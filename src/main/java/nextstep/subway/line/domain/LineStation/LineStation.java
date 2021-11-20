@@ -58,9 +58,8 @@ public class LineStation {
         return preStation.equals(lineStation.preStation) && nextStation.equals(lineStation.nextStation);
     }
 
-    public void updateToPreStation(Station station, Distance distance) {
+    public void updateToPreStation(Station station) {
         this.preStation = station;
-        this.distance.minus(distance);
     }
 
     public Station getNextStation() {
@@ -75,8 +74,15 @@ public class LineStation {
         return distance;
     }
 
-    public void updateToNextStation(Station station, Distance distance) {
+    public void updateToNextStation(Station station) {
         this.nextStation = station;
+    }
+
+    public void plusDistance(Distance distance) {
+        this.distance.plus(distance);
+    }
+
+    public void minusDistance(Distance distance) {
         this.distance.minus(distance);
     }
 }

@@ -101,7 +101,7 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
 
         // then
         응답_확인_OK(actual);
-        상행_혹은_하행_추가_검증(lines, 추가역);
+        상행_혹은_하행_추가_검증(추가역);
         순서_검증(신분당선_아이디, 추가역, 강남역, 광교역);
     }
 
@@ -110,8 +110,12 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
     void 하행을_기준으로_신규_노선_추가() {
         // given
         LineAndLineStation 신분당선_생성_강남_광교 = 신분당선_생성_강남_광교();
-        StationResponse 추가역 = 역_생성(홍대역);
         Long 신분당선_아이디 = 신분당선_생성_강남_광교.getLineResponse().getId();
+        StationResponse 추가역 = 역_생성(홍대역);
+        StationResponse 강남역 = 신분당선_생성_강남_광교.getStationResponses()
+                .stream()
+                .filter(f -> f.getName().equals("강남역"))
+                .findFirst().get();
         StationResponse 광교역 = 신분당선_생성_강남_광교.getStationResponses()
                 .stream()
                 .filter(f -> f.getName().equals("광교역"))
@@ -123,6 +127,7 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
 
         // then
         응답_확인_OK(actual);
+        순서_검증(신분당선_아이디, 강남역, 추가역, 광교역);
     }
 
     @DisplayName("[하행기준] 지하철 노선의 구간을 추가한다. 길이초과 발생")
@@ -167,7 +172,7 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
 
         // then
         응답_확인_OK(actual);
-        상행_혹은_하행_추가_검증(lines, 추가역);
+        상행_혹은_하행_추가_검증(추가역);
         순서_검증(신분당선_아이디, 강남역, 광교역, 추가역);
     }
 
@@ -201,8 +206,8 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
         return post(path, request, id);
     }
 
-    private void 상행_혹은_하행_추가_검증(ExtractableResponse<Response> response, StationResponse excepted) {
-        List<LineResponse> responses = response.jsonPath().getList(".", LineResponse.class);
+    private void 상행_혹은_하행_추가_검증(StationResponse excepted) {
+        List<LineResponse> responses = 지하철_노선_목록_조회_요청("/lines").jsonPath().getList(".", LineResponse.class);
 
         List<StationResponse> actual = new ArrayList<>();
         responses.stream()
@@ -214,16 +219,151 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
     }
 
 
-    private void 순서_검증(Long lineId
-            , StationResponse excepted1, StationResponse excepted2, StationResponse excepted3) {
+    private void 순서_검증(Long lineId, StationResponse... excepted) {
         LineResponse response = 지하철_노선_단건_조회("/lines/{id}", lineId).as(LineResponse.class);
 
         List<StationResponse> actual = response.getStations()
                 .stream().map(StationResponse::of)
                 .collect(Collectors.toList());
 
-        assertThat(actual).containsExactly(excepted1, excepted2, excepted3);
+        assertThat(actual).containsExactly(excepted);
     }
 
+
+    @DisplayName("지하철 노선의 구간을 삭제 한다.")
+    @Test
+    void 지하철_구간_삭제() {
+        // given
+        LineAndLineStation 신분당선_생성_강남_판교_광교 = 신분당선_생성_강남_판교_광교();
+        Long 신분당선_아이디 = 신분당선_생성_강남_판교_광교.getLineResponse().getId();
+        StationResponse 강남역 = 신분당선_생성_강남_판교_광교.getStationResponses()
+                .stream()
+                .filter(f -> f.getName().equals("강남역"))
+                .findFirst().get();
+        StationResponse 판교역 = 신분당선_생성_강남_판교_광교.getStationResponses()
+                .stream()
+                .filter(f -> f.getName().equals("판교역"))
+                .findFirst().get();
+        StationResponse 광교역 = 신분당선_생성_강남_판교_광교.getStationResponses()
+                .stream()
+                .filter(f -> f.getName().equals("광교역"))
+                .findFirst().get();
+
+        // when
+        ExtractableResponse<Response> actual
+                = 지하철_노선_구간_삭제("/lines/{lineId}/lineStations/{stationId}", 신분당선_아이디, 판교역.getId());
+        신분당선_생성_강남_판교_광교.getStationResponses().remove(판교역);
+
+        //then
+        응답_확인_OK(actual);
+        상행_혹은_하행_삭제_검증(신분당선_아이디, 신분당선_생성_강남_판교_광교.getStationResponses());
+        순서_검증(신분당선_아이디, 강남역, 광교역);
+    }
+
+    @DisplayName("지하철 노선의 구간을 삭제 한다.([삭제시도]강남 -> 판교 -> 광교)")
+    @Test
+    void 지하철_구간_상행종점_삭제_강남삭제() {
+        // given
+        LineAndLineStation 신분당선_생성_강남_판교_광교 = 신분당선_생성_강남_판교_광교();
+        Long 신분당선_아이디 = 신분당선_생성_강남_판교_광교.getLineResponse().getId();
+        StationResponse 강남역 = 신분당선_생성_강남_판교_광교.getStationResponses()
+                .stream()
+                .filter(f -> f.getName().equals("강남역"))
+                .findFirst().get();
+        StationResponse 판교역 = 신분당선_생성_강남_판교_광교.getStationResponses()
+                .stream()
+                .filter(f -> f.getName().equals("판교역"))
+                .findFirst().get();
+        StationResponse 광교역 = 신분당선_생성_강남_판교_광교.getStationResponses()
+                .stream()
+                .filter(f -> f.getName().equals("광교역"))
+                .findFirst().get();
+
+        // when
+        ExtractableResponse<Response> actual
+                = 지하철_노선_구간_삭제("/lines/{lineId}/lineStations/{stationId}", 신분당선_아이디, 강남역.getId());
+        신분당선_생성_강남_판교_광교.getStationResponses().remove(강남역);
+
+        //then
+        응답_확인_OK(actual);
+        상행_혹은_하행_삭제_검증(신분당선_아이디, 신분당선_생성_강남_판교_광교.getStationResponses());
+        순서_검증(신분당선_아이디, 판교역, 광교역);
+    }
+
+    @DisplayName("지하철 노선의 구간을 삭제 한다.(강남 -> 판교 -> [삭제시도]광교)")
+    @Test
+    void 지하철_구간_하행종점_삭제_광교삭제() {
+        // given
+        LineAndLineStation 신분당선_생성_강남_판교_광교 = 신분당선_생성_강남_판교_광교();
+        Long 신분당선_아이디 = 신분당선_생성_강남_판교_광교.getLineResponse().getId();
+        StationResponse 강남역 = 신분당선_생성_강남_판교_광교.getStationResponses()
+                .stream()
+                .filter(f -> f.getName().equals("강남역"))
+                .findFirst().get();
+        StationResponse 판교역 = 신분당선_생성_강남_판교_광교.getStationResponses()
+                .stream()
+                .filter(f -> f.getName().equals("판교역"))
+                .findFirst().get();
+        StationResponse 광교역 = 신분당선_생성_강남_판교_광교.getStationResponses()
+                .stream()
+                .filter(f -> f.getName().equals("광교역"))
+                .findFirst().get();
+
+        // when
+        ExtractableResponse<Response> actual
+                = 지하철_노선_구간_삭제("/lines/{lineId}/lineStations/{stationId}", 신분당선_아이디, 광교역.getId());
+        신분당선_생성_강남_판교_광교.getStationResponses().remove(광교역);
+
+        //then
+        응답_확인_OK(actual);
+        상행_혹은_하행_삭제_검증(신분당선_아이디, 신분당선_생성_강남_판교_광교.getStationResponses());
+        순서_검증(신분당선_아이디, 강남역, 판교역);
+    }
+
+    @DisplayName("지하철 노선의 구간을 삭제 한다.(마지막 구간은 삭제 못하도록)")
+    @Test
+    void 마지막_노선_삭제_시도() {
+        // given
+        LineAndLineStation 신분당선_생성_강남_판교_광교 = 신분당선_생성_강남_광교();
+        Long 신분당선_아이디 = 신분당선_생성_강남_판교_광교.getLineResponse().getId();
+        StationResponse 광교역 = 신분당선_생성_강남_판교_광교.getStationResponses()
+                .stream()
+                .filter(f -> f.getName().equals("광교역"))
+                .findFirst().get();
+
+        // when
+        ExtractableResponse<Response> actual
+                = 지하철_노선_구간_삭제("/lines/{lineId}/lineStations/{stationId}", 신분당선_아이디, 광교역.getId());
+
+        //then
+        응답_확인_BAD_REQUEST(actual);
+    }
+
+    private void 상행_혹은_하행_삭제_검증(Long 신분당선_아이디, List<StationResponse> excepted) {
+        LineResponse responses = 지하철_노선_단건_조회("/lines/{id}", 신분당선_아이디).as(LineResponse.class);
+
+        List<StationResponse> actual = responses.getStations()
+                .stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
+
+        assertThat(actual).containsAll(excepted);
+    }
+
+    private LineAndLineStation 신분당선_생성_강남_판교_광교() {
+        StationResponse 강남 = 역_생성(강남역);
+        StationResponse 판교 = 역_생성(판교역);
+        StationResponse 광교 = 역_생성(광교역);
+        LineResponse 신분당선_완료 = 신규_지하철_노선_생성_요청("/lines", 신분당선, 14, 강남, 광교).as(LineResponse.class);
+        지하철_노선_구간_추가("/lines/{id}/lineStations", 신분당선_완료.getId(), 구간_추가(강남, 판교, 1));
+
+        LineResponse responses = 지하철_노선_단건_조회("/lines/{id}", 신분당선_완료.getId()).as(LineResponse.class);
+
+        return new LineAndLineStation(responses, Arrays.asList(강남, 판교, 광교));
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_구간_삭제(String path, Long lineId, Long lineStationId) {
+        return delete(path, lineId, lineStationId);
+    }
 
 }

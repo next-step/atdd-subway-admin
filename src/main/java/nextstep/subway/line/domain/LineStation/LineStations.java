@@ -3,7 +3,9 @@ package nextstep.subway.line.domain.LineStation;
 import nextstep.subway.excetpion.ErrorCode;
 import nextstep.subway.line.exception.DuplicateLineStationException;
 import nextstep.subway.line.exception.LineStationNotConnectException;
+import nextstep.subway.line.exception.LineStationSafetyException;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.StationNotFoundException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -26,12 +28,18 @@ public class LineStations {
         lineStations.stream()
                 .filter(f -> f.getPreStation() == lineStation.getPreStation())
                 .findFirst()
-                .ifPresent(f -> f.updateToPreStation(lineStation.getNextStation(), lineStation.getDistance()));
+                .ifPresent(f -> {
+                    f.updateToPreStation(lineStation.getNextStation());
+                    f.minusDistance(lineStation.getDistance());
+                });
 
         lineStations.stream()
                 .filter(f -> f.getNextStation() == lineStation.getNextStation())
                 .findFirst()
-                .ifPresent(f -> f.updateToNextStation(lineStation.getPreStation(), lineStation.getDistance()));
+                .ifPresent(f -> {
+                    f.updateToNextStation(lineStation.getPreStation());
+                    f.minusDistance(lineStation.getDistance());
+                });
 
         lineStations.add(lineStation);
     }
@@ -88,4 +96,50 @@ public class LineStations {
                 .contains(station);
     }
 
+    public void delete(Long stationId) {
+        validationDelete();
+        Optional<LineStation> preStation = findDeleteByPreStation(stationId);
+
+        if (!preStation.isPresent()) {
+            Optional<LineStation> nextStation = findDeleteByNextStation(stationId);
+            deleteByNextStation(nextStation);
+        }
+
+        deleteByPreStation(preStation);
+    }
+
+    private void deleteByNextStation(Optional<LineStation> lineStation) {
+        lineStations.remove(lineStation.orElseThrow(() ->
+                new StationNotFoundException(ErrorCode.NOT_FOUND_ENTITY, "삭제 역이 없습니다.")));
+    }
+
+    private void deleteByPreStation(Optional<LineStation> lineStation) {
+        lineStation.ifPresent(pre ->
+                lineStations.stream()
+                        .filter(f -> f.getNextStation().equals(pre.getPreStation()))
+                        .findFirst()
+                        .ifPresent(f -> {
+                            f.updateToNextStation(pre.getNextStation());
+                            f.plusDistance(pre.getDistance());
+                        }));
+
+        lineStations.remove(lineStation.orElse(null));
+    }
+
+    private void validationDelete() {
+        if (lineStations.size() == 1) {
+            throw new LineStationSafetyException(ErrorCode.BAD_ARGUMENT, "마지막 구간은 삭제할 수 업습니다.");
+        }
+    }
+
+    private Optional<LineStation> findDeleteByPreStation(Long stationId) {
+        return lineStations.stream()
+                .filter(f -> f.getPreStation().isEqualsId(stationId))
+                .findFirst();
+    }
+    private Optional<LineStation> findDeleteByNextStation(Long stationId) {
+        return lineStations.stream()
+                .filter(f -> f.getNextStation().isEqualsId(stationId))
+                .findFirst();
+    }
 }
