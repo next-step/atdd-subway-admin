@@ -34,16 +34,17 @@ public class Section {
 
 	private int distance;
 
-	public Section() {
+	protected Section() {
 	}
 
-	public Section(Line line, Station upStation, Station downStation, int distance) {
-		this.line = line;
+	public Section(Station upStation, Station downStation, int distance) {
 		this.upStation = upStation;
 		this.downStation = downStation;
 		this.distance = distance;
+	}
 
-		line.addSection(this);
+	public void assignLine(Line line){
+		this.line = line;
 	}
 
 	public Long getId() {
@@ -64,6 +65,28 @@ public class Section {
 
 	public int getDistance() {
 		return distance;
+	}
+
+	public void minusDistance(int distance) {
+		this.distance -= distance;
+	}
+
+	public boolean matchUpStation(Station station) {
+		return upStation.equals(station);
+	}
+
+	public void splitUpSection(Section newPreSection) {
+		this.upStation = newPreSection.getDownStation();
+		minusDistance(newPreSection.getDistance());
+	}
+
+	public boolean matchDownStation(Station station) {
+		return downStation.equals(station);
+	}
+
+	public void splitDownSection(Section newPreSection) {
+		this.downStation = newPreSection.getUpStation();
+		minusDistance(newPreSection.getDistance());
 	}
 
 	@Override
@@ -92,5 +115,6 @@ public class Section {
 			", distance=" + distance +
 			'}';
 	}
+
 
 }

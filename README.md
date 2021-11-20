@@ -5,7 +5,7 @@
 ### # 1단계 : 지하철 노선도 관리
 
 #### 요구 사항
-
+ 
 - 지하철 노선 관리 기능을 구현하기
     - 기능 목록: 생성 / 목록 조회 / 조회 / 수정 / 삭제
     - 기능 구현 전 인수 테스트 작성
@@ -59,65 +59,6 @@ public class LineController {
 인수 테스트의 각 스텝들을 메서드로 분리하여 재사용하세요.
 ex) 인수 테스트 요청 로직 중복 제거 등# 우아한 테크 캠프 Pro - 미션 3
 
-## 미션명 : ATDD(인수 테스트 주도 개발)
-
-### # 1단계 : 지하철 노선도 관리
-
-#### 요구 사항
-
-- 지하철 노선 관리 기능을 구현하기
-    - 기능 목록: 생성 / 목록 조회 / 조회 / 수정 / 삭제
-    - 기능 구현 전 인수 테스트 작성
-    - 기능 구현 후 인수 테스트 리팩터링
-
-#### 단계별 요구사항
-
-**1.지하철 노선 관련 기능의 인수 테스트를 작성하기**
-- LineAcceptanceTest 를 모두 완성시키세요.
-```java
-@DisplayName("지하철 노선 관련 기능")
-public class LineAcceptanceTest extends AcceptanceTest {
-    @DisplayName("지하철 노선을 생성한다.")
-    @Test
-    void createLine() {
-        // when
-        // 지하철_노선_생성_요청
-
-        // then
-        // 지하철_노선_생성됨
-    }
-
-    ...
-}
-```
-
-
-**2.지하철 노선 관련 기능 구현하기**
-- 인수 테스트가 모두 성공할 수 있도록 LineController를 통해 요청을 받고 처리하는 기능을 구현하세요.
-```java
-@RestController
-@RequestMapping("/lines")
-public class LineController {
-
-    ...
-
-	@PostMapping
-	public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-		// TODO
-	}
-
-	@GetMapping
-	public ResponseEntity<List<LineResponse>> findAllLines() {
-		// TODO
-	}
-    
-    ...
-}
-```
-**3.인수 테스트 리팩터링**
-인수 테스트의 각 스텝들을 메서드로 분리하여 재사용하세요.
-ex) 인수 테스트 요청 로직 중복 제거 등
-
 
 ### # 2단계 : 인수 테스트 리팩터링
 
@@ -159,3 +100,39 @@ public class Line {
 - 노선 조회 시 역 목록을 함께 응답할 수 있도록 변경
 - 노선에 등록된 구간을 순서대로 정렬하여(상행역 부터 하행역 순) 상행 종점부터 하행 종점까지 목록을 응답하기
 - 필요시 노선과 구간(혹은 역)의 관계를 새로 맺기
+
+
+### # 3단계 : 구간 추가 기능
+
+#### 요구 사항
+
+1. 지하철 구간 등록 성공 인수 테스트 작성과 기능 구현
+
+- 역 사이에 새로운 역을 등록할 경우
+    - 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정
+- 새로운 역을 상행 종점으로 등록할 경우
+- 새로운 역을 하행 종점으로 등록할 경우
+
+2. 구간 등록 시 예외 케이스를 고려하여 인수테스트 작성
+
+- 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
+- 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
+    - A-B, B-C 구간이 등록된 상황에서 B-C 구간을 등록할 수 없음(A-C 구간도 등록할 수 없음
+    - 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
+
+
+
+#### 요청 Request 포맷
+
+```json
+POST /lines/1/sections HTTP/1.1
+accept: */*
+content-type: application/json; charset=UTF-8
+host: localhost:52165
+
+{
+    "downStationId": "4",
+    "upStationId": "2",
+    "distance": 10
+}
+```

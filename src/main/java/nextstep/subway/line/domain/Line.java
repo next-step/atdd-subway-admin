@@ -11,14 +11,16 @@ public class Line extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
 	@Column(unique = true)
 	private String name;
+
 	private String color;
 
 	@Embedded
 	private Sections sections = new Sections();
 
-	public Line() {
+	protected Line() {
 	}
 
 	public Line(String name, String color) {
@@ -27,7 +29,7 @@ public class Line extends BaseEntity {
 	}
 
 	public void addSection(Section section) {
-		sections.add(section);
+		sections.addSection(section,this);
 	}
 
 	public void update(Line line) {
