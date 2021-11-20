@@ -5,9 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
-import java.util.Map;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -21,17 +20,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        LineRequest request = new LineRequest("신분당선", "bg-red-600");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = 지하철_노선_생성(request, "/lines");
 
         // then
         // 지하철_노선_생성됨
@@ -106,5 +97,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_생성(LineRequest params, String path) {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post(path)
+            .then().log().all()
+            .extract();
+
+        return response;
     }
 }
