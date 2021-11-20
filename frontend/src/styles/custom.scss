@@ -458,7 +458,7 @@ blockquote:before {
 
 .CodeMirror {
   font-family: '나눔고딕', 'Nanum Gothic', 'Malgun Gothic', '맑은고딕', 'Apple SD Gothic Neo', Roboto, -apple-system, NanumGothic, Dotum, '돋움',
-    sans-serif, system-ui, BlinkMacSystemFont, Segoe UI, Helvetica Neue, Arial, sans-serif !important;
+  sans-serif, system-ui, BlinkMacSystemFont, Segoe UI, Helvetica Neue, Arial, sans-serif !important;
 }
 
 .cursor-wait {
@@ -659,6 +659,7 @@ blockquote:before {
     top: 0;
     left: -3px;
   }
+
   position: absolute;
   border-right: 1px solid #666;
   left: 50%;
@@ -695,6 +696,7 @@ blockquote:before {
   background: #333;
   position: relative;
   z-index: 0;
+
   &:before {
     content: '';
     background: url('/images/pages/course/syllabus/banner_bg.png') no-repeat scroll center bottom;
@@ -706,23 +708,28 @@ blockquote:before {
     z-index: -1;
     top: 0;
   }
+
   .syllabus-banner-img {
     position: relative;
     z-index: 1;
+
     .line {
       position: absolute;
       z-index: -1;
       height: 100%;
     }
+
     .line.line_one {
       left: -40px;
       top: -95px;
     }
+
     .line.line_two {
       left: 80px;
       bottom: -138px;
       opacity: 0.4;
     }
+
     .line.line_three {
       right: 93px;
       top: -160px;
@@ -745,6 +752,7 @@ blockquote:before {
 
 .unit-border-image {
   position: relative;
+
   .unit-border {
     height: 100%;
   }
@@ -770,11 +778,13 @@ blockquote:before {
 
 .curriculum-unit {
   max-width: 350px;
+
   img {
     max-height: 300px;
     max-width: 250px;
     margin-bottom: 16px;
   }
+
   h3 {
     &::before {
       position: absolute;
@@ -802,6 +812,7 @@ blockquote:before {
     left: 25.5%;
   }
 }
+
 @media only screen and (max-width: 767px) {
   .cover-content {
     top: 50% !important;
@@ -828,6 +839,7 @@ blockquote:before {
       img {
         max-width: 100%;
       }
+
       padding-right: 20px;
     }
   }
@@ -837,6 +849,7 @@ blockquote:before {
   .syllabus-banner-area {
     min-height: auto;
     padding: 150px 0px 100px;
+
     .syllabus-banner-img {
       padding-right: 0;
       padding-bottom: 50px;
@@ -856,11 +869,13 @@ blockquote:before {
   }
   #session-apply-list-mobile-container {
     display: block;
+
     .owl-carousel {
       .owl-dots {
         position: relative;
         bottom: 33px;
       }
+
       button.owl-prev {
         left: -40px;
         position: absolute;
@@ -869,15 +884,18 @@ blockquote:before {
         height: 30px;
         line-height: 1.6rem !important;
         border-radius: 100% !important;
+
         span {
           font-size: 25px !important;
           color: gray !important;
         }
       }
+
       button.owl-next {
         right: -40px !important;
       }
     }
+
     .owl-theme {
       .owl-nav {
         [class*='owl-'] {
@@ -886,6 +904,7 @@ blockquote:before {
           }
         }
       }
+
       .owl-dots {
         .owl-dot {
           span {
@@ -908,11 +927,13 @@ blockquote:before {
       line-height: 1.6rem !important;
       border-radius: 100% !important;
       right: -35px;
+
       span {
         font-size: 25px !important;
         color: gray !important;
       }
     }
+
     button.owl-prev {
       left: -35px;
     }
@@ -937,6 +958,7 @@ blockquote:before {
   }
   .unit-border-image.connect {
     position: static;
+
     .unit-border {
       height: calc(100% + 80px);
     }
@@ -945,8 +967,10 @@ blockquote:before {
     .left-column-container {
       padding-bottom: 0;
     }
+
     .right-column-container {
       padding-top: 0;
+
       .unit-border.last {
         display: none;
       }
@@ -1014,6 +1038,7 @@ blockquote:before {
     transform: rotate(360deg);
   }
 }
+
 @-webkit-keyframes loader {
   from {
     transform: rotate(0);
@@ -1022,6 +1047,7 @@ blockquote:before {
     transform: rotate(360deg);
   }
 }
+
 @-o-keyframes loader {
   from {
     transform: rotate(0);
@@ -1030,6 +1056,7 @@ blockquote:before {
     transform: rotate(360deg);
   }
 }
+
 @keyframes loader {
   from {
     transform: rotate(0);

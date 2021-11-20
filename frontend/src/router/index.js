@@ -12,6 +12,6 @@ import favoriteRoutes from '@/router/modules/favorite'
 Vue.use(VueRouter)
 
 export default new VueRouter({
-  mode: 'history',
-  routes: [...mapRoutes, ...pathRoutes, ...stationRoutes, ...lineRoutes, ...sectionRoutes, ...mainRoutes, ...authRoutes, ...favoriteRoutes]
+    mode: 'history',
+    routes: [...mapRoutes, ...pathRoutes, ...stationRoutes, ...lineRoutes, ...sectionRoutes, ...mainRoutes, ...authRoutes, ...favoriteRoutes]
 })

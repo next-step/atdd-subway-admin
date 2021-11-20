@@ -7,9 +7,9 @@ import '@/api'
 import '@/styles/index.scss'
 
 new Vue({
-  el: '#app',
-  vuetify,
-  router,
-  store,
-  render: h => h(App)
+    el: '#app',
+    vuetify,
+    router,
+    store,
+    render: h => h(App)
 })
