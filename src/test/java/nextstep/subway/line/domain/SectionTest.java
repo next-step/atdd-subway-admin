@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.exception.IllegalStationDistanceException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +24,7 @@ public class SectionTest {
     @Test
     void updateUpStation_기존_길이보다_새로운_구간의_길이가_길면_에러를_발생한다() {
         Section 구간 = new Section(이호선, 강남역, 삼성역, 10);
-        assertThatExceptionOfType(IllegalArgumentException.class)
+        assertThatExceptionOfType(IllegalStationDistanceException.class)
                 .isThrownBy(() -> 구간.updateUpStation(역삼역, 20));
     }
 
@@ -37,7 +38,7 @@ public class SectionTest {
     @Test
     void updateDownStation_기존_길이보다_새로운_구간의_길이가_길면_에러를_발생한다() {
         Section 구간 = new Section(이호선, 강남역, 삼성역, 10);
-        assertThatExceptionOfType(IllegalArgumentException.class)
+        assertThatExceptionOfType(IllegalStationDistanceException.class)
                 .isThrownBy(() -> 구간.updateDownStation(역삼역, 20));
     }
 }
