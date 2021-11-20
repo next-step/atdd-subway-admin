@@ -1,7 +1,6 @@
 package nextstep.subway.station.domain;
 
 import nextstep.subway.common.entity.BaseEntity;
-import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
 import java.util.Objects;

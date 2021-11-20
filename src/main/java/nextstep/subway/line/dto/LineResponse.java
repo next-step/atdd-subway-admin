@@ -3,15 +3,11 @@ package nextstep.subway.line.dto;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.dto.StationResponse;
-import org.mozilla.javascript.NativeArray;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class LineResponse {
     private Long id;

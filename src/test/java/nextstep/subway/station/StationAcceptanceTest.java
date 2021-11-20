@@ -62,7 +62,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철_역_목록_포함됨(response, Arrays.asList(강남역_ID, 역삼역_ID));
     }
 
-
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {

@@ -7,28 +7,24 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
-import nextstep.subway.station.dto.StationRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
-    private SectionRepository sectionRepository;
 
     public LineService(LineRepository lineRepository,
-                       StationRepository stationRepository,
-                       SectionRepository sectionRepository) {
+                       StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.sectionRepository = sectionRepository;
     }
 
     @Transactional(readOnly = true)
@@ -42,13 +38,13 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        return LineResponse.of(lineRepository.save(request.toLine()));
-    }
-
-    public LineResponse saveLineWithSection(LineRequest request) {
-        if(request.getUpStationId() == request.getDownStationId()) throw new DuplicateParameterException("역은 중복될 수 없습니다.");
-        final Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(() -> new NotFoundException("역이 존재하지 않습니다."));
-        final Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(() -> new NotFoundException("역이 존재하지 않습니다."));
+        if (isDuplicateStations(request)) {
+            throw new DuplicateParameterException("상행, 하행역은 중복될 수 없습니다.");
+        }
+        final Station upStation = stationRepository.findById(request.getUpStationId())
+                .orElseThrow(() -> new NotFoundException("역이 존재하지 않습니다."));
+        final Station downStation = stationRepository.findById(request.getDownStationId())
+                .orElseThrow(() -> new NotFoundException("역이 존재하지 않습니다."));
         Line line = request.toLine();
         line.addSection(new Section(request.getDistance(), upStation, downStation));
         Line savedLine = lineRepository.save(line);
@@ -70,5 +66,7 @@ public class LineService {
         lineRepository.deleteById(line.getId());
     }
 
-
+    private boolean isDuplicateStations(LineRequest request) {
+        return Objects.equals(request.getUpStationId(), request.getDownStationId());
+    }
 }
