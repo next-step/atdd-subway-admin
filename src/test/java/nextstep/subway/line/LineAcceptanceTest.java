@@ -6,12 +6,16 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -122,6 +126,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @DisplayName("종점역 정보를 포함한 지하철 노선을 생성한다.")
+    @Test
+    void createLastStopIncludeLine() {
+        //given
+        //종점역_상행_생성
+        //종점역_하행_생성
+        final StationResponse lastStopAscending = 종점역_생성("강남역");
+        final StationResponse lastStopDescending = 종점역_생성("역삼역");
+        int sectionDistance = 10;
+
+        //when
+        //종점역_정보를_포함한_지하철_노선_생성
+        final ExtractableResponse<Response> response = 종점역_정보를_포함한_지하철_노선_생성(lastStopAscending, lastStopDescending, sectionDistance);
+
+        //then
+        //종점역_정보를_포함한_지하철_노선_생성됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private ExtractableResponse<Response> 종점역_정보를_포함한_지하철_노선_생성(final StationResponse lastStopAscending, final StationResponse lastStopDescending, int sectionDistance) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new LineRequest("신분당선", "bg-red-600", lastStopAscending.getId(), lastStopDescending.getId(), sectionDistance))
+                .when().post("/lines")
+                .then().log().all().extract();
+    }
+
     private ExtractableResponse<Response> 지하철_노선_목록_조회() {
         return RestAssured.given().log().all()
                 .when().get("/lines")
@@ -134,5 +165,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .body(new LineRequest(name, color))
                 .when().post("/lines")
                 .then().log().all().extract();
+    }
+
+    private StationResponse 종점역_생성(String stationName) {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", stationName);
+
+        // when
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+
+        return response.as(StationResponse.class);
     }
 }

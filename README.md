@@ -55,7 +55,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ## 2단계 - 인수 테스트 리팩터링 기능 요구사항 정리
 - 인수 테스트 목록
-  - [ ] 종점역(상행,하행)과 구간 사이 길이(distance)를 포함한 지하철 노선 생성
+  - [X] 종점역(상행,하행)과 구간 사이 길이(distance)를 포함한 지하철 노선 생성
   - [ ] 지하철 노선에 해당하는 구간 조회 (GET : /lines/{lineNo})
 - 기능 요구사항 목록
   - [ ] 노선 생성 시 구간 정보를 저장한다.
