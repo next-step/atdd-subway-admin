@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.dto.StationResponse;
 
 public class LineResponse {
     private Long id;
@@ -13,27 +14,32 @@ public class LineResponse {
     private String color;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
+    private List<StationResponse> stations;
 
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public LineResponse(final Long id, final String name, final String color, final LocalDateTime createdDate,
+        final LocalDateTime modifiedDate, final List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
+        this.stations = stations;
     }
 
-    public static List<LineResponse> of(List<Line> lines) {
+    public static List<LineResponse> of(final List<Line> lines) {
         return lines.stream()
             .map(LineResponse::of)
             .collect(Collectors.toList());
     }
 
-    public static LineResponse of(Line line) {
+    public static LineResponse of(final Line line) {
         return new LineResponse(
-            line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
+            line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate(),
+            StationResponse.of(line.computeSortedStations())
+        );
     }
 
     public Long getId() {
@@ -54,6 +60,10 @@ public class LineResponse {
 
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
+    }
+
+    public List<StationResponse> getStations() {
+        return stations;
     }
 
     @Override

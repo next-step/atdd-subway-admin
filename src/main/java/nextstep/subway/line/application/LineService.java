@@ -9,22 +9,40 @@ import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 
 @Service
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(final LineRepository lineRepository) {
+    public LineService(final LineRepository lineRepository, final StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(final LineRequest request) {
         validateDuplicatedName(request);
         final Line persistLine = lineRepository.save(request.toLine());
+
+        addSection(request, persistLine);
+
         return LineResponse.of(persistLine);
+    }
+
+    private void addSection(final LineRequest request, final Line persistLine) {
+        final Station upStation = getStationById(request.getUpStationId());
+        final Station downStation = getStationById(request.getDownStationId());
+        persistLine.addSection(new Section(upStation, downStation, request.getDistance()));
+    }
+
+    private Station getStationById(final Long stationId) {
+        return stationRepository.findById(stationId).orElseThrow(() -> new NotFoundException("지하철역을 찾을 수 없습니다."));
     }
 
     public List<LineResponse> getAllLines() {
@@ -55,6 +73,6 @@ public class LineService {
 
     private Line getLineById(final Long id) {
         return lineRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("지하철 노선을 찾을 수 없습니다"));
+            .orElseThrow(() -> new NotFoundException("지하철 노선을 찾을 수 없습니다."));
     }
 }

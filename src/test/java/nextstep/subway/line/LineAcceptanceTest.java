@@ -24,7 +24,6 @@ import nextstep.subway.utils.StatusCodeCheckUtil;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-
     public static final List<String> EXPECTED_FIELDS =
         Arrays.asList("id", "name", "color", "createdDate", "modifiedDate", "stations");
 
