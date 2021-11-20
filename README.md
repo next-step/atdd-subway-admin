@@ -93,7 +93,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 
 ## 기능 목록
-- [ ] 노선 생성시 종점역(상행,하행) 추가하기
+- [x] 노선 생성시 종점역(상행,하행) 정보 요청 파라미터에 추가하기
 - [ ] 노선 객체에 구간 정보 추가하기
 - [ ] 노선의 역 목록 조회하는 기능 추가하기
     - [ ] 상행 -> 하행순으로 정렬하기

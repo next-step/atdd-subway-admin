@@ -22,9 +22,9 @@ import nextstep.subway.line.dto.LineResponse;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
     
-    private LineRequest 신분당선 = LineRequest.of("신분당선", "bg-red-600");
-    private LineRequest 이호선 = LineRequest.of("2호선", "bg-red-600");
-    private LineRequest 구분당선 = LineRequest.of("구분당선", "bg-blue-600");
+    private LineRequest 신분당선 = LineRequest.of("신분당선", "bg-red-600", 1L, 2L, 5);
+    private LineRequest 이호선 = LineRequest.of("2호선", "bg-red-600", 3L, 4L, 8);
+    private LineRequest 구분당선 = LineRequest.of("구분당선", "bg-blue-600", 5L, 6L, 7);
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
