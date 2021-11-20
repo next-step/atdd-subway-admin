@@ -40,4 +40,9 @@ public class LineController {
         lineService.deleteLine(lineId);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/{lineNo}")
+    public ResponseEntity<LineResponse> findLine(@PathVariable("lineNo") Long lineNo) {
+        return ResponseEntity.ok(lineService.findDetailLine(lineNo));
+    }
 }

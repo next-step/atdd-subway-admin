@@ -6,7 +6,6 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -72,6 +71,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         final List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(lineResponses.size()).isEqualTo(2);
+        assertThat(lineResponses.get(0).getStations().size()).isEqualTo(2);
+        assertThat(lineResponses.get(1).getStations().size()).isEqualTo(2);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -139,6 +140,33 @@ class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
+
+    @DisplayName("지하철 노선 상세 조회시 노선에 속한 역 정보도 포함한다.")
+    @Test
+    void getIncludeStationLine() {
+        //given
+        final StationResponse upStation = 종점역_생성("강남");
+        final StationResponse downStation = 종점역_생성("광교");
+        final ExtractableResponse<Response> response = 종점역_정보를_포함한_지하철_노선_생성(upStation, downStation, "신분당선", "red", 30);
+
+        //when
+        // 지하철_노선_상세_조회
+        final ExtractableResponse<Response> lineNo = RestAssured.given().log().all()
+                .when()
+                .pathParam("lineNo", response.as(LineResponse.class).getId())
+                .get("/lines/{lineNo}")
+                .then().log().all().extract();
+
+        //then
+        // 지하철_노선_응답됨
+        // 노선에_속한_역_정보_상행_하행_정렬_되어_응답
+        final LineResponse lineResponses = lineNo.as(LineResponse.class);
+        assertThat(lineNo.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineResponses.getStations().get(0).getName()).isEqualTo("강남");
+        assertThat(lineResponses.getStations().get(1).getName()).isEqualTo("광교");
+
+    }
+
 
     private ExtractableResponse<Response> 종점역_정보를_포함한_지하철_노선_생성(final StationResponse lastStopAscending, final StationResponse lastStopDescending, String lineName, String lineColor, int sectionDistance) {
         return RestAssured.given().log().all()

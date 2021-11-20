@@ -1,12 +1,13 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 
 @Entity
-public class Section {
+public class Section extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,7 +15,6 @@ public class Section {
 
     @Column(name = "distance")
     private int distance;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
@@ -57,5 +57,13 @@ public class Section {
 
     public static Section createDownLastStopStation(final Station station, final int distance, final Section parent, final Line line) {
         return new Section(station, distance, parent, line);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Station getStation() {
+        return station;
     }
 }

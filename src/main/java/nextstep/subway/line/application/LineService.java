@@ -4,14 +4,15 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.mapper.LineMapper;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -39,10 +40,13 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLine() {
-        return lineRepository.findAll()
-                .stream()
-                .map(LineResponse::of)
-                .collect(Collectors.toList());
+        final List<Line> lines = lineRepository.findAll();
+        final List<LineResponse> lineResponses = new ArrayList<>();
+        for (Line line : lines) {
+            lineResponses.add(LineResponse.of(line, LineMapper.sectionToLineStation(line)));
+        }
+
+        return lineResponses;
     }
 
     public LineResponse modifyLine(final Long lineId, final LineRequest lineRequest) {
@@ -55,6 +59,12 @@ public class LineService {
     public void deleteLine(final Long lineId) {
         final Line findLine = findLine(lineId);
         lineRepository.delete(findLine);
+    }
+
+    @Transactional(readOnly = true)
+    public LineResponse findDetailLine(final Long lineId) {
+        final Line line = this.findLine(lineId);
+        return LineResponse.of(line, LineMapper.sectionToLineStation(line));
     }
 
     @Transactional(readOnly = true)

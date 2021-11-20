@@ -20,6 +20,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OrderBy("parentStation asc")
     private List<Section> sections = new ArrayList<>();
 
     protected Line() {
@@ -49,5 +50,9 @@ public class Line extends BaseEntity {
 
     public void addSection(final Section section) {
         this.sections.add(section);
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }
