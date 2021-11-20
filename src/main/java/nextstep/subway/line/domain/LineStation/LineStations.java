@@ -95,9 +95,9 @@ public class LineStations {
                 .contains(station);
     }
 
-    public void delete(Long lineStationsId) {
+    public void delete(Long stationId) {
         validationDelete();
-        Optional<LineStation> lineStation = findDeleteByLineStation(lineStationsId);
+        Optional<LineStation> lineStation = findDeleteByLineStation(stationId);
 
         lineStation.ifPresent(pre ->
                 lineStations.stream()
@@ -117,9 +117,9 @@ public class LineStations {
         }
     }
 
-    private Optional<LineStation> findDeleteByLineStation(Long lineStationsId) {
+    private Optional<LineStation> findDeleteByLineStation(Long stationId) {
         return lineStations.stream()
-                .filter(f -> f.getPreStation().isEqualsId(lineStationsId))
+                .filter(f -> f.getPreStation().isEqualsId(stationId))
                 .findFirst();
     }
 }

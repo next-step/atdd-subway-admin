@@ -92,9 +92,9 @@ public class LineService {
     }
 
     @Transactional
-    public void deleteLineStation(Long lineId, Long lineStationsId) {
+    public void deleteLineStation(Long lineId, Long stationId) {
         Line persistLine = findLineById(lineId).orElse(null);
-        persistLine.deleteLineByLineStation(lineStationsId);
+        persistLine.deleteLineByLineStation(stationId);
     }
 
     private Optional<Line> findLineById(Long id) {

@@ -251,7 +251,7 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> actual
-                = 지하철_노선_구간_삭제("/lines/{lineId}/lineStations/{lineStationsId}", 신분당선_아이디, 판교역.getId());
+                = 지하철_노선_구간_삭제("/lines/{lineId}/lineStations/{stationId}", 신분당선_아이디, 판교역.getId());
         신분당선_생성_강남_판교_광교.getStationResponses().remove(판교역);
 
         //then
@@ -273,7 +273,7 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> actual
-                = 지하철_노선_구간_삭제("/lines/{lineId}/lineStations/{lineStationsId}", 신분당선_아이디, 광교역.getId());
+                = 지하철_노선_구간_삭제("/lines/{lineId}/lineStations/{stationId}", 신분당선_아이디, 광교역.getId());
 
         //then
         응답_확인_BAD_REQUEST(actual);
