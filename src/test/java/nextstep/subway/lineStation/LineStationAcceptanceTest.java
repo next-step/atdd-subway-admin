@@ -262,7 +262,7 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선의 구간을 삭제 한다.([삭제시도]강남 -> 판교 -> 광교)")
     @Test
-    void 지하철_구간_삭제_강남삭제() {
+    void 지하철_구간_상행종점_삭제_강남삭제() {
         // given
         LineAndLineStation 신분당선_생성_강남_판교_광교 = 신분당선_생성_강남_판교_광교();
         Long 신분당선_아이디 = 신분당선_생성_강남_판교_광교.getLineResponse().getId();
@@ -292,7 +292,7 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선의 구간을 삭제 한다.(강남 -> 판교 -> [삭제시도]광교)")
     @Test
-    void 지하철_구간_삭제_광교삭제() {
+    void 지하철_구간_하행종점_삭제_광교삭제() {
         // given
         LineAndLineStation 신분당선_생성_강남_판교_광교 = 신분당선_생성_강남_판교_광교();
         Long 신분당선_아이디 = 신분당선_생성_강남_판교_광교.getLineResponse().getId();
