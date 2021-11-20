@@ -2,9 +2,13 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.security.InvalidParameterException;
+import java.util.HashSet;
+import java.util.Set;
 import nextstep.subway.line.domain.Line;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,5 +59,24 @@ public class LineTest {
             () -> assertThrows(InvalidParameterException.class, () -> new Line("", LINE_COLOR1)),
             () -> assertThrows(InvalidParameterException.class, () -> new Line(LINE_NAME1, ""))
         );
+    }
+
+    @Test
+    void equals() {
+        Line line1 = new Line(LINE_NAME1, LINE_COLOR1);
+        Line line2 = new Line(LINE_NAME1, LINE_COLOR1);
+        Line line3 = line1;
+
+        assertThat(line1).isSameAs(line1);
+        assertEquals(line1, line1);
+        assertNotEquals(line1, line2);
+        assertNotEquals(line2, line1);
+        assertEquals(line1, line3);
+
+        Set<Line> lines = new HashSet<>();
+        lines.add(line1);
+        lines.add(line2);
+        lines.add(line3);
+        assertThat(lines).hasSize(2);
     }
 }
