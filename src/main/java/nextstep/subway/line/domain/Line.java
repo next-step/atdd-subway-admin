@@ -5,18 +5,24 @@ import java.util.Objects;
 import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
+import org.hibernate.annotations.Where;
 
 @Entity
+@Where(clause = "deleted = false")
 public class Line extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(name = "name", unique = true)
     private String name;
 
+    @Column(name = "color")
     private String color;
+
+    @Column(name = "deleted")
+    private boolean deleted = Boolean.FALSE;
 
     protected Line() {
     }
@@ -32,6 +38,14 @@ public class Line extends BaseEntity {
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public void delete() {
+        this.deleted = true;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
     }
 
     public Long getId() {
@@ -68,7 +82,7 @@ public class Line extends BaseEntity {
         if (Objects.isNull(id)) {
             return false;
         }
-        
+
         Line line = (Line) o;
         return id.equals(line.getId()) && name.equals(line.getName());
     }
