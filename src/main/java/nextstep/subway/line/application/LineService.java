@@ -21,6 +21,8 @@ public class LineService {
     }
 
     public LineResponse save(LineRequest request) {
+        checkDuplicatedName(request.getName());
+        
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
     }
@@ -51,5 +53,11 @@ public class LineService {
     private Line findById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(id + "에 해당하는 노선이 없습니다."));
+    }
+    
+    private void checkDuplicatedName(String name) {
+        if (lineRepository.existsByName(name)) {
+            throw new IllegalArgumentException(name + "이 중복되었습니다.");
+        }
     }
 }
