@@ -27,12 +27,12 @@ public class Sections {
     }
 
     private List<Station> getStations(List<Station> stations) {
-        Map<Station, Station> upToDown = getUpToDownStation();
+        Map<Station, Station> upToDowns = getUpToDownStation();
         Station upStation = getUpStation();
 
         while (upStation != null) {
             stations.add(upStation);
-            upStation = upToDown.get(upStation);
+            upStation = upToDowns.get(upStation);
         }
 
         return stations;
