@@ -30,11 +30,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        // 지하철_노선_생성_요청
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선);
         
         // then
-        // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
@@ -42,15 +40,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        // 지하철_노선_등록되어_있음
         지하철_노선_등록되어_있음(신분당선);
 
         // when
-        // 지하철_노선_생성_요청
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선);
 
         // then
-        // 지하철_노선_생성_실패됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -58,21 +53,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        // 지하철_노선_등록되어_있음
         LineResponse 신분당선_응답 = 지하철_노선_등록되어_있음(신분당선);
-        
-        // 지하철_노선_등록되어_있음
         LineResponse 이호선_응답 = 지하철_노선_등록되어_있음(이호선);
 
         // when
-        // 지하철_노선_목록_조회_요청
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
-        // 지하철_노선_목록_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         
-        // 지하철_노선_목록_포함됨
         지하철_노선_목록_포함됨(Arrays.asList(신분당선_응답, 이호선_응답), new ArrayList<>(response.jsonPath().getList(".",LineResponse.class)));
     }
 
@@ -80,15 +69,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        // 지하철_노선_등록되어_있음
         LineResponse 신분당선_응답 = 지하철_노선_등록되어_있음(신분당선);
 
         // when
-        // 지하철_노선_조회_요청
         ExtractableResponse<Response> response =  지하철_노선_조회_요청(신분당선_응답.getId());
 
         // then
-        // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -96,15 +82,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        // 지하철_노선_등록되어_있음
         LineResponse 구분당선_응답 = 지하철_노선_등록되어_있음(구분당선);
 
         // when
-        // 지하철_노선_수정_요청
         ExtractableResponse<Response> response =  지하철_노선_수정_요청(구분당선_응답);
 
         // then
-        // 지하철_노선_수정됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -112,15 +95,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
         LineResponse 신분당선_응답 = 지하철_노선_등록되어_있음(신분당선);
 
         // when
-        // 지하철_노선_제거_요청
         ExtractableResponse<Response> response =  지하철_노선_제거_요청(신분당선_응답);
 
         // then
-        // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
     
