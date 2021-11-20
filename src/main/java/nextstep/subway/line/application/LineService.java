@@ -50,6 +50,6 @@ public class LineService {
     
     private Line findById(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("노선이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(id + "에 해당하는 노선이 없습니다."));
     }
 }
