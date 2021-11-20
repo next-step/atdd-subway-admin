@@ -17,7 +17,7 @@ public class AcceptanceTestUtil {
 		return RestAssured
 				.given().log().all()
 				.when()
-				.post(url)
+				.get(url)
 				.then().log().all()
 				.extract();
 	}
@@ -27,7 +27,7 @@ public class AcceptanceTestUtil {
 			.given().log().all()
 			.pathParams(pathParams)
 			.when()
-			.post(url)
+			.get(url)
 			.then().log().all()
 			.extract();
 	}
