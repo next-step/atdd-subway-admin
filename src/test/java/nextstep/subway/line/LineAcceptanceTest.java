@@ -27,11 +27,11 @@ class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성됨(response);
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
+    @DisplayName("지하철 노선이 이미 등록되어 있는 경우 지하철 노선 생성에 실패한다.")
     @Test
     void createLineWithDuplicateName() {
         // given
-        지하철_노선_생성_요청(신분당선);
+        지하철_노선_등록되어_있음(신분당선);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선);
@@ -42,10 +42,10 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
-    void getLines() {
+    void findLines() {
         // given
-        지하철_노선_생성_요청(신분당선);
-        지하철_노선_생성_요청(수인선);
+        지하철_노선_등록되어_있음(신분당선);
+        지하철_노선_등록되어_있음(수인선);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청("/lines");
@@ -58,9 +58,9 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
-    void getLine() {
+    void findLine() {
         // given
-        지하철_노선_생성_요청(수인선);
+        지하철_노선_등록되어_있음(수인선);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청("/lines/1");
@@ -68,6 +68,19 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선_조회_응답됨(response);
         지하철_노선_조회_결과_일치됨(response, 수인선);
+    }
+
+    @DisplayName("지하철 노선이 등록되지 않은 경우 지하철 노선 조회가 실패한다.")
+    @Test
+    void findLineValidateNotFound() {
+        // given
+        지하철_노선이_등록되어_있지_않음(1L);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청("/lines/1");
+
+        // then
+        지하철_노선_조회_실패됨(response);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -94,5 +107,18 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_삭제됨(response);
+    }
+
+    @DisplayName("지하철 노선이 등록되지 않은 경우 지하철 노선 제거에 실패한다.")
+    @Test
+    void deleteLineValidateEmptyResult() {
+        // given
+        지하철_노선이_등록되어_있지_않음(1L);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(1L);
+
+        // then
+        지하철_노선_삭제_실패됨(response);
     }
 }
