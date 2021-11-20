@@ -27,18 +27,18 @@ public class Sections {
     }
 
     private List<Station> getStations(List<Station> stations) {
-        Map<Station, Station> map = getStationMap();
+        Map<Station, Station> upToDowns = getUpToDownStation();
         Station upStation = getUpStation();
 
         while (upStation != null) {
             stations.add(upStation);
-            upStation = map.get(upStation);
+            upStation = upToDowns.get(upStation);
         }
 
         return stations;
     }
 
-    private Map<Station, Station> getStationMap() {
+    private Map<Station, Station> getUpToDownStation() {
         return sections.stream()
                 .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
     }
@@ -60,6 +60,20 @@ public class Sections {
     }
 
     public void add(Section section) {
-        this.sections.add(section);
+        sections.add(section);
+    }
+
+    public void updateUpStation(Station upStation, Station downStation, int distance) {
+        sections.stream()
+                .filter(section -> section.isUpStation(upStation))
+                .findFirst()
+                .ifPresent(section -> section.updateUpStation(downStation, distance));
+    }
+
+    public void updateDownStation(Station upStation, Station downStation, int distance) {
+        sections.stream()
+                .filter(section -> section.isDownStation(downStation))
+                .findFirst()
+                .ifPresent(section -> section.updateDownStation(upStation, distance));
     }
 }

@@ -6,6 +6,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -69,6 +71,10 @@ public class LineStep {
                 .extract();
     }
 
+    public static LineResponse 지하철_노선_조회되어_있음(LineResponse lineResponse) {
+        return 지하철_노선_조회_요청(lineResponse).as(LineResponse.class);
+    }
+
     public static void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -93,5 +99,28 @@ public class LineStep {
                 .when().delete("/lines/{id}", 신분당선_응답.getId())
                 .then().log().all()
                 .extract();
+    }
+
+    public static void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    public static void 지하철_노선에_지하철역_정렬됨(LineResponse lineResponse, List<StationResponse> stations) {
+        assertThat(lineResponse.getStations()).containsAll(stations);
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(LineResponse line, StationResponse upStation, StationResponse downStation, int distance) {
+        SectionRequest request = new SectionRequest(upStation.getId(), downStation.getId(), distance);
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .when().post("/lines/{lineId}/sections", line.getId())
+                .then().log().all()
+                .extract();
+    }
+
+    public static void 지하철_노선에_지하철역_등록_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

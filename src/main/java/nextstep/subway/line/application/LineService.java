@@ -1,11 +1,14 @@
 package nextstep.subway.line.application;
 
 import nextstep.subway.exception.LineNotFoundException;
+import nextstep.subway.exception.SectionExistException;
+import nextstep.subway.exception.StationNotContainInUpOrDownStation;
 import nextstep.subway.exception.StationNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -27,13 +30,13 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = getStationById(request.getUpStationId());
-        Station downStation = getStationById(request.getDownStationId());
-        Line line = lineRepository.save(request.toLine(upStation, downStation));
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
+        Line line = lineRepository.save(request.toLine(upStation, downStation, request.getDistance()));
         return LineResponse.of(line);
     }
 
-    private Station getStationById(Long upStationId) {
+    private Station findStationById(Long upStationId) {
         return stationRepository.findById(upStationId)
                 .orElseThrow(StationNotFoundException::new);
     }
@@ -62,5 +65,14 @@ public class LineService {
     private Line findLineById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(LineNotFoundException::new);
+    }
+
+    public LineResponse addLineSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = findLineById(lineId);
+        Station upStation = findStationById(sectionRequest.getUpStationId());
+        Station downStation = findStationById(sectionRequest.getDownStationId());
+
+        Line updatedLine = line.updateSection(upStation, downStation, sectionRequest.getDistance());
+        return LineResponse.of(updatedLine);
     }
 }

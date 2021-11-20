@@ -1,12 +1,13 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.exception.SectionExistException;
+import nextstep.subway.exception.StationNotContainInUpOrDownStation;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
@@ -63,4 +64,45 @@ public class Line extends BaseEntity {
         return sections.getStations();
     }
 
+    public boolean hasStation(Station newStation) {
+        return getStations().stream()
+                .anyMatch(station -> station == newStation);
+    }
+
+    public void updateUpStation(Station upStation, Station downStation, int distance) {
+        sections.updateUpStation(upStation, downStation, distance);
+    }
+
+    public void updateDownStation(Station upStation, Station downStation, int distance) {
+        sections.updateDownStation(upStation, downStation, distance);
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        sections.add(new Section(this, upStation, downStation, distance));
+    }
+
+    public Line updateSection(Station upStation, Station downStation, int distance) {
+        check(upStation, downStation);
+        updateStation(upStation, downStation, distance);
+        addSection(upStation, downStation, distance);
+        return this;
+    }
+
+    private void check(Station upStation, Station downStation) {
+        if (hasStation(upStation) && hasStation(downStation)) {
+            throw new SectionExistException();
+        }
+        if (!hasStation(upStation) && !hasStation(downStation)) {
+            throw new StationNotContainInUpOrDownStation();
+        }
+    }
+
+    private void updateStation(Station upStation, Station downStation, int distance) {
+        if (hasStation(upStation)) {
+            updateUpStation(upStation, downStation, distance);
+        }
+        if (hasStation(downStation)) {
+            updateDownStation(upStation, downStation, distance);
+        }
+    }
 }

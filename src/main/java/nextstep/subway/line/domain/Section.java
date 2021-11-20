@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.exception.IllegalStationDistanceException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -75,5 +76,23 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(id, line, upStation, downStation, distance);
+    }
+
+    public void updateUpStation(Station station, int distance) {
+        checkDistance(distance);
+        this.upStation = station;
+        this.distance -= distance;
+    }
+
+    public void updateDownStation(Station downStation, int distance) {
+        checkDistance(distance);
+        this.downStation = downStation;
+        this.distance -= distance;
+    }
+
+    private void checkDistance(int distance) {
+        if (this.distance <= distance) {
+            throw new IllegalStationDistanceException();
+        }
     }
 }
