@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 @DataJpaTest
-public class PreExecutionTest {
+public class BeforeJpaTestExecution {
     @Autowired
     private StationRepository stations;
 

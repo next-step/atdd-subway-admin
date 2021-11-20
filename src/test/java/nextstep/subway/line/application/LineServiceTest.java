@@ -1,6 +1,6 @@
 package nextstep.subway.line.application;
 
-import nextstep.subway.PreExecutionTest;
+import nextstep.subway.BeforeJpaTestExecution;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineResponses;
@@ -12,7 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-class LineServiceTest extends PreExecutionTest {
+class LineServiceTest extends BeforeJpaTestExecution {
 
     @Autowired
     private LineService lineService;

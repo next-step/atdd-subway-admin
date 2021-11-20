@@ -1,6 +1,6 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.PreExecutionTest;
+import nextstep.subway.BeforeJpaTestExecution;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineResponses;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-class LineRepositoryTest extends PreExecutionTest {
+class LineRepositoryTest extends BeforeJpaTestExecution {
 
     @Autowired
     private LineRepository lines;
