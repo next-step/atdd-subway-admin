@@ -12,8 +12,10 @@ public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
+
     private String color;
 
     protected Line() {
@@ -58,16 +60,21 @@ public class Line extends BaseEntity {
         if (this == o) {
             return true;
         }
+
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
+        if (Objects.isNull(id)) {
+            return false;
+        }
+        
         Line line = (Line) o;
-        return Objects.equals(id, line.id) && Objects.equals(name, line.name)
-            && Objects.equals(color, line.color);
+        return id.equals(line.getId()) && name.equals(line.getName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color);
+        return getClass().hashCode();
     }
 }
