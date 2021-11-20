@@ -1,5 +1,6 @@
 package nextstep.subway.utils;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.MediaType;
@@ -15,11 +16,11 @@ public class AcceptanceTestUtil {
 
 	public static ExtractableResponse<Response> get(String url) {
 		return RestAssured
-				.given().log().all()
-				.when()
-				.get(url)
-				.then().log().all()
-				.extract();
+			.given().log().all()
+			.when()
+			.get(url)
+			.then().log().all()
+			.extract();
 	}
 
 	public static ExtractableResponse<Response> get(String url, Map<String, Object> pathParams) {
@@ -63,5 +64,20 @@ public class AcceptanceTestUtil {
 			.delete(url)
 			.then().log().all()
 			.extract();
+	}
+
+	public static ExtractableResponse<Response> delete(String url) {
+		return RestAssured
+			.given().log().all()
+			.when()
+			.delete(url)
+			.then().log().all()
+			.extract();
+	}
+
+	public static Map<String, Object> pathParamsForId(Long lineId) {
+		Map<String, Object> pathParams = new HashMap<>();
+		pathParams.put("id", lineId);
+		return pathParams;
 	}
 }

@@ -3,9 +3,6 @@ package nextstep.subway.line;
 import static nextstep.subway.utils.AcceptanceTestUtil.*;
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -152,10 +149,4 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extracting("name", "color")
             .contains("신분당선", "red");
     }
-
-	private Map<String, Object> pathParamsForId(Long lineId) {
-		Map<String, Object> pathParams = new HashMap<>();
-		pathParams.put("id", lineId);
-		return pathParams;
-	}
 }
