@@ -1,11 +1,12 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
+import io.restassured.http.Method;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.utils.RestAssuredBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -36,17 +37,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
-        return RestAssured.given()
-                .log()
-                .all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(BASE_LINE_URL)
-                .then()
-                .log()
-                .all()
-                .extract();
+        return new RestAssuredBuilder(Method.POST, BASE_LINE_URL)
+                .setContentType(MediaType.APPLICATION_JSON_VALUE)
+                .setBody(lineRequest)
+                .build();
     }
 
     private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
@@ -58,41 +52,20 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_목록_조회_요청(String requestUrl) {
-        return RestAssured.given()
-                .log()
-                .all()
-                .when()
-                .get(requestUrl)
-                .then()
-                .log()
-                .all()
-                .extract();
+        return new RestAssuredBuilder(Method.GET, requestUrl)
+                .build();
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(LineResponse lineResponse, LineRequest lineRequest) {
-        return RestAssured.given()
-                .log()
-                .all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put(BASE_LINE_URL + "/" + lineResponse.getId())
-                .then()
-                .log()
-                .all()
-                .extract();
+        return new RestAssuredBuilder(Method.PUT, BASE_LINE_URL + "/" + lineResponse.getId())
+                .setContentType(MediaType.APPLICATION_JSON_VALUE)
+                .setBody(lineRequest)
+                .build();
     }
 
     private ExtractableResponse<Response> 지하철_노선_제거_요청(LineResponse lineResponse) {
-        return RestAssured.given()
-                .log()
-                .all()
-                .when()
-                .delete(BASE_LINE_URL + "/" + lineResponse.getId())
-                .then()
-                .log()
-                .all()
-                .extract();
+        return new RestAssuredBuilder(Method.DELETE, BASE_LINE_URL + "/" + lineResponse.getId())
+                .build();
     }
 
     private LineResponse 지하철_노선_등록되어_있음(LineRequest lineRequest) {
