@@ -3,6 +3,10 @@ package nextstep.subway.line;
 import static nextstep.subway.utils.AcceptanceTestUtil.*;
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,56 +54,53 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLines() {
 		// given
-		지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 1L, 2L, 10));
-		지하철_노선_생성(new LineRequest("신분당선", "bg-red-600", 3L, 4L, 5));
+		ExtractableResponse<Response> createResponse1 = 지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 1L, 2L, 10));
+		ExtractableResponse<Response> createResponse2 = 지하철_노선_생성(new LineRequest("신분당선", "bg-red-600", 3L, 4L, 5));
 
 		// when
 		ExtractableResponse<Response> response = 지하철_노선_목록_조회();
 
 		// then
-		정상_응답(response);
-		노선_목록_2개가_응답에_포함(response);
+		노선_목록_두개가_응답에_포함(createResponse1, createResponse2, response);
 	}
 
 	@DisplayName("지하철 노선을 조회한다.")
 	@Test
 	void getLine() {
 		// given
-		지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 1L, 2L, 10));
+		ExtractableResponse<Response> createResponse = 지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 1L, 2L, 10));
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선_조회(1L);
+		ExtractableResponse<Response> response = 지하철_노선_조회(createResponse.header("Location"));
 
 		// then
-		정상_응답(response);
-        노선_2호선_green_1개가_응답에_포함(response);
-    }
+		노선_2호선_green_1개가_응답에_포함(response);
+	}
 
-    @DisplayName("지하철 노선을 수정한다.")
+	@DisplayName("지하철 노선을 수정한다.")
 	@Test
 	void updateLine() {
 		// given
-		지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 1L, 2L, 10));
+		ExtractableResponse<Response> createResponse = 지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 1L, 2L, 10));
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선_수정(1L, "신분당선", "red");
+		ExtractableResponse<Response> response = 지하철_노선_수정(createResponse.header("Location"), "신분당선", "bg-red-600");
 
 		// then
-		정상_응답(response);
-        변경된_노선_신분당선_red가_응답에_포함(response);
-    }
+		변경된_노선_신분당선_red가_응답에_포함(response);
+	}
 
-    @DisplayName("지하철 노선을 제거한다.")
+	@DisplayName("지하철 노선을 제거한다.")
 	@Test
 	void deleteLine() {
 		// given
-		지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 1L, 2L, 10));
+		ExtractableResponse<Response> createResponse = 지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 1L, 2L, 10));
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선_삭제(1L);
+		ExtractableResponse<Response> response = 지하철_노선_삭제(createResponse.header("Location"));
 
 		// then
-		정상_응답(response);
+		노선_삭제됨(response);
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_생성(LineRequest lineRequest) {
@@ -110,43 +111,54 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return get("/lines");
 	}
 
-	private ExtractableResponse<Response> 지하철_노선_조회(Long lineId) {
-		return get("/lines/{id}", pathParamsForId(lineId));
+	private ExtractableResponse<Response> 지하철_노선_조회(String uri) {
+		return get(uri);
 	}
 
-	private ExtractableResponse<Response> 지하철_노선_수정(long lineId, String name, String color) {
-		return put("/lines/{id}", new LineRequest(name, color), pathParamsForId(lineId));
+	private ExtractableResponse<Response> 지하철_노선_수정(String uri, String name, String color) {
+		return put(uri, new LineRequest(name, color));
 	}
 
-	private ExtractableResponse<Response> 지하철_노선_삭제(long lineId) {
-		return delete("/lines/{id}", pathParamsForId(lineId));
+	private ExtractableResponse<Response> 지하철_노선_삭제(String uri) {
+		return delete(uri);
 	}
 
 	private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+		assertThat(response.header("Location")).isNotBlank();
 	}
 
 	private void 존재하는_지하철_노선_이름인_경우_노선_생성_실패(ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
 
-	private void 정상_응답(ExtractableResponse<Response> response) {
+	private void 노선_목록_두개가_응답에_포함(ExtractableResponse<Response> createResponse1,
+		ExtractableResponse<Response> createResponse2,
+		ExtractableResponse<Response> response) {
+
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+			.map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+			.collect(Collectors.toList());
+		List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+			.map(it -> it.getId())
+			.collect(Collectors.toList());
+		assertThat(resultLineIds).containsAll(expectedLineIds);
 	}
 
-	private void 노선_목록_2개가_응답에_포함(ExtractableResponse<Response> response) {
-		assertThat(response.jsonPath().getList(".", LineResponse.class).size()).isEqualTo(2);
+	private void 노선_2호선_green_1개가_응답에_포함(ExtractableResponse<Response> response) {
+		assertThat(response.jsonPath().getObject(".", LineResponse.class))
+			.extracting("name", "color")
+			.contains("2호선", "bg-green-600");
 	}
 
-    private void 노선_2호선_green_1개가_응답에_포함(ExtractableResponse<Response> response) {
-        assertThat(response.jsonPath().getObject(".", LineResponse.class))
-            .extracting("name", "color")
-            .contains("2호선", "green");
-    }
+	private void 변경된_노선_신분당선_red가_응답에_포함(ExtractableResponse<Response> response) {
+		assertThat(response.jsonPath().getObject(".", LineResponse.class))
+			.extracting("name", "color")
+			.contains("신분당선", "bg-red-600");
+	}
 
-    private void 변경된_노선_신분당선_red가_응답에_포함(ExtractableResponse<Response> response) {
-        assertThat(response.jsonPath().getObject(".", LineResponse.class))
-            .extracting("name", "color")
-            .contains("신분당선", "red");
-    }
+	private void 노선_삭제됨(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+	}
 }
