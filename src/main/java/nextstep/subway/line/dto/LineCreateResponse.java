@@ -11,9 +11,6 @@ public class LineCreateResponse {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
-    public LineCreateResponse() {
-    }
-
     public LineCreateResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;

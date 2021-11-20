@@ -149,5 +149,5 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
         - [x] 지하철 노선이 등록되지 않은 경우 지하철 노선 조회가 실패한다.
     - [x] 지하철 노선을 수정한다.
     - [x] 지하철 노선을 삭제한다.
-      - [x] 지하철 노선이 등록되지 않은 경우 지하철 노선 제거에 실패한다.
+        - [x] 지하철 노선이 등록되지 않은 경우 지하철 노선 제거에 실패한다.
       
