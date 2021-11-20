@@ -10,12 +10,10 @@ import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
 
 import static nextstep.subway.line.LineStep.*;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineSectionAcceptanceTest extends AcceptanceTest {
 
@@ -93,7 +91,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(이호선, 역삼역, 삼성역, 10);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철_노선에_지하철역_등록_실패됨(response);
     }
 
     @Test
@@ -102,7 +100,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(이호선, 강남역, 삼성역, 10);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철_노선에_지하철역_등록_실패됨(response);
     }
 
     @Test
@@ -111,6 +109,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(이호선, 잠실역, 교대역, 3);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철_노선에_지하철역_등록_실패됨(response);
     }
+
+
 }
