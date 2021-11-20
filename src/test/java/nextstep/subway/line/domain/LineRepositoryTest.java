@@ -37,10 +37,7 @@ class LineRepositoryTest extends BeforeJpaTestExecution {
     @Test
     @DisplayName("노선_생성")
     void createLine(){
-        assertAll(
-                () -> assertThat(savedLine1.getName()).isEqualTo("신분당선"),
-                () -> assertThat(savedLine1.getStationResponses()).hasSize(2)
-        );
+        assertThat(savedLine1.getName()).isEqualTo("신분당선");
     }
 
     @Test

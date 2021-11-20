@@ -13,13 +13,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StationResponsesTest {
     @Test
     @DisplayName("노선 구간을 지하철 역 리스트로 나열")
-    void ofByLineSectionsTest(){
+    void ofByLineSectionsTest() {
         Line line = new Line("2호선", "green");
         Section section = new Section(강남역, 역삼역, line, 10);
-        Sections sections = line.getSections();
+        line.addSection(section);
 
-        StationResponses stationResponses = StationResponses.ofByLineSections(sections);
+        StationResponses stationResponses = StationResponses.ofByLineSections(line.getSections());
 
-        assertThat(stationResponses.getStationResponses()).hasSize(2);
+        assertThat(stationResponses.getStationResponses())
+                .contains(
+                        StationResponse.of(강남역)
+                        , StationResponse.of(역삼역)
+                );
     }
 }
