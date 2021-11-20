@@ -7,7 +7,7 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class LineName {
-	@Column(unique = true)
+	@Column(name = "name", unique = true)
 	private String value;
 
 	protected LineName() {

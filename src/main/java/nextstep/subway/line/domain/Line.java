@@ -20,7 +20,7 @@ public class Line extends BaseEntity {
 	@Embedded
 	private LineName name;
 
-	@Column
+	@Embedded
 	private LineColor color;
 
 	@Embedded

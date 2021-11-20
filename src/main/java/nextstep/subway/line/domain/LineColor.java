@@ -7,7 +7,7 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class LineColor {
-	@Column
+	@Column(name = "color")
 	private String value;
 
 	protected LineColor() {
