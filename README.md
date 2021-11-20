@@ -73,10 +73,21 @@ licensed.
   java.lang.Object 문서에 따르면 hashCode()에 대해 항상 0을 반환하는 것이 완벽해야 합니다. 고유한 개체에 대해 고유한 숫자를 반환하기 위해 hashCode()를 구현하면 성능이 향상될 수 있다는 긍정적인 효과가 있습니다. 단점은 hashCode()의 동작이 equals()와 일치해야 한다는 것입니다. 객체 a와 b의 경우 a.equals(b)가 true이면 a.hashCode() == b.hashCode()보다 true여야 합니다. 그러나 a.equals(b)가 false를 반환하면 a.hashCode() == b.hashCode()가 여전히 true일 수 있습니다. hashCode()를 'return 0'으로 구현하는 것은 이러한 기준을 충족하지만 HashSet 또는 HashMap과 같은 Hash 기반 컬렉션에서는 매우 비효율적입니다.
 - [Java equals()와 hashCode()에 대해](https://nesoy.github.io/articles/2018-06/Java-equals-hashcode)
 
+# 지하철 미션
+
 # 미션 시작
 
 ## 1단계 - 지하철 노선 관리
 
+- **도메인 테스트**
+    - [X] Line 생성
+    - [X] Line 업데이트
+    - [X] Line 삭제
+- **Repository 테스트**
+    - [X] Line 생성
+    - [X] Line equals
+    - [X] Line 전체조회
+    - [X] Line delete
 - **지하철 노선 관리 기능 구현**
     - [ ] 노선 생성
     - [ ] 노선 목록 조회
