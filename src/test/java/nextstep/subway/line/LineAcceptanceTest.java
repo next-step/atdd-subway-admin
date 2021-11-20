@@ -150,6 +150,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제됨(response);
     }
 
+    static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest params) {
+        return RestAssured
+            .given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then()
+            .log().all().extract();
+    }
+
     private ExtractableResponse<Response> 지하철_노선_조회_요청(Long lineId) {
         return RestAssured
             .given().log().all()
@@ -167,18 +179,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .get("/lines")
             .then().log().all()
             .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest params) {
-        return RestAssured
-            .given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then()
-            .log().all().extract();
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(Long lineTwoId, LineRequest params) {
