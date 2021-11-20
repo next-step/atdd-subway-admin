@@ -4,7 +4,8 @@ import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LineResponseList;
+import nextstep.subway.line.dto.LineResponses;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,7 @@ public class LineController {
      * @return
      */
     @GetMapping("/{id}")
-    public ResponseEntity findById(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> findById(@PathVariable Long id) {
         LineResponse line = lineService.findOne(id);
         return ResponseEntity.ok(line);
     }
@@ -37,8 +38,8 @@ public class LineController {
      * @return
      */
     @GetMapping
-    public ResponseEntity findAll() {
-        LineResponseList lines = lineService.findAll();
+    public ResponseEntity<LineResponses> findAll() {
+        LineResponses lines = lineService.findAll();
         return ResponseEntity.ok(lines);
     }
 
@@ -49,7 +50,7 @@ public class LineController {
      * @return
      */
     @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
@@ -63,7 +64,7 @@ public class LineController {
      * @throws NotFoundException
      */
     @PutMapping("/{id}")
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) throws NotFoundException {
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) throws NotFoundException {
         LineResponse line = lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok(line);
     }
@@ -75,7 +76,7 @@ public class LineController {
      * @return
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id) {
+    public ResponseEntity<HttpStatus> deleteLine(@PathVariable Long id) {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
