@@ -25,7 +25,7 @@ class LineScenarioMethod {
     }
 
     protected static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     protected static ExtractableResponse<Response> 지하철_노선_조회_요청(String uri) {
