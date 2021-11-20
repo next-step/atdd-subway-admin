@@ -13,13 +13,7 @@ public class RestControllerAdvice {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler({
-            StationNotContainInUpOrDownStation.class,
-            IllegalStationDistanceException.class,
-            StationNotFoundException.class,
-            SectionExistException.class,
-            LineNotFoundException.class
-    })
+    @ExceptionHandler(BusinessException.class)
     public ResponseEntity<String> handleBusinessException(BusinessException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
