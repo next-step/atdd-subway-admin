@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
@@ -40,7 +41,7 @@ public class LineService {
         Station downStation = findStationById(request.getDownStationId(), MESSAGE_ON_DOWN_STATION_NOT_FOUND);
 
         Line line = lineRepository.save(Line.of(request.getName(), request.getColor()));
-        line.addSection(upStation, downStation, request.getDistance());
+        line.addSection(Section.of(upStation, downStation, request.getDistance()));
 
         return LineResponse.of(line, getStationInOrder(line));
     }
@@ -80,7 +81,7 @@ public class LineService {
         Station upStation = findStationById(request.getUpStationId(), MESSAGE_ON_UP_STATION_NOT_FOUND);
         Station downStation = findStationById(request.getDownStationId(), MESSAGE_ON_DOWN_STATION_NOT_FOUND);
 
-        // TODO : 구간 등록
+        line.addSection(Section.of(upStation, downStation, request.getDistance()));
     }
 
     private Station findStationById(Long stationId, String messageOnStationNotFound) {
@@ -94,7 +95,7 @@ public class LineService {
     }
 
     private List<Station> getStationInOrder(Line line) {
-        List<Long> stationIds = line.getLineStationIdsInOrder();
+        List<Long> stationIds = line.getStationIdsInOrder();
         return stationRepository.findAllById(stationIds);
     }
 }

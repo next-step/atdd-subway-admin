@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -10,6 +11,8 @@ import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+
+import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class LineStations {
@@ -44,6 +47,12 @@ public class LineStations {
 		return result;
 	}
 
+	public List<Long> getStationIdsInOrder() {
+		return getLineStationsInOrder().stream()
+			.map(LineStation::getStationId)
+			.collect(Collectors.toList());
+	}
+
 	private Optional<LineStation> getFirstLineStation() {
 		return values.stream()
 			.filter(lineStation -> lineStation.getPreStationId() == null)
@@ -54,7 +63,50 @@ public class LineStations {
 		return values.size();
 	}
 
-	public void add(LineStation lineStation) {
-		values.add(lineStation);
+	public void addSection(Section section) {
+		if (isEmpty()) {
+			addFirstSection(section);
+			return;
+		}
+
+		throwOnBothStationsNotRegistered(section);
+		throwOnBothStationsAlreadyRegistered(section);
+
+		updateSection(section);
+	}
+
+	private boolean isEmpty() {
+		return values.isEmpty();
+	}
+
+	private void addFirstSection(Section section) {
+		values.add(LineStation.of(section.getUpStation(), null, 0));
+		values.add(LineStation.of(section.getDownStation(), section.getUpStation(), section.getDistance()));
+	}
+
+	private void throwOnBothStationsNotRegistered(Section section) {
+		if (!contains(section.getUpStation()) && !contains(section.getDownStation())) {
+			throw new SectionAddFailException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
+		}
+	}
+
+	private void throwOnBothStationsAlreadyRegistered(Section section) {
+		if (contains(section.getUpStation()) && contains(section.getDownStation())) {
+			throw new SectionAddFailException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
+		}
+	}
+
+	private boolean contains(Station station) {
+		return getStationIds().contains(station.getId());
+	}
+
+	private List<Long> getStationIds() {
+		return values.stream()
+			.map(LineStation::getStationId)
+			.collect(Collectors.toList());
+	}
+
+	private void updateSection(Section section) {
+		// TODO
 	}
 }
