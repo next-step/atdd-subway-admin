@@ -11,6 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -57,13 +62,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse1 = 지하철_노선_생성_요청(new LineRequest("2호선","bg-green-200"));
+        ExtractableResponse<Response> createResponse2 = 지하철_노선_생성_요청(new LineRequest("4호선","bg-blue-400"));
 
         // when
         // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when()
+                .get("/lines")
+                .then().log().all()
+                .extract();
 
         // then
         // 지하철_노선_목록_응답됨
         // 지하철_노선_목록_포함됨
+        List<String> expectedNames = Stream.of(createResponse1, createResponse2)
+                .map(createResponse -> createResponse.jsonPath().getObject(".",LineResponse.class))
+                .map(LineResponse::getName)
+                .collect(Collectors.toList());
+        List<LineResponse> resultReponses = response.jsonPath().getList(".", LineResponse.class);
+        List<String> results = resultReponses.stream()
+                .map(LineResponse::getName)
+                .collect(Collectors.toList());
+        assertThat(results).containsAll(expectedNames);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
