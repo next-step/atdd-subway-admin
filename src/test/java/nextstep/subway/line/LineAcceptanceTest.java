@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.domain.Line;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -68,12 +69,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 지하철_노선을_조회한다() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createLine = 지하철_노선_생성_요청("신분당선", "red");
+        Long createLineId = createLine.jsonPath().getObject(".", Line.class).getId();
 
         // when
         // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createLineId);
 
         // then
         // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getString("name")).isEqualTo("신분당선");
+        assertThat(response.jsonPath().getString("color")).isEqualTo("red");
     }
 
     @Test
@@ -117,6 +124,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return RestAssured
                 .given().log().all()
                 .when().get("/lines")
+                .then().log().all().extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
+        return RestAssured
+                .given().log().all()
+                .when().get("/lines/{id}", id)
                 .then().log().all().extract();
     }
 }
