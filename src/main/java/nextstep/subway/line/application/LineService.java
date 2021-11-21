@@ -23,8 +23,7 @@ public class LineService {
     public LineResponse save(LineRequest request) {
         checkDuplicatedName(request.getName());
         
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+        return LineResponse.of(lineRepository.save(request.toLine()));
     }
 
     @Transactional(readOnly = true)
@@ -57,7 +56,7 @@ public class LineService {
     
     private void checkDuplicatedName(String name) {
         if (lineRepository.existsByName(name)) {
-            throw new IllegalArgumentException(name + "이 중복되었습니다.");
+            throw new IllegalArgumentException(String.format("라인 이름(%d)이 중복되었습니다.", name));
         }
     }
 }

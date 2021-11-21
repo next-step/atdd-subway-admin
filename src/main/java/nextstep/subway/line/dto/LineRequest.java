@@ -38,6 +38,8 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(name, color);
+        Line line = new Line(name, color);
+        line.addSection(upStationId, downStationId, distance);
+        return line;
     }
 }
