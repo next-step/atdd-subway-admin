@@ -7,6 +7,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.UpdateLineResponseDto;
 import nextstep.subway.line.exception.DuplicateLineNameException;
 import nextstep.subway.line.exception.NotFoundLineByIdException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,10 +65,10 @@ public class LineService {
 
     @Transactional
     public void deleteLine(long id) {
-        if (lineRepository.existsById(id)) {
+        try {
             lineRepository.deleteById(id);
-            return;
+        } catch (EmptyResultDataAccessException exception) {
+            throw new NotFoundLineByIdException();
         }
-        throw new NotFoundLineByIdException();
     }
 }
