@@ -41,4 +41,8 @@ public class LineService {
     private Line getLine(final long id) {
         return lineRepository.findById(id).orElseThrow(IllegalStateException::new);
     }
+
+    public void deleteLineById(final long id) {
+        lineRepository.deleteById(id);
+    }
 }

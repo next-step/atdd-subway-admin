@@ -181,12 +181,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        final String name = "2호선";
+        final String color = "red lighten-3";
+        final long upStationId = 1;
+        final long downStationId = 10;
+        final double distance = 22.1;
+
+        final ExtractableResponse<Response> createResponse = createLine(
+            name, color, upStationId, downStationId, distance
+        );
+        assertCreateLine(createResponse);
 
         // when
         // 지하철_노선_제거_요청
+        final String uri = getLocation(createResponse);
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete(uri)
+            .then().log().all()
+            .extract();
 
         // then
         // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_NO_CONTENT);
     }
 
     private ExtractableResponse<Response> createLine(final String name, final String color,
