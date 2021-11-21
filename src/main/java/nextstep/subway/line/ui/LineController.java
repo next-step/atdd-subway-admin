@@ -22,14 +22,14 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineCreateResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineCreateResponse line = lineService.saveLine(lineRequest);
+    public ResponseEntity<LineCreateResponse> createLine(@RequestBody LineRequest request) {
+        LineCreateResponse line = lineService.saveLine(request);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> findLines() {
-        return ResponseEntity.ok().body(lineService.findLines());
+        return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

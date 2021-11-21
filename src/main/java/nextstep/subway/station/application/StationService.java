@@ -8,13 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 public class StationService {
 
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
@@ -28,12 +27,10 @@ public class StationService {
 
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
-
-        return stations.stream()
-                .map(StationResponse::of)
-                .collect(Collectors.toList());
+        return StationResponse.ofList(stations);
     }
 
+    @Transactional
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
     }

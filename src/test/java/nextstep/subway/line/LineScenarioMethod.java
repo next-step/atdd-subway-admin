@@ -5,12 +5,12 @@ import io.restassured.response.Response;
 import nextstep.subway.assured.RestAssuredApi;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import org.assertj.core.api.Assertions;
-import org.assertj.core.api.AssertionsForInterfaceTypes;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.http.HttpStatus.*;
 
 class LineScenarioMethod {
@@ -28,8 +28,8 @@ class LineScenarioMethod {
         assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
     }
 
-    public static String 지하철_노선_등록되어_있음(LineRequest lineRequest) {
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(lineRequest);
+    public static String 지하철_노선_등록되어_있음(LineRequest request) {
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(request);
         return createResponse.header("Location");
     }
 
@@ -53,9 +53,9 @@ class LineScenarioMethod {
 
     public static void 지하철_노선_목록_조회_결과_포함됨(ExtractableResponse<Response> response, LineRequest request) {
         List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
-        AssertionsForInterfaceTypes.assertThat(lineResponses)
+        assertThat(lineResponses)
                 .extracting(LineResponse::getColor, LineResponse::getName)
-                .contains(Assertions.tuple(request.getColor(), request.getName()));
+                .contains(tuple(request.getColor(), request.getName()));
     }
 
     public static void 지하철_노선_조회_결과_일치됨(ExtractableResponse<Response> response, LineRequest request) {

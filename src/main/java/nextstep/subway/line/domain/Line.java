@@ -7,10 +7,12 @@ import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
 
+import static javax.persistence.GenerationType.IDENTITY;
+
 @Entity
 public class Line extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @Column(unique = true)
