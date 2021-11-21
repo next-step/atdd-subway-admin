@@ -96,7 +96,7 @@ public class Sections {
 
 	private Optional<Section> findMatchUpSection(Section requestSection) {
 		return sections.stream()
-			.filter(it -> it.matchUpStation(requestSection.getUpStation()))
+			.filter(section -> section.matchUpStation(requestSection.getUpStation()))
 			.findAny();
 	}
 
@@ -107,7 +107,7 @@ public class Sections {
 
 	private Optional<Section> findMatchDownSection(Section requestSection) {
 		return sections.stream()
-			.filter(it -> it.matchDownStation(requestSection.getDownStation()))
+			.filter(section -> section.matchDownStation(requestSection.getDownStation()))
 			.findAny();
 	}
 
@@ -156,15 +156,14 @@ public class Sections {
 	}
 
 	private Section findStartSection() {
-		// 전체 하행역 콜렉션 생성
 		Set<Station> downStations = sections.stream()
 			.map(Section::getDownStation)
 			.collect(Collectors.toSet());
 		// 전체 상행역 중 하행역이 아닌 상행역 추출(=> 시작점)
-		Optional<Section> startSection = sections.stream()
-			.filter(it -> !downStations.contains(it.getUpStation()))
-			.findFirst();
-		return startSection.orElseThrow(() -> new IllegalStateException("구간 정보가 올바르지 않습니다."));
+		return sections.stream()
+			.filter(section -> !downStations.contains(section.getUpStation()))
+			.findFirst()
+			.orElseThrow(() -> new IllegalStateException("구간 정보가 올바르지 않습니다."));
 	}
 
 	private boolean isEmpty() {
