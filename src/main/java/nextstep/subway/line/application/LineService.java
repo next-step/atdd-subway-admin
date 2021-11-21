@@ -45,4 +45,8 @@ public class LineService {
                 .orElseThrow(() -> new NotFoundLineException(id + " 노선이 없습니다."));
         line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
     }
+
+    public void delete(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
