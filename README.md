@@ -59,5 +59,5 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [x] 지하철 노선을 조회한다
 - [x] 지하철 노선목록을 조회한다
 - [ ] 기존에 있는 지하철 노선 이름으로 생성할 시 생성이 실패한다
-- [ ] 지하철 노선을 수정한다
+- [x] 지하철 노선을 수정한다
 - [x] 지하철 노선을 제거한다

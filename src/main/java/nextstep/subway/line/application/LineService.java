@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,7 +38,14 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public Line getLineById(Long id) {
-        return lineRepository.findById(id).get();
+    public LineResponse getLineById(Long id) {
+        return LineResponse.of(lineRepository.findById(id).get());
+    }
+
+    public LineResponse updateLine(LineRequest lineRequest, Long id) {
+        Line sourceLine = lineRepository.findById(id).get();
+        sourceLine.update(lineRequest.toLine());
+        Line persistLine = lineRepository.save(sourceLine);
+        return LineResponse.of(persistLine);
     }
 }
