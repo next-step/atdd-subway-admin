@@ -25,4 +25,8 @@ public class LineService {
     public LineResponses findAllLines() {
         return LineResponses.of(lineRepository.findAll());
     }
+
+    public LineResponse findLineById(final long id) {
+        return LineResponse.of(lineRepository.findById(id).orElseThrow(IllegalStateException::new));
+    }
 }

@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LineResponses;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -83,11 +82,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_목록_응답됨
-        assertThat(response.statusCode()).isEqualTo(org.springframework.http.HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
 
         // 지하철_노선_목록_포함됨
         final List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+            .map(this::extractId)
             .collect(Collectors.toList());
         final List<Long> resultLineIds = response.jsonPath().getList("lineResponses", LineResponse.class).stream()
             .map(LineResponse::getId)
@@ -102,12 +101,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        final String name = "2호선";
+        final String color = "red lighten-3";
+        final long upStationId = 1;
+        final long downStationId = 10;
+        final double distance = 22.1;
+
+        final ExtractableResponse<Response> createLine = createLine(name, color, upStationId, downStationId, distance);
+        assertCreateLine(createLine);
 
         // when
         // 지하철_노선_조회_요청
+        final String lineId = createLine.header("Location").split("/")[2];
+
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines/{lineId}", lineId)
+            .then().log().all()
+            .extract();
 
         // then
         // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+
+        final long expectedLineId = extractId(createLine);
+        final long resultLineId = response.jsonPath().getObject(".", LineResponse.class).getId();
+
+        assertThat(resultLineId).isEqualTo(expectedLineId);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -161,4 +181,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
             () -> assertThat(response.header("Location")).isNotBlank()
         );
     }
+
+    private long extractId(ExtractableResponse<Response> response) {
+        return Long.parseLong(response.header("Location").split("/")[2]);
+    }
+
 }
