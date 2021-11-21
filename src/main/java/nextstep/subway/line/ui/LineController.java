@@ -58,7 +58,6 @@ public class LineController {
         } catch (NotFoundException e) {
             return ResponseEntity.notFound().build();
         }
-
     }
 
     @DeleteMapping("{id}")
