@@ -42,12 +42,12 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    public void deleteLine(Long id) {
+        lineRepository.deleteById(id);
+    }
+
     private Line readById(Long id) {
         return lineRepository.findById(id)
                              .orElseThrow(() -> new NotFoundException("해당하는 Line이 없습니다. id = " + id));
-    }
-
-    public void deleteLine(Long id) {
-        lineRepository.deleteById(id);
     }
 }
