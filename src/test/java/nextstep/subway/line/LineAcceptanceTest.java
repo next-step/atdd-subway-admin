@@ -41,12 +41,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 기존에_존재하는_지하철_노선_이름으로_지하철_노선을_생성한다() {
         // given
         // 지하철_노선_등록되어_있음
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "red");
+
+        RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all();
 
         // when
         // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all().extract();
 
         // then
         // 지하철_노선_생성_실패됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     @Test
