@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -75,7 +76,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 구간 사이에 새로운 상행역을 등록한다.")
     @Test
-    void addBetweenUpStation() {
+    void addBetweenUpSection() {
         // given
         StationResponse 선릉역 = StationAcceptanceTest.지하철_역_생성_요청(new StationRequest("선릉역"))
             .as(StationResponse.class);
@@ -92,7 +93,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 구간 사이에 새로운 하행역을 등록한다.")
     @Test
-    void addBetweenDownStation() {
+    void addBetweenDownSection() {
         // given
         StationResponse 삼성역 = StationAcceptanceTest.지하철_역_생성_요청(new StationRequest("삼성역"))
             .as(StationResponse.class);
@@ -107,6 +108,34 @@ class SectionAcceptanceTest extends AcceptanceTest {
         지하철_구간_추가됨(response);
     }
 
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있으면 구간 추가에 실패한다.")
+    @Test
+    void addSectionExistAllStation() {
+        // when
+        // 지하철 구간 추가 요청을 한다.
+        SectionRequest 중복_구간 = new SectionRequest(잠실역.getId(), 강남역.getId(), 10);
+        ExtractableResponse<Response> response = 지하철_구간_추가_요청(중복_구간, 이호선.getId());
+
+        지하철_구간_추가_실패함(response);
+    }
+
+    @DisplayName("상행역과 하행역 모두 노선에 포함되어있지 않으면 구간 추가에 실패한다.")
+    @Test
+    void addSectionNotFoundAllStation() {
+        // given
+        StationResponse 신촌역 = StationAcceptanceTest.지하철_역_생성_요청(new StationRequest("신촌역"))
+            .as(StationResponse.class);
+        StationResponse 신당역 = StationAcceptanceTest.지하철_역_생성_요청(new StationRequest("신당역"))
+            .as(StationResponse.class);
+
+        // when
+        // 지하철 구간 추가 요청을 한다.
+        SectionRequest 존재하지_않는_구간 = new SectionRequest(신촌역.getId(), 신당역.getId(), 10);
+        ExtractableResponse<Response> response = 지하철_구간_추가_요청(존재하지_않는_구간, 이호선.getId());
+
+        지하철_구간_추가_실패함(response);
+    }
+
     private ExtractableResponse<Response> 지하철_구간_추가_요청(SectionRequest params, Long lineId) {
         return RestAssured
             .given().log().all()
@@ -118,6 +147,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_구간_추가됨(ExtractableResponse<Response> response) {
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private void 지하철_구간_추가_실패함(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

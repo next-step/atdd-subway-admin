@@ -16,19 +16,19 @@ import nextstep.subway.station.domain.Station;
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
-    public Line line;
+    private Line line;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id")
-    public Station upStation;
+    private Station upStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id")
-    public Station downStation;
+    private Station downStation;
 
     private int distance;
 
@@ -46,12 +46,20 @@ public class Section {
         this.distance = distance;
     }
 
+    public Line getLine() {
+        return line;
+    }
+
     public Station getUpStation() {
         return upStation;
     }
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     public void changeLine(Line line) {

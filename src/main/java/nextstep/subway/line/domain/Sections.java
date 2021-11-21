@@ -87,7 +87,29 @@ public class Sections {
             .collect(Collectors.toSet());
     }
 
-    public void addSection(Section toSection) {
+    public void addSection(Section newSection) {
+        validateAddSection(newSection);
+    }
+
+    private void validateAddSection(Section newSection) {
+        Set<Station> allStations = createAllStations();
+        validateDuplicate(newSection, allStations);
+        validateNonExist(newSection, allStations);
+    }
+
+    private void validateDuplicate(Section newSection, Set<Station> allStations) {
+        if (allStations.contains(newSection.getUpStation())
+            && allStations.contains(newSection.getDownStation())) {
+            throw new DuplicateException(EXIST_ALL_STATION_TO_SECTION.getMessage());
+        }
+    }
+
+    private void validateNonExist(Section newSection, Set<Station> allStations) {
+        if (!allStations.contains(newSection.getUpStation())
+            && !allStations.contains(newSection.getDownStation())) {
+            throw new NotFoundException(NON_EXIST_ALL_STATION_TO_SECTION.getMessage());
+        }
+    }
 
     }
 }
