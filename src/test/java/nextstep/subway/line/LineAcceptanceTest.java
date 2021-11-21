@@ -1,19 +1,37 @@
 package nextstep.subway.line;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import java.util.HashMap;
+import java.util.Map;
 import nextstep.subway.AcceptanceTest;
+import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
+        //given
+        final String name = "2호선";
+        final String color = "red lighten-3";
+        final long upStationId = 1;
+        final long downStationId = 10;
+        final double distance = 22.1;
+
         // when
         // 지하철_노선_생성_요청
+        final ExtractableResponse<Response> response = createLine(name, color, upStationId, downStationId, distance);
 
         // then
         // 지하철_노선_생성됨
+        assertCreateLine(response);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -21,12 +39,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
+        final String name = "2호선";
+        final String color = "red lighten-3";
+        final long upStationId = 1;
+        final long downStationId = 10;
+        final double distance = 22.1;
+
+        assertCreateLine(createLine(name, color, upStationId, downStationId, distance));
 
         // when
         // 지하철_노선_생성_요청
+        final ExtractableResponse<Response> response = createLine(name, color, upStationId, downStationId, distance);
 
         // then
         // 지하철_노선_생성_실패됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_INTERNAL_SERVER_ERROR);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -81,5 +108,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
+    }
+
+    private ExtractableResponse<Response> createLine(final String name, final String color,
+        final long upStationId, final long downStationId, final double distance) {
+        final Map<String, Object> params = new HashMap<String, Object>() {{
+            put("name", name);
+            put("color", color);
+            put("upStationId", upStationId);
+            put("downStationId", downStationId);
+            put("distance", distance);
+        }};
+
+        return RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+    }
+
+    private void assertCreateLine(ExtractableResponse<Response> response) {
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_CREATED),
+            () -> assertThat(response.header("Location")).isNotBlank()
+        );
     }
 }
