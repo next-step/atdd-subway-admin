@@ -36,10 +36,12 @@ public class LineService {
         line.addSection(new Section(upStation, downStation, line, request.getDistance()));
     }
 
+    @Transactional(readOnly = true)
     public LineResponses findAll() {
         return LineResponses.of(lineRepository.findAll());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
         return LineResponse.of(lineRepository.findById(id)
                 .orElse(new Line()));
