@@ -25,15 +25,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        // 지하철_노선_생성_파라미터
         Map<String, String> params = 지하철_노선_생성_파라미터_맵핑("2호선");
 
         // when
-        // 지하철_노선_생성_요청
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
         // then
-        // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
     }
@@ -42,16 +39,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        // 지하철_노선_등록되어_있음
         Map<String, String> params = 지하철_노선_생성_파라미터_맵핑("2호선");
         지하철_노선_생성_요청(params);
 
         // when
-        // 지하철_노선_생성_요청
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
         // then
-        // 지하철_노선_생성_실패됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -60,20 +54,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        // 지하철_노선_등록되어_있음
-        // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> createResponse1 = 지하철_노선_등록되어_있음("2호선");
         ExtractableResponse<Response> createResponse2 = 지하철_노선_등록되어_있음("3호선");
 
         // when
-        // 지하철_노선_목록_조회_요청
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청("/lines");
 
         // then
-        // 지하철_노선_목록_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        // 지하철_노선_목록_포함됨
         List<Long> expectedLineIds = ids_추출_By_Location(createResponse1, createResponse2);
         List<Long> resultLineIds = ids_추출_By_LineResponse(response);
 
@@ -85,16 +74,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> createResponse1 = 지하철_노선_등록되어_있음("2호선");
         long lineId = ids_추출_By_Location(createResponse1).get(0);
 
         // when
-        // 지하철_노선_조회_요청
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청("/lines/" + lineId);
 
         // then
-        // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -102,17 +88,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> createResponse1 = 지하철_노선_등록되어_있음("2호선");
         long lineId = Long.parseLong(createResponse1.header("Location").split("/")[2]);
         Map<String, String> updateParams = 지하철_노선_생성_파라미터_맵핑("3호선");
 
         // when
-        // 지하철_노선_수정_요청
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(updateParams, lineId);
 
         // then
-        // 지하철_노선_수정됨
         String responseLineName = response.jsonPath().get("name");
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
@@ -125,16 +108,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음("2호선");
 
         // when
-        // 지하철_노선_제거_요청
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(createResponse);
 
         // then
-        // 지하철_노선_삭제됨
-
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
