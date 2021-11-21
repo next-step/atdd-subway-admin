@@ -12,14 +12,14 @@ import favorite from '@/store/modules/favorite'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  modules: {
-    station,
-    line,
-    snackbar,
-    map,
-    path,
-    member,
-    favorite,
-    auth
-  }
+    modules: {
+        station,
+        line,
+        snackbar,
+        map,
+        path,
+        member,
+        favorite,
+        auth
+    }
 })
