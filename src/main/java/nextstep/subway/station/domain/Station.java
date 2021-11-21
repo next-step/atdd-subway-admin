@@ -1,22 +1,26 @@
 package nextstep.subway.station.domain;
 
+import static javax.persistence.GenerationType.*;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import org.hibernate.annotations.DynamicUpdate;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 
 @Entity
+@DynamicUpdate
 public class Station extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @Column(unique = true)
@@ -26,22 +30,27 @@ public class Station extends BaseEntity {
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_station_to_line"))
     private Line line;
 
-    public Station() {
-    }
-
     public Station(String name) {
         this.name = name;
     }
 
-    public Station(Long upStationId) {
-        this.id = upStationId;
+    public Station(Long id, String name) {
+        this(name);
+        this.id = id;
     }
 
-    public Long getId() {
-        return id;
+    protected Station() {
     }
 
     public String getName() {
         return name;
+    }
+
+    public void setLine(Line saveLine) {
+        this.line = saveLine;
+    }
+
+    public Long getId() {
+        return id;
     }
 }
