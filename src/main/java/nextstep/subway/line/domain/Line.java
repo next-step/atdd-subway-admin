@@ -107,6 +107,23 @@ public class Line extends BaseEntity {
     }
 
     public void removeSection(Station station) {
-        sections.removeSection(station);
+        Optional<Section> upStationSection = sections.findUpStationSection(station);
+        Optional<Section> downStationSection = sections.findDownStationSection(station);
+
+        removeSection(upStationSection);
+        removeSection(downStationSection);
+        addSection(upStationSection, downStationSection);
+    }
+
+    private void addSection(Optional<Section> upStationSection, Optional<Section> downStationSection) {
+        if (upStationSection.isPresent() && downStationSection.isPresent()) {
+            sections.add(Section.merge(this, upStationSection.get(), downStationSection.get()));
+        }
+    }
+
+    private void removeSection(Optional<Section> upStationSection) {
+        if (upStationSection.isPresent()) {
+            sections.remove(upStationSection.get());
+        }
     }
 }

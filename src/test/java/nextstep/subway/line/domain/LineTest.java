@@ -97,4 +97,22 @@ class LineTest {
                 () -> assertThat(이호선.getStations()).containsExactly(강남역, 역삼역)
         );
     }
+
+    @Test
+    void removeSection_중간역을_삭제한다() {
+        // given
+        Line 이호선 = new Line("2호선", "green", 역삼역, 삼성역, 10);
+        이호선.addSection(강남역, 역삼역, 3);
+        assertThat(이호선.getStations()).containsExactly(강남역, 역삼역, 삼성역);
+
+        // when
+        이호선.removeSection(역삼역);
+
+        // then
+        assertAll(
+                () -> assertThat(이호선.getSections().size()).isEqualTo(1),
+                () -> assertThat(이호선.getSections()).contains(new Section(이호선, 강남역, 삼성역, 13)),
+                () -> assertThat(이호선.getStations()).containsExactly(강남역, 삼성역)
+        );
+    }
 }

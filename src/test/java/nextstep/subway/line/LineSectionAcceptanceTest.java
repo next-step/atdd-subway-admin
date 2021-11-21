@@ -141,4 +141,18 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_제거됨(response);
         지하철_노선에_지하철역_모두_정렬됨(lineResponse, Arrays.asList(강남역, 역삼역), 2);
     }
+
+    @Test
+    void removeLineSection_중간역을_제거한다() {
+        // given
+        지하철_노선에_지하철역_등록되어_있음(이호선, 강남역, 역삼역, 3);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_제거_요청(이호선, 역삼역);
+
+        // then
+        LineResponse lineResponse = LineStep.지하철_노선_조회되어_있음(이호선);
+        지하철_노선에_지하철역_제거됨(response);
+        지하철_노선에_지하철역_모두_정렬됨(lineResponse, Arrays.asList(강남역, 삼성역), 2);
+    }
 }
