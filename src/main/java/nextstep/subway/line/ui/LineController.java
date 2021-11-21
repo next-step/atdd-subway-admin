@@ -1,15 +1,12 @@
 package nextstep.subway.line.ui;
 
 import java.util.List;
-import javassist.NotFoundException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,12 +29,8 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        try {
-            LineResponse line = lineService.saveLine(lineRequest);
-            return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
-        } catch (RuntimeException runtimeException) {
-            return ResponseEntity.badRequest().build();
-        }
+        LineResponse line = lineService.saveLine(lineRequest);
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @GetMapping
@@ -55,7 +48,7 @@ public class LineController {
         @RequestBody LineRequest lineRequest) {
         try {
             return ResponseEntity.ok().body(lineService.updateLine(id, lineRequest));
-        } catch (NotFoundException e) {
+        } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -64,10 +57,5 @@ public class LineController {
     public ResponseEntity<Boolean> deleteStation(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().build();
     }
 }

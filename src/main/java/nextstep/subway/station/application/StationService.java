@@ -1,5 +1,8 @@
 package nextstep.subway.station.application;
 
+import java.util.Optional;
+import nextstep.subway.common.exception.DuplicateException;
+import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
@@ -21,9 +24,13 @@ public class StationService {
     }
 
     public StationResponse saveStation(StationRequest stationRequest) {
-        Station persistStation = stationRepository.save(stationRequest.toStation());
+        Station station = stationRequest.toStation();
+        validateDuplicateStation(station);
+
+        Station persistStation = stationRepository.save(station);
         return StationResponse.of(persistStation);
     }
+
 
     @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
@@ -35,6 +42,26 @@ public class StationService {
     }
 
     public void deleteStationById(Long id) {
-        stationRepository.deleteById(id);
+        Station station = findStation(id);
+        station.delete();
+        
+        stationRepository.save(station);
+    }
+
+    private Station findStation(Long id) {
+        Optional<Station> optionalStation = stationRepository.findById(id);
+        if (!optionalStation.isPresent()) {
+            throw new NotFoundException();
+        }
+
+        return optionalStation.get();
+    }
+
+    private void validateDuplicateStation(Station station) {
+        Optional<Station> optionalStation = stationRepository.findByName(station.getName());
+
+        optionalStation.ifPresent(findLine -> {
+            throw new DuplicateException("이미 등록된 역 이름을 사용할 수 없습니다.");
+        });
     }
 }
