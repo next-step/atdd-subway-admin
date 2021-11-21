@@ -37,11 +37,13 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> getAllLines() {
         final List<Line> lines = lineRepository.findAll();
         return LineResponse.of(lines);
     }
 
+    @Transactional(readOnly = true)
     public LineResponse getLine(final Long id) {
         final Line line = getLineById(id);
         return LineResponse.of(line);
