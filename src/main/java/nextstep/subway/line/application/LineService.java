@@ -61,4 +61,8 @@ public class LineService {
         persistLine.update(lineRequest.toLine());
         return LineResponse.of(persistLine);
     }
+
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
