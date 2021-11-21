@@ -58,12 +58,8 @@ public class LineService {
     }
 
     public void deleteLine(Long id) {
-        throwLineNotFoundExceptionIfHasNotLine(id);
-        lineRepository.deleteById(id);
-    }
-
-    private void throwLineNotFoundExceptionIfHasNotLine(Long id) {
-        lineRepository.findById(id)
+        Line line = lineRepository.findById(id)
                 .orElseThrow(throwLineNotFoundException(id));
+        lineRepository.delete(line);
     }
 }
