@@ -123,7 +123,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = RestAssured
+        RestAssured
                 .given().log().all()
                 .body(updateRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -134,6 +134,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_수정됨
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when()
+                .get("/lines/" + lineId)
+                .then().log().all()
+                .extract();
+
         LineResponse result = response.jsonPath().getObject(".", LineResponse.class);
         assertThat(result.getName()).isEqualTo(updateRequest.getName());
         assertThat(result.getColor()).isEqualTo(updateRequest.getColor());

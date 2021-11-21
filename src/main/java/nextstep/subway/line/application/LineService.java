@@ -40,10 +40,9 @@ public class LineService {
                 .orElseThrow(() -> new NotFoundLineException(id + " 노선이 없습니다."));
     }
 
-    public LineResponse update(Long id, LineRequest lineRequest) {
+    public void update(Long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundLineException(id + " 노선이 없습니다."));
         line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
-        return LineResponse.of(line);
     }
 }
