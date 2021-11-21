@@ -12,7 +12,7 @@ class LineStationTest {
 	@Test
 	void of() {
 		// given & when
-		LineStation lineStation = LineStation.of(강남역(), 역삼역(), 4);
+		LineStation lineStation = LineStation.of(강남역().getId(), 역삼역().getId(), 4);
 
 		// then
 		assertThat(lineStation).isNotNull();
@@ -22,7 +22,7 @@ class LineStationTest {
 	@Test
 	void ofFailIfStationAndPreStationIsEqual() {
 		// given & when & then
-		assertThatThrownBy(() -> LineStation.of(강남역(), 강남역(), 0))
+		assertThatThrownBy(() -> LineStation.of(강남역().getId(), 강남역().getId(), 0))
 			.isInstanceOf(IllegalArgumentException.class);
 	}
 }

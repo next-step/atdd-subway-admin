@@ -1,36 +1,34 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.station.domain.Station;
-
 public class Section {
-	private final Station upStation;
-	private final Station downStation;
+	private final Long upStationId;
+	private final Long downStationId;
 	private final int distance;
 
-	private Section(Station upStation, Station downStation, int distance) {
-		throwIfUpStationAndDownStationIsEqual(upStation, downStation);
+	private Section(Long upStationId, Long downStationId, int distance) {
+		throwIfUpStationAndDownStationIsEqual(upStationId, downStationId);
 
-		this.upStation = upStation;
-		this.downStation = downStation;
+		this.upStationId = upStationId;
+		this.downStationId = downStationId;
 		this.distance = distance;
 	}
 
-	private void throwIfUpStationAndDownStationIsEqual(Station upStation, Station downStation) {
-		if (upStation.equals(downStation)) {
+	private void throwIfUpStationAndDownStationIsEqual(Long upStationId, Long downStationId) {
+		if (upStationId.equals(downStationId)) {
 			throw new IllegalArgumentException("상행역과 하행역은 같을 수 없습니다.");
 		}
 	}
 
-	public static Section of(Station upStation, Station downStation, int distance) {
-		return new Section(upStation, downStation, distance);
+	public static Section of(Long upStationId, Long downStationId, int distance) {
+		return new Section(upStationId, downStationId, distance);
 	}
 
-	public Station getUpStation() {
-		return upStation;
+	public Long getUpStationId() {
+		return upStationId;
 	}
 
-	public Station getDownStation() {
-		return downStation;
+	public Long getDownStationId() {
+		return downStationId;
 	}
 
 	public int getDistance() {

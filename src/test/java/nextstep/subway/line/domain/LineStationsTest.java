@@ -66,7 +66,7 @@ class LineStationsTest {
 		LineStations lineStations = LineStations.of(new ArrayList<>());
 
 		// when
-		lineStations.addSection(Section.of(StationFixture.강남역(), StationFixture.역삼역(), 1));
+		lineStations.addSection(Section.of(StationFixture.강남역().getId(), StationFixture.역삼역().getId(), 1));
 
 		// then
 		assertThat(lineStations.getStationIdsInOrder()).isEqualTo(
@@ -79,12 +79,12 @@ class LineStationsTest {
 	@Test
 	void addSectionFailOnBothStationsNotRegistered() {
 		// given
-		LineStations lineStations = LineStations.of(Arrays.asList(
+		LineStations lineStations = LineStations.of(new ArrayList<>(Arrays.asList(
 			LineStationFixture.강남역(),
-			LineStationFixture.역삼역()));
+			LineStationFixture.역삼역())));
 
 		// when & then
-		assertThatThrownBy(() -> lineStations.addSection(Section.of(StationFixture.선릉역(), StationFixture.삼성역(), 1)))
+		assertThatThrownBy(() -> lineStations.addSection(Section.of(StationFixture.선릉역().getId(), StationFixture.삼성역().getId(), 1)))
 			.isInstanceOf(SectionAddFailException.class);
 	}
 
@@ -92,12 +92,12 @@ class LineStationsTest {
 	@Test
 	void addSectionFailOnBothStationsAlreadyRegistered() {
 		// given
-		LineStations lineStations = LineStations.of(Arrays.asList(
+		LineStations lineStations = LineStations.of(new ArrayList<>(Arrays.asList(
 			LineStationFixture.강남역(),
-			LineStationFixture.역삼역()));
+			LineStationFixture.역삼역())));
 
 		// when & then
-		assertThatThrownBy(() -> lineStations.addSection(Section.of(StationFixture.강남역(), StationFixture.역삼역(), 1)))
+		assertThatThrownBy(() -> lineStations.addSection(Section.of(StationFixture.강남역().getId(), StationFixture.역삼역().getId(), 1)))
 			.isInstanceOf(SectionAddFailException.class);
 	}
 
@@ -106,12 +106,12 @@ class LineStationsTest {
 	void addSectionBetweenStationsAtLeftSide() {
 		// given
 		LineStations lineStations = LineStations.of(
-			Arrays.asList(
+			new ArrayList<>(Arrays.asList(
 				LineStation.of(1L, StationFixture.강남역().getId(), null, 0),
-				LineStation.of(2L, StationFixture.선릉역().getId(), StationFixture.강남역().getId(), 7)));
+				LineStation.of(2L, StationFixture.선릉역().getId(), StationFixture.강남역().getId(), 7))));
 
 		// when
-		lineStations.addSection(Section.of(StationFixture.강남역(), StationFixture.역삼역(), 4));
+		lineStations.addSection(Section.of(StationFixture.강남역().getId(), StationFixture.역삼역().getId(), 4));
 
 		// then
 		assertThat(lineStations.getStationIdsInOrder()).isEqualTo(
@@ -126,12 +126,12 @@ class LineStationsTest {
 	void addSectionBetweenStationsAtRightSide() {
 		// given
 		LineStations lineStations = LineStations.of(
-			Arrays.asList(
+			new ArrayList<>(Arrays.asList(
 				LineStation.of(1L, StationFixture.강남역().getId(), null, 0),
-				LineStation.of(2L, StationFixture.선릉역().getId(), StationFixture.강남역().getId(), 7)));
+				LineStation.of(2L, StationFixture.선릉역().getId(), StationFixture.강남역().getId(), 7))));
 
 		// when
-		lineStations.addSection(Section.of(StationFixture.역삼역(), StationFixture.선릉역(), 3));
+		lineStations.addSection(Section.of(StationFixture.역삼역().getId(), StationFixture.선릉역().getId(), 3));
 
 		// then
 		assertThat(lineStations.getStationIdsInOrder()).isEqualTo(
@@ -141,19 +141,32 @@ class LineStationsTest {
 		assertThat(lineStations.getDistancesOnOrder()).isEqualTo(Arrays.asList(0, 4, 3));
 	}
 
-	@DisplayName("역 사이 새로운 구간을 등록할 때, 기존 역 사이 길이보다 크거나 같으면 등록 할 수 없다.")
+	@DisplayName("역 사이 왼쪽에 새로운 구간을 등록할 때, 기존 역 사이 길이보다 크거나 같으면 등록 할 수 없다.")
 	@Test
-	void addSectionBetweenStationsFailOnIllegalDistance() {
+	void addSectionBetweenStationsAtLeftSideFailOnIllegalDistance() {
 		// given
 		LineStations lineStations = LineStations.of(
-			Arrays.asList(
+			new ArrayList<>(Arrays.asList(
 				LineStation.of(1L, StationFixture.강남역().getId(), null, 0),
-				LineStation.of(2L, StationFixture.선릉역().getId(), StationFixture.강남역().getId(), 7)));
+				LineStation.of(2L, StationFixture.선릉역().getId(), StationFixture.강남역().getId(), 7))));
 
 		// when
-		assertThatThrownBy(() -> lineStations.addSection(Section.of(StationFixture.역삼역(), StationFixture.선릉역(), 7)))
+		assertThatThrownBy(() -> lineStations.addSection(Section.of(StationFixture.강남역().getId(), StationFixture.역삼역().getId(), 7)))
 			.isInstanceOf(SectionAddFailException.class);
+	}
 
+	@DisplayName("역 사이 오른쪽에 새로운 구간을 등록할 때, 기존 역 사이 길이보다 크거나 같으면 등록 할 수 없다.")
+	@Test
+	void addSectionBetweenStationsAtRightSideFailOnIllegalDistance() {
+		// given
+		LineStations lineStations = LineStations.of(
+			new ArrayList<>(Arrays.asList(
+				LineStation.of(1L, StationFixture.강남역().getId(), null, 0),
+				LineStation.of(2L, StationFixture.선릉역().getId(), StationFixture.강남역().getId(), 7))));
+
+		// when
+		assertThatThrownBy(() -> lineStations.addSection(Section.of(StationFixture.역삼역().getId(), StationFixture.선릉역().getId(), 7)))
+			.isInstanceOf(SectionAddFailException.class);
 	}
 
 	@DisplayName("상행 종점에 새로운 구간을 등록한다.")
@@ -161,12 +174,12 @@ class LineStationsTest {
 	void addSectionToUpStation() {
 		// given
 		LineStations lineStations = LineStations.of(
-			Arrays.asList(
+			new ArrayList<>(Arrays.asList(
 				LineStation.of(1L, StationFixture.역삼역().getId(), null, 0),
-				LineStation.of(2L, StationFixture.선릉역().getId(), StationFixture.역삼역().getId(), 7)));
+				LineStation.of(2L, StationFixture.선릉역().getId(), StationFixture.역삼역().getId(), 7))));
 
 		// when
-		lineStations.addSection(Section.of(StationFixture.강남역(), StationFixture.역삼역(), 4));
+		lineStations.addSection(Section.of(StationFixture.강남역().getId(), StationFixture.역삼역().getId(), 4));
 
 		// then
 		assertThat(lineStations.getStationIdsInOrder()).isEqualTo(
@@ -181,12 +194,12 @@ class LineStationsTest {
 	void addSectionToDownStation() {
 		// given
 		LineStations lineStations = LineStations.of(
-			Arrays.asList(
+			new ArrayList<>(Arrays.asList(
 				LineStation.of(1L, StationFixture.강남역().getId(), null, 0),
-				LineStation.of(2L, StationFixture.역삼역().getId(), StationFixture.강남역().getId(), 7)));
+				LineStation.of(2L, StationFixture.역삼역().getId(), StationFixture.강남역().getId(), 7))));
 
 		// when
-		lineStations.addSection(Section.of(StationFixture.역삼역(), StationFixture.선릉역(), 3));
+		lineStations.addSection(Section.of(StationFixture.역삼역().getId(), StationFixture.선릉역().getId(), 3));
 
 		// then
 		assertThat(lineStations.getStationIdsInOrder()).isEqualTo(

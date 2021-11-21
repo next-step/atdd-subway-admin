@@ -12,8 +12,6 @@ import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
-import nextstep.subway.station.domain.Station;
-
 @Embeddable
 public class LineStations {
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -86,33 +84,73 @@ public class LineStations {
 	}
 
 	private void addFirstSection(Section section) {
-		values.add(LineStation.of(section.getUpStation(), null, 0));
-		values.add(LineStation.of(section.getDownStation(), section.getUpStation(), section.getDistance()));
+		values.add(LineStation.of(section.getUpStationId(), null, 0));
+		values.add(LineStation.of(section.getDownStationId(), section.getUpStationId(), section.getDistance()));
 	}
 
 	private void throwOnBothStationsNotRegistered(Section section) {
-		if (!contains(section.getUpStation()) && !contains(section.getDownStation())) {
+		if (!findByStationId(section.getUpStationId()).isPresent() && !findByStationId(
+			section.getDownStationId()).isPresent()) {
 			throw new SectionAddFailException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
 		}
 	}
 
 	private void throwOnBothStationsAlreadyRegistered(Section section) {
-		if (contains(section.getUpStation()) && contains(section.getDownStation())) {
+		if (findByStationId(section.getUpStationId()).isPresent() && findByStationId(
+			section.getDownStationId()).isPresent()) {
 			throw new SectionAddFailException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
 		}
 	}
 
-	private boolean contains(Station station) {
-		return getStationIds().contains(station.getId());
-	}
-
-	private List<Long> getStationIds() {
-		return values.stream()
-			.map(LineStation::getStationId)
-			.collect(Collectors.toList());
-	}
-
 	private void updateSection(Section section) {
-		// TODO
+		if (findByStationId(section.getUpStationId()).isPresent()) {
+			updateSectionOnMatchingUpStation(section);
+			return;
+		}
+
+		if (findByStationId(section.getDownStationId()).isPresent()) {
+			updateSectionOnMatchingDownStation(section);
+		}
+	}
+
+	private void updateSectionOnMatchingUpStation(Section section) {
+		Optional<LineStation> optionalNextLineStation = findByPreStationId(section.getUpStationId());
+		if (optionalNextLineStation.isPresent()) {
+			LineStation nextLineStation = optionalNextLineStation.get();
+			throwOnIllegalDistance(nextLineStation.getDistance(), section.getDistance());
+			int distance = nextLineStation.getDistance() - section.getDistance();
+			nextLineStation.update(section.getDownStationId(), distance);
+		}
+		values.add(LineStation.of(section.getDownStationId(), section.getUpStationId(), section.getDistance()));
+	}
+
+	private void throwOnIllegalDistance(int existingDistance, int newDistance) {
+		if (existingDistance <= newDistance) {
+			throw new SectionAddFailException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다.");
+		}
+	}
+
+	private void updateSectionOnMatchingDownStation(Section section) {
+		LineStation currentLineStation = findByStationId(section.getDownStationId()).get();
+
+		if (currentLineStation.hasPrev()) {
+			throwOnIllegalDistance(currentLineStation.getDistance(), section.getDistance());
+		}
+
+		int distance = currentLineStation.hasPrev() ? currentLineStation.getDistance() - section.getDistance() : 0;
+		values.add(LineStation.of(section.getUpStationId(), currentLineStation.getPreStationId(), distance));
+		currentLineStation.update(section.getUpStationId(), section.getDistance());
+	}
+
+	private Optional<LineStation> findByStationId(Long stationId) {
+		return values.stream()
+			.filter(value -> stationId.equals(value.getStationId()))
+			.findFirst();
+	}
+
+	private Optional<LineStation> findByPreStationId(Long preStationId) {
+		return values.stream()
+			.filter(value -> preStationId.equals(value.getPreStationId()))
+			.findFirst();
 	}
 }

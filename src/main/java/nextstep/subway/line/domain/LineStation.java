@@ -9,8 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import nextstep.subway.station.domain.Station;
-
 @Entity
 @Table(name = "line_station")
 public class LineStation {
@@ -51,10 +49,7 @@ public class LineStation {
 		return new LineStation(id, stationId, preStationId, distance);
 	}
 
-	public static LineStation of(Station station, Station preStation, int distance) {
-		Long stationId = station.getId();
-		Long preStationId = preStation != null ? preStation.getId() : null;
-
+	public static LineStation of(Long stationId, Long preStationId, int distance) {
 		return LineStation.of(null, stationId, preStationId, distance);
 	}
 
@@ -72,6 +67,15 @@ public class LineStation {
 
 	public int getDistance() {
 		return distance;
+	}
+
+	public void update(Long preStationId, int distance) {
+		this.preStationId = preStationId;
+		this.distance = distance;
+	}
+
+	public boolean hasPrev() {
+		return preStationId != null;
 	}
 
 	@Override

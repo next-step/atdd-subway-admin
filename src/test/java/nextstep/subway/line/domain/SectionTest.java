@@ -13,7 +13,7 @@ public class SectionTest {
 	@Test
 	void of() {
 		// given & when
-		Section section = Section.of(강남역(), 역삼역(), 1);
+		Section section = Section.of(강남역().getId(), 역삼역().getId(), 1);
 
 		// then
 		assertThat(section).isNotNull();
@@ -23,7 +23,7 @@ public class SectionTest {
 	@Test
 	void ofFailIfUpStationAndDownStationIsEqual() {
 		// given & when & then
-		assertThatThrownBy(() -> Section.of(강남역(), 강남역(), 0))
+		assertThatThrownBy(() -> Section.of(강남역().getId(), 강남역().getId(), 0))
 			.isInstanceOf(IllegalArgumentException.class);
 	}
 }
