@@ -21,6 +21,7 @@ public class LineTest {
     public static final String LINE_COLOR2 = "yellow darken-3";
     public static final Line LINE1 = new Line(LINE_NAME1, LINE_COLOR1);
     public static final Line LINE2 = new Line(LINE_NAME2, LINE_COLOR2);
+    public static final Line LINE1_1 = new Line(LINE_NAME1, LINE_COLOR1);
 
 
     @Test
