@@ -161,12 +161,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        LineRequest request = new LineRequest("신분당선", "bg-red-600");
+        지하철_노선_생성(request, "/lines");
 
         // when
         // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = 지하철_노선_제거("/lines/1");
 
         // then
         // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성(LineRequest params, String path) {
@@ -198,6 +202,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .put(path)
+            .then().log().all()
+            .extract();
+
+        return response;
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_제거(String path) {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .delete(path)
             .then().log().all()
             .extract();
 
