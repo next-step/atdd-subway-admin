@@ -32,7 +32,7 @@ public class LineService {
     private void throwExceptionExistsDuplicateName(LineRequest request) {
         lineRepository.findByName(request.getName())
                 .ifPresent(line -> {
-                    throw new DuplicateLineNameException("중복된 노선명이 있습니다. : " + line.getName());
+                    throw new DuplicateLineNameException(line);
                 });
     }
 
