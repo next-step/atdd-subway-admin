@@ -3,6 +3,7 @@ package nextstep.subway.line.ui;
 import nextstep.subway.common.ui.ErrorResponse;
 import nextstep.subway.line.exception.DuplicateLineNameException;
 import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,5 +33,10 @@ public class LineControllerAdvice {
     @ExceptionHandler(LineNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleLineNotFoundException(LineNotFoundException error) {
         return new ResponseEntity<>(new ErrorResponse(error), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(StationNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleStationNotFoundException(StationNotFoundException error) {
+        return new ResponseEntity<>(new ErrorResponse(error), HttpStatus.BAD_REQUEST);
     }
 }

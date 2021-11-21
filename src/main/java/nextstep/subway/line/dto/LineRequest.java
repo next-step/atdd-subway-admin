@@ -1,6 +1,7 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.dto.SectionRequest;
 
 import javax.validation.constraints.NotBlank;
 
@@ -56,5 +57,9 @@ public class LineRequest {
         return upStationId != null ||
                 downStationId != null ||
                 distance > 0;
+    }
+
+    public SectionRequest toSectionRequest() {
+        return SectionRequest.of(this);
     }
 }

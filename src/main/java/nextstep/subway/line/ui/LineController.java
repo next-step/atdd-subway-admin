@@ -6,6 +6,7 @@ import nextstep.subway.line.dto.LineResponse;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +30,7 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createLine(@RequestBody @Valid LineRequest lineRequest, BindingResult bindingResult) {
+    public ResponseEntity<?> createLine(@RequestBody @Validated LineRequest lineRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             String errorMessage = getErrorMessage(bindingResult);
             return ResponseEntity.badRequest().body(errorMessage);

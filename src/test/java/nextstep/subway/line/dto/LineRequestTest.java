@@ -1,6 +1,7 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.dto.SectionRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -38,5 +39,19 @@ public class LineRequestTest {
         boolean hasNotSectionArguments = request.hasSectionArguments();
         // then
         assertThat(hasNotSectionArguments).isTrue();
+    }
+
+    @Test
+    void testToSectionRequest() {
+        // given
+        LineRequest request = new LineRequest("박달강남선", "blue", 1L, 2L, 191);
+        // when
+        SectionRequest sectionRequest = request.toSectionRequest();
+        // then
+        assertAll(
+                () -> assertThat(sectionRequest.getUpStationId()).isEqualTo(request.getUpStationId()),
+                () -> assertThat(sectionRequest.getDownStationId()).isEqualTo(request.getDownStationId()),
+                () -> assertThat(sectionRequest.getDistance()).isEqualTo(request.getDistance())
+        );
     }
 }

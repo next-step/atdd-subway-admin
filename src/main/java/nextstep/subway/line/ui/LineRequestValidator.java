@@ -13,10 +13,17 @@ public class LineRequestValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         LineRequest lineRequest = (LineRequest) target;
+
+        if (lineRequest.getName() == null || lineRequest.getName().trim().isEmpty()) {
+            errors.rejectValue("upStationId", "EMPTY", "노선명을 입력하세요.");
+        }
+        if (lineRequest.getColor() == null || lineRequest.getColor().trim().isEmpty()) {
+            errors.rejectValue("upStationId", "EMPTY", "노선색상을 입력하세요.");
+        }
+        // 구간(Section) 요청 검증
         if (!lineRequest.hasSectionArguments()) {
             return;
         }
-
         if (lineRequest.getUpStationId() == null) {
             errors.rejectValue("upStationId", "EMPTY", "upStationId을 입력하세요.");
         }
