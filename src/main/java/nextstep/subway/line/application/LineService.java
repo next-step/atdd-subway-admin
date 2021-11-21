@@ -34,8 +34,18 @@ public class LineService {
         return response;
     }
 
-    public LineResponse findById(Long lineId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new RuntimeException("존재하지 않는 노선ID 입니다."));
+    public LineResponse findLine(Long lineId) {
+        Line line = findById(lineId);
         return LineResponse.of(line);
+    }
+
+    public LineResponse updateLine(Long lineId, LineRequest lineRequest) {
+        Line line = findById(lineId);
+        line.update(lineRequest.toLine());
+        return LineResponse.of(line);
+    }
+
+    private Line findById(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(() -> new RuntimeException("존재하지 않는 노선ID 입니다."));
     }
 }

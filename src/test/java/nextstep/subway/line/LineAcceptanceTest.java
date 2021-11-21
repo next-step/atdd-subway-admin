@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -77,13 +78,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("신분당선", "red");
+        String lineId = createResponse.jsonPath().get("id").toString();
 
         // when
-        // 지하철_노선_수정_요청
+        LineRequest lineRequest = new LineRequest("2호선", "green");
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(Long.parseLong(lineId), lineRequest);
 
         // then
-        // 지하철_노선_수정됨
+        지하철_노선_수정됨(response, lineRequest);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -130,6 +133,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(long lineId, LineRequest lineRequest) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", lineRequest.getName());
+        params.put("color", lineRequest.getColor());
+
+        return RestAssured.given().log().all()
+                .pathParam("lineId", lineId)
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/{lineId}")
+                .then().log().all()
+                .extract();
+    }
+
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -140,6 +158,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_응답됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철_노선_수정됨(ExtractableResponse<Response> response, LineRequest lineRequest) {
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value())
+                , () -> assertThat(response.jsonPath().get("name").toString()).hasToString(lineRequest.getName())
+                , () -> assertThat(response.jsonPath().get("color").toString()).hasToString(lineRequest.getColor())
+        );
     }
 
     private void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
