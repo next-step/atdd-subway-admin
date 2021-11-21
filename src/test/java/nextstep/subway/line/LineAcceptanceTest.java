@@ -93,13 +93,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("신분당선", "red");
+        String lineId = createResponse.jsonPath().get("id").toString();
 
         // when
-        // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(Long.parseLong(lineId));
 
         // then
-        // 지하철_노선_삭제됨
+        지하철_노선_삭제됨(response);
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
@@ -148,6 +149,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(long lineId) {
+        return RestAssured.given().log().all()
+                .pathParam("lineId", lineId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/{lineId}")
+                .then().log().all()
+                .extract();
+    }
+
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -166,6 +177,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 , () -> assertThat(response.jsonPath().get("name").toString()).hasToString(lineRequest.getName())
                 , () -> assertThat(response.jsonPath().get("color").toString()).hasToString(lineRequest.getColor())
         );
+    }
+
+    private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {

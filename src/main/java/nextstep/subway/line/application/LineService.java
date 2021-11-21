@@ -45,6 +45,11 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    public void deleteLine(Long lineId) {
+        Line line = findById(lineId);
+        lineRepository.delete(line);
+    }
+
     private Line findById(Long lineId) {
         return lineRepository.findById(lineId).orElseThrow(() -> new RuntimeException("존재하지 않는 노선ID 입니다."));
     }
