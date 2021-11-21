@@ -2,9 +2,13 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -55,6 +59,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철 구간 추가 됨.
         지하철_구간_추가됨(response);
+        List<StationResponse> stations = response.as(LineResponse.class).getStations();
     }
 
     @DisplayName("지하철 하행 종점 구간을 추가한다.")
@@ -116,6 +121,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 중복_구간 = new SectionRequest(잠실역.getId(), 강남역.getId(), 10);
         ExtractableResponse<Response> response = 지하철_구간_추가_요청(중복_구간, 이호선.getId());
 
+        // then
         지하철_구간_추가_실패함(response);
     }
 
@@ -133,6 +139,24 @@ class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 존재하지_않는_구간 = new SectionRequest(신촌역.getId(), 신당역.getId(), 10);
         ExtractableResponse<Response> response = 지하철_구간_추가_요청(존재하지_않는_구간, 이호선.getId());
 
+        // then
+        지하철_구간_추가_실패함(response);
+    }
+
+    @DisplayName("지하철 구간사이에 구간을 추가할 때 기존 구간의 거리보다 새로운 구간의 거리가 크거나 같으면 실패한다.")
+    @ParameterizedTest
+    @ValueSource(ints = {10, 12})
+    void addSectionGreaterThanOrEqualDistance(int distance) {
+        // given
+        StationResponse 삼성역 = StationAcceptanceTest.지하철_역_생성_요청(new StationRequest("삼성역"))
+            .as(StationResponse.class);
+
+        // when
+        // 지하철 구간 추가 요청을 한다.
+        SectionRequest 중간_구간 = new SectionRequest(잠실역.getId(), 삼성역.getId(), distance);
+        ExtractableResponse<Response> response = 지하철_구간_추가_요청(중간_구간, 이호선.getId());
+
+        // then
         지하철_구간_추가_실패함(response);
     }
 

@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import static nextstep.subway.common.exception.ExceptionMessage.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -9,6 +11,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.common.exception.DuplicateException;
 import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
 
@@ -39,6 +42,28 @@ public class Sections {
         }
         stations.add(section.getDownStation());
         return stations;
+    }
+
+    public void addSection(Section newSection) {
+        validateAddSection(newSection);
+        Section firstSection = extractFirstSection();
+        if (firstSection.containsAndNotSamePosition(newSection)) {
+            new SectionStateSide().add(firstSection, newSection);
+            return;
+        }
+        Section lastSection = extractLastSection();
+        if (lastSection.containsAndNotSamePosition(newSection)) {
+            new SectionStateSide().add(lastSection, newSection);
+            return;
+        }
+        addSectionOfBetween(newSection);
+    }
+
+    private void addSectionOfBetween(Section newSection) {
+        sections.stream()
+            .filter(section -> section.containsAndSamePosition(newSection))
+            .findFirst()
+            .ifPresent(section -> new SectionStateBetween().add(section, newSection));
     }
 
     private Section extractFirstSection() {
@@ -87,10 +112,6 @@ public class Sections {
             .collect(Collectors.toSet());
     }
 
-    public void addSection(Section newSection) {
-        validateAddSection(newSection);
-    }
-
     private void validateAddSection(Section newSection) {
         Set<Station> allStations = createAllStations();
         validateDuplicate(newSection, allStations);
@@ -109,7 +130,5 @@ public class Sections {
             && !allStations.contains(newSection.getDownStation())) {
             throw new NotFoundException(NON_EXIST_ALL_STATION_TO_SECTION.getMessage());
         }
-    }
-
     }
 }
