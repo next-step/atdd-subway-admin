@@ -65,12 +65,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .get("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = 지하철_노선_조회("/lines");
 
         List<LineResponse> lines = response.body().jsonPath().getList(".", LineResponse.class);
 
@@ -96,6 +91,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_조회_요청
+
 
         // then
         // 지하철_노선_응답됨
@@ -133,6 +129,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post(path)
+            .then().log().all()
+            .extract();
+
+        return response;
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_조회(String path) {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get(path)
             .then().log().all()
             .extract();
 
