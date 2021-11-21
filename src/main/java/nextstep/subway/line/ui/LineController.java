@@ -18,7 +18,6 @@ import nextstep.subway.line.dto.LineAddRequest;
 import nextstep.subway.line.dto.LineEditRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionAddRequest;
-import nextstep.subway.line.dto.SectionResponse;
 
 @RestController
 @RequestMapping("/lines")
@@ -62,13 +61,13 @@ public class LineController {
     }
 
     @PostMapping("/{id}/sections")
-    public ResponseEntity<SectionResponse> createSection(
+    public ResponseEntity<Void> createSection(
         @PathVariable("id") Long lineId,
         @RequestBody SectionAddRequest sectionAddRequest
     ) {
-        final SectionResponse section = lineService.saveSection(lineId, sectionAddRequest);
+        final Long sectionId = lineService.saveSection(lineId, sectionAddRequest);
         return ResponseEntity.created(
-            URI.create(String.format("/lines/%d/sections/%d", lineId, section.getId()))
-        ).body(section);
+            URI.create(String.format("/lines/%d/sections/%d", lineId, sectionId))
+        ).build();
     }
 }

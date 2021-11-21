@@ -13,7 +13,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 내 구간 기능")
@@ -40,17 +39,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			신분당선_ID, sectionAddRequest(판교역_ID, 광교역_ID, 4)
 		);
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-		assertThat(response.header("Location")).isNotBlank();
-
-		final SectionResponse sectionResponse = response.as(SectionResponse.class);
-		assertAll(
-			() -> assertThat(sectionResponse.getId()).isNotNull(),
-			() -> assertThat(sectionResponse.getUpStation().getId()).isEqualTo(판교역_ID),
-			() -> assertThat(sectionResponse.getDownStation().getId()).isEqualTo(광교역_ID),
-			() -> assertThat(sectionResponse.getDistance()).isEqualTo(4),
-			() -> assertThat(sectionResponse.getCreatedDate()).isNotNull(),
-			() -> assertThat(sectionResponse.getModifiedDate()).isNotNull()
-		);
+		final String sectionId = response.header("Location").split("/")[4];
+		assertThat(sectionId).isNotBlank();
 	}
 
 	@DisplayName("구간추가/상행종착")
