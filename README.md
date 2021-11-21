@@ -65,4 +65,5 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
    - [x] 노선 조회 인수 테스트
    - [x] 존재하지 않는 노선을 조회 할 때 인수 테스트
  - [ ] 지하철 노선 수정
+   - [x] 노선 수정 인수 테스트
  - [ ] 지하철 노선 삭제

@@ -124,12 +124,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        LineRequest request = new LineRequest("신분당선", "bg-red-600");
+        지하철_노선_생성(request, "/lines");
 
         // when
         // 지하철_노선_수정_요청
+        LineRequest modifyRequest = new LineRequest("구분당선", "bg-red-600");
+        ExtractableResponse<Response> response = 지하철_노선_수정(modifyRequest, "/lines/1");
 
         // then
         // 지하철_노선_수정됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().jsonPath().getString("name")).isEqualTo("구분당선");
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -162,6 +168,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .get(path)
+            .then().log().all()
+            .extract();
+
+        return response;
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_수정(LineRequest params, String path) {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put(path)
             .then().log().all()
             .extract();
 
