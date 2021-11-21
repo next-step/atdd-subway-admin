@@ -277,12 +277,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private LineResponse 지하철_노선_객체_추출(final ExtractableResponse<Response> response) {
-        return response.jsonPath().getObject(".", LineResponse.class);
+        return response.as(LineResponse.class);
     }
 
     private Long 지하철역_생성_요청_후_아이디_반환(final String name) {
         final ExtractableResponse<Response> response = 지하철역_생성_요청(name);
-        return response.jsonPath().getObject(".", StationResponse.class).getId();
+        return response.as(StationResponse.class).getId();
     }
 
     private ExtractableResponse<Response> 지하철_노선에_지하철_구간_등록_요청(
