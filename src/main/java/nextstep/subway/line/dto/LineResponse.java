@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 public class LineResponse {
@@ -35,12 +36,12 @@ public class LineResponse {
         this.modifiedDate = modifiedDate;
     }
 
-    public static LineResponse of(Line line) {
+    public static LineResponse of(Line line, List<Station> stations) {
         return new LineResponse(
             line.getId(),
             line.getName(),
             line.getColor(),
-            line.getStations().stream()
+            stations.stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList()),
             line.getCreatedDate(),

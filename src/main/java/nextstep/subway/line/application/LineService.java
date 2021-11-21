@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
@@ -39,23 +39,27 @@ public class LineService {
     public LineResponse saveLine(LineCreateRequest request) {
         Station upStation = findStationById(request.getUpStationId(), MESSAGE_ON_UP_STATION_NOT_FOUND);
         Station downStation = findStationById(request.getDownStationId(), MESSAGE_ON_DOWN_STATION_NOT_FOUND);
-        Section section = Section.of(upStation, downStation, request.getDistance());
-        Line line = lineRepository.save(Line.of(request.getName(), request.getColor(), section));
-        return LineResponse.of(line);
+
+        Line line = lineRepository.save(Line.of(request.getName(), request.getColor()));
+        line.addLineStation(LineStation.of(upStation, null, 0));
+        line.addLineStation(LineStation.of(downStation, upStation, request.getDistance()));
+
+        return LineResponse.of(line, getStationInOrder(line));
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-            .map(LineResponse::of)
+            .map(line -> LineResponse.of(line, getStationInOrder(line)))
             .collect(Collectors.toList());
     }
 
     public LineResponse findLine(Long id) {
         Line line = findLineById(id);
+        List<Station> stations = getStationInOrder(line);
 
-        return LineResponse.of(line);
+        return LineResponse.of(line, stations);
     }
 
     @Transactional
@@ -89,5 +93,10 @@ public class LineService {
     private Line findLineById(Long lineId) {
         return lineRepository.findById(lineId)
             .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_LINE_NOT_FOUND));
+    }
+
+    private List<Station> getStationInOrder(Line line) {
+        List<Long> stationIds = line.getLineStationIdsInOrder();
+        return stationRepository.findAllById(stationIds);
     }
 }

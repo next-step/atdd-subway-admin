@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -11,7 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.station.domain.Station;
 
 @Entity
 @Table(name = "line")
@@ -28,26 +28,23 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private Sections sections = new Sections();
+    private LineStations lineStations = new LineStations();
 
-    public void addSection(Section section) {
-        sections.add(section);
-        section.setLine(this);
+    public void addLineStation(LineStation lineStation) {
+        lineStations.add(lineStation);
     }
 
     protected Line() {
 
     }
 
-    private Line(String name, String color, Section section) {
+    private Line(String name, String color) {
         this.name = name;
         this.color = color;
-
-        addSection(section);
     }
 
-    public static Line of(String name, String color, Section section) {
-        return new Line(name, color, section);
+    public static Line of(String name, String color) {
+        return new Line(name, color);
     }
 
     public void update(String name, String color) {
@@ -67,7 +64,14 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getStations() {
-        return sections.getStations();
+    public List<LineStation> getLineStationsInOrder() {
+        return lineStations.getLineStationsInOrder();
+    }
+
+    public List<Long> getLineStationIdsInOrder() {
+        return getLineStationsInOrder()
+            .stream()
+            .map(LineStation::getStationId)
+            .collect(Collectors.toList());
     }
 }

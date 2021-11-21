@@ -53,4 +53,8 @@ public class LineStations {
 	public int size() {
 		return values.size();
 	}
+
+	public void add(LineStation lineStation) {
+		values.add(lineStation);
+	}
 }
