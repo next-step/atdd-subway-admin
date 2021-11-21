@@ -3,7 +3,6 @@ package nextstep.subway.station.application;
 import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
-import nextstep.subway.station.domain.Stations;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,7 @@ public class StationService {
 
     @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
-        return Stations.of(stationRepository.findAll()).toDto();
+        return StationResponse.ofList(stationRepository.findAll());
     }
 
     @Transactional(readOnly = true)
@@ -32,7 +31,7 @@ public class StationService {
 
     public StationResponse saveStation(StationRequest request) {
         final Station savedStation = stationRepository.save(request.toStation());
-        return savedStation.toDto();
+        return StationResponse.of(savedStation);
     }
 
     public void deleteStationById(Long id) {

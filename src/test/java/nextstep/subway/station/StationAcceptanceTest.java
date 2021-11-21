@@ -20,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
     private static final String BASE_URI = "/stations";
-    private final StationRequest 강남역 = StationRequest.of("강남역");
-    private final StationRequest 역삼역 = StationRequest.of("역삼역");
+    public static final StationRequest 강남역 = StationRequest.of("강남역");
+    public static final StationRequest 역삼역 = StationRequest.of("역삼역");
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -62,7 +62,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철_역_목록_포함됨(response, Arrays.asList(강남역_ID, 역삼역_ID));
     }
 
-
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
@@ -76,7 +75,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철_역_삭제됨(response);
     }
 
-    private ExtractableResponse<Response> 지하철_역_생성_요청(StationRequest request) {
+    private static ExtractableResponse<Response> 지하철_역_생성_요청(StationRequest request) {
         return RestAssured.given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -102,7 +101,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private Long 지하철_역_등록되어_있음(StationRequest request) {
+    public static Long 지하철_역_등록되어_있음(StationRequest request) {
         ExtractableResponse<Response> response = 지하철_역_생성_요청(request);
         지하철_역_생성됨(response);
         return responseStation(response).getId();
@@ -112,7 +111,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private void 지하철_역_생성됨(ExtractableResponse<Response> response) {
+    private static void 지하철_역_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
     }
@@ -132,7 +131,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private StationResponse responseStation(ExtractableResponse<Response> response) {
+    private static StationResponse responseStation(ExtractableResponse<Response> response) {
         return response.jsonPath().getObject("", StationResponse.class);
     }
 
