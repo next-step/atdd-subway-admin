@@ -5,8 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
+import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -55,13 +58,34 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
+        LineRequest request1 = new LineRequest("신분당선", "bg-red-600");
+        LineRequest request2 = new LineRequest("2호선", "bg-green-600");
+        지하철_노선_생성(request1, "/lines");
+        지하철_노선_생성(request2, "/lines");
 
         // when
         // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get("/lines")
+            .then().log().all()
+            .extract();
+
+        List<LineResponse> lines = response.body().jsonPath().getList(".", LineResponse.class);
 
         // then
         // 지하철_노선_목록_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lines).isNotNull();
+        assertThat(lines).hasSize(2);
+
         // 지하철_노선_목록_포함됨
+        List<String> lineNames = lines.stream()
+            .map(LineResponse::getName)
+            .collect(Collectors.toList());
+
+        assertThat(lineNames).containsExactly("신분당선", "2호선");
     }
 
     @DisplayName("지하철 노선을 조회한다.")
