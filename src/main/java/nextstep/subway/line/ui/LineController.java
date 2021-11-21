@@ -46,11 +46,7 @@ public class LineController {
     @PatchMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id,
         @RequestBody LineRequest lineRequest) {
-        try {
-            return ResponseEntity.ok().body(lineService.updateLine(id, lineRequest));
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok().body(lineService.updateLine(id, lineRequest));
     }
 
     @DeleteMapping("{id}")
