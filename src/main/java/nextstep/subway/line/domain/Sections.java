@@ -152,7 +152,7 @@ public class Sections {
 
 	private Map<Station, Section> getSectionRoute() {
 		return sections.stream()
-			.collect(Collectors.toMap(Section::getUpStation, it -> it, (o1, o2) -> o1, HashMap::new));
+			.collect(Collectors.toMap(Section::getUpStation, section -> section, (stationKey1, stationKey2) -> stationKey1, HashMap::new));
 	}
 
 	private Section findStartSection() {
