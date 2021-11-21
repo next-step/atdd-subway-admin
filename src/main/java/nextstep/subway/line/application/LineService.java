@@ -13,12 +13,15 @@ import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
+import nextstep.subway.line.dto.SectionAddRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 
 @Service
 @Transactional(readOnly = true)
 public class LineService {
+    private static final String MESSAGE_ON_UP_STATION_NOT_FOUND = "상행역을 찾을 수 없습니다.";
+    private static final String MESSAGE_ON_DOWN_STATION_NOT_FOUND = "하행역을 찾을 수 없습니다.";
     private static final String MESSAGE_ON_LINE_NOT_FOUND = "노선을 찾을 수 없습니다.";
 
     private final LineRepository lineRepository;
@@ -35,9 +38,9 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineCreateRequest request) {
         Station upStation = stationRepository.findById(request.getUpStationId())
-            .orElseThrow(() -> new NoSuchElementException("상행역을 찾을 수 없습니다."));
+            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_UP_STATION_NOT_FOUND));
         Station downStation = stationRepository.findById(request.getDownStationId())
-            .orElseThrow(() -> new NoSuchElementException("하행역을 찾을 수 없습니다."));
+            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_DOWN_STATION_NOT_FOUND));
 
         Section section = Section.of(upStation, downStation, request.getDistance());
         Line line = lineRepository.save(Line.of(request.getName(), request.getColor(), section));
@@ -73,5 +76,17 @@ public class LineService {
             .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_LINE_NOT_FOUND));
 
         lineRepository.delete(line);
+    }
+
+    @Transactional
+    public void addSection(Long id, SectionAddRequest request) {
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_LINE_NOT_FOUND));
+        Station upStation = stationRepository.findById(request.getUpStationId())
+            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_UP_STATION_NOT_FOUND));
+        Station downStation = stationRepository.findById(request.getDownStationId())
+            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_DOWN_STATION_NOT_FOUND));
+
+        // TODO : 구간 등록
     }
 }
