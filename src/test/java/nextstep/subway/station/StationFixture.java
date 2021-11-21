@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.MediaType;
 
@@ -53,5 +54,9 @@ public class StationFixture {
         return response.jsonPath().getList(".", StationResponse.class).stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
+    }
+
+    public static Station ofStation(ExtractableResponse<Response> response) {
+        return response.as(Station.class);
     }
 }
