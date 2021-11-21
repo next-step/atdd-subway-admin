@@ -13,6 +13,7 @@ import javax.persistence.OneToMany;
 
 import nextstep.subway.station.domain.Station;
 
+@Deprecated
 @Embeddable
 public class Sections {
 	@OneToMany(

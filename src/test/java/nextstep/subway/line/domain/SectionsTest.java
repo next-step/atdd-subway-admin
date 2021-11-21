@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import nextstep.subway.station.domain.Station;
 
+@Deprecated
 @DisplayName("구간들")
 class SectionsTest {
 

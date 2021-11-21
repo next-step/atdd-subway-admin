@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
+@Deprecated
 @Entity
 @Table(name = "section")
 public class Section extends BaseEntity {

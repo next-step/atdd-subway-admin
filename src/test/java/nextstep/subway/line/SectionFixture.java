@@ -5,6 +5,7 @@ import static nextstep.subway.station.StationFixture.*;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.SectionAddRequest;
 
+@Deprecated
 public class SectionFixture {
 	public static Section 강남역_역삼역_구간() {
 		return Section.of(1L, 강남역(), 역삼역(), 1);
