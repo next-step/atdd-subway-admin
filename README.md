@@ -1,3 +1,17 @@
+## 1단계 - 지하철 노선 관리
+
+지하철 노션 관리 기능을 구현
+
+- 노선 인수테스트
+- 노선 생성
+- 노선 목록 조회
+- 노선 조회
+- 노선 수정
+- 노선 삭제
+
+
+---
+
 <p align="center">
     <img width="200px;" src="https://raw.githubusercontent.com/woowacourse/atdd-subway-admin-frontend/master/images/main_logo.png"/>
 </p>
