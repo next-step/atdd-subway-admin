@@ -60,10 +60,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findLine() {
         // given
-        지하철_노선_등록되어_있음(수인선);
+        String createdLocationUri = 지하철_노선_등록되어_있음(수인선);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청("/lines/1");
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdLocationUri);
 
         // then
         지하철_노선_조회_응답됨(response);
@@ -74,10 +74,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findLineValidateNotFound() {
         // given
-        지하철_노선_등록되어_있지_않음(1L);
+        String notFoundUri = 지하철_노선_등록되어_있지_않음("lines/1");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청("/lines/1");
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(notFoundUri);
 
         // then
         지하철_노선_조회_실패됨(response);
@@ -87,23 +87,23 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        지하철_노선_생성_요청(신분당선);
+        String createdLocationUri = 지하철_노선_등록되어_있음(신분당선);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(1L, 구분당선);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(createdLocationUri, 구분당선);
 
         // then
-        지하철_노선_수정됨(response);
+        지하철_노선_수정됨(response, createdLocationUri, 구분당선);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
         // given
-        지하철_노선_생성_요청(수인선);
+        String createdLocationUri = 지하철_노선_등록되어_있음(수인선);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_제거_요청(1L);
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(createdLocationUri);
 
         // then
         지하철_노선_삭제됨(response);
@@ -113,10 +113,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLineValidateEmptyResult() {
         // given
-        지하철_노선_등록되어_있지_않음(1L);
+        String notFoundUri = 지하철_노선_등록되어_있지_않음("lines/1");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_제거_요청(1L);
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(notFoundUri);
 
         // then
         지하철_노선_삭제_실패됨(response);

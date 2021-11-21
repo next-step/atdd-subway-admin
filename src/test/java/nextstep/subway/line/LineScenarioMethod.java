@@ -7,7 +7,6 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.AssertionsForInterfaceTypes;
-import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -34,9 +33,10 @@ class LineScenarioMethod {
         return createResponse.header("Location");
     }
 
-    public static void 지하철_노선_등록되어_있지_않음(Long id) {
-        ExtractableResponse<Response> findResponse = 지하철_노선_조회_요청("/lines/" + id);
+    public static String 지하철_노선_등록되어_있지_않음(String uri) {
+        ExtractableResponse<Response> findResponse = 지하철_노선_조회_요청(uri);
         지하철_노선_조회_실패됨(findResponse);
+        return uri;
     }
 
     public static ExtractableResponse<Response> 지하철_노선_조회_요청(String uri) {
@@ -64,16 +64,18 @@ class LineScenarioMethod {
                 .contains(request.getName(), request.getColor());
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, LineRequest request) {
-        return RestAssuredApi.put("lines/" + id, request);
+    public static ExtractableResponse<Response> 지하철_노선_수정_요청(String uri, LineRequest request) {
+        return RestAssuredApi.put(uri, request);
     }
 
-    public static void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
+    public static void 지하철_노선_수정됨(ExtractableResponse<Response> response, String uri, LineRequest request) {
         assertThat(response.statusCode()).isEqualTo(OK.value());
+        ExtractableResponse<Response> updatedResponse = 지하철_노선_조회_요청(uri);
+        지하철_노선_조회_결과_일치됨(updatedResponse, request);
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_제거_요청(Long id) {
-        return RestAssuredApi.delete("lines/" + id);
+    public static ExtractableResponse<Response> 지하철_노선_제거_요청(String uri) {
+        return RestAssuredApi.delete(uri);
     }
 
     public static void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
