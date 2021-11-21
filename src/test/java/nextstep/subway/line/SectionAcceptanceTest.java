@@ -2,8 +2,6 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -59,7 +57,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철 구간 추가 됨.
         지하철_구간_추가됨(response);
-        List<StationResponse> stations = response.as(LineResponse.class).getStations();
     }
 
     @DisplayName("지하철 하행 종점 구간을 추가한다.")
