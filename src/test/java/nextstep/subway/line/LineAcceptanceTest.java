@@ -192,48 +192,40 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성(LineRequest params, String path) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post(path)
             .then().log().all()
             .extract();
-
-        return response;
     }
 
     private ExtractableResponse<Response> 지하철_노선_조회(String path) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .get(path)
             .then().log().all()
             .extract();
-
-        return response;
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정(LineRequest params, String path) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .put(path)
             .then().log().all()
             .extract();
-
-        return response;
     }
 
     private ExtractableResponse<Response> 지하철_노선_제거(String path) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .delete(path)
             .then().log().all()
             .extract();
-
-        return response;
     }
 }

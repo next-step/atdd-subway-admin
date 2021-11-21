@@ -26,7 +26,8 @@ public class LineExceptionAdvice {
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
-    protected ResponseEntity handleEmptyResultDataAccessException(EmptyResultDataAccessException e) {
+    protected ResponseEntity handleEmptyResultDataAccessException(
+        EmptyResultDataAccessException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(LINE_NOT_EXISTS);
     }
 }
