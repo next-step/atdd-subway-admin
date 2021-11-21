@@ -35,7 +35,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             지하철_노선_생성_요청("신분당선", "red", "강남역", "역삼역", 10);
 
         // then
-        지하철_생성됨(response);
+        지하철_노선_생성됨(response);
         기대되는_모든_필드가_있는지_검증(response, ".");
         지하철역_정렬_검증(response, "stations", "강남역", "역삼역");
     }
@@ -118,6 +118,78 @@ public class LineAcceptanceTest extends AcceptanceTest {
         StatusCodeCheckUtil.noContent(response);
     }
 
+    @DisplayName("노선에 구간을 등록한다.")
+    @Test
+    void addSection() {
+        // given
+        final ExtractableResponse<Response> createResponse =
+            지하철_노선_생성_요청("신분당선", "red", "강남역", "역삼역", 10);
+        final LineResponse line = 지하철_노선_객체_추출(createResponse);
+        final Long lineId = line.getId();
+        final Long upStationId = 상행_종점역_아이디_추출(line);
+        final Long downStationId = 지하철역_생성_요청_후_아이디_반환("판교역");
+
+        // when
+        final ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_등록_요청(lineId, upStationId, downStationId, 5);
+
+        // then
+        지하철_구간_추가됨(response, lineId, "강남역", "판교역", "역삼역");
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 예외 발생")
+    @Test
+    void addSectionWithLongDistance() {
+        // given
+        final ExtractableResponse<Response> createResponse =
+            지하철_노선_생성_요청("신분당선", "red", "강남역", "역삼역", 10);
+        final LineResponse line = 지하철_노선_객체_추출(createResponse);
+        final Long lineId = line.getId();
+        final Long upStationId = 상행_종점역_아이디_추출(line);
+        final Long downStationId = 지하철역_생성_요청_후_아이디_반환("판교역");
+
+        // when
+        final ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_등록_요청(lineId, upStationId, downStationId, 10);
+
+        // then
+        StatusCodeCheckUtil.badRequest(response);
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 예외 발생")
+    @Test
+    void addSectionThatAlreadyExists() {
+        // given
+        final ExtractableResponse<Response> createResponse =
+            지하철_노선_생성_요청("신분당선", "red", "강남역", "역삼역", 10);
+        final LineResponse line = 지하철_노선_객체_추출(createResponse);
+        final Long lineId = line.getId();
+        final Long upStationId = 상행_종점역_아이디_추출(line);
+        final Long downStationId = 하행_종점역_아이디_추출(line);
+
+        // when
+        final ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_등록_요청(lineId, upStationId, downStationId, 5);
+
+        // then
+        StatusCodeCheckUtil.badRequest(response);
+    }
+
+    @DisplayName("추가하려고 하는 구간이 기존의 구간과 연결이 불가능하면 예외 발생")
+    @Test
+    void addSectionNotConnected() {
+        // given
+        final ExtractableResponse<Response> createResponse =
+            지하철_노선_생성_요청("신분당선", "red", "강남역", "역삼역", 10);
+        final LineResponse line = 지하철_노선_객체_추출(createResponse);
+        final Long lineId = line.getId();
+        final Long upStationId = 지하철역_생성_요청_후_아이디_반환("판교역");
+        final Long downStationId = 지하철역_생성_요청_후_아이디_반환("광교역");
+
+        // when
+        final ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_등록_요청(lineId, upStationId, downStationId, 5);
+
+        // then
+        StatusCodeCheckUtil.badRequest(response);
+    }
+
     private ExtractableResponse<Response> 지하철_노선_생성_요청(final String name, final String color,
         final String upStationName, final String downStationName, final int distance) {
 
@@ -159,9 +231,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return RequestUtil.delete(uri);
     }
 
-    private void 지하철_생성됨(final ExtractableResponse<Response> response) {
+    private void 지하철_노선_생성됨(final ExtractableResponse<Response> response) {
         StatusCodeCheckUtil.created(response);
-        final Long id = response.jsonPath().getObject(".", LineResponse.class).getId();
+        final Long id = 지하철_노선_객체_추출(response).getId();
         assertThat(response.header("Location")).isEqualTo("/lines/" + id);
     }
 
@@ -169,8 +241,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> createResponse,
         final ExtractableResponse<Response> response
     ) {
-        final LineResponse expectedLine = createResponse.jsonPath().getObject(".", LineResponse.class);
-        final LineResponse actualLine = response.jsonPath().getObject(".", LineResponse.class);
+        final LineResponse expectedLine = 지하철_노선_객체_추출(createResponse);
+        final LineResponse actualLine = 지하철_노선_객체_추출(response);
         assertThat(actualLine).isEqualTo(expectedLine);
     }
 
@@ -180,7 +252,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> response
     ) {
         final List<LineResponse> expectedLines = Stream.of(createResponse1, createResponse2)
-            .map(it -> it.jsonPath().getObject(".", LineResponse.class))
+            .map(this::지하철_노선_객체_추출)
             .collect(Collectors.toList());
         final List<LineResponse> actualLines = response.jsonPath().getList(".", LineResponse.class);
         assertThat(actualLines).containsAll(expectedLines);
@@ -204,8 +276,40 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(stationNames).containsExactly(expectedStationNames);
     }
 
+    private LineResponse 지하철_노선_객체_추출(final ExtractableResponse<Response> response) {
+        return response.jsonPath().getObject(".", LineResponse.class);
+    }
+
     private Long 지하철역_생성_요청_후_아이디_반환(final String name) {
         final ExtractableResponse<Response> response = 지하철역_생성_요청(name);
         return response.jsonPath().getObject(".", StationResponse.class).getId();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선에_지하철_구간_등록_요청(
+        final Long lineId, final Long upStationId, final Long downStationId, final int distance
+    ) {
+        final Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+
+        return RequestUtil.post("/lines/" + lineId + "/sections", params);
+    }
+
+    private Long 상행_종점역_아이디_추출(final LineResponse line) {
+        return line.getStations().get(0).getId();
+    }
+
+    private Long 하행_종점역_아이디_추출(final LineResponse line) {
+        final List<StationResponse> stations = line.getStations();
+        return stations.get(stations.size() - 1).getId();
+    }
+
+    private void 지하철_구간_추가됨(
+        final ExtractableResponse<Response> response, final Long lineId, final String... expectedStationNames
+    ) {
+        StatusCodeCheckUtil.created(response);
+        final ExtractableResponse<Response> searchedLineResponse = RequestUtil.get("/lines/" + lineId);
+        지하철역_정렬_검증(searchedLineResponse, "stations", expectedStationNames);
     }
 }
