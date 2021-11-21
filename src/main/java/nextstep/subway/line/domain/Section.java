@@ -1,5 +1,8 @@
 package nextstep.subway.line.domain;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -7,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -34,6 +38,27 @@ public class Section extends BaseEntity {
 
     boolean isNextSection(Section section) {
         return upStation.equals(section.downStation);
+    }
+
+    boolean isOverlapped(Section section) {
+        return upStation.equals(section.getUpStation()) || downStation.equals(section.getDownStation());
+    }
+
+    void divideBy(Section section) {
+        if (section.getDistance() >= distance) {
+            throw new BadRequestException("추가되는 구간의 길이가 기존 역 사이의 길이보다 크거나 같을 수 없습니다.");
+        }
+        if (upStation.equals(section.getUpStation())) {
+            upStation = section.getDownStation();
+        }
+        if (downStation.equals(section.getDownStation())) {
+            downStation = section.getUpStation();
+        }
+        distance = distance - section.getDistance();
+    }
+
+    List<Station> getStations() {
+        return Arrays.asList(upStation, downStation);
     }
 
     public Long getId() {

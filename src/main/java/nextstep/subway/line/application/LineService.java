@@ -12,6 +12,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 
@@ -30,19 +31,10 @@ public class LineService {
         validateDuplicatedName(request);
         final Line persistLine = lineRepository.save(request.toLine());
 
-        addSection(request, persistLine);
+        final Section initialSection = makeSection(request);
+        persistLine.addSection(initialSection);
 
         return LineResponse.of(persistLine);
-    }
-
-    private void addSection(final LineRequest request, final Line persistLine) {
-        final Station upStation = getStationById(request.getUpStationId());
-        final Station downStation = getStationById(request.getDownStationId());
-        persistLine.addSection(new Section(upStation, downStation, request.getDistance()));
-    }
-
-    private Station getStationById(final Long stationId) {
-        return stationRepository.findById(stationId).orElseThrow(() -> new NotFoundException("지하철역을 찾을 수 없습니다."));
     }
 
     public List<LineResponse> getAllLines() {
@@ -64,11 +56,28 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
+    public void addSection(final SectionRequest sectionRequest, final Long id) {
+        final Line line = getLineById(id);
+        final Section additionalSection = makeSection(sectionRequest);
+        line.addSection(additionalSection);
+    }
+
     private void validateDuplicatedName(final LineRequest request) {
         final boolean duplicated = lineRepository.findByName(request.getName()).isPresent();
         if (duplicated) {
             throw new BadRequestException("중복된 지하철 노선 이름은 사용할 수 없습니다.");
         }
+    }
+
+    private Section makeSection(final SectionRequest request) {
+        final Station upStation = getStationById(request.getUpStationId());
+        final Station downStation = getStationById(request.getDownStationId());
+        return new Section(upStation, downStation, request.getDistance());
+    }
+
+    private Station getStationById(final Long stationId) {
+        return stationRepository.findById(stationId)
+            .orElseThrow(() -> new NotFoundException("지하철역을 찾을 수 없습니다."));
     }
 
     private Line getLineById(final Long id) {

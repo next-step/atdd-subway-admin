@@ -24,9 +24,6 @@ public class StationResponse {
             station.getModifiedDate());
     }
 
-    public StationResponse() {
-    }
-
     public StationResponse(final Long id, final String name, final LocalDateTime createdDate,
         final LocalDateTime modifiedDate) {
         this.id = id;
