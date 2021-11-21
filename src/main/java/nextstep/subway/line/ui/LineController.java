@@ -5,8 +5,10 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -51,6 +53,12 @@ public class LineController {
 		return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
 	}
 
+	@DeleteMapping(value = "/{lineId}")
+	public ResponseEntity deleteLine(@PathVariable("lineId") Long id) {
+		lineService.deleteById(id);
+		return ResponseEntity.noContent().build();
+	}
+
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
 		return ResponseEntity.badRequest().build();
@@ -60,5 +68,11 @@ public class LineController {
 	public ResponseEntity handleIllegalArgsException(IllegalArgumentException e) {
 		return ResponseEntity.badRequest().body(e.getMessage());
 	}
+
+	@ExceptionHandler(EmptyResultDataAccessException.class)
+	public ResponseEntity handleIllegalArgsException(EmptyResultDataAccessException e) {
+		return ResponseEntity.badRequest().build();
+	}
+
 
 }

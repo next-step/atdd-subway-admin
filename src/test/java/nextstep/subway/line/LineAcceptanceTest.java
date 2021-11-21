@@ -71,7 +71,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		// when
 		// 지하철_노선_목록_조회_요청
-		Response findResponse = requestFindLine();
+		Response findResponse = requestFindAllLines();
 
 		// then
 		// 지하철_노선_목록_응답됨
@@ -135,13 +135,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void deleteLine() {
 		// given
 		// 지하철_노선_등록되어_있음
+		Map<String, String> otherParams = new HashMap<>();
+		otherParams.put("name", "서울역");
+		otherParams.put("color", "blue");
+		Response createResponse = requestCreateLines(params);
+		requestCreateLines(otherParams);
+		String url = createResponse.header("Location");
 
 		// when
 		// 지하철_노선_제거_요청
+		requestDeleteLine(url);
+		List<LineResponse> findAllLineResponse = requestFindAllLines().jsonPath().getList(".", LineResponse.class);
 
 		// then
 		// 지하철_노선_삭제됨
+		assertThat(findAllLineResponse).hasSize(1);
 	}
+
 
 	private Response requestCreateLines(Map<String, String> params) {
 		Response response = RestAssured.given().log().all()
@@ -155,7 +165,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return response;
 	}
 
-	private Response requestFindLine() {
+	private Response requestFindAllLines() {
 		return RestAssured.given().log().all()
 			.when()
 			.get("/lines")
@@ -180,4 +190,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.then().log().all()
 			.extract().response();
 	}
+
+	private Response requestDeleteLine(String url) {
+		return RestAssured.given().log().all()
+			.when()
+			.delete(url)
+			.then().log().all()
+			.extract().response();
+	}
+
 }

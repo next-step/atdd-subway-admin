@@ -53,4 +53,8 @@ public class LineService {
 		}
 		return optionalLine.get();
 	}
+
+	public void deleteById(Long id) {
+		lineRepository.deleteById(id);
+	}
 }
