@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -18,14 +19,23 @@ import org.springframework.http.MediaType;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    private LineRequest request1;
+    private LineRequest request2;
+
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+
+        request1 = new LineRequest("신분당선", "bg-red-600");
+        request2 = new LineRequest("2호선", "bg-green-600");
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        LineRequest request = new LineRequest("신분당선", "bg-red-600");
-
-        ExtractableResponse<Response> response = 지하철_노선_생성(request, "/lines");
+        ExtractableResponse<Response> response = 지하철_노선_생성(request1, "/lines");
 
         // then
         // 지하철_노선_생성됨
@@ -40,12 +50,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest request = new LineRequest("신분당선", "bg-red-600");
-        지하철_노선_생성(request, "/lines");
+        지하철_노선_생성(request1, "/lines");
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 지하철_노선_생성(request, "/lines");
+        ExtractableResponse<Response> response = 지하철_노선_생성(request1, "/lines");
 
         // then
         // 지하철_노선_생성_실패됨
@@ -58,8 +67,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        LineRequest request1 = new LineRequest("신분당선", "bg-red-600");
-        LineRequest request2 = new LineRequest("2호선", "bg-green-600");
         지하철_노선_생성(request1, "/lines");
         지하철_노선_생성(request2, "/lines");
 
@@ -88,8 +95,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest request = new LineRequest("신분당선", "bg-red-600");
-        지하철_노선_생성(request, "/lines");
+        지하철_노선_생성(request1, "/lines");
 
         // when
         // 지하철_노선_조회_요청
@@ -107,8 +113,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLineNotExists() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest request = new LineRequest("신분당선", "bg-red-600");
-        지하철_노선_생성(request, "/lines");
+        지하철_노선_생성(request1, "/lines");
 
         // when
         // 지하철_노선_조회_요청
@@ -124,8 +129,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest request = new LineRequest("신분당선", "bg-red-600");
-        지하철_노선_생성(request, "/lines");
+        지하철_노선_생성(request1, "/lines");
 
         // when
         // 지하철_노선_수정_요청
@@ -143,8 +147,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLineNotExists() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest request = new LineRequest("신분당선", "bg-red-600");
-        지하철_노선_생성(request, "/lines");
+        지하철_노선_생성(request1, "/lines");
 
         // when
         // 지하철_노선_수정_요청
@@ -161,8 +164,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest request = new LineRequest("신분당선", "bg-red-600");
-        지하철_노선_생성(request, "/lines");
+        지하철_노선_생성(request1, "/lines");
 
         // when
         // 지하철_노선_제거_요청
@@ -178,8 +180,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLineNotExists() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest request = new LineRequest("신분당선", "bg-red-600");
-        지하철_노선_생성(request, "/lines");
+        지하철_노선_생성(request1, "/lines");
 
         // when
         // 지하철_노선_제거_요청
