@@ -1,32 +1,47 @@
 package nextstep.subway.line;
 
+import static org.assertj.core.api.Assertions.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
+        // given
+        // 파라미터 준비
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "천안역");
+        params.put("color", "blue");
         // when
         // 지하철_노선_생성_요청
-
+        Response response = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(params)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract().response();
         // then
         // 지하철_노선_생성됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
-        // given
-        // 지하철_노선_등록되어_있음
 
-        // when
-        // 지하철_노선_생성_요청
-
-        // then
-        // 지하철_노선_생성_실패됨
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
