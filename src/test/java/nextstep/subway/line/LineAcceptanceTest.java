@@ -31,7 +31,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_역_생성(new StationRequest("역삼역"));
     }
 
-    @DisplayName("지하철 노선을 생성한다.")
+    @DisplayName("지하철 노선을 생트성한다.")
     @Test
     void createLine() {
         // when
@@ -60,8 +60,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        ExtractableResponse<Response> createResponse1 = 지하철_노선_생성(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 5));
-        ExtractableResponse<Response> createResponse2 = 지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 1L, 3L, 10));
+        ExtractableResponse<Response> createResponse1 =
+            지하철_노선_생성(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 5));
+        ExtractableResponse<Response> createResponse2 =
+            지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 1L, 3L, 10));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회();
@@ -74,7 +76,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 1L, 2L, 10));
+        ExtractableResponse<Response> createResponse =
+            지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 1L, 3L, 10));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회(createResponse.header("Location"));
@@ -97,10 +100,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 1L, 2L, 10));
+        ExtractableResponse<Response> createResponse =
+            지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 1L, 3L, 10));
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_수정(createResponse.header("Location"), "신분당선", "bg-red-600");
+        ExtractableResponse<Response> response = 지하철_노선_수정(createResponse.header("Location"),
+            new LineRequest("신분당선", "bg-red-600"));
 
         // then
         변경된_노선_신분당선_red가_응답에_포함(response);
@@ -110,7 +115,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 1L, 2L, 10));
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성(
+            new LineRequest("2호선", "bg-green-600", 1L, 3L, 10));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_삭제(createResponse.header("Location"));
@@ -131,8 +137,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return get(uri);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_수정(String uri, String name, String color) {
-        return put(uri, new LineRequest(name, color));
+    private ExtractableResponse<Response> 지하철_노선_수정(String uri, LineRequest request) {
+        return put(uri, request);
     }
 
     private ExtractableResponse<Response> 지하철_노선_삭제(String uri) {
