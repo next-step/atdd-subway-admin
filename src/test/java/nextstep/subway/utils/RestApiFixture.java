@@ -7,10 +7,10 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
-public class Fixture {
+public class RestApiFixture {
 
-	public static ExtractableResponse<Response> post(String path, Object body) {
-		return response(request(body).post(path));
+	public static ExtractableResponse<Response> post(Object body, String path, Object... pathParams) {
+		return response(request(body).post(path, pathParams));
 	}
 
 	public static ExtractableResponse<Response> get(String path, Object... pathParams) {

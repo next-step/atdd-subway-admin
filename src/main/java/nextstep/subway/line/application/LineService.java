@@ -13,6 +13,8 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineAddRequest;
 import nextstep.subway.line.dto.LineEditRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionAddRequest;
+import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
@@ -30,7 +32,8 @@ public class LineService {
 	}
 
 	public LineResponse saveLine(LineAddRequest request) {
-		final Map<Long, Station> stations = stationService.getStationsIn(request.getUpStationId(), request.getDownStationId());
+		final Map<Long, Station> stations = stationService.getStationsIn(request.getUpStationId(),
+			request.getDownStationId());
 		final Station upStation = stations.get(request.getUpStationId());
 		final Station downStation = stations.get(request.getDownStationId());
 		final Line line = lineRepository.save(
@@ -64,5 +67,16 @@ public class LineService {
 	private Line findLine(Long id) {
 		return lineRepository.findById(id)
 			.orElseThrow(LineNotFoundException::new);
+	}
+
+	public SectionResponse saveSection(Long lineId, SectionAddRequest request) {
+		final Map<Long, Station> stations = stationService.getStationsIn(request.getUpStationId(),
+			request.getDownStationId());
+		final Station upStation = stations.get(request.getUpStationId());
+		final Station downStation = stations.get(request.getDownStationId());
+		final Line line = findLine(lineId);
+		line.addSection(upStation, downStation, request.getDistance());
+		final Line savedLine = lineRepository.save(line); // @note: insert the new section, but not update(update when commit transaction)
+		return SectionResponse.of(savedLine.findSectionBy(upStation, downStation, request.getDistance()));
 	}
 }
