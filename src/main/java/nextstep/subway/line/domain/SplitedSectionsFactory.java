@@ -13,17 +13,23 @@ public class SplitedSectionsFactory {
             Section newDownSection = Section.valueOf(section.getUpStation(), section.getDownStation(), section.getDistance());
 
             return Optional.of(Sections.valueOf(newUpSection, newDownSection));
-        } else if (type == SectionMatchingType.DOWN_AND_DOWN) {
+        }
+
+        if (type == SectionMatchingType.DOWN_AND_DOWN) {
             Section newUpSection = Section.valueOf(findSection.getUpStation(), section.getUpStation(), findSection.minusDistance(section));
             Section newDownSection = Section.valueOf(section.getUpStation(), findSection.getDownStation(), section.getDistance());
 
             return Optional.of(Sections.valueOf(newUpSection, newDownSection));
-        } else if (type == SectionMatchingType.UP_AND_UP) {
+        }
+
+        if (type == SectionMatchingType.UP_AND_UP) {
             Section newUpSection =  Section.valueOf(findSection.getUpStation(), section.getDownStation(), findSection.minusDistance(section));
             Section newDownSection = Section.valueOf(section.getDownStation(), findSection.getDownStation(), section.getDistance());
 
             return Optional.of(Sections.valueOf(newUpSection, newDownSection));
-        } else if (type == SectionMatchingType.UP_AND_DOWN) {
+        }
+
+        if (type == SectionMatchingType.UP_AND_DOWN) {
             Section newUpSection = Section.valueOf(section.getUpStation(), section.getDownStation(), section.getDistance());
             Section newDownSection = Section.valueOf(findSection.getUpStation(), findSection.getDownStation(), findSection.getDistance());
 
