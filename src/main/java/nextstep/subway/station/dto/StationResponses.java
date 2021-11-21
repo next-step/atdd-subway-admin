@@ -3,6 +3,7 @@ package nextstep.subway.station.dto;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,7 @@ public class StationResponses {
     }
 
     public StationResponses(final Sections sections) {
+        stationResponses = new ArrayList<>();
         sections.getSections()
                 .forEach(section -> {
                     stationResponses.add(StationResponse.of(section.getUpStation()));
