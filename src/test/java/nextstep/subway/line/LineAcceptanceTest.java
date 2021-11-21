@@ -265,6 +265,86 @@ public class LineAcceptanceTest extends AcceptanceTest {
             선릉역_생성_응답.getId()));
     }
 
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어 있지 않을 때, 구간을 등록할 수 없다.")
+    @Test
+    void addSectionFailOnBothStationsNotRegistered() {
+        // given
+        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
+        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
+        StationResponse 선릉역_생성_응답 = 지하철_역_등록되어_있음(선릉역_생성_요청값());
+        StationResponse 삼성역_생성_응답 = 지하철_역_등록되어_있음(삼성역_생성_요청값());
+
+        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 1);
+        LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
+
+        SectionAddRequest 구간_등록_요청값 = SectionFixture.구간_등록_요청값(선릉역_생성_응답.getId(), 삼성역_생성_응답.getId(), 2);
+
+        // when
+        ExtractableResponse<Response> 지하철_구간_등록_응답 = 지하철_구간_등록_요청(노선_2호선_생성_응답.getId(), 구간_등록_요청값);
+
+        // then
+        지하철_구간_등록_실패됨(지하철_구간_등록_응답);
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어 있지 않을 때, 구간을 등록할 수 없다.")
+    @Test
+    void addSectionFailOnBothStationsAlreadyRegistered() {
+        // given
+        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
+        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
+
+        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 1);
+        LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
+
+        SectionAddRequest 구간_등록_요청값 = SectionFixture.구간_등록_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 2);
+
+        // when
+        ExtractableResponse<Response> 지하철_구간_등록_응답 = 지하철_구간_등록_요청(노선_2호선_생성_응답.getId(), 구간_등록_요청값);
+
+        // then
+        지하철_구간_등록_실패됨(지하철_구간_등록_응답);
+    }
+
+    @DisplayName("역 사이 왼쪽에 새로운 구간을 등록할 때, 기존 역 사이 길이보다 크거나 같으면 등록 할 수 없다.")
+    @Test
+    void addSectionBetweenStationsAtLeftSideFailOnIllegalDistance() {
+        // given
+        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
+        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
+        StationResponse 선릉역_생성_응답 = 지하철_역_등록되어_있음(선릉역_생성_요청값());
+
+        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 선릉역_생성_응답.getId(), 7);
+        LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
+
+        SectionAddRequest 구간_등록_요청값 = SectionFixture.구간_등록_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 7);
+
+        // when
+        ExtractableResponse<Response> 지하철_구간_등록_응답 = 지하철_구간_등록_요청(노선_2호선_생성_응답.getId(), 구간_등록_요청값);
+
+        // then
+        지하철_구간_등록_실패됨(지하철_구간_등록_응답);
+    }
+
+    @DisplayName("역 사이 오른쪽에 새로운 구간을 등록할 때, 기존 역 사이 길이보다 크거나 같으면 등록 할 수 없다.")
+    @Test
+    void addSectionBetweenStationsAtRightSideFailOnIllegalDistance() {
+        // given
+        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
+        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
+        StationResponse 선릉역_생성_응답 = 지하철_역_등록되어_있음(선릉역_생성_요청값());
+
+        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 선릉역_생성_응답.getId(), 7);
+        LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
+
+        SectionAddRequest 구간_등록_요청값 = SectionFixture.구간_등록_요청값(역삼역_생성_응답.getId(), 선릉역_생성_응답.getId(), 7);
+
+        // when
+        ExtractableResponse<Response> 지하철_구간_등록_응답 = 지하철_구간_등록_요청(노선_2호선_생성_응답.getId(), 구간_등록_요청값);
+
+        // then
+        지하철_구간_등록_실패됨(지하철_구간_등록_응답);
+    }
+
     private ExtractableResponse<Response> 지하철_노선_생성_요청(LineCreateRequest request) {
         return RestAssured.given().log().all()
             .body(request)
@@ -397,5 +477,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .collect(Collectors.toList());
 
         assertThat(actualStationIds).isEqualTo(expectedStationIds);
+    }
+
+    private void 지하철_구간_등록_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
