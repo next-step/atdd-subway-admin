@@ -27,6 +27,18 @@ public class LineService {
     }
 
     public LineResponse findLineById(final long id) {
-        return LineResponse.of(lineRepository.findById(id).orElseThrow(IllegalStateException::new));
+        return LineResponse.of(getLine(id));
+    }
+
+    public LineResponse updateLine(final long id, final LineRequest request) {
+        final Line line = getLine(id);
+
+        line.update(request.toLine());
+
+        return LineResponse.of(line);
+    }
+
+    private Line getLine(final long id) {
+        return lineRepository.findById(id).orElseThrow(IllegalStateException::new);
     }
 }
