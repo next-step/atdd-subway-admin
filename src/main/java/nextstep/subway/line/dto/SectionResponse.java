@@ -13,7 +13,7 @@ public class SectionResponse {
 	private SectionResponse() {
 	}
 
-	public SectionResponse(Long id, Station upStation, Station downStation, int distance) {
+	private SectionResponse(Long id, Station upStation, Station downStation, int distance) {
 		this.id = id;
 		this.upStation = upStation;
 		this.downStation = downStation;

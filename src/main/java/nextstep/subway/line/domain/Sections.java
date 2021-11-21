@@ -19,6 +19,11 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
 
+	private static final String ERROR_MESSAGE_STATIONS_NOT_INCLUDED_IN_LINE = "기존에 존재하는 역을 포함하여 구간 추가를 요청해야 합니다.";
+	private static final String ERROR_MESSAGE_ALREADY_EXIST_SECTION = "이미 등록된 구간 정보입니다.";
+	private static final String ERROR_MESSAGE_LONGER_THAN_EXIST_SECTION = "기존 역 사이 길이와 같거나 긴 구간은 등록이 불가합니다.";
+	private static final String ERROR_MESSAGE_HAVING_CIRCULATION_IN_LINE = "노선에 순환이 존재합니다.";
+
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
 
@@ -52,7 +57,7 @@ public class Sections {
 			sliceDownSection(matchDownSection.get(), requestSection);
 			return;
 		}
-		throw new IllegalStateException("기존에 존재하는 역을 포함하여 구간 추가를 요청해야 합니다.");
+		throw new IllegalStateException(ERROR_MESSAGE_STATIONS_NOT_INCLUDED_IN_LINE);
 	}
 
 	private boolean isOutBoundInsertable(List<Section> orderedSection, Section requestSection) {
@@ -90,7 +95,7 @@ public class Sections {
 	private void validateNotExistSection(Section requestSection) {
 		Set<Station> stations = getStations();
 		if (stations.containsAll(Arrays.asList(requestSection.getUpStation(), requestSection.getDownStation()))) {
-			throw new IllegalArgumentException("이미 등록된 구간 정보입니다.");
+			throw new IllegalArgumentException(ERROR_MESSAGE_ALREADY_EXIST_SECTION);
 		}
 	}
 
@@ -118,7 +123,7 @@ public class Sections {
 
 	private void validateInsertableLengthBetween(Section currentSection, Section requestSection) {
 		if (currentSection.getDistance() <= requestSection.getDistance()) {
-			throw new IllegalArgumentException("기존 역 사이 길이와 같거나 긴 구간은 등록이 불가합니다.");
+			throw new IllegalArgumentException(ERROR_MESSAGE_LONGER_THAN_EXIST_SECTION);
 		}
 	}
 
@@ -163,7 +168,7 @@ public class Sections {
 		return sections.stream()
 			.filter(section -> !downStations.contains(section.getUpStation()))
 			.findFirst()
-			.orElseThrow(() -> new IllegalStateException("구간 정보가 올바르지 않습니다."));
+			.orElseThrow(() -> new IllegalStateException(ERROR_MESSAGE_HAVING_CIRCULATION_IN_LINE));
 	}
 
 	private boolean isEmpty() {
