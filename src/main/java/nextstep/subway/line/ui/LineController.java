@@ -1,6 +1,6 @@
 package nextstep.subway.line.ui;
 
-import nextstep.subway.common.exception.NotFoundException;
+import nextstep.subway.common.exception.NoResultException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -61,10 +61,10 @@ public class LineController {
      * @param id
      * @param lineRequest
      * @return
-     * @throws NotFoundException
+     * @throws NoResultException
      */
     @PutMapping("/{id}")
-    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) throws NotFoundException {
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) throws NoResultException {
         LineResponse line = lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok(line);
     }

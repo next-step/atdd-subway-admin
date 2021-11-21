@@ -1,6 +1,6 @@
 package nextstep.subway.line.application;
 
-import nextstep.subway.common.exception.NotFoundException;
+import nextstep.subway.common.exception.NoResultException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -77,12 +77,12 @@ public class LineService {
 
     private Station findSection(Long sectionId) {
         return stationRepository.findById(sectionId)
-                .orElseThrow(() -> new NotFoundException("찾을 수 없는 구간입니다."));
+                .orElseThrow(() -> new NoResultException("찾을 수 없는 구간입니다."));
     }
 
     private Line findById(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("찾을 수 없는 노선입니다."));
+                .orElseThrow(() -> new NoResultException("찾을 수 없는 노선입니다."));
     }
 
     public void deleteLine(Long id) {
