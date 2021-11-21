@@ -207,11 +207,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "2호선");
+        params1.put("color", "orange darken-4");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(params1)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("lines")
+            .then().log().all()
+            .extract();
 
         // when
         // 지하철_노선_제거_요청
+        String uri = createResponse.header("Location");
 
         // then
         // 지하철_노선_삭제됨
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete(uri)
+            .then()
+            .log().all()
+            .extract();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
