@@ -102,7 +102,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ### 요구사항
 
-- [ ] 지하철 노선을 생성한다.
+- [X] 지하철 노선을 생성한다.
 - [ ] 기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.
 - [ ] 지하철 노선 목록을 조회한다.
 - [ ] 지하철 노선을 조회한다.
