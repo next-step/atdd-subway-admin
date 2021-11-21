@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.exception.CannotRemoveStationException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.Test;
 
@@ -7,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 class LineTest {
@@ -114,5 +116,15 @@ class LineTest {
                 () -> assertThat(이호선.getSections()).contains(new Section(이호선, 강남역, 삼성역, 13)),
                 () -> assertThat(이호선.getStations()).containsExactly(강남역, 삼성역)
         );
+    }
+
+    @Test
+    void removeSection_구간이_하나인_노선에서_역을_제거하면_에러_발생한다() {
+        // given
+        Line 이호선 = new Line("2호선", "green", 역삼역, 삼성역, 10);
+
+        // when
+        assertThatExceptionOfType(CannotRemoveStationException.class)
+                .isThrownBy(() -> 이호선.removeSection(역삼역));
     }
 }

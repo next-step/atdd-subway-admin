@@ -10,6 +10,7 @@ import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
 import java.util.List;
@@ -154,5 +155,14 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         LineResponse lineResponse = LineStep.지하철_노선_조회되어_있음(이호선);
         지하철_노선에_지하철역_제거됨(response);
         지하철_노선에_지하철역_모두_정렬됨(lineResponse, Arrays.asList(강남역, 삼성역), 2);
+    }
+
+    @Test
+    void removeLineSection_구간이_하나인_노선에서_역을_제거할_수_없다() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_제거_요청(이호선, 강남역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

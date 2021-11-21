@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
 
+    private static final int MIN_REMOVABLE_SECTION_SIZE = 1;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -91,5 +93,9 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.isDownStation(station))
                 .findAny();
+    }
+
+    public boolean isRemovable() {
+        return sections.size() == MIN_REMOVABLE_SECTION_SIZE;
     }
 }
