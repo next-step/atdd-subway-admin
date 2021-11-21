@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
@@ -30,10 +30,10 @@ public class LineService {
     }
 
     private void throwExceptionExistsDuplicateName(LineRequest request) {
-        Optional<Line> savedLine = lineRepository.findByName(request.getName());
-        if (savedLine.isPresent()) {
-            throw new DuplicateLineNameException("중복된 노선명이 있습니다.");
-        }
+        lineRepository.findByName(request.getName())
+                .ifPresent(line -> {
+                    throw new DuplicateLineNameException("중복된 노선명이 있습니다. : " + line.getName());
+                });
     }
 
     public List<LineResponse> getLines() {
