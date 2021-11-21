@@ -43,20 +43,20 @@ public class LineService {
         Line line = lineRepository.save(Line.of(request.getName(), request.getColor()));
         line.addSection(Section.of(upStation.getId(), downStation.getId(), request.getDistance()));
 
-        return LineResponse.of(line, getStationInOrder(line));
+        return LineResponse.of(line, getStationsInOrder(line));
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-            .map(line -> LineResponse.of(line, getStationInOrder(line)))
+            .map(line -> LineResponse.of(line, getStationsInOrder(line)))
             .collect(Collectors.toList());
     }
 
     public LineResponse findLine(Long id) {
         Line line = findLineById(id);
-        List<Station> stations = getStationInOrder(line);
+        List<Station> stations = getStationsInOrder(line);
 
         return LineResponse.of(line, stations);
     }
@@ -94,7 +94,7 @@ public class LineService {
             .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_LINE_NOT_FOUND));
     }
 
-    private List<Station> getStationInOrder(Line line) {
+    private List<Station> getStationsInOrder(Line line) {
         List<Long> stationIds = line.getStationIdsInOrder();
         return stationRepository.findAllById(stationIds);
     }
