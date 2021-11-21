@@ -20,13 +20,15 @@ import org.springframework.http.MediaType;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+	private static Map<String, String> params = new HashMap<>();
+	static{
+		params.put("name", "천안역");
+		params.put("color", "blue");
+	}
 
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
 	void createLine() {
-		Map<String, String> params = new HashMap<>();
-		params.put("name", "천안역");
-		params.put("color", "blue");
 		// given
 		// when
 		// 지하철_노선_생성_요청
@@ -41,9 +43,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
 	@Test
 	void createLine2() {
-		Map<String, String> params = new HashMap<>();
-		params.put("name", "천안역");
-		params.put("color", "blue");
 		// given
 		// 지하철_노선_등록되어_있음
 		requestCreateLines(params);
@@ -60,9 +59,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@DisplayName("지하철 노선 목록을 조회한다.")
 	@Test
 	void getLines() {
-		Map<String, String> params = new HashMap<>();
-		params.put("name", "천안역");
-		params.put("color", "blue");
 		// given
 		// 지하철_노선_등록되어_있음
 		// 지하철_노선_등록되어_있음
@@ -95,9 +91,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@DisplayName("지하철 노선을 조회한다.")
 	@Test
 	void getLine() {
-		Map<String, String> params = new HashMap<>();
-		params.put("name", "천안역");
-		params.put("color", "blue");
 		// given
 		// 지하철_노선_등록되어_있음
 		Response createResponse = requestCreateLines(params);
@@ -120,12 +113,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void updateLine() {
 		// given
 		// 지하철_노선_등록되어_있음
+		Map<String, String> updateParams = new HashMap<>();
+		updateParams.put("name", "서울역");
+		updateParams.put("color", "blue");
+		Response createResponse = requestCreateLines(params);
+		String url = createResponse.header("Location");
 
 		// when
 		// 지하철_노선_수정_요청
+		Response updateResponse = requestUpdateLine(url, updateParams);
 
 		// then
 		// 지하철_노선_수정됨
+		LineResponse lineResponse = updateResponse.jsonPath().getObject(".", LineResponse.class);
+		assertThat(lineResponse.getName()).isEqualTo("서울역");
+		assertThat(lineResponse.getId()).isEqualTo(Long.parseLong(url.split("/")[2]));
 	}
 
 	@DisplayName("지하철 노선을 제거한다.")
@@ -165,6 +167,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return RestAssured.given().log().all()
 			.when()
 			.get(url)
+			.then().log().all()
+			.extract().response();
+	}
+
+	private Response requestUpdateLine(String url, Map<String, String> updateParams) {
+		return RestAssured.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.body(updateParams)
+			.when()
+			.patch(url)
 			.then().log().all()
 			.extract().response();
 	}
