@@ -60,6 +60,12 @@ public class LineService {
         lineRepository.delete(findLine);
     }
 
+    static List<StationResponse> convertToStationResponse(List<Station> stations) {
+        return stations.stream()
+            .map(StationResponse::of)
+            .collect(Collectors.toList());
+    }
+
     private List<LineResponse> convertToLineResponses(List<Line> lines) {
         List<LineResponse> responseLines = new ArrayList<>();
         for (Line line : lines) {
@@ -67,12 +73,6 @@ public class LineService {
                 convertToStationResponse(line.getSections().createStations())));
         }
         return responseLines;
-    }
-
-    private List<StationResponse> convertToStationResponse(List<Station> stations) {
-        return stations.stream()
-            .map(StationResponse::of)
-            .collect(Collectors.toList());
     }
 
     private Line findLineById(Long id) {

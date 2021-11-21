@@ -49,6 +49,14 @@ public class Sections {
             .orElseThrow(NotFoundException::new);
     }
 
+    private Section extractLastSection() {
+        Set<Station> stations = createUpStations();
+        return sections.stream()
+            .filter(section -> !stations.contains(section.getDownStation()))
+            .findFirst()
+            .orElseThrow(NotFoundException::new);
+    }
+
     private boolean isLastStation(Station downStation) {
         return createUpStations().stream()
             .noneMatch(station -> station.equals(downStation));
@@ -61,6 +69,12 @@ public class Sections {
             .orElseThrow(NotFoundException::new);
     }
 
+    private Set<Station> createAllStations() {
+        Set<Station> upStations = createUpStations();
+        upStations.addAll(createDownStations());
+        return upStations;
+    }
+
     private Set<Station> createUpStations() {
         return sections.stream()
             .map(Section::getUpStation)
@@ -71,5 +85,9 @@ public class Sections {
         return sections.stream()
             .map(Section::getDownStation)
             .collect(Collectors.toSet());
+    }
+
+    public void addSection(Section toSection) {
+
     }
 }

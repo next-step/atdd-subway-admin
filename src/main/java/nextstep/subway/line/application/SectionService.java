@@ -33,7 +33,11 @@ public class SectionService {
 
     @Transactional
     public LineResponse addSection(SectionRequest request, Long lineId) {
-        return null;
+        Line findLine = lineRepository.findByIdWithSections(lineId).orElseThrow(NotFoundException::new);
+        findLine.getSections().addSection(request.toSection(
+            findStationById(request.getUpStationId()), findStationById(request.getDownStationId())));
+        return LineResponse.of(findLine,
+            LineService.convertToStationResponse(findLine.getSections().createStations()));
     }
 
     private Station findStationById(Long stationId) {
