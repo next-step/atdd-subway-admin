@@ -26,7 +26,7 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public List<LineResponse> readAllLines() {
-        final List<Line> lines = lineRepository.findAll();
+        final List<Line> lines = lineRepository.findAllWithSections();
         return LineResponse.of(lines);
     }
 
