@@ -18,19 +18,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 지하철_노선을_생성한다() {
-        // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "red");
-
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "red");
 
         // then
         // 지하철_노선_생성됨
@@ -41,25 +31,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 기존에_존재하는_지하철_노선_이름으로_지하철_노선을_생성한다() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "red");
-
-        RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all();
+        지하철_노선_생성_요청("신분당선", "red");
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "red");
 
         // then
         // 지하철_노선_생성_실패됨
@@ -114,5 +90,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
+        return RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all().extract();
     }
 }
