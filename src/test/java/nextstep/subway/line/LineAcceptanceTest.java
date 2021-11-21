@@ -1,4 +1,4 @@
-package nextstep.subway.line;
+항package nextstep.subway.line;
 
 import static nextstep.subway.station.StationAcceptanceTest.지하철_역_생성;
 import static nextstep.subway.utils.AcceptanceTestUtil.delete;
@@ -125,7 +125,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         노선_삭제됨(response);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성(LineRequest lineRequest) {
+    public static ExtractableResponse<Response> 지하철_노선_생성(LineRequest lineRequest) {
         return post("/lines", lineRequest);
     }
 
