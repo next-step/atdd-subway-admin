@@ -6,8 +6,13 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineResponses;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -61,14 +66,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
+        final ExtractableResponse<Response> createResponse1 = createLine("2호선", "red lighten-3", 1, 10, 22.1);
+        assertCreateLine(createResponse1);
+
         // 지하철_노선_등록되어_있음
+        final ExtractableResponse<Response> createResponse2 = createLine("1호선", "red", 11, 20, 22.4);
+        assertCreateLine(createResponse2);
 
         // when
         // 지하철_노선_목록_조회_요청
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines")
+            .then().log().all()
+            .extract();
 
         // then
         // 지하철_노선_목록_응답됨
+        assertThat(response.statusCode()).isEqualTo(org.springframework.http.HttpStatus.OK.value());
+
         // 지하철_노선_목록_포함됨
+        final List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
+            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+            .collect(Collectors.toList());
+        final List<Long> resultLineIds = response.jsonPath().getList("lineResponses", LineResponse.class).stream()
+            .map(LineResponse::getId)
+            .collect(Collectors.toList());
+
+        assertThat(resultLineIds).containsAll(expectedLineIds);
+
     }
 
     @DisplayName("지하철 노선을 조회한다.")
