@@ -43,7 +43,6 @@ public class LineTest {
 
         // then
         assertThat(line.computeSortedStations()).containsExactly(송내역, 부천역, 신도림역, 용산역);
-        assertThat(line.getSections()).allMatch(section -> section.getDistance() == 5);
     }
 
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 예외 발생")
