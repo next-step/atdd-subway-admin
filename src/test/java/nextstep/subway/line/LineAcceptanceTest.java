@@ -23,6 +23,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "천안역");
         params.put("color", "blue");
+
         // when
         // 지하철_노선_생성_요청
         Response response = RestAssured.given().log().all()
@@ -32,6 +33,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .post("/lines")
             .then().log().all()
             .extract().response();
+
         // then
         // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -41,7 +43,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
+        // given
+        // 지하철_노선_등록되어_있음
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "천안역");
+        params.put("color", "blue");
 
+        RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(params)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        // when
+        // 지하철_노선_생성_요청
+        Response response = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract().response();
+
+        // then
+        // 지하철_노선_생성_실패됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
