@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 
 import static nextstep.subway.line.LineStep.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineSectionAcceptanceTest extends AcceptanceTest {
 
@@ -123,6 +124,22 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         LineResponse lineResponse = LineStep.지하철_노선_조회되어_있음(이호선);
         지하철_노선에_지하철역_제거됨(response);
+        assertThat(lineResponse.getStations().size()).isEqualTo(2);
         지하철_노선에_지하철역_정렬됨(lineResponse, Arrays.asList(역삼역, 삼성역));
+    }
+
+    @Test
+    void removeLineSection_하행_종점역이_제거될_경우_이전_역이_하행_종점역이_된다() {
+        // given
+        지하철_노선에_지하철역_등록되어_있음(이호선, 강남역, 역삼역, 3);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_제거_요청(이호선, 삼성역);
+
+        // then
+        LineResponse lineResponse = LineStep.지하철_노선_조회되어_있음(이호선);
+        지하철_노선에_지하철역_제거됨(response);
+        assertThat(lineResponse.getStations().size()).isEqualTo(2);
+        지하철_노선에_지하철역_정렬됨(lineResponse, Arrays.asList(강남역, 역삼역));
     }
 }

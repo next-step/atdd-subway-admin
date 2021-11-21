@@ -111,8 +111,16 @@ public class Line extends BaseEntity {
                 .filter(section -> section.isUpStation(station))
                 .findAny();
 
+        Optional<Section> downStationSection = sections.getSections().stream()
+                .filter(section -> section.isDownStation(station))
+                .findAny();
+
         if (upStationSection.isPresent()) {
             sections.remove(upStationSection.get());
+        }
+
+        if (downStationSection.isPresent()) {
+            sections.remove(downStationSection.get());
         }
     }
 }
