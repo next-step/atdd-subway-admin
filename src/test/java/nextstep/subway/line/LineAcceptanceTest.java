@@ -28,6 +28,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private static final String URL = "/lines";
     private static Map<String, String> 노선_2호선;
     private static Map<String, String> 노선_신분당선;
+    private static Map<String, String> 노선_같은_종점;
+    private static Map<String, String> 노선_구간_거리_0;
     private Long upStationId;
     private Long downStationId;
 
@@ -42,12 +44,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
             put("color", "green");
             put("upStationId", upStationId);
             put("downStationId", downStationId);
+            put("distance", 10);
         }};
         노선_신분당선 = new HashMap() {{
             put("name", "신분당선");
             put("color", "red");
             put("upStationId", upStationId);
             put("downStationId", downStationId);
+            put("distance", 10);
+        }};
+        노선_같은_종점 = new HashMap() {{
+            put("name", "1호선");
+            put("color", "blue");
+            put("upStationId", upStationId);
+            put("downStationId", upStationId);
+            put("distance", 10);
+        }};
+        노선_구간_거리_0 = new HashMap() {{
+            put("name", "9호선");
+            put("color", "brown");
+            put("upStationId", upStationId);
+            put("downStationId", upStationId);
+            put("distance", 0);
         }};
     }
 
@@ -69,6 +87,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(노선_2호선);
+
+        // then
+        지하철_노선_생성_실패됨(response);
+    }
+
+    @DisplayName("노선 생성시 두 종점역으로 같은역으로 생성한다.")
+    @Test
+    void createLine3() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(노선_같은_종점);
+
+        // then
+        지하철_노선_생성_실패됨(response);
+    }
+
+    @DisplayName("노선 생성시 구간 거리를 0으로 생성한다.")
+    @Test
+    void createLine4() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(노선_구간_거리_0);
 
         // then
         지하철_노선_생성_실패됨(response);

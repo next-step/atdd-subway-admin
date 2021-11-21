@@ -8,6 +8,8 @@ import java.util.Objects;
 
 @Entity
 public class Section extends BaseEntity {
+    private static final String DISTANCE_ERROR_MESSAGE = "거리는 0보다 커야 합니다.";
+    private static final String SAME_STATION_ERROR_MESSAGE = "같은 역은 구간이 될 수 없습니다.";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,10 +32,28 @@ public class Section extends BaseEntity {
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
+        validate(upStation, downStation, distance);
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private void validate(Station upStation, Station downStation, int distance) {
+        validateStation(upStation, downStation);
+        validateDistance(distance);
+    }
+
+    private void validateDistance(int distance) {
+        if (distance <= 0) {
+            throw new IllegalArgumentException(DISTANCE_ERROR_MESSAGE);
+        }
+    }
+
+    private void validateStation(Station upStation, Station downStation) {
+        if (upStation.equals(downStation)) {
+            throw new IllegalArgumentException(SAME_STATION_ERROR_MESSAGE);
+        }
     }
 
     public Long getId() {
