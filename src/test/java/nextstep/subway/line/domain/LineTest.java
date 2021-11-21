@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -21,5 +23,21 @@ class LineTest {
         // then
         assertThat(line.getName()).isEqualTo(name);
         assertThat(line.getColor()).isEqualTo(color);
+    }
+
+    @Test
+    @DisplayName("지하철 구간을 추가한다.")
+    void addSection() {
+        // given
+        Line line = new Line();
+        Station upStation = new Station();
+        Station downStation = new Station();
+        Section section = new Section(upStation, downStation, 10);
+
+        // when
+        line.addSection(section);
+
+        // then
+        assertThat(line.getSections().get(0)).isEqualTo(section);
     }
 }

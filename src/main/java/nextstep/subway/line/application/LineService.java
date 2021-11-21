@@ -6,6 +6,9 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineFindResponse;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,15 +18,25 @@ import java.util.List;
 @Transactional
 public class LineService {
 
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
         validateDuplicatedLineName(request.getName());
-        Line persistLine = lineRepository.save(request.toLine());
+
+        Station upStation = findStation(request.getUpStationId());
+        Station downStation = findStation(request.getDownStationId());
+
+        Line line = request.toLine();
+        Section section = request.toSection(upStation, downStation);
+
+        line.addSection(section);
+        Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
     }
 
@@ -54,5 +67,10 @@ public class LineService {
         if (lineRepository.findByName(name).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 노선 이름입니다. (입력값: " + name + ")");
         }
+    }
+
+    private Station findStation(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new NotFoundResourceException("존재하지 않는 지하철 역입니다. (입력값: " + stationId + ")"));
     }
 }
