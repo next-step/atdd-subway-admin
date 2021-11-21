@@ -30,14 +30,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        List<Station> stations = new ArrayList<>();
-        line.getSections().getSections()
-                .stream()
-                .forEach(section -> {
-                    stations.add(section.getUpStation());
-                    stations.add(section.getDownStation());
-                });
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), new StationResponses(stations), line.getCreatedDate(), line.getModifiedDate());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), new StationResponses(line.getSections()), line.getCreatedDate(), line.getModifiedDate());
     }
 
     public Long getId() {
