@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line extends BaseEntity {
@@ -36,8 +37,8 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
     
-    public void addSection(Long upStationId, Long downStationId, int distance) {
-        this.sections.add(new Section(this, upStationId, downStationId, distance));
+    public void addSection(Station upStation, Station downStation, int distance) {
+        this.sections.add(new Section(this, upStation, downStation, distance));
     }
 
     public Long getId() {

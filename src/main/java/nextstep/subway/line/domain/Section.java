@@ -9,7 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Section extends BaseEntity {
@@ -22,19 +22,23 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "line_id")
     private Line line;
     
-    private Long upStationId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "up_station_id")
+    private Station upStation;
     
-    private Long downStationId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "down_station_id")
+    private Station downStation;
     
     private int distance;
 
     protected Section() {
     }
 
-    public Section(Line line, Long upStationId, Long downStationId, int distance) {
+    public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
