@@ -10,13 +10,9 @@ import nextstep.subway.line.dto.LineResponses;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -28,21 +24,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     final static private String uri = "/lines";
 
     private StationAcceptanceTest stationAcceptanceTest = new StationAcceptanceTest();
-    private List<Long> stationIds = new ArrayList<>();
-
-    @BeforeEach
-    public void setup() {
-        String[] stationNames = new String[]{"강남역", "역삼역", "선릉역", "삼성역"};
-        for (String stationName : stationNames) {
-            StationResponse stationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest(stationName));
-            stationIds.add(stationResponse.getId());
-        }
-    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", stationIds.get(0), stationIds.get(1), 10);
+        StationResponse stationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
+        StationResponse stationResponse2 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("역삼역"));
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", stationResponse.getId(), stationResponse2.getId(), 10);
 
         // when
         // 지하철_노선_생성_요청
@@ -58,7 +46,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", stationIds.get(0), stationIds.get(1), 10);
+        StationResponse stationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
+        StationResponse stationResponse2 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("역삼역"));
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", stationResponse.getId(), stationResponse2.getId(), 10);
 
         // given
         // 지하철_노선_등록되어_있음
@@ -78,10 +68,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", stationIds.get(0), stationIds.get(1), 10);
+        StationResponse stationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
+        StationResponse stationResponse2 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("역삼역"));
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", stationResponse.getId(), stationResponse2.getId(), 10);
         LineResponse lineResponse = 지하철_노선_등록되어_있음(lineRequest);
         // 지하철_노선_등록되어_있음
-        LineRequest lineRequest2 = new LineRequest("2호선", "bg-green-600", stationIds.get(2), stationIds.get(3), 10);
+        StationResponse stationResponse3 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("선릉역"));
+        StationResponse stationResponse4 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("삼성역"));
+        LineRequest lineRequest2 = new LineRequest("2호선", "bg-green-600", stationResponse3.getId(), stationResponse4.getId(), 10);
         LineResponse lineResponse2 = 지하철_노선_등록되어_있음(lineRequest2);
 
         // when
@@ -101,7 +95,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", stationIds.get(0), stationIds.get(1), 10);
+        StationResponse stationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
+        StationResponse stationResponse2 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("역삼역"));
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", stationResponse.getId(), stationResponse2.getId(), 10);
         LineResponse lineResponse = 지하철_노선_등록되어_있음(lineRequest);
 
         // when
@@ -128,12 +124,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", stationIds.get(0), stationIds.get(1), 10);
+        StationResponse stationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
+        StationResponse stationResponse2 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("역삼역"));
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", stationResponse.getId(), stationResponse2.getId(), 10);
         LineResponse lineResponse = 지하철_노선_등록되어_있음(lineRequest);
 
         // when
         // 지하철_노선_수정_요청
-        LineRequest updateLineRequest = new LineRequest("구분당선", "bg-blue-600", stationIds.get(2), stationIds.get(3), 10);
+        StationResponse stationResponse3 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("선릉역"));
+        StationResponse stationResponse4 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("삼성역"));
+        LineRequest updateLineRequest = new LineRequest("구분당선", "bg-blue-600", stationResponse3.getId(), stationResponse4.getId(), 10);
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(lineResponse.getId(), updateLineRequest);
         LineResponse updatedLine = response.as(LineResponse.class);
 
@@ -168,7 +168,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", stationIds.get(0), stationIds.get(1), 10);
+        StationResponse stationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
+        StationResponse stationResponse2 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("역삼역"));
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", stationResponse.getId(), stationResponse2.getId(), 10);
         ExtractableResponse<Response> createResponse = 데이터_생성_요청(lineRequest, uri);
 
         // when
