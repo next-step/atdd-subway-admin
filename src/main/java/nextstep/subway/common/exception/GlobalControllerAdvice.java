@@ -1,6 +1,5 @@
-package nextstep.subway;
+package nextstep.subway.common.exception;
 
-import nextstep.subway.common.ApiError;
 import nextstep.subway.line.application.LineNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
