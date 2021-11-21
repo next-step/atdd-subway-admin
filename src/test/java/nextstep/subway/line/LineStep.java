@@ -109,6 +109,11 @@ public class LineStep {
         assertThat(lineResponse.getStations()).containsAll(stations);
     }
 
+    public static void 지하철_노선에_지하철역_모두_정렬됨(LineResponse lineResponse, List<StationResponse> stations, int size) {
+        assertThat(lineResponse.getStations().size()).isEqualTo(size);
+        지하철_노선에_지하철역_정렬됨(lineResponse, stations);
+    }
+
     public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(LineResponse line, StationResponse upStation, StationResponse downStation, int distance) {
         SectionRequest request = new SectionRequest(upStation.getId(), downStation.getId(), distance);
         return RestAssured
