@@ -57,11 +57,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse2 = 지하철됨_역_생성_됨("역삼역");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/stations")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = 지하철_역_목록_조회();
 
         // then
         List<Long> expectedLineIds = ids_추출_By_Location(createResponse1, createResponse2);
@@ -84,12 +80,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private Map<String, String> 지하철_역_생성_파라미터_맵핑(String stationName) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", stationName);
-        return params;
-    }
-
     private ExtractableResponse<Response> 지하철_역_생성_요청(Map<String, String> params) {
         return RestAssured.given().log().all()
             .body(params)
@@ -107,6 +97,15 @@ public class StationAcceptanceTest extends AcceptanceTest {
         return 지하철_역_생성_요청(params);
     }
 
+
+    private ExtractableResponse<Response> 지하철_역_목록_조회() {
+        return RestAssured.given().log().all()
+            .when()
+            .get("/stations")
+            .then().log().all()
+            .extract();
+    }
+
     private ExtractableResponse<Response> 지하철_역_제거_함(String uri) {
         return RestAssured.given().log().all()
             .when()
@@ -115,6 +114,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
+    private Map<String, String> 지하철_역_생성_파라미터_맵핑(String stationName) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", stationName);
+        return params;
+    }
 
     private List<Long> ids_추출_By_StationResponse(ExtractableResponse<Response> response) {
         return response.jsonPath().getList(".", StationResponse.class).stream()
