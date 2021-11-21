@@ -38,12 +38,12 @@ public class StationController {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
+    public ResponseEntity handleException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity handleIllegalArgsException(NoSuchElementException e) {
+    public ResponseEntity handleException(NoSuchElementException e) {
         return ResponseEntity.notFound().build();
     }
 }

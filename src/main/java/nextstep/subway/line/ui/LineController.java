@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.domain.SectionAddFailException;
 import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
@@ -65,12 +66,17 @@ public class LineController {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
+    public ResponseEntity handleException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity handleIllegalArgsException(NoSuchElementException e) {
+    public ResponseEntity handleException(NoSuchElementException e) {
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(SectionAddFailException.class)
+    public ResponseEntity handleException(SectionAddFailException e) {
+        return ResponseEntity.badRequest().build();
     }
 }
