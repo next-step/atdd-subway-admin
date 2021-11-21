@@ -3,12 +3,16 @@ package nextstep.subway.line.ui;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/lines")
@@ -19,8 +23,17 @@ public class LineController {
         this.lineService = lineService;
     }
 
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.setValidator(new LineRequestValidator());
+    }
+
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
+    public ResponseEntity<?> createLine(@RequestBody @Valid LineRequest lineRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            String errorMessage = getErrorMessage(bindingResult);
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
@@ -47,5 +60,12 @@ public class LineController {
     public ResponseEntity<?> deleteLine(@PathVariable Long id) {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private String getErrorMessage(BindingResult bindingResult) {
+        return bindingResult.getFieldErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining(","));
     }
 }
