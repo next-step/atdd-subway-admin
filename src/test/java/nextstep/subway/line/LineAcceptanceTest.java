@@ -28,12 +28,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = createLine(params);
 
         // then
         // 지하철_노선_생성됨
@@ -49,21 +44,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
-        RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all().extract();
+        createLine(params);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = createLine(params);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -78,22 +63,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "신분당선");
         params1.put("color", "bg-red-600");
-        ExtractableResponse<Response> createResponse1 = RestAssured
-                .given().log().all()
-                .body(params1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all().extract();
+        ExtractableResponse<Response> createResponse1 = createLine(params1);
         // 지하철_노선_등록되어_있음
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "1호선");
         params2.put("color", "blue");
-        ExtractableResponse<Response> createResponse2 = RestAssured
-                .given().log().all()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all().extract();
+        ExtractableResponse<Response> createResponse2 = createLine(params2);
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -105,7 +80,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_목록_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        // 지하철_노선_목록_포함됨
+        // 지하철_노선_목록_조회됨
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
@@ -123,16 +98,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
-        ExtractableResponse<Response> createResponse = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all().extract();
+        ExtractableResponse<Response> createResponse = createLine(params);
 
         // when
         // 지하철_노선_조회_요청
-        String uri = createResponse.header("Location");
+        String uri = getUri(createResponse);
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
                 .when().get(uri)
@@ -155,16 +125,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "신분당선");
         params1.put("color", "bg-red-600");
-        ExtractableResponse<Response> createResponse = RestAssured
-                .given().log().all()
-                .body(params1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all().extract();
+        ExtractableResponse<Response> createResponse = createLine(params1);
 
         // when
         // 지하철_노선_수정_요청
-        String uri = createResponse.header("Location");
+        String uri = getUri(createResponse);
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "1호선");
         params2.put("color", "blue");
@@ -188,16 +153,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
-        ExtractableResponse<Response> createResponse = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all().extract();
+        ExtractableResponse<Response> createResponse = createLine(params);
 
         // when
         // 지하철_노선_제거_요청
-        String uri = createResponse.header("Location");
+        String uri = getUri(createResponse);
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
                 .when().delete(uri)
@@ -206,5 +166,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> createLine(Map<String, String> params) {
+        return RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all().extract();
+    }
+
+    private String getUri(ExtractableResponse<Response> response) {
+        return response.header("Location");
     }
 }
