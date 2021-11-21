@@ -46,8 +46,7 @@ public class Sections {
 
     public void addSection(Section newSection) {
         validateAddSection(newSection);
-        if (!addSectionOfFirst(newSection)
-            && !addSectionOfLast(newSection)) {
+        if (!(addSectionOfFirst(newSection) || addSectionOfLast(newSection))) {
             addSectionOfBetween(newSection);
         }
     }

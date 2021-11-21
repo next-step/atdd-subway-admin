@@ -65,10 +65,13 @@ class SectionAcceptanceTest extends AcceptanceTest {
         // given
         StationResponse 교대역 = StationAcceptanceTest.지하철_역_생성_요청(new StationRequest("교대역"))
             .as(StationResponse.class);
+        StationResponse 사당역 = StationAcceptanceTest.지하철_역_생성_요청(new StationRequest("사당역"))
+            .as(StationResponse.class);
 
         // when
         // 지하철 구간 추가 요청을 한다.
-        SectionRequest 하행_구간 = new SectionRequest(강남역.getId(), 교대역.getId(), 10);
+        지하철_구간_추가_요청(new SectionRequest(강남역.getId(), 교대역.getId(), 10), 이호선.getId());
+        SectionRequest 하행_구간 = new SectionRequest(교대역.getId(), 사당역.getId(), 10);
         ExtractableResponse<Response> response = 지하철_구간_추가_요청(하행_구간, 이호선.getId());
 
         // then
