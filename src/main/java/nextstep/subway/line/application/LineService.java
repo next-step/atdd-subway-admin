@@ -1,6 +1,8 @@
 package nextstep.subway.line.application;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -12,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class LineService {
 
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
@@ -32,5 +34,13 @@ public class LineService {
         optionalLine.ifPresent(findLine -> {
             throw new RuntimeException("이미 등록된 노선 이름을 사용할 수 없습니다.");
         });
+    }
+
+    public List<LineResponse> findAllLines() {
+        List<Line> lines = lineRepository.findAll();
+
+        return lines.stream()
+            .map(LineResponse::of)
+            .collect(Collectors.toList());
     }
 }
