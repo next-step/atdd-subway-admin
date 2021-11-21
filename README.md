@@ -77,6 +77,41 @@ licensed.
 
 # 미션 시작
 
+## 인수 테스트 시나리오
+
+```text
+  Feature: 지하철 노선관련기능
+    Scenario: 지하철 노선을 생성한다.
+      Given 지하철 노선 생성 파라미터 맵핑
+      When 지하철 노선 생성 요청
+      Then  지하철 노선 생성 됨
+      
+    Scenario: 기존 존재하는 지하철 노선 이름으로 노선 생성
+      Given 지하철 노선 생성됨
+      When 지하철 노선 생성요청
+      Then 지하철 노선 생성 실패
+      
+    Scenario: 지하철 노선 목록 조회
+      Given 지하철 노선등록 되어있음
+      When 지하철 노선 목록 조회
+      Then  등록된 노선 모두 목록에 포함되어 있음
+      
+    Scenario: 지하철 노선을 조회
+      Given 지하철 노선 등록 되어 있음
+      When 등록된 노선 조회
+      Then  조회됨
+      
+    Scenario: 지하철 노선을 수정
+      Given 지하철 노선을 등록함
+      When 등록된 지하철 노선을 수정 요청
+      Then  수정 응답받는다.
+      
+    Scenario: 지하철 노선을 제거
+      Given 지하철 노선 등록 되어 있음
+      When 등록된 지하철 노선 제거 요청
+      Then  NO_CONTENT 정상 응답 받음
+```
+
 ## 1단계 - 지하철 노선 관리
 
 - **도메인 테스트**
@@ -88,7 +123,6 @@ licensed.
     - [X] Line equals
     - [X] Line 전체조회
     - [X] Line delete
-- **기능 구현 전 인수 테스트 작성**
 - **지하철 노선 관리 기능 구현**
     - [X] 노선 생성
     - [X] 노선 목록 조회
