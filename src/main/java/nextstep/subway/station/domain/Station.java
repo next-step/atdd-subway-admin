@@ -1,16 +1,22 @@
 package nextstep.subway.station.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Station extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
+
+    @OneToMany(mappedBy = "station")
+    private List<Section> sections;
 
     public Station() {
     }
@@ -25,5 +31,9 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }
