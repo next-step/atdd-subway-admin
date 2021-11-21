@@ -1,4 +1,4 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
