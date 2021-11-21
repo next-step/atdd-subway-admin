@@ -4,9 +4,8 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 import javax.persistence.*;
 
@@ -19,8 +18,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "id", cascade = CascadeType.ALL)
-    private List<Section> sections;
+    @Embedded
+    private Sections sections;
 
     protected Line() {
     }
@@ -29,7 +28,7 @@ public class Line extends BaseEntity {
         this.name = name;
         this.color = color;
 
-        sections = new ArrayList<>();
+        sections = Sections.valueOf();
     }
 
     public void update(Line line) {
@@ -37,8 +36,8 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-    public boolean addSection(Section section) {
-        return this.sections.add(section);
+    public void addSection(Section section) {
+        this.sections.add(section);
     }
 
     public Long getId() {
@@ -53,8 +52,8 @@ public class Line extends BaseEntity {
         return this.color;
     }
 
-    public List<Section> getSections() {
-        return Collections.unmodifiableList(this.sections);
+    public Sections getSections() {
+        return this.sections;
     }
 
     public List<Station> getStations() {
@@ -62,14 +61,30 @@ public class Line extends BaseEntity {
             return new ArrayList<>();
         }
 
-        List<Station> stations = this.sections.stream()
-                                                .map(Section::getUpStation)
-                                                .collect(Collectors.toList());
+        List<Station> stations = this.sections.findUpStations();
 
-        Section lastSection = this.sections.get(this.sections.size() - 1);
+        Section lastSection = this.sections.findLastItem();
 
         stations.add(lastSection.getDownStation());
 
         return stations;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Line)) {
+            return false;
+        }
+        Line line = (Line) o;
+        return  Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects.equals(sections, line.sections);
+       
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, color);
     }
 }

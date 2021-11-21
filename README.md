@@ -245,3 +245,34 @@ Content-Type: application/json
 ]
 ```
 </details>
+
+## 3단계-구간 추가 기능
+### 요구사항
+- [x] 노선에 등록된 구간에 다른 구간을 추가할 수 있다.
+
+### 구현 목록
+- [x] 새로운 역이 기 등록된 구간 사이에 등록된다.
+- [x] 새로운 역이 상행 종점으로 등록된다.
+- [x] 새로운 역이 하행 종점으로 등록된다.
+- [x] 추가되는 구간의 역중 하나가 기등록된 구간의 역에 포함되지 않으면 에러가 발생된다.
+- [x] 추가되는 구간의 역 모두가 기등록된 구간의 역에 있으면 에러가 발생된다.
+- [x] 추가되는 구간의 길이는 추가되는 역이 상행과 일치할 경우 그 역으로부터 하행역까지의 구간 길이 이상이면 에러가 발생된다.
+- [x] 추가되는 구간의 길이는 추가되는 역이 하행과 일치할 경우 그 역으로부터 상행역까지의 구간 길이 이상이면 에러가 발생된다.
+
+### 구간 추가기능관련 전문 내용
+#### 구간 등록
+<details><summary>Request</summary>
+
+```python
+POST /lines/1/sections HTTP/1.1
+accept: */*
+content-type: application/json; charset=UTF-8
+host: localhost:52165
+
+{
+    "downStationId": "4",
+    "upStationId": "2",
+    "distance": 10
+}
+```
+</details>

@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import java.util.Objects;
+
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -38,7 +40,7 @@ public class Section extends BaseEntity {
 
     protected Section() {
     }
-    
+
     private Section(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
@@ -52,6 +54,14 @@ public class Section extends BaseEntity {
     public void addSectionAtLine(Line line) {
         this.line = line;
         this.line.addSection(this);
+    }
+
+    public boolean isEqualUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean isEqualDownStation(Station station) {
+        return this.downStation.equals(station);
     }
 
     public Long getId() {
@@ -68,5 +78,56 @@ public class Section extends BaseEntity {
 
     public Distance getDistance() {
         return this.distance;
+    }
+
+    public boolean hasStaion(Section findSection) {
+        if (this.upStation.equals(findSection.upStation) ||
+            this.upStation.equals(findSection.downStation) ||
+            this.downStation.equals(findSection.upStation) ||
+            this.downStation.equals(findSection.downStation)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public Distance minusDistance(Section minusingSection) {
+        return this.distance.minus(minusingSection.getDistance());
+    }
+
+    public SectionMatchingType findMatchingType(Section section) {
+        if (isEqualDownStation(section.getUpStation())) {
+            return SectionMatchingType.DOWN_AND_UP;
+        }
+
+        if (isEqualDownStation(section.getDownStation())) {
+            return SectionMatchingType.DOWN_AND_DOWN;
+        }
+
+        if (isEqualUpStation(section.getUpStation())) {
+            return SectionMatchingType.UP_AND_UP;
+        }
+
+        if (isEqualUpStation(section.getDownStation())) {
+            return SectionMatchingType.UP_AND_DOWN;
+        }
+
+        return SectionMatchingType.UNKNOWN;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof Section)) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(distance, section.distance) && Objects.equals(line, section.line);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, upStation, downStation, distance, line);
     }
 }

@@ -4,6 +4,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.SectionRepository;
+import nextstep.subway.line.domain.Sections;
 import nextstep.subway.line.dto.LineInfoResponse;
 
 import java.util.List;
@@ -25,11 +26,13 @@ public class LineService {
 
     @Transactional
     public Line saveLine(Line line, Section section) {
+        Line savedLine = lineRepository.save(line);
+        
         if (section != null) {
             section.addSectionAtLine(line);
         }
-        
-        return lineRepository.save(line);
+
+        return savedLine;
     }
 
     @Transactional(readOnly = true)
@@ -64,5 +67,15 @@ public class LineService {
     @Transactional
     public Section saveSection(Section section) {
         return sectionRepository.save(section);
+    }
+
+    @Transactional
+    public Sections addSection(long lineId, Section section) {
+        Line line = lineRepository.findById(lineId)
+                                    .orElseThrow(() -> new NoSuchElementException("조회되는 라인이 없습니다."));
+
+        section.addSectionAtLine(line);
+        
+        return line.getSections();
     }
 }
