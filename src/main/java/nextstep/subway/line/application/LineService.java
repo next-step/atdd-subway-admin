@@ -34,12 +34,12 @@ public class LineService {
     }
 
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+        Line line = findById(id);
         return LineResponse.of(line);
     }
 
     public LineResponse updateLine(Long id, LineRequest request) {
-        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+        Line line = findById(id);
         line.update(request.toLine());
 
         return LineResponse.of(line);
@@ -47,5 +47,10 @@ public class LineService {
 
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    private Line findById(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(LineNotFoundException::new);
     }
 }
