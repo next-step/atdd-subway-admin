@@ -1,12 +1,14 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineResponse {
 	private Long id;
@@ -19,20 +21,28 @@ public class LineResponse {
 	private LineResponse() {
 	}
 
-	private LineResponse(Long id, String name, String color, Sections sections, LocalDateTime createdDate,
+	private LineResponse(Long id, String name, String color, List<Station> stations, LocalDateTime createdDate,
 		LocalDateTime modifiedDate) {
 		this.id = id;
 		this.name = name;
 		this.color = color;
-		this.stations = sections.getOrderedStations();
+		this.stations = stations;
 		this.createdDate = createdDate;
 		this.modifiedDate = modifiedDate;
 	}
 
 	public static LineResponse from(Line line) {
-		return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getSections(),
+		List<Station> stations = converToStations(line.getOrderedSections());
+		return new LineResponse(line.getId(), line.getName(), line.getColor(), stations,
 			line.getCreatedDate(), line.getModifiedDate());
 	}
+
+	private static List<Station> converToStations(List<Section> orderedSections) {
+		List<Station> stations = orderedSections.stream().map(Section::getUpStation).collect(Collectors.toList());
+		stations.add(orderedSections.get(orderedSections.size() - 1).getDownStation());
+		return stations;
+	}
+
 
 	public Long getId() {
 		return id;

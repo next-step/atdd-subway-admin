@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Entity;
@@ -15,6 +16,8 @@ import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Section {
+
+	private static final String ERROR_MESSAGE_LONGER_THAN_EXIST_SECTION = "기존 역 사이 길이와 같거나 긴 구간은 등록이 불가합니다.";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +46,7 @@ public class Section {
 		this.distance = distance;
 	}
 
-	public void assignLine(Line line){
+	public void assignLine(Line line) {
 		this.line = line;
 	}
 
@@ -75,18 +78,8 @@ public class Section {
 		return upStation.equals(station);
 	}
 
-	public void splitUpSection(Section newPreSection) {
-		this.upStation = newPreSection.getDownStation();
-		minusDistance(newPreSection.getDistance());
-	}
-
 	public boolean matchDownStation(Station station) {
 		return downStation.equals(station);
-	}
-
-	public void splitDownSection(Section newPreSection) {
-		this.downStation = newPreSection.getUpStation();
-		minusDistance(newPreSection.getDistance());
 	}
 
 	@Override
@@ -116,5 +109,21 @@ public class Section {
 			'}';
 	}
 
+	protected void sliceUpSection(Section addSection) {
+		validateInsertableLengthBetween(addSection);
+		this.upStation = addSection.getDownStation();
+		minusDistance(addSection.getDistance());
+	}
 
+	protected void sliceDownSection(Section addSection) {
+		validateInsertableLengthBetween(addSection);
+		this.downStation = addSection.getUpStation();
+		minusDistance(addSection.getDistance());
+	}
+
+	private void validateInsertableLengthBetween(Section requestSection) {
+		if (distance <= requestSection.getDistance()) {
+			throw new IllegalArgumentException(ERROR_MESSAGE_LONGER_THAN_EXIST_SECTION);
+		}
+	}
 }
