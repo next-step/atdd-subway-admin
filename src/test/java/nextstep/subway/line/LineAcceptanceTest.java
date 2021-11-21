@@ -7,6 +7,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.assertj.core.api.AbstractIntegerAssert;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -18,20 +19,37 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
-public class LineAcceptanceTest extends AcceptanceTest {
 
+public class LineAcceptanceTest extends AcceptanceTest {
     private static final String URL = "/lines";
-    private static final Map<String, String> 노선_2호선 = new HashMap() {{
-        put("name", "2호선");
-        put("color", "green");
-    }};
-    private static final Map<String, String> 노선_신분당선 = new HashMap() {{
-        put("name", "신분당선");
-        put("color", "red");
-    }};
+    private static Map<String, String> 노선_2호선;
+    private static Map<String, String> 노선_신분당선;
+    private Long upStationId;
+    private Long downStationId;
+
+    @Override
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+        upStationId = 지하철_역_ID(강남역);
+        downStationId = 지하철_역_ID(역삼역);
+        노선_2호선 = new HashMap() {{
+            put("name", "2호선");
+            put("color", "green");
+            put("upStationId", upStationId);
+            put("downStationId", downStationId);
+        }};
+        노선_신분당선 = new HashMap() {{
+            put("name", "신분당선");
+            put("color", "red");
+            put("upStationId", upStationId);
+            put("downStationId", downStationId);
+        }};
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -53,7 +71,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(노선_2호선);
 
         // then
-        지하철_노성_생성_실패됨(response);
+        지하철_노선_생성_실패됨(response);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -176,7 +194,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    private AbstractIntegerAssert<?> 지하철_노성_생성_실패됨(ExtractableResponse<Response> response) {
+    private AbstractIntegerAssert<?> 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
         return assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
