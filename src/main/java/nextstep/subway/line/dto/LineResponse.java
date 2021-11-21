@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.Line;
 import java.time.LocalDateTime;
 
 public class LineResponse {
+
     private Long id;
     private String name;
     private String color;
@@ -14,7 +15,8 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public LineResponse(Long id, String name, String color, LocalDateTime createdDate,
+        LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -23,7 +25,8 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(),
+            line.getCreatedDate(), line.getModifiedDate());
     }
 
     public Long getId() {
