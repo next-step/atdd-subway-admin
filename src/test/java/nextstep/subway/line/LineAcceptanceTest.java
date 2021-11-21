@@ -270,7 +270,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
      * 요청
      */
     private ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color) {
-        return 지하철_노선_생성_요청(name, color);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(name, color);
+        지하철_노선이_생성된다(response);
+        return response;
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
