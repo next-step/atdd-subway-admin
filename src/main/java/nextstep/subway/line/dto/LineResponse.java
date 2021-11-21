@@ -1,6 +1,7 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,6 +12,7 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
+    private List<StationResponse> stations;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
@@ -55,16 +57,20 @@ public class LineResponse {
         return modifiedDate;
     }
 
+    public List<StationResponse> getStations() {
+        return stations;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LineResponse that = (LineResponse) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(color, that.color) && Objects.equals(createdDate, that.createdDate) && Objects.equals(modifiedDate, that.modifiedDate);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(color, that.color) && Objects.equals(stations, that.stations) && Objects.equals(createdDate, that.createdDate) && Objects.equals(modifiedDate, that.modifiedDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, createdDate, modifiedDate);
+        return Objects.hash(id, name, color, stations, createdDate, modifiedDate);
     }
 }
