@@ -25,6 +25,7 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> lines() {
         List<Line> lines = lineRepository.findAll();
 
@@ -33,6 +34,7 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
         Line line = findById(id);
         return LineResponse.of(line);
