@@ -4,6 +4,8 @@ import nextstep.subway.common.exception.DuplicateParameterException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,17 +18,19 @@ import java.util.Objects;
 @RequestMapping("lines")
 public class LineController {
     private final LineService lineService;
+    private final StationService stationService;
 
-    public LineController(final LineService lineService) {
+    public LineController(LineService lineService, StationService stationService) {
         this.lineService = lineService;
+        this.stationService = stationService;
     }
 
     @PostMapping
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-        if (isDuplicateStationIds(lineRequest)) {
-            throw new DuplicateParameterException("상행, 하행역은 중복될 수 없습니다.");
-        }
-        final LineResponse line = lineService.saveLine(lineRequest);
+        checkStationIds(lineRequest);
+        final Station upStation = stationService.findByStationId(lineRequest.getUpStationId());
+        final Station downStation = stationService.findByStationId(lineRequest.getDownStationId());
+        final LineResponse line = lineService.saveLine(lineRequest, upStation, downStation);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
@@ -52,7 +56,9 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    private boolean isDuplicateStationIds(LineRequest lineRequest) {
-        return Objects.equals(lineRequest.getUpStationId(), lineRequest.getDownStationId());
+    private void checkStationIds(LineRequest lineRequest) {
+        if (Objects.equals(lineRequest.getUpStationId(), lineRequest.getDownStationId())) {
+            throw new DuplicateParameterException("상행, 하행역은 중복될 수 없습니다.");
+        }
     }
 }

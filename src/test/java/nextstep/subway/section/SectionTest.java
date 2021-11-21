@@ -2,7 +2,6 @@ package nextstep.subway.section;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
@@ -25,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 public class SectionTest {
     private static final int DISTANCE_5 = 5;
+
     @Autowired
     StationRepository stationRepository;
 
@@ -47,6 +47,13 @@ public class SectionTest {
         assertThat(findSection.getStation().getId()).isEqualTo(upStation.getId());
         assertThat(findSection.getNextStation().getId()).isEqualTo(downStation.getId());
         assertThat(findSection.getLine().getId()).isEqualTo(line.getId());
+    }
+
+    @DisplayName("노선역_목록_조회")
+    @Test
+    void getStationsTest() {
+        // given
+
     }
 
 }

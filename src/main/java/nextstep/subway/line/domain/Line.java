@@ -8,15 +8,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static javax.persistence.FetchType.EAGER;
+
 @Entity
 public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
+
     private String color;
 
+    /**
+     * TODO :  1) 고아객체 설정에 대해 학습하기
+     *         2) 일급컬렉션으로 관리하기
+     */
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
@@ -59,15 +67,12 @@ public class Line extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return Objects.equals(getId(), line.getId()) &&
-                Objects.equals(getName(), line.getName()) &&
-                Objects.equals(getColor(), line.getColor()) &&
-                Objects.equals(sections, line.sections);
+        return Objects.equals(getId(), line.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getColor(), sections);
+        return Objects.hash(getId());
     }
 
 }

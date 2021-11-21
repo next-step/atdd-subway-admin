@@ -8,8 +8,11 @@ import java.util.stream.Collectors;
 
 public class StationResponse {
     private Long id;
+
     private String name;
+
     private LocalDateTime createdDate;
+
     private LocalDateTime modifiedDate;
 
     private StationResponse() {
@@ -21,10 +24,6 @@ public class StationResponse {
         this.name = name;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-    }
-
-    public static StationResponse of(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
-        return new StationResponse(id, name, createdDate, modifiedDate);
     }
 
     public static StationResponse of(Station station) {

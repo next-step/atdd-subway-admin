@@ -1,13 +1,22 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 
+/**
+ *  TODO : 일급 컬렉션 관련 수정하기
+ */
 public class LineRequest {
     private String name;
+
     private String color;
+
     private Long upStationId;
+
     private Long downStationId;
-    private int distance;
+
+    private Distance distance;
 
     private LineRequest() {
     }
@@ -17,7 +26,7 @@ public class LineRequest {
         this.color = color;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
-        this.distance = distance;
+        this.distance = Distance.of(distance);
     }
 
     public static LineRequest of(String name, String color, Long upStationId, Long downStationId, int distance) {
@@ -40,11 +49,13 @@ public class LineRequest {
         return downStationId;
     }
 
-    public int getDistance() {
-        return distance;
-    }
 
     public Line toLine() {
         return new Line(name, color);
+    }
+    public Line toLine(Station upStation, Station downStation) {
+        Line line = new Line(name, color);
+        line.addSection(new Section(distance, upStation, downStation));
+        return line;
     }
 }

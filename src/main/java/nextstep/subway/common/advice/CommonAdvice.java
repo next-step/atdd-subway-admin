@@ -16,7 +16,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  */
 @RestControllerAdvice
 public class CommonAdvice {
-    @ExceptionHandler({DataIntegrityViolationException.class, NotFoundException.class, DuplicateParameterException.class})
+    @ExceptionHandler({
+            DataIntegrityViolationException.class,
+            NotFoundException.class,
+            DuplicateParameterException.class})
     public ResponseEntity handleIllegalArgsException(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }

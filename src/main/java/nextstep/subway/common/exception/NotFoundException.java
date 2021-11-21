@@ -8,7 +8,6 @@ package nextstep.subway.common.exception;
  * description : NoData 예외 처리 클래스
  */
 public class NotFoundException extends RuntimeException {
-
     private static final long serialVersionUID = 1L;
 
     public NotFoundException() {

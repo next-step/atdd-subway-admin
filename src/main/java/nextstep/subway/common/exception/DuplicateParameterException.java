@@ -8,7 +8,6 @@ package nextstep.subway.common.exception;
  * description : 중복 데이터 관련 예외처리
  */
 public class DuplicateParameterException extends RuntimeException {
-
     private static final long serialVersionUID = 1L;
 
     public DuplicateParameterException() {

@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class SectionService {
-    private SectionRepository sectionRepository;
+    private final SectionRepository sectionRepository;
 
     public SectionService(SectionRepository sectionRepository) {
         this.sectionRepository = sectionRepository;

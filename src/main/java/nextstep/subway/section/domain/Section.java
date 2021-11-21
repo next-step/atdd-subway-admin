@@ -3,11 +3,13 @@ package nextstep.subway.section.domain;
 import nextstep.subway.common.entity.BaseEntity;
 import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.dto.Distance;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.Objects;
 
+import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.FetchType.LAZY;
 
 /**
@@ -25,6 +27,10 @@ public class Section extends BaseEntity {
 
     private int distance;
 
+    /**
+     * TODO : 노선 조회 시 쿼리 확인할 것
+     */
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "STATION_ID")
     private Station station;
@@ -41,7 +47,7 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    public Section(Line line, Station station, Station nextStation, int distance) {
+    public Section(Line line, Station station, Station nextStation, Distance distance) {
         if (Objects.isNull(line)) {
             throw new NotFoundException("노선이 존재하지 않습니다.");
         }
@@ -52,11 +58,11 @@ public class Section extends BaseEntity {
         this.line = line;
         this.station = station;
         this.nextStation = nextStation;
-        this.distance = distance;
+        this.distance = distance.value();
     }
 
-    public Section(int distance, Station station, Station nextStation) {
-        this.distance = distance;
+    public Section(Distance distance, Station station, Station nextStation) {
+        this.distance = distance.value();
         this.station = station;
         this.nextStation = nextStation;
     }
