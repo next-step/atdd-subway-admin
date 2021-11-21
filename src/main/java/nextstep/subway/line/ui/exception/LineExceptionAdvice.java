@@ -2,6 +2,7 @@ package nextstep.subway.line.ui.exception;
 
 import nextstep.subway.line.ui.exception.LineNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,5 +20,10 @@ public class LineExceptionAdvice {
     @ExceptionHandler(LineNotFoundException.class)
     protected ResponseEntity handleLineNotFoundException(LineNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    protected ResponseEntity handleEmptyResultDataAccessException(EmptyResultDataAccessException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 노선입니다.");
     }
 }
