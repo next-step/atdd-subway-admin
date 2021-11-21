@@ -8,11 +8,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static nextstep.subway.line.LineAcceptanceTestFactory.*;
 import static nextstep.subway.line.LineAcceptanceVerify.*;
@@ -38,8 +39,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         });
     }
 
+
     @ParameterizedTest(name = "노선의 이름이 \"{0}\" 일 경우 지하철 노선을 생성하지 못하고 예외 메시지가 발생한다.")
-    @MethodSource("blankStrings")
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "            "})
     void createLineWithEmptyName(String name) {
         // given
         final Map<String, String> params = getLineCreateParams(name, "미지의색상");
@@ -49,12 +52,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성_실패됨(response, "노선의 이름이 빈값일 수 없습니다.");
     }
 
-    static Stream<String> blankStrings() {
-        return Stream.of("", "   ", null);
-    }
-
     @ParameterizedTest(name = "노선의 색상값이 \"{0}\" 일 경우 지하철 노선을 생성하지 못하고 예외 메시지가 발생한다.")
-    @MethodSource("blankStrings")
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "            "})
     void createLineWithEmptyColor(String color) {
         // given
         final Map<String, String> params = getLineCreateParams("미지의이름", color);
