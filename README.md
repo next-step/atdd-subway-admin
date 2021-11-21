@@ -53,6 +53,14 @@ npm run dev
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
 
+## step3 요구사항
+* 구간 등록
+* 역 사이에 구간이 등록되는 경우 거리 수정
+* 구간 등록시 예외 케이스
+  * 역 사이에 새로운 역을 등록하는 경우 기존 역 사이 길이보다 크거나 같을 수 없다
+  * 상행역과 하행역이 이미 노선에 모두 등록된 경우 등록할 수 없다
+  * 상행역과 하행역 둘 중 하나도 포함되지 않으면 등록할 수 없다
+
 
 ## step2 요구사항
 * 노선 생성시 종점역(상행, 하행) 정보 추가
