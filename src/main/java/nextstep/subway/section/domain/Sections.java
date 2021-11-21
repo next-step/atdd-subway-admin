@@ -1,11 +1,14 @@
 package nextstep.subway.section.domain;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
@@ -25,5 +28,17 @@ public class Sections {
 
 	public static Sections empty() {
 		return new Sections(new ArrayList<>());
+	}
+
+	public List<Station> toStations() {
+		List<Station> stations = this.values.stream()
+			.map(Section::getUpStation)
+			.collect(toList());
+
+		Section lastSection = this.values.get(values.size() - 1);
+
+		stations.add(lastSection.getDownStation());
+
+		return stations;
 	}
 }

@@ -74,7 +74,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철_역_삭제됨(response);
     }
 
-    public ExtractableResponse<Response> 지하철_역_생성(StationRequest request) {
+    public static ExtractableResponse<Response> 지하철_역_생성(StationRequest request) {
         return post("/stations", request);
     }
 

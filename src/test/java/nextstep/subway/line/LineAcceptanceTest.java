@@ -1,28 +1,33 @@
 package nextstep.subway.line;
 
-import static nextstep.subway.utils.AcceptanceTestUtil.*;
-import static org.assertj.core.api.Assertions.*;
+import static nextstep.subway.station.StationAcceptanceTest.지하철_역_생성;
+import static nextstep.subway.utils.AcceptanceTestUtil.delete;
+import static nextstep.subway.utils.AcceptanceTestUtil.get;
+import static nextstep.subway.utils.AcceptanceTestUtil.post;
+import static nextstep.subway.utils.AcceptanceTestUtil.put;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
-import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     private void setup() {
+        지하철_역_생성(new StationRequest("강남역"));
+        지하철_역_생성(new StationRequest("청계산입구역"));
     }
 
     @DisplayName("지하철 노선을 생성한다.")

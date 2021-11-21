@@ -46,4 +46,12 @@ public class Section {
 	public static Section of(Line line, Long upStationId, Long downStationId, Integer distance) {
 		return new Section(line, Station.of(upStationId), Station.of(downStationId), distance);
 	}
+
+	public Station getUpStation() {
+		return upStation;
+	}
+
+	public Station getDownStation() {
+		return downStation;
+	}
 }
