@@ -3,13 +3,9 @@ package nextstep.subway.line.domain;
 import nextstep.subway.station.domain.Station;
 
 public class Section {
-	private Station upStation;
-	private Station downStation;
-	private int distance;
-
-	private Section() {
-
-	}
+	private final Station upStation;
+	private final Station downStation;
+	private final int distance;
 
 	private Section(Station upStation, Station downStation, int distance) {
 		throwIfUpStationAndDownStationIsEqual(upStation, downStation);
