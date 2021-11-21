@@ -88,13 +88,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        LineRequest request = new LineRequest("신분당선", "bg-red-600");
+        지하철_노선_생성(request, "/lines");
 
         // when
         // 지하철_노선_조회_요청
-
+        ExtractableResponse<Response> response = 지하철_노선_조회("/lines/1");
 
         // then
         // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().jsonPath().getString("name")).isEqualTo("신분당선");
+        assertThat(response.body().jsonPath().getString("color")).isEqualTo("bg-red-600");
     }
 
     @DisplayName("지하철 노선을 수정한다.")

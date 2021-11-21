@@ -30,4 +30,8 @@ public class LineService {
             .map(LineResponse::of)
             .collect(Collectors.toList());
     }
+
+    public LineResponse findLine(Long id) {
+        return LineResponse.of(lineRepository.findLineById(id));
+    }
 }
