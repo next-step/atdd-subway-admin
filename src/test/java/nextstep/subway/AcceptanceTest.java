@@ -67,15 +67,15 @@ public abstract class AcceptanceTest<T, S, V> {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    protected void 목록에_포함_검증(V responseList, final S... responses) {
+    protected void 목록에_포함_검증(V responses, final S... createdResponses) {
         assertAll(
-                () -> assertThat(responseList).isNotNull(),
+                () -> assertThat(responses).isNotNull(),
                 () -> {
-                    List<S> createdLines = Arrays.stream(responses).collect(Collectors.toList());
-                    String responseListClassName = responseList.getClass().getSimpleName();
+                    List<S> createdLines = Arrays.stream(createdResponses).collect(Collectors.toList());
+                    String responseListClassName = responses.getClass().getSimpleName();
                     String methodName = "get" + responseListClassName.substring(0, 1).toUpperCase() + responseListClassName.substring(1);
-                    Method method = responseList.getClass().getMethod(methodName);
-                    List<S> responseListValues = (List<S>) method.invoke(responseList);
+                    Method method = responses.getClass().getMethod(methodName);
+                    List<S> responseListValues = (List<S>) method.invoke(responses);
                     assertThat(responseListValues).containsAll(createdLines);
                 }
         );
