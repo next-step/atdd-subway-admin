@@ -88,9 +88,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(findIds).containsAll(createIds);
 	}
 
-	@DisplayName("지하철 노선을 조회한다.")
+	@DisplayName("지하철 노선 조회 성공")
 	@Test
-	void getLine() {
+	void getLineSuccess() {
 		// given
 		// 지하철_노선_등록되어_있음
 		Response createResponse = requestCreateLines(params);
@@ -107,10 +107,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(findId).isEqualTo(createId);
 	}
 
-
-	@DisplayName("지하철 노선을 수정한다.")
+	@DisplayName("지하철 노선 조회 실패")
 	@Test
-	void updateLine() {
+	void getLineFail() {
+		// given
+		// 지하철_노선_등록되어_있음
+		Response createResponse = requestCreateLines(params);
+		String url = createResponse.header("Location");
+
+		// when
+		// 지하철_노선_조회_요청
+		Response findResponse = requestFindLine("/lines/3");
+
+		// then
+		// 지하철_노선_응답됨
+		assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+
+	@DisplayName("지하철 노선을 수정 성공")
+	@Test
+	void updateLineSuccess() {
 		// given
 		// 지하철_노선_등록되어_있음
 		Map<String, String> updateParams = new HashMap<>();
@@ -130,9 +147,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(lineResponse.getId()).isEqualTo(Long.parseLong(url.split("/")[2]));
 	}
 
-	@DisplayName("지하철 노선을 제거한다.")
+	@DisplayName("지하철 노선을 수정 실패")
 	@Test
-	void deleteLine() {
+	void updateLineFail() {
+		// given
+		// 지하철_노선_등록되어_있음
+		Map<String, String> updateParams = new HashMap<>();
+		updateParams.put("name", "서울역");
+		updateParams.put("color", "blue");
+		Response createResponse = requestCreateLines(params);
+		String url = createResponse.header("Location");
+
+		// when
+		// 지하철_노선_수정_요청
+		Response updateResponse = requestUpdateLine("lines/3", updateParams);
+
+		// then
+		// 지하철_노선_수정됨
+		assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	@DisplayName("지하철 노선을 제거 성공")
+	@Test
+	void deleteLineSuccess() {
 		// given
 		// 지하철_노선_등록되어_있음
 		Map<String, String> otherParams = new HashMap<>();
@@ -145,11 +182,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// when
 		// 지하철_노선_제거_요청
 		requestDeleteLine(url);
-		List<LineResponse> findAllLineResponse = requestFindAllLines().jsonPath().getList(".", LineResponse.class);
+		List<LineResponse> findAllResponse = requestFindAllLines().jsonPath().getList(".", LineResponse.class);
 
 		// then
 		// 지하철_노선_삭제됨
-		assertThat(findAllLineResponse).hasSize(1);
+		assertThat(findAllResponse).hasSize(1);
+	}
+
+	@DisplayName("지하철 노선을 제거 실패")
+	@Test
+	void deleteLineFail() {
+		// given
+		// 지하철_노선_등록되어_있음
+		requestCreateLines(params);
+		// when
+		// 지하철_노선_제거_요청
+		Response deleteResponse = requestDeleteLine("/lines/3");
+
+		// then
+		// 지하철_노선_삭제됨
+		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 
