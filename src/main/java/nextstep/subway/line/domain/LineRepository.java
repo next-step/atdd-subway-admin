@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface LineRepository extends JpaRepository<Line, Long> {
 
-    @Query("select line from Line line join fetch line.stations")
+    @Query("select DISTINCT line from Line line join fetch line.stations.stations")
     List<Line> findAll();
 }

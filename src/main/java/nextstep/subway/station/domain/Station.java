@@ -17,7 +17,7 @@ import nextstep.subway.line.domain.Line;
 
 @Entity
 @DynamicUpdate
-public class Station extends BaseEntity {
+public class Station extends BaseEntity implements Comparable<Station> {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -52,5 +52,16 @@ public class Station extends BaseEntity {
 
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public int compareTo(Station o) {
+        if (this.id > o.id) {
+            return 1;
+        }
+        if (this.id < o.id) {
+            return -1;
+        }
+        return 0;
     }
 }

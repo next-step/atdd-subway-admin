@@ -39,6 +39,9 @@ public class Line extends BaseEntity {
         this.section = section;
     }
 
+    protected Line() {
+    }
+
     public void changeStation() {
         this.stations.changeLine(this);
     }
@@ -47,7 +50,8 @@ public class Line extends BaseEntity {
         this.stations = new Stations(stations);
     }
 
-    protected Line() {
+    public List<Station> getStations() {
+        return stations.getStations();
     }
 
     public void update(Line line) {

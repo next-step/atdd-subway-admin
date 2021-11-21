@@ -17,7 +17,7 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(),
-                                line.getModifiedDate(), new ArrayList<>()
+                                line.getModifiedDate(), line.getStations()
         );
     }
 

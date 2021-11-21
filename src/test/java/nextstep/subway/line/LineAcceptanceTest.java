@@ -71,7 +71,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         StationResponse station1 = 지하철역_등록되어_있음(new StationRequest("신촌역"));
         StationResponse station2 = 지하철역_등록되어_있음(new StationRequest("강남역"));
-        지하철_노선_등록되어_있음(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, station1.getId(), station2.getId(), 10));
+        StationResponse station3 = 지하철역_등록되어_있음(new StationRequest("서울역"));
+        StationResponse station4 = 지하철역_등록되어_있음(new StationRequest("용산역"));
+        지하철_노선_등록되어_있음(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, station3.getId(), station4.getId(), 10));
         지하철_노선_등록되어_있음(new LineRequest(LINE_TWO, LINE_TWO_COLOR_GREEN, station1.getId(), station2.getId(), 10));
 
         // when
