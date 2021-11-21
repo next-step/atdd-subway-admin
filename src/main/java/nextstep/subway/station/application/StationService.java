@@ -31,6 +31,12 @@ public class StationService {
         return StationResponse.of(persistStation);
     }
 
+    public void deleteStationById(Long id) {
+        Station station = findStation(id);
+        station.delete();
+
+        stationRepository.save(station);
+    }
 
     @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
@@ -41,23 +47,14 @@ public class StationService {
             .collect(Collectors.toList());
     }
 
-    public void deleteStationById(Long id) {
-        Station station = findStation(id);
-        station.delete();
-        
-        stationRepository.save(station);
+    @Transactional(readOnly = true)
+    protected Station findStation(Long id) {
+        return stationRepository.findById(id)
+            .orElseThrow(NotFoundException::new);
     }
 
-    private Station findStation(Long id) {
-        Optional<Station> optionalStation = stationRepository.findById(id);
-        if (!optionalStation.isPresent()) {
-            throw new NotFoundException();
-        }
-
-        return optionalStation.get();
-    }
-
-    private void validateDuplicateStation(Station station) {
+    @Transactional(readOnly = true)
+    protected void validateDuplicateStation(Station station) {
         Optional<Station> optionalStation = stationRepository.findByName(station.getName());
 
         optionalStation.ifPresent(findLine -> {

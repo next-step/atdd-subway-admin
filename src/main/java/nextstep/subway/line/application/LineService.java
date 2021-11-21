@@ -30,23 +30,25 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    public LineResponse updateLine(Long id, LineRequest lineRequest) {
+        Line persistLine = findLine(id);
+
+        persistLine.update(lineRequest.toLine());
+        return LineResponse.of(persistLine);
+    }
+
+    @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         return lineRepository.findAll().stream()
             .map(LineResponse::of)
             .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findByLineId(Long id) {
         return lineRepository.findById(id)
             .map(LineResponse::of)
             .orElse(null);
-    }
-
-    public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        Line persistLine = findLine(id);
-
-        persistLine.update(lineRequest.toLine());
-        return LineResponse.of(persistLine);
     }
 
     public void deleteLineById(Long id) {
@@ -56,16 +58,14 @@ public class LineService {
         lineRepository.save(line);
     }
 
-    private Line findLine(Long id) {
-        Optional<Line> optionalPersistLine = lineRepository.findById(id);
-        if (!optionalPersistLine.isPresent()) {
-            throw new NotFoundException();
-        }
-
-        return optionalPersistLine.get();
+    @Transactional(readOnly = true)
+    protected Line findLine(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(NotFoundException::new);
     }
 
-    private void validateDuplicateLine(Line line) {
+    @Transactional(readOnly = true)
+    protected void validateDuplicateLine(Line line) {
         Optional<Line> optionalLine = lineRepository.findByName(line.getName());
 
         optionalLine.ifPresent(findLine -> {

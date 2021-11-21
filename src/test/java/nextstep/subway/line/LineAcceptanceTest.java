@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import nextstep.subway.AcceptanceTest;
@@ -27,8 +29,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = LineTestUtil.지하철_노선_생성_요청(params);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+            () -> assertThat(response.header("Location")).isNotBlank()
+        );
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -57,12 +61,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = LineTestUtil.지하철_노선_목록_조회_요청("/lines");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        List<Long> expectedLineIds = LineTestUtil.ids_추출_By_Location(createResponse1,
-            createResponse2);
+        List<Long> expectedLineIds = LineTestUtil.ids_추출_By_Location(Arrays.asList(createResponse1,
+            createResponse2));
         List<Long> resultLineIds = LineTestUtil.ids_추출_By_LineResponse(response);
-
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -72,7 +74,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         ExtractableResponse<Response> createResponse1 = LineTestUtil.지하철_노선_등록되어_있음("2호선");
-        long lineId = LineTestUtil.ids_추출_By_Location(createResponse1).get(0);
+        long lineId = LineTestUtil.ids_추출_By_Location(Collections.singletonList(createResponse1))
+            .get(0);
 
         // when
         ExtractableResponse<Response> response = LineTestUtil.지하철_노선_목록_조회_요청("/lines/" + lineId);

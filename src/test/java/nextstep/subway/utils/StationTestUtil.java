@@ -3,7 +3,6 @@ package nextstep.subway.utils;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,8 +61,9 @@ public class StationTestUtil {
             .collect(Collectors.toList());
     }
 
-    public static List<Long> ids_추출_By_Location(ExtractableResponse<Response>... createResponses) {
-        return Arrays.asList(createResponses).stream()
+    public static List<Long> ids_추출_By_Location(
+        List<ExtractableResponse<Response>> createResponses) {
+        return createResponses.stream()
             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
             .collect(Collectors.toList());
     }
