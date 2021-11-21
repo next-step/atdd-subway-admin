@@ -30,11 +30,14 @@ public class Section {
     public Section() {
     }
 
-    public Section(Long id, Line line, Station station, int distance) {
-        this.id = id;
+    public Section(Line line, Station station, int distance) {
         changeLine(line);
         changeStation(station);
         this.distance = distance;
+    }
+
+    public static Section of(Line line, Station station, int distance) {
+        return new Section(line, station, distance);
     }
 
     public void changeLine(Line line) {
@@ -42,8 +45,15 @@ public class Section {
             this.line.getSections().remove(this);
         }
 
+        addLine(line);
+    }
+
+    public void addLine(Line line) {
+        if (!Objects.isNull(line)) {
+            line.getSections().add(this);
+        }
+
         this.line = line;
-        line.getSections().add(this);
     }
 
     public void changeStation(Station station) {
@@ -51,8 +61,15 @@ public class Section {
             this.station.getSections().remove(this);
         }
 
+        addStation(station);
+    }
+
+    public void addStation(Station station) {
+        if (!Objects.isNull(station)) {
+            station.getSections().add(this);
+        }
+
         this.station = station;
-        station.getSections().add(this);
     }
 
     public Long getId() {
@@ -65,5 +82,9 @@ public class Section {
 
     public Station getStation() {
         return station;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }
