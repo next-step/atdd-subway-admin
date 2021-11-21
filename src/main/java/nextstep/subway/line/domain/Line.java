@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.domain.Station;
 
 @Entity
 @Table(name = "line")
@@ -30,8 +31,9 @@ public class Line extends BaseEntity {
     @Embedded
     private LineStations lineStations = new LineStations();
 
-    public void addLineStation(LineStation lineStation) {
-        lineStations.add(lineStation);
+    public void addSection(Station upStation, Station downStation, int distance) {
+        lineStations.add(LineStation.of(upStation, null, 0));
+        lineStations.add(LineStation.of(downStation, upStation, distance));
     }
 
     protected Line() {

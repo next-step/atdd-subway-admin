@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
@@ -41,8 +40,7 @@ public class LineService {
         Station downStation = findStationById(request.getDownStationId(), MESSAGE_ON_DOWN_STATION_NOT_FOUND);
 
         Line line = lineRepository.save(Line.of(request.getName(), request.getColor()));
-        line.addLineStation(LineStation.of(upStation, null, 0));
-        line.addLineStation(LineStation.of(downStation, upStation, request.getDistance()));
+        line.addSection(upStation, downStation, request.getDistance());
 
         return LineResponse.of(line, getStationInOrder(line));
     }
