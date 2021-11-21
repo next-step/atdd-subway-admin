@@ -77,6 +77,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		노선_2호선_green_1개가_응답에_포함(response);
 	}
 
+	@Test
+	void getLineWhenNotExistEntity() {
+		// when
+		ExtractableResponse<Response> response = 지하철_노선_조회("/lines/1");
+
+		// then
+		잘못된_요청_응답(response);
+	}
+
 	@DisplayName("지하철 노선을 수정한다.")
 	@Test
 	void updateLine() {
@@ -130,6 +139,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	private void 존재하는_지하철_노선_이름인_경우_노선_생성_실패(ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+	}
+
+	private void 잘못된_요청_응답(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(response.body().asString()).isEqualTo("해당하는 Line이 없습니다. id = 1");
 	}
 
 	private void 노선_목록_두개가_응답에_포함(ExtractableResponse<Response> createResponse1,

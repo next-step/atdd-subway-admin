@@ -14,6 +14,9 @@ public class LineResponse {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
+    public LineResponse() {
+    }
+
     private LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
@@ -23,10 +26,6 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        if (line == null) {
-            return null;
-        }
-
         return new LineResponse(line.getId(),
             line.getName().getValue(),
             line.getColor().getValue(),
