@@ -37,10 +37,7 @@ public class LineService {
     }
 
     public List<LineResponse> getLines() {
-        return lineRepository.findAll()
-                .stream()
-                .map(LineResponse::of)
-                .collect(Collectors.toList());
+        return LineResponse.listOf(lineRepository.findAll());
     }
 
     public LineResponse getLine(Long id) {
