@@ -12,6 +12,11 @@ public class ExceptionAdvice {
         return ResponseEntity.badRequest().build();
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity handleNotFoundException(NotFoundException e) {
         return ResponseEntity.badRequest().body(e.getMessage());

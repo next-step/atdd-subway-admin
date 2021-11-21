@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Entity;
@@ -68,5 +70,46 @@ public class Section {
         }
         this.line = line;
         line.getSections().add(this);
+    }
+
+    public void updateDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public void updateUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void updateDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
+    public boolean containsAndSamePosition(Section section) {
+        return containsSomeStation(section)
+            && containsExactlyStationPosition(section);
+    }
+
+    public boolean containsAndNotSamePosition(Section section) {
+        return containsSomeStation(section)
+            && !containsExactlyStationPosition(section);
+    }
+
+    public boolean containsExactlyUpStationPosition(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean containsExactlyDownStationPosition(Station station) {
+        return downStation.equals(station);
+    }
+
+    private boolean containsSomeStation(Section section) {
+        List<Station> stations = Arrays.asList(upStation, downStation);
+        return stations.contains(section.getUpStation())
+            || stations.contains(section.getDownStation());
+    }
+
+    private boolean containsExactlyStationPosition(Section section) {
+        return containsExactlyUpStationPosition(section.upStation)
+            || containsExactlyDownStationPosition(section.downStation);
     }
 }
