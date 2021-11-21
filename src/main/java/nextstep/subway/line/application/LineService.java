@@ -9,7 +9,6 @@ import nextstep.subway.line.exception.DuplicateLineNameException;
 import nextstep.subway.line.exception.NotFoundLineByIdException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -23,7 +22,7 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public LineResponse saveLine(LineRequest request) {
         validateExistsByName(request.getName());
         final Line persistLine = lineRepository.save(request.toLine());
