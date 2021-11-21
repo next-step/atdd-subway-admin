@@ -53,6 +53,12 @@ public class LineStations {
 			.collect(Collectors.toList());
 	}
 
+	public List<Integer> getDistancesOnOrder() {
+		return getLineStationsInOrder().stream()
+			.map(LineStation::getDistance)
+			.collect(Collectors.toList());
+	}
+
 	private Optional<LineStation> getFirstLineStation() {
 		return values.stream()
 			.filter(lineStation -> lineStation.getPreStationId() == null)

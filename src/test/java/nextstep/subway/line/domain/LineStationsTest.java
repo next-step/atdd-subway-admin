@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import nextstep.subway.line.LineStationFixture;
 import nextstep.subway.station.StationFixture;
+import nextstep.subway.station.domain.Station;
 
 @DisplayName("노선 역들")
 class LineStationsTest {
@@ -98,5 +99,100 @@ class LineStationsTest {
 		// when & then
 		assertThatThrownBy(() -> lineStations.addSection(Section.of(StationFixture.강남역(), StationFixture.역삼역(), 1)))
 			.isInstanceOf(SectionAddFailException.class);
+	}
+
+	@DisplayName("역 사이 왼쪽에 새로운 구간을 등록한다.")
+	@Test
+	void addSectionBetweenStationsAtLeftSide() {
+		// given
+		LineStations lineStations = LineStations.of(
+			Arrays.asList(
+				LineStation.of(1L, StationFixture.강남역().getId(), null, 0),
+				LineStation.of(2L, StationFixture.선릉역().getId(), StationFixture.강남역().getId(), 7)));
+
+		// when
+		lineStations.addSection(Section.of(StationFixture.강남역(), StationFixture.역삼역(), 4));
+
+		// then
+		assertThat(lineStations.getStationIdsInOrder()).isEqualTo(
+			Stream.of(StationFixture.강남역(), StationFixture.역삼역(), StationFixture.선릉역())
+				.map(Station::getId)
+				.collect(Collectors.toList()));
+		assertThat(lineStations.getDistancesOnOrder()).isEqualTo(Arrays.asList(0, 4, 3));
+	}
+
+	@DisplayName("역 사이 오른쪽에 새로운 구간을 등록한다.")
+	@Test
+	void addSectionBetweenStationsAtRightSide() {
+		// given
+		LineStations lineStations = LineStations.of(
+			Arrays.asList(
+				LineStation.of(1L, StationFixture.강남역().getId(), null, 0),
+				LineStation.of(2L, StationFixture.선릉역().getId(), StationFixture.강남역().getId(), 7)));
+
+		// when
+		lineStations.addSection(Section.of(StationFixture.역삼역(), StationFixture.선릉역(), 3));
+
+		// then
+		assertThat(lineStations.getStationIdsInOrder()).isEqualTo(
+			Stream.of(StationFixture.강남역(), StationFixture.역삼역(), StationFixture.선릉역())
+				.map(Station::getId)
+				.collect(Collectors.toList()));
+		assertThat(lineStations.getDistancesOnOrder()).isEqualTo(Arrays.asList(0, 4, 3));
+	}
+
+	@DisplayName("역 사이 새로운 구간을 등록할 때, 기존 역 사이 길이보다 크거나 같으면 등록 할 수 없다.")
+	@Test
+	void addSectionBetweenStationsFailOnIllegalDistance() {
+		// given
+		LineStations lineStations = LineStations.of(
+			Arrays.asList(
+				LineStation.of(1L, StationFixture.강남역().getId(), null, 0),
+				LineStation.of(2L, StationFixture.선릉역().getId(), StationFixture.강남역().getId(), 7)));
+
+		// when
+		assertThatThrownBy(() -> lineStations.addSection(Section.of(StationFixture.역삼역(), StationFixture.선릉역(), 7)))
+			.isInstanceOf(SectionAddFailException.class);
+
+	}
+
+	@DisplayName("상행 종점에 새로운 구간을 등록한다.")
+	@Test
+	void addSectionToUpStation() {
+		// given
+		LineStations lineStations = LineStations.of(
+			Arrays.asList(
+				LineStation.of(1L, StationFixture.역삼역().getId(), null, 0),
+				LineStation.of(2L, StationFixture.선릉역().getId(), StationFixture.역삼역().getId(), 7)));
+
+		// when
+		lineStations.addSection(Section.of(StationFixture.강남역(), StationFixture.역삼역(), 4));
+
+		// then
+		assertThat(lineStations.getStationIdsInOrder()).isEqualTo(
+			Stream.of(StationFixture.강남역(), StationFixture.역삼역(), StationFixture.선릉역())
+				.map(Station::getId)
+				.collect(Collectors.toList()));
+		assertThat(lineStations.getDistancesOnOrder()).isEqualTo(Arrays.asList(0, 4, 7));
+	}
+
+	@DisplayName("하행 종점에 새로운 구간을 등록한다.")
+	@Test
+	void addSectionToDownStation() {
+		// given
+		LineStations lineStations = LineStations.of(
+			Arrays.asList(
+				LineStation.of(1L, StationFixture.강남역().getId(), null, 0),
+				LineStation.of(2L, StationFixture.역삼역().getId(), StationFixture.강남역().getId(), 7)));
+
+		// when
+		lineStations.addSection(Section.of(StationFixture.역삼역(), StationFixture.선릉역(), 3));
+
+		// then
+		assertThat(lineStations.getStationIdsInOrder()).isEqualTo(
+			Stream.of(StationFixture.강남역(), StationFixture.역삼역(), StationFixture.선릉역())
+				.map(Station::getId)
+				.collect(Collectors.toList()));
+		assertThat(lineStations.getDistancesOnOrder()).isEqualTo(Arrays.asList(0, 7, 3));
 	}
 }
