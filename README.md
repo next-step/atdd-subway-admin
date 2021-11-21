@@ -59,7 +59,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - 두 종점역은 구간의 형태로 관리되어야 함
   - 구간 중에 downStation 쪽에 distance를 저장한다. (후방 노드에 distance가 remove에 작업이 좀 더 쉬울 것이라 예측)
   - 종점역 정보는 선택으로 받는다. (역 정보가 들어올 수도, 노선만 추가될 수도 있다고 생각)
-- [ ] 노선 조회 시 응답 결과에 역 목록 추가하기 
+- [x] 노선 조회 시 응답 결과에 역 목록 추가하기 
   - 상행역 부터 하행역 순으로 정렬되어야 함
 
 ## 고려한 점
