@@ -11,43 +11,48 @@ import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
 
 @Service
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+        Line saveLine = lineRepository.save(request.toLine());
+        List<Station> allByIdIsIn = stationRepository.findAllByIdIsIn(request.toStationIds());
+        saveLine.toStations(allByIdIsIn);
+        saveLine.changeStation();
+        return LineResponse.of(saveLine);
     }
 
     public List<LineResponse> findAllLine() {
-        return lineRepository.findAll().stream()
-                             .map(LineResponse::of)
-                             .collect(toList());
+        List<Line> all = lineRepository.findAll();
+        return all.stream()
+                  .map(LineResponse::of)
+                  .collect(toList());
     }
 
     public LineResponse findLineById(final Long id) {
 
         Line line = lineRepository.findById(id)
                                   .orElseThrow(EntityNotFoundException::new);
-
         return LineResponse.of(line);
     }
 
     public LineResponse updateLine(final Long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id)
                                   .orElseThrow(EntityNotFoundException::new);
-
         line.update(lineRequest.toLine());
-
         return LineResponse.of(line);
     }
 

@@ -1,22 +1,17 @@
 package nextstep.subway.line.domain;
 
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.Stations;
 
 @Entity
 public class Line extends BaseEntity {
@@ -29,26 +24,30 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private LineStationId lineStationId;
+    Section section = new Section();
 
     @Embedded
-    private Distance distance;
-
-    @OneToMany(mappedBy = "line", fetch = LAZY, cascade = ALL)
-    private List<Station> stations = new ArrayList<>();
-
-    protected Line() {
-    }
+    Stations stations = new Stations();
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public Line(String name, String color, LineStationId lineStationId, Distance distance) {
+    public Line(String name, String color, Section section) {
         this(name, color);
-        this.lineStationId = lineStationId;
-        this.distance = distance;
+        this.section = section;
+    }
+
+    public void changeStation() {
+        this.stations.changeLine(this);
+    }
+
+    public void toStations(List<Station> stations) {
+        this.stations = new Stations(stations);
+    }
+
+    protected Line() {
     }
 
     public void update(Line line) {
