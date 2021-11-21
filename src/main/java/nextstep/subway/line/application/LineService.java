@@ -14,6 +14,7 @@ import java.util.List;
 @Service
 @Transactional
 public class LineService {
+    public static final String THE_REQUESTED_INFORMATION_DOES_NOT_EXIST = "The requested information does not exist.";
     private LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
@@ -38,14 +39,14 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse findByLineId(Long id) {
         LineResponse lineResponse = new LineResponse();
-        Line line = lineRepository.findById(id).orElseThrow(NotFoundException::new);
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundException(THE_REQUESTED_INFORMATION_DOES_NOT_EXIST));
         BeanUtils.copyProperties(line, lineResponse);
         return lineResponse;
     }
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
         LineResponse lineResponse = new LineResponse();
-        Line line = lineRepository.findById(id).orElseThrow(NotFoundException::new);
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundException(THE_REQUESTED_INFORMATION_DOES_NOT_EXIST));
         line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
         BeanUtils.copyProperties(line, lineResponse);
         return lineResponse;
