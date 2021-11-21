@@ -7,41 +7,41 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class LineColor {
-	@Column(name = "color")
-	private String value;
+    @Column(name = "color")
+    private String value;
 
-	protected LineColor() {
-	}
+    protected LineColor() {
+    }
 
-	private LineColor(String value) {
-		this.value = value;
-	}
+    private LineColor(String value) {
+        this.value = value;
+    }
 
-	public static LineColor from(String value) {
-		return new LineColor(value);
-	}
+    public static LineColor from(String value) {
+        return new LineColor(value);
+    }
 
-	public String getValue() {
-		return value;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		LineColor lineColor = (LineColor)o;
-		return Objects.equals(value, lineColor.value);
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        LineColor lineColor = (LineColor)o;
+        return Objects.equals(value, lineColor.value);
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(value);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
 
-	@Override
-	public String toString() {
-		return value;
-	}
+    @Override
+    public String toString() {
+        return value;
+    }
 }
