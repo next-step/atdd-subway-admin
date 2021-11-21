@@ -34,9 +34,16 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse getLine(Long lineId) {
-        return lineRepository.findById(lineId)
+    public LineResponse getLine(Long id) {
+        return lineRepository.findById(id)
                 .map(LineResponse::of)
-                .orElseThrow(() -> new NotFoundLineException(lineId + " 노선이 없습니다."));
+                .orElseThrow(() -> new NotFoundLineException(id + " 노선이 없습니다."));
+    }
+
+    public LineResponse update(Long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NotFoundLineException(id + " 노선이 없습니다."));
+        line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
+        return LineResponse.of(line);
     }
 }

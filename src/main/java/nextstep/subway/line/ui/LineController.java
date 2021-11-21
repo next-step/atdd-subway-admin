@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/lines")
@@ -32,8 +31,12 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity getLine(@PathVariable Long id) {
-        LineResponse line = lineService.getLine(id);
-        return ResponseEntity.ok().body(line);
+        return ResponseEntity.ok().body(lineService.getLine(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        return ResponseEntity.ok().body(lineService.update(id, lineRequest));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
