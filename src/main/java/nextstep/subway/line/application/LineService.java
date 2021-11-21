@@ -8,6 +8,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineResponses;
 import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -42,11 +43,12 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = this.findSection(request.getUpStationId());
-        Station downStation = this.findSection(request.getDownStationId());
-        Section section = new Section(upStation, downStation, new Distance(request.getDistance()));
         validateDuplicatedLine(request.getName());
-        Line persistLine = lineRepository.save(request.toLine(section));
+        Line line = request.toLine(this.getNewSections(request));
+        line.getSections().getSections()
+                .stream()
+                .forEach(section -> section.setLine(line));
+        Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
     }
 
@@ -57,10 +59,17 @@ public class LineService {
         }
     }
 
-    public LineResponse updateLine(Long id, LineRequest request) {
+    private Sections getNewSections(LineRequest request) {
         Station upStation = this.findSection(request.getUpStationId());
         Station downStation = this.findSection(request.getDownStationId());
+        Section section = new Section(upStation, downStation, new Distance(request.getDistance()));
+        return new Sections(section);
+    }
+
+    public LineResponse updateLine(Long id, LineRequest request) {
         Line line = this.findById(id);
+        Station upStation = this.findSection(request.getUpStationId());
+        Station downStation = this.findSection(request.getDownStationId());
         line.update(request.getName(), request.getColor(), upStation, downStation, new Distance(request.getDistance()));
         Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
