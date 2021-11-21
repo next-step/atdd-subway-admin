@@ -107,20 +107,6 @@ public class Line extends BaseEntity {
     }
 
     public void removeSection(Station station) {
-        Optional<Section> upStationSection = sections.getSections().stream()
-                .filter(section -> section.isUpStation(station))
-                .findAny();
-
-        Optional<Section> downStationSection = sections.getSections().stream()
-                .filter(section -> section.isDownStation(station))
-                .findAny();
-
-        if (upStationSection.isPresent()) {
-            sections.remove(upStationSection.get());
-        }
-
-        if (downStationSection.isPresent()) {
-            sections.remove(downStationSection.get());
-        }
+        sections.removeSection(station);
     }
 }

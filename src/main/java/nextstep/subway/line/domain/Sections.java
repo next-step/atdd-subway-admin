@@ -77,7 +77,21 @@ public class Sections {
                 .ifPresent(section -> section.updateDownStation(upStation, distance));
     }
 
-    public void remove(Section section) {
-        sections.remove(section);
+    public void removeSection(Station station) {
+        Optional<Section> upStationSection = sections.stream()
+                .filter(section -> section.isUpStation(station))
+                .findAny();
+
+        Optional<Section> downStationSection = sections.stream()
+                .filter(section -> section.isDownStation(station))
+                .findAny();
+
+        if (upStationSection.isPresent()) {
+            sections.remove(upStationSection.get());
+        }
+
+        if (downStationSection.isPresent()) {
+            sections.remove(downStationSection.get());
+        }
     }
 }
