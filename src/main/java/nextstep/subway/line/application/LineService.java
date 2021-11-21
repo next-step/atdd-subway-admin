@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -8,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -32,20 +32,19 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse readLine(Long id) {
-        final Optional<Line> optionalLine = readById(id);
-        return LineResponse.of(optionalLine.orElse(null));
+        final Line line = readById(id);
+        return LineResponse.of(line);
     }
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        final Optional<Line> optionalLine = readById(id);
-
-        optionalLine.ifPresent(line -> line.update(lineRequest.toLine()));
-
-        return LineResponse.of(optionalLine.orElse(null));
+        final Line line = readById(id);
+        line.update(lineRequest.toLine());
+        return LineResponse.of(line);
     }
 
-    private Optional<Line> readById(Long id) {
-        return lineRepository.findById(id);
+    private Line readById(Long id) {
+        return lineRepository.findById(id)
+                             .orElseThrow(() -> new NotFoundException("해당하는 Line이 없습니다. id = " + id));
     }
 
     public void deleteLine(Long id) {
