@@ -63,13 +63,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("신분당선", "red");
+        String lineId = createResponse.jsonPath().get("id").toString();
 
         // when
-        // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(Long.parseLong(lineId));
 
         // then
-        // 지하철_노선_응답됨
+        지하철_노선_응답됨(response);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -113,12 +114,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .when()
                 .get("/lines")
                 .then().log().all()
                 .extract();
-        return response;
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(long lineId) {
+        return RestAssured.given().log().all()
+                .pathParam("lineId", lineId)
+                .when()
+                .get("/lines/{lineId}")
+                .then().log().all()
+                .extract();
     }
 
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
@@ -127,6 +136,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    private void 지하철_노선_응답됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     private void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {

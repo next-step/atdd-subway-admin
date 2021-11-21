@@ -33,4 +33,9 @@ public class LineService {
         }
         return response;
     }
+
+    public LineResponse findById(Long lineId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new RuntimeException("존재하지 않는 노선ID 입니다."));
+        return LineResponse.of(line);
+    }
 }
