@@ -38,6 +38,10 @@ public class StationFixture {
 		return new StationRequest("역삼역");
 	}
 
+	public static StationRequest 선릉역_생성_요청값() {
+		return new StationRequest("선릉역");
+	}
+
 	public static StationRequest 사당역_생성_요청값() {
 		return new StationRequest("사당역");
 	}
