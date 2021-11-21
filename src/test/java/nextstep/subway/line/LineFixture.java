@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.MediaType;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +14,16 @@ public class LineFixture {
     private LineFixture() {
     }
 
-    public static ExtractableResponse<Response> requestCreateLine(Map<String, String> params) {
+    private static Map<String, String> createParams(String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        return params;
+    }
+
+    public static ExtractableResponse<Response> requestCreateLine(String name, String color) {
+        Map<String, String> params = createParams(name, color);
+
         return RestAssured
                 .given().log().all()
                 .body(params)
@@ -22,10 +32,12 @@ public class LineFixture {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> requestUpdateLine(Long id, Map<String, String> params2) {
+    public static ExtractableResponse<Response> requestUpdateLine(Long id, String name, String color) {
+        Map<String, String> params = createParams(name, color);
+
         return RestAssured
                 .given().log().all()
-                .body(params2)
+                .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/lines/" + id)
                 .then().log().all().extract();

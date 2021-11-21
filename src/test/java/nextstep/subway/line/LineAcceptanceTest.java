@@ -9,9 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,10 +21,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "green");
-        ExtractableResponse<Response> response = LineFixture.requestCreateLine(params);
+        ExtractableResponse<Response> response = LineFixture.requestCreateLine("2호선", "green");
 
         // then
         // 지하철_노선_생성됨
@@ -39,17 +34,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "green");
-        LineFixture.requestCreateLine(params);
+        LineFixture.requestCreateLine("2호선", "green");
 
         // when
         // 지하철_노선_생성_요청
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "2호선");
-        params2.put("color", "green");
-        ExtractableResponse<Response> response = LineFixture.requestCreateLine(params2);
+        ExtractableResponse<Response> response = LineFixture.requestCreateLine("2호선", "green");
 
         // then
         // 지하철_노선_생성_실패됨
@@ -61,15 +50,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "green");
-        ExtractableResponse<Response> createdResponse1 = LineFixture.requestCreateLine(params);
+        ExtractableResponse<Response> createdResponse1 = LineFixture.requestCreateLine("2호선", "green");
         // 지하철_노선_등록되어_있음
-        Map<String, String> params2 = new HashMap<>();
-        params.put("name", "3호선");
-        params.put("color", "orange");
-        ExtractableResponse<Response> createdResponse2 = LineFixture.requestCreateLine(params);
+        ExtractableResponse<Response> createdResponse2 = LineFixture.requestCreateLine("3호선", "orange");
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -89,10 +72,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "green");
-        ExtractableResponse<Response> createdResponse = LineFixture.requestCreateLine(params);
+        ExtractableResponse<Response> createdResponse = LineFixture.requestCreateLine("2호선", "green");
         LineResponse createdLineResponse = LineFixture.ofLineResponse(createdResponse);
 
         // when
@@ -109,20 +89,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "green");
-
-        ExtractableResponse<Response> createdResponse = LineFixture.requestCreateLine(params);
+        ExtractableResponse<Response> createdResponse = LineFixture.requestCreateLine("2호선", "green");
         LineResponse createdLineResponse = LineFixture.ofLineResponse(createdResponse);
 
         // when
         // 지하철_노선_수정_요청
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "3호선");
-        params2.put("color", "red");
-
-        ExtractableResponse<Response> response = LineFixture.requestUpdateLine(createdLineResponse.getId(), params2);
+        ExtractableResponse<Response> response = LineFixture.requestUpdateLine(createdLineResponse.getId(), "3호선", "red");
 
         // then
         // 지하철_노선_수정됨
@@ -134,10 +106,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "green");
-        ExtractableResponse<Response> createdResponse = LineFixture.requestCreateLine(params);
+        ExtractableResponse<Response> createdResponse = LineFixture.requestCreateLine("2호선", "green");
         LineResponse createdLineResponse = LineFixture.ofLineResponse(createdResponse);
 
         // when
