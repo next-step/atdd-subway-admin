@@ -122,9 +122,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .collect(Collectors.toList());
     }
 
-    private List<Long> ids_추출_By_Location(ExtractableResponse<Response> createResponse1,
-        ExtractableResponse<Response> createResponse2) {
-        return Arrays.asList(createResponse1, createResponse2).stream()
+    private List<Long> ids_추출_By_Location(ExtractableResponse<Response>... createResponses) {
+        return Arrays.asList(createResponses).stream()
             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
             .collect(Collectors.toList());
     }

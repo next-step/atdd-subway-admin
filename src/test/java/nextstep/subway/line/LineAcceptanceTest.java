@@ -6,12 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
@@ -27,19 +26,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // given
         // 지하철_노선_생성_파라미터
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "orange darken-4");
+        Map<String, String> params = 지하철_노선_생성_파라미터_맵핑("2호선");
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
         // then
         // 지하철_노선_생성됨
@@ -52,32 +43,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "orange darken-4");
-
-        RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("lines")
-            .then().log().all()
-            .extract();
+        Map<String, String> params = 지하철_노선_생성_파라미터_맵핑("2호선");
+        지하철_노선_생성_요청(params);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
         // then
         // 지하철_노선_생성_실패됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
@@ -85,77 +62,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "2호선");
-        params1.put("color", "orange darken-4");
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "3호선");
-        params2.put("color", "orange darken-4");
-
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-            .body(params1)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("lines")
-            .then().log().all()
-            .extract();
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-            .body(params2)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> createResponse1 = 지하철_노선_등록되어_있음("2호선");
+        ExtractableResponse<Response> createResponse2 = 지하철_노선_등록되어_있음("3호선");
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청("/lines");
 
         // then
         // 지하철_노선_목록_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // 지하철_노선_목록_포함됨
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-            .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath()
-            .getList(".", LineResponse.class)
-            .stream()
-            .map(it -> it.getId())
-            .collect(Collectors.toList());
+        List<Long> expectedLineIds = ids_추출_By_Location(createResponse1, createResponse2);
+        List<Long> resultLineIds = ids_추출_By_LineResponse(response);
+
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
+
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "2호선");
-        params1.put("color", "orange darken-4");
-
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-            .body(params1)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("lines")
-            .then().log().all()
-            .extract();
-        long lineId = Long.parseLong(createResponse1.header("Location").split("/")[2]);
+        ExtractableResponse<Response> createResponse1 = 지하철_노선_등록되어_있음("2호선");
+        long lineId = ids_추출_By_Location(createResponse1).get(0);
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/lines/" + lineId)
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청("/lines/" + lineId);
 
         // then
         // 지하철_노선_응답됨
@@ -167,69 +103,106 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "2호선");
-        params1.put("color", "orange darken-4");
-        Map<String, String> updateParams = new HashMap<>();
-        updateParams.put("name", "3호선");
-        updateParams.put("color", "orange darken-4");
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-            .body(params1)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> createResponse1 = 지하철_노선_등록되어_있음("2호선");
         long lineId = Long.parseLong(createResponse1.header("Location").split("/")[2]);
+        Map<String, String> updateParams = 지하철_노선_생성_파라미터_맵핑("3호선");
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(updateParams)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .patch("/lines/" + lineId)
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(updateParams, lineId);
 
         // then
         // 지하철_노선_수정됨
         String responseLineName = response.jsonPath().get("name");
-
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
             () -> assertThat(responseLineName).isEqualTo(updateParams.get("name"))
         );
     }
 
+
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "2호선");
-        params1.put("color", "orange darken-4");
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-            .body(params1)
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음("2호선");
+
+        // when
+        // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(createResponse);
+
+        // then
+        // 지하철_노선_삭제됨
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+
+    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(String lineName) {
+        Map<String, String> params = 지하철_노선_생성_파라미터_맵핑(lineName);
+        return 지하철_노선_생성_요청(params);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청(String url) {
+        return RestAssured.given().log().all()
+            .when()
+            .get(url)
+            .then().log().all()
+            .extract();
+    }
+
+
+    private ExtractableResponse<Response> 지하철_노선_생성_요청(
+        Map<String, String> params) {
+        return RestAssured.given().log().all()
+            .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("lines")
             .then().log().all()
             .extract();
+    }
 
-        // when
-        // 지하철_노선_제거_요청
-        String uri = createResponse.header("Location");
 
-        // then
-        // 지하철_노선_삭제됨
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(Map<String, String> updateParams,
+        long lineId) {
+        return RestAssured.given().log().all()
+            .body(updateParams)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .patch("/lines/" + lineId)
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(ExtractableResponse<Response> response) {
+        String uri = response.header("Location");
+        return RestAssured.given().log().all()
             .when()
             .delete(uri)
             .then()
             .log().all()
             .extract();
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
+    private Map<String, String> 지하철_노선_생성_파라미터_맵핑(String s) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", s);
+        params.put("color", "orange darken-4");
+        return params;
+    }
+
+    private List<Long> ids_추출_By_LineResponse(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(".", LineResponse.class).stream()
+            .map(it -> it.getId())
+            .collect(Collectors.toList());
+    }
+
+    private List<Long> ids_추출_By_Location(ExtractableResponse<Response>... createResponses) {
+        return Arrays.asList(createResponses).stream()
+            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+            .collect(Collectors.toList());
+    }
+
 }
