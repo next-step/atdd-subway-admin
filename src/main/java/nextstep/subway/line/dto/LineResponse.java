@@ -3,6 +3,7 @@ package nextstep.subway.line.dto;
 import nextstep.subway.line.domain.Line;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class LineResponse {
     private final Long id;
@@ -40,26 +41,38 @@ public class LineResponse {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object target) {
+        if (this == target) {
+            return true;
+        }
 
-        LineResponse that = (LineResponse) o;
+        if (target == null || getClass() != target.getClass()) {
+            return false;
+        }
 
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (color != null ? !color.equals(that.color) : that.color != null) return false;
-        if (createdDate != null ? !createdDate.equals(that.createdDate) : that.createdDate != null) return false;
-        return modifiedDate != null ? modifiedDate.equals(that.modifiedDate) : that.modifiedDate == null;
+        LineResponse that = (LineResponse) target;
+
+        if (!Objects.equals(id, that.id)) {
+            return false;
+        }
+
+        if (!Objects.equals(name, that.name)) {
+            return false;
+        }
+
+        if (!Objects.equals(color, that.color)) {
+            return false;
+        }
+
+        if (!Objects.equals(createdDate, that.createdDate)) {
+            return false;
+        }
+
+        return Objects.equals(modifiedDate, that.modifiedDate);
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (color != null ? color.hashCode() : 0);
-        result = 31 * result + (createdDate != null ? createdDate.hashCode() : 0);
-        result = 31 * result + (modifiedDate != null ? modifiedDate.hashCode() : 0);
-        return result;
+        return Objects.hash(id, name, createdDate, modifiedDate);
     }
 }
