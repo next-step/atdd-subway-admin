@@ -66,8 +66,7 @@ public class LineService {
     }
 
     private void validateDuplicateLine(Line line) {
-        Optional<Line> optionalLine = Optional.ofNullable(
-            lineRepository.findByName(line.getName()));
+        Optional<Line> optionalLine = lineRepository.findByName(line.getName());
 
         optionalLine.ifPresent(findLine -> {
             throw new DuplicateException("이미 등록된 노선 이름을 사용할 수 없습니다.");
