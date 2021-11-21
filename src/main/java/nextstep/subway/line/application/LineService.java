@@ -37,11 +37,8 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineCreateRequest request) {
-        Station upStation = stationRepository.findById(request.getUpStationId())
-            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_UP_STATION_NOT_FOUND));
-        Station downStation = stationRepository.findById(request.getDownStationId())
-            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_DOWN_STATION_NOT_FOUND));
-
+        Station upStation = findStationById(request.getUpStationId(), MESSAGE_ON_UP_STATION_NOT_FOUND);
+        Station downStation = findStationById(request.getDownStationId(), MESSAGE_ON_DOWN_STATION_NOT_FOUND);
         Section section = Section.of(upStation, downStation, request.getDistance());
         Line line = lineRepository.save(Line.of(request.getName(), request.getColor(), section));
         return LineResponse.of(line);
@@ -56,37 +53,41 @@ public class LineService {
     }
 
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_LINE_NOT_FOUND));
+        Line line = findLineById(id);
 
         return LineResponse.of(line);
     }
 
     @Transactional
     public void updateLine(Long id, LineUpdateRequest request) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_LINE_NOT_FOUND));
+        Line line = findLineById(id);
 
         line.update(request.getName(), request.getColor());
     }
 
     @Transactional
     public void deleteLineById(Long id) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_LINE_NOT_FOUND));
+        Line line = findLineById(id);
 
         lineRepository.delete(line);
     }
 
     @Transactional
     public void addSection(Long id, SectionAddRequest request) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_LINE_NOT_FOUND));
-        Station upStation = stationRepository.findById(request.getUpStationId())
-            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_UP_STATION_NOT_FOUND));
-        Station downStation = stationRepository.findById(request.getDownStationId())
-            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_DOWN_STATION_NOT_FOUND));
+        Line line = findLineById(id);
+        Station upStation = findStationById(request.getUpStationId(), MESSAGE_ON_UP_STATION_NOT_FOUND);
+        Station downStation = findStationById(request.getDownStationId(), MESSAGE_ON_DOWN_STATION_NOT_FOUND);
 
         // TODO : 구간 등록
+    }
+
+    private Station findStationById(Long stationId, String messageOnStationNotFound) {
+        return stationRepository.findById(stationId)
+            .orElseThrow(() -> new NoSuchElementException(messageOnStationNotFound));
+    }
+
+    private Line findLineById(Long lineId) {
+        return lineRepository.findById(lineId)
+            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_LINE_NOT_FOUND));
     }
 }
