@@ -1,6 +1,7 @@
 package nextstep.subway.line.ui;
 
 import java.util.List;
+import javassist.NotFoundException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -9,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,6 +49,16 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.findByLineId(id));
     }
 
+    @PatchMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id,
+        @RequestBody LineRequest lineRequest) {
+        try {
+            return ResponseEntity.ok().body(lineService.updateLine(id, lineRequest));
+        } catch (NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+
+    }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {

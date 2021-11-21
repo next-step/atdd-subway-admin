@@ -3,6 +3,7 @@ package nextstep.subway.line.application;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javassist.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -48,5 +49,16 @@ public class LineService {
         return lineRepository.findById(id)
             .map(LineResponse::of)
             .orElse(null);
+    }
+
+    public LineResponse updateLine(Long id, LineRequest lineRequest) throws NotFoundException {
+        Optional<Line> optionalPersistLine = lineRepository.findById(id);
+        if (!optionalPersistLine.isPresent()) {
+            throw new NotFoundException("line not found");
+        }
+        Line persistLine = optionalPersistLine.get();
+
+        persistLine.update(lineRequest.toLine());
+        return LineResponse.of(persistLine);
     }
 }
