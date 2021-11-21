@@ -135,8 +135,6 @@ class SectionsTest {
 
 		final Sections sections = new Sections();
 		sections.add(Section.of(신분당선, 강남역, 양재역, 10));
-		sections.add(Section.of(신분당선, 양재역, 판교역, 10));
-		sections.add(Section.of(신분당선, 판교역, 광교역, 10));
 
 		assertThatExceptionOfType(IllegalSectionException.class)
 			.isThrownBy(() -> sections.add(Section.of(신분당선, 신분당선아닌역1, 신분당선아닌역2, 10)))
