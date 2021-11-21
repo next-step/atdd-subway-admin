@@ -111,44 +111,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         /// given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(params1)
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "9호선");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
-
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "역삼역");
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
+                .post("/lines")
                 .then().log().all()
                 .extract();
 
         // when
-        // 지하철_노선_조회_요청
+        String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get("/stations")
+                .get(uri)
                 .then().log().all()
                 .extract();
 
         // then
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        Long expectedLineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
+        Long resultLineId = response.jsonPath().getLong("id");
+        assertThat(resultLineId).isEqualTo(expectedLineId);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
