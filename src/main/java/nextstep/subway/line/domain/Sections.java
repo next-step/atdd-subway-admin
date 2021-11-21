@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -112,12 +113,10 @@ public class Sections {
 	}
 
 	private List<Station> getAllStationFrom(List<Section> sections) {
-		final List<Station> stations = new LinkedList<>();
-		if (!sections.isEmpty() && null != sections.get(0)) {
-			stations.add(sections.get(0).getUpStation());
-		}
-		stations.addAll(sections.stream().map(Section::getDownStation).collect(Collectors.toList()));
-		return stations;
+		return sections.stream()
+			.flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+			.distinct()
+			.collect(Collectors.toList());
 	}
 
 	@Override

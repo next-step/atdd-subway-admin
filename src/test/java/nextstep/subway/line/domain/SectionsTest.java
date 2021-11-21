@@ -50,9 +50,9 @@ class SectionsTest {
 			.containsExactly(양재역, 판교역, 광교역);
 	}
 
-	@DisplayName("구간추가/상행종착")
+	@DisplayName("구간추가/상행종착/1번만")
 	@Test
-	void add_upTerminal() {
+	void add_upTerminal_once() {
 		final Sections sections = new Sections();
 		sections.add(Section.of(신분당선, 양재역, 판교역, 10));
 
@@ -61,6 +61,20 @@ class SectionsTest {
 
 		assertThat(sections.getAllStationSortedByUpToDownFrom(firstSection))
 			.containsExactly(강남역, 양재역, 판교역);
+	}
+
+	@DisplayName("구간추가/상행종착/2번연속")
+	@Test
+	void add_upTerminal_twice() {
+		final Sections sections = new Sections();
+		sections.add(Section.of(신분당선, 판교역, 광교역, 4));
+
+		sections.add(Section.of(신분당선, 양재역, 판교역, 10));
+		final Section upTerminalSection = Section.of(신분당선, 강남역, 양재역, 4);
+		sections.add(upTerminalSection);
+
+		assertThat(sections.getAllStationSortedByUpToDownFrom(upTerminalSection))
+			.containsExactly(강남역, 양재역, 판교역, 광교역);
 	}
 
 	@DisplayName("구간추가/하행종착")
