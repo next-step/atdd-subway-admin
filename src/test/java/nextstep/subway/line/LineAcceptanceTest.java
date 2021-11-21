@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,15 +47,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철_노선_등록되어_있음("bg-red-600", "신분당선");
-        지하철_노선_등록되어_있음("bg-green-600", "2호선");
+        String name1 = "신분당선";
+        String name2 = "2호선";
+        지하철_노선_등록되어_있음("bg-red-600", name1);
+        지하철_노선_등록되어_있음("bg-green-600", name2);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
         지하철_노선_목록_응답됨(response);
-        지하철_노선_목록_포함됨(response);
+        지하철_노선_목록_포함됨(response, name1, name2);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -106,7 +109,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_수정_요청("bg-blue-600", "구분당선", 1);
 
         // then
-        지하철_노선_수정_실패됨(response);
+        지하철_노선_수정_실패됨(response, HttpStatus.NOT_FOUND);
+    }
+
+    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 수정하는 경우 실패한다.")
+    @Test
+    void updateLine_기존_존재하는_노선_이름() {
+        // given
+        지하철_노선_등록되어_있음("bg-red-600", "신분당선");
+        지하철_노선_등록되어_있음("bg-green-600", "2호선");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청("bg-blue-600", "2호선", 1);
+
+        // then
+        지하철_노선_수정_실패됨(response, HttpStatus.BAD_REQUEST);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -184,9 +201,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response) {
-        List<LineFindResponse> lines = response.jsonPath().getList(".", LineFindResponse.class);
-        assertThat(lines.size()).isEqualTo(2);
+    private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, String name1, String name2) {
+        List<LineFindResponse> lineFindResponses = response.jsonPath()
+                .getList(".", LineFindResponse.class);
+
+        List<String> names = lineFindResponses.stream()
+                .map(lineFindResponse -> lineFindResponse.getName())
+                .collect(Collectors.toList());
+
+        assertThat(names).containsExactly(name1, name2);
     }
 
     private ExtractableResponse<Response> 지하철_노선_조회_요청(int id) {
@@ -222,8 +245,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    private void 지하철_노선_수정_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    private void 지하철_노선_수정_실패됨(ExtractableResponse<Response> response, HttpStatus httpStatus) {
+        assertThat(response.statusCode()).isEqualTo(httpStatus.value());
     }
 
     private ExtractableResponse<Response> 지하철_노선_제거_요청(int id) {

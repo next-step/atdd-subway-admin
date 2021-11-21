@@ -31,6 +31,14 @@ public class LineFindResponse {
         return new LineFindResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
     }
 
+    public static List<LineFindResponse> ofList(List<Line> lines) {
+        List<LineFindResponse> lineFindResponses = new ArrayList<>();
+        for (Line line : lines) {
+            lineFindResponses.add(of(line));
+        }
+        return lineFindResponses;
+    }
+
     public Long getId() {
         return id;
     }
