@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineFindResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -76,8 +77,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        지하철역_등록되어_있음("강남역");
-        지하철역_등록되어_있음("역삼역");
+        String name1 = "강남역";
+        String name2 = "역삼역";
+        지하철역_등록되어_있음(name1);
+        지하철역_등록되어_있음(name2);
         지하철_노선_등록되어_있음("bg-red-600", "신분당선", "1", "2", "10");
 
         // when
@@ -85,6 +88,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_응답됨(response);
+        지하철역_목록_포함됨(name1, name2, response);
     }
 
     @DisplayName("조회한 노선이 존재하지 않을 경우 실패한다.")
@@ -290,5 +294,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_삭제_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    private void 지하철역_목록_포함됨(String name1, String name2, ExtractableResponse<Response> response) {
+        List<StationResponse> stationResponses = response.jsonPath()
+                .getList("stations", StationResponse.class);
+
+        List<String> names = stationResponses.stream()
+                .map(s -> s.getName()).collect(Collectors.toList());
+
+        assertThat(names).containsExactly(name1, name2);
     }
 }
