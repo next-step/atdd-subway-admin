@@ -28,10 +28,7 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> lines() {
         List<Line> lines = lineRepository.findAll();
-
-        return lines.stream()
-            .map(LineResponse::of)
-            .collect(Collectors.toList());
+        return LineResponse.ofList(lines);
     }
 
     @Transactional(readOnly = true)
