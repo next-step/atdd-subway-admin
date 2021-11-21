@@ -94,14 +94,6 @@ public class Section {
             && !containsExactlyStationPosition(section);
     }
 
-    public boolean containsExactlyUpStationPosition(Station station) {
-        return upStation.equals(station);
-    }
-
-    public boolean containsExactlyDownStationPosition(Station station) {
-        return downStation.equals(station);
-    }
-
     private boolean containsSomeStation(Section section) {
         List<Station> stations = Arrays.asList(upStation, downStation);
         return stations.contains(section.getUpStation())
@@ -109,7 +101,7 @@ public class Section {
     }
 
     private boolean containsExactlyStationPosition(Section section) {
-        return containsExactlyUpStationPosition(section.upStation)
-            || containsExactlyDownStationPosition(section.downStation);
+        return upStation.equals(section.upStation)
+            || downStation.equals(section.downStation);
     }
 }

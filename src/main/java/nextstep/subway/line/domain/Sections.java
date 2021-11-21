@@ -46,17 +46,28 @@ public class Sections {
 
     public void addSection(Section newSection) {
         validateAddSection(newSection);
+        if (!addSectionOfFirst(newSection)
+            && !addSectionOfLast(newSection)) {
+            addSectionOfBetween(newSection);
+        }
+    }
+
+    private boolean addSectionOfFirst(Section newSection) {
         Section firstSection = extractFirstSection();
         if (firstSection.containsAndNotSamePosition(newSection)) {
             new SectionStateSide().add(firstSection, newSection);
-            return;
+            return true;
         }
+        return false;
+    }
+
+    private boolean addSectionOfLast(Section newSection) {
         Section lastSection = extractLastSection();
         if (lastSection.containsAndNotSamePosition(newSection)) {
             new SectionStateSide().add(lastSection, newSection);
-            return;
+            return true;
         }
-        addSectionOfBetween(newSection);
+        return false;
     }
 
     private void addSectionOfBetween(Section newSection) {
