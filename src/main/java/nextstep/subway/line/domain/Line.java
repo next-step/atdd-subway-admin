@@ -1,8 +1,15 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.exception.NotEmptyLineColorException;
+import nextstep.subway.line.exception.NotEmptyLineNameException;
+import org.springframework.util.StringUtils;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 public class Line extends BaseEntity {
@@ -17,8 +24,18 @@ public class Line extends BaseEntity {
     }
 
     public Line(String name, String color) {
+        validate(name, color);
         this.name = name;
         this.color = color;
+    }
+
+    private void validate(String name, String color) {
+        if (!StringUtils.hasText(name)) {
+            throw new NotEmptyLineNameException();
+        }
+        if (!StringUtils.hasText(color)) {
+            throw new NotEmptyLineColorException();
+        }
     }
 
     public void update(Line line) {
@@ -37,4 +54,6 @@ public class Line extends BaseEntity {
     public String getColor() {
         return color;
     }
+
+
 }

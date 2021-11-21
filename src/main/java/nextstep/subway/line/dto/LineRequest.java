@@ -3,11 +3,8 @@ package nextstep.subway.line.dto;
 import nextstep.subway.line.domain.Line;
 
 public class LineRequest {
-    private String name;
-    private String color;
-
-    public LineRequest() {
-    }
+    private final String name;
+    private final String color;
 
     public LineRequest(String name, String color) {
         this.name = name;
@@ -16,10 +13,6 @@ public class LineRequest {
 
     public String getName() {
         return name;
-    }
-
-    public String getColor() {
-        return color;
     }
 
     public Line toLine() {

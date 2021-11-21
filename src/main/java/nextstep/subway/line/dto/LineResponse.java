@@ -3,16 +3,14 @@ package nextstep.subway.line.dto;
 import nextstep.subway.line.domain.Line;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class LineResponse {
-    private Long id;
-    private String name;
-    private String color;
-    private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
-
-    public LineResponse() {
-    }
+    private final Long id;
+    private final String name;
+    private final String color;
+    private final LocalDateTime createdDate;
+    private final LocalDateTime modifiedDate;
 
     public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
@@ -38,11 +36,43 @@ public class LineResponse {
         return color;
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
+    }
+
+    @Override
+    public boolean equals(Object target) {
+        if (this == target) {
+            return true;
+        }
+
+        if (target == null || getClass() != target.getClass()) {
+            return false;
+        }
+
+        LineResponse that = (LineResponse) target;
+
+        if (!Objects.equals(id, that.id)) {
+            return false;
+        }
+
+        if (!Objects.equals(name, that.name)) {
+            return false;
+        }
+
+        if (!Objects.equals(color, that.color)) {
+            return false;
+        }
+
+        if (!Objects.equals(createdDate, that.createdDate)) {
+            return false;
+        }
+
+        return Objects.equals(modifiedDate, that.modifiedDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, createdDate, modifiedDate);
     }
 }
