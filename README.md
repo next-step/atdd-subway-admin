@@ -52,3 +52,20 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+
+## 기능목록
+1. 노선 생성한다.
+ - 노선 생성 요청을 한다.
+ - 노선이 생성된다. 
+
+2. 노선 목록을 조회한다.
+ - 노선 목록 조회를 요청한다.
+ - 조회된 노선 목록을 검증한다.
+
+3. 노선을 수정한다.
+ - 노선 수정 요청을 한다.
+ - 노선이 수정되었는지 검증한다.
+
+4. 노선을 삭제한다
+ - 노선 삭제 요청을 한다.
