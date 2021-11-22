@@ -16,6 +16,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,11 +25,16 @@ import org.springframework.http.HttpStatus;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    private StationResponse 강남역;
+    private StationResponse 청계산입구역;
+    private StationResponse 역삼역;
+
     @BeforeEach
-    private void setup() {
-        지하철_역_생성(new StationRequest("강남역"));
-        지하철_역_생성(new StationRequest("청계산입구역"));
-        지하철_역_생성(new StationRequest("역삼역"));
+    public void setUp() {
+        super.setUp();
+        강남역 = 지하철_역_생성(new StationRequest("강남역")).as(StationResponse.class);
+        청계산입구역 = 지하철_역_생성(new StationRequest("청계산입구역")).as(StationResponse.class);
+        역삼역 = 지하철_역_생성(new StationRequest("역삼역")).as(StationResponse.class);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -36,7 +42,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         ExtractableResponse<Response> response =
-            지하철_노선_생성(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10));
+            지하철_노선_생성(new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 청계산입구역.getId(), 10));
 
         // then
         지하철_노선_생성됨(response);
@@ -46,11 +52,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        지하철_노선_생성(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10));
+        지하철_노선_생성(new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 청계산입구역.getId(), 10));
 
         // when
         final ExtractableResponse<Response> response =
-            지하철_노선_생성(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10));
+            지하철_노선_생성(new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 청계산입구역.getId(), 10));
 
         // then
         존재하는_지하철_노선_이름인_경우_노선_생성_실패(response);
@@ -61,9 +67,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         ExtractableResponse<Response> createResponse1 =
-            지하철_노선_생성(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 5));
+            지하철_노선_생성(new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 청계산입구역.getId(), 5));
         ExtractableResponse<Response> createResponse2 =
-            지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 1L, 3L, 10));
+            지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 강남역.getId(), 역삼역.getId(), 10));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회();
@@ -77,7 +83,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         ExtractableResponse<Response> createResponse =
-            지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 1L, 3L, 10));
+            지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 강남역.getId(), 역삼역.getId(), 10));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회(createResponse.header("Location"));
@@ -101,7 +107,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         ExtractableResponse<Response> createResponse =
-            지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 1L, 3L, 10));
+            지하철_노선_생성(new LineRequest("2호선", "bg-green-600", 강남역.getId(), 역삼역.getId(), 10));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_수정(createResponse.header("Location"),
@@ -116,7 +122,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         ExtractableResponse<Response> createResponse = 지하철_노선_생성(
-            new LineRequest("2호선", "bg-green-600", 1L, 3L, 10));
+            new LineRequest("2호선", "bg-green-600", 강남역.getId(), 역삼역.getId(), 10));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_삭제(createResponse.header("Location"));
