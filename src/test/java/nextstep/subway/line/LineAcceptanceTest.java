@@ -15,6 +15,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.utils.TestGetRequestFactory.요청_get;
+import static nextstep.subway.utils.TestPostRequestFactory.요청_post;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -178,22 +180,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    private ExtractableResponse<Response> 요청_post(String path, LineRequest lineRequest) {
-        return RestAssured
-                .given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(path)
-                .then().log().all().extract();
-    }
-
-    private ExtractableResponse<Response> 요청_get(String path) {
-        return RestAssured
-                .given().log().all()
-                .when().get(path)
-                .then().log().all().extract();
     }
 }
