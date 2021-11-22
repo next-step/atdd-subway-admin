@@ -10,10 +10,13 @@ import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static nextstep.subway.line.LineStep.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineSectionAcceptanceTest extends AcceptanceTest {
 
@@ -112,5 +115,54 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록_실패됨(response);
     }
 
+    @Test
+    void removeLineSection_상행_종점역이_제거될_경우_다음_역이_상행_종점역이_된다() {
+        // given
+        지하철_노선에_지하철역_등록되어_있음(이호선, 강남역, 역삼역, 3);
 
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_제거_요청(이호선, 강남역);
+
+        // then
+        LineResponse lineResponse = LineStep.지하철_노선_조회되어_있음(이호선);
+        지하철_노선에_지하철역_제거됨(response);
+        지하철_노선에_지하철역_모두_정렬됨(lineResponse, Arrays.asList(역삼역, 삼성역), 2);
+    }
+
+    @Test
+    void removeLineSection_하행_종점역이_제거될_경우_이전_역이_하행_종점역이_된다() {
+        // given
+        지하철_노선에_지하철역_등록되어_있음(이호선, 강남역, 역삼역, 3);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_제거_요청(이호선, 삼성역);
+
+        // then
+        LineResponse lineResponse = LineStep.지하철_노선_조회되어_있음(이호선);
+        지하철_노선에_지하철역_제거됨(response);
+        지하철_노선에_지하철역_모두_정렬됨(lineResponse, Arrays.asList(강남역, 역삼역), 2);
+    }
+
+    @Test
+    void removeLineSection_중간역을_제거한다() {
+        // given
+        지하철_노선에_지하철역_등록되어_있음(이호선, 강남역, 역삼역, 3);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_제거_요청(이호선, 역삼역);
+
+        // then
+        LineResponse lineResponse = LineStep.지하철_노선_조회되어_있음(이호선);
+        지하철_노선에_지하철역_제거됨(response);
+        지하철_노선에_지하철역_모두_정렬됨(lineResponse, Arrays.asList(강남역, 삼성역), 2);
+    }
+
+    @Test
+    void removeLineSection_구간이_하나인_노선에서_역을_제거할_수_없다() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_제거_요청(이호선, 강남역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

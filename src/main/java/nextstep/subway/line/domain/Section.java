@@ -27,6 +27,14 @@ public class Section {
 
     private int distance;
 
+    public static Section merge(Line line, Section upStationSection, Section downStationSection) {
+        return new Section(
+                line,
+                downStationSection.upStation,
+                upStationSection.downStation,
+                upStationSection.distance + downStationSection.distance);
+    }
+
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
@@ -94,5 +102,9 @@ public class Section {
         if (this.distance <= distance) {
             throw new IllegalStationDistanceException();
         }
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }

@@ -109,6 +109,11 @@ public class LineStep {
         assertThat(lineResponse.getStations()).containsAll(stations);
     }
 
+    public static void 지하철_노선에_지하철역_모두_정렬됨(LineResponse lineResponse, List<StationResponse> stations, int size) {
+        assertThat(lineResponse.getStations().size()).isEqualTo(size);
+        지하철_노선에_지하철역_정렬됨(lineResponse, stations);
+    }
+
     public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(LineResponse line, StationResponse upStation, StationResponse downStation, int distance) {
         SectionRequest request = new SectionRequest(upStation.getId(), downStation.getId(), distance);
         return RestAssured
@@ -120,7 +125,24 @@ public class LineStep {
                 .extract();
     }
 
+    public static LineResponse 지하철_노선에_지하철역_등록되어_있음(LineResponse line, StationResponse upStation, StationResponse downStation, int distance) {
+        return 지하철_노선에_지하철역_등록_요청(line, upStation, downStation, distance).as(LineResponse.class);
+    }
+
     public static void 지하철_노선에_지하철역_등록_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    public static void 지하철_노선에_지하철역_제거됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선에_지하철역_제거_요청(LineResponse line, StationResponse station) {
+        return RestAssured
+                .given().log().all()
+                .param("stationId", station.getId())
+                .when().delete("/lines/{lineId}/sections", line.getId())
+                .then().log().all()
+                .extract();
     }
 }

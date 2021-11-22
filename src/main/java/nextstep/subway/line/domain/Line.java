@@ -1,13 +1,14 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.exception.CannotRemoveStationException;
 import nextstep.subway.exception.SectionExistException;
 import nextstep.subway.exception.StationNotContainInUpOrDownStation;
-import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
@@ -103,6 +104,35 @@ public class Line extends BaseEntity {
         }
         if (hasStation(downStation)) {
             updateDownStation(upStation, downStation, distance);
+        }
+    }
+
+    public void removeSection(Station station) {
+        checkRemoveSection();
+
+        Optional<Section> upStationSection = sections.findUpStationSection(station);
+        Optional<Section> downStationSection = sections.findDownStationSection(station);
+
+        removeSection(upStationSection);
+        removeSection(downStationSection);
+        addSection(upStationSection, downStationSection);
+    }
+
+    private void checkRemoveSection() {
+        if (sections.isRemovable()) {
+            throw new CannotRemoveStationException();
+        }
+    }
+
+    private void addSection(Optional<Section> upStationSection, Optional<Section> downStationSection) {
+        if (upStationSection.isPresent() && downStationSection.isPresent()) {
+            sections.add(Section.merge(this, upStationSection.get(), downStationSection.get()));
+        }
+    }
+
+    private void removeSection(Optional<Section> upStationSection) {
+        if (upStationSection.isPresent()) {
+            sections.remove(upStationSection.get());
         }
     }
 }
