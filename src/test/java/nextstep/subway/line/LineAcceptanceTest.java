@@ -311,9 +311,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> requestDeleteSection(targetLineId, deletingStationId))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("구간이 1개인 라인의 종점역은 삭제할 수 없습니다.");
+        Assertions.assertThat(requestDeleteSection(targetLineId, deletingStationId).statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     @DisplayName("1개의 구간이 등록된 경우 하행 종점역을 제거시 에러를 발생한다.")
@@ -329,9 +327,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> requestDeleteSection(targetLineId, deletingStationId))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("구간이 1개인 라인의 종점역은 삭제할 수 없습니다.");
+        Assertions.assertThat(requestDeleteSection(targetLineId, deletingStationId).statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     private void createSingleSectionLine() {
@@ -432,7 +428,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return RestAssured.given().log().all().
                             contentType(MediaType.APPLICATION_JSON_VALUE).
                             when().
-                            delete("/lines/" + subwayLineId + "/section?stationId=" + StationId).
+                            delete("/lines/" + subwayLineId + "/sections?stationId=" + StationId).
                             then().
                             log().all().
                             extract();

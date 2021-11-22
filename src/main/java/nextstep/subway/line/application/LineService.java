@@ -78,4 +78,13 @@ public class LineService {
         
         return line.getSections();
     }
+
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        Sections sections = lineRepository.findById(lineId)
+                                            .orElseThrow(() -> new NoSuchElementException("조회되는 라인이 없습니다."))
+                                            .getSections();
+
+        sections.deleteSection(stationId);
+    }
 }

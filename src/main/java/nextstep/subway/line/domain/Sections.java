@@ -15,7 +15,7 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> values;
 
     protected Sections() {
@@ -149,6 +149,47 @@ public class Sections {
     private void checkNotContainStations(Optional<Section> upStationMaption, Optional<Section> downStationMaption) {
         if (upStationMaption.isEmpty() && downStationMaption.isEmpty()) {
             throw new IllegalArgumentException();
+        }
+    }
+
+    public void deleteSection(Long stationId) {
+        validateDelete();
+
+        Section findSection2 = this.values.stream()
+                                        .filter(findSection -> findSection.getUpStation().getId() == stationId)
+                                        .findFirst()
+                                        .orElse(Section.valueOf(null, null, null));
+                                        //.orElseThrow(() -> new NoSuchElementException("조회되는 구간이 없습니다."));
+
+        int index = 0;
+
+        index = this.values.indexOf(findSection2);
+
+        if (this.values.get(this.values.size() - 1).getDownStation().getId().equals(stationId)) {
+            index = this.values.size() - 1; 
+            Section deletedSection = this.values.get(index);
+
+            this.values.get(index - 1).plusDistance(deletedSection);
+            this.values.get(index - 1).updateDownStation(deletedSection.getUpStation());
+
+            this.values.remove(deletedSection);
+            return;
+        }
+
+        if (index == 0) {
+            this.values.remove(index);
+        } else {
+            Section deletedSection = this.values.get(index);
+
+            this.values.get(index - 1).plusDistance(deletedSection);
+            this.values.get(index - 1).updateDownStation(deletedSection.getDownStation());
+            this.values.remove(deletedSection);
+        }
+    }
+
+    private void validateDelete() {
+        if (this.values.size() <= 1) {
+            throw new IllegalArgumentException("구간이 1개 이하인 라인의 종점역은 삭제할 수 없습니다.");
         }
     }
 
