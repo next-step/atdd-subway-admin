@@ -4,6 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.utils.RestAssuredApiTest;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +32,6 @@ public class StationAcceptanceTestFactory {
     public static Map<String, String> getStationCreateParam(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
-        return params;
+        return Collections.unmodifiableMap(params);
     }
 }
