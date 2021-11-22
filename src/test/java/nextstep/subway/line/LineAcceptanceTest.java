@@ -54,10 +54,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
-        assertAll(
-                () -> 지하철_노선_목록_응답됨(response)
-                , () -> 지하철_노선_목록_포함됨(response, Arrays.asList("신분당선", "2호선"))
-        );
+        지하철_노선_목록_조회됨(response);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -181,6 +178,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private void 지하철_노선_목록_조회됨(ExtractableResponse<Response> response) {
+        assertAll(
+                () -> 지하철_노선_목록_응답됨(response)
+                , () -> 지하철_노선_목록_포함됨(response, Arrays.asList("신분당선", "2호선"))
+        );
     }
 
     private void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
