@@ -17,6 +17,8 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
+    public static final int POSSIBLE_REMOVE_SECTION_MIN = 2;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
@@ -74,6 +76,18 @@ public class Sections {
             .filter(section -> section.containsAndSamePosition(newSection))
             .findFirst()
             .ifPresent(section -> new SectionStateBetween().add(section, newSection));
+    }
+
+    public void removeSection(Long stationId) {
+        validateRemoveSectionSize();
+        List<Section> findSections = findRemoveSections(stationId);
+        validateExistStationToSection(findSections);
+    }
+
+    private List<Section> findRemoveSections(Long stationId) {
+        return sections.stream()
+            .filter(section -> section.containsStation(stationId))
+            .collect(Collectors.toList());
     }
 
     private Section extractFirstSection() {
@@ -139,6 +153,18 @@ public class Sections {
         if (!allStations.contains(newSection.getUpStation())
             && !allStations.contains(newSection.getDownStation())) {
             throw new NotFoundException(NON_EXIST_ALL_STATION_TO_SECTION.getMessage());
+        }
+    }
+
+    private void validateRemoveSectionSize() {
+        if (sections.size() == POSSIBLE_REMOVE_SECTION_MIN) {
+            throw new IllegalArgumentException(NOT_REMOVE_SECTION_MIN_SIZE.getMessage());
+        }
+    }
+
+    private void validateExistStationToSection(List<Section> findSections) {
+        if (findSections.isEmpty()) {
+            throw new IllegalArgumentException(NON_EXIST_STATION_TO_SECTION.getMessage());
         }
     }
 }

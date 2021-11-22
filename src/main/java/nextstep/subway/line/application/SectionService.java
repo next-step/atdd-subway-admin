@@ -42,6 +42,13 @@ public class SectionService {
             LineService.convertToStationResponse(findLine.getSections().createStations()));
     }
 
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line findLine = lineRepository.findByIdWithSections(lineId).orElseThrow(NotFoundException::new);
+        Sections sections = findLine.getSections();
+        sections.removeSection(stationId);
+    }
+
     private Station findStationById(Long stationId) {
         return stationRepository.findById(stationId)
             .orElseThrow(NotFoundException::new);

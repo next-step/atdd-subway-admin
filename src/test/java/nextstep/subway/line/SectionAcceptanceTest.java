@@ -171,7 +171,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철 종점 제거 요청을 한다.
-        String uri = 지하철_구간_추가_요청.header("Location") + "stationId=" + 잠실역.getId();
+        String uri = 지하철_구간_추가_요청.header("Location") + "?stationId=" + 잠실역.getId();
         ExtractableResponse<Response> response = 지하철_구간_제거_요청(uri);
 
         // then
@@ -189,7 +189,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철 종점 제거 요청을 한다.
-        String uri = 지하철_구간_추가_요청.header("Location") + "stationId=" + 사당역.getId();
+        String uri = 지하철_구간_추가_요청.header("Location") + "?stationId=" + 사당역.getId();
         ExtractableResponse<Response> response = 지하철_구간_제거_요청(uri);
 
         // then
@@ -207,7 +207,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철 종점 제거 요청을 한다.
-        String uri = 지하철_구간_추가_요청.header("Location") + "stationId=" + 강남역.getId();
+        String uri = 지하철_구간_추가_요청.header("Location") + "?stationId=" + 강남역.getId();
         ExtractableResponse<Response> response = 지하철_구간_제거_요청(uri);
 
         // then
@@ -223,7 +223,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철 종점 제거 요청을 한다.
-        String uri = "/lines/" + 이호선.getId() + "/stations?stationId=" + 사당역.getId();
+        String uri = "/lines/" + 이호선.getId() + "/sections?stationId=" + 사당역.getId();
         ExtractableResponse<Response> response = 지하철_구간_제거_요청(uri);
 
         // then
@@ -235,7 +235,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void deleteUniqueSection() {
         // when
         // 지하철 종점 제거 요청을 한다.
-        String uri = "/lines/" + 이호선.getId() + "/stations?stationId=" + 잠실역.getId();
+        String uri = "/lines/" + 이호선.getId() + "/sections?stationId=" + 잠실역.getId();
         ExtractableResponse<Response> response = 지하철_구간_제거_요청(uri);
 
         // then
@@ -253,12 +253,11 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_구간_제거_요청(String uri) {
-        ExtractableResponse<Response> response = RestAssured
+        return RestAssured
             .given().log().all()
             .when()
             .delete(uri)
             .then().log().all().extract();
-        return response;
     }
 
     private void 지하철_구간_추가됨(ExtractableResponse<Response> response) {
