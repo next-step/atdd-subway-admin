@@ -59,7 +59,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 * 인수 테스트 작성
   * [x] 생성
   * [x] 중복 생성 실패
-  * [ ] 목록 조회
+  * [x] 목록 조회
   * [ ] 조회
   * [ ] 수정
   * [ ] 삭제
