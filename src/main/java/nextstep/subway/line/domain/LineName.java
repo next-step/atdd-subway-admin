@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import org.springframework.util.StringUtils;
 
 @Embeddable
 public class LineName {
@@ -14,11 +15,19 @@ public class LineName {
     }
 
     private LineName(String value) {
+        validate(value);
         this.value = value;
     }
 
     public static LineName from(String value) {
         return new LineName(value);
+    }
+
+    private void validate(String value) {
+        if (StringUtils.hasText(value)) {
+            return;
+        }
+        throw new IllegalArgumentException("라인 이름은 빈 값일 수 없습니다.");
     }
 
     public String getValue() {
