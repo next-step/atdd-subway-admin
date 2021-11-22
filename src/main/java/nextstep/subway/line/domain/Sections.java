@@ -19,8 +19,9 @@ public class Sections {
 
 	private static final String ERROR_MESSAGE_STATIONS_NOT_INCLUDED_IN_LINE = "기존에 존재하는 역을 포함하여 구간 추가를 요청해야 합니다.";
 	private static final String ERROR_MESSAGE_ALREADY_EXIST_SECTION = "이미 등록된 구간 정보입니다.";
-
 	private static final String ERROR_MESSAGE_HAVING_CIRCULATION_IN_LINE = "노선에 순환이 존재합니다.";
+	private static final String ERROR_MESSAGE_NOT_EXIST_STATION = "해당 노선에 존재하지 않는 역입니다.";
+	private static final String ERROR_MESSAGE_NOT_ENOUGH_SECTIONS_TO_DELETE = "최소 2개의 구간이 존재하는 경우 삭제 가능합니다.";
 
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
@@ -126,5 +127,42 @@ public class Sections {
 
 	private boolean isEmpty() {
 		return sections.size() == 0;
+	}
+
+	public void deleteStation(Station station) {
+		validateAtLeastTwoSections();
+
+		List<Section> orderedSections = getOrderSections();
+		Section startSection = orderedSections.get(0);
+		if(startSection.matchUpStation(station)){
+			sections.remove(startSection);
+			return;
+		}
+
+		Section endSection = orderedSections.get(orderedSections.size() - 1);
+		if(endSection.matchDownStation(station)){
+			sections.remove(endSection);
+			return;
+		}
+
+		deleteBetweenSections(orderedSections,station);
+	}
+
+	private void deleteBetweenSections(List<Section> orderedSections, Station station) {
+		for(int i=1; i<orderedSections.size(); i++){
+			if(orderedSections.get(i).matchUpStation(station)){
+				orderedSections.get(i-1).changeDownStation(orderedSections.get(i).getDownStation());
+				sections.remove(orderedSections.get(i));
+				return;
+			}
+		}
+		throw new IllegalArgumentException(ERROR_MESSAGE_NOT_EXIST_STATION);
+	}
+
+	private void validateAtLeastTwoSections() {
+
+		if(sections.size()<=1){
+			throw new IllegalStateException(ERROR_MESSAGE_NOT_ENOUGH_SECTIONS_TO_DELETE);
+		}
 	}
 }

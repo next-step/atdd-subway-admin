@@ -165,7 +165,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			getDeleteStationInLinePath(신분당선.getId(), 강남역.getId()));
 
 		// then
-		AcceptanceTestFactory.삭제_완료_확인(삭제_결과);
+		ExtractableResponse<Response> 신분당선_조회_결과 = AcceptanceTestFactory.get("/lines/1");
+		지하철_노선_구간_순서_확인(신분당선_조회_결과, Arrays.asList(수지구청역, 성복역, 광교역));
+		AcceptanceTestFactory.정상_처리_확인(삭제_결과);
 	}
 
 	@DisplayName("하행 종점 삭제")
@@ -177,10 +179,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// when
 		ExtractableResponse<Response> 삭제_결과 = 지하철_노선_구간의_지하철역_삭제_요청(
-			getDeleteStationInLinePath(신분당선.getId(), 강남역.getId()));
+			getDeleteStationInLinePath(신분당선.getId(), 광교역.getId()));
 
 		// then
-		AcceptanceTestFactory.삭제_완료_확인(삭제_결과);
+		ExtractableResponse<Response> 신분당선_조회_결과 = AcceptanceTestFactory.get("/lines/1");
+		지하철_노선_구간_순서_확인(신분당선_조회_결과, Arrays.asList(강남역,수지구청역, 성복역));
+		AcceptanceTestFactory.정상_처리_확인(삭제_결과);
 	}
 
 	@DisplayName("구간 내 역 삭제")
@@ -188,14 +192,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	void removeSection3() {
 		// given
 		지하철_노선에_구간_등록_요청(구간_정보_정의(강남역.getId(), 수지구청역.getId(), 4), getSectionInLinePath(신분당선.getId()));
-		지하철_노선에_구간_등록_요청(구간_정보_정의(수지구청역.getId(), 성복역.getId(), 2), getSectionInLinePath(신분당선.getId()));
 
 		// when
 		ExtractableResponse<Response> 삭제_결과 = 지하철_노선_구간의_지하철역_삭제_요청(
-			getDeleteStationInLinePath(신분당선.getId(), 강남역.getId()));
+			getDeleteStationInLinePath(신분당선.getId(), 수지구청역.getId()));
 
 		// then
-		AcceptanceTestFactory.삭제_완료_확인(삭제_결과);
+		ExtractableResponse<Response> 신분당선_조회_결과 = AcceptanceTestFactory.get("/lines/1");
+		지하철_노선_구간_순서_확인(신분당선_조회_결과, Arrays.asList(강남역,광교역));
+		AcceptanceTestFactory.정상_처리_확인(삭제_결과);
 	}
 
 	private void 지하철_노선_구간_순서_확인(ExtractableResponse<Response> 강남_성복_구간_등록_결과, List<StationResponse> expectedStations) {
@@ -233,6 +238,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 	private String getDeleteStationInLinePath(Long lineId, Long stationId) {
 		return String.join("", LineAcceptanceTest.LINE_SERVICE_PATH, "/", String.valueOf(lineId),
-			SECTION_SERVICE_PATH, "?", STATION_QUERY_PARAMETER_PATH, String.valueOf(stationId));
+			SECTION_SERVICE_PATH, "?", STATION_QUERY_PARAMETER_PATH,"=", String.valueOf(stationId));
 	}
 }

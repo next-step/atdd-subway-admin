@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 
@@ -85,5 +86,9 @@ public class Line extends BaseEntity {
 			", name='" + name + '\'' +
 			", color='" + color + '\'' +
 			'}';
+	}
+
+	public void deleteStation(Station station) {
+		sections.deleteStation(station);
 	}
 }

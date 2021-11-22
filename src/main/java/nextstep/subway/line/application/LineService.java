@@ -88,4 +88,11 @@ public class LineService {
 		line.addSection(section);
 		return LineResponse.from(line);
 	}
+
+	@Transactional
+	public void removeSectionByStationId(Long lineId, Long stationId) {
+		Line line = getLine(lineId);
+		Station station = stationService.getStationEntity(stationId);
+		line.deleteStation(station);
+	}
 }

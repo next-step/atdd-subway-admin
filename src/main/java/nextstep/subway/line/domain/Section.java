@@ -126,4 +126,8 @@ public class Section {
 			throw new IllegalArgumentException(ERROR_MESSAGE_LONGER_THAN_EXIST_SECTION);
 		}
 	}
+
+	public void changeDownStation(Station downStation) {
+		this.downStation=downStation;
+	}
 }
