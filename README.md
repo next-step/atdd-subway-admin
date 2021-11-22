@@ -96,3 +96,32 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [X] 노선 조회 시 응답 결과에 역 목록 추가하기
   - [X] 노선 조회 시 역 목록을 함께 응답함
   - [X] 상행역 부터 하행역 순으로 정렬되어야 함
+
+### [3단계] 구간 추가 기능
+
+지하철 구간 등록 기능 구현하기
+- 구간 등록 API Request
+```
+POST /lines/1/sections HTTP/1.1
+accept: */*
+content-type: application/json; charset=UTF-8
+host: localhost:52165
+
+{
+    "downStationId": "4",
+    "upStationId": "2",
+    "distance": 10
+}
+```
+- [ ] 기능 구현 전 구간 등록 인수 테스트 작성
+- [ ] 예외 케이스 처리 인수 테스트 작성
+  - [ ] 하행역이 두 역 사이에 등록 될 경우
+  - [ ] 상행역이 두 역 사이에 등록 될 경우
+  - [ ] 상행 종점이 새로 등록될 경우
+  - [ ] 하행 종점이 새로 등록될 경우
+  - [ ] 역 사이에 새로운 역을 등록할 때 기존 역 사이 길이보다 작아야 한다.
+  - [ ] 상행역과 하행역 모두가 구간에 등록되어 있으면 추가할 수 없다.
+  - [ ] 상행역과 하행역 둘 중 하나가 구간에 포함되어있지 않으면 추가 할 수 없다.
+- [ ] 기능 구현
+- [ ] 테스트 리펙터링
+- [ ] 기능 리펙터링
