@@ -47,18 +47,6 @@ public class Section extends BaseEntity {
         this.distance = new Distance(distance);
     }
 
-    private void validateDuplicateStation(Station upStation, Station downStation) {
-        if (upStation.equals(downStation)) {
-            throw new IllegalArgumentException(ERROR_MESSAGE_DUPLICATE_STATION);
-        }
-    }
-
-    private void validateDistanceBound(int distance) {
-        if (distance < 1) {
-            throw new IllegalArgumentException(ERROR_MESSAGE_DISTANCE_BOUND);
-        }
-    }
-
     public static Section of(Long id, Station upStation, Station downStation, int distance) {
         return new Section(id, upStation, downStation, distance);
     }
@@ -73,5 +61,17 @@ public class Section extends BaseEntity {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    private void validateDuplicateStation(Station upStation, Station downStation) {
+        if (upStation.equals(downStation)) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_DUPLICATE_STATION);
+        }
+    }
+
+    private void validateDistanceBound(int distance) {
+        if (distance < 1) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_DISTANCE_BOUND);
+        }
     }
 }
