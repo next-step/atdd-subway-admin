@@ -5,6 +5,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,16 +15,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class LineService {
     private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
+    @Transactional
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+        Station upStation = findStation(request.getUpStationId());
+        Station downStation = findStation(request.getDownStationId());
+
+        Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
 
@@ -41,6 +49,7 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    @Transactional
     public LineResponse update(LineUpdateRequest lineUpdateRequest) {
         Line line = lineRepository.findById(lineUpdateRequest.getId())
                 .orElseThrow(() ->
@@ -50,7 +59,13 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    @Transactional
     public void delete(Long lineId) {
         lineRepository.deleteById(lineId);
+    }
+
+    private Station findStation(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException());
     }
 }
