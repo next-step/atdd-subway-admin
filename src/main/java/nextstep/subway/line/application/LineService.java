@@ -1,5 +1,8 @@
 package nextstep.subway.line.application;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,4 +34,30 @@ public class LineService {
 		}
 	}
 
+	public List<LineResponse> getLines() {
+		return lineRepository.findAll().stream()
+			.map(LineResponse::of)
+			.collect(Collectors.toList());
+	}
+
+	public LineResponse getLineById(Long id) {
+		Line line = getById(id);
+		return LineResponse.of(line);
+	}
+
+	public LineResponse modify(Long id, LineRequest lineRequest) {
+		Line line = getById(id);
+		line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
+		return LineResponse.of(line);
+	}
+
+	private Line getById(Long id) {
+		return lineRepository.findById(id)
+			.orElseThrow(() -> new AppException(ErrorCode.WRONG_INPUT, id + "는 존재하지 않습니다"));
+	}
+
+	public void deleteLineById(Long id) {
+		Line line = getById(id);
+		lineRepository.delete(line);
+	}
 }
