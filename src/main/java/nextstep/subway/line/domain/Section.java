@@ -23,17 +23,36 @@ public class Section {
     @JoinColumn(name = "station_id")
     private Station station;
 
+    private Double position;
+
     protected Section() {
 
     }
 
-    private Section(Line line, Station station) {
+    private Section(Line line, Station station, Double position) {
         this.line = line;
         this.station = station;
+        this.position = position;
     }
 
     public static Section create(Line line, Station station) {
-        return new Section(line, station);
+        return new Section(line, station, 65535.0);
+    }
+
+    public static Section create(Line line, Station station, Double position) {
+        return new Section(line, station, position);
+    }
+
+    public void updatePosition(Double position) {
+        this.position = position;
+    }
+
+    public Double getPosition() {
+        return position;
+    }
+
+    public Station getStation() {
+        return station;
     }
 
     @Override

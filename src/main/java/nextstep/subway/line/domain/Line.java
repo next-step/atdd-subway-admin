@@ -47,7 +47,7 @@ public class Line extends BaseEntity {
             this.distance = line.getDistance();
         }
 
-        this.sections = line.getSections();
+        this.sections.addAll(line.getSections());
     }
 
     public void addSection(Station station) {
@@ -55,7 +55,8 @@ public class Line extends BaseEntity {
     }
 
     public void addSections(List<Station> stations) {
-        this.sections.addAll(stations.stream()
+        this.sections.addAll(
+                stations.stream()
                 .map(s -> Section.create(this, s))
                 .collect(toList())
         );
@@ -77,8 +78,8 @@ public class Line extends BaseEntity {
         return distance;
     }
 
-    public Sections getSections() {
-        return sections;
+    public List<Section> getSections() {
+        return sections.getSections();
     }
 
     @Override

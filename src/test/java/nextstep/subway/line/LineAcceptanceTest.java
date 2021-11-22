@@ -4,6 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.ApiUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -96,8 +97,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        지하철_노선_등록("신분당선", "bg-red-600", 1L, 2L, 10);
-        지하철_노선_등록("2호선", "bg-blue-600", 3L, 4L, 5);
+        지하철_노선_등록("신분당선", "bg-red-600", 10);
+
+        ExtractableResponse<Response> upStationResponse = 지하철역_등록("신설동");
+        ExtractableResponse<Response> downStationResponse = 지하철역_등록("까치산");
+
+        long upStationId = upStationResponse.body().jsonPath().getLong("id");
+        long downStationId = downStationResponse.body().jsonPath().getLong("id");
+
+        지하철_노선_등록("2호선", "bg-blue-600", upStationId, downStationId, 5);
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -110,6 +118,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<LineResponse> lines = response.body().jsonPath().getList(".", LineResponse.class);
         assertThat(lines).extracting(LineResponse::getName).contains("신분당선", "2호선");
         assertThat(lines).extracting(LineResponse::getColor).contains("bg-blue-600", "bg-red-600");
+        assertThat(lines).flatExtracting(LineResponse::getStations).extracting(StationResponse::getName)
+                .contains("광교", "강남", "신설동", "까치산");
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -117,7 +127,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = 지하철_노선_등록("신분당선", "bg-red-600", 1L, 2L, 10);
+        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
+        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
+
+        long upStationId = upStationResponse.body().jsonPath().getLong("id");
+        long downStationId = downStationResponse.body().jsonPath().getLong("id");
+
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 10);
         Long id = createResponse.body().jsonPath().getLong("id");
 
         // when
@@ -128,9 +144,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         LineResponse line = response.body().jsonPath().getObject(".", LineResponse.class);
+
         assertThat(line.getId()).isEqualTo(1L);
         assertThat(line.getName()).isEqualTo("신분당선");
         assertThat(line.getColor()).isEqualTo("bg-red-600");
+        assertThat(line.getStations().size()).isEqualTo(2);
+        assertThat(line.getStations()).extracting(StationResponse::getName).contains("강남", "광교");
     }
 
     @DisplayName("지하철 노선을 수정한다.")
