@@ -40,12 +40,13 @@ public class Station extends BaseEntity implements Comparable<Station> {
         this.id = id;
     }
 
-    protected Station() {
-    }
-
     public Station(Long upStationId) {
         this.id = upStationId;
     }
+
+    protected Station() {
+    }
+
 
     public String getName() {
         return name;
