@@ -66,4 +66,22 @@ public class SectionTest {
         assertThat(section1.getDownStation()).isEqualTo(부천역);
         assertThat(section1.getDistance()).isEqualTo(1);
     }
+
+    @Test
+    void connectWith() {
+        // given
+        final Station 송내역 = stationRepository.save(new Station("송내역"));
+        final Station 부천역 = stationRepository.save(new Station("부천역"));
+        final Station 신도림역 = stationRepository.save(new Station("신도림역"));
+        final Section section1 = new Section(송내역, 부천역, 1);
+        final Section section2 = new Section(부천역, 신도림역, 9);
+
+        // when
+        section1.connectWith(section2);
+
+        // then
+        assertThat(section1.getUpStation()).isEqualTo(송내역);
+        assertThat(section1.getDownStation()).isEqualTo(신도림역);
+        assertThat(section1.getDistance()).isEqualTo(10);
+    }
 }

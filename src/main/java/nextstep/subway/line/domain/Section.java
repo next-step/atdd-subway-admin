@@ -57,6 +57,16 @@ public class Section extends BaseEntity {
         distance = distance - section.getDistance();
     }
 
+    void connectWith(final Section section) {
+        if (isNextSection(section)) {
+            upStation = section.getUpStation();
+        }
+        if (section.isNextSection(this)) {
+            downStation = section.getDownStation();
+        }
+        distance = distance + section.getDistance();
+    }
+
     List<Station> getStations() {
         return Arrays.asList(upStation, downStation);
     }

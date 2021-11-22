@@ -64,6 +64,12 @@ public class LineService {
         line.addSection(additionalSection);
     }
 
+    public void deleteSection(final Long stationId, final Long id) {
+        final Line line = getLineById(id);
+        final Station targetStation = getStationById(stationId);
+        line.deleteSection(targetStation);
+    }
+
     private void validateDuplicatedName(final LineRequest request) {
         final boolean duplicated = lineRepository.findByName(request.getName()).isPresent();
         if (duplicated) {
