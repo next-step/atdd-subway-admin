@@ -35,13 +35,6 @@ public class LineResponse {
             line.getCreatedDate(), line.getModifiedDate());
     }
 
-    private static List<StationResponse> convertStationResponses(List<Section> sections) {
-        return sections
-            .stream()
-            .map(section -> StationResponse.of(section.getStation()))
-            .collect(Collectors.toList());
-    }
-
     public Long getId() {
         return id;
     }
@@ -66,4 +59,22 @@ public class LineResponse {
         return modifiedDate;
     }
 
+    private static List<StationResponse> convertStationResponses(List<Section> sections) {
+        return sections
+            .stream()
+            .map(section -> StationResponse.of(section.getStation()))
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public String toString() {
+        return "LineResponse{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", color='" + color + '\'' +
+            ", stations=" + stations +
+            ", createdDate=" + createdDate +
+            ", modifiedDate=" + modifiedDate +
+            '}';
+    }
 }

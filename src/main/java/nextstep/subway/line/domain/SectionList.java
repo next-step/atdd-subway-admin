@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import javax.swing.ListModel;
 import nextstep.subway.section.domain.Section;
 
 @Embeddable
@@ -25,7 +24,7 @@ public class SectionList {
 
     public List<Section> getSortedList() {
         return this.sections.stream()
-            .sorted(Comparator.comparing(Section::getSortSeq))
+            .sorted()
             .collect(Collectors.toList());
     }
 }

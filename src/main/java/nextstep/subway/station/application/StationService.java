@@ -38,18 +38,19 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public StationResponse findStationById(Long id) {
         return StationResponse.of(findById(id));
-    }
-
-    private Station findById(Long id) {
-        return stationRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException());
     }
 
     public void updateStationById(Long id, StationRequest request) {
         Station station = findById(id);
         station.update(request.getName());
         stationRepository.save(station);
+    }
+
+    private Station findById(Long id) {
+        return stationRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException());
     }
 }

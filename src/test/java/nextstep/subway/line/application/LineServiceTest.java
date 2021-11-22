@@ -10,7 +10,12 @@ import java.util.Optional;
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.SectionList;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.domain.SectionType;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,14 +32,22 @@ class LineServiceTest {
     @Mock
     private LineRepository lineRepository;
 
+    @Mock
+    private SectionRepository sectionRepository;
+
     @InjectMocks
     private LineService lineService;
 
     private Line line;
+    private SectionList sectionList;
 
     @BeforeEach
     public void setUp() {
+        Section 시작 = new Section(10, 1, new Station("시작"), SectionType.UP);
+        Section 끝 = new Section(0, 2, new Station("끝"), SectionType.DOWN);
         line = new Line("1호선", "blue");
+        시작.setLine(line);
+        끝.setLine(line);
     }
 
     @Test
@@ -68,8 +81,6 @@ class LineServiceTest {
             .thenReturn(Arrays.asList(line));
         List<LineResponse> lineResponseList = lineService.findLines();
         assertThat(lineResponseList.size()).isEqualTo(1);
-
-        System.out.println(lineResponseList);
     }
 
 }

@@ -38,14 +38,18 @@ class SectionTest {
             assertThat(yongsanStation.getName()).isEqualTo("용산역");
         });
 
-        Section section1 = sectionRepository.save(new Section(10, 1, seoulStation));
-        Section section2 = sectionRepository.save(new Section(10, 2, yongsanStation));
+        Section section1 = sectionRepository.save(new Section(10, 1, seoulStation, SectionType.UP));
+        Section section2 = sectionRepository.save(new Section(10, 2, yongsanStation, SectionType.DOWN));
 
         Line line = lineRepository.save(new Line("1호선", "blue"));
         line.addSections(Arrays.asList(section1, section2));
 
         //쿼리 확인
         lineRepository.flush();
+
+        Line findLine = lineRepository.findById(line.getId()).get();
+        assertThat(findLine.getSections().size()).isEqualTo(2);
+
     }
 
 

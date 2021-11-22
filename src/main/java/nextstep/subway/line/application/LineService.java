@@ -3,13 +3,16 @@ package nextstep.subway.line.application;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import nextstep.subway.common.Messages;
 import nextstep.subway.exception.NotFoundException;
+import nextstep.subway.line.common.Constants;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.domain.SectionType;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -33,27 +36,24 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = stationRepository.findById(request.getUpStationId())
-            .orElseThrow(() -> new NotFoundException("역정보가 없습니다."));
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
 
-        Station downStation = stationRepository.findById(request.getDownStationId())
-            .orElseThrow(() -> new NotFoundException("역정보가 없습니다."));
-
-        Section section1 = sectionRepository.save(new Section(request.getDistance(), 1, upStation));
-        Section section2 = sectionRepository
-            .save(new Section(request.getDistance(), 1, downStation));
+        List<Section> sections = saveUpDownSection(request, upStation, downStation);
 
         Line persistLine = lineRepository.save(request.toLine());
-        persistLine.addSections(Arrays.asList(section1, section2));
+        persistLine.addSections(sections);
 
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLine(Long lineId) {
         Line line = findById(lineId);
         return LineResponse.of(line);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findLines() {
         List<Line> lineList = lineRepository.findAll();
         return lineList
@@ -78,7 +78,21 @@ public class LineService {
 
     private Line findById(Long lineId) {
         return lineRepository.findById(lineId)
-            .orElseThrow(() -> new NotFoundException());
+            .orElseThrow(() -> new NotFoundException(Messages.NO_LINE.getValues()));
     }
 
+    private Station findStationById(Long stationId) {
+        return stationRepository.findById(stationId)
+            .orElseThrow(() -> new NotFoundException(Messages.NO_STATION.getValues()));
+    }
+
+    private Section saveSection(Section entity) {
+        return sectionRepository.save(entity);
+    }
+
+    private List<Section> saveUpDownSection(LineRequest request, Station upStation, Station downStation) {
+        Section up = saveSection(new Section(request.getDistance(), Constants.UP_SORT_SEQ, upStation, SectionType.UP));
+        Section down = saveSection(new Section(Constants.DOWN_DISTANCE, Constants.DOWN_SORT_SEQ, downStation, SectionType.DOWN));
+        return Arrays.asList(up, down);
+    }
 }
