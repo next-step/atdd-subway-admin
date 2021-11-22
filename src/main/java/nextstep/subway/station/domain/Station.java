@@ -2,6 +2,7 @@ package nextstep.subway.station.domain;
 
 import static javax.persistence.GenerationType.*;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
@@ -26,7 +27,7 @@ public class Station extends BaseEntity implements Comparable<Station> {
     @Column(unique = true)
     private String name;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_station_to_line"))
     private Line line;
 

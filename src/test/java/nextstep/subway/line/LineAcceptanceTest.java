@@ -123,10 +123,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        LineResponse lineResponse = 지하철_노선_등록되어_있음(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED));
+        StationResponse station1 = 지하철역_등록되어_있음(new StationRequest(서울역));
+        StationResponse station2 = 지하철역_등록되어_있음(new StationRequest(용산역));
+        LineResponse lineResponse = 지하철_노선_등록되어_있음(
+            new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, station1.getId(), station2.getId(), 10));
 
         // when
-        LineRequest updateRequest = new LineRequest(LINE_THREE, LINE_THREE_YELLOW);
+        LineRequest updateRequest = new LineRequest(LINE_THREE, LINE_THREE_YELLOW, station1.getId(), station2.getId(), 10);
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(lineResponse.getId(), updateRequest);
 
         // then
@@ -141,7 +144,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineResponse lineResponse = 지하철_노선_등록되어_있음(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED));
+        StationResponse station1 = 지하철역_등록되어_있음(new StationRequest(서울역));
+        StationResponse station2 = 지하철역_등록되어_있음(new StationRequest(용산역));
+        LineResponse lineResponse = 지하철_노선_등록되어_있음(
+            new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, station1.getId(), station2.getId(), 10));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(lineResponse.getId());

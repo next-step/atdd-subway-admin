@@ -18,6 +18,7 @@ import nextstep.subway.line.domain.Line;
 
 @Embeddable
 public class Stations {
+
     @OneToMany(fetch = LAZY, mappedBy = "line", cascade = MERGE)
     private Set<Station> stations = new HashSet<>();
 
