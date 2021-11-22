@@ -22,10 +22,12 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public LineResponses findAllLines() {
         return LineResponses.of(lineRepository.findAll());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLineById(final long id) {
         return LineResponse.of(getLine(id));
     }
