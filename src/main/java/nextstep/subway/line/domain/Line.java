@@ -2,6 +2,8 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.entity.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -10,6 +12,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 @Entity
@@ -49,6 +52,12 @@ public class Line extends BaseEntity {
         section.addLine(this);
     }
 
+    public List<Station> getStations() {
+        List<Station> stations = sections.stream().map(Section::getStation).collect(Collectors.toList());
+        stations.add(sections.get(sections.size() - 1).getNextStation());
+        return stations;
+    }
+
     public Long getId() {
         return id;
     }
@@ -77,5 +86,6 @@ public class Line extends BaseEntity {
     public int hashCode() {
         return Objects.hash(getId());
     }
+
 
 }

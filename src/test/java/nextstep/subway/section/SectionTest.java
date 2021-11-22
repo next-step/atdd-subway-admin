@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -50,11 +52,23 @@ public class SectionTest {
         assertThat(findSection.getLine().getId()).isEqualTo(line.getId());
     }
 
-    @DisplayName("노선역_목록_조회")
+    @DisplayName("노선의 역 목록 조회")
     @Test
-    void getStationsTest() {
-        // given
+    void getStations() {
+        final Distance 거리_5 = Distance.of(5);
+        final Line 일호선 = new Line("일호선","blue");
+        final Station 서울역 = new Station("서울역");
+        final Station 시청역 = new Station("시청역");
+        Section 서울역_시청_구간 = new Section(일호선, 서울역, 시청역, 거리_5);
+        일호선.addSection(서울역_시청_구간);
 
+        final Station 종각역 = new Station("종각역");
+        Section 시청_종각역_구간 = new Section(일호선, 시청역, 종각역, 거리_5);
+        일호선.addSection(시청_종각역_구간);
+
+        List<Station> stations = 일호선.getStations();
+
+        assertThat(stations).hasSize(3);
+        assertThat(stations).contains(서울역, 시청역, 종각역);
     }
-
 }
