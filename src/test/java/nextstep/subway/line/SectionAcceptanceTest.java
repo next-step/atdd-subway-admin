@@ -203,6 +203,30 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		AcceptanceTestFactory.정상_처리_확인(삭제_결과);
 	}
 
+	@DisplayName("구간이 하나인 노선에서 마지막 구간 제거")
+	@Test
+	void removeSection_exception1() {
+
+		// when
+		ExtractableResponse<Response> 삭제_결과 = 지하철_노선_구간의_지하철역_삭제_요청(
+			getDeleteStationInLinePath(신분당선.getId(), 강남역.getId()));
+
+		// then
+		AcceptanceTestFactory.예외_발생_확인(삭제_결과);
+	}
+
+	@DisplayName("구간에 존재하지 않는 역 삭제 요청")
+	@Test
+	void removeSection_exception2() {
+
+		// when
+		ExtractableResponse<Response> 삭제_결과 = 지하철_노선_구간의_지하철역_삭제_요청(
+			getDeleteStationInLinePath(신분당선.getId(), 성복역.getId()));
+
+		// then
+		AcceptanceTestFactory.예외_발생_확인(삭제_결과);
+	}
+
 	private void 지하철_노선_구간_순서_확인(ExtractableResponse<Response> 강남_성복_구간_등록_결과, List<StationResponse> expectedStations) {
 		List<Station> stations = 강남_성복_구간_등록_결과.jsonPath()
 			.getList("stations", Station.class);
