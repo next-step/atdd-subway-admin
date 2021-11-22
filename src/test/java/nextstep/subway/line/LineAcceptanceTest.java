@@ -97,6 +97,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineResponse createdLineResponse = LineFixture.ofLineResponse(
                 requestCreateLineWithStation("역삼역", "강남역", 9, "2호선", "green")
         );
+
         // when
         // 지하철_노선_수정_요청
         ExtractableResponse<Response> response =
