@@ -31,7 +31,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_등록(팔호선, 암사역, 천호역, 1300);
 
         // then
-        지하철_노선_생성_확인(response, 팔호선_구간.get("암사역-천호역"));
+        지하철_노선_생성_확인(response, 팔호선, 암사역, 천호역);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
