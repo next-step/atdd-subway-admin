@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.exception.IllegalDistanceException;
 import nextstep.subway.station.domain.Station;
 
@@ -16,10 +17,7 @@ import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Embeddable
-public class Section {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Section extends BaseEntity {
 
     private int distance;
 
@@ -59,5 +57,17 @@ public class Section {
 
     public static Section of(int distance, Station upStation, Station downStation) {
         return new Section(distance, upStation, downStation);
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 }
