@@ -61,13 +61,13 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   * [x] 중복 생성 실패
   * [x] 목록 조회
   * [x] 조회
-  * [ ] 수정
+  * [x] 수정
   * [ ] 삭제
 * 기능 목록: 생성 / 목록 조회 / 조회 / 수정 / 삭제
   * [x] 생성
   * [x] 중복 생성 실패
   * [x] 목록 조회
   * [x] 조회
-  * [ ] 수정
+  * [x] 수정
   * [ ] 삭제
 * [ ] 기능 구현 후 인수 테스트 리팩터링

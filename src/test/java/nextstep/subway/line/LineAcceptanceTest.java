@@ -139,7 +139,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .get("lines/1")
                 .then().log().all()
                 .extract();
+
         // then 지하철_노선_응답됨
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.body()).isNotNull();
     }
@@ -147,14 +149,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
-        // given
-        // 지하철_노선_등록되어_있음
+        // given 지하철_노선_등록되어_있음
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-red-600");
+        params.put("name", "신분당선");
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
 
-        // when
-        // 지하철_노선_수정_요청
+        // when 지하철_노선_수정_요청
+        Map<String, String> updateParams = new HashMap<>();
+        updateParams.put("color", "bg-blue-600");
+        updateParams.put("name", "구분당선");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .pathParam("id","1")
+                .body(updateParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("lines/{id}")
+                .then().log().all()
+                .extract();
 
-        // then
-        // 지하철_노선_수정됨
+        // then 지하철_노선_수정됨
+        LineResponse finalResponse = response.jsonPath().getObject(".",LineResponse.class);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(finalResponse.getName()).isEqualTo("구분당선");
     }
 
     @DisplayName("지하철 노선을 제거한다.")

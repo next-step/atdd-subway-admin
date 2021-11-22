@@ -8,13 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
@@ -34,8 +33,20 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findById(Long id) {
-        Line line = lineRepository.findById(id).orElse(null);
+    public LineResponse findLine(Long id) {
+        Line line = findByid(id);
         return LineResponse.of(line);
+    }
+
+    public LineResponse updateLine(Long id, LineRequest lineRequest) {
+        Line line = findByid(id);
+        line.update(lineRequest.toLine());
+        return LineResponse.of(line);
+    }
+
+    private Line findByid(Long id) {
+        return lineRepository.findById(id).orElseThrow(() ->
+                new NullPointerException("라인이 없습니다.")
+        );
     }
 }
