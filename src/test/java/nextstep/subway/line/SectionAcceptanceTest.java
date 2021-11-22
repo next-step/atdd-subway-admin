@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,7 +40,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest request = 구간_요청_파라미터_생성(강남역.getId(), 삼성역.getId(), 3);
 
         // when
-        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request);
+        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request, LineLocation);
 
         // then
         지하철_구간_등록됨(response);
@@ -52,7 +53,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest request = 구간_요청_파라미터_생성(강남역.getId(), 삼성역.getId(), 9);
 
         // when
-        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request);
+        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request, LineLocation);
 
         // then
         지하철_구간_등록됨(response);
@@ -65,7 +66,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest request = 구간_요청_파라미터_생성(삼성역.getId(), 역삼역.getId(), 1);
 
         // when
-        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request);
+        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request, LineLocation);
 
         // then
         지하철_구간_등록됨(response);
@@ -78,7 +79,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest request = 구간_요청_파라미터_생성(삼성역.getId(), 강남역.getId(), 10);
 
         // when
-        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request);
+        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request, LineLocation);
 
         // then
         지하철_구간_등록됨(response);
@@ -91,7 +92,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest request = 구간_요청_파라미터_생성(역삼역.getId(), 삼성역.getId(), 10);
 
         // when
-        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request);
+        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request, LineLocation);
 
         // then
         지하철_구간_등록됨(response);
@@ -104,7 +105,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest request = 구간_요청_파라미터_생성(강남역.getId(), 삼성역.getId(), 10);
 
         // when
-        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request);
+        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request, LineLocation);
 
         // then
         지하철_구간_등록_실패됨(response);
@@ -117,7 +118,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest request = 구간_요청_파라미터_생성(강남역.getId(), 역삼역.getId(), 5);
 
         // when
-        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request);
+        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request, LineLocation);
 
         // then
         지하철_구간_등록_실패됨(response);
@@ -131,7 +132,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest request = 구간_요청_파라미터_생성(사당역.getId(), 삼성역.getId(), 5);
 
         // when
-        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request);
+        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request, LineLocation);
+
+        // then
+        지하철_구간_등록_실패됨(response);
+    }
+
+    @DisplayName("존재하지 않는 노선에 구간을 추가할 수 없다.")
+    @Test
+    void notFoundLine() {
+        // given
+        SectionRequest request = 구간_요청_파라미터_생성(강남역.getId(), 삼성역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> response = 존재하지_않는_노선에_구간_추가_요청(request);
 
         // then
         지하철_구간_등록_실패됨(response);
@@ -141,12 +155,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return new SectionRequest(upStationId, downStationId, distance);
     }
 
-    private ExtractableResponse<Response> 지하철_구간_등록_요청(SectionRequest request) {
+    private ExtractableResponse<Response> 존재하지_않는_노선에_구간_추가_요청(SectionRequest request){
+        return 지하철_구간_등록_요청(request, "lines/3");
+    }
+
+    private ExtractableResponse<Response> 지하철_구간_등록_요청(SectionRequest request, String location) {
         return RestAssured
                 .given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(LineLocation + "sections")
+                .when().post(location + "sections")
                 .then().log().all().extract();
     }
 

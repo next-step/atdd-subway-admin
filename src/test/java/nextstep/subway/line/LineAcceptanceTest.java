@@ -27,7 +27,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public LineRequest 신분당선;
     private StationResponse 강남역;
     private StationResponse 역삼역;
-    private StationResponse 삼성역;
 
     public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest lineRequest) {
         return 지하철_노선_생성_요청(lineRequest);
@@ -46,7 +45,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void beforeEach() {
         강남역 = 지하철_역_등록되어_있음("강남역").as(StationResponse.class);
         역삼역 = 지하철_역_등록되어_있음("역삼역").as(StationResponse.class);
-        삼성역 = 지하철_역_등록되어_있음("삼성역").as(StationResponse.class);
 
         수인분당선 = new LineRequest("수인분당선", "yellow", 강남역.getId(), 역삼역.getId(), 10);
         신분당선 = new LineRequest("신분당선", "red", 강남역.getId(), 역삼역.getId(), 15);
