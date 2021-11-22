@@ -138,10 +138,10 @@ public class Sections {
 		boolean isMatchUpStation = false;
 		for (int i = 0; i < orderedSections.size() && !isMatchUpStation; i++) {
 			Section currentSection = orderedSections.get(i);
-			Section preSection = i==0 ? null : orderedSections.get(i-1);
+			Section preSection = i == 0 ? null : orderedSections.get(i - 1);
 			isMatchUpStation = deleteUpStationIfMatch(currentSection, preSection, station);
 		}
-		if(isMatchUpStation){
+		if (isMatchUpStation) {
 			return;
 		}
 

@@ -183,7 +183,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		ExtractableResponse<Response> 신분당선_조회_결과 = AcceptanceTestFactory.get("/lines/1");
-		지하철_노선_구간_순서_확인(신분당선_조회_결과, Arrays.asList(강남역,수지구청역, 성복역));
+		지하철_노선_구간_순서_확인(신분당선_조회_결과, Arrays.asList(강남역, 수지구청역, 성복역));
 		AcceptanceTestFactory.정상_처리_확인(삭제_결과);
 	}
 
@@ -199,7 +199,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		ExtractableResponse<Response> 신분당선_조회_결과 = AcceptanceTestFactory.get("/lines/1");
-		지하철_노선_구간_순서_확인(신분당선_조회_결과, Arrays.asList(강남역,광교역));
+		지하철_노선_구간_순서_확인(신분당선_조회_결과, Arrays.asList(강남역, 광교역));
 		AcceptanceTestFactory.정상_처리_확인(삭제_결과);
 	}
 
@@ -227,7 +227,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		AcceptanceTestFactory.예외_발생_확인(삭제_결과);
 	}
 
-	private void 지하철_노선_구간_순서_확인(ExtractableResponse<Response> 강남_성복_구간_등록_결과, List<StationResponse> expectedStations) {
+	private void 지하철_노선_구간_순서_확인(ExtractableResponse<Response> 강남_성복_구간_등록_결과,
+		List<StationResponse> expectedStations) {
+
 		List<Station> stations = 강남_성복_구간_등록_결과.jsonPath()
 			.getList("stations", Station.class);
 		for (int i = 0; i < stations.size(); i++) {
@@ -262,6 +264,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 	private String getDeleteStationInLinePath(Long lineId, Long stationId) {
 		return String.join("", LineAcceptanceTest.LINE_SERVICE_PATH, "/", String.valueOf(lineId),
-			SECTION_SERVICE_PATH, "?", STATION_QUERY_PARAMETER_PATH,"=", String.valueOf(stationId));
+			SECTION_SERVICE_PATH, "?", STATION_QUERY_PARAMETER_PATH, "=", String.valueOf(stationId));
 	}
 }
