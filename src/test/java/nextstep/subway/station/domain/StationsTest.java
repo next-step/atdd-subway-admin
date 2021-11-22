@@ -15,7 +15,7 @@ class StationsTest {
     private static Stations stations;
 
     @BeforeAll
-    static void setUp(){
+    static void setUp() {
         List<Station> stationList = new ArrayList<>();
         stationList.add(강남역);
         stationList.add(역삼역);
@@ -24,7 +24,7 @@ class StationsTest {
 
     @Test
     @DisplayName("지하철 역 목록 생성")
-    void create(){
+    void create() {
         List<Station> stationList = new ArrayList<>();
         stationList.add(강남역);
         stationList.add(역삼역);
@@ -34,7 +34,7 @@ class StationsTest {
 
     @Test
     @DisplayName("지하철 역 목록에 입력받은 역이 포함되어 있다.")
-    void isInTrue(){
+    void isInTrue() {
         boolean actual = stations.isIn(강남역);
 
         assertThat(actual).isTrue();
@@ -42,7 +42,7 @@ class StationsTest {
 
     @Test
     @DisplayName("지하철 역 목록에서 입력받은 역이 포함되어 있지 않는다.")
-    void isInFalse(){
+    void isInFalse() {
         boolean actual = stations.isIn(양재역);
 
         assertThat(actual).isFalse();

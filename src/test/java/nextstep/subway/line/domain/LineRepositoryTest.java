@@ -24,7 +24,7 @@ class LineRepositoryTest extends BeforeJpaTestExecution {
     private Line savedLine2;
 
     @BeforeEach
-    void beforeEach(){
+    void beforeEach() {
         Line line1 = new Line("신분당선", "red");
         line1.addSection(new Section(강남역, 역삼역, line1, 7));
         Line line2 = new Line("2호선", "green");
@@ -36,13 +36,13 @@ class LineRepositoryTest extends BeforeJpaTestExecution {
 
     @Test
     @DisplayName("노선_생성")
-    void createLine(){
+    void createLine() {
         assertThat(savedLine1.getName()).isEqualTo("신분당선");
     }
 
     @Test
     @DisplayName("노선_구간포함_목록_조회_검증")
-    void findAll(){
+    void findAll() {
         List<Line> actual = lines.findAll();
 
         assertThat(actual).hasSize(2);

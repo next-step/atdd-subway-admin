@@ -155,7 +155,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return new SectionRequest(upStationId, downStationId, distance);
     }
 
-    private ExtractableResponse<Response> 존재하지_않는_노선에_구간_추가_요청(SectionRequest request){
+    private ExtractableResponse<Response> 존재하지_않는_노선에_구간_추가_요청(SectionRequest request) {
         return 지하철_구간_등록_요청(request, "lines/3");
     }
 
