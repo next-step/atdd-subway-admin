@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ControllerExceptionHandler {
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity notFoundExceptionHandler(NotFoundException e) {
+    @ExceptionHandler(DataNotFoundException.class)
+    public ResponseEntity dataNotFoundExceptionHandler(DataNotFoundException e) {
         return ResponseEntity.badRequest().build();
     }
 }
