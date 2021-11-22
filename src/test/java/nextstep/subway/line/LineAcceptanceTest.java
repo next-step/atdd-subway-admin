@@ -27,49 +27,129 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 요청_post(DEFAULT_PATH, lineRequest);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
 
         // then
-        // 지하철_노선_생성됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        지하철_노선_생성_응답됨(response);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
         // given
-        // 지하철_노선_등록되어_있음
-        요청_post(DEFAULT_PATH, lineRequest);
+        지하철_노선_생성_요청(lineRequest);
 
         // when
-        // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 요청_post(DEFAULT_PATH, lineRequest);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
 
         // then
-        // 지하철_노선_생성_실패됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        지하철_노선_생성_실패됨(response);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
         // given
-        // 지하철_노선_등록되어_있음
         LineRequest secondLine = new LineRequest("2호선", "green");
-        요청_post(DEFAULT_PATH, secondLine);
-        // 지하철_노선_등록되어_있음
         LineRequest thirdLine = new LineRequest("3호선", "orange");
-        요청_post(DEFAULT_PATH, thirdLine);
+        지하철_노선_생성_요청(secondLine);
+        지하철_노선_생성_요청(thirdLine);
 
         // when
-        // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = 요청_get(DEFAULT_PATH);
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
-        // 지하철_노선_목록_응답됨
-        // 지하철_노선_목록_포함됨
-        List<String> lineRequestNames = Arrays.asList(secondLine.getName(), thirdLine.getName());
+        지하철_노선_목록_응답됨(Arrays.asList(secondLine.getName(), thirdLine.getName()), response);
+    }
+
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void getLine() {
+        // given
+        ExtractableResponse<Response> saveResponse = 지하철_노선_생성_요청(lineRequest);
+        LineResponse lineResponse = 저장된_노선_응답(saveResponse);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineResponse.getId());
+
+        // then
+        지하철_노선_조회_응답됨(lineResponse, response);
+    }
+
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        ExtractableResponse<Response> saveResponse = 지하철_노선_생성_요청(lineRequest);
+        LineResponse savedLineResponse = 저장된_노선_응답(saveResponse);
+
+        // when
+        // 지하철_노선_수정_요청
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(savedLineResponse);
+
+        // then
+        // 지하철_노선_수정됨
+        지하철_노선_수정됨(savedLineResponse, response);
+    }
+
+    @DisplayName("지하철 노선을 제거한다.")
+    @Test
+    void deleteLine() {
+        // given
+        ExtractableResponse<Response> saveResponse = 지하철_노선_생성_요청(lineRequest);
+        LineResponse savedLineResponse = 저장된_노선_응답(saveResponse);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(savedLineResponse.getId());
+
+        // then
+        // 지하철_노선_삭제됨
+        지하철_노선_삭제됨(response);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
+        return 요청_post(DEFAULT_PATH, lineRequest);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
+        return 요청_get(DEFAULT_PATH);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
+        return 요청_get(DEFAULT_PATH + "/" + id);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(LineResponse savedLineResponse) {
+        LineRequest updateLineRequest = new LineRequest(savedLineResponse.getName(), "red");
+
+        return RestAssured
+                .given().log().all()
+                .body(updateLineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/" + savedLineResponse.getId())
+                .then().log().all().extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(Long id) {
+        return RestAssured
+                .given().log().all()
+                .when().delete("/lines/" + id)
+                .then().log().all().extract();
+    }
+
+    private void 지하철_노선_생성_응답됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    private LineResponse 저장된_노선_응답(ExtractableResponse<Response> saveResponse) {
+        return saveResponse.body().as(LineResponse.class);
+    }
+
+    private void 지하철_노선_목록_응답됨(List<String> lineRequestNames, ExtractableResponse<Response> response) {
         List<String> lineResponseNames = response.jsonPath().getList(".", LineResponse.class)
                 .stream()
                 .map(lineResponse -> lineResponse.getName())
@@ -81,76 +161,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
-    @Test
-    void getLine() {
-        // given
-        // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> saveResponse = 요청_post(DEFAULT_PATH, lineRequest);
-        LineResponse lineResponse = 저장된_노선_응답(saveResponse);
-
-        // when
-        // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = 요청_get(DEFAULT_PATH + "/" + lineResponse.getId());
-
-        // then
-        // 지하철_노선_응답됨
+    private void 지하철_노선_조회_응답됨(LineResponse lineResponse, ExtractableResponse<Response> response) {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.body().jsonPath().getLong("id")).isEqualTo(lineResponse.getId())
         );
     }
 
-    @DisplayName("지하철 노선을 수정한다.")
-    @Test
-    void updateLine() {
-        // given
-        // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> saveResponse = 요청_post(DEFAULT_PATH, lineRequest);
-        LineResponse lineResponse = 저장된_노선_응답(saveResponse);
-
-        // when
-        // 지하철_노선_수정_요청
-        LineRequest lineRequest = new LineRequest(lineResponse.getName(), "red");
-
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/" + lineResponse.getId())
-                .then().log().all().extract();
-
-        // then
-        // 지하철_노선_수정됨
-        LineResponse newLineResponse = response.body().as(LineResponse.class);
+    private void 지하철_노선_수정됨(LineResponse savedLineResponse, ExtractableResponse<Response> response) {
+        LineResponse updatedLineResponse = response.body().as(LineResponse.class);
         assertAll(
-                () -> assertThat(newLineResponse.getId()).isEqualTo(lineResponse.getId()),
-                () -> assertThat(newLineResponse.getColor()).isEqualTo("red")
+                () -> assertThat(updatedLineResponse.getId()).isEqualTo(savedLineResponse.getId()),
+                () -> assertThat(updatedLineResponse.getColor()).isEqualTo("red")
         );
     }
 
-    @DisplayName("지하철 노선을 제거한다.")
-    @Test
-    void deleteLine() {
-        // given
-        // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> saveResponse = 요청_post(DEFAULT_PATH, lineRequest);
-        LineResponse lineResponse = 저장된_노선_응답(saveResponse);
-
-        // when
-        // 지하철_노선_제거_요청
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .when().delete("/lines/" + lineResponse.getId())
-                .then().log().all().extract();
-
-        // then
-        // 지하철_노선_삭제됨
+    private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    private LineResponse 저장된_노선_응답(ExtractableResponse<Response> saveResponse) {
-        return saveResponse.body().as(LineResponse.class);
     }
 
     private ExtractableResponse<Response> 요청_post(String path, LineRequest lineRequest) {
