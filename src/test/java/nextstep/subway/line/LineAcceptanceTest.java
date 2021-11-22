@@ -1,19 +1,31 @@
 package nextstep.subway.line;
 
-import nextstep.subway.AcceptanceTest;
+import static org.assertj.core.api.Assertions.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
+        //given
+        LineRequest 화곡역 = 지하철_노선_정보("화곡역", "purple");
+
         // when
-        // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(화곡역);
 
         // then
-        // 지하철_노선_생성됨
+        지하철_노선_생성됨(response);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -21,12 +33,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
+        LineRequest 화곡역 = 지하철_노선_정보("화곡역", "purple");
+        지하철_노선_생성_요청(화곡역);
 
         // when
-        // 지하철_노선_생성_요청
+        ExtractableResponse<Response> 응답 = 지하철_노선_생성_요청(화곡역);
 
         // then
-        // 지하철_노선_생성_실패됨
+        지하철_노선_생성_실패됨(응답);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -81,5 +95,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
+    }
+
+    private LineRequest 지하철_노선_정보(String name, String color) {
+        return new LineRequest(name, color);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
+        return RestAssured
+            .given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(lineRequest)
+            .when().post("/lines")
+            .then().log().all().extract();
+    }
+
+    private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
+    }
+
+    private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
