@@ -1,8 +1,6 @@
 package nextstep.subway.line.domain;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -50,11 +48,7 @@ public class Line extends BaseEntity {
     }
     
     public List<Station> getStations() {
-        return sections.getSections()
-                .stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                .distinct()
-                .collect(Collectors.toList());
+        return sections.getStations();
     }
 
     public Long getId() {
