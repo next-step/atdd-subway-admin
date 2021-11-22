@@ -12,6 +12,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.line.exception.LineException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -86,5 +87,18 @@ public class LineService {
 			.orElseThrow(() ->
 				new StationException(ErrorCode.STATION_NULL_POINTER_ERROR)
 			);
+	}
+
+	public LineResponse addSection(Long id, SectionRequest sectionRequest) {
+		Line line = lineFindById(id);
+		Section section = reqToSection(line, sectionRequest);
+		line.addSection(section);
+		return LineResponse.of(line);
+	}
+
+	private Section reqToSection(Line line, SectionRequest sectionRequest) {
+		Station upStation = stationFindById(sectionRequest.getUpStationId());
+		Station downStation = stationFindById(sectionRequest.getDownStationId());
+		return new Section(line, downStation, upStation, sectionRequest.getDistance());
 	}
 }
