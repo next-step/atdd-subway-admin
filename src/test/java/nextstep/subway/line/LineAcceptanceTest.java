@@ -5,9 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import nextstep.subway.AcceptanceTest;
@@ -21,70 +19,55 @@ import org.springframework.http.MediaType;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    public static ExtractableResponse<Response> createResponse;
-
-    public static final Map<String, Object> CREATE_LINE_FIXTURE = new HashMap<String, Object>() {{
-        put("name", "2호선");
-        put("color", "red lighten-3");
-        put("upStationId", 1);
-        put("downStationId", 10);
-        put("distance", 22.1);
-    }};
-
     @TestFactory
     Stream<DynamicTest> 지하철_노선_시나리오() {
+        // given
+        // 지하철_노선_등록되어_있음
+        final LineFixture lineFixture = LineFixture.createOf("2호선", "red lighten-2", 11, 20, 22.2);
+        final ExtractableResponse<Response> createResponse = createLine(lineFixture);
+
+        final LineFixture otherLineFixture = LineFixture.createOf("4호선", "red lighten-3", 31, 40, 22.4);
+        final ExtractableResponse<Response> otherCreateResponse = createLine(otherLineFixture);
+
+        assertCreateLine(createResponse);
+        assertCreateLine(otherCreateResponse);
+
         return Stream.of(
             DynamicTest.dynamicTest("지하철 노선을 생성한다.", this::지하철_노선을_생성한다),
-            DynamicTest.dynamicTest("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.", this::기존에_존재하는_지하철_노선_이름으로_지하철_노선을_생성한다),
-            DynamicTest.dynamicTest("지하철 노선 목록을 조회한다.", this::지하철_노선_목록을_조회한다),
-            DynamicTest.dynamicTest("지하철 노선을 조회한다.", this::지하철_노선을_조회한다),
-            DynamicTest.dynamicTest("지하철 노선을 수정한다.", this::지하철_노선을_수정한다),
-            DynamicTest.dynamicTest("지하철 노선을 제거한다.", this::지하철_노선을_제거한다)
+            DynamicTest.dynamicTest("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.",
+                () -> 기존에_존재하는_지하철_노선_이름으로_지하철_노선을_생성한다(lineFixture)),
+            DynamicTest.dynamicTest("지하철 노선 목록을 조회한다.", () -> 지하철_노선_목록을_조회한다(createResponse, otherCreateResponse)),
+            DynamicTest.dynamicTest("지하철 노선을 조회한다.", () -> 지하철_노선을_조회한다(createResponse)),
+            DynamicTest.dynamicTest("지하철 노선을 수정한다.", () -> 지하철_노선을_수정한다(createResponse)),
+            DynamicTest.dynamicTest("지하철 노선을 제거한다.", () -> 지하철_노선을_제거한다(createResponse))
         );
     }
 
-    @DisplayName("지하철 노선을 생성한다.")
-    @Test
     void 지하철_노선을_생성한다() {
+        //given
+        final LineFixture lineFixture = LineFixture.createOf("1호선", "red lighten-1", 1, 10, 22.1);
+
         // when
         // 지하철_노선_생성_요청
-        createResponse = createLine(CREATE_LINE_FIXTURE);
+        final ExtractableResponse<Response> createResponse = createLine(lineFixture);
 
         // then
         // 지하철_노선_생성됨
         assertCreateLine(createResponse);
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
-    @Test
-    void 기존에_존재하는_지하철_노선_이름으로_지하철_노선을_생성한다() {
-        // given
-        // 지하철_노선_등록되어_있음
-
+    void 기존에_존재하는_지하철_노선_이름으로_지하철_노선을_생성한다(final LineFixture lineFixture) {
         // when
         // 지하철_노선_생성_요청
-        final ExtractableResponse<Response> response = createLine(CREATE_LINE_FIXTURE);
+        final ExtractableResponse<Response> createResponse = createLine(lineFixture);
 
         // then
         // 지하철_노선_생성_실패됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.SC_INTERNAL_SERVER_ERROR);
     }
 
-    @DisplayName("지하철 노선 목록을 조회한다.")
-    @Test
-    void 지하철_노선_목록을_조회한다() {
-        // given
-        // 지하철_노선_등록되어_있음
-        final HashMap<String, Object> params = new HashMap<String, Object>() {{
-            put("name", "1호선");
-            put("color", "red");
-            put("upStationId", 11);
-            put("downStationId", 20);
-            put("distance", 22.4);
-        }};
-        final ExtractableResponse<Response> createResponse2 = createLine(params);
-        assertCreateLine(createResponse2);
-
+    void 지하철_노선_목록을_조회한다(final ExtractableResponse<Response> createResponse,
+        final ExtractableResponse<Response> otherCreateResponse) {
         // when
         // 지하철_노선_목록_조회_요청
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -98,7 +81,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
 
         // 지하철_노선_목록_포함됨
-        final List<Long> expectedLineIds = Stream.of(createResponse, createResponse2)
+        final List<Long> expectedLineIds = Stream.of(createResponse, otherCreateResponse)
             .map(it -> extractId(getLocation(it)))
             .collect(Collectors.toList());
         final List<Long> resultLineIds = response.jsonPath().getList("lineResponses", LineResponse.class).stream()
@@ -109,12 +92,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
-    @Test
-    void 지하철_노선을_조회한다() {
-        // given
-        // 지하철_노선_등록되어_있음
-
+    void 지하철_노선을_조회한다(final ExtractableResponse<Response> createResponse) {
         // when
         // 지하철_노선_조회_요청
         final String uri = getLocation(createResponse);
@@ -135,24 +113,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineId).isEqualTo(expectedLineId);
     }
 
-    @DisplayName("지하철 노선을 수정한다.")
-    @Test
-    void 지하철_노선을_수정한다() {
-        // given
-        // 지하철_노선_등록되어_있음
-
+    void 지하철_노선을_수정한다(final ExtractableResponse<Response> createResponse) {
         // when
         // 지하철_노선_수정_요청
         final String updateName = "3호선";
         final String updateColor = "red";
-        final HashMap<String, Object> params = new HashMap<String, Object>() {{
-            put("name", updateName);
-            put("color", updateColor);
-        }};
+        final LineFixture lineFixture = LineFixture.updateOf(updateName, updateColor);
 
         final String uri = getLocation(createResponse);
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(params)
+            .body(lineFixture)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .put(uri)
@@ -171,10 +141,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
-    void 지하철_노선을_제거한다() {
-        // given
-        // 지하철_노선_등록되어_있음
-
+    void 지하철_노선을_제거한다(final ExtractableResponse<Response> createResponse) {
         // when
         // 지하철_노선_제거_요청
         final String uri = getLocation(createResponse);
@@ -189,9 +156,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_NO_CONTENT);
     }
 
-    private ExtractableResponse<Response> createLine(final Map<String, Object> params) {
+    private ExtractableResponse<Response> createLine(final LineFixture lineFixture) {
         return RestAssured.given().log().all()
-            .body(params)
+            .body(lineFixture)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
