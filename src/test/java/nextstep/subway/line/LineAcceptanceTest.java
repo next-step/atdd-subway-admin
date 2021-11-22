@@ -2,11 +2,11 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -59,13 +59,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		Map<String, String> params = new HashMap<>();
 		params.put("color", "bg-red-600");
 		params.put("name", "신분당선");
-		RestAssured.given().log().all()
-			.body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/lines")
-			.then().log().all()
-			.extract();
+		지하철_노선_등록(params);
 
 		// when
 		// 지하철_노선_생성_요청
@@ -91,24 +85,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		Map<String, String> params = new HashMap<>();
 		params.put("color", "bg-red-600");
 		params.put("name", "신분당선");
-		ExtractableResponse<Response> givenResponse1 = RestAssured.given().log().all()
-			.body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/lines")
-			.then().log().all()
-			.extract();
+		long givenId1 = 지하철_노선_등록(params);
 		// 지하철_노선_등록되어_있음
 		Map<String, String> params2 = new HashMap<>();
 		params2.put("color", "bg-green-600");
 		params2.put("name", "2호선");
-		ExtractableResponse<Response> givenResponse2 = RestAssured.given().log().all()
-			.body(params2)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/lines")
-			.then().log().all()
-			.extract();
+		long givenId2 = 지하철_노선_등록(params2);
 
 		// when
 		// 지하철_노선_목록_조회_요청
@@ -124,10 +106,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// 지하철_노선_목록_응답됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 		// 지하철_노선_목록_포함됨
-		List<Long> expectedLineIds = Stream.of(givenResponse1, givenResponse2)
-			.map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-			.collect(Collectors.toList());
-		List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+		List<Long> expectedLineIds = Arrays.asList(givenId1, givenId2);
+		List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class)
+			.stream()
 			.map(LineResponse::getId)
 			.collect(Collectors.toList());
 		assertThat(resultLineIds).containsAll(expectedLineIds);
@@ -141,16 +122,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		Map<String, String> params = new HashMap<>();
 		params.put("color", "bg-red-600");
 		params.put("name", "신분당선");
-		ExtractableResponse<Response> givenResponse1 = RestAssured.given().log().all()
-			.body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/lines")
-			.then().log().all()
-			.extract();
-
-		long givenId = Long.parseLong(givenResponse1.header("Location")
-			.split("/")[2]);
+		long givenId = 지하철_노선_등록(params);
 
 		// when
 		// 지하철_노선_조회_요청
@@ -177,15 +149,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		Map<String, String> params = new HashMap<>();
 		params.put("color", "bg-red-600");
 		params.put("name", "신분당선");
-		ExtractableResponse<Response> givenResponse1 = RestAssured.given().log().all()
-			.body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/lines")
-			.then().log().all()
-			.extract();
-		long givenId = Long.parseLong(givenResponse1.header("Location")
-			.split("/")[2]);
+		long givenId = 지하철_노선_등록(params);
 
 		Map<String, String> body = new HashMap<>();
 		body.put("color", "bg-blue-600");
@@ -219,16 +183,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		Map<String, String> params = new HashMap<>();
 		params.put("color", "bg-red-600");
 		params.put("name", "신분당선");
-		ExtractableResponse<Response> givenResponse1 = RestAssured.given()
-			.log().all()
-			.body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/lines")
-			.then().log().all()
-			.extract();
-		long givenId = Long.parseLong(givenResponse1.header("Location")
-			.split("/")[2]);
+		Long givenId = 지하철_노선_등록(params);
 
 		// when
 		// 지하철_노선_제거_요청
@@ -243,5 +198,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// then
 		// 지하철_노선_삭제됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+	}
+
+	private Long 지하철_노선_등록(Map<String, String> params) {
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+			.body(params)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post("/lines")
+			.then().log().all()
+			.extract();
+		return getIdFromHeader(response);
+	}
+
+	private Long getIdFromHeader(ExtractableResponse<Response> response) {
+		return Long.parseLong(response.header("Location")
+			.split("/")[2]);
 	}
 }
