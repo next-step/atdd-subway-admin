@@ -27,13 +27,7 @@ public class LineService {
     public LineResponse save(LineRequest request) {
         checkDuplicatedName(request.getName());
         
-        Station upStation = stationService.findById(request.getUpStationId());
-        Station downStation = stationService.findById(request.getDownStationId());
-        
-        Line line = request.toLine();
-        line.addSection(upStation, downStation, request.getDistance());
-        
-        return LineResponse.of(lineRepository.save(line));
+        return LineResponse.of(lineRepository.save(toLine(request)));
     }
 
     @Transactional(readOnly = true)
@@ -69,5 +63,14 @@ public class LineService {
         if (lineRepository.existsByName(name)) {
             throw new IllegalArgumentException(String.format("라인 이름(%d)이 중복되었습니다.", name));
         }
+    }
+    
+    private Line toLine(LineRequest request) {
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+        
+        Line line = request.toLine();
+        line.addSection(upStation, downStation, request.getDistance());
+        return line;
     }
 }

@@ -31,9 +31,13 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    public Line(String name, String color) {
+    private Line(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+    
+    public static Line of(String name, String color) {
+        return new Line(name, color);
     }
 
     public void update(Line line) {
@@ -42,11 +46,12 @@ public class Line extends BaseEntity {
     }
     
     public void addSection(Station upStation, Station downStation, int distance) {
-        this.sections.add(new Section(this, upStation, downStation, distance));
+        this.sections.add(Section.of(this, upStation, downStation, distance));
     }
     
     public List<Station> getStations() {
-        return sections.getSections().stream()
+        return sections.getSections()
+                .stream()
                 .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
                 .distinct()
                 .collect(Collectors.toList());

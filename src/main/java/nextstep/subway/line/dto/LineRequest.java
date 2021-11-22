@@ -51,11 +51,11 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(name, color);
+        return Line.of(name, color);
     }
 
     public Line toLine(Station upStation, Station downStation) {
-        Line line = new Line(name, color);
+        Line line = Line.of(name, color);
         line.addSection(upStation, downStation, distance);
         return line;
     }

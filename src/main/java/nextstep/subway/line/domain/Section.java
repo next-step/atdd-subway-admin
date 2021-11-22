@@ -35,19 +35,15 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    private Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Line getLine() {
-        return line;
+    
+    public static Section of(Line line, Station upStation, Station downStation, int distance) {
+        return new Section(line, upStation, downStation, distance);
     }
 
     public Station getUpStation() {
@@ -61,6 +57,5 @@ public class Section extends BaseEntity {
     public int getDistance() {
         return distance;
     }
-
 
 }
