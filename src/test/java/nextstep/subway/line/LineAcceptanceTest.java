@@ -63,7 +63,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> selectResponse = selectOneLine(savedLineId);
         // then
         // 지하철_노선_응답됨
-        checkLine(selectResponse);
+        isStatusOk(selectResponse);
         validLine(createResponse, selectResponse);
     }
 
@@ -79,7 +79,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_목록_조회_요청
         ExtractableResponse<Response> response = selectAllLines();
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        isStatusOk(response);
         validLines(createResponse1, createResponse2, response);
     }
 
@@ -95,7 +95,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = requestModifyLine(createResponse1, "1", "2호선", "green", "홍대입구역", "이대역", 20);
         // then
         // 지하철_노선_수정됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        isStatusOk(response);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -112,19 +112,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
-    }
-
-    private ExtractableResponse<Response> createLine(String name, String color) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
     }
 
     private ExtractableResponse<Response> createLine(String name, String color, Long upStationId, Long downStationId, int distance) {
@@ -170,7 +157,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private void checkLine(ExtractableResponse<Response> response) {
+    private void isStatusOk(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -191,9 +178,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(createLineResponse.getId()).isEqualTo(selectLineResponse.getId()),
                 () -> assertThat(createLineResponse.getName()).isEqualTo(selectLineResponse.getName()),
                 () -> assertThat(createLineResponse.getColor()).isEqualTo(selectLineResponse.getColor()),
-                () -> assertThat(createStations.get(0).getName()).isEqualTo(selectStations.get(0).getName()),
-                () -> assertThat(createStations.get(1).getName()).isEqualTo(selectStations.get(1).getName())
+                () -> checkDupilicateStationName(createStations, selectStations)
         );
+    }
+
+    private void checkDupilicateStationName(List<StationResponse> createStations, List<StationResponse> selectStations) {
+        for (int i = 0; i < createStations.size(); i++) {
+            assertThat(createStations.get(i).getName()).isEqualTo(selectStations.get(i).getName());
+        }
     }
 
     private void validLines(ExtractableResponse<Response> createResponse1, ExtractableResponse<Response> createResponse2,
