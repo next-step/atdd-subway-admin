@@ -1,5 +1,7 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.station.domain.Station;
+
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
@@ -15,5 +17,14 @@ public class Sections {
             return;
         }
         sections.add(section);
+    }
+
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+        for (Section section : sections) {
+            stations.add(section.getUpStation());
+            stations.add(section.getDownStation());
+        }
+        return stations;
     }
 }

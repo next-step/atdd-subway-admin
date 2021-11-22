@@ -3,8 +3,10 @@ package nextstep.subway.line.domain;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -45,5 +47,9 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section) {
         sections.add(section);
+    }
+
+    public List<Station> getStations() {
+        return sections.getStations();
     }
 }
