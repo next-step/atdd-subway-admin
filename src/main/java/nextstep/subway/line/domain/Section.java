@@ -90,18 +90,19 @@ public class Section extends BaseEntity {
     }
 
     public boolean hasStaion(Section findSection) {
-        if (this.upStation.equals(findSection.upStation) ||
-            this.upStation.equals(findSection.downStation) ||
-            this.downStation.equals(findSection.upStation) ||
-            this.downStation.equals(findSection.downStation)) {
+        if (this.upStation.equals(findSection.upStation) 
+            || this.upStation.equals(findSection.downStation) 
+            || this.downStation.equals(findSection.upStation) 
+            || this.downStation.equals(findSection.downStation)) {
             return true;
         }
 
         return false;
     }
+
     public boolean hasStaion(Station findStation) {
-        if (this.upStation.equals(findStation) ||
-            this.downStation.equals(findStation)) {
+        if (this.upStation.equals(findStation)
+            || this.downStation.equals(findStation)) {
             return true;
         }
 
