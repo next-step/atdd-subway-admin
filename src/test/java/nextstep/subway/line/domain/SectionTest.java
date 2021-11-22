@@ -1,15 +1,13 @@
-package nextstep.subway.line;
+package nextstep.subway.line.domain;
 
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.domain.Station;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static nextstep.subway.line.SectionTestFixture.강남역;
-import static nextstep.subway.line.SectionTestFixture.역삼역;
-import static nextstep.subway.line.SectionTestFixture.이호선;
+import static nextstep.subway.line.domain.SectionTestFixture.강남역;
+import static nextstep.subway.line.domain.SectionTestFixture.역삼역;
+import static nextstep.subway.line.domain.SectionTestFixture.이호선;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

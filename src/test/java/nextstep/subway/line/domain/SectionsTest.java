@@ -1,7 +1,5 @@
-package nextstep.subway.line;
+package nextstep.subway.line.domain;
 
-import nextstep.subway.line.domain.Section;
-import nextstep.subway.line.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,11 +7,11 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 
-import static nextstep.subway.line.SectionTestFixture.강남역;
-import static nextstep.subway.line.SectionTestFixture.교대역;
-import static nextstep.subway.line.SectionTestFixture.역삼역;
-import static nextstep.subway.line.SectionTestFixture.이호선_강남역_역삼역_구간;
-import static nextstep.subway.line.SectionTestFixture.이호선_역삼역_교대역_구간;
+import static nextstep.subway.line.domain.SectionTestFixture.강남역;
+import static nextstep.subway.line.domain.SectionTestFixture.교대역;
+import static nextstep.subway.line.domain.SectionTestFixture.역삼역;
+import static nextstep.subway.line.domain.SectionTestFixture.이호선_강남역_역삼역_구간;
+import static nextstep.subway.line.domain.SectionTestFixture.이호선_역삼역_교대역_구간;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
