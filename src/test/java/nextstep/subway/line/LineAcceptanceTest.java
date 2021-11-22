@@ -230,25 +230,4 @@ public class LineAcceptanceTest extends AcceptanceTest {
         요청_결과_검증(response, HttpStatus.BAD_REQUEST);
     }
 
-    @DisplayName("지하철 노선에 구간을 추가한다.")
-    @Test
-    void addSection() {
-        // given
-        //지하철 노선 등록되어 있음
-        ExtractableResponse<Response> createLine = 지하철_노선_등록되어_있음(수인분당선);
-        //request parameter
-        SectionRequest request = new SectionRequest(강남역.getId(), 삼성역.getId(), 3);
-
-        // when
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(createLine.header("Location") + "sections")
-                .then().log().all().extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
 }
