@@ -1,16 +1,15 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -46,6 +45,10 @@ public class LineService {
         Line line = lineRepository.findById(id).orElse(null);
         line.update(lineRequest.toLine());
         return LineResponse.of(line);
+    }
+
+    public void delete(Long id) {
+        lineRepository.deleteById(id);
     }
 
 }

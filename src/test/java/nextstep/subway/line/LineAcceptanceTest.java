@@ -27,13 +27,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         //given
-        LineRequest 화곡역 = 지하철_노선_정보("화곡역", "purple");
+        LineRequest 화곡 = 지하철_노선_정보("화곡역", "purple");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(화곡역);
+        ExtractableResponse<Response> 화곡역 = 지하철_노선_생성_요청(화곡);
 
         // then
-        지하철_노선_생성됨(response);
+        지하철_노선_생성됨(화곡역);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -41,11 +41,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest 화곡역 = 지하철_노선_정보("화곡", "purple");
-        지하철_노선_생성_요청(화곡역);
+        LineRequest 화곡 = 지하철_노선_정보("화곡", "purple");
+        ExtractableResponse<Response> 화곡역 = 지하철_노선_생성_요청(화곡);
 
         // when
-        ExtractableResponse<Response> 응답 = 지하철_노선_생성_요청(화곡역);
+        ExtractableResponse<Response> 응답 = 지하철_노선_생성_요청(화곡);
 
         // then
         지하철_노선_생성_실패됨(응답);
@@ -106,12 +106,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        LineRequest 화곡 = 지하철_노선_정보("화곡", "purple");
+        ExtractableResponse<Response> 화곡역 = 지하철_노선_생성_요청(화곡);
 
         // when
-        // 지하철_노선_제거_요청
+        ExtractableResponse<Response> 삭제 = 지하철_노선_제거_요청(화곡역);
 
         // then
-        // 지하철_노선_삭제됨
+        지하철_노선_삭제됨(삭제);
     }
 
     private LineRequest 지하철_노선_정보(String name, String color) {
@@ -121,8 +123,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
         return RestAssured
             .given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(lineRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post(LINES_PATH)
             .then().log().all().extract();
     }
@@ -142,6 +144,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all().extract();
     }
 
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(ExtractableResponse<Response> response,
+        LineRequest changeLine) {
+        return RestAssured
+            .given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(changeLine)
+            .when().put(response.header("Location"))
+            .then().log().all().extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(ExtractableResponse<Response> response) {
+        return RestAssured
+            .given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().delete(response.header("Location"))
+            .then().log().all().extract();
+    }
+
     private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> resultResponse,
         ExtractableResponse<Response> response1, ExtractableResponse<Response> response2) {
 
@@ -155,16 +175,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_수정_요청(ExtractableResponse<Response> response,
-        LineRequest changeLine) {
-        return RestAssured
-            .given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(changeLine)
-            .when().put(response.header("Location"))
-            .then().log().all().extract();
-    }
-
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -176,5 +186,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_응답됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
