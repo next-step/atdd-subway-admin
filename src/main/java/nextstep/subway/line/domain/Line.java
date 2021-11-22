@@ -28,6 +28,12 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    public Line(String name, String color, Section section) {
+        this.name = name;
+        this.color = color;
+        addSection(section);
+    }
+
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
@@ -48,5 +54,10 @@ public class Line extends BaseEntity {
     public void update(LineUpdateRequest lineUpdateRequest) {
         this.name = lineUpdateRequest.getName();
         this.color = lineUpdateRequest.getColor();
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+        section.setLine(this);
     }
 }

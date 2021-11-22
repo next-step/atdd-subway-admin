@@ -30,4 +30,8 @@ public class Section extends BaseEntity {
         this.distance = distance;
         this.line = line;
     }
+
+    public void setLine(Line line) {
+        this.line = line;
+    }
 }
