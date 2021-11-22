@@ -33,7 +33,7 @@ public class LineService {
         Line line = request.toLine();
         line.addSection(upStation, downStation, request.getDistance());
         
-        return LineResponse.of(lineRepository.save(request.toLine()));
+        return LineResponse.of(lineRepository.save(line));
     }
 
     @Transactional(readOnly = true)
