@@ -1,13 +1,15 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,14 +18,26 @@ import java.util.stream.Collectors;
 public class LineService {
     public static final String LINE_NOT_FOUND_MESSAGE = "노선이 없습니다.";
     private LineRepository lineRepository;
+    private StationService stationService;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
+        this.stationService = stationService;
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+        Station upStation = getStationById(request.getUpStationId());
+        Station downStation = getStationById(request.getDownStationId());
+        int distance = request.getDistance();
+
+        Line line = request.toLine();
+        line.addSection(upStation, downStation, distance);
+        Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
+    }
+
+    private Station getStationById(Long id) {
+        return stationService.findById(id);
     }
 
     public List<LineResponse> findAllLines() {
@@ -34,17 +48,17 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findById(long id) {
+    public LineResponse findById(Long id) {
         Line line = getLine(id);
         return LineResponse.of(line);
     }
 
-    private Line getLine(long id) {
+    private Line getLine(Long id) {
         return lineRepository.findById(id)
-                    .orElseThrow(() -> new EntityNotFoundException(LINE_NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND_MESSAGE));
     }
 
-    public LineResponse updateLine(LineRequest lineRequest, long id) {
+    public LineResponse updateLine(LineRequest lineRequest, Long id) {
         Line line = getLine(id);
         line.update(lineRequest.toLine());
         return LineResponse.of(line);
