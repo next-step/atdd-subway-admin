@@ -126,7 +126,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "blue", arg[0], arg[1], "20");
 
                 // then
-                지하철_노선_생성이_실패한다(response);
+                등록된_역_없음_사유로_지하철_노선_생성이_실패한다(response);
             }
         }
     }
@@ -302,6 +302,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
      */
     private void 지하철_노선이_생성된다(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private void 등록된_역_없음_사유로_지하철_노선_생성이_실패한다(ExtractableResponse<Response> response) {
+        Asserts.assertIsNotFound(response);
     }
 
     private void 지하철_노선_생성이_실패한다(ExtractableResponse<Response> response) {
