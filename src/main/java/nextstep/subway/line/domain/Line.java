@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.domain.Station;
 
 @Entity
 @Table(name = "line")
@@ -28,23 +29,26 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private LineStations lineStations = new LineStations();
+    private Sections sections = new Sections();
 
     public void addSection(Section section) {
-        lineStations.addSection(section);
+        sections.add(section);
+        section.setLine(this);
     }
 
     protected Line() {
 
     }
 
-    private Line(String name, String color) {
+    private Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
+
+        addSection(section);
     }
 
-    public static Line of(String name, String color) {
-        return new Line(name, color);
+    public static Line of(String name, String color, Section section) {
+        return new Line(name, color, section);
     }
 
     public void update(String name, String color) {
@@ -64,11 +68,14 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<LineStation> getLineStationsInOrder() {
-        return lineStations.getLineStationsInOrder();
+    public Sections getSections() {
+        return sections;
     }
 
     public List<Long> getStationIdsInOrder() {
-        return lineStations.getStationIdsInOrder();
+        return sections.getStationsInOrder()
+            .stream()
+            .map(Station::getId)
+            .collect(Collectors.toList());
     }
 }
