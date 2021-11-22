@@ -27,15 +27,11 @@ public class Section extends BaseEntity {
 
     private int distance;
 
-    /**
-     * TODO : 노선 조회 시 쿼리 확인할 것
-     */
-
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne
     @JoinColumn(name = "STATION_ID")
     private Station station;
 
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne
     @JoinColumn(name = "NEXT_STATION_ID")
     private Station nextStation;
 
@@ -55,14 +51,15 @@ public class Section extends BaseEntity {
         if (Objects.isNull(station) || Objects.isNull(nextStation)) {
             throw new NotFoundException("역이 존재하지 않습니다.");
         }
+
         this.line = line;
         this.station = station;
         this.nextStation = nextStation;
-        this.distance = distance.value();
+        this.distance = distance.intValue();
     }
 
     public Section(Distance distance, Station station, Station nextStation) {
-        this.distance = distance.value();
+        this.distance = distance.intValue();
         this.station = station;
         this.nextStation = nextStation;
     }

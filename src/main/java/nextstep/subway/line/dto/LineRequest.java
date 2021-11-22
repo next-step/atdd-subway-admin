@@ -16,7 +16,7 @@ public class LineRequest {
 
     private Long downStationId;
 
-    private Distance distance;
+    private int distance;
 
     private LineRequest() {
     }
@@ -26,7 +26,7 @@ public class LineRequest {
         this.color = color;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
-        this.distance = Distance.of(distance);
+        this.distance = distance;
     }
 
     public static LineRequest of(String name, String color, Long upStationId, Long downStationId, int distance) {
@@ -49,13 +49,17 @@ public class LineRequest {
         return downStationId;
     }
 
+    public int getDistance() {
+        return distance;
+    }
 
     public Line toLine() {
         return new Line(name, color);
     }
+
     public Line toLine(Station upStation, Station downStation) {
         Line line = new Line(name, color);
-        line.addSection(new Section(distance, upStation, downStation));
+        line.addSection(new Section(Distance.of(distance), upStation, downStation));
         return line;
     }
 }

@@ -27,7 +27,7 @@ public class Distance {
         if (distance < MIN_DISTANCE) throw new IllegalArgumentException("거리는 1보다 작을 수 없습니다.");
     }
 
-    public int value() {
+    public int intValue() {
         return this.distance;
     }
 

@@ -2,13 +2,15 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.entity.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static javax.persistence.FetchType.EAGER;
 
 @Entity
 public class Line extends BaseEntity {
@@ -25,8 +27,9 @@ public class Line extends BaseEntity {
      * TODO :  1) 고아객체 설정에 대해 학습하기
      *         2) 일급컬렉션으로 관리하기
      */
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    private List<Section> sections = new ArrayList<>();
+    private final List<Section> sections = new ArrayList<>();
 
     public Line() {
     }

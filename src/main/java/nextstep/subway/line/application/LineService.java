@@ -19,10 +19,12 @@ import java.util.List;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+    private final EntityManager em;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository, EntityManager em) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.em = em;
     }
 
     @Transactional(readOnly = true)

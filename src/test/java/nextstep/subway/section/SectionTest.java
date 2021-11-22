@@ -2,6 +2,7 @@ package nextstep.subway.section;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.dto.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
@@ -40,7 +41,7 @@ public class SectionTest {
         final Station upStation = stationRepository.save(StationRequest.of("강남역").toStation());
         final Station downStation = stationRepository.save(StationRequest.of("삼성역").toStation());
         Line line = new Line("2호선", "녹색");
-        line.addSection(new Section(line, upStation, downStation, DISTANCE_5));
+        line.addSection(new Section(line, upStation, downStation, Distance.of(DISTANCE_5)));
         final Line savedLine = lineRepository.save(line);
 
         Section findSection = sectionRepository.findById(savedLine.getSections().get(0).getId()).get();

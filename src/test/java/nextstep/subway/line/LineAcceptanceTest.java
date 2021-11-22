@@ -30,6 +30,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private Long 역삼역_ID;
     private LineRequest 일호선;
     private LineRequest 이호선;
+    private LineRequest 삼호선;
 
     private static final int 거리_5 = 5;
 
@@ -39,6 +40,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         역삼역_ID = 지하철_역_등록되어_있음(역삼역);
         일호선 = LineRequest.of("일호선", "남색", 강남역_ID, 역삼역_ID, DISTANCE_5);
         이호선 = LineRequest.of("이호선", "녹색", 강남역_ID, 역삼역_ID, DISTANCE_10);
+        삼호선 = LineRequest.of("삼호선", "빨강", 강남역_ID, 역삼역_ID, DISTANCE_10);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -80,13 +82,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         Long 일호선_ID = 지하철_노선_등록되어_있음(일호선);
         Long 이호선_ID = 지하철_노선_등록되어_있음(이호선);
+        Long 삼호선_ID = 지하철_노선_등록되어_있음(삼호선);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
         지하철_노선_목록_응답됨(response);
-        지하철_노선_목록_포함됨(response, Arrays.asList(일호선_ID, 이호선_ID));
+        지하철_노선_목록_포함됨(response, Arrays.asList(일호선_ID, 이호선_ID,삼호선_ID));
     }
 
     @DisplayName("지하철 노선을 조회한다.")
