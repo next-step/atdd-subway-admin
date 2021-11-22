@@ -1,4 +1,4 @@
-항package nextstep.subway.line;
+package nextstep.subway.line;
 
 import static nextstep.subway.station.StationAcceptanceTest.지하철_역_생성;
 import static nextstep.subway.utils.AcceptanceTestUtil.delete;
