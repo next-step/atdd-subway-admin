@@ -8,11 +8,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class StationService {
+    private final static Logger log = Logger.getLogger(StationService.class.getName());
+
     private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
@@ -27,10 +30,7 @@ public class StationService {
     @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
-
-        return stations.stream()
-                .map(station -> StationResponse.of(station))
-                .collect(Collectors.toList());
+        return convertStationsResponse(stations);
     }
 
     public void deleteStationById(Long id) {
@@ -38,4 +38,9 @@ public class StationService {
     }
 
 
+    public List<StationResponse> convertStationsResponse(List<Station> stations) {
+        return stations.stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
+    }
 }

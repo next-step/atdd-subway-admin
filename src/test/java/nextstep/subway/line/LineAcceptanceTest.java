@@ -4,6 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,8 +33,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
-        강남역_아이디 = 지하철_역_등록되어_있음("강남역").as(LineResponse.class).getId();
-        역삼역_아이디 = 지하철_역_등록되어_있음("역삼역").as(LineResponse.class).getId();
+        강남역_아이디 = 지하철_역_등록되어_있음("강남역").as(StationResponse.class).getId();
+        역삼역_아이디 = 지하철_역_등록되어_있음("역삼역").as(StationResponse.class).getId();
         구간_거리 = 10;
     }
 
@@ -108,7 +109,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성_실패됨(response, "역간의 거리는 0보다 커야 합니다.");
     }
 
-
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성할 경우 에러가 발생한다.")
     @Test
     void createLineWithDuplicatedName() {
@@ -154,6 +154,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선_응답됨(response);
         지하철_노선_응답_항목_검증(response, 초록노선);
+        지하철_노선_종점역_응답_순서_검증(response, 강남역_아이디, 역삼역_아이디);
     }
 
     @DisplayName("지하철 노선을 수정한다.")

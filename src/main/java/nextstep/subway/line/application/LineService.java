@@ -9,6 +9,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.UpdateLineResponseDto;
 import nextstep.subway.line.exception.DuplicateLineNameException;
 import nextstep.subway.line.exception.NotFoundLineByIdException;
+import nextstep.subway.station.application.StationService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +21,12 @@ import java.util.stream.Collectors;
 public class LineService {
     private final LineRepository lineRepository;
     private final SectionService sectionService;
+    private final StationService stationService;
 
-    public LineService(LineRepository lineRepository, SectionService sectionService) {
+    public LineService(LineRepository lineRepository, SectionService sectionService, StationService stationService) {
         this.lineRepository = lineRepository;
         this.sectionService = sectionService;
+        this.stationService = stationService;
     }
 
     @Transactional
@@ -53,14 +56,18 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         return lineRepository.findAll().stream()
-                .map(LineResponse::of)
+                .map(this::convertLineResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse findById(long id) {
         final Line line = getLineByIdOrElseThrow(id);
-        return LineResponse.of(line);
+        return convertLineResponse(line);
+    }
+
+    private LineResponse convertLineResponse(Line line) {
+        return LineResponse.of(line, stationService.convertStationsResponse(line.getStationsOrderByUptoDown()));
     }
 
     private Line getLineByIdOrElseThrow(long id) {

@@ -1,9 +1,11 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,18 +15,19 @@ public class LineResponse {
     private final String color;
     private final LocalDateTime createdDate;
     private final LocalDateTime modifiedDate;
-    private final List<SectionResponse> sectionResponses = new ArrayList<>();
+    private final List<StationResponse> stations = new ArrayList<>();
 
-    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
+        this.stations.addAll(stations);
     }
 
-    public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
+    public static LineResponse of(Line line, List<StationResponse> stations) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate(), stations);
     }
 
     public Long getId() {
@@ -43,8 +46,8 @@ public class LineResponse {
         return modifiedDate;
     }
 
-    public List<SectionResponse> getSectionResponses() {
-        return sectionResponses;
+    public List<StationResponse> getStations() {
+        return Collections.unmodifiableList(stations);
     }
 
     @Override
@@ -59,23 +62,11 @@ public class LineResponse {
 
         LineResponse that = (LineResponse) target;
 
-        if (!Objects.equals(id, that.id)) {
-            return false;
-        }
-
-        if (!Objects.equals(name, that.name)) {
-            return false;
-        }
-
-        if (!Objects.equals(color, that.color)) {
-            return false;
-        }
-
-        if (!Objects.equals(createdDate, that.createdDate)) {
-            return false;
-        }
-
-        return Objects.equals(modifiedDate, that.modifiedDate);
+        return Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(color, that.color) &&
+                Objects.equals(createdDate, that.createdDate) &&
+                Objects.equals(modifiedDate, that.modifiedDate);
     }
 
     @Override

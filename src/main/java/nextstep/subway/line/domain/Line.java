@@ -3,13 +3,17 @@ package nextstep.subway.line.domain;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.exception.NotEmptyLineColorException;
 import nextstep.subway.line.exception.NotEmptyLineNameException;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -60,7 +64,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
-        return Collections.unmodifiableList(sections.getSections());
+    public List<Station> getStationsOrderByUptoDown() {
+        return this.sections.getStationsOrderByUptoDown();
     }
 }

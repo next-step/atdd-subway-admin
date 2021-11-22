@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.station.domain.Station;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
@@ -25,11 +27,20 @@ public class Sections {
         this.sections.add(section);
     }
 
+    public Sections(List<Section> sections) {
+        this.sections.addAll(sections);
+    }
+
     public static Sections of(Section section) {
         return new Sections(section);
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public static Sections of(List<Section> sections) {
+        return new Sections(sections);
     }
+
+    public List<Station> getStationsOrderByUptoDown() {
+        return SectionsSort.of(this.sections).sortUpToDown();
+    }
+
 }
