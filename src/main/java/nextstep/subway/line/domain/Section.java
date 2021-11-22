@@ -16,8 +16,9 @@ import javax.persistence.ManyToOne;
 @Entity
 public class Section extends BaseEntity {
 
-    public static final String ERROR_MESSAGE_DUPLICATE_STATION = "동일한 역으로 구간을 생성할 수 없습니다.";
-    public static final String ERROR_MESSAGE_DISTANCE_BOUND = "역간 거리는 0 이하가 될 수 없습니다.";
+    private static final String ERROR_MESSAGE_DUPLICATE_STATION = "동일한 역으로 구간을 생성할 수 없습니다.";
+    private static final String ERROR_MESSAGE_DISTANCE_BOUND = "역간 거리는 0 이하가 될 수 없습니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;

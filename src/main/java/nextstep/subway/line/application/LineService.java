@@ -18,8 +18,10 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class LineService {
-    public static final String ERROR_MESSAGE_CANNOT_FIND_LINE = "요청한 지하철 노선 정보를 찾을 수 없습니다.";
-    public static final String ERROR_MESSAGE_CANNOT_FIND_STATION = "요청한 지하철역 정보를 찾을 수 없습니다.";
+
+    private static final String ERROR_MESSAGE_CANNOT_FIND_LINE = "요청한 지하철 노선 정보를 찾을 수 없습니다.";
+    private static final String ERROR_MESSAGE_CANNOT_FIND_STATION = "요청한 지하철역 정보를 찾을 수 없습니다.";
+
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
