@@ -1,12 +1,14 @@
 package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static nextstep.subway.station.StationAcceptanceTest.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -18,14 +20,31 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
     
-    private LineRequest 신분당선 = LineRequest.of("신분당선", "bg-red-600", 1L, 2L, 5);
-    private LineRequest 이호선 = LineRequest.of("2호선", "bg-red-600", 3L, 4L, 8);
-    private LineRequest 구분당선 = LineRequest.of("구분당선", "bg-blue-600", 5L, 6L, 7);
+    private LineRequest 신분당선;
+    private LineRequest 이호선;
+    private LineRequest 구분당선;
 
+    private StationResponse 교대역;
+    private StationResponse 강남역;
+    private StationResponse 양재역;
+    
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+        교대역 = 지하철역_등록되어_있음(StationRequest.from("교대역"));
+        강남역 = 지하철역_등록되어_있음(StationRequest.from("강남역"));
+        양재역 = 지하철역_등록되어_있음(StationRequest.from("양재역"));
+        이호선 = LineRequest.of("2호선", "bg-red-600", 교대역.getId(), 강남역.getId(), 8);
+        신분당선 = LineRequest.of("신분당선", "bg-red-600", 강남역.getId(), 양재역.getId(), 10);
+        구분당선 = LineRequest.of("구분당선", "bg-blue-600", 강남역.getId(), 양재역.getId(), 13);
+    }
+    
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {

@@ -78,7 +78,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
     
-    private ExtractableResponse<Response> 지하철역_생성_요청(StationRequest request) {
+    private static ExtractableResponse<Response> 지하철역_생성_요청(StationRequest request) {
         return RestAssured
                 .given().log().all()
                 .body(request)
@@ -89,7 +89,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
     
-    private StationResponse 지하철역_등록되어_있음(StationRequest request) {
+    public static StationResponse 지하철역_등록되어_있음(StationRequest request) {
         return 지하철역_생성_요청(request).as(StationResponse.class);
     }
     
