@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import nextstep.subway.line.domain.Line;
@@ -31,5 +32,12 @@ public class LineService {
         return lines.stream()
             .map(line -> LineResponse.of(line))
             .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public LineResponse findLineId(Long id) {
+        return lineRepository.findById(id)
+            .map(LineResponse::of)
+            .orElse(null);
     }
 }

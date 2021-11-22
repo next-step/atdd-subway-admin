@@ -6,17 +6,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -41,7 +41,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest 화곡역 = 지하철_노선_정보("화곡역", "purple");
+        LineRequest 화곡역 = 지하철_노선_정보("화곡", "purple");
         지하철_노선_생성_요청(화곡역);
 
         // when
@@ -66,7 +66,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 지하철목록 = 지하철_노선_목록_조회();
 
         // then
-        지하철_노선_목록_응답됨(지하철목록);
+        지하철_노선_응답됨(지하철목록);
         지하철_노선_목록_포함됨(지하철목록, 화곡역, 사당역);
     }
 
@@ -75,12 +75,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        LineRequest 화곡 = 지하철_노선_정보("화곡", "purple");
+        ExtractableResponse<Response> 화곡역 = 지하철_노선_생성_요청(화곡);
 
         // when
-        // 지하철_노선_조회_요청
+        ExtractableResponse<Response> 응답 = 지하철_노선_조회_요청(화곡역);
 
         // then
-        // 지하철_노선_응답됨
+        지하철_노선_응답됨(응답);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -123,11 +125,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_목록_조회() {
-        ExtractableResponse<Response> response = RestAssured
+        return RestAssured
             .given().log().all()
             .when().get(LINES_PATH)
             .then().log().all().extract();
-        return response;
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> response) {
+        return RestAssured
+            .given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(response.header("Location"))
+            .when().get(LINES_PATH)
+            .then().log().all().extract();
     }
 
     private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> resultResponse,
@@ -152,7 +162,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
+    private void 지하철_노선_응답됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }
