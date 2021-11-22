@@ -12,10 +12,10 @@ import java.util.Set;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line" ,cascade = {CascadeType.PERSIST, CascadeType.MERGE},orphanRemoval = true)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public List<Station> getStation(){
+    public List<Station> getStation() {
         Set<Station> stationBasket = new LinkedHashSet<>();
         this.sections.stream()
                 .forEach(section -> {
