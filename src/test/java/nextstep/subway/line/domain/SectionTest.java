@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import static nextstep.subway.line.domain.SectionTestFixture.강남역;
 import static nextstep.subway.line.domain.SectionTestFixture.역삼역;
-import static nextstep.subway.line.domain.SectionTestFixture.이호선;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -18,12 +17,11 @@ class SectionTest {
     @Test
     void 생성_확인() {
         // given
-        Line 이호선 = 이호선();
         Station 강남역 = 강남역();
         Station 역삼역 = 역삼역();
 
         // when
-        Section section = Section.of(이호선, 강남역, 역삼역, 10);
+        Section section = Section.of(강남역, 역삼역, 10);
 
         // then
         assertThat(section)
@@ -34,11 +32,10 @@ class SectionTest {
     @Test
     void 중복된_역으로_생성() {
         // given
-        Line 이호선 = 이호선();
         Station 강남역 = 강남역();
 
         // when
-        ThrowableAssert.ThrowingCallable throwingCallable = () -> Section.of(이호선, 강남역, 강남역, 10);
+        ThrowableAssert.ThrowingCallable throwingCallable = () -> Section.of(강남역, 강남역, 10);
 
         // then
         assertThatThrownBy(throwingCallable)
@@ -49,12 +46,11 @@ class SectionTest {
     @Test
     void 거리가_0() {
         // given
-        Line 이호선 = 이호선();
         Station 강남역 = 강남역();
         Station 역삼역 = 역삼역();
 
         // when
-        ThrowableAssert.ThrowingCallable throwingCallable = () -> Section.of(이호선, 강남역, 역삼역, 0);
+        ThrowableAssert.ThrowingCallable throwingCallable = () -> Section.of(강남역, 역삼역, 0);
 
         // then
         assertThatThrownBy(throwingCallable)

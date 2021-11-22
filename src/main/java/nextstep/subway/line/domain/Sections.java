@@ -5,6 +5,8 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +17,8 @@ import java.util.Set;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_line_section"))
     private List<Section> values = new ArrayList<>();
 
     protected Sections() {

@@ -24,10 +24,6 @@ public class Section extends BaseEntity {
     Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_line"))
-    private Line line;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_up_station"))
     private Station upStation;
 
@@ -41,12 +37,11 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    private Section(Long id, Line line, Station upStation, Station downStation, int distance) {
+    private Section(Long id, Station upStation, Station downStation, int distance) {
         validateDuplicateStation(upStation, downStation);
         validateDistanceBound(distance);
 
         this.id = id;
-        this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = new Distance(distance);
@@ -64,24 +59,12 @@ public class Section extends BaseEntity {
         }
     }
 
-    public static Section of(Long id, Line line, Station upStation, Station downStation, int distance) {
-        return new Section(id, line, upStation, downStation, distance);
-    }
-
-    public static Section of(Line line, Station upStation, Station downStation, int distance) {
-        return new Section(null, line, upStation, downStation, distance);
+    public static Section of(Long id, Station upStation, Station downStation, int distance) {
+        return new Section(id, upStation, downStation, distance);
     }
 
     public static Section of(Station upStation, Station downStation, int distance) {
-        return new Section(null, null, upStation, downStation, distance);
-    }
-
-    public Line getLine() {
-        return line;
-    }
-
-    public void setLine(Line line) {
-        this.line = line;
+        return new Section(null, upStation, downStation, distance);
     }
 
     public Station getUpStation() {
