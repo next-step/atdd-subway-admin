@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.exception.DistanceOverException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -51,20 +52,44 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public boolean isEqualsUpStation(Station station) {
-        return this.getUpStation()
-                .equals(station);
+    public int getDistance() {
+        return distance;
     }
 
-    public boolean isEqualsDownStation(Station station) {
-        return this.getDownStation()
-                .equals(station);
+    public boolean isEqualsUpStation(final Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isEqualsDownStation(final Station station) {
+        return downStation.equals(station);
+    }
+
+
+    public boolean isIncludeOneStation(final Section nonPersistSection) {
+        return isEqualsUpStation(nonPersistSection.upStation)
+                || isEqualsDownStation(nonPersistSection.downStation);
+    }
+
+    public void insertCalculatedDistance(final Section nonPersistSection) {
+        if(distance <= nonPersistSection.distance){
+            throw new DistanceOverException();
+        }
+
+        if(isEqualsUpStation(nonPersistSection.upStation)){
+            upStation = nonPersistSection.downStation;
+        }
+
+        if(isEqualsDownStation(nonPersistSection.downStation)){
+            downStation = nonPersistSection.upStation;
+        }
+
+        distance -= nonPersistSection.distance;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Section)) return false;
         Section section = (Section) o;
         return distance == section.distance
                 && Objects.equals(id, section.id)

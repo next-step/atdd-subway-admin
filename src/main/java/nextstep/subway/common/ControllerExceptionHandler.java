@@ -1,9 +1,6 @@
 package nextstep.subway.common;
 
-import nextstep.subway.exception.NotFoundLineException;
-import nextstep.subway.exception.NotFoundStationException;
-import nextstep.subway.exception.NotIncludeOneStationException;
-import nextstep.subway.exception.SameSectionStationException;
+import nextstep.subway.exception.*;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,7 +15,8 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
             , NotFoundLineException.class
             , NotFoundStationException.class
             , SameSectionStationException.class
-            , NotIncludeOneStationException.class})
+            , NotIncludeOneStationException.class
+            , DistanceOverException.class})
     protected ResponseEntity<Void> handleConflict(RuntimeException ex, WebRequest request) {
         return ResponseEntity.badRequest().build();
     }

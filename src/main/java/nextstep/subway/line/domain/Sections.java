@@ -23,29 +23,34 @@ public class Sections {
         sections = new ArrayList<>();
     }
 
-    public void add(Section section) {
-        if(!sections.isEmpty()){
-            validateSection(section);
+    public void add(Section nonPersistSection) {
+        if (!sections.isEmpty()) {
+            validateSection(nonPersistSection);
+
+            sections.stream()
+                    .filter(section -> section.isIncludeOneStation(nonPersistSection))
+                    .findAny()
+                    .ifPresent(section -> section.insertCalculatedDistance(nonPersistSection));
         }
 
-        sections.add(section);
+        sections.add(nonPersistSection);
     }
 
-    public void validateSection(final Section nonPersistSection) {
+    private void validateSection(final Section nonPersistSection) {
         boolean isSameUpStation = getStations().isMatch(nonPersistSection.getUpStation());
         boolean isSameDownStation = getStations().isMatch(nonPersistSection.getDownStation());
         validateSameSectionStation(isSameUpStation, isSameDownStation);
         notIncludeOneStation(isSameUpStation, isSameDownStation);
     }
 
-    private void notIncludeOneStation(boolean isSameUpStation, boolean isSameDownStation) {
-        if(!isSameUpStation && !isSameDownStation){
+    private void notIncludeOneStation(final boolean isSameUpStation, final boolean isSameDownStation) {
+        if (!isSameUpStation && !isSameDownStation) {
             throw new NotIncludeOneStationException();
         }
     }
 
-    private void validateSameSectionStation(boolean isSameUpStation, boolean isSameDownStation) {
-        if(isSameUpStation && isSameDownStation){
+    private void validateSameSectionStation(final boolean isSameUpStation, final boolean isSameDownStation) {
+        if (isSameUpStation && isSameDownStation) {
             throw new SameSectionStationException();
         }
     }
@@ -71,9 +76,9 @@ public class Sections {
         return new Stations(sectionStationList);
     }
 
-    private List<Station> getSectionStationList(Station station){
+    private List<Station> getSectionStationList(Station station) {
         List<Station> stations = new ArrayList<>();
-        while(!Objects.isNull(station)) {
+        while (!Objects.isNull(station)) {
             stations.add(station);
             Section nextSection = findNextSection(station);
             station = nextSection.getDownStation();
