@@ -117,13 +117,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         StationResponse stationResponse1 = 역_미리_생성("강남역");
         StationResponse stationResponse2 = 역_미리_생성("역삼역");
-        LineRequest lineRequestWithStations = new LineRequest("2호선", "green", stationResponse1.getId(), stationResponse2.getId(), 10);
 
         // when
-        ExtractableResponse<Response> saveResponse = 지하철_노선_생성_요청(lineRequestWithStations);
+        ExtractableResponse<Response> saveResponse = 지하철_노선_종점역_추가하여_생성_요청(stationResponse1.getId(), stationResponse2.getId());
 
         // then
         지하철_노선_생성_응답됨(saveResponse);
+    }
+
+    @DisplayName("노선 조회, 역 목록 추가")
+    @Test
+    void findLineWithStations() {
+        // given
+        StationResponse stationResponse1 = 역_미리_생성("강남역");
+        StationResponse stationResponse2 = 역_미리_생성("역삼역");
+        LineResponse lineResponse = 지하철_노선_종점역_추가하여_생성_요청(stationResponse1.getId(), stationResponse2.getId()).body()
+                .as(LineResponse.class);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineResponse.getId());
+
+        // then
+        지하철_노선_역_목록_응답됨(Arrays.asList(stationResponse1.getId(), stationResponse2.getId()), response);
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
@@ -154,6 +169,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .given().log().all()
                 .when().delete("/lines/" + id)
                 .then().log().all().extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_종점역_추가하여_생성_요청(Long stationId1, Long stationId2) {
+        LineRequest lineRequestWithStations = new LineRequest("2호선", "green", stationId1, stationId2, 10);
+        return 지하철_노선_생성_요청(lineRequestWithStations);
     }
 
     private void 지하철_노선_생성_응답됨(ExtractableResponse<Response> response) {
@@ -197,5 +217,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철_노선_역_목록_응답됨(List<Long> stationIds, ExtractableResponse<Response> response) {
+        List<Long> lineResponseIds = response.jsonPath()
+                .getList("..", StationResponse.class)
+                .stream()
+                .map(stationResponse -> stationResponse.getId())
+                .collect(Collectors.toList());
+
+        assertThat(lineResponseIds).containsAll(stationIds);
     }
 }
