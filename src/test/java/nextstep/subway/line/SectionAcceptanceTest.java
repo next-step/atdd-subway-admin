@@ -160,6 +160,88 @@ class SectionAcceptanceTest extends AcceptanceTest {
         지하철_구간_추가_실패함(response);
     }
 
+    @DisplayName("지하철 상행 종점을 제거한다.")
+    @Test
+    void deleteUpStation() {
+        // given
+        StationResponse 사당역 = StationAcceptanceTest
+            .지하철_역_생성_요청(new StationRequest("사당역")).as(StationResponse.class);
+        ExtractableResponse<Response> 지하철_구간_추가_요청 =
+            지하철_구간_추가_요청(new SectionRequest(강남역.getId(), 사당역.getId(), 10), 이호선.getId());
+
+        // when
+        // 지하철 종점 제거 요청을 한다.
+        String uri = 지하철_구간_추가_요청.header("Location") + "stationId=" + 잠실역.getId();
+        ExtractableResponse<Response> response = 지하철_구간_제거_요청(uri);
+
+        // then
+        지하철_구간_제거됨(response);
+    }
+
+    @DisplayName("지하철 하행 종점을 제거한다.")
+    @Test
+    void deleteDownStation() {
+        // given
+        StationResponse 사당역 = StationAcceptanceTest
+            .지하철_역_생성_요청(new StationRequest("사당역")).as(StationResponse.class);
+        ExtractableResponse<Response> 지하철_구간_추가_요청 =
+            지하철_구간_추가_요청(new SectionRequest(강남역.getId(), 사당역.getId(), 10), 이호선.getId());
+
+        // when
+        // 지하철 종점 제거 요청을 한다.
+        String uri = 지하철_구간_추가_요청.header("Location") + "stationId=" + 사당역.getId();
+        ExtractableResponse<Response> response = 지하철_구간_제거_요청(uri);
+
+        // then
+        지하철_구간_제거됨(response);
+    }
+
+    @DisplayName("지하철 중간역을 제거한다.")
+    @Test
+    void deleteBetweenStation() {
+        // given
+        StationResponse 사당역 = StationAcceptanceTest
+            .지하철_역_생성_요청(new StationRequest("사당역")).as(StationResponse.class);
+        ExtractableResponse<Response> 지하철_구간_추가_요청 =
+            지하철_구간_추가_요청(new SectionRequest(강남역.getId(), 사당역.getId(), 10), 이호선.getId());
+
+        // when
+        // 지하철 종점 제거 요청을 한다.
+        String uri = 지하철_구간_추가_요청.header("Location") + "stationId=" + 강남역.getId();
+        ExtractableResponse<Response> response = 지하철_구간_제거_요청(uri);
+
+        // then
+        지하철_구간_제거됨(response);
+    }
+
+    @DisplayName("노선이 등록되어 있지 않은 역은 제거할 수 없다.")
+    @Test
+    void deleteNotExistStationToSection() {
+        // given
+        StationResponse 사당역 = StationAcceptanceTest
+            .지하철_역_생성_요청(new StationRequest("사당역")).as(StationResponse.class);
+
+        // when
+        // 지하철 종점 제거 요청을 한다.
+        String uri = "/lines/" + 이호선.getId() + "/stations?stationId=" + 사당역.getId();
+        ExtractableResponse<Response> response = 지하철_구간_제거_요청(uri);
+
+        // then
+        지하철_구간_제거_실패함(response);
+    }
+
+    @DisplayName("구간이 하나인 경우 제거할 수 없다.")
+    @Test
+    void deleteUniqueSection() {
+        // when
+        // 지하철 종점 제거 요청을 한다.
+        String uri = "/lines/" + 이호선.getId() + "/stations?stationId=" + 잠실역.getId();
+        ExtractableResponse<Response> response = 지하철_구간_제거_요청(uri);
+
+        // then
+        지하철_구간_제거_실패함(response);
+    }
+
     private ExtractableResponse<Response> 지하철_구간_추가_요청(SectionRequest params, Long lineId) {
         return RestAssured
             .given().log().all()
@@ -170,11 +252,28 @@ class SectionAcceptanceTest extends AcceptanceTest {
             .then().log().all().extract();
     }
 
+    private ExtractableResponse<Response> 지하철_구간_제거_요청(String uri) {
+        ExtractableResponse<Response> response = RestAssured
+            .given().log().all()
+            .when()
+            .delete(uri)
+            .then().log().all().extract();
+        return response;
+    }
+
     private void 지하철_구간_추가됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
+    private void 지하철_구간_제거됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
     private void 지하철_구간_추가_실패함(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 지하철_구간_제거_실패함(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
