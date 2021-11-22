@@ -5,6 +5,7 @@ import io.restassured.internal.path.ObjectConverter;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.utils.DatabaseCleanup;
@@ -35,13 +36,16 @@ public class AcceptanceTest {
         databaseCleanup.execute();
     }
 
-    private RequestSpecification given() {
-        return RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON_VALUE);
+    protected List<ExtractableResponse<Response>> given_목록저장되어있다(Object[] bodies, String url) {
+        List<ExtractableResponse<Response>> responseList = new ArrayList<>();
+        for (Object body : bodies) {
+            responseList.add(저장한다(body, url));
+        }
+        return responseList;
     }
 
     protected ExtractableResponse<Response> 저장한다(Object body, String url) {
+        System.out.println(url);
         return given().body(body)
             .when()
             .post(url)
@@ -83,5 +87,15 @@ public class AcceptanceTest {
             .map(it -> ObjectConverter
                 .convertObjectTo(it.header("Location").split("/")[2], genericType))
             .collect(Collectors.toList());
+    }
+
+    protected Long getLongIdByResponse(ExtractableResponse<Response> response) {
+        return response.body().jsonPath().getLong("id");
+    }
+
+    private RequestSpecification given() {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE);
     }
 }

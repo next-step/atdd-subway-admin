@@ -2,6 +2,7 @@ package nextstep.subway.station.application;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
@@ -13,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class StationService {
 
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
@@ -35,5 +36,21 @@ public class StationService {
 
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public StationResponse findStationById(Long id) {
+        return StationResponse.of(findById(id));
+    }
+
+    public void updateStationById(Long id, StationRequest request) {
+        Station station = findById(id);
+        station.update(request.getName());
+        stationRepository.save(station);
+    }
+
+    private Station findById(Long id) {
+        return stationRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException());
     }
 }

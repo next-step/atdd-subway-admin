@@ -20,7 +20,7 @@ public class LineTest {
 
     @Test
     @DisplayName("라인 생성 성공")
-    public void createLine() {
+    void createLine() {
         Line line2 = new Line("2호선", "green");
         Line save = lineRepository.save(line2);
 
@@ -32,14 +32,14 @@ public class LineTest {
 
     @Test
     @DisplayName("라인 조회")
-    public void getLine() {
+    void getLine() {
         Optional<Line> line = lineRepository.findById(1L);
         assertThat(line.isPresent()).isTrue();
     }
 
     @Test
     @DisplayName("라인 목록 조회")
-    public void getAllLines() {
+    void getAllLines() {
         lineRepository.save(new Line("3호선", "orange"));
         List<Line> lines = lineRepository.findAll();
         assertThat(lines.size()).isEqualTo(2);
@@ -48,7 +48,7 @@ public class LineTest {
 
     @Test
     @DisplayName("라인 이름,색상 수정")
-    public void updateLine() {
+    void updateLine() {
         Optional<Line> optionalLine = lineRepository.findById(1L);
 
         assertThat(optionalLine.isPresent()).isTrue();
@@ -68,7 +68,7 @@ public class LineTest {
 
     @Test
     @DisplayName("라인 삭제")
-    public void deleteLine() {
+    void deleteLine() {
         Line save = lineRepository.save(new Line("2호선", "green"));
 
         Optional<Line> optionalLine1 = lineRepository.findById(save.getId());
