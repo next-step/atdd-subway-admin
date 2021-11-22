@@ -20,7 +20,7 @@ public class AcceptanceTest {
     @Autowired
     private DatabaseCleanup databaseCleanup;
 
-    public static void 요청_결과_검증(ExtractableResponse<Response> response, HttpStatus status) {
+    public void 요청_결과_검증(ExtractableResponse<Response> response, HttpStatus status) {
         assertThat(response.statusCode()).isEqualTo(status.value());
     }
 

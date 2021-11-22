@@ -10,6 +10,10 @@ import java.util.stream.Collectors;
 public class LineResponses {
     private final List<LineResponse> lineResponses;
 
+    private LineResponses(){
+        lineResponses = new ArrayList<>();
+    }
+
     private LineResponses(List<LineResponse> lineResponses) {
         this.lineResponses = lineResponses;
     }

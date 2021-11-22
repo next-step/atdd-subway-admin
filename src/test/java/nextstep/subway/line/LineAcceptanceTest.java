@@ -6,6 +6,8 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -15,14 +17,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static nextstep.subway.station.StationAcceptanceTest.지하철_역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-
     //given
-    public static final LineRequest 수인분당선 = new LineRequest("수인분당선", "yellow");
-    public static final LineRequest 신분당선 = new LineRequest("신분당선", "red");
+    public LineRequest 수인분당선;
+    public LineRequest 신분당선;
+    private StationResponse 강남역;
+    private StationResponse 역삼역;
 
     public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest lineRequest) {
         return 지하철_노선_생성_요청(lineRequest);
@@ -37,7 +41,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    @DisplayName("지하철 노선을 생성한다.")
+    @BeforeEach
+    void beforeEach() {
+        강남역 = 지하철_역_등록되어_있음("강남역").as(StationResponse.class);
+        역삼역 = 지하철_역_등록되어_있음("역삼역").as(StationResponse.class);
+
+        수인분당선 = new LineRequest("수인분당선", "yellow", 강남역.getId(), 역삼역.getId(), 10);
+        신분당선 = new LineRequest("신분당선", "red", 강남역.getId(), 역삼역.getId(), 15);
+    }
+
+    @DisplayName("노선 등록시 구간정보도 같이 저장한다.")
     @Test
     void createLine() {
         // when
