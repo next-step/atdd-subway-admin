@@ -220,12 +220,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_역_목록_응답됨(List<Long> stationIds, ExtractableResponse<Response> response) {
-        List<Long> lineResponseIds = response.jsonPath()
-                .getList("..", StationResponse.class)
+        List<Long> lineResponseStationIds = response.body()
+                .as(LineResponse.class)
+                .getStations()
                 .stream()
                 .map(stationResponse -> stationResponse.getId())
                 .collect(Collectors.toList());
 
-        assertThat(lineResponseIds).containsAll(stationIds);
+        assertThat(lineResponseStationIds).containsAll(stationIds);
     }
 }
