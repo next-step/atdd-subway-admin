@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,8 +47,18 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = readWithSectionsById(lineId);
+        line.addSection(sectionRequest.toSectionWith(line));
+    }
+
     private Line readById(Long id) {
         return lineRepository.findById(id)
                              .orElseThrow(() -> new NotFoundException("해당하는 Line이 없습니다. id = " + id));
+    }
+
+    private Line readWithSectionsById(Long id) {
+        return lineRepository.findWithSectionsById(id)
+            .orElseThrow(() -> new NotFoundException("해당하는 Line이 없습니다. id = " + id));
     }
 }
