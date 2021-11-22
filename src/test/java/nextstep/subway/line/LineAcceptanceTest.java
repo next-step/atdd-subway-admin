@@ -18,6 +18,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
 
@@ -162,8 +163,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // 노선에_속한_역_정보_상행_하행_정렬_되어_응답
         final LineResponse lineResponses = lineNo.as(LineResponse.class);
         assertThat(lineNo.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(lineResponses.getStations().get(0).getName()).isEqualTo("강남");
-        assertThat(lineResponses.getStations().get(1).getName()).isEqualTo("광교");
+        assertThat(lineResponses.getStations()).extracting("name").containsExactly("강남","광교");
 
     }
 
