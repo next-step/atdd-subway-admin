@@ -158,6 +158,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> createResponse = 지하철_노선_등록("신분당선", "bg-red-600", 10);
+
+        ExtractableResponse<Response> upStationResponse = 지하철역_등록("신설동");
+        long upStationId = upStationResponse.body().jsonPath().getLong("id");
         long id = createResponse.body().jsonPath().getLong("id");
 
         Map<String, String> params = new HashMap<>();

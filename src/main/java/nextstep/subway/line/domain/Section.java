@@ -25,6 +25,12 @@ public class Section {
 
     private Double position;
 
+    @Transient
+    public static final double UP_SECTION = 65535.0;
+
+    @Transient
+    public static final double DOWN_SECTION = UP_SECTION * 2;
+
     protected Section() {
 
     }
@@ -45,6 +51,14 @@ public class Section {
 
     public void updatePosition(Double position) {
         this.position = position;
+    }
+
+    public boolean matchPosition(Section section) {
+        return matchPosition(section.getPosition());
+    }
+
+    public boolean matchPosition(Double position) {
+        return this.position == position;
     }
 
     public Double getPosition() {

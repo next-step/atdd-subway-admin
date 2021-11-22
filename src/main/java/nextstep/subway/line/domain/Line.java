@@ -36,8 +36,17 @@ public class Line extends BaseEntity {
         this.sections = new Sections();
     }
 
+    public static Line of(String name, String color, Integer distance, Long upStationId, Long downStationId, List<Station> stations) {
+        Line line = new Line(name, color, distance);
+        line.addUpSection(stations, upStationId);
+        line.addDownSection(stations, downStationId);
+        return line;
+    }
+
     public void update(Line line) {
-        this.name = line.getName();
+        if(Objects.nonNull(line.getName())) {
+            this.name = line.getName();
+        }
 
         if(Objects.nonNull(line.getColor())) {
             this.color = line.getColor();
@@ -46,12 +55,33 @@ public class Line extends BaseEntity {
         if(Objects.nonNull(line.getDistance())) {
             this.distance = line.getDistance();
         }
-
-        this.sections.addAll(line.getSections());
     }
 
-    public void addSection(Station station) {
-        this.sections.add(Section.create(this, station));
+    public void addUpSection(List<Station> stations, Long upStationId) {
+
+        if(Objects.isNull(upStationId)) {
+            return;
+        }
+
+        Station station = stations.stream()
+                .filter(s -> s.matchId(upStationId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("상행역이 존재하지 않습니다. upStationId = " + upStationId));
+
+        this.sections.addUpSection(Section.create(this, station));
+    }
+    public void addDownSection(List<Station> stations, Long downStationId) {
+
+        if(Objects.isNull(downStationId)) {
+            return;
+        }
+
+        Station station = stations.stream()
+                .filter(s -> s.matchId(downStationId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("하행역이 존재하지 않습니다. upStationId = " + downStationId));
+
+        this.sections.addDownSection(Section.create(this, station));
     }
 
     public void addSections(List<Station> stations) {

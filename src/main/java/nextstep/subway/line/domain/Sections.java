@@ -9,13 +9,12 @@ import java.util.List;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
-
         if(!this.sections.contains(section)) {
-            section.updatePosition(findPosition());
             this.sections.add(section);
         }
 
@@ -23,23 +22,23 @@ public class Sections {
     }
 
     public void addAll(List<Section> sections) {
-        this.sections.clear();
         for(Section section : sections) {
             add(section);
         }
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public void addUpSection(Section section) {
+        section.updatePosition(section.UP_SECTION);
+        add(section);
     }
 
-    private Double findPosition() {
+    public void addDownSection(Section section) {
+        section.updatePosition(section.DOWN_SECTION);
+        add(section);
+    }
 
-        if(this.sections.isEmpty()) {
-            return 65535.0;
-        }
-
-        return this.sections.get(this.sections.size() - 1).getPosition() * 2;
+    public List<Section> getSections() {
+        return sections;
     }
 
     private void validateSectionSize() {
@@ -47,4 +46,5 @@ public class Sections {
             throw new IllegalArgumentException("종점역(상행, 하행) 개수가 일치하지 않습니다.");
         }
     }
+
 }

@@ -2,6 +2,7 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
@@ -28,13 +29,14 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
 
-        List<Station> stations = stationRepository.findAllById(Arrays.asList(request.getUpStationId(), request.getDownStationId()))
+        List<Station> stations = stationRepository.findAllById(request.toIds())
                 .stream()
                 .distinct()
                 .collect(toList());
 
         Line requestLine = request.toLine();
-        requestLine.addSections(stations);
+        requestLine.addUpSection(stations, request.getUpStationId());
+        requestLine.addDownSection(stations, request.getDownStationId());
         Line persistLine = lineRepository.save(requestLine);
 
         return LineResponse.of(persistLine);
@@ -61,12 +63,8 @@ public class LineService {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 Line이 존재하지 않습니다. id = " + id));
 
-        List<Station> stations = stationRepository.findAllById(Arrays.asList(request.getUpStationId(), request.getDownStationId()))
-                .stream()
-                .distinct()
-                .collect(toList());
-
         Line updatedLine = new Line(request.getName(), request.getColor(), request.getDistance());
+
         line.update(updatedLine);
     }
 

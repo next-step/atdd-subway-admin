@@ -2,6 +2,9 @@ package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class LineRequest {
     private String name;
     private String color;
@@ -44,4 +47,9 @@ public class LineRequest {
         Line line = new Line(name, color, distance);
         return line;
     }
+
+    public List<Long> toIds() {
+        return Arrays.asList(upStationId, downStationId);
+    }
+
 }
