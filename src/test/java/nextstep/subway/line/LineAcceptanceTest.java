@@ -27,6 +27,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public LineRequest 신분당선;
     private StationResponse 강남역;
     private StationResponse 역삼역;
+    private StationResponse 삼성역;
 
     public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest lineRequest) {
         return 지하철_노선_생성_요청(lineRequest);
@@ -45,6 +46,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void beforeEach() {
         강남역 = 지하철_역_등록되어_있음("강남역").as(StationResponse.class);
         역삼역 = 지하철_역_등록되어_있음("역삼역").as(StationResponse.class);
+        삼성역 = 지하철_역_등록되어_있음("삼성역").as(StationResponse.class);
 
         수인분당선 = new LineRequest("수인분당선", "yellow", 강남역.getId(), 역삼역.getId(), 10);
         신분당선 = new LineRequest("신분당선", "red", 강남역.getId(), 역삼역.getId(), 15);
@@ -227,4 +229,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private void 지하철_노선_삭제_실패(ExtractableResponse<Response> response) {
         요청_결과_검증(response, HttpStatus.BAD_REQUEST);
     }
+
+    @DisplayName("지하철 노선에 구간을 추가한다.")
+    @Test
+    void addSection() {
+        // given
+        //지하철 노선 등록되어 있음
+        ExtractableResponse<Response> createLine = 지하철_노선_등록되어_있음(수인분당선);
+        //request parameter
+        SectionRequest request = new SectionRequest(강남역.getId(), 삼성역.getId(), 3);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(createLine.header("Location") + "sections")
+                .then().log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
 }
