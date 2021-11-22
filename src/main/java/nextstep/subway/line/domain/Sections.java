@@ -86,7 +86,7 @@ public class Sections {
         validateExistStationToSection(findSections);
 
         if (!(removeSectionOfSide(findSections) || removeSectionOfBetween(findSections))) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(ILLEGAL_SECTIONS_DATA.getMessage());
         }
     }
 
