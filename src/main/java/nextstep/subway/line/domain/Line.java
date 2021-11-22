@@ -1,8 +1,10 @@
 package nextstep.subway.line.domain;
 
+import java.util.List;
 import java.util.Objects;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 
@@ -29,7 +31,8 @@ public class Line extends BaseEntity {
 	}
 
 	public void addSection(Section section) {
-		sections.addSection(section,this);
+		sections.addSection(section);
+		section.assignLine(this);
 	}
 
 	public void update(Line line) {
@@ -51,6 +54,10 @@ public class Line extends BaseEntity {
 
 	public Sections getSections() {
 		return sections;
+	}
+
+	public List<Section> getOrderedSections(){
+		return sections.getOrderSections();
 	}
 
 	@Override
@@ -79,5 +86,9 @@ public class Line extends BaseEntity {
 			", name='" + name + '\'' +
 			", color='" + color + '\'' +
 			'}';
+	}
+
+	public void deleteStation(Station station) {
+		sections.deleteStation(station);
 	}
 }

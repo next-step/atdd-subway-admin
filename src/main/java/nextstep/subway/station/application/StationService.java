@@ -14,7 +14,11 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class StationService {
+
+    private static final String ERROR_MESSAGE_NO_STATION_EXIST = "없는 지하철역 입니다.";
+
     private final StationRepository stationRepository;
+
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
@@ -44,7 +48,7 @@ public class StationService {
 	}
 
     public Station getStationEntity(Long id) {
-        Optional<Station> findStation = stationRepository.findById(id);
-        return findStation.orElseThrow(() -> new IllegalArgumentException("없는 지하철 역입니다."));
+        return stationRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NO_STATION_EXIST));
     }
 }

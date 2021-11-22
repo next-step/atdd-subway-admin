@@ -1,7 +1,6 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import nextstep.subway.line.domain.Line;
@@ -19,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class LineService {
+
+	private static final String ERROR_MESSAGE_NO_LINE_EXIST = "없는 노선입니다.";
 
 	private final LineRepository lineRepository;
 
@@ -61,7 +62,7 @@ public class LineService {
 
 	private void validateExistLine(Line line) {
 		if (line == null) {
-			throw new IllegalArgumentException("없는 노선입니다.");
+			throw new IllegalArgumentException(ERROR_MESSAGE_NO_LINE_EXIST);
 		}
 	}
 
@@ -72,8 +73,8 @@ public class LineService {
 	}
 
 	private Line getLine(Long id) {
-		Optional<Line> findLine = lineRepository.findById(id);
-		return findLine.orElseThrow(() -> new IllegalArgumentException("없는 노선입니다."));
+		return lineRepository.findById(id)
+			.orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NO_LINE_EXIST));
 	}
 
 	@Transactional
@@ -86,5 +87,12 @@ public class LineService {
 
 		line.addSection(section);
 		return LineResponse.from(line);
+	}
+
+	@Transactional
+	public void removeSectionByStationId(Long lineId, Long stationId) {
+		Line line = getLine(lineId);
+		Station station = stationService.getStationEntity(stationId);
+		line.deleteStation(station);
 	}
 }
