@@ -27,11 +27,11 @@ public class LineService {
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
-        List<LineResponse> response = new ArrayList<>();
+        List<LineResponse> responses = new ArrayList<>();
         for (Line line : lines) {
-            response.add(LineResponse.of(line));
+            responses.add(LineResponse.of(line));
         }
-        return response;
+        return responses;
     }
 
     public LineResponse findLine(Long lineId) {
