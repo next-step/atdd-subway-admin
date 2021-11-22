@@ -62,6 +62,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         존재하는_지하철_노선_이름인_경우_노선_생성_실패(response);
     }
 
+    @DisplayName("노선 생성시 거리가 0인 경우 생성 실패")
+    @Test
+    void createLine_거리_0() {
+
+        // when
+        final ExtractableResponse<Response> response =
+            지하철_노선_생성(new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 청계산입구역.getId(), 0));
+
+        // then
+        거리가_0인_경우_노선_생성_실패(response);
+    }
+
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
@@ -158,6 +170,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 존재하는_지하철_노선_이름인_경우_노선_생성_실패(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    private void 거리가_0인_경우_노선_생성_실패(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private void 잘못된_요청_응답(ExtractableResponse<Response> response) {
