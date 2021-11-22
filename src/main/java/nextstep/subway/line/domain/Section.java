@@ -2,7 +2,7 @@ package nextstep.subway.line.domain;
 
 import java.util.Objects;
 
-import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -27,8 +27,8 @@ public class Section extends BaseEntity {
 	@JoinColumn(name = "down_station_id")
 	private Station downStation;
 
-	@Column(name = "distance")
-	private int distance;
+	@Embedded
+	private Distance distance;
 
 	protected Section() {
 	}
@@ -37,7 +37,7 @@ public class Section extends BaseEntity {
 		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
-		this.distance = distance;
+		this.distance = new Distance(distance);
 	}
 
 	public Line getLine() {
@@ -60,7 +60,7 @@ public class Section extends BaseEntity {
 		return StationResponse.of(downStation);
 	}
 
-	public int getDistance() {
+	public Distance getDistance() {
 		return distance;
 	}
 
