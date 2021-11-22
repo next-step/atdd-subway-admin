@@ -38,14 +38,14 @@ public class Sections {
         final Set<Station> allStations = extractAllStations();
         final List<Station> sectionStations = section.getStations();
 
-        final long matchCount = sectionStations.stream()
+        final Set<Station> matchedStations = sectionStations.stream()
             .filter(allStations::contains)
-            .count();
+            .collect(Collectors.toSet());
 
-        if (matchCount == 0) {
+        if (matchedStations.isEmpty()) {
             throw new BadRequestException("추가되는 구간은 기존의 구간과 연결 가능하여야 합니다.");
         }
-        if (matchCount == 2) {
+        if (matchedStations.containsAll(sectionStations)) {
             throw new BadRequestException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
         }
     }
