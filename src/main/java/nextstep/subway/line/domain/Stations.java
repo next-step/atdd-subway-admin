@@ -7,10 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Stations {
-    private List<Station> values;
-
-    public Stations() {
-    }
+    private final List<Station> values;
 
     private Stations(List<Station> stations) {
         this.values = stations;
