@@ -34,7 +34,7 @@ public class Sections {
         values.add(section);
     }
 
-    public Stations getStations() {
+    public List<Station> getStations() {
         List<Station> result = new ArrayList<>();
         Set<Station> stationVisit = new HashSet<>();
         Map<Station, Station> upToDownStation = new HashMap<>();
@@ -49,7 +49,7 @@ public class Sections {
             addSortedStation(result, stationVisit, upToDownStation, downToUpStation, entry);
         }
 
-        return Stations.of(result);
+        return result;
     }
 
     private void addSortedStation(List<Station> result, Set<Station> stationVisit, Map<Station, Station> upToDownStation, Map<Station, Station> downToUpStation, Map.Entry<Station, Station> entry) {

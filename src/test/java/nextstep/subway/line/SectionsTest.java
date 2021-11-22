@@ -2,11 +2,12 @@ package nextstep.subway.line;
 
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.Sections;
-import nextstep.subway.line.domain.Stations;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static nextstep.subway.line.SectionTestFixture.강남역;
 import static nextstep.subway.line.SectionTestFixture.교대역;
@@ -43,15 +44,15 @@ class SectionsTest {
         Sections sections = Sections.of(Arrays.asList(section1, section2));
 
         // when
-        Stations stations = sections.getStations();
+        List<Station> stations = sections.getStations();
 
         // then
         assertAll(
-                () -> assertThat(stations.getStations().get(0))
+                () -> assertThat(stations.get(0))
                         .isEqualTo(강남역()),
-                () -> assertThat(stations.getStations().get(1))
+                () -> assertThat(stations.get(1))
                         .isEqualTo(역삼역()),
-                () -> assertThat(stations.getStations().get(2))
+                () -> assertThat(stations.get(2))
                         .isEqualTo(교대역())
         );
     }
