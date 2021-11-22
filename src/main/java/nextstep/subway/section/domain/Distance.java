@@ -14,11 +14,19 @@ public class Distance {
 	}
 
 	private Distance(int distance) {
+		validate(distance);
 		this.distance = distance;
 	}
 
 	public static Distance from(int distance) {
 		return new Distance(distance);
+	}
+
+	private void validate(int distance) {
+		if (distance > 0) {
+			return;
+		}
+		throw new IllegalArgumentException("거리는 0보다 커야 합니다.");
 	}
 
 	@Override
