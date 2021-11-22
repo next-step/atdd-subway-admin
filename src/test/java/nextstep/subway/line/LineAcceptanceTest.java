@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,54 +20,44 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
 	private static final String LINE_PATH = "/lines";
-	private static final String STATION_PATH = "/stations";
 	private static final String SLASH = "/";
 	private static StationResponse 강남역;
 	private static StationResponse 광교역;
 	private static StationResponse 성수역;
+
+	private static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest params) {
+		return RestAssured
+			.given().log().all()
+			.body(params)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post(LINE_PATH)
+			.then().log().all().extract();
+	}
+
+	public static LineResponse 지하철_노선_등록되어_있음(LineRequest params) {
+		return 지하철_노선_생성_요청(params).as(LineResponse.class);
+	}
+
+	public static LineRequest 이호선_생성_요청값(StationResponse upStation, StationResponse downStation) {
+		return new LineRequest("2호선", "bg-green-600", upStation.getId(), downStation.getId(), 20);
+	}
+
+	public static LineRequest 신분당선_생성_요청값(StationResponse upStation, StationResponse downStation) {
+		return new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
+	}
 
 	@BeforeEach
 	void setup() {
 		강남역 = 지하철역이_등록되어있음(강남역_생성_요청값());
 		광교역 = 지하철역이_등록되어있음(광교역_생성_요청값());
 		성수역 = 지하철역이_등록되어있음(성수역_생성_요청값());
-	}
-
-	private StationResponse 지하철역이_등록되어있음(StationRequest params) {
-		return RestAssured
-			.given().log().all()
-			.body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post(STATION_PATH)
-			.then().log().all().extract().as(StationResponse.class);
-	}
-
-	StationRequest 강남역_생성_요청값() {
-		return new StationRequest("강남역");
-	}
-
-	StationRequest 광교역_생성_요청값() {
-		return new StationRequest("광교역");
-	}
-
-	StationRequest 성수역_생성_요청값() {
-		return new StationRequest("성수역");
-	}
-
-	LineRequest 이호선_생성_요청값(StationResponse upStation, StationResponse downStation) {
-		return new LineRequest("2호선", "bg-green-600", upStation.getId(), downStation.getId(), 20);
-	}
-
-	LineRequest 신분당선_생성_요청값(StationResponse upStation, StationResponse downStation) {
-		return new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
 	}
 
 	@DisplayName("존재하지 않는 역을 종점역으로 가 지하철 노선을 생성한다.")
@@ -91,16 +82,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		// then
 		지하철_노선_생성됨(response);
-	}
-
-	ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest params) {
-		return RestAssured
-			.given().log().all()
-			.body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post(LINE_PATH)
-			.then().log().all().extract();
 	}
 
 	void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
@@ -137,10 +118,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// then
 		지하철_노선_목록_응답됨(response);
 		지하철_노선_목록_포함됨(response, 이호선_등록되어_있음, 신분당선_등록되어_있음);
-	}
-
-	LineResponse 지하철_노선_등록되어_있음(LineRequest params) {
-		return 지하철_노선_생성_요청(params).as(LineResponse.class);
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
