@@ -1,6 +1,8 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.exception.NotFoundStationException;
+import nextstep.subway.exception.NotIncludeOneStationException;
+import nextstep.subway.exception.SameSectionStationException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.Stations;
 
@@ -22,7 +24,30 @@ public class Sections {
     }
 
     public void add(Section section) {
+        if(!sections.isEmpty()){
+            validateSection(section);
+        }
+
         sections.add(section);
+    }
+
+    public void validateSection(final Section nonPersistSection) {
+        boolean isSameUpStation = getStations().isMatch(nonPersistSection.getUpStation());
+        boolean isSameDownStation = getStations().isMatch(nonPersistSection.getDownStation());
+        validateSameSectionStation(isSameUpStation, isSameDownStation);
+        notIncludeOneStation(isSameUpStation, isSameDownStation);
+    }
+
+    private void notIncludeOneStation(boolean isSameUpStation, boolean isSameDownStation) {
+        if(!isSameUpStation && !isSameDownStation){
+            throw new NotIncludeOneStationException();
+        }
+    }
+
+    private void validateSameSectionStation(boolean isSameUpStation, boolean isSameDownStation) {
+        if(isSameUpStation && isSameDownStation){
+            throw new SameSectionStationException();
+        }
     }
 
     public Station findFirstUpStation() {

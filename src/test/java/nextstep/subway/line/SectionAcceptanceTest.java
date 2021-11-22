@@ -164,7 +164,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(location + "sections")
+                .when().post(location + "/sections")
                 .then().log().all().extract();
     }
 

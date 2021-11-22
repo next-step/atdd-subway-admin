@@ -1,9 +1,11 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.exception.NotFoundStationException;
+import nextstep.subway.exception.NotIncludeOneStationException;
+import nextstep.subway.exception.SameSectionStationException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.Stations;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,10 +15,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SectionsTest {
-    private static final Sections sections = new Sections();
+    private Sections sections = new Sections();
 
-    @BeforeAll
-    static void setUp(){
+    @BeforeEach
+    void setUp(){
         sections.add(new Section(강남역, 역삼역, LINE_2호선, 10));
         sections.add(new Section(역삼역, 양재역, LINE_2호선, 50));
     }
@@ -50,6 +52,22 @@ class SectionsTest {
         Stations stations = sections.getStations();
         assertThat(stations.getStations()).hasSize(3);
         assertThat(stations.getStations()).containsExactly(강남역, 역삼역, 양재역);
+    }
+
+    @Test
+    @DisplayName("상행역과 하행역 모두가 구간에 등록되어 있으면 추가할 수 없다.")
+    void validateSections_SameStation(){
+        Section actual = new Section(강남역, 양재역, LINE_2호선, 10);
+        assertThatThrownBy(() -> sections.add(actual)).isInstanceOf(SameSectionStationException.class);
+    }
+
+    @Test
+    @DisplayName("상행역과 하행역 둘 중 하나가 구간에 포함되어있지 않으면 추가 할 수 없다.")
+    void validateSections_IncludeOneStation(){
+        Station 사당역 = new Station("사당역");
+        Station 잠실역 = new Station("잠실역");
+        Section actual = new Section(사당역, 잠실역, LINE_2호선, 10);
+        assertThatThrownBy(() -> sections.add(actual)).isInstanceOf(NotIncludeOneStationException.class);
     }
 
 }

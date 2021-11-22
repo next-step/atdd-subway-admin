@@ -22,6 +22,10 @@ public class Stations {
         return new ArrayList<>(stations);
     }
 
+    public boolean isMatch(Station nonPersistStation) {
+        return stations.stream().anyMatch(nonPersistStation::equals);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

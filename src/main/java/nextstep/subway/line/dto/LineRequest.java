@@ -2,22 +2,17 @@ package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
 
-public class LineRequest {
+public class LineRequest extends SectionRequest {
     private String name;
     private String color;
-    private Long upStationId;
-    private Long downStationId;
-    private int distance;
 
     private LineRequest() {
     }
 
     public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+        super(upStationId, downStationId, distance);
         this.name = name;
         this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
     }
 
     public String getName() {
@@ -26,18 +21,6 @@ public class LineRequest {
 
     public String getColor() {
         return color;
-    }
-
-    public Long getUpStationId() {
-        return upStationId;
-    }
-
-    public Long getDownStationId() {
-        return downStationId;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 
     public Line toLine() {
