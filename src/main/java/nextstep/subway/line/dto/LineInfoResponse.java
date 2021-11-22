@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 public class LineInfoResponse {
@@ -64,6 +65,34 @@ public class LineInfoResponse {
 
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
+    }
+
+    public Long findFirstStationId() {
+        if (this.stations.isEmpty()) {
+            throw new IllegalStateException("구간이 등록되지 않았습니다.");
+        }
+
+        return this.stations.get(0).getId();
+    }
+
+    public Long findMidStationId(Integer index) {
+        if (this.stations.isEmpty()) {
+            throw new IllegalStateException("구간이 등록되지 않았습니다.");
+        }
+
+        if (this.stations.size() <= index) {
+            throw new IllegalArgumentException("구간의 역 개수보다 큰 수가 입력되었습니다.");
+        }
+
+        return this.stations.get(index).getId();
+    }
+
+    public Long findLastStationId() {
+        if (this.stations.isEmpty()) {
+            throw new IllegalStateException("구간이 등록되지 않았습니다.");
+        }
+
+        return this.stations.get(this.stations.size() - 1).getId();
     }
 
     @Override

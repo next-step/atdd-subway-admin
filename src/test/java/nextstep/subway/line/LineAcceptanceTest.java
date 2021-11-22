@@ -7,6 +7,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -46,7 +47,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간을 포함하여 지하철 노선을 생성한다.")
     @Test
     void createLineWithSection() {
-        // given 
+        // given
         StationResponse upStation = StationAcceptanceTest.createStation("대화");
         StationResponse downStation =  StationAcceptanceTest.createStation("수서");
 
@@ -227,6 +228,131 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Assertions.assertThat(serachResponse.as(LineInfoResponse.class).getStations()).hasSize(3);
     }
 
+    @DisplayName("2개의 구간이 등록된 경우 상행종점역을 제거한다.")
+    @Test
+    void deleteSection_hasMultiSection_deleteUpStation() {
+        // given
+        createMultiSectionLine();
+        
+        List<LineInfoResponse> stationResponses = List.of(requestSearchAllLineInfo().as(LineInfoResponse[].class));
+        Long targetLineId = stationResponses.get(0).getId();
+        Long deletingStationId = stationResponses.get(0).findFirstStationId();
+
+        List<StationResponse> expectedStationResponse = List.of(StationResponse.of(new Station("양재")), StationResponse.of(new Station("수서")));
+
+        // when
+        ExtractableResponse<Response> deleteResposne = requestDeleteSection(targetLineId, deletingStationId);
+
+        // then
+        ExtractableResponse<Response> findResposne = requestSearchLineInfo(targetLineId);
+
+        assertAll(
+            () -> Assertions.assertThat(deleteResposne.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+            () -> Assertions.assertThat(findResposne.as(LineInfoResponse.class).getStations()).isEqualTo(expectedStationResponse)
+        );
+    }
+
+    @DisplayName("2개의 구간이 등록된 경우 하행종점역을 제거한다.")
+    @Test
+    void deleteSection_hasMultiSection_deleteDownStation() {
+        // given
+        createMultiSectionLine();
+
+        List<LineInfoResponse> stationResponses = List.of(requestSearchAllLineInfo().as(LineInfoResponse[].class));
+
+        Long targetLineId = stationResponses.get(0).getId();
+        Long deletingStationId = stationResponses.get(0).findLastStationId();
+
+        // when
+        ExtractableResponse<Response> deleteResposne = requestDeleteSection(targetLineId, deletingStationId);
+
+        // then
+        ExtractableResponse<Response> findResposne = requestSearchLineInfo(targetLineId);
+        assertAll(
+            () -> Assertions.assertThat(deleteResposne.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+            () -> Assertions.assertThat(findResposne.as(LineInfoResponse.class).getStations()).isEqualTo(List.of(StationResponse.of(new Station("대화")), StationResponse.of(new Station("양재"))))
+        );
+    }
+
+    @DisplayName("2개의 구간이 등록된 경우 중간역을 제거한다.")
+    @Test
+    void deleteSection_hasMultiSection_deleteMidStation() {
+        // given
+        createMultiSectionLine();
+
+
+        List<LineInfoResponse> stationResponses = List.of(requestSearchAllLineInfo().as(LineInfoResponse[].class));
+        
+        Long targetLineId = stationResponses.get(0).getId();
+        Long deletingStationId = stationResponses.get(0).findMidStationId(1);
+
+        // when
+        ExtractableResponse<Response> deleteResposne = requestDeleteSection(targetLineId, deletingStationId);
+
+        // then
+        ExtractableResponse<Response> findResposne = requestSearchLineInfo(targetLineId);
+        assertAll(
+            () -> Assertions.assertThat(deleteResposne.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+            () -> Assertions.assertThat(findResposne.as(LineInfoResponse.class).getStations()).isEqualTo(List.of(StationResponse.of(new Station("대화")), StationResponse.of(new Station("수서"))))
+        );
+    }
+
+
+    @DisplayName("1개의 구간이 등록된 경우 상행 종점역을 제거시 에러를 발생한다.")
+    @Test
+    void deleteSection_hasOneSection_deleteUpStation() {
+        // given
+        createSingleSectionLine();
+
+        List<LineInfoResponse> stationResponses = List.of(requestSearchAllLineInfo().as(LineInfoResponse[].class));
+
+        Long targetLineId = stationResponses.get(0).getId();
+        Long deletingStationId = stationResponses.get(0).findFirstStationId();
+
+        // when
+        // then
+        Assertions.assertThatThrownBy(() -> requestDeleteSection(targetLineId, deletingStationId))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("구간이 1개인 라인의 종점역은 삭제할 수 없습니다.");
+    }
+
+    @DisplayName("1개의 구간이 등록된 경우 하행 종점역을 제거시 에러를 발생한다.")
+    @Test
+    void deleteSection_hasOneSection_deleteDownStation() {
+        // given
+        createSingleSectionLine();
+
+        List<LineInfoResponse> stationResponses = List.of(requestSearchAllLineInfo().as(LineInfoResponse[].class));
+
+        Long targetLineId = stationResponses.get(0).getId();
+        Long deletingStationId = stationResponses.get(0).findLastStationId();
+
+        // when
+        // then
+        Assertions.assertThatThrownBy(() -> requestDeleteSection(targetLineId, deletingStationId))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("구간이 1개인 라인의 종점역은 삭제할 수 없습니다.");
+    }
+
+    private void createSingleSectionLine() {
+        StationResponse upStation = StationAcceptanceTest.createStation("대화");
+        StationResponse downStation =  StationAcceptanceTest.createStation("수서");
+
+        LineResponse redLine = createSubwayLine(new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10));
+    }
+
+    private void createMultiSectionLine() {
+        StationResponse upStation = StationAcceptanceTest.createStation("대화");
+        StationResponse newStation = StationAcceptanceTest.createStation("양재");
+        StationResponse downStation = StationAcceptanceTest.createStation("수서");
+
+        LineResponse orangeLine = createSubwayLine(new LineRequest("3호선", "bg-orange-600", upStation.getId(), downStation.getId(), 300));
+
+        SectionRequest sectionRequest = new SectionRequest(upStation.getId(), newStation.getId(), 130);
+
+        // when
+        ExtractableResponse<Response> response = requestAddSection(orangeLine.getId(), sectionRequest);
+    }
     private LineResponse createSubwayLine(LineRequest lineRequest) {
         ExtractableResponse<Response> response = requestCreateLine(lineRequest);
 
@@ -271,6 +397,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
                             extract();
     }
 
+    private ExtractableResponse<Response> requestSearchAllLineInfo() {
+        return RestAssured.given().log().all().
+                            contentType(MediaType.APPLICATION_JSON_VALUE).
+                            when().
+                            get("/lines").
+                            then().
+                            log().all().
+                            extract();
+    }
+
     private ExtractableResponse<Response> requestUpdateLine(Long subwayLineId, LineRequest lineRequest) {
         return RestAssured.given().log().all().
                             contentType(MediaType.APPLICATION_JSON_VALUE).
@@ -287,6 +423,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
                             contentType(MediaType.APPLICATION_JSON_VALUE).
                             when().
                             delete("/lines/" + subwayLineId).
+                            then().
+                            log().all().
+                            extract();
+    }
+
+    private ExtractableResponse<Response> requestDeleteSection(Long subwayLineId, Long StationId) {
+        return RestAssured.given().log().all().
+                            contentType(MediaType.APPLICATION_JSON_VALUE).
+                            when().
+                            delete("/lines/" + subwayLineId + "/section?stationId=" + StationId).
                             then().
                             log().all().
                             extract();
