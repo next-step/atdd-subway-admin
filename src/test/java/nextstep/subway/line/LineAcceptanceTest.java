@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -190,6 +191,66 @@ public class LineAcceptanceTest extends AcceptanceTest {
         StatusCodeCheckUtil.badRequest(response);
     }
 
+    @DisplayName("노선의 구간을 제거한다.")
+    @Test
+    void deleteSection() {
+        // given
+        final ExtractableResponse<Response> createResponse =
+            지하철_노선_생성_요청("신분당선", "red", "강남역", "역삼역", 10);
+        final LineResponse line = 지하철_노선_객체_추출(createResponse);
+        final Long lineId = line.getId();
+        final Long upStationId = 상행_종점역_아이디_추출(line);
+        final Long targetStationId = 지하철역_생성_요청_후_아이디_반환("판교역");
+        지하철_노선에_지하철_구간_등록_요청(lineId, upStationId, targetStationId, 5);
+
+        // when
+        final ExtractableResponse<Response> response = 지하철_노선에_구간_삭제_요청(lineId, targetStationId);
+
+        // then
+        StatusCodeCheckUtil.noContent(response);
+        지하철_구간_삭제됨(lineId, targetStationId);
+    }
+
+    @DisplayName("노선에 등록되어 있지 않은 역을 제거하려 할 때 예외 발생")
+    @Test
+    void deleteSectionNotConnected() {
+        // given
+        final ExtractableResponse<Response> createResponse =
+            지하철_노선_생성_요청("신분당선", "red", "강남역", "역삼역", 10);
+        final LineResponse line = 지하철_노선_객체_추출(createResponse);
+        final Long lineId = line.getId();
+        final Long targetStationId = 지하철역_생성_요청_후_아이디_반환("신도림역");
+
+        // when
+        final ExtractableResponse<Response> response = 지하철_노선에_구간_삭제_요청(lineId, targetStationId);
+
+        // then
+        StatusCodeCheckUtil.badRequest(response);
+    }
+
+    @DisplayName("노선에 마지막 구간을 제거하려 할 때 예외 발생")
+    @Test
+    void deleteLastSection() {
+        // given
+        final ExtractableResponse<Response> createResponse =
+            지하철_노선_생성_요청("신분당선", "red", "강남역", "역삼역", 10);
+        final LineResponse line = 지하철_노선_객체_추출(createResponse);
+        final Long lineId = line.getId();
+        final Long targetStationId = 상행_종점역_아이디_추출(line);
+
+        // when
+        final ExtractableResponse<Response> response = 지하철_노선에_구간_삭제_요청(lineId, targetStationId);
+
+        // then
+        StatusCodeCheckUtil.badRequest(response);
+    }
+
+    private void 지하철_구간_삭제됨(final Long lineId, final Long targetStationId) {
+        final ExtractableResponse<Response> responseExtractableResponse = RequestUtil.get("/lines/" + lineId);
+        final List<StationResponse> stations = 지하철_노선_객체_추출(responseExtractableResponse).getStations();
+        assertThat(stations).noneMatch(it -> it.getId().equals(targetStationId));
+    }
+
     private ExtractableResponse<Response> 지하철_노선_생성_요청(final String name, final String color,
         final String upStationName, final String downStationName, final int distance) {
 
@@ -311,5 +372,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         StatusCodeCheckUtil.created(response);
         final ExtractableResponse<Response> searchedLineResponse = RequestUtil.get("/lines/" + lineId);
         지하철역_정렬_검증(searchedLineResponse, "stations", expectedStationNames);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선에_구간_삭제_요청(final Long lineId, final Long targetStationId) {
+        return RestAssured
+            .given().log().all()
+            .queryParam("stationId", targetStationId)
+            .when().delete("/lines/" + lineId + "/sections")
+            .then().log().all().extract();
     }
 }
