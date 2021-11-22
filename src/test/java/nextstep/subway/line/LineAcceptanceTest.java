@@ -30,7 +30,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        지하철_노선_응답(response,1L,lineRequest);
+        지하철_노선_응답(response, 1L, lineRequest);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -83,8 +83,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         LineRequest lineRequest = new LineRequest("2호선", "bg-green-200");
-        ExtractableResponse<Response> createResponse1 = LineApiRequests.지하철_노선_생성_요청(lineRequest);
-        Long lineId = createResponse1.jsonPath().getObject("id", Long.class);
+        Long lineId = 지하철_노선_등록되어_있음(lineRequest);
 
         // when
         // 지하철_노선_조회_요청
@@ -92,7 +91,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_응답됨
-        지하철_노선_응답(response,lineId,lineRequest);
+        지하철_노선_응답(response, lineId, lineRequest);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -100,8 +99,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse1 = LineApiRequests.지하철_노선_생성_요청(new LineRequest("신분당선", "bg-red-600"));
-        Long lineId = createResponse1.jsonPath().getObject("id", Long.class);
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
+        Long lineId = 지하철_노선_등록되어_있음(lineRequest);
         LineRequest updateRequest = new LineRequest("구분당선", "bg-blue-600");
 
         // when
@@ -112,7 +111,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_수정됨
         ExtractableResponse<Response> response = LineApiRequests.지하철_노선_조회_요청(lineId);
 
-        지하철_노선_응답(response,lineId,updateRequest);
+        지하철_노선_응답(response, lineId, updateRequest);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -120,8 +119,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse1 = LineApiRequests.지하철_노선_생성_요청(new LineRequest("신분당선", "bg-red-600"));
-        Long lineId = createResponse1.jsonPath().getObject("id", Long.class);
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
+        Long lineId = 지하철_노선_등록되어_있음(lineRequest);
 
         // when
         // 지하철_노선_제거_요청
@@ -138,6 +137,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(result.getId()).isEqualTo(lineId);
         assertThat(result.getName()).isEqualTo(updateRequest.getName());
         assertThat(result.getColor()).isEqualTo(updateRequest.getColor());
+    }
+
+    private Long 지하철_노선_등록되어_있음(LineRequest lineRequest) {
+        ExtractableResponse<Response> createResponse = LineApiRequests.지하철_노선_생성_요청(lineRequest);
+        return Long.valueOf(createResponse.header("Location").split("/")[2]);
     }
 
 }
