@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 @Transactional
 public class StationService {
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;

@@ -20,8 +20,8 @@ public class LineService {
     public static final String NOT_FOUND_ENTITY_MESSAGE = "Entity를 찾을 수 없습니다.";
     public static final String DUPLICATE_ENTITY_MESSAGE = "이미 존재하는 Entity가 있습니다.";
 
-    private LineRepository lineRepository;
-    private StationService stationService;
+    private final LineRepository lineRepository;
+    private final StationService stationService;
 
     public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
