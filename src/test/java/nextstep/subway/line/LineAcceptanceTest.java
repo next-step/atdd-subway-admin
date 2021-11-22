@@ -40,9 +40,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        StationResponse upStationResponse = 지하철역_등록되어_있음(강남역_요청_데이터());
-        StationResponse downStationResponse = 지하철역_등록되어_있음(역삼역_요청_데이터());
-        LineRequest lineRequest = 신분당선_요청_데이터(upStationResponse, downStationResponse);
+        StationResponse 상행역 = 지하철역_등록되어_있음(강남역_요청_데이터());
+        StationResponse 하행역 = 지하철역_등록되어_있음(역삼역_요청_데이터());
+        LineRequest lineRequest = 신분당선_요청_데이터(상행역, 하행역);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
@@ -60,12 +60,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        StationResponse upStationResponse = 지하철역_등록되어_있음(강남역_요청_데이터());
-        StationResponse downStationResponse = 지하철역_등록되어_있음(역삼역_요청_데이터());
-        지하철_노선_생성_요청(신분당선_요청_데이터(upStationResponse, downStationResponse));
+        StationResponse 상행역 = 지하철역_등록되어_있음(강남역_요청_데이터());
+        StationResponse 하행역 = 지하철역_등록되어_있음(역삼역_요청_데이터());
+        지하철_노선_생성_요청(신분당선_요청_데이터(상행역, 하행역));
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선_요청_데이터(upStationResponse, downStationResponse));
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선_요청_데이터(상행역, 하행역));
 
         // then
         assertThat(response.statusCode())
@@ -76,10 +76,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        StationResponse upStationResponse = 지하철역_등록되어_있음(강남역_요청_데이터());
-        StationResponse downStationResponse = 지하철역_등록되어_있음(역삼역_요청_데이터());
-        LineResponse 신분당선 = 지하철_노선_등록되어_있음(신분당선_요청_데이터(upStationResponse, downStationResponse));
-        LineResponse 이호선 = 지하철_노선_등록되어_있음(이호선_요청_데이터(upStationResponse, downStationResponse));
+        StationResponse 상행역 = 지하철역_등록되어_있음(강남역_요청_데이터());
+        StationResponse 하행역 = 지하철역_등록되어_있음(역삼역_요청_데이터());
+        LineResponse 신분당선 = 지하철_노선_등록되어_있음(신분당선_요청_데이터(상행역, 하행역));
+        LineResponse 이호선 = 지하철_노선_등록되어_있음(이호선_요청_데이터(상행역, 하행역));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -96,9 +96,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        StationResponse upStationResponse = 지하철역_등록되어_있음(강남역_요청_데이터());
-        StationResponse downStationResponse = 지하철역_등록되어_있음(역삼역_요청_데이터());
-        LineResponse 신분당선 = 지하철_노선_등록되어_있음(신분당선_요청_데이터(upStationResponse, downStationResponse));
+        StationResponse 상행역 = 지하철역_등록되어_있음(강남역_요청_데이터());
+        StationResponse 하행역 = 지하철역_등록되어_있음(역삼역_요청_데이터());
+        LineResponse 신분당선 = 지하철_노선_등록되어_있음(신분당선_요청_데이터(상행역, 하행역));
 
         // when
         ExtractableResponse<Response> response = 특정_지하철_노선_조회_요청(신분당선);
@@ -126,12 +126,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        StationResponse upStationResponse = 지하철역_등록되어_있음(강남역_요청_데이터());
-        StationResponse downStationResponse = 지하철역_등록되어_있음(역삼역_요청_데이터());
-        LineResponse 신분당선 = 지하철_노선_등록되어_있음(신분당선_요청_데이터(upStationResponse, downStationResponse));
+        StationResponse 상행역 = 지하철역_등록되어_있음(강남역_요청_데이터());
+        StationResponse 하행역 = 지하철역_등록되어_있음(역삼역_요청_데이터());
+        LineResponse 신분당선 = 지하철_노선_등록되어_있음(신분당선_요청_데이터(상행역, 하행역));
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(신분당선, 구분당선_요청_데이터(upStationResponse, downStationResponse));
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(신분당선, 구분당선_요청_데이터(상행역, 하행역));
 
         // then
         assertThat(response.statusCode())
@@ -142,9 +142,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        StationResponse upStationResponse = 지하철역_등록되어_있음(강남역_요청_데이터());
-        StationResponse downStationResponse = 지하철역_등록되어_있음(역삼역_요청_데이터());
-        LineResponse 신분당선 = 지하철_노선_등록되어_있음(신분당선_요청_데이터(upStationResponse, downStationResponse));
+        StationResponse 상행역 = 지하철역_등록되어_있음(강남역_요청_데이터());
+        StationResponse 하행역 = 지하철역_등록되어_있음(역삼역_요청_데이터());
+        LineResponse 신분당선 = 지하철_노선_등록되어_있음(신분당선_요청_데이터(상행역, 하행역));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(신분당선);
