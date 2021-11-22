@@ -25,19 +25,13 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        throwExceptionExistsDuplicateName(request);
+        lineRepository.findByName(request.getName())
+                .ifPresent(line -> { throw new DuplicateLineNameException(line); });
         Line line = lineRepository.save(request.toLine());
         if (request.hasSectionArguments()) {
             sectionService.create(line, request.toSectionRequest());
         }
         return LineResponse.of(line);
-    }
-
-    private void throwExceptionExistsDuplicateName(LineRequest request) {
-        lineRepository.findByName(request.getName())
-                .ifPresent(line -> {
-                    throw new DuplicateLineNameException(line);
-                });
     }
 
     public List<LineResponse> getLines() {
