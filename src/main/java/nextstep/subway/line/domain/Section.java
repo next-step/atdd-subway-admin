@@ -23,11 +23,11 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
@@ -99,6 +99,14 @@ public class Section extends BaseEntity {
 
         return false;
     }
+    public boolean hasStaion(Station findStation) {
+        if (this.upStation.equals(findStation) ||
+            this.downStation.equals(findStation)) {
+            return true;
+        }
+
+        return false;
+    }
 
     public Distance minusDistance(Section minusingSection) {
         this.distance.minus(minusingSection.getDistance());
@@ -112,6 +120,10 @@ public class Section extends BaseEntity {
 
     public void updateDownStation(Station station) {
         this.downStation = station;
+    }
+
+    public void updateUpStation(Station station) {
+        this.upStation = station;
     }
 
     public SectionMatchingType findMatchingType(Section section) {

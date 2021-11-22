@@ -47,7 +47,7 @@ public class Sections {
     }
 
     public Section findLastItem() {
-        return this.values.get(this.values.size() - 1);
+        return findLastSection();
     }
 
     public Integer size() {
@@ -110,7 +110,7 @@ public class Sections {
     }
 
     private boolean isDownStaionTeminal(Section section) {
-        return this.values.get(this.values.size() - 1)
+        return findLastSection()
                             .isEqualDownStation(section.getUpStation());
     }
 
@@ -152,39 +152,50 @@ public class Sections {
         }
     }
 
-    public void deleteSection(Long stationId) {
+    public void deleteSection(Station station) {
         validateDelete();
+        
+        Section deletingSection = findDeletingSection(station);
 
-        Section findSection2 = this.values.stream()
-                                        .filter(findSection -> findSection.getUpStation().getId() == stationId)
-                                        .findFirst()
-                                        .orElse(Section.valueOf(null, null, null));
-                                        //.orElseThrow(() -> new NoSuchElementException("조회되는 구간이 없습니다."));
-
-        int index = 0;
-
-        index = this.values.indexOf(findSection2);
-
-        if (this.values.get(this.values.size() - 1).getDownStation().getId().equals(stationId)) {
-            index = this.values.size() - 1; 
-            Section deletedSection = this.values.get(index);
-
-            this.values.get(index - 1).plusDistance(deletedSection);
-            this.values.get(index - 1).updateDownStation(deletedSection.getUpStation());
-
-            this.values.remove(deletedSection);
+        if (this.isTermanalStaion(station)) {
+            this.values.remove(deletingSection);
             return;
         }
 
-        if (index == 0) {
-            this.values.remove(index);
-        } else {
-            Section deletedSection = this.values.get(index);
+        Section workSection = findNextSection(deletingSection);
+        
+        workSection.plusDistance(deletingSection);
+        workSection.updateUpStation(deletingSection.getUpStation());
 
-            this.values.get(index - 1).plusDistance(deletedSection);
-            this.values.get(index - 1).updateDownStation(deletedSection.getDownStation());
-            this.values.remove(deletedSection);
+        this.values.remove(deletingSection);
+    }
+
+    private Section findDeletingSection(Station station) {
+        return this.values.stream()
+                            .filter(findSection -> findSection.hasStaion(station))
+                            .findFirst()
+                            .orElseThrow(() -> new NoSuchElementException("조회되는 구간이 없습니다."));
+    }
+
+    private Section findNextSection(Section section) {
+        return this.values.get(this.values.indexOf(section) + 1);
+    }
+
+    private boolean isTermanalStaion(Station station) {
+        if (this.findFirstItem().isEqualUpStation(station) ||
+            this.findLastItem().isEqualDownStation(station)) {
+            return true;
         }
+
+        return false;
+    }
+
+    private Section findLastSection() {
+        return this.values.get(this.values.size() - 1);
+    }
+
+    private Section findFirstSection() {
+        return this.values.get(0);
     }
 
     private void validateDelete() {
