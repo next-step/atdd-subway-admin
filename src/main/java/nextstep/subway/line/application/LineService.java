@@ -2,6 +2,8 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.dto.LineCreateResponse;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.UpdateLineResponseDto;
@@ -17,23 +19,27 @@ import java.util.stream.Collectors;
 @Service
 public class LineService {
     private final LineRepository lineRepository;
+    private final SectionService sectionService;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, SectionService sectionService) {
         this.lineRepository = lineRepository;
+        this.sectionService = sectionService;
     }
 
     @Transactional
-    public LineResponse saveLine(LineRequest request) {
-        validateExistsByName(request.getName());
-        final Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+    public LineCreateResponse saveLine(LineRequest lineRequest) {
+        validateExistsByName(lineRequest.getName());
+        final Section section = sectionService.getSectionOrElseThrow(lineRequest.getSectionRequest());
+        final Line persistLine = lineRepository.save(lineRequest.toLine(section));
+        return LineCreateResponse.of(persistLine);
     }
 
     @Transactional
     public UpdateLineResponseDto updateLine(long id, LineRequest lineRequest) {
         validateExistsByName(lineRequest.getName());
         final Line line = getLineByIdOrElseThrow(id);
-        line.update(lineRequest.toLine());
+        final Section section = sectionService.getSectionOrElseThrow(lineRequest.getSectionRequest());
+        line.update(lineRequest.toLine(section));
         lineRepository.flush();
         return UpdateLineResponseDto.of(line);
     }

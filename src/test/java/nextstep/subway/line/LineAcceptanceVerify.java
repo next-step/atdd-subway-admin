@@ -4,10 +4,10 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,13 +26,17 @@ public class LineAcceptanceVerify {
         assertThat(responseJson.getString("name")).isEqualTo(createdLineResponse.getName());
         assertThat(responseJson.getString("color")).isEqualTo(createdLineResponse.getColor());
         assertThat(responseJson.getLong("id")).isEqualTo(createdLineResponse.getId());
+//        assertThat(responseJson.getList("sectionResponses", SectionResponse.class)).containsAll(createdLineResponse.getSectionResponses());
+//        assertThat(responseJson.getList("sectionResponses", SectionResponse.class).get(0)).isEqualTo(createdLineResponse.getSectionResponses().get(0));
+//        assertThat(responseJson.getList("sectionResponses", SectionResponse.class).get(1)).isEqualTo(createdLineResponse.getSectionResponses().get(1));
+
+
     }
 
-    public static void 지하철_노선_생성_결과_검증(ExtractableResponse<Response> response, Map<String, String> params) {
-        final LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
+    public static void 지하철_노선_생성_결과_검증(ExtractableResponse<Response> response) {
+        final Long createdId = response.jsonPath().getLong("id");
         assertAll(() -> {
-            assertThat(lineResponse.getColor()).isEqualTo(params.get("color"));
-            assertThat(lineResponse.getName()).isEqualTo(params.get("name"));
+            assertThat(createdId).isGreaterThan(0L);
         });
     }
 

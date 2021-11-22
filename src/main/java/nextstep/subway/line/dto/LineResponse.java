@@ -3,6 +3,8 @@ package nextstep.subway.line.dto;
 import nextstep.subway.line.domain.Line;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class LineResponse {
@@ -11,6 +13,7 @@ public class LineResponse {
     private final String color;
     private final LocalDateTime createdDate;
     private final LocalDateTime modifiedDate;
+    private final List<SectionResponse> sectionResponses = new ArrayList<>();
 
     public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
@@ -38,6 +41,10 @@ public class LineResponse {
 
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
+    }
+
+    public List<SectionResponse> getSectionResponses() {
+        return sectionResponses;
     }
 
     @Override

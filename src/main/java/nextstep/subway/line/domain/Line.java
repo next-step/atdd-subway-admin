@@ -6,10 +6,13 @@ import nextstep.subway.line.exception.NotEmptyLineNameException;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.Collections;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -19,17 +22,29 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
+    @Embedded
+    private Sections sections;
 
-    public Line() {
+    protected Line() {
     }
 
-    public Line(String name, String color) {
+    private Line(String name, String color) {
         validate(name, color);
         this.name = name;
         this.color = color;
     }
 
+    private Line(String name, String color, Section section) {
+        this(name, color);
+        this.sections = Sections.of(section);
+    }
+
+    public static Line of(String name, String color, Section section) {
+        return new Line(name, color, section);
+    }
+
     private void validate(String name, String color) {
+
         if (!StringUtils.hasText(name)) {
             throw new NotEmptyLineNameException();
         }
@@ -55,5 +70,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-
+    public List<Section> getSections() {
+        return Collections.unmodifiableList(sections.getSections());
+    }
 }
