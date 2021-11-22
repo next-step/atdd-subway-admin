@@ -25,21 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("지하철역 관련 기능")
 class StationAcceptanceTest extends AcceptanceTest {
 
-    private void 지하철역_조회_데이터_확인(ExtractableResponse<Response> response, StationResponse... stationResponses) {
-        List<Long> expectedStationIds = Arrays.stream(stationResponses)
-                .map(StationResponse::getId)
-                .collect(Collectors.toList());
-
-        List<Long> resultLineIds = response.jsonPath()
-                .getList(".", StationResponse.class)
-                .stream()
-                .map(StationResponse::getId)
-                .collect(Collectors.toList());
-
-        assertThat(resultLineIds)
-                .containsAll(expectedStationIds);
-    }
-
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
@@ -102,5 +87,20 @@ class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode())
                 .isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private void 지하철역_조회_데이터_확인(ExtractableResponse<Response> response, StationResponse... stationResponses) {
+        List<Long> expectedStationIds = Arrays.stream(stationResponses)
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+        List<Long> resultLineIds = response.jsonPath()
+                .getList(".", StationResponse.class)
+                .stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+        assertThat(resultLineIds)
+                .containsAll(expectedStationIds);
     }
 }

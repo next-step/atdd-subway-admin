@@ -36,44 +36,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
 
-    private void 지하철_노선_조회_데이터_확인(ExtractableResponse<Response> response, LineResponse... expectedLineResponses) {
-        List<LineResponse> lineResponses = new ArrayList<>(response.jsonPath()
-                .getList(".", LineResponse.class));
-
-        노선_ID_확인(lineResponses, expectedLineResponses);
-        노선_포함_확인(lineResponses, expectedLineResponses);
-    }
-
-    private void 노선_포함_확인(List<LineResponse> lineResponses, LineResponse[] expectedLineResponses) {
-        HashMap<Long, List<StationResponse>> stationResponses = new HashMap<>();
-        for (LineResponse lineResponse : lineResponses) {
-            stationResponses.put(lineResponse.getId(), lineResponse.getStations());
-        }
-
-        HashMap<Long, List<StationResponse>> expectedStationResponses = new HashMap<>();
-        for (LineResponse lineResponse : expectedLineResponses) {
-            expectedStationResponses.put(lineResponse.getId(), lineResponse.getStations());
-        }
-
-        for (Map.Entry<Long, List<StationResponse>> entry : stationResponses.entrySet()) {
-            assertThat(entry.getValue())
-                    .containsAll(expectedStationResponses.get(entry.getKey()));
-        }
-    }
-
-    private void 노선_ID_확인(List<LineResponse> lineResponses, LineResponse[] expectedLineResponses) {
-        List<Long> expectedLineIds = Arrays.stream(expectedLineResponses)
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
-
-        List<Long> resultLineIds = lineResponses.stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
-
-        assertThat(resultLineIds)
-                .containsAll(expectedLineIds);
-    }
-
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -190,5 +152,43 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode())
                 .isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private void 지하철_노선_조회_데이터_확인(ExtractableResponse<Response> response, LineResponse... expectedLineResponses) {
+        List<LineResponse> lineResponses = new ArrayList<>(response.jsonPath()
+                .getList(".", LineResponse.class));
+
+        노선_ID_확인(lineResponses, expectedLineResponses);
+        노선_포함_확인(lineResponses, expectedLineResponses);
+    }
+
+    private void 노선_포함_확인(List<LineResponse> lineResponses, LineResponse[] expectedLineResponses) {
+        HashMap<Long, List<StationResponse>> stationResponses = new HashMap<>();
+        for (LineResponse lineResponse : lineResponses) {
+            stationResponses.put(lineResponse.getId(), lineResponse.getStations());
+        }
+
+        HashMap<Long, List<StationResponse>> expectedStationResponses = new HashMap<>();
+        for (LineResponse lineResponse : expectedLineResponses) {
+            expectedStationResponses.put(lineResponse.getId(), lineResponse.getStations());
+        }
+
+        for (Map.Entry<Long, List<StationResponse>> entry : stationResponses.entrySet()) {
+            assertThat(entry.getValue())
+                    .containsAll(expectedStationResponses.get(entry.getKey()));
+        }
+    }
+
+    private void 노선_ID_확인(List<LineResponse> lineResponses, LineResponse[] expectedLineResponses) {
+        List<Long> expectedLineIds = Arrays.stream(expectedLineResponses)
+                .map(LineResponse::getId)
+                .collect(Collectors.toList());
+
+        List<Long> resultLineIds = lineResponses.stream()
+                .map(LineResponse::getId)
+                .collect(Collectors.toList());
+
+        assertThat(resultLineIds)
+                .containsAll(expectedLineIds);
     }
 }
