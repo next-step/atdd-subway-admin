@@ -16,6 +16,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.line.exception.DeletableSectionNotFoundException;
 import nextstep.subway.line.exception.DuplicatedSectionException;
 import nextstep.subway.line.exception.IllegalSectionException;
 import nextstep.subway.line.exception.SectionNotFoundException;
@@ -23,6 +24,8 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
+
+	public static final int SECTIONS_MIN_SIZE_INCLUSIVE = 1;
 
 	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE,
 		CascadeType.REMOVE}, orphanRemoval = true)
@@ -74,6 +77,32 @@ public class Sections {
 
 	public Optional<Section> findAny(Predicate<? super Section> conditional) {
 		return sections.stream().filter(conditional).findAny();
+	}
+
+	public void delete(Station station) {
+		validateToDelete();
+		final Optional<Section> maybeUpSection = findAny(section -> section.equalsUpStation(station));
+		final Optional<Section> maybeDownSection = findAny(section -> section.equalsDownStation(station));
+		if (!maybeUpSection.isPresent() && !maybeDownSection.isPresent()) {
+			throw new SectionNotFoundException();
+		} else if (maybeUpSection.isPresent() && maybeDownSection.isPresent()) {
+			deleteStationBetween(maybeUpSection.get(), maybeDownSection.get());
+			return;
+		}
+		maybeUpSection.ifPresent(section -> sections.remove(section));
+		maybeDownSection.ifPresent(section -> sections.remove(section));
+	}
+
+	private void deleteStationBetween(Section sectionToDeleteUpStation, Section sectionToDeleteDownStation) {
+		final int distance = sectionToDeleteUpStation.getDistance() + sectionToDeleteDownStation.getDistance();
+		sectionToDeleteUpStation.updateUpStation(sectionToDeleteDownStation.getUpStation(), distance);
+		sections.remove(sectionToDeleteDownStation);
+	}
+
+	private void validateToDelete() {
+		if (sections.size() <= SECTIONS_MIN_SIZE_INCLUSIVE) {
+			throw new DeletableSectionNotFoundException();
+		}
 	}
 
 	// @note: 순환선인 경우 별도의 종착 구간 정보 필요, but 순환선이 없다고 가정
