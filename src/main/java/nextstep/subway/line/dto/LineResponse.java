@@ -16,9 +16,6 @@ public class LineResponse {
     private LocalDateTime modifiedDate;
     private List<StationResponse> stations;
 
-    public LineResponse() {
-    }
-
     public LineResponse(final Long id, final String name, final String color, final LocalDateTime createdDate,
         final LocalDateTime modifiedDate, final List<StationResponse> stations) {
         this.id = id;
@@ -77,11 +74,12 @@ public class LineResponse {
         final LineResponse that = (LineResponse)obj;
         return Objects.equals(id, that.id) && Objects.equals(name, that.name)
             && Objects.equals(color, that.color) && Objects.equals(createdDate, that.createdDate)
-            && Objects.equals(modifiedDate, that.modifiedDate);
+            && Objects.equals(modifiedDate, that.modifiedDate) && Objects.equals(stations,
+            that.stations);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, createdDate, modifiedDate);
+        return Objects.hash(id, name, color, createdDate, modifiedDate, stations);
     }
 }

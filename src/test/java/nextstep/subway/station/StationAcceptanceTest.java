@@ -104,7 +104,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> response
     ) {
         final List<StationResponse> expectedStations = Stream.of(createResponse1, createResponse2)
-            .map(it -> it.jsonPath().getObject(".", StationResponse.class))
+            .map(it -> it.as(StationResponse.class))
             .collect(Collectors.toList());
         final List<StationResponse> actualStations = response.jsonPath().getList(".", StationResponse.class);
 
