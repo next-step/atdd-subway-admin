@@ -71,15 +71,15 @@ public class Section extends BaseEntity {
     }
 
     public void insertCalculatedDistance(final Section nonPersistSection) {
-        if(distance <= nonPersistSection.distance){
+        if (distance <= nonPersistSection.distance) {
             throw new DistanceOverException();
         }
 
-        if(isEqualsUpStation(nonPersistSection.upStation)){
+        if (isEqualsUpStation(nonPersistSection.upStation)) {
             upStation = nonPersistSection.downStation;
         }
 
-        if(isEqualsDownStation(nonPersistSection.downStation)){
+        if (isEqualsDownStation(nonPersistSection.downStation)) {
             downStation = nonPersistSection.upStation;
         }
 

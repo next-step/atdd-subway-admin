@@ -20,14 +20,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private StationResponse 강남역;
     private StationResponse 역삼역;
     private StationResponse 삼성역;
+    private StationResponse 사당역;
     private String LineLocation;
-
 
     @BeforeEach
     void beforeEach() {
         강남역 = 지하철_역_등록되어_있음("강남역").as(StationResponse.class);
         역삼역 = 지하철_역_등록되어_있음("역삼역").as(StationResponse.class);
         삼성역 = 지하철_역_등록되어_있음("삼성역").as(StationResponse.class);
+        사당역 = 지하철_역_등록되어_있음("사당역").as(StationResponse.class);
 
         LineRequest 수인분당선 = new LineRequest("수인분당선", "yellow", 강남역.getId(), 역삼역.getId(), 10);
         LineLocation = 지하철_노선_등록되어_있음(수인분당선).header("Location");
@@ -128,7 +129,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void includeOneStation() {
         // given
-        StationResponse 사당역 = 지하철_역_등록되어_있음("사당역").as(StationResponse.class);
         SectionRequest request = 구간_요청_파라미터_생성(사당역.getId(), 삼성역.getId(), 5);
 
         // when

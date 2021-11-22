@@ -1,11 +1,8 @@
 package nextstep.subway.station.domain;
 
-import nextstep.subway.line.domain.Section;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 public class Stations {
     private final List<Station> stations;
@@ -14,7 +11,7 @@ public class Stations {
         this.stations = stations;
     }
 
-    public boolean isIn(Station station){
+    public boolean isIn(Station station) {
         return stations.contains(station);
     }
 

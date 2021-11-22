@@ -3,8 +3,6 @@ package nextstep.subway.line.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-
 import static nextstep.subway.station.domain.StationTest.강남역;
 import static nextstep.subway.station.domain.StationTest.역삼역;
 import static org.assertj.core.api.Assertions.assertThat;

@@ -115,7 +115,7 @@ class SectionsTest {
         구간_검증(Arrays.asList(사당역, 강남역, 역삼역, 양재역));
     }
 
-    private void 구간_검증(List<Station> expected){
+    private void 구간_검증(List<Station> expected) {
         assertAll(
                 () -> assertThat(sections.getSections()).hasSize(3),
                 () -> assertThat(sections.getStations().getStations()).containsExactlyElementsOf(expected)
