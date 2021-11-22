@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.RestAssuredDelegator;
 import nextstep.subway.line.dto.LineResponse;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.DisplayName;
@@ -70,11 +71,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> otherCreateResponse) {
         // when
         // 지하철_노선_목록_조회_요청
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
+        final ExtractableResponse<Response> response = RestAssuredDelegator.given()
             .get("/lines")
-            .then().log().all()
-            .extract();
+            .then().extract();
 
         // then
         // 지하철_노선_목록_응답됨
@@ -97,11 +96,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_조회_요청
         final String uri = getLocation(createResponse);
 
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
+        final ExtractableResponse<Response> response = RestAssuredDelegator.given()
             .get(uri)
-            .then().log().all()
-            .extract();
+            .then().extract();
 
         // then
         // 지하철_노선_응답됨
@@ -121,13 +118,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final LineFixture lineFixture = LineFixture.updateOf(updateName, updateColor);
 
         final String uri = getLocation(createResponse);
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(lineFixture)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
+        final ExtractableResponse<Response> response = RestAssuredDelegator.given(lineFixture)
             .put(uri)
-            .then().log().all()
-            .extract();
+            .then().extract();
 
         // then
         // 지하철_노선_수정됨
@@ -145,11 +138,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_제거_요청
         final String uri = getLocation(createResponse);
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
+        final ExtractableResponse<Response> response = RestAssuredDelegator.given()
             .delete(uri)
-            .then().log().all()
-            .extract();
+            .then().extract();
 
         // then
         // 지하철_노선_삭제됨
