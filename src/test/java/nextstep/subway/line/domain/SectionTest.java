@@ -67,7 +67,7 @@ public class SectionTest {
     @DisplayName("하행역이 구간 사이에 있을 경우")
     void downStationBetweenSection(int distance) {
         Section actual = new Section(강남역, 양재역, LINE_2호선, distance);
-        section.insertCalculatedDistance(actual);
+        section.reArrangeSection(actual);
         assertAll(
                 () -> assertThat(section.getUpStation()).isEqualTo(양재역),
                 () -> assertThat(section.getDistance()).isEqualTo(10 - actual.getDistance())
@@ -81,7 +81,7 @@ public class SectionTest {
     @DisplayName("상행역이 구간 사이에 있을 경우")
     void upStationBetweenSection(int distance) {
         Section actual = new Section(양재역, 역삼역, LINE_2호선, distance);
-        section.insertCalculatedDistance(actual);
+        section.reArrangeSection(actual);
         assertAll(
                 () -> assertThat(section.getDownStation()).isEqualTo(양재역),
                 () -> assertThat(section.getDistance()).isEqualTo(10 - actual.getDistance())
@@ -92,7 +92,7 @@ public class SectionTest {
     @DisplayName("기존 구간의 길이보다 크거나 같으면 등록 할 수 없다.")
     void distanceOver() {
         Section actual = new Section(강남역, 양재역, LINE_2호선, 10);
-        assertThatThrownBy(() -> section.insertCalculatedDistance(actual)).isInstanceOf(DistanceOverException.class);
+        assertThatThrownBy(() -> section.reArrangeSection(actual)).isInstanceOf(DistanceOverException.class);
 
     }
 }

@@ -26,14 +26,17 @@ public class Sections {
     public void add(Section nonPersistSection) {
         if (!sections.isEmpty()) {
             validateSection(nonPersistSection);
-
-            sections.stream()
-                    .filter(section -> section.isIncludeOneStation(nonPersistSection))
-                    .findAny()
-                    .ifPresent(section -> section.insertCalculatedDistance(nonPersistSection));
+            calculateBetweenStation(nonPersistSection);
         }
 
         sections.add(nonPersistSection);
+    }
+
+    private void calculateBetweenStation(Section nonPersistSection) {
+        sections.stream()
+                .filter(section -> section.isIncludeOneStation(nonPersistSection))
+                .findAny()
+                .ifPresent(section -> section.reArrangeSection(nonPersistSection));
     }
 
     private void validateSection(final Section nonPersistSection) {

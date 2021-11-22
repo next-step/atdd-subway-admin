@@ -70,20 +70,27 @@ public class Section extends BaseEntity {
                 || isEqualsDownStation(nonPersistSection.downStation);
     }
 
-    public void insertCalculatedDistance(final Section nonPersistSection) {
+    public void reArrangeSection(final Section nonPersistSection) {
         if (distance <= nonPersistSection.distance) {
             throw new DistanceOverException();
         }
 
-        if (isEqualsUpStation(nonPersistSection.upStation)) {
-            upStation = nonPersistSection.downStation;
-        }
+        upStationToDownStation(nonPersistSection);
+        downStationToUpStation(nonPersistSection);
 
+        distance -= nonPersistSection.distance;
+    }
+
+    private void downStationToUpStation(Section nonPersistSection) {
         if (isEqualsDownStation(nonPersistSection.downStation)) {
             downStation = nonPersistSection.upStation;
         }
+    }
 
-        distance -= nonPersistSection.distance;
+    private void upStationToDownStation(Section nonPersistSection) {
+        if (isEqualsUpStation(nonPersistSection.upStation)) {
+            upStation = nonPersistSection.downStation;
+        }
     }
 
     @Override
