@@ -64,8 +64,6 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-
-    @Transactional
     private void changeSections(Line line, LineRequest request) {
         if (request.getUpStationId() != null) {
             Station upStation = stationService.findStationById(request.getUpStationId());
@@ -78,7 +76,6 @@ public class LineService {
         }
     }
 
-    @Transactional
     private void updateSections(Line line, LineRequest request) {
         line.clearSections();
         changeSections(line, request);
@@ -88,7 +85,6 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    @Transactional
     private void validateUniqueName(LineRequest request) {
         if (lineRepository.existsByName(request.getName())) {
             throw new DuplicateEntityException(DUPLICATE_ENTITY_MESSAGE);
