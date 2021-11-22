@@ -1,8 +1,11 @@
 package nextstep.subway.line.domain;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Embeddable;
 
 @Embeddable
+@Access(AccessType.FIELD)
 public class Distance {
     private int distance;
 
@@ -11,10 +14,6 @@ public class Distance {
     }
 
     public Distance(int distance) {
-        this.distance = distance;
-    }
-
-    public void setDistance(int distance) {
         this.distance = distance;
     }
 
