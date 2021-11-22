@@ -8,6 +8,9 @@ public class SectionRequest {
     private Long downStationId;
     private Integer distance;
 
+    public SectionRequest() {
+    }
+
     public SectionRequest(Long upStationId, Long downStationId, Integer distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
@@ -20,6 +23,10 @@ public class SectionRequest {
 
     public Long getDownStationId() {
         return downStationId;
+    }
+
+    public Integer getDistance() {
+        return distance;
     }
 
     public Section toSection(Station upStation, Station downStation) {

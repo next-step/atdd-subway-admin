@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Entity;
@@ -16,19 +18,19 @@ import nextstep.subway.station.domain.Station;
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
-    public Line line;
+    private Line line;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id")
-    public Station upStation;
+    private Station upStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id")
-    public Station downStation;
+    private Station downStation;
 
     private int distance;
 
@@ -46,6 +48,10 @@ public class Section {
         this.distance = distance;
     }
 
+    public Line getLine() {
+        return line;
+    }
+
     public Station getUpStation() {
         return upStation;
     }
@@ -54,11 +60,48 @@ public class Section {
         return downStation;
     }
 
+    public int getDistance() {
+        return distance;
+    }
+
     public void changeLine(Line line) {
         if (Objects.nonNull(this.line)) {
             this.line.getSections().remove(this);
         }
         this.line = line;
         line.getSections().add(this);
+    }
+
+    public void updateDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public void updateUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void updateDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
+    public boolean containsAndSamePosition(Section section) {
+        return containsSomeStation(section)
+            && containsExactlyStationPosition(section);
+    }
+
+    public boolean containsAndNotSamePosition(Section section) {
+        return containsSomeStation(section)
+            && !containsExactlyStationPosition(section);
+    }
+
+    private boolean containsSomeStation(Section section) {
+        List<Station> stations = Arrays.asList(upStation, downStation);
+        return stations.contains(section.getUpStation())
+            || stations.contains(section.getDownStation());
+    }
+
+    private boolean containsExactlyStationPosition(Section section) {
+        return upStation.equals(section.upStation)
+            || downStation.equals(section.downStation);
     }
 }
