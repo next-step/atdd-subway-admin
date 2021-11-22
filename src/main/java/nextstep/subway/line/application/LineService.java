@@ -8,6 +8,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +26,7 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional()
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
@@ -35,9 +36,16 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse findLineId(Long id) {
+    public LineResponse findId(Long id) {
         return lineRepository.findById(id)
             .map(LineResponse::of)
             .orElse(null);
     }
+
+    public LineResponse update(Long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id).orElse(null);
+        line.update(lineRequest.toLine());
+        return LineResponse.of(line);
+    }
+
 }

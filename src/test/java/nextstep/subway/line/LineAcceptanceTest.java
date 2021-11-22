@@ -90,12 +90,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        LineRequest 화곡 = 지하철_노선_정보("화곡", "purple");
+        ExtractableResponse<Response> 화곡역 = 지하철_노선_생성_요청(화곡);
+        LineRequest 까치산 = 지하철_노선_정보("까치산", "purple");
 
         // when
-        // 지하철_노선_수정_요청
+        ExtractableResponse<Response> 수정 = 지하철_노선_수정_요청(화곡역, 까치산);
 
         // then
-        // 지하철_노선_수정됨
+        지하철_노선_응답됨(수정);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -134,7 +137,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> response) {
         return RestAssured
             .given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(response.header("Location"))
             .when().get(LINES_PATH)
             .then().log().all().extract();
@@ -151,6 +153,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .map(it -> it.getId())
             .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(ExtractableResponse<Response> response,
+        LineRequest changeLine) {
+        return RestAssured
+            .given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(changeLine)
+            .when().put(response.header("Location"))
+            .then().log().all().extract();
     }
 
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
