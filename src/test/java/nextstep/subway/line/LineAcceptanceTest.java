@@ -31,7 +31,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_역_생성(new StationRequest("역삼역"));
     }
 
-    @DisplayName("지하철 노선을 생트성한다.")
+    @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // when
