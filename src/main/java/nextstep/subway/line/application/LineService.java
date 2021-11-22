@@ -91,8 +91,8 @@ public class LineService {
     }
 
     private List<Section> saveUpDownSection(LineRequest request, Station upStation, Station downStation) {
-        Section up = saveSection(new Section(request.getDistance(), Constants.UP_SORT_SEQ, upStation, SectionType.UP));
-        Section down = saveSection(new Section(Constants.DOWN_DISTANCE, Constants.DOWN_SORT_SEQ, downStation, SectionType.DOWN));
+        Section up = saveSection(new Section(request.getDistance(), SectionType.UP, upStation, downStation));
+        Section down = saveSection(new Section(Constants.DOWN_DISTANCE, SectionType.DOWN, downStation));
         return Arrays.asList(up, down);
     }
 }

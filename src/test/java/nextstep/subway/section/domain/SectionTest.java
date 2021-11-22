@@ -38,11 +38,11 @@ class SectionTest {
             assertThat(yongsanStation.getName()).isEqualTo("용산역");
         });
 
-        Section section1 = sectionRepository.save(new Section(10, 1, seoulStation, SectionType.UP));
-        Section section2 = sectionRepository.save(new Section(10, 2, yongsanStation, SectionType.DOWN));
+        Section upSection = sectionRepository.save(new Section(10, SectionType.UP, seoulStation, yongsanStation));
+        Section downSection = sectionRepository.save(new Section(10, SectionType.DOWN, yongsanStation));
 
         Line line = lineRepository.save(new Line("1호선", "blue"));
-        line.addSections(Arrays.asList(section1, section2));
+        line.addSections(Arrays.asList(upSection, downSection));
 
         //쿼리 확인
         lineRepository.flush();

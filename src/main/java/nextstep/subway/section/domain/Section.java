@@ -24,15 +24,16 @@ public class Section extends BaseEntity implements Comparable<Section>{
     @Embedded
     private Distance distance;
 
-    @Embedded
-    private SectionSortSeq sortSeq;
-
     @Enumerated(EnumType.STRING)
     private SectionType sectionType;
 
     @ManyToOne
-    @JoinColumn(name = "station_id")
+    @JoinColumn(name = "station_id", nullable = false)
     private Station station;
+
+    @ManyToOne
+    @JoinColumn(name = "link_station_id")
+    private Station linkStation;
 
     @ManyToOne
     @JoinColumn(name = "line_id")
@@ -41,11 +42,15 @@ public class Section extends BaseEntity implements Comparable<Section>{
     protected Section() {
     }
 
-    public Section(Integer distance, Integer sortSeq, Station station, SectionType sectionType) {
+    public Section(Integer distance, SectionType sectionType, Station station) {
+        this(distance, sectionType, station, null);
+    }
+
+    public Section(Integer distance, SectionType sectionType, Station station, Station linkStation) {
         this.distance = new Distance(distance);
-        this.sortSeq = new SectionSortSeq(sortSeq);
         this.sectionType = sectionType;
         setStation(station);
+        setLinkStation(linkStation);
     }
 
     public void setLine(Line line) {
@@ -57,16 +62,43 @@ public class Section extends BaseEntity implements Comparable<Section>{
     }
 
     public void setStation(Station station) {
+        if (station == null) {
+            throw new IllegalArgumentException("역정보는 필수입니다.");
+        }
         this.station = station;
     }
 
-    public SectionSortSeq getSortSeq() {
-        return sortSeq;
+    public void setLinkStation(Station station) {
+        if (station == null) {
+            return;
+        }
+        this.linkStation = station;
     }
 
     @Override
     public int compareTo(Section o) {
-        return sortSeq.compare(o.sortSeq);
+
+        if (sectionType.equals(SectionType.UP)) {
+            return -1;
+        }
+
+        if (linkStation == null) {
+            return 1;
+        }
+
+        if (o.linkStation == null) {
+            return -1;
+        }
+
+        if (linkStation.equals(o.station)) {
+            return -1;
+        }
+
+        if (station.equals(o.linkStation)) {
+            return 1;
+        }
+
+        return 0;
     }
 
     @Override
@@ -83,6 +115,6 @@ public class Section extends BaseEntity implements Comparable<Section>{
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, distance, sortSeq, station, line);
+        return Objects.hash(id, distance, sectionType, station, linkStation, line);
     }
 }
