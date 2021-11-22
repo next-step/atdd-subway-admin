@@ -23,11 +23,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        // given
+        // when
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
-
-        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
