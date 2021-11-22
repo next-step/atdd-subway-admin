@@ -41,19 +41,4 @@ class SectionTest {
         assertThatThrownBy(throwingCallable)
                 .isInstanceOf(IllegalArgumentException.class);
     }
-
-    @DisplayName("거리가 0")
-    @Test
-    void 거리가_0() {
-        // given
-        Station 강남역 = 강남역();
-        Station 역삼역 = 역삼역();
-
-        // when
-        ThrowableAssert.ThrowingCallable throwingCallable = () -> Section.of(강남역, 역삼역, 0);
-
-        // then
-        assertThatThrownBy(throwingCallable)
-                .isInstanceOf(IllegalArgumentException.class);
-    }
 }
