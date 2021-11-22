@@ -34,16 +34,6 @@ public class LineResponse {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses, line.getCreatedDate(), line.getModifiedDate());
     }
 
-    public static List<StationResponse> toStationResponses(List<Station> stations) {
-        List<StationResponse> stationResponses = new ArrayList<>();
-
-        for (Station station : stations) {
-            stationResponses.add(StationResponse.of(station));
-        }
-
-        return stationResponses;
-    }
-
     public Long getId() {
         return id;
     }
@@ -66,5 +56,15 @@ public class LineResponse {
 
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
+    }
+
+    private static List<StationResponse> toStationResponses(List<Station> stations) {
+        List<StationResponse> stationResponses = new ArrayList<>();
+
+        for (Station station : stations) {
+            stationResponses.add(StationResponse.of(station));
+        }
+
+        return stationResponses;
     }
 }
