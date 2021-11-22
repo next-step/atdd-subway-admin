@@ -43,7 +43,6 @@ public class LineService {
     }
 
     public LineResponse findLineById(final Long id) {
-
         Line line = lineRepository.findById(id)
                                   .orElseThrow(EntityNotFoundException::new);
         return LineResponse.of(line);
