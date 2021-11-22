@@ -33,6 +33,7 @@ public class Sections {
 	}
 
 	public void add(Section section) {
+		sectionList.forEach(inner -> inner.validSection(section));
 		sectionList.add(section);
 	}
 

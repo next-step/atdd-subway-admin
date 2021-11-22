@@ -9,6 +9,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.common.ErrorCode;
+import nextstep.subway.line.exception.SectionException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -62,6 +64,47 @@ public class Section extends BaseEntity {
 
 	public Distance getDistance() {
 		return distance;
+	}
+
+	public void validSection(Section section) {
+		validNotInStations(section);
+		validSameStation(section);
+		isInDistance(section);
+	}
+
+	private void isInDistance(Section section) {
+		if (distance.getDistance() < section.distance.getDistance()
+			|| distance.getDistance() == section.distance.getDistance()) {
+			throw new SectionException(ErrorCode.VALID_DISTANCE_ERROR);
+		}
+	}
+
+	private boolean isSameUpStation(Section section) {
+		return upStation.equals(section.upStation);
+	}
+
+	private boolean isSameDownStation(Section section) {
+		return downStation.equals(section.downStation);
+	}
+
+	private boolean isSameUpDownStation(Section section) {
+		return isSameUpStation(section) && isSameDownStation(section);
+	}
+
+	private void validSameStation(Section section) {
+		if (isSameUpDownStation(section)) {
+			throw new SectionException(ErrorCode.VALID_SAME_STATION_ERROR);
+		}
+	}
+
+	private boolean isInStations(Section section) {
+		return isSameUpStation(section) || isSameDownStation(section);
+	}
+
+	private void validNotInStations(Section section) {
+		if (!isInStations(section)) {
+			throw new SectionException(ErrorCode.VALID_NOT_IN_STATIONS_ERROR);
+		}
 	}
 
 	@Override
