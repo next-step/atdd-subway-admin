@@ -135,28 +135,26 @@ public class Sections {
 	}
 
 	private void deleteStation(List<Section> orderedSections, Station station) {
-		if(deleteIfMatchUpStation(orderedSections,station)){
+		boolean isMatchUpStation = false;
+		for (int i = 0; i < orderedSections.size() && !isMatchUpStation; i++) {
+			Section currentSection = orderedSections.get(i);
+			Section preSection = i==0 ? null : orderedSections.get(i-1);
+			isMatchUpStation = deleteUpStationIfMatch(currentSection, preSection, station);
+		}
+		if(isMatchUpStation){
 			return;
 		}
 
-		if(deleteIfMatchLastStation(orderedSections.get(orderedSections.size() - 1),station)){
+		Section lastSection = orderedSections.get(orderedSections.size() - 1);
+		if (lastSection.matchDownStation(station)) {
+			sections.remove(orderedSections.get(orderedSections.size() - 1));
 			return;
 		}
 
 		throw new IllegalArgumentException(ERROR_MESSAGE_NOT_EXIST_STATION);
 	}
 
-	public boolean deleteIfMatchUpStation(List<Section> orderedSections, Station station){
-		boolean isDeleted = false;
-		for (int i = 0; i < orderedSections.size() && !isDeleted; i++) {
-			Section currentSection = orderedSections.get(i);
-			Section preSection = i == 0 ? null : orderedSections.get(i - 1);
-			isDeleted = deleteSectionMatchUpStation(currentSection, preSection, station);
-		}
-		return isDeleted;
-	}
-
-	private boolean deleteSectionMatchUpStation(Section currentSection, Section preSection, Station station) {
+	private boolean deleteUpStationIfMatch(Section currentSection, Section preSection, Station station) {
 		if (!currentSection.matchUpStation(station)) {
 			return false;
 		}
@@ -164,17 +162,8 @@ public class Sections {
 		if (preSection != null) {
 			preSection.changeDownStation(currentSection.getDownStation());
 		}
-
 		sections.remove(currentSection);
 		return true;
-	}
-
-	private boolean deleteIfMatchLastStation(Section lastSection, Station station) {
-		if (lastSection.matchDownStation(station)) {
-			sections.remove(lastSection);
-			return true;
-		}
-		return false;
 	}
 
 	private void validateAtLeastTwoSections() {
