@@ -9,9 +9,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,8 +28,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        지하철_노선_응답(response, 1L, lineRequest);
+        지하철_노선_생성됨(response);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -47,7 +45,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성_실패됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철_노선_생성_실패됨(response);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -56,8 +54,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse1 = LineApiRequests.지하철_노선_생성_요청(new LineRequest("2호선", "bg-green-200"));
-        ExtractableResponse<Response> createResponse2 = LineApiRequests.지하철_노선_생성_요청(new LineRequest("4호선", "bg-blue-400"));
+        Long id1 = 지하철_노선_등록되어_있음(new LineRequest("2호선", "bg-green-200"));
+        Long id2 = 지하철_노선_등록되어_있음(new LineRequest("4호선", "bg-blue-400"));
+
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -66,15 +65,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_목록_응답됨
         // 지하철_노선_목록_포함됨
-        List<String> expectedNames = Stream.of(createResponse1, createResponse2)
-                .map(createResponse -> createResponse.jsonPath().getObject(".", LineResponse.class))
-                .map(LineResponse::getName)
-                .collect(Collectors.toList());
-        List<LineResponse> resultReponses = response.jsonPath().getList(".", LineResponse.class);
-        List<String> results = resultReponses.stream()
-                .map(LineResponse::getName)
-                .collect(Collectors.toList());
-        assertThat(results).containsAll(expectedNames);
+        지하철_노선_응답됨(response);
+        지하철_노선_목록_포함됨(response, Arrays.asList(id1, id2));
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -109,9 +101,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_수정됨
-        ExtractableResponse<Response> response = LineApiRequests.지하철_노선_조회_요청(lineId);
-
-        지하철_노선_응답(response, lineId, updateRequest);
+        지하철_노선_수정됨(lineId, updateRequest);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -128,20 +118,49 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
+        지하철_노선_삭제됨(lineId);
+    }
+
+    private void 지하철_노선_삭제됨(Long lineId) {
         ExtractableResponse<Response> response = LineApiRequests.지하철_노선_조회_요청(lineId);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private void 지하철_노선_응답(ExtractableResponse<Response> response, Long lineId, LineRequest updateRequest) {
+    private void 지하철_노선_응답(ExtractableResponse<Response> response, Long lineId, LineRequest lineRequest) {
         LineResponse result = response.jsonPath().getObject(".", LineResponse.class);
         assertThat(result.getId()).isEqualTo(lineId);
-        assertThat(result.getName()).isEqualTo(updateRequest.getName());
-        assertThat(result.getColor()).isEqualTo(updateRequest.getColor());
+        assertThat(result.getName()).isEqualTo(lineRequest.getName());
+        assertThat(result.getColor()).isEqualTo(lineRequest.getColor());
     }
 
     private Long 지하철_노선_등록되어_있음(LineRequest lineRequest) {
         ExtractableResponse<Response> createResponse = LineApiRequests.지하철_노선_생성_요청(lineRequest);
         return Long.valueOf(createResponse.header("Location").split("/")[2]);
+    }
+
+    private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, List<Long> givenLines) {
+        List<Long> resultList = response.jsonPath().getList("id", Long.class);
+        assertThat(resultList).containsAll(givenLines);
+    }
+
+    private void 지하철_노선_응답됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 지하철_노선_수정됨(Long lineId, LineRequest updateRequest) {
+        ExtractableResponse<Response> response = LineApiRequests.지하철_노선_조회_요청(lineId);
+        LineResponse result = response.jsonPath().getObject(".", LineResponse.class);
+        assertThat(result.getId()).isEqualTo(lineId);
+        assertThat(result.getName()).isEqualTo(updateRequest.getName());
+        assertThat(result.getColor()).isEqualTo(updateRequest.getColor());
     }
 
 }
