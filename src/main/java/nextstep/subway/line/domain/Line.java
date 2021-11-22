@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.application.dto.LineUpdateRequest;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -21,11 +22,6 @@ public class Line extends BaseEntity {
 
 
     public Line() {
-    }
-
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
     }
 
     public Line(String name, String color, Section section) {
@@ -51,6 +47,10 @@ public class Line extends BaseEntity {
         return color;
     }
 
+    public List<Section> getSections() {
+        return sections;
+    }
+
     public void update(LineUpdateRequest lineUpdateRequest) {
         this.name = lineUpdateRequest.getName();
         this.color = lineUpdateRequest.getColor();
@@ -59,5 +59,16 @@ public class Line extends BaseEntity {
     public void addSection(Section section) {
         sections.add(section);
         section.setLine(this);
+    }
+
+    public List<StationResponse> getStationResponse() {
+        List<StationResponse> stationResponses = new ArrayList<>();
+
+        for (int i = 0; i < sections.size(); i++) {
+            stationResponses.add(StationResponse.of(sections.get(i).getUpStation()));
+            stationResponses.add(StationResponse.of(sections.get(i).getDownStation()));
+        }
+
+        return stationResponses;
     }
 }
