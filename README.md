@@ -70,4 +70,4 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   * [x] 조회
   * [x] 수정
   * [x] 삭제
-* [ ] 기능 구현 후 인수 테스트 리팩터링
+* [x] 기능 구현 후 인수 테스트 리팩터링
