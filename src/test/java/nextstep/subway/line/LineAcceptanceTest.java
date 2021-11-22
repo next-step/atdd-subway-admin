@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.station.TestStationFactory.역_미리_생성;
 import static nextstep.subway.utils.TestGetRequestFactory.요청_get;
 import static nextstep.subway.utils.TestPostRequestFactory.요청_post;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -107,6 +109,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         지하철_노선_삭제됨(response);
+    }
+
+    @DisplayName("노선 생성시 두 종점역 추가하기")
+    @Test
+    void createLineWithStations() {
+        // given
+        StationResponse stationResponse1 = 역_미리_생성("강남역");
+        StationResponse stationResponse2 = 역_미리_생성("역삼역");
+        LineRequest lineRequestWithStations = new LineRequest("2호선", "green", stationResponse1.getId(), stationResponse2.getId(), 10);
+
+        // when
+        ExtractableResponse<Response> saveResponse = 지하철_노선_생성_요청(lineRequestWithStations);
+
+        // then
+        지하철_노선_생성_응답됨(saveResponse);
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
