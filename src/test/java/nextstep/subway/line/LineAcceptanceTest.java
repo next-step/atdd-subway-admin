@@ -163,12 +163,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 노선_포함_확인(List<LineResponse> lineResponses, LineResponse[] expectedLineResponses) {
-        HashMap<Long, List<StationResponse>> stationResponses = new HashMap<>();
+        Map<Long, List<StationResponse>> stationResponses = new HashMap<>();
         for (LineResponse lineResponse : lineResponses) {
             stationResponses.put(lineResponse.getId(), lineResponse.getStations());
         }
 
-        HashMap<Long, List<StationResponse>> expectedStationResponses = new HashMap<>();
+        Map<Long, List<StationResponse>> expectedStationResponses = new HashMap<>();
         for (LineResponse lineResponse : expectedLineResponses) {
             expectedStationResponses.put(lineResponse.getId(), lineResponse.getStations());
         }
