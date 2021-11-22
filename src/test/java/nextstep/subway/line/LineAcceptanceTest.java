@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.utils.ApiUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -24,15 +25,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("name", name);
         params.put("color", color);
 
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
-
+        return ApiUtils.post("/lines", params);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -75,12 +68,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = ApiUtils.get("/lines");
 
         // then
         // 지하철_노선_목록_응답됨
@@ -101,12 +89,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get("/lines/" + id)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = ApiUtils.get("/lines/" + id);
 
         // then
         // 지하철_노선_응답됨
@@ -130,13 +113,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params)
-                .when()
-                .put("/lines/" + id)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = ApiUtils.put("/lines/" + id, params);
 
         // then
         // 지하철_노선_수정됨
@@ -153,12 +130,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_제거_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete("/lines/" + id)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = ApiUtils.delete("/lines/" + id);
 
         // then
         // 지하철_노선_삭제됨
