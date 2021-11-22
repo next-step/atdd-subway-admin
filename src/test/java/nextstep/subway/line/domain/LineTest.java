@@ -24,20 +24,4 @@ class LineTest {
         assertThat(line.getName()).isEqualTo(name);
         assertThat(line.getColor()).isEqualTo(color);
     }
-
-    @Test
-    @DisplayName("지하철 구간을 추가한다.")
-    void addSection() {
-        // given
-        Line line = new Line();
-        Station upStation = new Station();
-        Station downStation = new Station();
-        Section section = new Section(upStation, downStation, 10);
-
-        // when
-        line.addSection(section);
-
-        // then
-        assertThat(line.getSections().get(0)).isEqualTo(section);
-    }
 }

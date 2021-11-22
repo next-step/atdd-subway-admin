@@ -2,6 +2,7 @@ package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
@@ -44,11 +45,12 @@ public class LineFindResponse {
 
     private static List<StationResponse> createStations(Line line) {
         List<StationResponse> stations = new ArrayList<>();
-        List<Section> sections = line.getSections();
-        for (Section section : sections) {
+        Sections sections = line.getSections();
+        List<Section> sectionList = sections.getSections();
+        for (Section section : sectionList) {
             stations.add(StationResponse.of(section.getUpStation()));
         }
-        stations.add(StationResponse.of(sections.get(sections.size() - 1).getDownStation()));
+        stations.add(StationResponse.of(sectionList.get(sectionList.size() - 1).getDownStation()));
         return stations;
     }
 

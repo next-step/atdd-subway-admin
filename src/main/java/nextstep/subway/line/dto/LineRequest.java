@@ -52,7 +52,10 @@ public class LineRequest {
         return new Line(name, color);
     }
 
-    public Section toSection(Station upStation, Station downStation) {
-        return new Section(upStation, downStation, distance);
+    public Line toLine(Station upStation, Station downStation) {
+        Line line = new Line(name, color);
+        Section section = new Section(upStation, downStation, distance, line);
+        line.addSection(section);
+        return line;
     }
 }

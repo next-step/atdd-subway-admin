@@ -1,24 +1,23 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.line.domain.Line;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SectionTest {
+class SectionsTest {
 
     @Test
-    @DisplayName("지하철 노선을 저장한다.")
-    void updateLine() {
+    @DisplayName("지하철 구간을 추가한다.")
+    void add() {
         // given
-        Line line = new Line("신분당선", "bg-red-600");
+        Sections sections = new Sections();
         Section section = new Section();
 
         // when
-        section.updateLine(line);
+        sections.add(section);
 
         // then
-        assertThat(section.getLine()).isEqualTo(line);
+        assertThat(sections.getSections().get(0)).isEqualTo(section);
     }
 }
