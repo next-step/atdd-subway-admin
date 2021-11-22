@@ -46,6 +46,10 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(name, color, upStationId, downStationId, distance);
+        return Line.from(name, color, upStationId, downStationId, distance);
+    }
+
+    public Line toLineForUpdate() {
+        return Line.from(name, color);
     }
 }

@@ -27,10 +27,23 @@ public class Line extends BaseEntity {
 	protected Line() {
 	}
 
-	public Line(String name, String color, Long upStationId, Long downStationId, int distance) {
+	private Line(String name, String color) {
+		this.name = LineName.from(name);
+		this.color = LineColor.from(color);
+	}
+
+	private Line(String name, String color, Long upStationId, Long downStationId, int distance) {
 		this.name = LineName.from(name);
 		this.color = LineColor.from(color);
 		this.sections.add(Section.of(this, upStationId, downStationId, distance));
+	}
+
+	public static Line from(String name, String color) {
+		return new Line(name, color);
+	}
+
+	public static Line from(String name, String color, Long upStationId, Long downStationId, int distance) {
+		return new Line(name, color, upStationId, downStationId, distance);
 	}
 
 	public void update(Line line) {
