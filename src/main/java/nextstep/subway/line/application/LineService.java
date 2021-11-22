@@ -1,5 +1,7 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.common.ErrorCode;
+import nextstep.subway.exception.NotFoundApiException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -51,6 +53,7 @@ public class LineService {
     }
 
     private Line findById(Long lineId) {
-        return lineRepository.findById(lineId).orElseThrow(() -> new RuntimeException("존재하지 않는 노선ID 입니다."));
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new NotFoundApiException(ErrorCode.NOT_FOUND_LINE_ID));
     }
 }
