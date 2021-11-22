@@ -71,16 +71,16 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
  - 노선 삭제 요청을 한다.
 
 ## STEP 2 
-1. Feature : 노선 생성하기
- Scenario : 노선 생성 시 상행, 하행 추가 
-  Given 상행, 하행에 등록할 지하철역이 등록되어있다.
-  When 노선 생성을 요청한다
-  Then 사용자는 상태코드를 응답받는다
+1. Feature : 노선 생성하기  
+ Scenario : 노선 생성 시 상행, 하행 추가  
+  Given 상행, 하행에 등록할 지하철역이 등록되어있다.  
+  When 노선 생성을 요청한다.  
+  Then 사용자는 상태코드를 응답받는다.  
     
-2. Feature : 노선 목록조회
- Scenario : 노선 목록 조회하기 
-  Given 노선을 생성한다.
-  And 지하철역을 생성한다.
-  When 생성한 노선을 조회한다.
-  Then 사용자는 노선의 정보와 노선에 속한 지하철 역 정보를 응답받는다.
+2. Feature : 노선 목록조회  
+ Scenario : 노선 목록 조회하기  
+  Given 노선을 생성한다.  
+  And 지하철역을 생성한다.  
+  When 생성한 노선을 조회한다.  
+  Then 사용자는 노선의 정보와 노선에 속한 지하철 역 정보를 응답받는다.  
  
