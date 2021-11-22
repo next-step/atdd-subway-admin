@@ -56,6 +56,7 @@ public class Sections {
 		if (endSection.matchDownStation(requestSection.getUpStation())) {
 			return true;
 		}
+
 		return false;
 	}
 
@@ -93,7 +94,6 @@ public class Sections {
 
 	public List<Section> getOrderSections() {
 		Section startSection = findStartSection();
-
 		Map<Station, Section> upStationAndSectionRoute = getSectionRoute();
 		List<Section> orderedSections = new ArrayList<>();
 		Section nextSection = startSection;
@@ -131,37 +131,54 @@ public class Sections {
 
 	public void deleteStation(Station station) {
 		validateAtLeastTwoSections();
-
-		List<Section> orderedSections = getOrderSections();
-		Section startSection = orderedSections.get(0);
-		if(startSection.matchUpStation(station)){
-			sections.remove(startSection);
-			return;
-		}
-
-		Section endSection = orderedSections.get(orderedSections.size() - 1);
-		if(endSection.matchDownStation(station)){
-			sections.remove(endSection);
-			return;
-		}
-
-		deleteBetweenSections(orderedSections,station);
+		deleteStation(getOrderSections(), station);
 	}
 
-	private void deleteBetweenSections(List<Section> orderedSections, Station station) {
-		for(int i=1; i<orderedSections.size(); i++){
-			if(orderedSections.get(i).matchUpStation(station)){
-				orderedSections.get(i-1).changeDownStation(orderedSections.get(i).getDownStation());
-				sections.remove(orderedSections.get(i));
-				return;
-			}
+	private void deleteStation(List<Section> orderedSections, Station station) {
+		if(deleteIfMatchUpStation(orderedSections,station)){
+			return;
 		}
+
+		if(deleteIfMatchLastStation(orderedSections.get(orderedSections.size() - 1),station)){
+			return;
+		}
+
 		throw new IllegalArgumentException(ERROR_MESSAGE_NOT_EXIST_STATION);
 	}
 
-	private void validateAtLeastTwoSections() {
+	public boolean deleteIfMatchUpStation(List<Section> orderedSections, Station station){
+		boolean isDeleted = false;
+		for (int i = 0; i < orderedSections.size() && !isDeleted; i++) {
+			Section currentSection = orderedSections.get(i);
+			Section preSection = i == 0 ? null : orderedSections.get(i - 1);
+			isDeleted = deleteSectionMatchUpStation(currentSection, preSection, station);
+		}
+		return isDeleted;
+	}
 
-		if(sections.size()<=1){
+	private boolean deleteSectionMatchUpStation(Section currentSection, Section preSection, Station station) {
+		if (!currentSection.matchUpStation(station)) {
+			return false;
+		}
+
+		if (preSection != null) {
+			preSection.changeDownStation(currentSection.getDownStation());
+		}
+
+		sections.remove(currentSection);
+		return true;
+	}
+
+	private boolean deleteIfMatchLastStation(Section lastSection, Station station) {
+		if (lastSection.matchDownStation(station)) {
+			sections.remove(lastSection);
+			return true;
+		}
+		return false;
+	}
+
+	private void validateAtLeastTwoSections() {
+		if (sections.size() <= 1) {
 			throw new IllegalStateException(ERROR_MESSAGE_NOT_ENOUGH_SECTIONS_TO_DELETE);
 		}
 	}
