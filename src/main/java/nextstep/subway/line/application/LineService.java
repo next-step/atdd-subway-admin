@@ -49,4 +49,8 @@ public class LineService {
                 new NullPointerException("라인이 없습니다.")
         );
     }
+
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
