@@ -10,6 +10,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.section.domain.SectionType;
@@ -91,8 +92,8 @@ public class LineService {
     }
 
     private List<Section> saveUpDownSection(LineRequest request, Station upStation, Station downStation) {
-        Section up = saveSection(new Section(request.getDistance(), SectionType.UP, upStation, downStation));
-        Section down = saveSection(new Section(Constants.DOWN_DISTANCE, SectionType.DOWN, downStation));
+        Section up = saveSection(Section.of(new Distance(request.getDistance()), SectionType.UP, upStation, downStation));
+        Section down = saveSection(Section.fromDownStation(downStation));
         return Arrays.asList(up, down);
     }
 }

@@ -11,6 +11,7 @@ import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionType;
 import nextstep.subway.station.domain.Station;
@@ -25,7 +26,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class LineServiceTest {
+public class LineServiceTest {
+    private static final Integer TEST_DISTANCE = 10;
 
     @Mock
     private LineRepository lineRepository;
@@ -36,18 +38,18 @@ class LineServiceTest {
     private Line line;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         Station startStation = new Station("시작");
         Station endStation = new Station("끝");
-        Section 시작 = new Section(10, SectionType.UP, startStation, endStation);
-        Section 끝 = new Section(0, SectionType.DOWN, endStation);
+        Section 시작 = Section.of(new Distance(TEST_DISTANCE), SectionType.UP, startStation, endStation);
+        Section 끝 = Section.fromDownStation(endStation);
         line = new Line("1호선", "blue");
         line.addSections(Arrays.asList(시작, 끝));
     }
 
     @Test
     @DisplayName("라인 한건 조회")
-    public void findById() {
+    void findById() {
         Mockito.when(lineRepository.findById(ArgumentMatchers.anyLong()))
             .thenReturn(Optional.of(line));
 
@@ -61,7 +63,7 @@ class LineServiceTest {
 
     @Test
     @DisplayName("라인 한건 조회시 없을 경우 NotFoundException")
-    public void findByIdNotFoundException() {
+    void findByIdNotFoundException() {
         Mockito.when(lineRepository.findById(ArgumentMatchers.anyLong()))
             .thenReturn(Optional.empty());
 
@@ -71,7 +73,7 @@ class LineServiceTest {
 
     @Test
     @DisplayName("라인 목록 조회")
-    public void findAll() {
+    void findAll() {
         Mockito.when(lineRepository.findAll())
             .thenReturn(Arrays.asList(line));
         List<LineResponse> lineResponseList = lineService.findLines();

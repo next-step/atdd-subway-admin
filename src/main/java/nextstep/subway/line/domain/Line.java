@@ -41,9 +41,16 @@ public class Line extends BaseEntity {
      */
     public void addSections(List<Section> sections) {
         for (Section section: sections) {
-            this.sections.add(section);
-            section.setLine(this);
+            addSection(section);
         }
+    }
+
+    public void addSection(Section section) {
+        if (this.sections.contains(section)) {
+            return;
+        }
+        this.sections.add(section);
+        section.setLine(this);
     }
 
     public void update(Line line) {

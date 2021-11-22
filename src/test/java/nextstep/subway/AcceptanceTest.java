@@ -18,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = "test")
-public abstract class AcceptanceTest {
+public class AcceptanceTest {
 
     @LocalServerPort
     int port;
@@ -36,7 +36,7 @@ public abstract class AcceptanceTest {
         databaseCleanup.execute();
     }
 
-    protected List<ExtractableResponse<Response>> givenDataList_저장한다(Object[] bodies, String url) {
+    protected List<ExtractableResponse<Response>> given_목록저장되어있다(Object[] bodies, String url) {
         List<ExtractableResponse<Response>> responseList = new ArrayList<>();
         for (Object body : bodies) {
             responseList.add(저장한다(body, url));
@@ -87,6 +87,10 @@ public abstract class AcceptanceTest {
             .map(it -> ObjectConverter
                 .convertObjectTo(it.header("Location").split("/")[2], genericType))
             .collect(Collectors.toList());
+    }
+
+    protected Long getLongIdByResponse(ExtractableResponse<Response> response) {
+        return response.body().jsonPath().getLong("id");
     }
 
     private RequestSpecification given() {

@@ -16,7 +16,9 @@ import org.springframework.test.context.jdbc.Sql;
 
 @DataJpaTest
 @Sql(scripts = "classpath:scripts/sectionTestData.sql")
-class SectionTest {
+public class SectionTest {
+
+    private static final Integer TEST_DISTANCE = 10;
 
     @Autowired
     LineRepository lineRepository;
@@ -29,7 +31,7 @@ class SectionTest {
 
     @DisplayName("라인 생성시 구간 추가")
     @Test
-    public void createLineWithSection() {
+    void createLineWithSection() {
         Station seoulStation = stationRepository.findById(1L).get();
         Station yongsanStation = stationRepository.findById(2L).get();
 
@@ -38,8 +40,8 @@ class SectionTest {
             assertThat(yongsanStation.getName()).isEqualTo("용산역");
         });
 
-        Section upSection = sectionRepository.save(new Section(10, SectionType.UP, seoulStation, yongsanStation));
-        Section downSection = sectionRepository.save(new Section(10, SectionType.DOWN, yongsanStation));
+        Section upSection = sectionRepository.save(Section.of(new Distance(TEST_DISTANCE), SectionType.UP, seoulStation, yongsanStation));
+        Section downSection = sectionRepository.save(Section.fromDownStation(yongsanStation));
 
         Line line = lineRepository.save(new Line("1호선", "blue"));
         line.addSections(Arrays.asList(upSection, downSection));

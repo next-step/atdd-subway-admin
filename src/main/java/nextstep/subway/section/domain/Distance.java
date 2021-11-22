@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import java.util.Objects;
 import javax.persistence.Embeddable;
+import nextstep.subway.line.common.Constants;
 
 @Embeddable
 public class Distance {
@@ -12,6 +13,10 @@ public class Distance {
 
     public Distance(Integer distance) {
         this.distance = distance;
+    }
+
+    public static Distance createDownDistance() {
+        return new Distance(Constants.DOWN_DISTANCE);
     }
 
     @Override

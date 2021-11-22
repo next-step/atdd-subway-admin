@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.station.dto.StationRequest;
-import org.apiguardian.api.API;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        givenData_강남역_저장한다();
+        given_강남역저장되어있다();
 
         // when
         ExtractableResponse<Response> response = 저장한다(params, API_URL);
@@ -45,7 +44,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 생성한다.")
     @Test
-    public void create() {
+    void create() {
         // when
         ExtractableResponse<Response> response = 저장한다(params, API_URL);
 
@@ -56,9 +55,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역 한건 조회한다.")
     @Test
-    public void getOne() {
+    void getOne() {
         // given
-        ExtractableResponse<Response> saved = givenData_강남역_저장한다();
+        ExtractableResponse<Response> saved = given_강남역저장되어있다();
 
         //when
         ExtractableResponse<Response> response = 조회한다(saved.header("Location"));
@@ -72,12 +71,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 조회한다.")
     @Test
-    public void getList() {
+    void getList() {
         // given
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "역삼역");
-        List<ExtractableResponse<Response>> givenList = givenDataList_저장한다(
-            new Object[]{params, params2}, API_URL);
+        List<ExtractableResponse<Response>> givenList = given_목록저장되어있다(new Object[]{params, params2}, API_URL);
 
         // when
         ExtractableResponse<Response> response = 조회한다(API_URL);
@@ -94,9 +92,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역 이름을 수정한다.")
     @Test
-    public void update() {
+    void update() {
         // given
-        ExtractableResponse<Response> givenData = givenData_강남역_저장한다();
+        ExtractableResponse<Response> givenData = given_강남역저장되어있다();
 
         //when
         String uri = givenData.header("Location");
@@ -108,9 +106,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 제거한다.")
     @Test
-    public void delete() {
+    void delete() {
         // given
-        ExtractableResponse<Response> givenData = givenData_강남역_저장한다();
+        ExtractableResponse<Response> givenData = given_강남역저장되어있다();
 
         // when
         String uri = givenData.header("Location");
@@ -120,12 +118,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> givenData_강남역_저장한다() {
-        return givenData_저장한다(params);
-    }
-
-    private ExtractableResponse<Response> givenData_저장한다(Map<String, String> params) {
-        System.out.println("=== " + params);
+    private ExtractableResponse<Response> given_강남역저장되어있다() {
         return 저장한다(params, API_URL);
     }
 }

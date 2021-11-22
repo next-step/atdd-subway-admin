@@ -12,7 +12,7 @@ import nextstep.subway.section.domain.Section;
 @Embeddable
 public class SectionList {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    private List<Section> sections;
+    private final List<Section> sections;
 
     public SectionList() {
         this.sections = new ArrayList<>();
@@ -26,5 +26,9 @@ public class SectionList {
         return this.sections.stream()
             .sorted()
             .collect(Collectors.toList());
+    }
+
+    public boolean contains(Section section) {
+        return this.sections.contains(section);
     }
 }
