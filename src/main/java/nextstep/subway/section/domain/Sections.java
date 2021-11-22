@@ -10,6 +10,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import nextstep.subway.station.domain.Station;
+import org.springframework.util.CollectionUtils;
 
 @Embeddable
 public class Sections {
@@ -31,15 +32,17 @@ public class Sections {
 		return new Sections(new ArrayList<>());
 	}
 
-	public List<Station> toStations() {
-		List<Station> stations = this.values.stream()
-			.map(Section::getUpStation)
-			.collect(toList());
+    public List<Station> toStations() {
+        if (CollectionUtils.isEmpty(this.values)) {
+            return new ArrayList<>();
+        }
 
-		Section lastSection = this.values.get(values.size() - 1);
+        List<Station> stations = this.values.stream()
+            .map(Section::getUpStation)
+            .collect(toList());
 
-		stations.add(lastSection.getDownStation());
-
-		return stations;
-	}
+        Section lastSection = this.values.get(values.size() - 1);
+        stations.add(lastSection.getDownStation());
+        return stations;
+    }
 }

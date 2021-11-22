@@ -38,7 +38,7 @@ public class LineService {
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
         final Line line = readById(id);
-        line.update(lineRequest.toLine());
+        line.update(lineRequest.toLineForUpdate());
         return LineResponse.of(line);
     }
 

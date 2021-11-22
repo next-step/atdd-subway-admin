@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import org.springframework.util.StringUtils;
 
 @Embeddable
 public class LineColor {
@@ -14,11 +15,19 @@ public class LineColor {
     }
 
     private LineColor(String value) {
+        validate(value);
         this.value = value;
     }
 
     public static LineColor from(String value) {
         return new LineColor(value);
+    }
+
+    private void validate(String value) {
+        if (StringUtils.hasText(value)) {
+            return;
+        }
+        throw new IllegalArgumentException("라인 색상은 빈 값일 수 없습니다.");
     }
 
     public String getValue() {
