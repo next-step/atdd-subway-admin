@@ -1,5 +1,9 @@
 package nextstep.subway.line.domain;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -40,6 +44,13 @@ public class Line extends BaseEntity {
     public void addSection(Station upStation, Station downStation, int distance) {
         this.sections.add(new Section(this, upStation, downStation, distance));
     }
+    
+    public List<Station> getStations() {
+        return sections.getSections().stream()
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .distinct()
+                .collect(Collectors.toList());
+    }
 
     public Long getId() {
         return id;
@@ -51,5 +62,9 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+    
+    public Sections getSections() {
+        return sections;
     }
 }

@@ -50,7 +50,8 @@ public class StationService {
     }
     
     
-    private Station findById(Long id) {
+    @Transactional(readOnly = true)
+    public Station findById(Long id) {
         return stationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(id + "에 해당하는 지하철역이 없습니다."));
     }
