@@ -35,7 +35,7 @@ public class Sections {
         Optional<Section> optExistedSection = upBoundSection(section);
         updateWhenConnectInMiddleOfExistedSection(optExistedSection, section);
 
-        validateExistStations(section);
+        validateExistUpStationOrDownStation(section);
 
         this.values.add(section);
     }
@@ -129,7 +129,8 @@ public class Sections {
         return stations;
     }
 
-    private void validateDistanceWhenConnectInExistedSection(Section existedSection, Section section) {
+    private void validateDistanceWhenConnectInExistedSection(Section existedSection,
+        Section section) {
         if (existedSection.getDistance().lessThanOrEqual(section.getDistance())) {
             throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 작아야 합니다");
         }
@@ -141,10 +142,16 @@ public class Sections {
         }
     }
 
-    private void validateExistStations(Section section) {
-        if (!isExistedUpStationAndDownStation(section)) {
-            throw new IllegalArgumentException("상행역과 하행역 둘 다 포함되지 않은 역입니다");
+    private void validateExistUpStationOrDownStation(Section section) {
+        Set<Station> stations = getAllStations();
+        if (isNotExistUpStationOrDownStation(section, stations)) {
+            throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어 있지 않습니다.");
         }
+    }
+
+    private boolean isNotExistUpStationOrDownStation(Section section, Set<Station> stations) {
+        return !(stations.contains(section.getUpStation())
+            || stations.contains(section.getDownStation()));
     }
 
     private boolean isExistedUpStationAndDownStation(Section section) {

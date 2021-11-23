@@ -57,8 +57,8 @@ class SectionsTest {
     void 구역에서_역_추출2() {
         // given - 역을 연결하면 1 -> 2 -> 3- > 4 -> 6 -> 5
         Sections sections = line.getSections();
-        sections.connect(Section.of(line, 3L, 4L, 2));
         sections.connect(Section.of(line, 2L, 3L, 2));
+        sections.connect(Section.of(line, 3L, 4L, 2));
         sections.connect(Section.of(line, 4L, 6L, 2));
         sections.connect(Section.of(line, 6L, 5L, 2));
 
@@ -174,6 +174,6 @@ class SectionsTest {
         assertThatIllegalArgumentException().isThrownBy(
                 () -> sections.connect(Section.of(line, 3L, 4L, 5))
             )
-            .withMessage("상행역과 하행역 둘 다 포함되지 않은 역입니다");
+            .withMessage("상행역과 하행역 둘 중 하나도 포함되어 있지 않습니다.");
     }
 }
