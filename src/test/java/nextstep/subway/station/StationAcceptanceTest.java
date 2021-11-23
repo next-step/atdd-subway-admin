@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
-    void createStation() {
+    public static void createStation() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
@@ -39,6 +39,28 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+    }
+
+    @DisplayName("이름을 입력받아서 지하철역을 생성한다.")
+    @Test
+    public static ExtractableResponse<Response> createStation(String name) {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
+        return response;
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
