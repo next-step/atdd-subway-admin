@@ -1,6 +1,5 @@
 package nextstep.subway.station;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -9,85 +8,22 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.station.StationTestFixture.강남역_요청_데이터;
+import static nextstep.subway.station.StationTestFixture.역삼역_요청_데이터;
+import static nextstep.subway.station.StationTestFixture.지하철_노선_목록_조회_요청;
+import static nextstep.subway.station.StationTestFixture.지하철역_등록되어_있음;
+import static nextstep.subway.station.StationTestFixture.지하철역_생성_요청;
+import static nextstep.subway.station.StationTestFixture.지하철역_제거_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철역 관련 기능")
 class StationAcceptanceTest extends AcceptanceTest {
-
-    public static final String BASE_STATION_URL = "/stations";
-
-    private StationRequest 강남역_요청_데이터() {
-        return new StationRequest("강남역");
-    }
-
-    private StationRequest 역삼역_요청_데이터() {
-        return new StationRequest("역삼역");
-    }
-
-    private ExtractableResponse<Response> 지하철역_생성_요청(StationRequest stationRequest) {
-        return RestAssured.given()
-                .log()
-                .all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(BASE_STATION_URL)
-                .then()
-                .log()
-                .all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
-        return RestAssured.given()
-                .log()
-                .all()
-                .when()
-                .get(BASE_STATION_URL)
-                .then()
-                .log()
-                .all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철역_제거_요청(StationResponse stationResponse) {
-        return RestAssured.given()
-                .log()
-                .all()
-                .when()
-                .delete(BASE_STATION_URL + "/" + stationResponse.getId())
-                .then()
-                .log()
-                .all()
-                .extract();
-    }
-
-    private StationResponse 지하철역_등록되어_있음(StationRequest stationRequest) {
-        return 지하철역_생성_요청(stationRequest)
-                .as(StationResponse.class);
-    }
-
-    private void 지하철역_조회_데이터_확인(ExtractableResponse<Response> response, StationResponse... stationResponses) {
-        List<Long> expectedStationIds = Arrays.stream(stationResponses)
-                .map(StationResponse::getId)
-                .collect(Collectors.toList());
-
-        List<Long> resultLineIds = response.jsonPath()
-                .getList(".", StationResponse.class)
-                .stream()
-                .map(StationResponse::getId)
-                .collect(Collectors.toList());
-
-        assertThat(resultLineIds)
-                .containsAll(expectedStationIds);
-    }
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -151,5 +87,20 @@ class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode())
                 .isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private void 지하철역_조회_데이터_확인(ExtractableResponse<Response> response, StationResponse... stationResponses) {
+        List<Long> expectedStationIds = Arrays.stream(stationResponses)
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+        List<Long> resultLineIds = response.jsonPath()
+                .getList(".", StationResponse.class)
+                .stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+        assertThat(resultLineIds)
+                .containsAll(expectedStationIds);
     }
 }
