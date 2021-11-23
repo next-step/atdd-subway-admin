@@ -24,7 +24,7 @@ public class Section implements Serializable {
     private Station downStationId;
 
     @Embedded
-    private Distance distance = new Distance(0);
+    private Distance distance = new Distance();
 
     public Section(Long upStationId, Long downStationId) {
 
