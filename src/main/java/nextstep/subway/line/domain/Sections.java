@@ -20,9 +20,9 @@ import java.util.Set;
 @Embeddable
 public class Sections {
 
-    public static final String ERROR_MESSAGE_EQUAL_OR_MORE_DISTANCE = "기존 구간보다 길이가 길거나 같습니다.";
-    public static final String ERROR_MESSAGE_DISCONNECTED_SECTION = "연결될 수 없는 구간입니다.";
-    public static final String ERROR_MESSAGE_EXISTED_SECTION = "이미 존재하는 구간입니다.";
+    private static final String ERROR_MESSAGE_EQUAL_OR_MORE_DISTANCE = "기존 구간보다 길이가 길거나 같습니다.";
+    private static final String ERROR_MESSAGE_DISCONNECTED_SECTION = "연결될 수 없는 구간입니다.";
+    private static final String ERROR_MESSAGE_EXISTED_SECTION = "이미 존재하는 구간입니다.";
 
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_line_section"))
