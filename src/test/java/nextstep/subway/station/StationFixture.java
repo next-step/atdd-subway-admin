@@ -50,13 +50,13 @@ public class StationFixture {
                 .extract();
     }
 
-    public static List<Long> ofStationIds(ExtractableResponse<Response> response) {
+    public static List<Long> ofStationResponseIds(ExtractableResponse<Response> response) {
         return response.jsonPath().getList(".", StationResponse.class).stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
     }
 
-    public static StationResponse ofStation(ExtractableResponse<Response> response) {
+    public static StationResponse ofStationResponse(ExtractableResponse<Response> response) {
         return response.as(StationResponse.class);
     }
 }

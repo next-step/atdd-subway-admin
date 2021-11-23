@@ -131,16 +131,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> requestCreateLineWithStation(String upStationName, String downStationName, int distance, String lineName, String colorName) {
-        StationResponse upStation = StationFixture.ofStation(StationFixture.requestCreateStations(upStationName));
-        StationResponse downStation = StationFixture.ofStation(StationFixture.requestCreateStations(downStationName));
+        StationResponse upStation = StationFixture.ofStationResponse(StationFixture.requestCreateStations(upStationName));
+        StationResponse downStation = StationFixture.ofStationResponse(StationFixture.requestCreateStations(downStationName));
         Map<String, String> params = LineFixture.createParams(lineName, colorName, upStation.getId(), downStation.getId(), distance);
         return LineFixture.requestCreateLine(params);
     }
 
 
     private ExtractableResponse<Response> requestUpdateLineWithStation(Long lineId, String upStationName, String downStationName, int distance, String lineName, String colorName) {
-        StationResponse upStation = StationFixture.ofStation(StationFixture.requestCreateStations(upStationName));
-        StationResponse downStation = StationFixture.ofStation(StationFixture.requestCreateStations(downStationName));
+        StationResponse upStation = StationFixture.ofStationResponse(StationFixture.requestCreateStations(upStationName));
+        StationResponse downStation = StationFixture.ofStationResponse(StationFixture.requestCreateStations(downStationName));
         Map<String, String> params = LineFixture.createParams(lineName, colorName, upStation.getId(), downStation.getId(), distance);
         return LineFixture.requestUpdateLine(lineId, params);
     }
