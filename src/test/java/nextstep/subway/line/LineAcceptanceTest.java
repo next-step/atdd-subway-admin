@@ -113,8 +113,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         Map<String, String> params = new HashMap<>();
-        params.put("name", "구분당선");
-        params.put("color", "bg-blue-600");
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
         ExtractableResponse<Response> createResponse1 = 지하철_노선_생성_요청(params);
 
         // when
