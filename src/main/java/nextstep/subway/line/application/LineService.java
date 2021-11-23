@@ -37,7 +37,7 @@ public class LineService {
         Line requestLine = request.toLine();
         requestLine.addSection(
                 stations.stream().filter(s -> s.matchId(request.getUpStationId())).findFirst().orElseThrow(() -> new IllegalArgumentException("")),
-                stations.stream().filter(s -> s.matchId(request.getUpStationId())).findFirst().orElseThrow(() -> new IllegalArgumentException("")),
+                stations.stream().filter(s -> s.matchId(request.getDownStationId())).findFirst().orElseThrow(() -> new IllegalArgumentException("")),
                 request.getDistance()
         );
         Line persistLine = lineRepository.save(requestLine);
