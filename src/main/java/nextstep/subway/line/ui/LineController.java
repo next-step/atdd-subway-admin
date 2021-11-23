@@ -36,7 +36,7 @@ public class LineController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        return ResponseEntity.ok().body(lineService.showAllLines());
+        return ResponseEntity.ok().body(lineService.showAllLinesWithSections());
     }
 
     @GetMapping("{id}")

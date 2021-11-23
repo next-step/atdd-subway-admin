@@ -30,7 +30,6 @@ public class Line extends BaseEntity {
      * TODO :  1) 고아객체 설정에 대해 학습하기
      *         2) 일급컬렉션으로 관리하기
      */
-    @BatchSize(size = 100)
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private final List<Section> sections = new ArrayList<>();
 

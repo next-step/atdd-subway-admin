@@ -27,11 +27,11 @@ public class Section extends BaseEntity {
 
     private int distance;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "STATION_ID")
     private Station station;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "NEXT_STATION_ID")
     private Station nextStation;
 

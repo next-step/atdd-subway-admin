@@ -89,7 +89,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_목록_응답됨(response);
-        지하철_노선_목록_포함됨(response, Arrays.asList(일호선_ID, 이호선_ID,삼호선_ID));
+        지하철_노선_목록_포함됨(response, Arrays.asList(일호선_ID, 이호선_ID, 삼호선_ID));
     }
 
     @DisplayName("지하철 노선을 조회한다.")
