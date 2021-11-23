@@ -63,7 +63,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
       * 상행역부터 하행역 순으로 정렬되어야 함
 
 ### 기능 목록
-  * [ ] 노선 생성 인수테스트 추가
+  * [x] 노선 생성 인수테스트 추가
   * [ ] 노선 생성 기능 변경
   * [ ] 노선 조회 인수테스트 추가
   * [ ] 노선 조회 기능 변경

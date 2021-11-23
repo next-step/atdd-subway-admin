@@ -5,6 +5,8 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationApiRequests;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -37,6 +39,60 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
+        LineApiRequests.지하철_노선_생성_요청(lineRequest);
+
+        // when
+        // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = LineApiRequests.지하철_노선_생성_요청(lineRequest);
+
+        // then
+        // 지하철_노선_생성_실패됨
+        지하철_노선_생성_실패됨(response);
+    }
+
+    @DisplayName("NEW-지하철 노선을 생성한다.")
+    @Test
+    void new_createLine() {
+        // given
+        StationResponse upStation = StationApiRequests.지하철역_생성됨("강남역");
+        StationResponse downStation = StationApiRequests.지하철역_생성됨("잠실역");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
+
+        // when
+        // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = LineApiRequests.지하철_노선_생성_요청(lineRequest);
+
+        // then
+        // 지하철_노선_생성됨
+        지하철_노선_생성됨(response);
+    }
+
+    @DisplayName("NEW-기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
+    @Test
+    void new_createLine2() {
+        // given
+        // 지하철_노선_등록되어_있음
+        StationResponse upStation = StationApiRequests.지하철역_생성됨("강남역");
+        StationResponse downStation = StationApiRequests.지하철역_생성됨("잠실역");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
+        LineApiRequests.지하철_노선_생성_요청(lineRequest);
+
+        // when
+        // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = LineApiRequests.지하철_노선_생성_요청(lineRequest);
+
+        // then
+        // 지하철_노선_생성_실패됨
+        지하철_노선_생성_실패됨(response);
+    }
+
+    @DisplayName("NEW-존재하지 않는 지하철역을 노선에 등록한다")
+    @Test
+    void new_createLine3() {
+        // given
+        // 지하철_노선_등록되어_있음
+        StationResponse upStation = StationApiRequests.지하철역_생성됨("강남역");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", upStation.getId(), 2L, 10);
         LineApiRequests.지하철_노선_생성_요청(lineRequest);
 
         // when
