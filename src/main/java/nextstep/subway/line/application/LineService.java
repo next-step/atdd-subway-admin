@@ -13,12 +13,15 @@ import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
+import nextstep.subway.line.dto.SectionAddRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 
 @Service
 @Transactional(readOnly = true)
 public class LineService {
+    private static final String MESSAGE_ON_UP_STATION_NOT_FOUND = "상행역을 찾을 수 없습니다.";
+    private static final String MESSAGE_ON_DOWN_STATION_NOT_FOUND = "하행역을 찾을 수 없습니다.";
     private static final String MESSAGE_ON_LINE_NOT_FOUND = "노선을 찾을 수 없습니다.";
 
     private final LineRepository lineRepository;
@@ -34,44 +37,64 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineCreateRequest request) {
-        Station upStation = stationRepository.findById(request.getUpStationId())
-            .orElseThrow(() -> new NoSuchElementException("상행역을 찾을 수 없습니다."));
-        Station downStation = stationRepository.findById(request.getDownStationId())
-            .orElseThrow(() -> new NoSuchElementException("하행역을 찾을 수 없습니다."));
-
+        Station upStation = findStationById(request.getUpStationId(), MESSAGE_ON_UP_STATION_NOT_FOUND);
+        Station downStation = findStationById(request.getDownStationId(), MESSAGE_ON_DOWN_STATION_NOT_FOUND);
         Section section = Section.of(upStation, downStation, request.getDistance());
         Line line = lineRepository.save(Line.of(request.getName(), request.getColor(), section));
-        return LineResponse.of(line);
+
+        return LineResponse.of(line, getStationsInOrder(line));
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-            .map(LineResponse::of)
+            .map(line -> LineResponse.of(line, getStationsInOrder(line)))
             .collect(Collectors.toList());
     }
 
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_LINE_NOT_FOUND));
+        Line line = findLineById(id);
+        List<Station> stations = getStationsInOrder(line);
 
-        return LineResponse.of(line);
+        return LineResponse.of(line, stations);
     }
 
     @Transactional
     public void updateLine(Long id, LineUpdateRequest request) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_LINE_NOT_FOUND));
+        Line line = findLineById(id);
 
         line.update(request.getName(), request.getColor());
     }
 
     @Transactional
     public void deleteLineById(Long id) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_LINE_NOT_FOUND));
+        Line line = findLineById(id);
 
         lineRepository.delete(line);
+    }
+
+    @Transactional
+    public void addSection(Long id, SectionAddRequest request) {
+        Line line = findLineById(id);
+        Station upStation = findStationById(request.getUpStationId(), MESSAGE_ON_UP_STATION_NOT_FOUND);
+        Station downStation = findStationById(request.getDownStationId(), MESSAGE_ON_DOWN_STATION_NOT_FOUND);
+        Section section = Section.of(upStation, downStation, request.getDistance());
+        line.addSection(section);
+    }
+
+    private Station findStationById(Long stationId, String messageOnStationNotFound) {
+        return stationRepository.findById(stationId)
+            .orElseThrow(() -> new NoSuchElementException(messageOnStationNotFound));
+    }
+
+    private Line findLineById(Long lineId) {
+        return lineRepository.findById(lineId)
+            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_LINE_NOT_FOUND));
+    }
+
+    private List<Station> getStationsInOrder(Line line) {
+        List<Long> stationIds = line.getStationIdsInOrder();
+        return stationRepository.findAllById(stationIds);
     }
 }

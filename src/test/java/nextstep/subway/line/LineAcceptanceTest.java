@@ -6,7 +6,6 @@ import static nextstep.subway.station.StationFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -176,7 +175,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_찾지_못함(response);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(LineCreateRequest request) {
+    private static ExtractableResponse<Response> 지하철_노선_생성_요청(LineCreateRequest request) {
         return RestAssured.given().log().all()
             .body(request)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -207,7 +206,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(actualIds).isEqualTo(expectIds);
     }
 
-    private LineResponse 지하철_노선_등록되어_있음(LineCreateRequest request) {
+    public static LineResponse 지하철_노선_등록되어_있음(LineCreateRequest request) {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(request);
         return response.jsonPath().getObject(".", LineResponse.class);
     }
@@ -242,7 +241,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(actualLineIds).containsAll(expectedLineIds);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
         return RestAssured.given().log().all()
             .when()
             .get("/lines/{lineId}", id)

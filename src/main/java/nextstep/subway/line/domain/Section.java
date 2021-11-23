@@ -11,27 +11,26 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
 @Entity
 @Table(name = "section")
-public class Section extends BaseEntity {
+public class Section {
 	@Column(name = "id")
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_line"))
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
 	private Line line;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_up_station"))
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_to_up_station"))
 	private Station upStation;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_down_station"))
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_to_down_station"))
 	private Station downStation;
 
 	@Column(name = "distance")
@@ -75,5 +74,29 @@ public class Section extends BaseEntity {
 
 	public Station getDownStation() {
 		return downStation;
+	}
+
+	public int getDistance() {
+		return distance;
+	}
+
+	public boolean isOverlapped(Section section) {
+		return upStation.equals(section.upStation) || downStation.equals(section.downStation);
+	}
+
+	public void divideBy(Section section) {
+		if (section.distance >= distance) {
+			throw new SectionAddFailException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다.");
+		}
+
+		if (upStation.equals(section.upStation)) {
+			upStation = section.downStation;
+		}
+
+		if (downStation.equals(section.downStation)) {
+			downStation = section.upStation;
+		}
+
+		distance = distance - section.getDistance();
 	}
 }
