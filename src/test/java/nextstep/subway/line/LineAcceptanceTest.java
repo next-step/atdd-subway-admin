@@ -4,9 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -30,7 +28,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
-        //LineRequest.of("신분당선");
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
@@ -84,7 +81,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
         LineResponse 신분당선 = 지하철_노선_생성_요청(params).as(LineResponse.class);
-        System.out.println(신분당선.toString());
+
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선.getId());
 
@@ -129,8 +126,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-
-
     private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -138,10 +133,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .get("/lines")
                 .then().log().all()
                 .extract();
-
-        //상황에 따라 get, post 로 동적으로 보낼 방법은 없나??
     }
-
 
     private ExtractableResponse<Response> 지하철_노선_조회_요청(Long lineId) {
         System.out.println("지하철_노선_조회_요청");
