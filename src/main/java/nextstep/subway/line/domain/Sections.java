@@ -1,9 +1,8 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.*;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

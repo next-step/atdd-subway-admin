@@ -1,4 +1,4 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
 import static nextstep.subway.common.ErrorCode.*;
 

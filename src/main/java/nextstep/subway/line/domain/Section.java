@@ -1,4 +1,4 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
 import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.*;
@@ -16,7 +16,6 @@ import javax.persistence.ManyToOne;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.common.ServiceException;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -28,11 +27,11 @@ public class Section extends BaseEntity {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_line_to_up_station_id"))
-    private Station upStationId;
+    private Station upStation;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_line_to_down_station_id"))
-    private Station downStationId;
+    private Station downStation;
 
     @Embedded
     private Distance distance = new Distance();
@@ -54,8 +53,8 @@ public class Section extends BaseEntity {
         if (upStationId.equals(downStationId)) {
             throw new ServiceException(INPUT_INVALID_ERROR, "상행선과 하행선은 동일할 수 없습니다.");
         }
-        this.upStationId = new Station(upStationId);
-        this.downStationId = new Station(downStationId);
+        this.upStation = new Station(upStationId);
+        this.downStation = new Station(downStationId);
     }
 
     public Section(Long upStationId, Long downStationId, Distance distance) {
@@ -75,11 +74,11 @@ public class Section extends BaseEntity {
     }
 
     public Station getUpStationId() {
-        return upStationId;
+        return upStation;
     }
 
     public Station getDownStationId() {
-        return downStationId;
+        return downStation;
     }
 
     public Distance getDistance() {

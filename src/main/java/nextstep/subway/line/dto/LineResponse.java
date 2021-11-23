@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.dto.StationResponse;
 
 public class LineResponse {

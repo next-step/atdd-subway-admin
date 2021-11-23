@@ -4,7 +4,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import nextstep.subway.common.ServiceException;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 public class SectionTest {

@@ -2,17 +2,13 @@ package nextstep.subway.station.exception;
 
 import javax.persistence.EntityNotFoundException;
 
-import nextstep.subway.common.ErrorCode;
-
 public class StationNotFoundException extends EntityNotFoundException {
-    private ErrorCode errorCode;
 
-    public StationNotFoundException(ErrorCode errorCode) {
-        this.errorCode = errorCode;
+    public StationNotFoundException(String message) {
+        super(message);
     }
 
-    public StationNotFoundException(ErrorCode errorCode, String message) {
-        super(message);
-        this.errorCode = errorCode;
+    public StationNotFoundException() {
+        super("지하철역이 존재하지 않습니다.");
     }
 }
