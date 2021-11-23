@@ -23,6 +23,14 @@ public class StationTestFixture {
         return new StationRequest("역삼역");
     }
 
+    public static StationRequest 교대역_요청_데이터() {
+        return new StationRequest("교대역");
+    }
+
+    public static StationRequest 서초역_요청_데이터() {
+        return new StationRequest("서초역");
+    }
+
     public static ExtractableResponse<Response> 지하철역_생성_요청(StationRequest stationRequest) {
         return new RestAssuredBuilder(Method.POST, BASE_STATION_URL)
                 .setContentType(MediaType.APPLICATION_JSON_VALUE)
