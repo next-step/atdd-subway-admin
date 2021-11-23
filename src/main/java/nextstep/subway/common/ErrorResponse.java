@@ -15,4 +15,12 @@ public class ErrorResponse {
         this.errorCode = errorCode;
         this.message = message;
     }
+
+    public ErrorCode getErrorCode() {
+        return errorCode;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }
