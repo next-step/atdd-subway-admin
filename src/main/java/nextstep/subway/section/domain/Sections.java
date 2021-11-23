@@ -41,12 +41,14 @@ public class Sections {
     }
 
     private void validateForConnect(Optional<Section> optExistedSection, Section section) {
+        Set<Station> stations = getAllStations();
+
         if (optExistedSection.isPresent()) {
             Section existedSection = optExistedSection.get();
-            validateAlreadyExistedStations(section);
+            validateAlreadyExistedStations(section, stations);
             validateDistanceWhenConnectInExistedSection(existedSection, section);
         }
-        validateExistUpStationOrDownStation(section);
+        validateExistUpStationOrDownStation(section, stations);
     }
 
     private void updateWhenConnectInMiddleOfExistedSection(Optional<Section> optExistedSection,
@@ -142,14 +144,13 @@ public class Sections {
         }
     }
 
-    private void validateAlreadyExistedStations(Section section) {
-        if (isExistedUpStationAndDownStation(section)) {
+    private void validateAlreadyExistedStations(Section section, Set<Station> stations) {
+        if (isExistedUpStationAndDownStation(section, stations)) {
             throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다");
         }
     }
 
-    private void validateExistUpStationOrDownStation(Section section) {
-        Set<Station> stations = getAllStations();
+    private void validateExistUpStationOrDownStation(Section section, Set<Station> stations) {
         if (isNotExistUpStationOrDownStation(section, stations)) {
             throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어 있지 않습니다.");
         }
@@ -160,8 +161,7 @@ public class Sections {
             || stations.contains(section.getDownStation()));
     }
 
-    private boolean isExistedUpStationAndDownStation(Section section) {
-        Set<Station> stations = getAllStations();
+    private boolean isExistedUpStationAndDownStation(Section section, Set<Station> stations) {
         return stations.contains(section.getUpStation())
             && stations.contains(section.getDownStation());
     }
