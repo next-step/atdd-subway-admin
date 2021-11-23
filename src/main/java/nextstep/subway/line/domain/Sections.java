@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.exception.CannotAddSectionException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -13,10 +14,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 @Embeddable
 public class Sections {
+
+    public static final String ERROR_MESSAGE_EQUAL_OR_MORE_DISTANCE = "기존 구간보다 길이가 길거나 같습니다.";
+    public static final String ERROR_MESSAGE_DISCONNECTED_SECTION = "연결될 수 없는 구간입니다.";
+    public static final String ERROR_MESSAGE_EXISTED_SECTION = "이미 존재하는 구간입니다.";
+
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_line_section"))
     private List<Section> values = new ArrayList<>();
@@ -33,8 +40,15 @@ public class Sections {
         return new Sections(sections);
     }
 
-    public void addSection(Section section) {
-        values.add(section);
+    public void addSection(Section requestSection) {
+        Set<Station> existedStation = findAllStation();
+
+        if (existedStation.isEmpty()) {
+            values.add(requestSection);
+            return;
+        }
+
+        addSectionInExistSections(requestSection, existedStation);
     }
 
     public List<Station> getStations() {
@@ -82,5 +96,108 @@ public class Sections {
             upStation = downToUpStation.get(upStation);
         }
         return upStation;
+    }
+
+    private void addSectionInExistSections(Section requestSection, Set<Station> existedStation) {
+        validateExistOrDisconnectSection(requestSection, existedStation);
+
+        Optional<Station> existUpStation = findStation(requestSection.getUpStation(), existedStation);
+        if (existUpStation.isPresent()) {
+            addSectionByUpStation(requestSection);
+            return;
+        }
+
+        Optional<Station> existDownStation = findStation(requestSection.getDownStation(), existedStation);
+        if (existDownStation.isPresent()) {
+            addSectionByDownStation(requestSection);
+            return;
+        }
+
+        throw new IllegalArgumentException();
+    }
+
+    private void addSectionByUpStation(Section requestSection) {
+        Map<Station, Section> upToDownSections = new HashMap<>();
+        values.forEach(section -> upToDownSections.put(section.getUpStation(), section));
+
+        Section modifiedSection = upToDownSections.get(requestSection.getUpStation());
+
+        if (modifiedSection == null) {
+            values.add(requestSection);
+            return;
+        }
+
+        addSection(requestSection, modifiedSection, requestSection.getDownStation(), modifiedSection.getDownStation());
+    }
+
+    private void addSectionByDownStation(Section requestSection) {
+        Map<Station, Section> downToUpSections = new HashMap<>();
+        values.forEach(section -> downToUpSections.put(section.getDownStation(), section));
+
+        Section modifiedSection = downToUpSections.get(requestSection.getDownStation());
+
+        if (modifiedSection == null) {
+            values.add(requestSection);
+            return;
+        }
+
+        addSection(requestSection, modifiedSection, modifiedSection.getUpStation(), requestSection.getUpStation());
+    }
+
+    private void addSection(Section requestSection,
+                            Section modifiedSection,
+                            Station newUpStation,
+                            Station newDownStation) {
+
+        if (modifiedSection.isEqualOrMoreDistance(requestSection)) {
+            throw new CannotAddSectionException(ERROR_MESSAGE_EQUAL_OR_MORE_DISTANCE);
+        }
+
+        values.remove(modifiedSection);
+
+        int totalDistance = modifiedSection.getDistanceToInt();
+        int diffDistance = totalDistance - requestSection.getDistanceToInt();
+
+        Section newSection = Section.of(newUpStation,
+                newDownStation,
+                diffDistance);
+
+        values.add(newSection);
+        values.add(requestSection);
+    }
+
+    private Set<Station> findAllStation() {
+        Set<Station> existedStation = new HashSet<>();
+
+        values.forEach(section -> {
+            existedStation.add(section.getUpStation());
+            existedStation.add(section.getDownStation());
+        });
+        return existedStation;
+    }
+
+    private void validateExistOrDisconnectSection(Section requestSection, Set<Station> existedStation) {
+        validateExistSection(requestSection, existedStation);
+        validateDisconnectSection(requestSection, existedStation);
+    }
+
+    private void validateExistSection(Section requestSection, Set<Station> existedStation) {
+        if (existedStation.contains(requestSection.getUpStation())
+                && existedStation.contains(requestSection.getDownStation())) {
+            throw new CannotAddSectionException(ERROR_MESSAGE_EXISTED_SECTION);
+        }
+    }
+
+    private void validateDisconnectSection(Section requestSection, Set<Station> existedStation) {
+        if (!existedStation.contains(requestSection.getUpStation())
+                && !existedStation.contains(requestSection.getDownStation())) {
+            throw new CannotAddSectionException(ERROR_MESSAGE_DISCONNECTED_SECTION);
+        }
+    }
+
+    private Optional<Station> findStation(Station upStation, Set<Station> existedStation) {
+        return existedStation.stream()
+                .filter(station -> station.equals(upStation))
+                .findFirst();
     }
 }
