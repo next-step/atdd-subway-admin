@@ -13,6 +13,9 @@ import org.junit.jupiter.api.Test;
 
 public class SectionTest {
 
+    public final static Section SECTION1 = new Section(LineTest.LINE1, StationTest.STATION1,
+        StationTest.STATION2, 100);
+
     @Test
     @DisplayName("Section 생성시 Line,upStation,distance 필수 값 체크")
     void validateNotNull() {
@@ -53,6 +56,7 @@ public class SectionTest {
         // when
         Section actual = Section.lastOf(section);
 
+        // then
         assertAll(
             () -> assertThat(actual.getStation()).isEqualTo(lastStation),
             () -> assertThat(actual.getNextStation()).isNull()
