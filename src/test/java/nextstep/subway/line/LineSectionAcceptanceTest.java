@@ -12,10 +12,10 @@ import org.junit.jupiter.api.Test;
 @DisplayName("지하철 구간 관련 기능")
 public class LineSectionAcceptanceTest extends AcceptanceTest {
 
-    LineResponse shinBunDangLine;
-    StationResponse gangNamStation;
-    StationResponse gwangKyoStation;
-    String lineUri;
+    private LineResponse shinBunDangLine;
+    private StationResponse gangNamStation;
+    private StationResponse gwangKyoStation;
+    private String lineUri;
     @BeforeEach
     public void setUp() {
         super.setUp();

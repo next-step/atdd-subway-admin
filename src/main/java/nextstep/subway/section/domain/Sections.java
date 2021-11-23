@@ -12,10 +12,12 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
 
-    private static final int START_SECTION_INDEX = 0;
-
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
+
+    public int size(){
+        return this.sections.size();
+    }
 
     public List<Station> getStations() {
         return this.sections.stream().

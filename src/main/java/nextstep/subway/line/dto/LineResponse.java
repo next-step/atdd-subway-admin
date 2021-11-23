@@ -28,7 +28,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        List<SectionResponse> sectionResponses = line.getSections().stream()
+        List<SectionResponse> sectionResponses = line.getOrderedSections().stream()
                 .map(SectionResponse::of)
                 .collect(Collectors.toList());
         return new LineResponse(line.getId(), line.getName(), line.getColor(), sectionResponses, line.getCreatedDate(), line.getModifiedDate());
