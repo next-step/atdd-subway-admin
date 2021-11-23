@@ -45,6 +45,9 @@ public class Section extends BaseEntity {
     }
 
     void divideBy(Section section) {
+        if (!isOverlapped(section)) {
+            throw new IllegalArgumentException("section must be overlapped to divide");
+        }
         if (section.getDistance() >= distance) {
             throw new BadRequestException("추가되는 구간의 길이가 기존 역 사이의 길이보다 크거나 같을 수 없습니다.");
         }
@@ -55,6 +58,19 @@ public class Section extends BaseEntity {
             downStation = section.getUpStation();
         }
         distance = distance - section.getDistance();
+    }
+
+    void connectWith(final Section section) {
+        if (!isNextSection(section) && !section.isNextSection(this)) {
+            throw new IllegalArgumentException("section cannot be connected");
+        }
+        if (isNextSection(section)) {
+            upStation = section.getUpStation();
+        }
+        if (section.isNextSection(this)) {
+            downStation = section.getDownStation();
+        }
+        distance = distance + section.getDistance();
     }
 
     List<Station> getStations() {

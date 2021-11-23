@@ -43,6 +43,10 @@ public class Line extends BaseEntity {
         sections.addSection(section);
     }
 
+    public void deleteSection(final Station targetStation) {
+        sections.deleteSection(targetStation);
+    }
+
     public List<Station> computeSortedStations() {
         return sections.computeSortedStations();
     }

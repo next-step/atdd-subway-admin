@@ -14,6 +14,13 @@ import nextstep.subway.exception.NotFoundException;
 public class WebControllerAdvice {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public void handleException(Exception exception) {
+        log.error(exception.getMessage());
+        // 이 부분에서 모니터링 시스템에 에러 전송
+    }
+
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public void handleBadRequest(BadRequestException exception) {

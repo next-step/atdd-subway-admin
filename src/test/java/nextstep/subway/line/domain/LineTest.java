@@ -93,6 +93,54 @@ public class LineTest {
             .hasMessageContaining("추가되는 구간은 기존의 구간과 연결 가능하여야 합니다.");
     }
 
+    @Test
+    void deleteSection() {
+        // given
+        final Line line = lineRepository.save(new Line("1호선", "indigo"));
+        final Station 송내역 = stationRepository.save(new Station("송내역"));
+        final Station 신도림역 = stationRepository.save(new Station("신도림역"));
+        final Station 부천역 = stationRepository.save(new Station("부천역"));
+        line.addSection(new Section(송내역, 부천역, 1));
+        line.addSection(new Section(부천역, 신도림역, 9));
+
+        // when
+        line.deleteSection(부천역);
+
+        // then
+        assertThat(line.computeSortedStations()).containsExactly(송내역, 신도림역);
+    }
+
+    @Test
+    void deleteSectionNotConnected() {
+        // given
+        final Line line = lineRepository.save(new Line("1호선", "indigo"));
+        final Station 송내역 = stationRepository.save(new Station("송내역"));
+        final Station 신도림역 = stationRepository.save(new Station("신도림역"));
+        final Station 부천역 = stationRepository.save(new Station("부천역"));
+        final Station 강남역 = stationRepository.save(new Station("강남역"));
+        line.addSection(new Section(송내역, 부천역, 1));
+        line.addSection(new Section(부천역, 신도림역, 9));
+
+        // when, then
+        assertThatThrownBy(() -> line.deleteSection(강남역))
+            .isInstanceOf(RuntimeException.class)
+            .hasMessageContaining("노선에 등록되어 있지 않은 역은 삭제할 수 없습니다.");
+    }
+
+    @Test
+    void deleteLastSection() {
+        // given
+        final Line line = lineRepository.save(new Line("1호선", "indigo"));
+        final Station 송내역 = stationRepository.save(new Station("송내역"));
+        final Station 신도림역 = stationRepository.save(new Station("신도림역"));
+        line.addSection(new Section(송내역, 신도림역, 10));
+
+        // when, then
+        assertThatThrownBy(() -> line.deleteSection(송내역))
+            .isInstanceOf(RuntimeException.class)
+            .hasMessageContaining("노선의 마지막 구간은 삭제할 수 없습니다.");
+    }
+
     @DisplayName("상행 - 하행 순으로 정렬된 지하철역 목록을 반환")
     @Test
     void computeSortedStations() {
