@@ -40,10 +40,7 @@ public class LineService {
         Station upStation = findStationById(request.getUpStationId());
         Station downStation = findStationById(request.getDownStationId());
 
-        List<Section> sections = saveUpDownSection(request, upStation, downStation);
-
-        Line persistLine = lineRepository.save(request.toLine());
-        persistLine.addSections(sections);
+        Line persistLine = lineRepository.save(saveUpDownSection(request, upStation, downStation, request.toLine()));
 
         return LineResponse.of(persistLine);
     }
@@ -77,6 +74,17 @@ public class LineService {
         lineRepository.delete(line);
     }
 
+    public LineResponse addSections(Long lineId, LineRequest lineRequest) {
+
+        Station upStation = findStationById(lineRequest.getUpStationId());
+        Station downStation = findStationById(lineRequest.getDownStationId());
+        Line line = findById(lineId);
+
+        line = line.addSection(Distance.from(lineRequest.getDistance()), upStation, downStation);
+
+        return LineResponse.of(line);
+    }
+
     private Line findById(Long lineId) {
         return lineRepository.findById(lineId)
             .orElseThrow(() -> new NotFoundException(Messages.NO_LINE.getValues()));
@@ -91,9 +99,9 @@ public class LineService {
         return sectionRepository.save(entity);
     }
 
-    private List<Section> saveUpDownSection(LineRequest request, Station upStation, Station downStation) {
-        Section up = saveSection(Section.ofUpStation(new Distance(request.getDistance()), upStation, downStation));
-        Section down = saveSection(Section.fromDownStation(downStation));
-        return Arrays.asList(up, down);
+    private Line saveUpDownSection(LineRequest request, Station upStation, Station downStation, Line line) {
+        saveSection(Section.ofUpStation(Distance.from(request.getDistance()), upStation, downStation, line));
+        saveSection(Section.fromDownStation(downStation, line));
+        return line;
     }
 }

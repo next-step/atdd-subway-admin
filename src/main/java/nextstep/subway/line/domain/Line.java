@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -11,7 +12,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line extends BaseEntity {
@@ -37,20 +40,13 @@ public class Line extends BaseEntity {
     /**
      * 연관관계 편의 메서드
      *
-     * @param sections
+     * @param section
      */
-    public void addSections(List<Section> sections) {
-        for (Section section: sections) {
-            addSection(section);
-        }
-    }
-
     public void addSection(Section section) {
-        if (this.sections.contains(section)) {
-            return;
-        }
         this.sections.add(section);
-        section.setLine(this);
+        if (!section.equalsLine(this)) {
+            section.setLine(this);
+        }
     }
 
     public void removeSection(Section section) {
@@ -78,4 +74,29 @@ public class Line extends BaseEntity {
         return sections.getSortedList();
     }
 
+    public boolean containsSection(Section section) {
+        return this.sections.contains(section);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Line line = (Line) o;
+        return Objects.equals(id, line.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    public Line addSection(Distance from, Station upStation, Station station) {
+
+        return this;
+    }
 }

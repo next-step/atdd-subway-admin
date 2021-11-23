@@ -11,12 +11,16 @@ public class Distance {
     protected Distance() {
     }
 
-    public Distance(Integer distance) {
+    private Distance(Integer distance) {
         this.distance = distance;
     }
 
     public static Distance createDownDistance() {
         return new Distance(Constants.DOWN_DISTANCE);
+    }
+
+    public static Distance from(Integer distance) {
+        return new Distance(distance);
     }
 
     @Override

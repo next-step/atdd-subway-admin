@@ -3,11 +3,12 @@ package nextstep.subway.section.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.util.Arrays;
+import java.util.List;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,21 @@ public class SectionTest {
     @Autowired
     StationRepository stationRepository;
 
-    @DisplayName("라인 생성시 구간 추가")
+    private Line line;
+
+    @BeforeEach
+    public void setUp() {
+        Station seoulStation = stationRepository.findById(1L).get();
+        Station yongsanStation = stationRepository.findById(2L).get();
+
+        line = lineRepository.save(new Line("1호선", "blue"));
+
+        sectionRepository.save(Section.ofUpStation(Distance.from(TEST_DISTANCE), seoulStation, yongsanStation, line));
+        sectionRepository.save(Section.fromDownStation(yongsanStation, line));
+    }
+
     @Test
+    @DisplayName("라인 생성시 구간 추가")
     void createLineWithSection() {
         Station seoulStation = stationRepository.findById(1L).get();
         Station yongsanStation = stationRepository.findById(2L).get();
@@ -40,11 +54,10 @@ public class SectionTest {
             assertThat(yongsanStation.getName()).isEqualTo("용산역");
         });
 
-        Section upSection = sectionRepository.save(Section.ofUpStation(new Distance(TEST_DISTANCE), seoulStation, yongsanStation));
-        Section downSection = sectionRepository.save(Section.fromDownStation(yongsanStation));
+        Line line = lineRepository.save(new Line("1호선-천안", "blue"));
 
-        Line line = lineRepository.save(new Line("1호선", "blue"));
-        line.addSections(Arrays.asList(upSection, downSection));
+        sectionRepository.save(Section.ofUpStation(Distance.from(TEST_DISTANCE), seoulStation, yongsanStation, line));
+        sectionRepository.save(Section.fromDownStation(yongsanStation, line));
 
         //쿼리 확인
         lineRepository.flush();
@@ -54,5 +67,47 @@ public class SectionTest {
 
     }
 
+    @Test
+    @DisplayName("이미 저장된 1호선(서울역-용산역)에 상행 구간(추가역, 10) 추가")
+    void addUpSection() {
+
+        Station seoulStation = stationRepository.findById(1L).get();
+        Station addStation = stationRepository.findById(3L).get();
+
+        line.addSection(Distance.from(TEST_DISTANCE), addStation, seoulStation);
+
+        assertAddSection(0, addStation);
+    }
+
+    @Test
+    @DisplayName("이미 저장된 1호선(서울역-용산역)에 하행 구간(추가역, 10) 추가")
+    void addDownSection() {
+
+        Station yongsanStation = stationRepository.findById(2L).get();
+        Station addStation = stationRepository.findById(3L).get();
+
+        line.addSection(Distance.from(TEST_DISTANCE), yongsanStation, addStation);
+
+        assertAddSection(2, addStation);
+    }
+
+    @Test
+    @DisplayName("이미 저장된 1호선(서울역-용산역)에 중간 구간(추가역, 5) 추가")
+    void addMiddleSection() {
+        Station seoulStation = stationRepository.findById(1L).get();
+        Station addStation = stationRepository.findById(3L).get();
+
+        line.addSection(Distance.from(TEST_DISTANCE-5), seoulStation, addStation);
+
+        assertAddSection(1, addStation);
+    }
+
+    private void assertAddSection(int assertIndex, Station assertStation) {
+        //쿼리 확인
+        lineRepository.flush();
+
+        List<Section> sortedSections = line.getSortedSections();
+        assertThat(sortedSections.get(assertIndex).getStation().equals(assertStation)).isTrue();
+    }
 
 }
