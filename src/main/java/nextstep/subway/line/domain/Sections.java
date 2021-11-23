@@ -152,12 +152,12 @@ public class Sections {
         }
     }
 
-    public void deleteSection(Station station) {
+    public void deleteSection(Station deletingStation) {
         validateDelete();
         
-        Section deletingSection = findDeletingSection(station);
+        Section deletingSection = findSectionHasStation(deletingStation);
 
-        if (this.isTermanalStaion(station)) {
+        if (this.isTermanalStaion(deletingStation)) {
             this.values.remove(deletingSection);
             return;
         }
@@ -170,7 +170,7 @@ public class Sections {
         this.values.remove(deletingSection);
     }
 
-    private Section findDeletingSection(Station station) {
+    private Section findSectionHasStation(Station station) {
         return this.values.stream()
                             .filter(findSection -> findSection.hasStaion(station))
                             .findFirst()

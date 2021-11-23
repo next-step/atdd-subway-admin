@@ -85,13 +85,12 @@ public class LineService {
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Sections sections = lineRepository.findById(lineId)
-                                            .orElseThrow(() -> new NoSuchElementException("조회되는 라인이 없습니다."))
-                                            .getSections();
+        Line line = lineRepository.findById(lineId)
+                                    .orElseThrow(() -> new NoSuchElementException("조회되는 라인이 없습니다."));
 
         Station deletingStation = stationRepository.findById(stationId)
                                                     .orElseThrow(() -> new NoSuchElementException("조회되는 역이 없습니다."));
 
-        sections.deleteSection(deletingStation);
+        line.deleteStation(deletingStation);
     }
 }

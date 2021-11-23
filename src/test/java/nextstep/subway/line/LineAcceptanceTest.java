@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,19 @@ import io.restassured.response.Response;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+    private StationResponse 대화역;
+    private StationResponse 양재역;
+    private StationResponse 수서역;
+
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+
+        대화역 = StationAcceptanceTest.createStation("대화");
+        양재역 = StationAcceptanceTest.createStation("양재");
+        수서역 = StationAcceptanceTest.createStation("수서");
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -48,8 +62,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithSection() {
         // given
-        StationResponse upStation = StationAcceptanceTest.createStation("대화");
-        StationResponse downStation =  StationAcceptanceTest.createStation("수서");
+        StationResponse upStation = 대화역;
+        StationResponse downStation =  수서역;
 
         // when
         // 지하철_노선_생성_요청
@@ -135,8 +149,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLineWithSection() {
         // given
         // 지하철_노선_등록되어_있음
-        StationResponse upStation = StationAcceptanceTest.createStation("대화");
-        StationResponse downStation =  StationAcceptanceTest.createStation("수서");
+        StationResponse upStation = 대화역;
+        StationResponse downStation = 수서역;
 
         LineResponse redLine = createSubwayLine(new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10));
         createSubwayLine(new LineRequest("2호선", "bg-green-600"));
@@ -210,9 +224,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_hasSectionLine() {
         // given
-        StationResponse upStation = StationAcceptanceTest.createStation("대화");
-        StationResponse downStation =  StationAcceptanceTest.createStation("수서");
-        StationResponse newStation =  StationAcceptanceTest.createStation("양재");
+        StationResponse upStation = 대화역;
+        StationResponse downStation = 수서역;
+        StationResponse newStation = 양재역;
 
         LineResponse orangeLine = createSubwayLine(new LineRequest("3호선", "bg-orange-600", upStation.getId(), downStation.getId(), 300));
 
@@ -232,13 +246,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSection_hasMultiSection_deleteUpStation() {
         // given
-        createMultiSectionLine();
-        
-        List<LineInfoResponse> stationResponses = List.of(requestSearchAllLineInfo().as(LineInfoResponse[].class));
-        Long targetLineId = stationResponses.get(0).getId();
-        Long deletingStationId = stationResponses.get(0).findFirstStationId();
+        LineResponse 삼호선 = createSubwayLine(new LineRequest("삼호선", "bg-orange-600", 대화역.getId(), 수서역.getId(), 300));
 
-        List<StationResponse> expectedStationResponse = List.of(StationResponse.of(new Station("양재")), StationResponse.of(new Station("수서")));
+        createMultiSectionLine(삼호선, 대화역, 양재역, 130);
+
+        Long targetLineId = 삼호선.getId();
+        Long deletingStationId = 대화역.getId();
+
+        List<StationResponse> expectedStationResponse = List.of(양재역, 수서역);
 
         // when
         ExtractableResponse<Response> deleteResposne = requestDeleteSection(targetLineId, deletingStationId);
@@ -256,12 +271,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSection_hasMultiSection_deleteDownStation() {
         // given
-        createMultiSectionLine();
+        LineResponse 삼호선 = createSubwayLine(new LineRequest("삼호선", "bg-orange-600", 대화역.getId(), 수서역.getId(), 300));
+
+        createMultiSectionLine(삼호선, 대화역, 양재역, 130);
 
         List<LineInfoResponse> stationResponses = List.of(requestSearchAllLineInfo().as(LineInfoResponse[].class));
 
-        Long targetLineId = stationResponses.get(0).getId();
-        Long deletingStationId = stationResponses.get(0).findLastStationId();
+        Long targetLineId = 삼호선.getId();
+        Long deletingStationId = 수서역.getId();
 
         // when
         ExtractableResponse<Response> deleteResposne = requestDeleteSection(targetLineId, deletingStationId);
@@ -278,13 +295,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSection_hasMultiSection_deleteMidStation() {
         // given
-        createMultiSectionLine();
+        LineResponse 삼호선 = createSubwayLine(new LineRequest("삼호선", "bg-orange-600", 대화역.getId(), 수서역.getId(), 300));
 
+        createMultiSectionLine(삼호선, 대화역, 양재역, 130);
 
-        List<LineInfoResponse> stationResponses = List.of(requestSearchAllLineInfo().as(LineInfoResponse[].class));
-        
-        Long targetLineId = stationResponses.get(0).getId();
-        Long deletingStationId = stationResponses.get(0).findMidStationId(1);
+        Long targetLineId = 삼호선.getId();
+        Long deletingStationId = 양재역.getId();
 
         // when
         ExtractableResponse<Response> deleteResposne = requestDeleteSection(targetLineId, deletingStationId);
@@ -297,57 +313,37 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-
     @DisplayName("1개의 구간이 등록된 경우 상행 종점역을 제거시 에러를 발생한다.")
     @Test
     void deleteSection_hasOneSection_deleteUpStation() {
         // given
-        createSingleSectionLine();
-
-        List<LineInfoResponse> stationResponses = List.of(requestSearchAllLineInfo().as(LineInfoResponse[].class));
-
-        Long targetLineId = stationResponses.get(0).getId();
-        Long deletingStationId = stationResponses.get(0).findFirstStationId();
+        LineResponse 삼호선 = createSubwayLine(new LineRequest("삼호선", "bg-orange-600", 대화역.getId(), 수서역.getId(), 300));
 
         // when
         // then
-        Assertions.assertThat(requestDeleteSection(targetLineId, deletingStationId).statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        Assertions.assertThat(requestDeleteSection(삼호선.getId(), 대화역.getId()).statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     @DisplayName("1개의 구간이 등록된 경우 하행 종점역을 제거시 에러를 발생한다.")
     @Test
     void deleteSection_hasOneSection_deleteDownStation() {
         // given
-        createSingleSectionLine();
-
-        List<LineInfoResponse> stationResponses = List.of(requestSearchAllLineInfo().as(LineInfoResponse[].class));
-
-        Long targetLineId = stationResponses.get(0).getId();
-        Long deletingStationId = stationResponses.get(0).findLastStationId();
+        LineResponse 삼호선 = createSubwayLine(new LineRequest("삼호선", "bg-orange-600", 대화역.getId(), 수서역.getId(), 300));
 
         // when
         // then
-        Assertions.assertThat(requestDeleteSection(targetLineId, deletingStationId).statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        Assertions.assertThat(requestDeleteSection(삼호선.getId(), 수서역.getId()).statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    private void createSingleSectionLine() {
-        StationResponse upStation = StationAcceptanceTest.createStation("대화");
-        StationResponse downStation =  StationAcceptanceTest.createStation("수서");
-
-        LineResponse redLine = createSubwayLine(new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10));
+    private void createSingleSectionLine(StationResponse upStation, StationResponse downStation, int distance) {
+        LineResponse redLine = createSubwayLine(new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), distance));
     }
 
-    private void createMultiSectionLine() {
-        StationResponse upStation = StationAcceptanceTest.createStation("대화");
-        StationResponse newStation = StationAcceptanceTest.createStation("양재");
-        StationResponse downStation = StationAcceptanceTest.createStation("수서");
-
-        LineResponse orangeLine = createSubwayLine(new LineRequest("3호선", "bg-orange-600", upStation.getId(), downStation.getId(), 300));
-
-        SectionRequest sectionRequest = new SectionRequest(upStation.getId(), newStation.getId(), 130);
+    private void createMultiSectionLine(LineResponse line, StationResponse newUpStation, StationResponse newDownStation, int distance) {
+        SectionRequest sectionRequest = new SectionRequest(newUpStation.getId(), newDownStation.getId(), distance);
 
         // when
-        ExtractableResponse<Response> response = requestAddSection(orangeLine.getId(), sectionRequest);
+        ExtractableResponse<Response> response = requestAddSection(line.getId(), sectionRequest);
     }
     private LineResponse createSubwayLine(LineRequest lineRequest) {
         ExtractableResponse<Response> response = requestCreateLine(lineRequest);
