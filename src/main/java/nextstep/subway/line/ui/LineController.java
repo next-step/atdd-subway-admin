@@ -18,19 +18,14 @@ import java.util.Objects;
 @RequestMapping("lines")
 public class LineController {
     private final LineService lineService;
-    private final StationService stationService;
 
-    public LineController(LineService lineService, StationService stationService) {
+    public LineController(LineService lineService) {
         this.lineService = lineService;
-        this.stationService = stationService;
     }
 
     @PostMapping
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-        checkStationIds(lineRequest);
-        final Station upStation = stationService.findByStationId(lineRequest.getUpStationId());
-        final Station downStation = stationService.findByStationId(lineRequest.getDownStationId());
-        final LineResponse line = lineService.saveLine(lineRequest, upStation, downStation);
+        final LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
@@ -54,11 +49,5 @@ public class LineController {
     public ResponseEntity updateLine(@PathVariable Long id) {
         lineService.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    private void checkStationIds(LineRequest lineRequest) {
-        if (Objects.equals(lineRequest.getUpStationId(), lineRequest.getDownStationId())) {
-            throw new DuplicateParameterException("상행, 하행역은 중복될 수 없습니다.");
-        }
     }
 }
