@@ -45,8 +45,8 @@ public class LineRequest {
         return distance;
     }
 
-    public boolean isSameName(Line persistLine) {
-        return name.equals(persistLine.getName());
+    public boolean isSameName(String lineName) {
+        return name.equals(lineName);
     }
 
     public Line toLine() {

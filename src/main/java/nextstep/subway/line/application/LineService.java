@@ -55,7 +55,7 @@ public class LineService {
         Line persistLine = lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundEntityException(NOT_FOUND_ENTITY_MESSAGE));
 
-        if (!lineRequest.isSameName(persistLine)) {
+        if (!lineRequest.isSameName(persistLine.getName())) {
             validateUniqueName(lineRequest);
         }
 
