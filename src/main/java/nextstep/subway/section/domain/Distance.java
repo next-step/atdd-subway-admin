@@ -1,9 +1,10 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.section.domain;
 
 import static nextstep.subway.common.ErrorCode.*;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 import nextstep.subway.common.ServiceException;
@@ -11,6 +12,7 @@ import nextstep.subway.common.ServiceException;
 @Embeddable
 public class Distance implements Serializable {
 
+    @Column
     private int distance = 0;
 
     public Distance(int distance) {
@@ -21,5 +23,9 @@ public class Distance implements Serializable {
     }
 
     protected Distance() {
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }

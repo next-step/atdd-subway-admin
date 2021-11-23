@@ -3,6 +3,9 @@ package nextstep.subway.line.domain;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import nextstep.subway.common.ServiceException;
+import nextstep.subway.section.domain.Distance;
+
 class DistanceTest {
 
     @Test
@@ -10,7 +13,7 @@ class DistanceTest {
         // then
         Assertions.assertThatThrownBy(() -> {
                       Distance distance = new Distance(-1);
-                  }).isInstanceOf(IllegalArgumentException.class)
+                  }).isInstanceOf(ServiceException.class)
                   .hasMessage("구간의 거리가 0 또는 0보다 작을 수 없습니다.");
     }
 }

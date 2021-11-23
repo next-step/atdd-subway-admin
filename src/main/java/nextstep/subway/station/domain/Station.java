@@ -11,13 +11,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.DynamicUpdate;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 
 @Entity
-@DynamicUpdate
+@BatchSize(size = 5)
 public class Station extends BaseEntity implements Comparable<Station> {
 
     @Id
@@ -26,10 +27,6 @@ public class Station extends BaseEntity implements Comparable<Station> {
 
     @Column(unique = true)
     private String name;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_station_to_line"))
-    private Line line;
 
     public Station(String name) {
         this.name = name;
@@ -47,13 +44,8 @@ public class Station extends BaseEntity implements Comparable<Station> {
     protected Station() {
     }
 
-
     public String getName() {
         return name;
-    }
-
-    public void setLine(Line saveLine) {
-        this.line = saveLine;
     }
 
     public Long getId() {
