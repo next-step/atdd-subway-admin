@@ -63,6 +63,14 @@ public class Section {
         return deleted;
     }
 
+    public void nextStationUpdate(Station station) {
+        this.nextStation = station;
+    }
+
+    public void stationUpdate(Station station) {
+        this.station = station;
+    }
+
     public Station getStation() {
         return station;
     }

@@ -20,8 +20,14 @@ public class Sections {
     }
 
     public void add(Section section) {
-        if (sections.isEmpty()) {
-            sections.add(Section.lastOf(section));
+        Optional<Section> changeSection = sections.stream()
+            .filter(it -> it.getNextStation() == section.getNextStation())
+            .findFirst();
+
+        changeSection.ifPresent(value -> value.nextStationUpdate(section.getStation()));
+
+        if (!changeSection.isPresent()) {
+            addLastSection(section);
         }
         sections.add(section);
     }
@@ -33,6 +39,7 @@ public class Sections {
         while (nextSection.isPresent()) {
             Section section = nextSection.get();
             result.add(section.getStation());
+
             nextSection = sections.stream()
                 .filter(it -> section.getStation().equals(it.getNextStation()))
                 .findFirst();
@@ -44,6 +51,16 @@ public class Sections {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    private void addLastSection(Section section) {
+        Optional<Section> lastSection = getLastSection();
+        if (lastSection.isPresent()) {
+            lastSection.get().stationUpdate(section.getNextStation());
+            return;
+        }
+
+        sections.add(Section.lastOf(section));
     }
 
     private Optional<Section> getLastSection() {
