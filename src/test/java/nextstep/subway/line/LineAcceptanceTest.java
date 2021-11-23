@@ -27,13 +27,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         //given
-        LineRequest 화곡 = 지하철_노선_정보("화곡역", "purple");
+        LineRequest 화곡역 = 지하철_노선_정보("화곡", "purple");
 
         // when
-        ExtractableResponse<Response> 화곡역 = 지하철_노선_생성_요청(화곡);
+        ExtractableResponse<Response> 노선_생성_응답 = 지하철_노선_생성_요청(화곡역);
 
         // then
-        지하철_노선_생성됨(화곡역);
+        지하철_노선_생성됨(노선_생성_응답);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -41,14 +41,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest 화곡 = 지하철_노선_정보("화곡", "purple");
-        ExtractableResponse<Response> 화곡역 = 지하철_노선_생성_요청(화곡);
+        LineRequest 화곡역 = 지하철_노선_정보("화곡", "purple");
+        ExtractableResponse<Response> 화곡역_생성_응답 = 지하철_노선_생성_요청(화곡역);
 
         // when
-        ExtractableResponse<Response> 응답 = 지하철_노선_생성_요청(화곡);
+        ExtractableResponse<Response> 중복_결과_응답 = 지하철_노선_생성_요청(화곡역);
 
         // then
-        지하철_노선_생성_실패됨(응답);
+        지하철_노선_생성_실패됨(중복_결과_응답);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -56,18 +56,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest 화곡 = 지하철_노선_정보("화곡", "purple");
-        ExtractableResponse<Response> 화곡역 = 지하철_노선_생성_요청(화곡);
+        LineRequest 화곡역 = 지하철_노선_정보("화곡", "purple");
+        ExtractableResponse<Response> 화곡역_생성_응답 = 지하철_노선_생성_요청(화곡역);
         // 지하철_노선_등록되어_있음
-        LineRequest 사당 = 지하철_노선_정보("사당", "blue");
-        ExtractableResponse<Response> 사당역 = 지하철_노선_생성_요청(사당);
+        LineRequest 사당역 = 지하철_노선_정보("사당", "blue");
+        ExtractableResponse<Response> 사당역_생성_응답 = 지하철_노선_생성_요청(사당역);
 
         // when
-        ExtractableResponse<Response> 지하철목록 = 지하철_노선_목록_조회();
+        ExtractableResponse<Response> 노선_목록_응답 = 지하철_노선_목록_조회();
 
         // then
-        지하철_노선_응답됨(지하철목록);
-        지하철_노선_목록_포함됨(지하철목록, 화곡역, 사당역);
+        지하철_노선_응답됨(노선_목록_응답);
+        지하철_노선_목록_포함됨(노선_목록_응답, 화곡역_생성_응답, 사당역_생성_응답);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -75,14 +75,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest 화곡 = 지하철_노선_정보("화곡", "purple");
-        ExtractableResponse<Response> 화곡역 = 지하철_노선_생성_요청(화곡);
+        LineRequest 화곡역 = 지하철_노선_정보("화곡", "purple");
+        ExtractableResponse<Response> 화곡역_생성_응답 = 지하철_노선_생성_요청(화곡역);
 
         // when
-        ExtractableResponse<Response> 응답 = 지하철_노선_조회_요청(화곡역);
+        ExtractableResponse<Response> 노선_조회_응답 = 지하철_노선_조회_요청(화곡역_생성_응답);
 
         // then
-        지하철_노선_응답됨(응답);
+        지하철_노선_응답됨(노선_조회_응답);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -90,15 +90,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest 화곡 = 지하철_노선_정보("화곡", "purple");
-        ExtractableResponse<Response> 화곡역 = 지하철_노선_생성_요청(화곡);
-        LineRequest 까치산 = 지하철_노선_정보("까치산", "purple");
+        LineRequest 화곡역 = 지하철_노선_정보("화곡", "purple");
+        ExtractableResponse<Response> 화곡역_생성_응답 = 지하철_노선_생성_요청(화곡역);
+        LineRequest 까치산역 = 지하철_노선_정보("까치산", "purple");
 
         // when
-        ExtractableResponse<Response> 수정 = 지하철_노선_수정_요청(화곡역, 까치산);
+        ExtractableResponse<Response> 노선_수정_응답 = 지하철_노선_수정_요청(화곡역_생성_응답, 까치산역);
 
         // then
-        지하철_노선_응답됨(수정);
+        지하철_노선_응답됨(노선_수정_응답);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -106,14 +106,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest 화곡 = 지하철_노선_정보("화곡", "purple");
-        ExtractableResponse<Response> 화곡역 = 지하철_노선_생성_요청(화곡);
+        LineRequest 화곡역 = 지하철_노선_정보("화곡", "purple");
+        ExtractableResponse<Response> 화곡역_생성_응답 = 지하철_노선_생성_요청(화곡역);
 
         // when
-        ExtractableResponse<Response> 삭제 = 지하철_노선_제거_요청(화곡역);
+        ExtractableResponse<Response> 노선_제거_응답 = 지하철_노선_제거_요청(화곡역_생성_응답);
 
         // then
-        지하철_노선_삭제됨(삭제);
+        지하철_노선_삭제됨(노선_제거_응답);
     }
 
     private LineRequest 지하철_노선_정보(String name, String color) {
