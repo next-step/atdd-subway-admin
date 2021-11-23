@@ -227,4 +227,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private void 지하철_노선_삭제_실패(ExtractableResponse<Response> response) {
         요청_결과_검증(response, HttpStatus.BAD_REQUEST);
     }
+
 }

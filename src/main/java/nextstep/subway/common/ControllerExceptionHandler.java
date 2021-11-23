@@ -1,7 +1,6 @@
 package nextstep.subway.common;
 
-import nextstep.subway.exception.NotFoundLineException;
-import nextstep.subway.exception.NotFoundStationException;
+import nextstep.subway.exception.*;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,8 +12,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {
             ConstraintViolationException.class
-            , NotFoundLineException.class
-            , NotFoundStationException.class})
+            , BadRequestException.class})
     protected ResponseEntity<Void> handleConflict(RuntimeException ex, WebRequest request) {
         return ResponseEntity.badRequest().build();
     }

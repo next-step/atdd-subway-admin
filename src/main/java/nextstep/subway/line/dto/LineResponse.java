@@ -13,24 +13,34 @@ public class LineResponse {
     private String name;
     private String color;
     private List<StationResponse> stations;
+    private int totalDistance;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
     private LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, StationResponses stations, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public LineResponse(Long id, String name, String color, StationResponses stations, int totalDistance, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.stations = stations.getStationResponses();
+        this.totalDistance = totalDistance;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
     }
 
     public static LineResponse of(final Line line) {
         StationResponses stationResponses = StationResponses.ofByLineSections(line.getSections());
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses, line.getCreatedDate(), line.getModifiedDate());
+        return new LineResponse(
+                line.getId()
+                , line.getName()
+                , line.getColor()
+                , stationResponses
+                , line.totalDistance()
+                , line.getCreatedDate()
+                , line.getModifiedDate()
+        );
     }
 
     public Long getId() {
@@ -47,6 +57,10 @@ public class LineResponse {
 
     public List<StationResponse> getStations() {
         return stations;
+    }
+
+    public int getTotalDistance() {
+        return totalDistance;
     }
 
     public LocalDateTime getCreatedDate() {

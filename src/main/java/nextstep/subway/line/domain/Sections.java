@@ -1,6 +1,8 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.exception.NotFoundStationException;
+import nextstep.subway.exception.NotIncludeOneStationException;
+import nextstep.subway.exception.SameSectionStationException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.Stations;
 
@@ -21,8 +23,39 @@ public class Sections {
         sections = new ArrayList<>();
     }
 
-    public void add(Section section) {
-        sections.add(section);
+    public void add(Section nonPersistSection) {
+        if (!sections.isEmpty()) {
+            validateSection(nonPersistSection);
+            calculateBetweenStation(nonPersistSection);
+        }
+
+        sections.add(nonPersistSection);
+    }
+
+    private void calculateBetweenStation(Section nonPersistSection) {
+        sections.stream()
+                .filter(section -> section.isIncludeOneStation(nonPersistSection))
+                .findAny()
+                .ifPresent(section -> section.reArrangeSection(nonPersistSection));
+    }
+
+    private void validateSection(final Section nonPersistSection) {
+        boolean isSameUpStation = getStations().isMatch(nonPersistSection.getUpStation());
+        boolean isSameDownStation = getStations().isMatch(nonPersistSection.getDownStation());
+        validateSameSectionStation(isSameUpStation, isSameDownStation);
+        notIncludeOneStation(isSameUpStation, isSameDownStation);
+    }
+
+    private void notIncludeOneStation(final boolean isSameUpStation, final boolean isSameDownStation) {
+        if (!isSameUpStation && !isSameDownStation) {
+            throw new NotIncludeOneStationException();
+        }
+    }
+
+    private void validateSameSectionStation(final boolean isSameUpStation, final boolean isSameDownStation) {
+        if (isSameUpStation && isSameDownStation) {
+            throw new SameSectionStationException();
+        }
     }
 
     public Station findFirstUpStation() {
@@ -46,9 +79,9 @@ public class Sections {
         return new Stations(sectionStationList);
     }
 
-    private List<Station> getSectionStationList(Station station){
+    private List<Station> getSectionStationList(Station station) {
         List<Station> stations = new ArrayList<>();
-        while(!Objects.isNull(station)) {
+        while (!Objects.isNull(station)) {
             stations.add(station);
             Section nextSection = findNextSection(station);
             station = nextSection.getDownStation();
@@ -65,6 +98,12 @@ public class Sections {
 
     public List<Section> getSections() {
         return new ArrayList<>(sections);
+    }
+
+    public int sumDistance() {
+        return sections.stream()
+                .mapToInt(Section::getDistance)
+                .sum();
     }
 
     @Override

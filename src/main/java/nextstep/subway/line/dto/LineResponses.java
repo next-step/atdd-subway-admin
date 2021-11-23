@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class LineResponses {
     private final List<LineResponse> lineResponses;
 
-    private LineResponses(){
+    private LineResponses() {
         lineResponses = new ArrayList<>();
     }
 

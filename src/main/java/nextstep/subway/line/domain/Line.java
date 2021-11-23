@@ -32,13 +32,17 @@ public class Line extends BaseEntity {
         return new Line(lineRequest.getName(), lineRequest.getColor());
     }
 
-    public void addSection(Section section){
+    public void addSection(Section section) {
         sections.add(section);
     }
 
     public void update(final Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public int totalDistance() {
+        return sections.sumDistance();
     }
 
     public Long getId() {

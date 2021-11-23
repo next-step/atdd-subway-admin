@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.exception.DistanceOverException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -51,15 +52,51 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public boolean isEqualsUpStation(Station downStation) {
-        return this.getUpStation()
-                .equals(downStation);
+    public int getDistance() {
+        return distance;
+    }
+
+    public boolean isEqualsUpStation(final Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isEqualsDownStation(final Station station) {
+        return downStation.equals(station);
+    }
+
+
+    public boolean isIncludeOneStation(final Section nonPersistSection) {
+        return isEqualsUpStation(nonPersistSection.upStation)
+                || isEqualsDownStation(nonPersistSection.downStation);
+    }
+
+    public void reArrangeSection(final Section nonPersistSection) {
+        if (distance <= nonPersistSection.distance) {
+            throw new DistanceOverException();
+        }
+
+        upStationToDownStation(nonPersistSection);
+        downStationToUpStation(nonPersistSection);
+
+        distance -= nonPersistSection.distance;
+    }
+
+    private void downStationToUpStation(Section nonPersistSection) {
+        if (isEqualsDownStation(nonPersistSection.downStation)) {
+            downStation = nonPersistSection.upStation;
+        }
+    }
+
+    private void upStationToDownStation(Section nonPersistSection) {
+        if (isEqualsUpStation(nonPersistSection.upStation)) {
+            upStation = nonPersistSection.downStation;
+        }
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Section)) return false;
         Section section = (Section) o;
         return distance == section.distance
                 && Objects.equals(id, section.id)
