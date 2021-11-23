@@ -33,7 +33,7 @@ public class Section {
 
     public Section(Line line, Station station, int distance) {
         changeLine(line);
-        changeStation(station);
+        this.station = station;
         this.distance = distance;
     }
 
@@ -55,22 +55,6 @@ public class Section {
         }
 
         this.line = line;
-    }
-
-    public void changeStation(Station station) {
-        if (!Objects.isNull(this.station)) {
-            this.station.getSections().remove(this);
-        }
-
-        addStation(station);
-    }
-
-    public void addStation(Station station) {
-        if (!Objects.isNull(station)) {
-            station.getSections().add(this);
-        }
-
-        this.station = station;
     }
 
     public Long getId() {

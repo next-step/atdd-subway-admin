@@ -16,9 +16,6 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "station", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
-
     public Station() {
     }
 
@@ -32,9 +29,5 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
-    }
-
-    public List<Section> getSections() {
-        return sections;
     }
 }
