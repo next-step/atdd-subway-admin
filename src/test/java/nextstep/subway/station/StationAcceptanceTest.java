@@ -20,7 +20,8 @@ import org.springframework.http.MediaType;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    private static final String path = "/stations";
+    private static final String PATH = "/stations";
+
     private StationRequest request1;
     private StationRequest request2;
 
@@ -82,7 +83,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철_역_삭제됨(response);
     }
 
-    private long 지하철_역_등록되어_있음(StationRequest request) {
+    public static long 지하철_역_등록되어_있음(StationRequest request) {
         ExtractableResponse<Response> response = 지하철_역_생성(request);
         return response.jsonPath().getLong("id");
     }
@@ -96,12 +97,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    private ExtractableResponse<Response> 지하철_역_생성(StationRequest request) {
+    private static ExtractableResponse<Response> 지하철_역_생성(StationRequest request) {
         return RestAssured.given().log().all()
             .body(request)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .post(path)
+            .post(PATH)
             .then().log().all()
             .extract();
     }
@@ -117,7 +118,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> 지하철_역_목록_조회() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
-            .get(path)
+            .get(PATH)
             .then().log().all()
             .extract();
         return response;
@@ -130,7 +131,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> 지하철_역_제거(long stationId) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
-            .delete(path + String.format("/%d", stationId))
+            .delete(PATH + String.format("/%d", stationId))
             .then().log().all()
             .extract();
         return response;

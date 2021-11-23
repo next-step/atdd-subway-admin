@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,17 +21,28 @@ import org.springframework.http.MediaType;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final String path = "/lines";
+    private static final String PATH = "/lines";
+    private static final int DEFAULT_DISTANCE = 10;
 
     private LineRequest request1;
     private LineRequest request2;
+    StationRequest stationRequest1;
+    StationRequest stationRequest2;
+    private Long upStationId;
+    private Long downStationId;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
 
-        request1 = new LineRequest("신분당선", "bg-red-600");
-        request2 = new LineRequest("2호선", "bg-green-600");
+        stationRequest1 = new StationRequest("판교역");
+        stationRequest2 = new StationRequest("정자역");
+
+        upStationId = StationAcceptanceTest.지하철_역_등록되어_있음(stationRequest1);
+        downStationId = StationAcceptanceTest.지하철_역_등록되어_있음(stationRequest2);
+
+        request1 = new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, DEFAULT_DISTANCE);
+        request2 = new LineRequest("2호선", "bg-green-600", upStationId, downStationId, DEFAULT_DISTANCE);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -37,7 +50,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 지하철_노선_생성(request1, path);
+        ExtractableResponse<Response> response = 지하철_노선_생성(request1, PATH);
 
         // then
         // 지하철_노선_생성됨
@@ -53,7 +66,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 지하철_노선_생성(request1, path);
+        ExtractableResponse<Response> response = 지하철_노선_생성(request1, PATH);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -71,7 +84,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = 지하철_노선_조회(path);
+        ExtractableResponse<Response> response = 지하철_노선_조회(PATH);
 
         // then
         // 지하철_노선_목록_응답됨
@@ -190,7 +203,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(String location) {
-        LineRequest modifyRequest = new LineRequest("구분당선", "bg-red-600");
+        LineRequest modifyRequest = new LineRequest("구분당선", "bg-red-600", upStationId, downStationId, DEFAULT_DISTANCE);
         return 지하철_노선_수정(modifyRequest, location);
     }
 
@@ -223,7 +236,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private String 지하철_노선_등록되어_있음(LineRequest request) {
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성(request, path);
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성(request, PATH);
         return createResponse.header("Location");
     }
 
