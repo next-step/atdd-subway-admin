@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -34,17 +35,21 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.getOne(id);
+        Line line = getLine(id);
         return LineResponse.of(line);
     }
 
     public LineResponse updateLine(LineRequest lineRequest, Long id) {
-        Line line = lineRepository.getOne(id);
+        Line line = getLine(id);
         line.update(lineRequest.toLine());
         return LineResponse.of(line);
     }
 
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    private Line getLine(Long id) {
+        return lineRepository.findById(id).orElseThrow(BadRequestException::new);
     }
 }
