@@ -193,7 +193,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             지하철_노선_응답이_실패한다(response);
         }
 
-        @DisplayName("역이 포함된 지하철 노선을 조회한다.")
+        @DisplayName("상행선 하행선 순으로 정렬된 역들이 포함된 지하철 노선을 조회한다.")
         @Test
         void getLineWithSection() {
             // given
@@ -206,7 +206,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
             // then
             지하철_노선을_응답한다(response);
-            역이_포함된_지하철_노선을_응답한다(response, 강남역, 광교역);
+            상행선_하행선_순으로_정렬된_역을_포함한_지하철_노선을_응답한다(response, 강남역, 광교역);
         }
     }
 
@@ -349,7 +349,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    private void 역이_포함된_지하철_노선을_응답한다(ExtractableResponse<Response> response, StationResponse ... stations) {
+    private void 상행선_하행선_순으로_정렬된_역을_포함한_지하철_노선을_응답한다(ExtractableResponse<Response> response, StationResponse ... stations) {
         Long[] expectedStationIds = Stream.of(stations).map(StationResponse::getId).toArray(Long[]::new);
         LineResponse result = response.jsonPath().getObject(".", LineResponse.class);
         assertThat(result.getStations()).hasSize(stations.length)
