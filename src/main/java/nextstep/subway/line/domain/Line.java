@@ -1,12 +1,8 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.entity.BaseEntity;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.common.exception.StationNotFoundException;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -47,14 +43,31 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
+        //존재하는지
+        sections.stream()
+                .filter(it -> it.getStation().equals(section.getStation()))
+                .findFirst()
+                .ifPresent(it -> it.updateStation(section.getNextStation(), section.getDistance()));
+
         this.sections.add(section);
         section.addLine(this);
+        System.out.println("firststation ::" + findFirstStation());
     }
 
-    public List<Station> getStations() {
-        List<Station> stations = sections.stream().map(Section::getStation).collect(Collectors.toList());
-        stations.add(sections.get(sections.size() - 1).getNextStation());
-        return stations;
+    private List<Station> getStations() {
+        return sections.stream().map(Section::getStation).collect(Collectors.toList());
+    }
+
+    private List<Station> getNextStations() {
+        return sections.stream().map(Section::getNextStation).collect(Collectors.toList());
+    }
+
+    private Station findFirstStation() {
+        return sections.stream()
+                .filter(section -> !getNextStations().contains(section.getStation()))
+                .findFirst()
+                .orElseThrow(StationNotFoundException::new)
+                .getStation();
     }
 
     public Long getId() {

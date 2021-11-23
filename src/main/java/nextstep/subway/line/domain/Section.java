@@ -1,4 +1,4 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
 import nextstep.subway.common.entity.BaseEntity;
 import nextstep.subway.line.domain.Line;
@@ -36,7 +36,6 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "LINE_ID")
     private Line line;
 
-
     protected Section() {
     }
 
@@ -44,6 +43,11 @@ public class Section extends BaseEntity {
         this.station = station;
         this.nextStation = nextStation;
         this.distance = distance.intValue();
+    }
+
+    public void updateStation(Station station, int distance) {
+        this.station = station;
+        this.distance -= distance;
     }
 
     public void addLine(Line line) {
@@ -68,6 +72,4 @@ public class Section extends BaseEntity {
     public Line getLine() {
         return line;
     }
-
-
 }

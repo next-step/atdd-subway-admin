@@ -6,8 +6,11 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -20,7 +23,7 @@ import java.util.stream.Collectors;
 import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-
+//TODO : 테스트 분리할 것
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
     private static final String BASE_URI = "lines";
@@ -42,6 +45,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private static final int 거리_5 = 5;
     private static final int 거리_100 = 100;
 
+    @Disabled
     @BeforeEach
     void setUpLine() {
         //노선 테스트 용 데이터
@@ -151,6 +155,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제됨(response);
     }
 
+    @DisplayName("역 사이에 새로운 역을 등록한다")
+    @Test
+    void createSection() {
+        SectionRequest request = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_5);
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .when()
+                .post(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
+                .then().log().all().extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        LineResponse lineResponse = responseLine(response);
+        assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(최초_상행종점역_ID, 사이_추가_역_ID, 최초_하행종점역_ID);
+    }
+
+
+    @Test
+    void asdf() {
+        List<Station> stationList = Arrays.asList(new Station("강남역"),new Station("강남역2"),new Station("강남역3"));
+        List<Station> stationList2 = Arrays.asList(new Station("강남역"),new Station("강남역2"));
+
+
+        System.out.println(1);
+    }
     private ExtractableResponse<Response> 지하철_노선_제거_요청(Long id) {
         return RestAssured.given().log().all()
                 .when()

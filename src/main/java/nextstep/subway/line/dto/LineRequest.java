@@ -1,13 +1,13 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.station.domain.Station;
+
+import java.util.Objects;
 
 /**
  *  TODO : 일급 컬렉션 관련 수정하기
  */
-public class LineRequest {
+public class LineRequest implements BaseRequest {
     private String name;
 
     private String color;
@@ -31,6 +31,11 @@ public class LineRequest {
 
     public static LineRequest of(String name, String color, Long upStationId, Long downStationId, int distance) {
         return new LineRequest(name, color, upStationId, downStationId, distance);
+    }
+
+    @Override
+    public boolean hasDuplicateStations() {
+        return Objects.equals(upStationId, downStationId);
     }
 
     public String getName() {

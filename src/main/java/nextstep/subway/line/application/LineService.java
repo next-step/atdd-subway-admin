@@ -5,10 +5,8 @@ import nextstep.subway.common.exception.LineNotFoundException;
 import nextstep.subway.common.exception.StationNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.dto.Distance;
-import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.line.dto.*;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -16,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -59,14 +56,26 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         checkStationIds(request);
 
-        final Station upStation = stationRepository.findById(request.getUpStationId())
+        Line line = request.toLine();
+        line.addSection(createSection(request.getUpStationId(), request.getDownStationId(), request.getDistance()));
+        return LineResponse.of(lineRepository.save(line));
+    }
+
+    public LineResponse saveSection(Long id, SectionRequest request) {
+        checkStationIds(request);
+
+        Line line = findByLineId(id);
+        line.addSection(createSection(request.getUpStationId(), request.getDownStationId(), request.getDistance()));
+        return LineResponse.of(lineRepository.save(line));
+    }
+
+    private Section createSection(Long upStationId, Long downStationId, int distance) {
+        final Station upStation = stationRepository.findById(upStationId)
                 .orElseThrow(StationNotFoundException::new);
-        final Station downStation = stationRepository.findById(request.getUpStationId())
+        final Station downStation = stationRepository.findById(downStationId)
                 .orElseThrow(StationNotFoundException::new);
 
-        Line line = request.toLine();
-        line.addSection(new Section(upStation, downStation, Distance.of(request.getDistance())));
-        return LineResponse.of(lineRepository.save(line));
+        return new Section(upStation, downStation, Distance.of(distance));
     }
 
     public LineResponse findOne(Long id) {
@@ -84,9 +93,11 @@ public class LineService {
         lineRepository.deleteById(line.getId());
     }
 
-    private void checkStationIds(LineRequest lineRequest) {
-        if (Objects.equals(lineRequest.getUpStationId(), lineRequest.getDownStationId())) {
+    private void checkStationIds(BaseRequest request) {
+        if (request.hasDuplicateStations()) {
             throw new DuplicateParameterException("상행, 하행역은 중복될 수 없습니다.");
         }
     }
+
+
 }
