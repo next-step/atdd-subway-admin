@@ -20,14 +20,12 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
 	private static final String LINE_PATH = "/lines";
-	private static final String SECTION_PATH = "/sections";
 	private static final String SLASH = "/";
 	private StationResponse 강남역;
 	private StationResponse 광교역;
@@ -274,68 +272,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	void 지하철_노선_삭제_실패됨(ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-	}
-
-	@DisplayName("노선에 구간을 등록한다.")
-	@Test
-	void addSection() {
-		// when
-		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 구간_등록요청(강남역, 양재역, 2));
-
-		// then
-		지하철_노선에_지하철역_등록됨(response);
-	}
-
-	SectionRequest 구간_등록요청(StationResponse downStation, StationResponse upStation, int distance) {
-		return new SectionRequest(downStation.getId(), upStation.getId(), distance);
-	}
-
-	ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(Long id, SectionRequest params) {
-		return RestAssured.given().log().all()
-			.when().body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.post(LINE_PATH + SLASH + id + SECTION_PATH)
-			.then().log().all().extract();
-	}
-
-	void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-	}
-
-	@DisplayName("기존 역 사이 길이보다 크거나 같은 길이의 구간을 추가한다.")
-	@Test
-	void addSectionOverDistance() {
-		// when
-		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 구간_등록요청(강남역, 양재역, 11));
-
-		// then
-		지하철_노선에_지하철역_등록_실패됨(response);
-	}
-
-	void 지하철_노선에_지하철역_등록_실패됨(ExtractableResponse<Response> response) {
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-	}
-
-	@DisplayName("이미 등록 되어있는 구간을 추가한다.")
-	@Test
-	void addSectionDuplicate() {
-		// given
-		LineResponse 이미_등록된_구간 = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 구간_등록요청(강남역, 양재역, 5)).as(LineResponse.class);
-
-		// when
-		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(이미_등록된_구간.getId(), 구간_등록요청(강남역, 양재역, 3));
-
-		// then
-		지하철_노선에_지하철역_등록_실패됨(response);
-	}
-
-	@DisplayName("상, 하행역 둘 중 하나도 포함되지 않은 구간을 추가한다.")
-	@Test
-	void addSectionNotInStations() {
-		// when
-		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 구간_등록요청(성수역, 양재역, 3));
-
-		// then
-		지하철_노선에_지하철역_등록_실패됨(response);
 	}
 }
