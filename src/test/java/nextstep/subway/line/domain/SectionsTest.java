@@ -204,8 +204,10 @@ class SectionsTest {
     }
 
     private void 등록된_구간_순서_확인(Sections sections, Station... expectedStations) {
+        List<Station> stations = sections.getStations();
+
         for (int i = 0; i < expectedStations.length; i++) {
-            assertThat(sections.getStations().get(i))
+            assertThat(stations.get(i))
                     .isEqualTo(expectedStations[i]);
         }
     }
