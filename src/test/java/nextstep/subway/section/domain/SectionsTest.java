@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -135,5 +136,18 @@ class SectionsTest {
             () -> assertThat(sections.getValues().get(1).getDownStation().equals(Station.of(3L))),
             () -> assertThat(sections.getValues().get(1).getDistance().equals(Distance.from(3)))
         );
+    }
+
+    @Test
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 예외 발생")
+    void 예외_케이스1() {
+        // given
+        Sections sections = line.getSections();
+
+        // when, then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> sections.connect(Section.of(line, 1L, 3L, 10))
+            )
+            .withMessage("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 작아야 합니다");
     }
 }
