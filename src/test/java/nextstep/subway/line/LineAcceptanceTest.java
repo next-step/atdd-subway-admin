@@ -83,7 +83,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성_실패됨
-        지하철_노선_생성_실패됨(response);
+        지하철_노선_생성_실패됨_지하철_역_없음(response);
     }
 
     @DisplayName("NEW-존재하지 않는 지하철역을 노선에 등록한다")
@@ -101,7 +101,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성_실패됨
-        지하철_노선_생성_실패됨(response);
+        지하철_노선_생성_실패됨_지하철_역_없음(response);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -207,8 +207,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
+    private void 지하철_노선_생성_실패됨_지하철_역_없음(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
     private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     private void 지하철_노선_수정됨(Long lineId, LineRequest updateRequest) {
