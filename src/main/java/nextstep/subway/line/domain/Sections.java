@@ -23,10 +23,14 @@ public class Sections {
     }
 
     private Sections(Section section) {
+        validateNotNull(section);
+        add(section);
+    }
+
+    private void validateNotNull(Section section) {
         if (Objects.isNull(section)) {
             throw new IllegalArgumentException(NOT_NULL_ERROR_MESSAGE);
         }
-        add(section);
     }
 
     private void add(Section section) {
