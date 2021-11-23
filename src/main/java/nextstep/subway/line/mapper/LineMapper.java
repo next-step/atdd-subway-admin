@@ -13,7 +13,7 @@ public class LineMapper {
     }
 
     public static List<LineResponse.LineStation> sectionToLineStation(final Line line) {
-        final List<Section> sections = line.getStationInOrder();
+        final List<Section> sections = line.getSections();
         List<LineResponse.LineStation> lineStations = new ArrayList<>();
         for (Section section : sections) {
             LineResponse.LineStation station = new LineResponse.LineStation(section.getId(), section.getStation().getName(), section.getCreatedDate(), section.getModifiedDate());
