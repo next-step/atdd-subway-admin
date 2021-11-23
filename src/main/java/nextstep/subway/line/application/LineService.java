@@ -32,8 +32,7 @@ public class LineService {
         final Station upStation = stationService.findStation(request.getUpStationId());
         final Station downStation = stationService.findStation(request.getDownStationId());
 
-        final Section upwardLastStopStation = Section.createUpLastStopStation(upStation, persistLine);
-        Section.createDownLastStopStation(downStation, request.getDistance(), upwardLastStopStation, persistLine);
+        Section.createFirstSection(upStation, downStation, request.getDistance(), persistLine);
 
         return LineResponse.of(persistLine);
     }

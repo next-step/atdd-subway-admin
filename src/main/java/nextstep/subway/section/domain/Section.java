@@ -21,29 +21,31 @@ public class Section extends BaseEntity {
     private Line line;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pre_station_id")
+    private Station preStation;
+
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "station_id")
     private Station station;
-
-    @OneToOne
-    @JoinColumn(name = "parent_id")
-    private Section parentStation;
-
-    @OneToOne(mappedBy = "parentStation")
-    private Section childStation;
 
     protected Section() {
     }
 
-    private Section(final Station station, final Line line) {
+    public Section(final Station station) {
         this.station = station;
-        addLine(line);
     }
 
-    private Section(final Station station, final int distance, final Section parentStation, final Line line) {
-        this.station = station;
+    public Section(final Station preStation, final Station station, final int distance) {
         this.distance = distance;
-        this.parentStation = parentStation;
-        addLine(line);
+        this.preStation = preStation;
+        this.station = station;
+    }
+
+    public static void createFirstSection(Station preStation, Station station, int distance, Line line) {
+        final Section sectionStart = new Section(preStation);
+        final Section sectionEnd = new Section(preStation, station, distance);
+        sectionStart.addLine(line);
+        sectionEnd.addLine(line);
     }
 
     private void addLine(Line line) {
@@ -51,13 +53,6 @@ public class Section extends BaseEntity {
         line.addSection(this);
     }
 
-    public static Section createUpLastStopStation(final Station station, final Line line) {
-        return new Section(station, line);
-    }
-
-    public static Section createDownLastStopStation(final Station station, final int distance, final Section parent, final Line line) {
-        return new Section(station, distance, parent, line);
-    }
 
     public Long getId() {
         return id;
