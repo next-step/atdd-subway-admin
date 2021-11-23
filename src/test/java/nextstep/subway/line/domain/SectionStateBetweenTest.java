@@ -4,7 +4,10 @@ import static nextstep.subway.common.exception.ExceptionMessage.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,7 +42,7 @@ class SectionStateBetweenTest {
         Section newSection = new Section(잠실역, 선릉역, distance);
 
         // when
-        SectionStateBetween between = new SectionStateBetween();
+        SectionStateBetween between = new SectionStateBetween(Collections.emptyList());
         between.add(section, newSection);
 
         // then
@@ -58,7 +61,7 @@ class SectionStateBetweenTest {
         Section newSection = new Section(선릉역, 강남역, distance);
 
         // when
-        SectionStateBetween between = new SectionStateBetween();
+        SectionStateBetween between = new SectionStateBetween(Collections.emptyList());
         between.add(section, newSection);
 
         // then
@@ -77,8 +80,31 @@ class SectionStateBetweenTest {
         Section newSection = new Section(선릉역, 강남역, distance);
 
         // when && then
-        assertThatThrownBy(() -> new SectionStateBetween().add(section, newSection))
+        assertThatThrownBy(() -> new SectionStateBetween(Collections.emptyList()).add(section, newSection))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage(GREATER_THAN_OR_EQUAL_DISTANCE.getMessage());
+    }
+
+    @DisplayName("두 개의 구간에 중복된 역이 삭제된다.")
+    @Test
+    void removeSection() {
+        // given
+        List<Section> sections = new ArrayList<>(Arrays.asList(
+            new Section(잠실역, 강남역, distance),
+            new Section(강남역, 선릉역, distance)
+        ));
+
+        SectionStateBetween between = new SectionStateBetween(sections);
+
+        // when
+        between.remove(sections);
+
+        // then
+        assertEquals(1, sections.size());
+        assertThat(sections).extracting("distance").containsExactly(distance + distance);
+        assertThat(sections).extracting("upStation")
+            .containsExactly(잠실역);
+        assertThat(sections).extracting("downStation")
+            .containsExactly(선릉역);
     }
 }

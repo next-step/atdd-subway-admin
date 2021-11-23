@@ -94,6 +94,11 @@ public class Section {
             && !containsExactlyStationPosition(section);
     }
 
+    boolean containsStation(Long stationId) {
+        List<Long> stationIds = Arrays.asList(upStation.getId(), downStation.getId());
+        return stationIds.contains(stationId);
+    }
+
     private boolean containsSomeStation(Section section) {
         List<Station> stations = Arrays.asList(upStation, downStation);
         return stations.contains(section.getUpStation())
