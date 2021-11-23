@@ -1,7 +1,6 @@
 package nextstep.subway.station.application;
 
 import nextstep.subway.common.exception.NotFoundEntityException;
-import nextstep.subway.line.application.LineService;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;

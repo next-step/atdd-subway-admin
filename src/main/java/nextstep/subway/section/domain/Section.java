@@ -23,22 +23,27 @@ public class Section {
     private Line line;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "station_id")
-    private Station station;
+    @JoinColumn(name = "up_station_id")
+    private Station upStation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "down_station_id")
+    private Station downStation;
 
     private int distance;
 
     public Section() {
     }
 
-    public Section(Line line, Station station, int distance) {
+    public Section(Line line, Station upStation, Station downStation, int distance) {
         changeLine(line);
-        this.station = station;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
-    public static Section of(Line line, Station station, int distance) {
-        return new Section(line, station, distance);
+    public static Section of(Line line, Station upStation, Station downStation, int distance) {
+        return new Section(line, upStation, downStation, distance);
     }
 
     public void changeLine(Line line) {
@@ -65,8 +70,12 @@ public class Section {
         return line;
     }
 
-    public Station getStation() {
-        return station;
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 
     public int getDistance() {

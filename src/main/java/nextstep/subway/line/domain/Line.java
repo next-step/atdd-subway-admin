@@ -37,8 +37,7 @@ public class Line extends BaseEntity {
     }
 
     private void generateSections(Station upStation, Station downStation, int distance) {
-        new Section(this, upStation, 0);
-        new Section(this, downStation, distance);
+        new Section(this, upStation, downStation, distance);
     }
 
     public void update(Line line) {
@@ -63,9 +62,10 @@ public class Line extends BaseEntity {
     }
 
     public void clearSections() {
-        for (Section section : sections) {
-            section.changeLine(null);
+        for (Section section: sections) {
+            section.addLine(null);
         }
-        sections.clear();
+
+        this.sections.clear();
     }
 }
