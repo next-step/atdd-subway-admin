@@ -3,7 +3,10 @@ package nextstep.subway.common;
 public enum ErrorCode {
 
     // 노선 [01xx]
-    NOT_FOUND_LINE_ID("0101", "존재하지 않는 노선ID 입니다.");
+    NOT_FOUND_LINE_ID("0101", "존재하지 않는 노선ID 입니다.")
+
+    // 역 [02xx]
+    , NOT_FOUND_STATION_ID("0201", "존재하지 않는 역ID 입니다.");
 
     private final String code;
     private final String message;

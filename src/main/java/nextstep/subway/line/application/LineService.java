@@ -21,9 +21,8 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
-    public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+    public Line saveLine(LineRequest request) {
+        return lineRepository.save(request.toLine());
     }
 
     public List<LineResponse> findAllLines() {
