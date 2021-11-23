@@ -79,10 +79,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 화곡역_생성_응답 = 지하철_노선_생성_요청(화곡역);
 
         // when
-        ExtractableResponse<Response> 노선_조회_응답 = 지하철_노선_조회_요청(화곡역_생성_응답);
+        ExtractableResponse<Response> 화곡역_조회_응답 = 지하철_노선_조회_요청(화곡역_생성_응답);
 
         // then
-        지하철_노선_응답됨(노선_조회_응답);
+        지하철_노선_응답됨(화곡역_조회_응답);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -95,10 +95,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineRequest 까치산역 = 지하철_노선_정보("까치산", "purple");
 
         // when
-        ExtractableResponse<Response> 노선_수정_응답 = 지하철_노선_수정_요청(화곡역_생성_응답, 까치산역);
+        ExtractableResponse<Response> 화곡역_수정_응답 = 지하철_노선_수정_요청(화곡역_생성_응답, 까치산역);
 
         // then
-        지하철_노선_응답됨(노선_수정_응답);
+        지하철_노선_응답됨(화곡역_수정_응답);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -110,10 +110,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 화곡역_생성_응답 = 지하철_노선_생성_요청(화곡역);
 
         // when
-        ExtractableResponse<Response> 노선_제거_응답 = 지하철_노선_제거_요청(화곡역_생성_응답);
+        ExtractableResponse<Response> 화곡역_제거_응답 = 지하철_노선_제거_요청(화곡역_생성_응답);
 
         // then
-        지하철_노선_삭제됨(노선_제거_응답);
+        지하철_노선_삭제됨(화곡역_제거_응답);
     }
 
     private LineRequest 지하철_노선_정보(String name, String color) {
