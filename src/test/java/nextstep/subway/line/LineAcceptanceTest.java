@@ -184,8 +184,11 @@ class LineAcceptanceTest extends AcceptanceTest {
                 ExtractableResponse<Response> 구간_추가_응답 = 노선에_구간_추가_요청(이호선, 구간_추가_요청_데이터);
 
                 // then
-                assertThat(구간_추가_응답.statusCode())
-                        .isEqualTo(HttpStatus.OK.value());
+                assertAll(
+                        () -> assertThat(구간_추가_응답.statusCode())
+                                .isEqualTo(HttpStatus.OK.value()),
+                        () -> 등록된_노선_순서_확인(이호선, 강남역, 역삼역, 교대역)
+                );
             }
 
             @DisplayName("새로운 역을 상행 종점으로 등록")
@@ -203,8 +206,11 @@ class LineAcceptanceTest extends AcceptanceTest {
                 ExtractableResponse<Response> 구간_추가_응답 = 노선에_구간_추가_요청(이호선, 구간_추가_요청_데이터);
 
                 // then
-                assertThat(구간_추가_응답.statusCode())
-                        .isEqualTo(HttpStatus.OK.value());
+                assertAll(
+                        () -> assertThat(구간_추가_응답.statusCode())
+                                .isEqualTo(HttpStatus.OK.value()),
+                        () -> 등록된_노선_순서_확인(이호선, 강남역, 역삼역, 교대역)
+                );
             }
 
             @DisplayName("새로운 역을 하행 종점으로 등록")
@@ -222,8 +228,11 @@ class LineAcceptanceTest extends AcceptanceTest {
                 ExtractableResponse<Response> 구간_추가_응답 = 노선에_구간_추가_요청(이호선, 구간_추가_요청_데이터);
 
                 // then
-                assertThat(구간_추가_응답.statusCode())
-                        .isEqualTo(HttpStatus.OK.value());
+                assertAll(
+                        () -> assertThat(구간_추가_응답.statusCode())
+                        .isEqualTo(HttpStatus.OK.value()),
+                        () -> 등록된_노선_순서_확인(이호선, 강남역, 역삼역, 교대역)
+                );
             }
         }
 
@@ -308,6 +317,21 @@ class LineAcceptanceTest extends AcceptanceTest {
                 assertThat(구간_추가_응답.statusCode())
                         .isEqualTo(HttpStatus.BAD_REQUEST.value());
             }
+        }
+    }
+
+    private void 등록된_노선_순서_확인(LineResponse 이호선, StationResponse... expectedStationResponses) {
+        ExtractableResponse<Response> response = 특정_지하철_노선_조회_요청(이호선);
+
+        LineResponse lineResponse = new ArrayList<>(response.jsonPath()
+                .getList(".", LineResponse.class))
+                .get(0);
+
+        List<StationResponse> stationResponses = lineResponse.getStations();
+
+        for (int i = 0; i < expectedStationResponses.length; i++) {
+            assertThat(stationResponses.get(i))
+                    .isEqualTo(expectedStationResponses[i]);
         }
     }
 
