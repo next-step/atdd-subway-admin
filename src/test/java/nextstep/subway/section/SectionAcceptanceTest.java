@@ -44,7 +44,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationResponse 청계산입구역 = 지하철_역_생성(new StationRequest("청계산입구역")).as(StationResponse.class);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선에_구간_추가(신분당선.getId(), 청계산입구역);
+        ExtractableResponse<Response> response = 지하철_노선에_구간_추가(청계산입구역);
 
         // then
         구간_등록됨(response);
@@ -57,7 +57,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationResponse 청계산입구역 = 지하철_역_생성(new StationRequest("청계산입구역")).as(StationResponse.class);
 
         // when
-        ExtractableResponse<Response> response = 상행_종점에_구간_추가(신분당선.getId(), 청계산입구역);
+        ExtractableResponse<Response> response = 상행_종점에_구간_추가(청계산입구역);
 
         // then
         구간_등록됨(response);
@@ -70,7 +70,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationResponse 청계산입구역 = 지하철_역_생성(new StationRequest("청계산입구역")).as(StationResponse.class);
 
         // when
-        ExtractableResponse<Response> response = 하행_종점에_구간_추가(신분당선.getId(), 청계산입구역);
+        ExtractableResponse<Response> response = 하행_종점에_구간_추가(청계산입구역);
 
         // then
         구간_등록됨(response);
@@ -83,7 +83,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationResponse 청계산입구역 = 지하철_역_생성(new StationRequest("청계산입구역")).as(StationResponse.class);
 
         // when
-        ExtractableResponse<Response> response = 구간_사이에_기존_구간과_동일한_거리로_구간_추가(신분당선.getId(), 청계산입구역);
+        ExtractableResponse<Response> response = 구간_사이에_기존_구간과_동일한_거리로_구간_추가(청계산입구역);
 
         // then
         구간_등록_실패(response);
@@ -113,23 +113,23 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_등록_실패(response);
     }
 
-    private ExtractableResponse<Response> 지하철_노선에_구간_추가(Long lineId, StationResponse 청계산입구역) {
-        return post("/lines/" + lineId + "/sections",
+    private ExtractableResponse<Response> 지하철_노선에_구간_추가(StationResponse 청계산입구역) {
+        return post("/lines/" + 신분당선.getId() + "/sections",
             new SectionRequest(강남역.getId(), 청계산입구역.getId(), 8));
     }
 
-    private ExtractableResponse<Response> 상행_종점에_구간_추가(Long lineId, StationResponse 청계산입구역) {
-        return post("/lines/" + lineId + "/sections",
+    private ExtractableResponse<Response> 상행_종점에_구간_추가(StationResponse 청계산입구역) {
+        return post("/lines/" + 신분당선.getId() + "/sections",
             new SectionRequest(청계산입구역.getId(), 강남역.getId(), 8));
     }
 
-    private ExtractableResponse<Response> 하행_종점에_구간_추가(Long lineId, StationResponse 청계산입구역) {
-        return post("/lines/" + lineId + "/sections",
+    private ExtractableResponse<Response> 하행_종점에_구간_추가(StationResponse 청계산입구역) {
+        return post("/lines/" + 신분당선.getId() + "/sections",
             new SectionRequest(광교역.getId(), 청계산입구역.getId(), 8));
     }
 
-    private ExtractableResponse<Response> 구간_사이에_기존_구간과_동일한_거리로_구간_추가(Long lineId, StationResponse 청계산입구역) {
-        return post("/lines/" + lineId + "/sections",
+    private ExtractableResponse<Response> 구간_사이에_기존_구간과_동일한_거리로_구간_추가(StationResponse 청계산입구역) {
+        return post("/lines/" + 신분당선.getId() + "/sections",
             new SectionRequest(강남역.getId(), 청계산입구역.getId(), 8));
     }
 
