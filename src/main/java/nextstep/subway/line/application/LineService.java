@@ -58,20 +58,20 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         return lineRepository.findAll().stream()
-                .map(this::convertLineResponse)
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse findById(long id) {
         final Line line = getLineByIdOrElseThrow(id);
-        return convertLineResponse(line);
+        final List<StationResponse> stationResponses = getStationResponses(line);
+        return LineResponse.of(line, stationResponses);
     }
 
-    private LineResponse convertLineResponse(Line line) {
+    private List<StationResponse> getStationResponses(Line line) {
         final List<Station> stations = line.getStationsOrderByUptoDown();
-        final List<StationResponse> stationResponses = stationService.convertStationsResponse(stations);
-        return LineResponse.of(line, stationResponses);
+        return stationService.convertStationsResponse(stations);
     }
 
     private Line getLineByIdOrElseThrow(long id) {
