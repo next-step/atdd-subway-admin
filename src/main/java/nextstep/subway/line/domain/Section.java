@@ -25,14 +25,18 @@ public class Section {
 
     private int distance;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Line line;
+
     protected Section() {
     }
 
-    private Section(Station upStation, Station downStation, int distance) {
+    private Section(Station upStation, Station downStation, int distance, Line line) {
         validateDistance(distance);
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+        this.line = line;
     }
 
     private void validateDistance(int distance) {
@@ -41,8 +45,8 @@ public class Section {
         }
     }
 
-    public static Section of(Station upStation, Station downStation, int distance) {
-        return new Section(upStation, downStation, distance);
+    public static Section of(Station upStation, Station downStation, int distance, Line line) {
+        return new Section(upStation, downStation, distance, line);
     }
 
     public Long getId() {
@@ -59,5 +63,9 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public Line getLine() {
+        return line;
     }
 }

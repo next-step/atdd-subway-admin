@@ -1,6 +1,6 @@
 package nextstep.subway.line;
 
-import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +19,6 @@ class SectionTest {
 
         //when //then
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> Section.of(upStation, downStation, 0));
+                .isThrownBy(() -> Line.of("신분당선", "bg-red-600", upStation, downStation, 0));
     }
 }

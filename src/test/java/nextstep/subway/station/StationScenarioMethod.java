@@ -6,13 +6,15 @@ import nextstep.subway.assured.RestAssuredApi;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.http.HttpStatus.*;
 
-class StationScenarioMethod {
+public class StationScenarioMethod {
 
     public static ExtractableResponse<Response> 지하철_역_생성_요청(StationRequest request) {
         return RestAssuredApi.post("/stations", request);
@@ -53,5 +55,17 @@ class StationScenarioMethod {
 
     public static void 지하철_역_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(NO_CONTENT.value());
+    }
+
+    public static Long 지하철_종점역_생성됨(StationRequest request) {
+        ExtractableResponse<Response> response = 지하철_역_생성_요청(request);
+        return response.as(StationResponse.class).getId();
+    }
+
+    public static Map<String, Long> 지하철_종점역_정보(String upStationName, String downStationName) {
+        HashMap<String, Long> terminus = new HashMap<>();
+        terminus.put("upStationId", 지하철_종점역_생성됨(new StationRequest("upStationName")));
+        terminus.put("downStationId", 지하철_종점역_생성됨(new StationRequest("downStationName")));
+        return terminus;
     }
 }

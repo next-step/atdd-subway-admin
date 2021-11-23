@@ -3,23 +3,26 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineEditRequest;
 import nextstep.subway.line.dto.LineRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static nextstep.subway.line.LineScenarioMethod.*;
+import static nextstep.subway.station.StationScenarioMethod.지하철_종점역_정보;
 
 @DisplayName("지하철 노선 인수 테스트")
 class LineAcceptanceTest extends AcceptanceTest {
 
-    private LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600");
-    private LineRequest 구분당선 = new LineRequest("구분당선", "bg-blue-600");
-    private LineRequest 수인선 = new LineRequest("수인선", "bg-yellow-600");
-
-
-    @DisplayName("지하철 노선을 생성한다.")
+    @DisplayName("지하철 구간을 포함하여 지하철 노선을 생성한다.")
     @Test
     void createLine() {
+        // given
+        Map<String, Long> terminus = 지하철_종점역_정보("강남", "광교");
+        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "bg-red-600", terminus, 13);
+
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선);
 
@@ -31,6 +34,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
+        Map<String, Long> terminus = 지하철_종점역_정보("강남", "광교");
+        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "bg-red-600", terminus, 13);
         지하철_노선_등록되어_있음(신분당선);
 
         // when
@@ -44,6 +49,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findLines() {
         // given
+        Map<String, Long> terminus = 지하철_종점역_정보("강남", "광교");
+        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "bg-red-600", terminus, 13);
+        LineRequest 수인선 = 지하철_노선_정보("수인선", "bg-yellow-600", terminus, 14);
+
         지하철_노선_등록되어_있음(신분당선);
         지하철_노선_등록되어_있음(수인선);
 
@@ -60,6 +69,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findLine() {
         // given
+        Map<String, Long> terminus = 지하철_종점역_정보("오이도", "인천");
+        LineRequest 수인선 = 지하철_노선_정보("수인선", "bg-yellow-600", terminus, 14);
         String createdLocationUri = 지하철_노선_등록되어_있음(수인선);
 
         // when
@@ -87,19 +98,26 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
+        Map<String, Long> terminus = 지하철_종점역_정보("강남", "광교");
+        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "bg-red-600", terminus, 13);
+
         String createdLocationUri = 지하철_노선_등록되어_있음(신분당선);
+        LineEditRequest 구분당선 = new LineEditRequest("구분당선", "bg-blue-600");
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(createdLocationUri, 구분당선);
 
         // then
-        지하철_노선_수정됨(response, createdLocationUri, 구분당선);
+        지하철_노선_수정됨(response);
+        지하철_노선_수정_결과_일치됨(createdLocationUri, 구분당선);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
         // given
+        Map<String, Long> terminus = 지하철_종점역_정보("오이도", "인천");
+        LineRequest 수인선 = 지하철_노선_정보("수인선", "bg-yellow-600", terminus, 14);
         String createdLocationUri = 지하철_노선_등록되어_있음(수인선);
 
         // when

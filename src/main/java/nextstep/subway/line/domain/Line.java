@@ -22,7 +22,7 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     protected Line() {
@@ -33,10 +33,10 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    private Line(String name, String color, Section section) {
+    private Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        this.sections.add(section);
+        sections.add(Section.of(upStation, downStation, distance, this));
     }
 
     public static Line of(String name, String color) {
@@ -44,8 +44,7 @@ public class Line extends BaseEntity {
     }
 
     public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
-        Section section = Section.of(upStation, downStation, distance);
-        return new Line(name, color, section);
+        return new Line(name, color, upStation, downStation, distance);
     }
 
     public void update(Line line) {
