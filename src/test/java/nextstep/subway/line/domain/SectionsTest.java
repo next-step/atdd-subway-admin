@@ -22,11 +22,11 @@ class SectionsTest {
     @Test
     void 생성_확인() {
         // given
-        Section section1 = 강남역_역삼역_구간();
-        Section section2 = 역삼역_교대역_구간();
+        Section 강남역_역삼역_구간 = 강남역_역삼역_구간();
+        Section 역삼역_교대역_구간 = 역삼역_교대역_구간();
 
         // when
-        Sections sections = Sections.of(Arrays.asList(section1, section2));
+        Sections sections = Sections.of(Arrays.asList(강남역_역삼역_구간, 역삼역_교대역_구간));
 
         // then
         assertThat(sections)
@@ -37,9 +37,9 @@ class SectionsTest {
     @Test
     void 역_목록_조회_확인() {
         // given
-        Section section1 = 강남역_역삼역_구간();
-        Section section2 = 역삼역_교대역_구간();
-        Sections sections = Sections.of(Arrays.asList(section1, section2));
+        Section 강남역_역삼역_구간 = 강남역_역삼역_구간();
+        Section 역삼역_교대역_구간 = 역삼역_교대역_구간();
+        Sections sections = Sections.of(Arrays.asList(강남역_역삼역_구간, 역삼역_교대역_구간));
 
         // when
         List<Station> stations = sections.getStations();
