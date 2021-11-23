@@ -36,7 +36,6 @@ public class LineService {
     }
 
     public LineResponse findById(Long lineId) {
-        System.out.println("findById start");
         Line line = lineRepository.findById(lineId).orElseThrow(
                 () -> new IllegalArgumentException(String.format("존재하지 않는 노선입니다.[lineId: %s]", lineId))
         );
