@@ -17,9 +17,6 @@ import java.util.List;
 @Service
 @Transactional
 public class LineService {
-    public static final String NOT_FOUND_ENTITY_MESSAGE = "Entity를 찾을 수 없습니다.";
-    public static final String DUPLICATE_ENTITY_MESSAGE = "이미 존재하는 Entity가 있습니다.";
-
     private final LineRepository lineRepository;
     private final StationService stationService;
 
@@ -45,7 +42,7 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse findLineById(Long id) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new NotFoundEntityException(NOT_FOUND_ENTITY_MESSAGE));
+                .orElseThrow(() -> new NotFoundEntityException(id));
 
         return LineResponse.of(line);
     }
@@ -53,7 +50,7 @@ public class LineService {
     @Transactional
     public LineResponse update(Long id, LineRequest lineRequest) {
         Line persistLine = lineRepository.findById(id)
-                .orElseThrow(() -> new NotFoundEntityException(NOT_FOUND_ENTITY_MESSAGE));
+                .orElseThrow(() -> new NotFoundEntityException(id));
 
         if (!lineRequest.isSameName(persistLine.getName())) {
             validateUniqueName(lineRequest);
@@ -87,7 +84,7 @@ public class LineService {
 
     private void validateUniqueName(LineRequest request) {
         if (lineRepository.existsByName(request.getName())) {
-            throw new DuplicateEntityException(DUPLICATE_ENTITY_MESSAGE);
+            throw new DuplicateEntityException();
         }
     }
 }

@@ -39,6 +39,6 @@ public class StationService {
     @Transactional(readOnly = true)
     public Station findStationById(Long id) {
         return stationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundEntityException(LineService.NOT_FOUND_ENTITY_MESSAGE));
+                .orElseThrow(() -> new NotFoundEntityException(id));
     }
 }
