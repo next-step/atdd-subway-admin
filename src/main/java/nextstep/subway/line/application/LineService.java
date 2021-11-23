@@ -35,8 +35,11 @@ public class LineService {
                 .collect(toList());
 
         Line requestLine = request.toLine();
-        requestLine.addUpSection(stations, request.getUpStationId());
-        requestLine.addDownSection(stations, request.getDownStationId());
+        requestLine.addSection(
+                stations.stream().filter(s -> s.matchId(request.getUpStationId())).findFirst().orElseThrow(() -> new IllegalArgumentException("")),
+                stations.stream().filter(s -> s.matchId(request.getUpStationId())).findFirst().orElseThrow(() -> new IllegalArgumentException("")),
+                request.getDistance()
+        );
         Line persistLine = lineRepository.save(requestLine);
 
         return LineResponse.of(persistLine);
@@ -63,7 +66,7 @@ public class LineService {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 Line이 존재하지 않습니다. id = " + id));
 
-        Line updatedLine = new Line(request.getName(), request.getColor(), request.getDistance());
+        Line updatedLine = new Line(request.getName(), request.getColor());
 
         line.update(updatedLine);
     }

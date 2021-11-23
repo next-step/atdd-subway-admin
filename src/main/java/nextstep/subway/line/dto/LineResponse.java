@@ -42,11 +42,7 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate(),
-                line.getSections().stream()
-                        .sorted(comparingDouble(Section::getPosition))
-                        .map(s -> s.getStation())
-                        .map(StationResponse::of)
-                        .collect(toList()));
+                Collections.emptyList());
     }
 
     public Long getId() {

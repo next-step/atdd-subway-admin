@@ -3,11 +3,10 @@ package nextstep.subway.line.domain;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 @Table(name = "section", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"line_id", "station_id"})
+        @UniqueConstraint(columnNames = {"line_id", "up_station_id", "down_station_id"})
 })
 public class Section {
 
@@ -19,66 +18,39 @@ public class Section {
     @JoinColumn(name = "line_id")
     private Line line;
 
-    @ManyToOne
-    @JoinColumn(name = "station_id")
-    private Station station;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "up_station_id")
+    private Station upStation;
 
-    private Double position;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "down_station_id")
+    private Station downStation;
 
-    @Transient
-    public static final double UP_SECTION = 65535.0;
-
-    @Transient
-    public static final double DOWN_SECTION = UP_SECTION * 2;
+    private Integer distance;
 
     protected Section() {
 
     }
 
-    private Section(Line line, Station station, Double position) {
+    private Section(Line line, Station upStation, Station downStation, Integer distance) {
         this.line = line;
-        this.station = station;
-        this.position = position;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
     }
 
-    public static Section create(Line line, Station station) {
-        return new Section(line, station, 65535.0);
+    public static Section create(Line line, Station upStation, Station downStation, Integer distance) {
+        return new Section(line, upStation, downStation, distance);
     }
 
-    public static Section create(Line line, Station station, Double position) {
-        return new Section(line, station, position);
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public void updatePosition(Double position) {
-        this.position = position;
+    public Station getDownStation() {
+        return downStation;
     }
 
-    public boolean matchPosition(Section section) {
-        return matchPosition(section.getPosition());
-    }
 
-    public boolean matchPosition(Double position) {
-        return this.position == position;
-    }
 
-    public Double getPosition() {
-        return position;
-    }
-
-    public Station getStation() {
-        return station;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Section section = (Section) o;
-        return Objects.equals(line, section.line) && Objects.equals(station, section.station);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(line, station);
-    }
 }
