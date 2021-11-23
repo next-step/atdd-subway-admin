@@ -35,7 +35,8 @@ public class LineResponse {
         return new LineResponse(line.getId(),
             line.getName().getValue(),
             line.getColor().getValue(),
-            StationResponse.of(line.getSections().toStations()),
+            StationResponse.of(
+                line.getSections().extractStationsApplyOrderingUpStationToDownStation()),
             line.getCreatedDate(),
             line.getModifiedDate());
     }

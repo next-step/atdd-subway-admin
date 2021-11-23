@@ -1,48 +1,100 @@
 package nextstep.subway.section.domain;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import nextstep.subway.station.domain.Station;
-import org.springframework.util.CollectionUtils;
 
 @Embeddable
 public class Sections {
-	@OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Section> values = new ArrayList<>();
 
-	protected Sections() {
-	}
+    private static final int LAST_STATION_COUNT = 1;
 
-	private Sections(List<Section> values) {
-		this.values = values;
-	}
+    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Section> values = new ArrayList<>();
 
-	public void add(Section section) {
-		this.values.add(section);
-	}
+    protected Sections() {
+    }
 
-	public static Sections empty() {
-		return new Sections(new ArrayList<>());
-	}
+    private Sections(List<Section> values) {
+        this.values = values;
+    }
 
-    public List<Station> toStations() {
-        if (CollectionUtils.isEmpty(this.values)) {
-            return new ArrayList<>();
+    public void add(Section section) {
+        this.values.add(section);
+    }
+
+    public static Sections empty() {
+        return new Sections(new ArrayList<>());
+    }
+
+    public List<Station> extractStationsApplyOrderingUpStationToDownStation() {
+        List<Station> stations = new ArrayList<>();
+
+        final Map<Long, Section> sectionByUpStationId = toMapForSectionByUpStationId();
+        Section section = upBoundLastSection();
+        while (section != null) {
+            stations.add(section.getUpStation());
+            section = sectionByUpStationId.get(section.getDownStation().getId());
         }
 
-        List<Station> stations = this.values.stream()
-            .map(Section::getUpStation)
-            .collect(toList());
-
-        Section lastSection = this.values.get(values.size() - 1);
-        stations.add(lastSection.getDownStation());
+        stations.add(downBoundLastStation());
         return stations;
+    }
+
+    private Map<Long, Section> toMapForSectionByUpStationId() {
+        return this.values.stream()
+            .collect(toMap(section -> section.getUpStation().getId(), Function.identity()));
+    }
+
+    private Section upBoundLastSection() {
+        final Station upBoundLastStation = upBoundLastStation();
+        return this.values.stream()
+            .filter(section -> section.getUpStation().equals(upBoundLastStation))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("상행역이 속하는 구간은 한 개가 있어야 합니다."));
+    }
+
+    private Station upBoundLastStation() {
+        Set<Station> upStations = getUpStations();
+        upStations.removeAll(getDownStations());
+
+        if (upStations.size() != LAST_STATION_COUNT) {
+            throw new IllegalStateException("상행 종착역은 한 개가 있어야 합니다.");
+        }
+
+        return upStations.stream().findAny().get();
+    }
+
+    private Station downBoundLastStation() {
+        Set<Station> downStations = getDownStations();
+        downStations.removeAll(getUpStations());
+
+        if (downStations.size() != LAST_STATION_COUNT) {
+            throw new IllegalStateException("하행 종착역은 한 개가 있어야 합니다.");
+        }
+
+        return downStations.stream().findAny().get();
+    }
+
+    private Set<Station> getUpStations() {
+        return this.values.stream()
+            .map(Section::getUpStation)
+            .collect(toSet());
+    }
+
+    private Set<Station> getDownStations() {
+        return this.values.stream()
+            .map(Section::getDownStation)
+            .collect(toSet());
     }
 }
