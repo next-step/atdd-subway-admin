@@ -56,7 +56,7 @@ public class StationFixture {
                 .collect(Collectors.toList());
     }
 
-    public static Station ofStation(ExtractableResponse<Response> response) {
-        return response.as(Station.class);
+    public static StationResponse ofStation(ExtractableResponse<Response> response) {
+        return response.as(StationResponse.class);
     }
 }
