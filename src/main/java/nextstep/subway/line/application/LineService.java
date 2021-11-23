@@ -46,4 +46,8 @@ public class LineService {
         Line line = lineRepository.findById(newLine.getId()).orElseThrow(IllegalArgumentException::new);
         line.update(newLine);
     }
+
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
