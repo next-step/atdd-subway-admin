@@ -31,7 +31,6 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
-
         return lines.stream()
             .map(LineResponse::of)
             .collect(Collectors.toList());
@@ -40,8 +39,11 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse findLineById(long id) {
         Optional<Line> line = lineRepository.findById(id);
-
         return line.map(LineResponse::of).orElse(null);
+    }
 
+    public void updateLine(Line newLine) {
+        Line line = lineRepository.findById(newLine.getId()).orElseThrow(IllegalArgumentException::new);
+        line.update(newLine);
     }
 }

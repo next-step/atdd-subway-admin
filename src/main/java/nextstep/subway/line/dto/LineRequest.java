@@ -25,4 +25,8 @@ public class LineRequest {
     public Line toLine() {
         return new Line(name, color);
     }
+
+    public Line toLineWithId(Long id) {
+        return new Line(id, name, color);
+    }
 }
