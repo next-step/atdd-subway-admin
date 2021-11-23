@@ -12,6 +12,7 @@ import java.util.Objects;
 
 @Embeddable
 public class Sections {
+    private static final String NOT_NULL_ERROR_MESSAGE = "종점역은 빈값이 될 수 없습니다.";
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "sectionId")
@@ -22,8 +23,12 @@ public class Sections {
 
     private Sections(Section section) {
         if (Objects.isNull(section)) {
-            throw new IllegalArgumentException("종점역은 빈값이 될 수 없습니다.");
+            throw new IllegalArgumentException(NOT_NULL_ERROR_MESSAGE);
         }
+        add(section);
+    }
+
+    private void add(Section section) {
         this.sections.add(section);
     }
 
@@ -42,5 +47,4 @@ public class Sections {
     public List<Station> getStationsOrderByUptoDown() {
         return SectionsSort.of(this.sections).sortUpToDown();
     }
-
 }
