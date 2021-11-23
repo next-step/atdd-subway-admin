@@ -158,7 +158,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long upStationId = upStationResponse.body().jsonPath().getLong("id");
         long id = createResponse.body().jsonPath().getLong("id");
 
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("color", "bg-blue-700");
 
         // when
