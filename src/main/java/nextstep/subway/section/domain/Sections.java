@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import javax.persistence.CascadeType;
@@ -29,7 +30,12 @@ public class Sections {
         this.values = values;
     }
 
-    public void add(Section section) {
+    public void connect(Section section) {
+        Optional<Section> optUpBoundSection = upBoundSection(section);
+        if (optUpBoundSection.isPresent()) {
+            Section upBoundSection = optUpBoundSection.get();
+            upBoundSection.updateForInsertMiddle(section);
+        }
         this.values.add(section);
     }
 
@@ -64,6 +70,12 @@ public class Sections {
             .orElseThrow(() -> new IllegalStateException("상행역이 속하는 구간은 한 개가 있어야 합니다."));
     }
 
+    private Optional<Section> upBoundSection(Section standardSection) {
+        return this.values.stream()
+            .filter(section -> section.getUpStation().equals(standardSection.getUpStation()))
+            .findFirst();
+    }
+
     private Station upBoundLastStation() {
         Set<Station> upStations = getUpStations();
         upStations.removeAll(getDownStations());
@@ -96,5 +108,9 @@ public class Sections {
         return this.values.stream()
             .map(Section::getDownStation)
             .collect(toSet());
+    }
+
+    List<Section> getValues() {
+        return values;
     }
 }

@@ -47,11 +47,24 @@ public class Section {
 		return new Section(line, Station.of(upStationId), Station.of(downStationId), distance);
 	}
 
-	public Station getUpStation() {
-		return upStation;
-	}
+    public void updateForInsertMiddle(Section section) {
+        this.upStation = section.upStation;
+        this.distance = this.distance.subtract(section.distance);
+    }
 
-	public Station getDownStation() {
-		return downStation;
-	}
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    Distance getDistance() {
+        return distance;
+    }
 }

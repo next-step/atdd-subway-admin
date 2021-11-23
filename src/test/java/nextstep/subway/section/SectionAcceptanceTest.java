@@ -51,11 +51,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선에_구간_추가(Long lineId, StationResponse 청계산입구역) {
-        return post("/" + lineId + "/sections", new SectionRequest(강남역.getId(), 청계산입구역.getId(), 8));
+        return post("/lines/" + lineId + "/sections",
+            new SectionRequest(강남역.getId(), 청계산입구역.getId(), 8));
     }
 
     private void 구간_등록됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }

@@ -35,7 +35,7 @@ public class Line extends BaseEntity {
 	private Line(String name, String color, Long upStationId, Long downStationId, int distance) {
 		this.name = LineName.from(name);
 		this.color = LineColor.from(color);
-		this.sections.add(Section.of(this, upStationId, downStationId, distance));
+		this.sections.connect(Section.of(this, upStationId, downStationId, distance));
 	}
 
 	public static Line from(String name, String color) {
@@ -52,7 +52,7 @@ public class Line extends BaseEntity {
 	}
 
 	public void addSection(Section section) {
-		sections.add(section);
+		sections.connect(section);
 	}
 
 	public Long getId() {
