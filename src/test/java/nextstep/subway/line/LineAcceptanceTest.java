@@ -35,9 +35,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public static final String 용산역 = "용산역";
     public static final String 강남역 = "강남역";
 
-    @DisplayName("지하철 노선을 생성한다.")
     @Test
-    void createLine() {
+    void 지하철_노선을_생성한다() {
 
         StationResponse station1 = 지하철역_등록되어_있음(new StationRequest(신촌역));
         StationResponse station2 = 지하철역_등록되어_있음(new StationRequest(강남역));
@@ -52,9 +51,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(post.statusCode()).isEqualTo(CREATED.value());
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
-    void createLine2() {
+    void 기존에_존재하는_지하철_노선_이름으로_지하철_노선을_생성한다() {
         // given
         // 지하철_노선_등록되어_있음
         StationResponse station1 = 지하철역_등록되어_있음(new StationRequest(신촌역));
@@ -71,9 +69,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(post.statusCode()).isEqualTo(BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
-    void getLines() {
+    void 지하철_노선_목록을_조회한다() {
+
         // given
         StationResponse station1 = 지하철역_등록되어_있음(new StationRequest(신촌역));
         StationResponse station2 = 지하철역_등록되어_있음(new StationRequest(강남역));
@@ -102,9 +100,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(subwayName2).isEqualTo(서울역);
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
     @Test
-    void getLine() {
+    void 지하철_노선을_조회한다() {
+
         // given
         StationResponse station1 = 지하철역_등록되어_있음(new StationRequest(신촌역));
         StationResponse station2 = 지하철역_등록되어_있음(new StationRequest(강남역));
@@ -119,9 +117,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(OK.value());
     }
 
-    @DisplayName("지하철 노선을 수정한다.")
     @Test
-    void updateLine() {
+    void 지하철_노선을_수정한다() {
+
         // given
         StationResponse station1 = 지하철역_등록되어_있음(new StationRequest(서울역));
         StationResponse station2 = 지하철역_등록되어_있음(new StationRequest(용산역));
@@ -140,9 +138,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    @DisplayName("지하철 노선을 제거한다.")
     @Test
-    void deleteLine() {
+    void 지하철_노선을_제거한다() {
+
         // given
         StationResponse station1 = 지하철역_등록되어_있음(new StationRequest(서울역));
         StationResponse station2 = 지하철역_등록되어_있음(new StationRequest(용산역));

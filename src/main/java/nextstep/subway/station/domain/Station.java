@@ -19,7 +19,7 @@ import nextstep.subway.line.domain.Line;
 
 @Entity
 @BatchSize(size = 5)
-public class Station extends BaseEntity implements Comparable<Station> {
+public class Station extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -52,14 +52,4 @@ public class Station extends BaseEntity implements Comparable<Station> {
         return id;
     }
 
-    @Override
-    public int compareTo(Station o) {
-        if (this.id > o.id) {
-            return 1;
-        }
-        if (this.id < o.id) {
-            return -1;
-        }
-        return 0;
-    }
 }

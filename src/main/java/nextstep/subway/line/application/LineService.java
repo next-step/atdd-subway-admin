@@ -39,11 +39,13 @@ public class LineService {
         return new Section(downStation.getId(), upStation.getId(), new Distance(request.getDistance()));
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAllLine() {
         List<Line> findAll = lineRepository.findAll();
         return LineResponse.ofList(findAll);
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLineById(final Long id) {
         Line line = lineRepository.findById(id)
                                   .orElseThrow(EntityNotFoundException::new);
