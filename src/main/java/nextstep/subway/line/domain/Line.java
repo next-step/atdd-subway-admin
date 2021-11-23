@@ -4,16 +4,12 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.exception.NotEmptyLineColorException;
 import nextstep.subway.line.exception.NotEmptyLineNameException;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
