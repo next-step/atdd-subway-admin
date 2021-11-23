@@ -33,20 +33,26 @@ public class Sections {
 
     public void connect(Section section) {
         Optional<Section> optExistedSection = upBoundSection(section);
+        validateForConnect(optExistedSection, section);
+
         updateWhenConnectInMiddleOfExistedSection(optExistedSection, section);
 
-        validateExistUpStationOrDownStation(section);
-
         this.values.add(section);
+    }
+
+    private void validateForConnect(Optional<Section> optExistedSection, Section section) {
+        if (optExistedSection.isPresent()) {
+            Section existedSection = optExistedSection.get();
+            validateAlreadyExistedStations(section);
+            validateDistanceWhenConnectInExistedSection(existedSection, section);
+        }
+        validateExistUpStationOrDownStation(section);
     }
 
     private void updateWhenConnectInMiddleOfExistedSection(Optional<Section> optExistedSection,
         Section section) {
         if (optExistedSection.isPresent()) {
             Section existedSection = optExistedSection.get();
-            validateAlreadyExistedStations(section);
-            validateDistanceWhenConnectInExistedSection(existedSection, section);
-
             existedSection.updateForConnect(section);
         }
     }
