@@ -1,5 +1,7 @@
 package nextstep.subway.line.dto;
 
+import nextstep.subway.line.domain.Section;
+
 import java.util.Objects;
 
 /**

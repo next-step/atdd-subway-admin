@@ -35,17 +35,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private LineRequest 이호선;
     private LineRequest 삼호선;
 
-    private Long 구간_테스트_노선_ID;
-    private Long 변경_상행종점역_ID;
-    private Long 최초_상행종점역_ID;
-    private Long 최초_하행종점역_ID;
-    private Long 변경_하행_종점역_ID;
-    private Long 사이_추가_역_ID;
-
     private static final int 거리_5 = 5;
     private static final int 거리_100 = 100;
 
-    @Disabled
     @BeforeEach
     void setUpLine() {
         //노선 테스트 용 데이터
@@ -54,17 +46,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         일호선 = LineRequest.of("일호선", "남색", 강남역_ID, 역삼역_ID, DISTANCE_5);
         이호선 = LineRequest.of("이호선", "녹색", 강남역_ID, 역삼역_ID, DISTANCE_10);
         삼호선 = LineRequest.of("삼호선", "빨강", 강남역_ID, 역삼역_ID, DISTANCE_10);
-
-        //노선과 구간 테스트 용 데이터
-
-        변경_상행종점역_ID = 지하철_역_등록되어_있음(변경_상행종점역);
-        최초_상행종점역_ID = 지하철_역_등록되어_있음(최초_상행종점역);
-        최초_하행종점역_ID = 지하철_역_등록되어_있음(최초_하행종점역);
-        변경_하행_종점역_ID = 지하철_역_등록되어_있음(변경_하행_종점역);
-        사이_추가_역_ID = 지하철_역_등록되어_있음(사이_추가_역);
-
-        final LineRequest 구간_테스트_노선 = LineRequest.of("구간_테스트_노선", "사일런트라이트색", 최초_상행종점역_ID, 최초_하행종점역_ID, 거리_100);
-        구간_테스트_노선_ID = 지하철_노선_등록되어_있음(구간_테스트_노선);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -155,31 +136,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제됨(response);
     }
 
-    @DisplayName("역 사이에 새로운 역을 등록한다")
-    @Test
-    void createSection() {
-        SectionRequest request = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_5);
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(request)
-                .when()
-                .post(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
-                .then().log().all().extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        LineResponse lineResponse = responseLine(response);
-        assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(최초_상행종점역_ID, 사이_추가_역_ID, 최초_하행종점역_ID);
-    }
-
-
-    @Test
-    void asdf() {
-        List<Station> stationList = Arrays.asList(new Station("강남역"),new Station("강남역2"),new Station("강남역3"));
-        List<Station> stationList2 = Arrays.asList(new Station("강남역"),new Station("강남역2"));
-
-
-        System.out.println(1);
-    }
     private ExtractableResponse<Response> 지하철_노선_제거_요청(Long id) {
         return RestAssured.given().log().all()
                 .when()
@@ -188,7 +145,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest request) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest request) {
         return RestAssured.given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -223,13 +180,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private Long 지하철_노선_등록되어_있음(LineRequest request) {
+    public static Long 지하철_노선_등록되어_있음(LineRequest request) {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(request);
         지하철_노선_생성됨(response);
         return responseLine(response).getId();
     }
 
-    private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
+    public static void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
         LineResponse result = responseLine(response);
@@ -268,11 +225,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private LineResponse responseLine(ExtractableResponse<Response> response) {
+    public static LineResponse responseLine(ExtractableResponse<Response> response) {
         return response.jsonPath().getObject("", LineResponse.class);
     }
 
-    private List<LineResponse> responseLines(ExtractableResponse<Response> response) {
+    public static List<LineResponse> responseLines(ExtractableResponse<Response> response) {
         return response.jsonPath().getList(".", LineResponse.class);
     }
 }

@@ -1,14 +1,9 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.entity.BaseEntity;
-import nextstep.subway.common.exception.StationNotFoundException;
-import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 
 @Entity
@@ -26,8 +21,8 @@ public class Line extends BaseEntity {
      * TODO :  1) 고아객체 설정에 대해 학습하기
      *         2) 일급컬렉션으로 관리하기
      */
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    private final List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = new Sections();
 
     public Line() {
     }
@@ -43,31 +38,8 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        //존재하는지
-        sections.stream()
-                .filter(it -> it.getStation().equals(section.getStation()))
-                .findFirst()
-                .ifPresent(it -> it.updateStation(section.getNextStation(), section.getDistance()));
-
-        this.sections.add(section);
+        sections.add(section);
         section.addLine(this);
-        System.out.println("firststation ::" + findFirstStation());
-    }
-
-    private List<Station> getStations() {
-        return sections.stream().map(Section::getStation).collect(Collectors.toList());
-    }
-
-    private List<Station> getNextStations() {
-        return sections.stream().map(Section::getNextStation).collect(Collectors.toList());
-    }
-
-    private Station findFirstStation() {
-        return sections.stream()
-                .filter(section -> !getNextStations().contains(section.getStation()))
-                .findFirst()
-                .orElseThrow(StationNotFoundException::new)
-                .getStation();
     }
 
     public Long getId() {
@@ -82,7 +54,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return sections;
     }
 

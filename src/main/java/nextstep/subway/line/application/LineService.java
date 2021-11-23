@@ -34,8 +34,9 @@ public class LineService {
         final List<Line> lines = em.createQuery(
                         "select distinct l from Line l " +
                                 "left join fetch l.sections s " +
-                                "left join fetch s.station " +
-                                "left join fetch s.nextStation", Line.class)
+                                "left join fetch s.sections sc " +
+                                "left join fetch sc.station " +
+                                "left join fetch sc.nextStation", Line.class)
                 .getResultList();
         return LineResponse.ofList(lines);
     }
@@ -45,8 +46,9 @@ public class LineService {
         final Line line = em.createQuery(
                         "select distinct l from Line l" +
                                 " left join fetch l.sections s " +
-                                "left join fetch s.station " +
-                                "left join fetch s.nextStation " +
+                                "left join fetch s.sections sc " +
+                                "left join fetch sc.station " +
+                                "left join fetch sc.nextStation " +
                                 "where l.id = :id", Line.class)
                 .setParameter("id", id)
                 .getSingleResult();
