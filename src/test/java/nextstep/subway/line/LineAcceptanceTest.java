@@ -23,9 +23,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        StationResponse upStation = StationApiRequests.지하철역_생성됨("강남역");
-        StationResponse downStation = StationApiRequests.지하철역_생성됨("잠실역");
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
+        StationResponse 강남역 = StationApiRequests.지하철_역_생성됨("강남역");
+        StationResponse 잠실역 = StationApiRequests.지하철_역_생성됨("잠실역");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 잠실역.getId(), 10);
 
         // when
         // 지하철_노선_생성_요청
@@ -41,9 +41,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        StationResponse upStation = StationApiRequests.지하철역_생성됨("강남역");
-        StationResponse downStation = StationApiRequests.지하철역_생성됨("잠실역");
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
+        StationResponse 강남역 = StationApiRequests.지하철_역_생성됨("강남역");
+        StationResponse 잠실역 = StationApiRequests.지하철_역_생성됨("잠실역");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 잠실역.getId(), 10);
         LineApiRequests.지하철_노선_생성_요청(lineRequest);
 
         // when
@@ -55,13 +55,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성_실패됨_지하철_역_없음(response);
     }
 
-    @DisplayName("존재하지 않는 지하철역을 노선에 등록한다")
+    @DisplayName("존재하지 않는 지하철_역을 노선에 등록한다")
     @Test
     void createLine3() {
         // given
         // 지하철_노선_등록되어_있음
-        StationResponse upStation = StationApiRequests.지하철역_생성됨("강남역");
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", upStation.getId(), 2L, 10);
+        StationResponse 강남역 = StationApiRequests.지하철_역_생성됨("강남역");
+        Long 저장되지_않은_역_ID = 5L;
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 저장되지_않은_역_ID, 10);
         LineApiRequests.지하철_노선_생성_요청(lineRequest);
 
         // when
@@ -79,6 +80,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
+        StationResponse upStation = StationApiRequests.지하철_역_생성됨("강남역");
+        StationResponse downStation = StationApiRequests.지하철_역_생성됨("잠실역");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
+        LineApiRequests.지하철_노선_생성_요청(lineRequest);
+
         Long id1 = 지하철_노선_등록되어_있음(new LineRequest("2호선", "bg-green-200"));
         Long id2 = 지하철_노선_등록되어_있음(new LineRequest("4호선", "bg-blue-400"));
 

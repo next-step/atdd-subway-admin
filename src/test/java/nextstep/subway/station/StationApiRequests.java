@@ -20,7 +20,7 @@ public class StationApiRequests {
                 .extract();
     }
 
-    public static StationResponse 지하철역_생성됨(String name) {
+    public static StationResponse 지하철_역_생성됨(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
