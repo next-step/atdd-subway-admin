@@ -55,12 +55,13 @@ public class Sections {
 
     private void addLastSection(Section section) {
         Optional<Section> lastSection = getLastSection();
-        if (lastSection.isPresent()) {
-            lastSection.get().stationUpdate(section.getNextStation());
+
+        if (!lastSection.isPresent()) {
+            sections.add(Section.lastOf(section));
             return;
         }
 
-        sections.add(Section.lastOf(section));
+        lastSection.ifPresent(it -> it.stationUpdate(section.getNextStation()));
     }
 
     private Optional<Section> getLastSection() {
