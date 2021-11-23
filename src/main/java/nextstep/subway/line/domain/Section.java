@@ -3,7 +3,6 @@ package nextstep.subway.line.domain;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -36,11 +35,11 @@ public class Section extends BaseEntity {
     @Embedded
     private Distance distance;
 
-    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "upStationId", foreignKey = @ForeignKey(name = "fk_section_up_station"))
     private Station upStation;
 
-    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "downStationId", foreignKey = @ForeignKey(name = "fk_section_down_station"))
     private Station downStation;
 
@@ -65,10 +64,6 @@ public class Section extends BaseEntity {
 
     public static Section of(int distance, Station upStation, Station downStation) {
         return new Section(distance, upStation, downStation);
-    }
-
-    public static Section of(int distance, String upStation, String downStation) {
-        return new Section(distance, Station.of(upStation), Station.of(downStation));
     }
 
     public int getDistance() {
