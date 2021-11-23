@@ -1,4 +1,4 @@
-package nextstep.subway.line.ui.exception;
+package nextstep.subway.line.application.exception;
 
 import java.util.NoSuchElementException;
 
