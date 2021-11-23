@@ -12,7 +12,7 @@ public class Station extends BaseEntity {
     protected Station() {
     }
 
-    public Station(String name) {
+    public Station(final String name) {
         this.name = name;
     }
 
