@@ -1,7 +1,9 @@
 package nextstep.subway.line.ui;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
@@ -23,6 +25,8 @@ import nextstep.subway.line.dto.LineResponse;
 @RestController
 @RequestMapping("/lines")
 public class LineController {
+    public static final String ERROR_DATA_INTEGRITY_VIOLATION = "이미 생성된 노선입니다.";
+    public static final String ERROR = "Error";
     private final LineService lineService;
 
     public LineController(final LineService lineService) {
@@ -58,7 +62,12 @@ public class LineController {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest().body(Map.of(ERROR, ERROR_DATA_INTEGRITY_VIOLATION));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity defaultException(Exception e){
+        return ResponseEntity.badRequest().body(e);
     }
 
 }

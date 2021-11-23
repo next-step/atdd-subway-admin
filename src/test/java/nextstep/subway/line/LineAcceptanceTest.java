@@ -179,6 +179,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.jsonPath().getObject("Error", String.class)).isEqualTo("이미 생성된 노선입니다.");
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
