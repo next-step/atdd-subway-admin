@@ -173,10 +173,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_수정됨(final String updateName, final String updateColor,
         final ExtractableResponse<Response> response) {
-        응답코드_검증(response, HttpStatus.SC_OK);
-        assertThat(response.as(LineResponse.class)).isNotNull()
-            .extracting(LineResponse::getName, LineResponse::getColor)
-            .containsExactly(updateName, updateColor);
+        assertAll(
+            () -> 응답코드_검증(response, HttpStatus.SC_OK),
+            () -> assertThat(response.as(LineResponse.class)).isNotNull()
+                .extracting(LineResponse::getName, LineResponse::getColor)
+                .containsExactly(updateName, updateColor)
+        );
     }
 
     @DisplayName("지하철 노선을 제거한다.")
