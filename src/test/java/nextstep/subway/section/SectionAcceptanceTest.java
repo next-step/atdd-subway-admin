@@ -37,7 +37,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             LineResponse.class);
     }
 
-    @DisplayName("노선에 구간을 등록한다.")
+    @DisplayName("역 사이에 새 구간을 등록한다.")
     @Test
     void addSection() {
         // given
@@ -50,9 +50,45 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_등록됨(response);
     }
 
+    @DisplayName("상행 종점 구간으로 등록한다.")
+    @Test
+    void addSection_상행_종점_구간() {
+        // given
+        StationResponse 청계산입구역 = 지하철_역_생성(new StationRequest("청계산입구역")).as(StationResponse.class);
+
+        // when
+        ExtractableResponse<Response> response = 상행_종점에_구간_추가(신분당선.getId(), 청계산입구역);
+
+        // then
+        구간_등록됨(response);
+    }
+
+    @DisplayName("하행 종점 구간으로 등록한다.")
+    @Test
+    void addSection_하행_종점_구간() {
+        // given
+        StationResponse 청계산입구역 = 지하철_역_생성(new StationRequest("청계산입구역")).as(StationResponse.class);
+
+        // when
+        ExtractableResponse<Response> response = 하행_종점에_구간_추가(신분당선.getId(), 청계산입구역);
+
+        // then
+        구간_등록됨(response);
+    }
+
     private ExtractableResponse<Response> 지하철_노선에_구간_추가(Long lineId, StationResponse 청계산입구역) {
         return post("/lines/" + lineId + "/sections",
             new SectionRequest(강남역.getId(), 청계산입구역.getId(), 8));
+    }
+
+    private ExtractableResponse<Response> 상행_종점에_구간_추가(Long lineId, StationResponse 청계산입구역) {
+        return post("/lines/" + lineId + "/sections",
+            new SectionRequest(청계산입구역.getId(), 강남역.getId(), 8));
+    }
+
+    private ExtractableResponse<Response> 하행_종점에_구간_추가(Long lineId, StationResponse 청계산입구역) {
+        return post("/lines/" + lineId + "/sections",
+            new SectionRequest(광교역.getId(), 청계산입구역.getId(), 8));
     }
 
     private void 구간_등록됨(ExtractableResponse<Response> response) {
