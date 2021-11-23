@@ -1,8 +1,8 @@
-package nextstep.subway.line.ui;
+package nextstep.subway.common.ui;
 
+import nextstep.subway.common.exception.NotFoundException;
+import nextstep.subway.common.exception.ServiceException;
 import nextstep.subway.common.ui.ErrorResponse;
-import nextstep.subway.line.exception.DuplicateLineNameException;
-import nextstep.subway.line.exception.LineNotFoundException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
-public class LineControllerAdvice {
+public class DefaultControllerAdvice {
 
-    @ExceptionHandler(DuplicateLineNameException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateLineNameException(DuplicateLineNameException error) {
+    @ExceptionHandler(ServiceException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateLineNameException(ServiceException error) {
         return new ResponseEntity<>(new ErrorResponse(error), HttpStatus.BAD_REQUEST);
     }
 
@@ -29,8 +29,8 @@ public class LineControllerAdvice {
         return new ResponseEntity<>(new ErrorResponse(message), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(LineNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleLineNotFoundException(LineNotFoundException error) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleLineNotFoundException(NotFoundException error) {
         return new ResponseEntity<>(new ErrorResponse(error), HttpStatus.NOT_FOUND);
     }
 }

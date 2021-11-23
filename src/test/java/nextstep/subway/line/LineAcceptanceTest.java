@@ -5,8 +5,12 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.Asserts;
 import nextstep.subway.utils.Methods;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -27,6 +31,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 생성")
     @Nested
     class CreateLineTest {
+        private StationResponse 강남역;
+        private StationResponse 광교역;
+
+        @BeforeEach
+        void setUp() {
+            강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
+            광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+        }
 
         @DisplayName("지하철 노선을 생성한다.")
         @Test
@@ -70,6 +82,53 @@ public class LineAcceptanceTest extends AcceptanceTest {
             // then
             지하철_노선_생성이_실패한다(response);
         }
+
+        @DisplayName("상행선, 하행선, 거리가 포함된 노선을 생성 요청한다")
+        @Test
+        void givenSectionWhenCreateThenOk() {
+            // when
+            ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), "10");
+
+            // then
+            지하철_노선이_생성된다(response);
+        }
+
+        @DisplayName("상행선, 하행선, 거리 중 한개 이상 미포함하여 노선을 생성 요청한다")
+        @Test
+        void givenInvalidSectionWhenCreateThenReturnFail() {
+            // given
+            // 상행선, 하행선, 거리가 각각 하나씩 없는 조건 배열
+            String[][] conditions = {
+                    {강남역.getId().toString(), "", "11"},
+                    {"", 광교역.getId().toString(), "11"},
+                    {강남역.getId().toString(), 광교역.getId().toString(), ""}};
+
+            for (String[] arg : conditions) {
+                // when
+                ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "blue", arg[0], arg[1], arg[2]);
+
+                // then
+                지하철_노선_생성이_실패한다(response);
+            }
+        }
+
+        @DisplayName("상행선, 하행선에 등록이 안된 역을 포함한 노선을 생성 요청한다")
+        @Test
+        void givenHasNotStationWhenCreateThenReturnFail() {
+            // given
+            // 상행선, 하행선 각 각 없는 역 ID를 담은 배열
+            String[][] conditions = {
+                    {강남역.getId().toString(), "999999"},
+                    {"999999", 광교역.getId().toString()}};
+
+            for (String[] arg : conditions) {
+                // when
+                ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "blue", arg[0], arg[1], "20");
+
+                // then
+                등록된_역_없음_사유로_지하철_노선_생성이_실패한다(response);
+            }
+        }
     }
 
     @DisplayName("지하철 노선 목록 조회")
@@ -81,6 +140,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
             // given
             ExtractableResponse<Response> createResponse1 = 지하철_노선_등록되어_있음("박달-강남선", "blue");
             ExtractableResponse<Response> createResponse2 = 지하철_노선_등록되어_있음("광명-구디선", "green");
+
+            // when
+            ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
+
+            // then
+            지하철_노선_목록이_응답된다(response);
+            지하철_노선_목록이_포함된다(createResponse1, createResponse2, response);
+        }
+
+        @DisplayName("역이 포함된 지하철 노선을 조회한다.")
+        @Test
+        void getLineWithSection() {
+            // given
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+            ExtractableResponse<Response> createResponse1 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), "10");
+            ExtractableResponse<Response> createResponse2 = 지하철_노선_등록되어_있음("신분당선2", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), "10");
 
             // when
             ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -115,6 +191,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
             // then
             지하철_노선_응답이_실패한다(response);
+        }
+
+        @DisplayName("상행선 하행선 순으로 정렬된 역들이 포함된 지하철 노선을 조회한다.")
+        @Test
+        void getLineWithSection() {
+            // given
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+            ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), "10");
+
+            // when
+            ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
+
+            // then
+            지하철_노선을_응답한다(response);
+            상행선_하행선_순으로_정렬된_역을_포함한_지하철_노선을_응답한다(response, 강남역, 광교역);
         }
     }
 
@@ -212,6 +304,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
+    private void 등록된_역_없음_사유로_지하철_노선_생성이_실패한다(ExtractableResponse<Response> response) {
+        Asserts.assertIsNotFound(response);
+    }
+
     private void 지하철_노선_생성이_실패한다(ExtractableResponse<Response> response) {
         Asserts.assertIsBadRequest(response);
     }
@@ -253,6 +349,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
+    private void 상행선_하행선_순으로_정렬된_역을_포함한_지하철_노선을_응답한다(ExtractableResponse<Response> response, StationResponse ... stations) {
+        Long[] expectedStationIds = Stream.of(stations).map(StationResponse::getId).toArray(Long[]::new);
+        LineResponse result = response.jsonPath().getObject(".", LineResponse.class);
+        assertThat(result.getStations()).hasSize(stations.length)
+                .map(StationResponse::getId)
+                .containsExactly(expectedStationIds);
+    }
+
     private void 지하철_노선이_수정된_이름_색상으로_변경된다(ExtractableResponse<Response> createResponse, Map<String, String> toBeParams) {
         ExtractableResponse<Response> modifiedResponse = 지하철_노선_조회_요청(createResponse);
         Line line = modifiedResponse.jsonPath().getObject(".", Line.class);
@@ -270,14 +374,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
      * 요청
      */
     private ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color) {
-        return 지하철_노선_생성_요청(name, color);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(name, color);
+        지하철_노선이_생성된다(response);
+        return response;
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color, String upStationId, String downStationId, String distance) {
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(name, color, upStationId, downStationId, distance);
+        지하철_노선이_생성된다(response);
+        return response;
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
+        return 지하철_노선_생성_요청(name, color, null, null, null);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, String upStationId, String downStationId, String distance) {
         return RestAssured
                 .given().log().all()
+                .body(createLineParams(name, color, upStationId, downStationId, distance))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(createLineParams(name, color))
                 .when().post("/lines")
                 .then().log().all().extract();
     }
@@ -314,9 +430,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
      * 공통 메소드
      */
     private Map<String, String> createLineParams(String name, String color) {
-        Map<String, String> toBeParams = new HashMap<>();
-        toBeParams.put("name", name);
-        toBeParams.put("color", color);
-        return toBeParams;
+        return createLineParams(name, color, "", "", "");
+    }
+
+    private Map<String, String> createLineParams(String name, String color, String upStationId, String downStationId, String distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+        return params;
     }
 }
