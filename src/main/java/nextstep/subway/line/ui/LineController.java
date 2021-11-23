@@ -48,31 +48,17 @@ public class LineController {
 	}
 
 	@PostMapping
-	public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+	public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
 		LineResponse line = lineService.saveLine(lineRequest);
 		return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
 	}
 
 	@DeleteMapping(value = "/{lineId}")
-	public ResponseEntity deleteLine(@PathVariable("lineId") Long id) {
+	public ResponseEntity<LineResponse> deleteLine(@PathVariable("lineId") Long id) {
 		lineService.deleteById(id);
 		return ResponseEntity.noContent().build();
 	}
 
-	@ExceptionHandler(DataIntegrityViolationException.class)
-	public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
-		return ResponseEntity.badRequest().build();
-	}
-
-	@ExceptionHandler(IllegalArgumentException.class)
-	public ResponseEntity handleIllegalArgsException(IllegalArgumentException e) {
-		return ResponseEntity.badRequest().body(e.getMessage());
-	}
-
-	@ExceptionHandler(EmptyResultDataAccessException.class)
-	public ResponseEntity handleIllegalArgsException(EmptyResultDataAccessException e) {
-		return ResponseEntity.badRequest().build();
-	}
 
 
 }

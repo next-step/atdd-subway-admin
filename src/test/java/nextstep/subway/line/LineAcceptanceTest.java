@@ -3,14 +3,13 @@ package nextstep.subway.line;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
 import org.junit.jupiter.api.DisplayName;
@@ -20,11 +19,8 @@ import org.springframework.http.MediaType;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-	private static Map<String, String> params = new HashMap<>();
-	static{
-		params.put("name", "천안역");
-		params.put("color", "blue");
-	}
+	private static LineRequest params = new LineRequest("천안역", "blue");
+	private static LineRequest otherParams = new LineRequest("서울역", "blue");
 
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
@@ -62,10 +58,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// given
 		// 지하철_노선_등록되어_있음
 		// 지하철_노선_등록되어_있음
-		Map<String, String> otherParams = new HashMap<>();
-		otherParams.put("name", "서울역");
-		otherParams.put("color", "blue");
-
 		Response createResponse = requestCreateLines(params);
 		Response otherCreateResponse = requestCreateLines(otherParams);
 
@@ -94,7 +86,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// given
 		// 지하철_노선_등록되어_있음
 		Response createResponse = requestCreateLines(params);
-		String url = createResponse.header("Location");
+		String url = extractUrlByResponse(createResponse);
 
 		// when
 		// 지하철_노선_조회_요청
@@ -102,9 +94,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		// then
 		// 지하철_노선_응답됨
-		Long findId = findResponse.jsonPath().getObject(".", LineResponse.class).getId();
-		Long createId = Long.parseLong(url.split("/")[2]);
-		assertThat(findId).isEqualTo(createId);
+		assertThat(extractLineResponse(findResponse).getId()).isEqualTo(extractIdByURL(url));
 	}
 
 	@DisplayName("지하철 노선 조회 실패")
@@ -112,8 +102,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void getLineFail() {
 		// given
 		// 지하철_노선_등록되어_있음
-		Response createResponse = requestCreateLines(params);
-		String url = createResponse.header("Location");
+		requestCreateLines(params);
 
 		// when
 		// 지하철_노선_조회_요청
@@ -124,27 +113,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
-
 	@DisplayName("지하철 노선을 수정 성공")
 	@Test
 	void updateLineSuccess() {
 		// given
 		// 지하철_노선_등록되어_있음
-		Map<String, String> updateParams = new HashMap<>();
-		updateParams.put("name", "서울역");
-		updateParams.put("color", "blue");
 		Response createResponse = requestCreateLines(params);
-		String url = createResponse.header("Location");
+		String url = extractUrlByResponse(createResponse);
 
 		// when
 		// 지하철_노선_수정_요청
-		Response updateResponse = requestUpdateLine(url, updateParams);
+		Response updateResponse = requestUpdateLine(url, otherParams);
 
 		// then
 		// 지하철_노선_수정됨
-		LineResponse lineResponse = updateResponse.jsonPath().getObject(".", LineResponse.class);
+		LineResponse lineResponse = extractLineResponse(updateResponse);
 		assertThat(lineResponse.getName()).isEqualTo("서울역");
-		assertThat(lineResponse.getId()).isEqualTo(Long.parseLong(url.split("/")[2]));
+		assertThat(lineResponse.getId()).isEqualTo(extractIdByURL(url));
 	}
 
 	@DisplayName("지하철 노선을 수정 실패")
@@ -152,15 +137,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void updateLineFail() {
 		// given
 		// 지하철_노선_등록되어_있음
-		Map<String, String> updateParams = new HashMap<>();
-		updateParams.put("name", "서울역");
-		updateParams.put("color", "blue");
 		Response createResponse = requestCreateLines(params);
-		String url = createResponse.header("Location");
+		String url = extractUrlByResponse(createResponse);
 
 		// when
 		// 지하철_노선_수정_요청
-		Response updateResponse = requestUpdateLine("lines/3", updateParams);
+		Response updateResponse = requestUpdateLine("lines/3", otherParams);
 
 		// then
 		// 지하철_노선_수정됨
@@ -172,12 +154,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void deleteLineSuccess() {
 		// given
 		// 지하철_노선_등록되어_있음
-		Map<String, String> otherParams = new HashMap<>();
-		otherParams.put("name", "서울역");
-		otherParams.put("color", "blue");
 		Response createResponse = requestCreateLines(params);
 		requestCreateLines(otherParams);
-		String url = createResponse.header("Location");
+		String url = extractUrlByResponse(createResponse);
 
 		// when
 		// 지하철_노선_제거_요청
@@ -204,8 +183,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
+	private long extractIdByURL(String url) {
+		return Long.parseLong(url.split("/")[2]);
+	}
 
-	private Response requestCreateLines(Map<String, String> params) {
+	private LineResponse extractLineResponse(Response response) {
+		return response.jsonPath().getObject(".", LineResponse.class);
+	}
+
+	private String extractUrlByResponse(Response response) {
+		return response.header("Location");
+	}
+
+	private Response requestCreateLines(LineRequest params) {
 		Response response = RestAssured.given().log().all()
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.body(params)
@@ -233,7 +223,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.extract().response();
 	}
 
-	private Response requestUpdateLine(String url, Map<String, String> updateParams) {
+	private Response requestUpdateLine(String url, LineRequest updateParams) {
 		return RestAssured.given().log().all()
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.body(updateParams)

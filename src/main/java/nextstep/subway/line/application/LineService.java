@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class LineService {
-	private LineRepository lineRepository;
+	private final LineRepository lineRepository;
 
 	public LineService(LineRepository lineRepository) {
 		this.lineRepository = lineRepository;
@@ -30,7 +30,7 @@ public class LineService {
 	public List<LineResponse> findAllLines() {
 		return lineRepository.findAll()
 			.stream()
-			.map(line -> LineResponse.of(line))
+			.map(LineResponse::of)
 			.collect(Collectors.toList());
 	}
 
