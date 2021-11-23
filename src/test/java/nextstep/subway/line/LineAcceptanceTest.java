@@ -106,12 +106,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 지하철_노선을_제거한다() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createLine = 지하철_노선_생성_요청("신분당선", "red");
+        Long createLineId = createLine.jsonPath().getObject(".", Line.class).getId();
 
         // when
         // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(createLineId);
 
         // then
         // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(Long deleteLineId) {
+        return RestAssured
+                .given().log().all()
+                .when().delete("/lines/{id}", deleteLineId)
+                .then().log().all().extract();
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
