@@ -63,6 +63,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	@BeforeEach
 	void setup() {
+		super.setUp();
+
 		강남역 = 지하철역이_등록되어있음(강남역_생성_요청값());
 		광교역 = 지하철역이_등록되어있음(광교역_생성_요청값());
 		성수역 = 지하철역이_등록되어있음(성수역_생성_요청값());
