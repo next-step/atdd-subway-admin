@@ -30,8 +30,16 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), convertStationResponses(line.getSortedSections()),
+        return new LineResponse(line.getId(), line.getName(), line.getColor(),
+            convertStationResponses(line.getSortedSections()),
             line.getCreatedDate(), line.getModifiedDate());
+    }
+
+    private static List<StationResponse> convertStationResponses(List<Section> sections) {
+        return sections
+            .stream()
+            .map(section -> StationResponse.of(section.getStation()))
+            .collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -56,13 +64,6 @@ public class LineResponse {
 
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
-    }
-
-    private static List<StationResponse> convertStationResponses(List<Section> sections) {
-        return sections
-            .stream()
-            .map(section -> StationResponse.of(section.getStation()))
-            .collect(Collectors.toList());
     }
 
     @Override

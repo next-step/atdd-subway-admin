@@ -44,14 +44,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철 역 3개(서울역, 용산역, 추가역) 추가 되어 있음
         Map<SectionType, Long> idsMap = 상행역_하행역_저장한다(new Station("서울역"), new Station("용산역"));
-        ExtractableResponse<Response> addStationResponse = 저장한다(new Station("추가역"), STATION_API_URL);
+        ExtractableResponse<Response> addStationResponse = 저장한다(new Station("추가역"),
+            STATION_API_URL);
 
         // 서울역-용산역을 구간으로 가진 1호선 등록되어 있음
-        LineRequest lineRequest = new LineRequest(line1Name, "blue", idsMap.get(SectionType.UP),
-            idsMap.get(SectionType.DOWN), DISTANCE_10);
+        LineRequest lineRequest =
+            new LineRequest(line1Name, "blue", idsMap.get(SectionType.UP),
+                idsMap.get(SectionType.DOWN), DISTANCE_10);
         line1 = 저장한다(lineRequest, API_URL);
 
-        sectionUrl = line1.header("Location")+"/sections";
+        sectionUrl = line1.header("Location") + "/sections";
         upStationId = idsMap.get(SectionType.UP);
         downStationId = idsMap.get(SectionType.DOWN);
         addStationId = getLongIdByResponse(addStationResponse);
@@ -67,7 +69,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // 이름, 색상, 상행역id, 하행역id, 거리
         LineRequest lineRequest =
-            new LineRequest("1호선-천안", "Blue", idsMap.get(SectionType.UP), idsMap.get(SectionType.DOWN), 10);
+            new LineRequest("1호선-천안", "Blue", idsMap.get(SectionType.UP),
+                idsMap.get(SectionType.DOWN), DISTANCE_10);
 
         //when
         //지하철 노선 생성 (상행, 하행 역 정보 포함) 요청
@@ -93,7 +96,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_생성_요청
         ExtractableResponse<Response> response =
-            저장한다(new LineRequest(line1Name, "Orange", idsMap.get(SectionType.UP), idsMap.get(SectionType.DOWN), 10), API_URL);
+            저장한다(new LineRequest(line1Name, "Orange", idsMap.get(SectionType.UP),
+                idsMap.get(SectionType.DOWN), DISTANCE_10), API_URL);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -106,7 +110,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         Map<SectionType, Long> idsMap = 상행역_하행역_저장한다(new Station("강남역"), new Station("역삼역"));
-        ExtractableResponse<Response> line2 = 저장한다(new LineRequest("2호선", "green", idsMap.get(SectionType.UP), idsMap.get(SectionType.DOWN), 10), API_URL);
+        ExtractableResponse<Response> line2 =
+            저장한다(new LineRequest("2호선", "green", idsMap.get(SectionType.UP),
+                idsMap.get(SectionType.DOWN), DISTANCE_10), API_URL);
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -181,12 +187,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //when
         // 용산역-추가역 구간 추가
-        SectionRequest sectionRequest = new SectionRequest(downStationId, addStationId, DISTANCE_10);
+        SectionRequest sectionRequest =
+            new SectionRequest(downStationId, addStationId, DISTANCE_10);
         ExtractableResponse<Response> saveResponse = 저장한다(sectionRequest, sectionUrl);
 
         //then
         // 노선 정보에 추가역 추가되어 지하철 역 정보 3개(서울역,용산역,추가역 순으로) 목록 조회됨
-        노선정보에구간추가되어_역정보목록정렬되어조회됨(saveResponse, Arrays.asList("서울역","용산역","추가역"));
+        노선정보에구간추가되어_역정보목록정렬되어조회됨(saveResponse, Arrays.asList("서울역", "용산역", "추가역"));
     }
 
     @Test
@@ -202,7 +209,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         // 노선 정보에 역 추가되어 지하철 역 정보 3개(추가역,서울역,용산역 순으로) 목록 조회됨
-        노선정보에구간추가되어_역정보목록정렬되어조회됨(saveResponse, Arrays.asList("추가역","서울역","용산역"));
+        노선정보에구간추가되어_역정보목록정렬되어조회됨(saveResponse, Arrays.asList("추가역", "서울역", "용산역"));
     }
 
     @Test
@@ -219,7 +226,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         // 노선 정보에 추가역 추가되어 지하철 역 정보 3개(서울역,추가역,용산역 순으로) 목록 조회됨
-        노선정보에구간추가되어_역정보목록정렬되어조회됨(saveResponse, Arrays.asList("서울역","추가역","용산역"));
+        노선정보에구간추가되어_역정보목록정렬되어조회됨(saveResponse, Arrays.asList("서울역", "추가역", "용산역"));
     }
 
     @Test
@@ -248,7 +255,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //when
         //강남역-역삼역을 상행-하행으로 구간 추가
-        SectionRequest sectionRequest = new SectionRequest(idsMap.get(SectionType.UP), idsMap.get(SectionType.DOWN), DISTANCE_4);
+        SectionRequest sectionRequest =
+            new SectionRequest(idsMap.get(SectionType.UP), idsMap.get(SectionType.DOWN),
+                DISTANCE_4);
         ExtractableResponse<Response> saveResponse = 저장한다(sectionRequest, sectionUrl);
 
         //then
@@ -290,7 +299,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private void 노선정보에구간추가되어_역정보목록정렬되어조회됨(ExtractableResponse<Response> response, List<String> stationNames) {
+    @Test
+    @DisplayName("1호선과 같은 구간(서울역-용산역, 10)을 가지는 1호선-천안 노선 추가")
+    void createLine1Cheonan() {
+        //given
+        //서울역-용산역을 구간으로 가지는 1호선 저장되어 있다.
+
+        //when
+        //서울역-용산역을 구간으로 가지는 1호선-천안 노선 생성 요청
+        LineRequest lineRequest =
+            new LineRequest("1호선-천안", "navy", upStationId, downStationId, DISTANCE_10);
+        ExtractableResponse<Response> response = 저장한다(lineRequest, API_URL);
+
+        //then
+        //1호선-천안 노선 생성 성공
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private void 노선정보에구간추가되어_역정보목록정렬되어조회됨(ExtractableResponse<Response> response,
+        List<String> stationNames) {
         LineResponse lineResponse = response.body().as(LineResponse.class);
         List<StationResponse> stations = lineResponse.getStations();
 

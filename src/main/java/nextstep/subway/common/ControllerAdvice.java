@@ -1,5 +1,6 @@
 package nextstep.subway.common;
 
+import nextstep.subway.exception.BusinessException;
 import nextstep.subway.exception.NotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,11 @@ public class ControllerAdvice {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity handleNotFoundException(NotFoundException e) {
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity handleBusinessException(BusinessException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
 }

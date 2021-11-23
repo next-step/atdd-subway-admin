@@ -75,7 +75,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // given
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "역삼역");
-        List<ExtractableResponse<Response>> givenList = 목록을_저장한다(new Object[]{params, params2}, API_URL);
+        List<ExtractableResponse<Response>> givenList = 목록을_저장한다(new Object[]{params, params2},
+            API_URL);
 
         // when
         ExtractableResponse<Response> response = 조회한다(API_URL);

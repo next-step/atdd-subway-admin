@@ -1,19 +1,19 @@
 package nextstep.subway.line.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.common.Messages;
+import nextstep.subway.exception.BusinessException;
 import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionType;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -78,6 +78,65 @@ public class Line extends BaseEntity {
         return this.sections.contains(section);
     }
 
+    public Line addSection(Distance distance, Station upStation, Station downStation) {
+        Section upSection = sections.findByStation(upStation);
+        Section downSection = sections.findByStation(downStation);
+
+        validate(upSection, downSection);
+
+        if (upSection != null) {
+            addDownSection(distance, upSection, downStation);
+            return this;
+        }
+
+        if (downSection != null) {
+            addUpSection(distance, downSection, upStation);
+            return this;
+        }
+        return this;
+    }
+
+    private void addDownSection(Distance distance, Section upSection, Station downStation) {
+        if (upSection.isDownStation()) {
+            upSection.update(distance, SectionType.MIDDLE, downStation);
+            Section downSection = Section.fromDownSection(downStation, this);
+            sections.add(downSection);
+            return;
+        }
+
+        addMiddleSection(upSection, downStation, distance, upSection.getLinkStation());
+    }
+
+    private void addUpSection(Distance distance, Section downSection, Station upStation) {
+        if (downSection.isUpStation()) {
+            downSection.update(SectionType.MIDDLE);
+            Section upSection =
+                Section.ofUpSection(distance, upStation, downSection.getStation(), this);
+            sections.add(upSection);
+            return;
+        }
+
+        Section upSection = sections.findByLinkStation(downSection.getStation());
+        addMiddleSection(upSection, upStation, distance, downSection.getStation());
+    }
+
+    private void addMiddleSection(Section updateSection, Station addStation, Distance distance,
+        Station linkStation) {
+        updateSection.update(updateSection.calculateDistance(distance), addStation);
+        Section middleSection = Section.ofMiddleSection(distance, addStation, linkStation, this);
+        sections.add(middleSection);
+    }
+
+    private void validate(Section upSection, Section downSection) {
+        if (upSection == null && downSection == null) {
+            throw new BusinessException(Messages.NOT_INCLUDE_SECTION.getValues());
+        }
+
+        if (upSection != null && downSection != null) {
+            throw new BusinessException(Messages.ALREADY_EXISTS_SECTION.getValues());
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -95,8 +154,4 @@ public class Line extends BaseEntity {
         return Objects.hash(id);
     }
 
-    public Line addSection(Distance from, Station upStation, Station station) {
-
-        return this;
-    }
 }
