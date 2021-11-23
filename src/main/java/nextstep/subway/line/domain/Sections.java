@@ -33,7 +33,15 @@ public class Sections {
 	}
 
 	public void add(Section section) {
-		sectionList.forEach(inner -> inner.validSection(section));
+		if (!sectionList.isEmpty()) {
+			sectionList.forEach(inner -> inner.validSection(section));
+			sectionList
+				.stream()
+				.filter(inner -> inner.isSameUpDownStation(section))
+				.findAny()
+				.ifPresent(inner -> inner.reSettingSection(section));
+		}
+
 		sectionList.add(section);
 	}
 
