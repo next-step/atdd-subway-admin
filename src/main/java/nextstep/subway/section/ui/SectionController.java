@@ -3,6 +3,7 @@ package nextstep.subway.section.ui;
 import nextstep.subway.section.application.SectionService;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class SectionController {
         this.sectionService = sectionService;
     }
 
-    @PostMapping(value = "/{lineId}/sections")
+    @PostMapping(value = "/{lineId}/sections", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity addSection(@PathVariable Long lineId,
                                      @RequestBody SectionRequest request) {
         SectionResponse section = sectionService.addSection(lineId, request);
