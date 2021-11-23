@@ -7,14 +7,17 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.util.Objects;
-
-import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Embeddable
+@Table(
+        indexes = @Index(name = "section_id_upStationId_downStationId_unique_index", columnList = "id,upStationId,downStationId", unique = true)
+)
 public class Section extends BaseEntity {
 
     private static final String UP_STATION_NOT_NULL_ERROR_MESSAGE = "상행역은 빈값일 수 없습니다.";
@@ -22,11 +25,11 @@ public class Section extends BaseEntity {
     @Embedded
     private Distance distance;
 
-    @ManyToOne(fetch = LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "upStationId")
     private Station upStation;
 
-    @ManyToOne(fetch = LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "downStationId")
     private Station downStation;
 
