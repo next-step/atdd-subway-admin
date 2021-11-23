@@ -23,10 +23,9 @@ public class Distance {
     }
 
     private void validate(int value) {
-        if (value > 0) {
-            return;
+        if (value <= 0) {
+            throw new IllegalArgumentException("거리는 0보다 커야 합니다.");
         }
-        throw new IllegalArgumentException("거리는 0보다 커야 합니다.");
     }
 
     public Distance subtract(Distance distance) {
