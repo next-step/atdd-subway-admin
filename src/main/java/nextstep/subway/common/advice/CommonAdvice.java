@@ -2,6 +2,7 @@ package nextstep.subway.common.advice;
 
 import nextstep.subway.common.exception.DuplicateParameterException;
 import nextstep.subway.common.exception.LineNotFoundException;
+import nextstep.subway.common.exception.SectionNotCreateException;
 import nextstep.subway.common.exception.StationNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ public class CommonAdvice {
             DataIntegrityViolationException.class,
             LineNotFoundException.class,
             StationNotFoundException.class,
+            SectionNotCreateException.class,
             DuplicateParameterException.class})
     public ResponseEntity handleIllegalArgsException(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());

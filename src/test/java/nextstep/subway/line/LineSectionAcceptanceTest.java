@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import static nextstep.subway.station.StationAcceptanceTest.*;
 import static nextstep.subway.line.LineAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.*;
 
 @DisplayName("지하철 구간 관련 기능")
 public class LineSectionAcceptanceTest extends AcceptanceTest {
@@ -58,9 +59,23 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
                 .post(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
                 .then().log().all().extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(CREATED.value());
         LineResponse lineResponse = responseLine(response);
         assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(최초_상행종점역_ID, 사이_추가_역_ID, 최초_하행종점역_ID);
+    }
+
+    @DisplayName("역 사이에 새로운 역 거리가 유효하지 않게 등록한다.")
+    @Test
+    void createSectionFail() {
+        SectionRequest request = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_100);
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .when()
+                .post(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
+                .then().log().all().extract();
+
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
     }
 
     @DisplayName("새로운 역을 상행 종점에 등록한다.")
@@ -74,7 +89,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
                 .post(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
                 .then().log().all().extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(CREATED.value());
         LineResponse lineResponse = responseLine(response);
         assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(변경_상행종점역_ID, 최초_상행종점역_ID, 최초_하행종점역_ID);
     }
@@ -90,8 +105,10 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
                 .post(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
                 .then().log().all().extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(CREATED.value());
         LineResponse lineResponse = responseLine(response);
         assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(최초_상행종점역_ID, 최초_하행종점역_ID, 변경_하행_종점역_ID);
     }
+
+
 }

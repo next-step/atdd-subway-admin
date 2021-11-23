@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.common.exception.SectionNotCreateException;
 import nextstep.subway.common.exception.StationNotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
@@ -23,10 +24,12 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
+        validate(section);
+
         //존재하는지
         sections.stream()
                 .filter(it -> it.getStation().equals(section.getStation()))
@@ -35,6 +38,18 @@ public class Sections {
 
         this.sections.add(section);
     }
+
+    private void validate(Section section) {
+        validateDistance(section);
+    }
+
+    private void validateDistance(Section section) {
+        Optional<Section> findSection = findSection(section);
+        findSection.ifPresent(it -> {
+            if(!it.isPermitDistance(section.getDistance())) throw new SectionNotCreateException("유효한 길이가 아닙니다.");
+        });
+    }
+
 
     public List<Station> getStations() {
         Station firstStation = findFirstStation();
@@ -71,6 +86,12 @@ public class Sections {
                 .filter(it -> !getDownStations().contains(it.getStation()))
                 .findFirst()
                 .orElseThrow(StationNotFoundException::new);
+    }
+
+    private Optional<Section> findSection(Section section) {
+        return sections.stream()
+                .filter(it -> it.getStation().equals(section.getStation()))
+                .findFirst();
     }
 
     private Station findFirstStation() {

@@ -55,6 +55,11 @@ public class Section extends BaseEntity {
     public void addLine(Line line) {
         this.line = line;
     }
+
+    public boolean isPermitDistance(int distance) {
+        return this.distance > distance;
+    }
+
     public Long getId() {
         return id;
     }
