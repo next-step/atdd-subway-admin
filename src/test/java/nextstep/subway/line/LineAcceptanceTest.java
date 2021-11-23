@@ -4,6 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.ApiUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -14,12 +15,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private ExtractableResponse<Response> 지하철_노선_등록(String name, String color, Integer distance) {
+    public static ExtractableResponse<Response> 지하철_노선_등록(String name, String color, Integer distance) {
 
         ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
         ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
@@ -30,7 +32,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return 지하철_노선_등록(name, color, upStationId, downStationId, distance);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_등록(String name, String color, Long upStationId,
+    public static ExtractableResponse<Response> 지하철_노선_등록(String name, String color, Long upStationId,
                                                          Long downStationId, Integer distance) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
@@ -40,13 +42,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("distance", String.valueOf(distance));
 
         return ApiUtils.post("/lines", params);
-    }
-
-    private ExtractableResponse<Response> 지하철역_등록(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        return ApiUtils.post("/stations", params);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
