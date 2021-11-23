@@ -150,4 +150,18 @@ class SectionsTest {
             )
             .withMessage("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 작아야 합니다");
     }
+
+    @Test
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록된 경우 예외 발생")
+    void 예외_케이스2() {
+        // given
+        Sections sections = line.getSections();
+
+        // when, then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> sections.connect(Section.of(line, 1L, 2L, 5))
+            )
+            .withMessage("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다");
+    }
+
 }

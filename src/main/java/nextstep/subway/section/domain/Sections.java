@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,6 +35,7 @@ public class Sections {
         Optional<Section> optExistedSection = upBoundSection(section);
         if (optExistedSection.isPresent()) {
             Section existedSection = optExistedSection.get();
+            validateAlreadyExistedStations(section);
             validateDistanceWhenConnectInExistedSection(existedSection, section);
             existedSection.updateForConnect(section);
         }
@@ -111,10 +113,29 @@ public class Sections {
             .collect(toSet());
     }
 
+    private Set<Station> getAllStations() {
+        Set<Station> stations = new HashSet<>();
+        stations.addAll(getUpStations());
+        stations.addAll(getDownStations());
+        return stations;
+    }
+
     private void validateDistanceWhenConnectInExistedSection(Section existedSection, Section section) {
         if (existedSection.getDistance().lessThanOrEqual(section.getDistance())) {
             throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 작아야 합니다");
         }
+    }
+
+    private void validateAlreadyExistedStations(Section section) {
+        if (isExistedUpStationAndDownStation(section)) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다");
+        }
+    }
+
+    private boolean isExistedUpStationAndDownStation(Section section) {
+        Set<Station> stations = getAllStations();
+        return stations.contains(section.getUpStation())
+            && stations.contains(section.getDownStation());
     }
 
     List<Section> getValues() {
