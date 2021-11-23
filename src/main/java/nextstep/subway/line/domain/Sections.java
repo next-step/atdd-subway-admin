@@ -41,14 +41,12 @@ public class Sections {
     }
 
     public void addSection(Section requestSection) {
-        Set<Station> existedStation = findAllStation();
-
-        if (existedStation.isEmpty()) {
+        if (values.isEmpty()) {
             values.add(requestSection);
             return;
         }
 
-        addSectionInExistSections(requestSection, existedStation);
+        addSectionInExistSections(requestSection);
     }
 
     public List<Station> getStations() {
@@ -98,7 +96,9 @@ public class Sections {
         return upStation;
     }
 
-    private void addSectionInExistSections(Section requestSection, Set<Station> existedStation) {
+    private void addSectionInExistSections(Section requestSection) {
+        Set<Station> existedStation = findAllStation();
+
         validateExistOrDisconnectSection(requestSection, existedStation);
 
         Optional<Station> existUpStation = findStation(requestSection.getUpStation(), existedStation);
