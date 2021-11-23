@@ -3,7 +3,7 @@ package nextstep.subway.line.domain;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.common.ServiceException;
+import nextstep.subway.common.exception.ServiceException;
 
 class DistanceTest {
 

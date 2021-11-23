@@ -24,8 +24,8 @@ public class Sections {
     }
 
     public List<Section> getStations() {
-        List<Section> collect = sections.stream().sorted().collect(toList());
-        return Collections.unmodifiableList(collect);
+        List<Section> sortSections = sections.stream().sorted().collect(toList());
+        return Collections.unmodifiableList(sortSections);
     }
 
 }

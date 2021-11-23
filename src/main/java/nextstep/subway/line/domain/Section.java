@@ -16,7 +16,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.common.ServiceException;
+import nextstep.subway.line.exception.DuplicationStationException;
+import nextstep.subway.common.exception.NoResultDataException;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -47,11 +48,11 @@ public class Section extends BaseEntity implements Comparable<Section> {
     public Section(Station upStation, Station downStation) {
 
         if (Objects.isNull(upStation)) {
-            throw new ServiceException("상행 값이 비어있습니다.");
+            throw new NoResultDataException();
         }
 
         if (upStation.equals(downStation)) {
-            throw new ServiceException("상행선과 하행선은 동일할 수 없습니다.");
+            throw new DuplicationStationException();
         }
         this.station = upStation;
         this.nextStation = downStation;

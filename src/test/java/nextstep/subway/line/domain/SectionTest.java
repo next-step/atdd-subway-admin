@@ -3,7 +3,8 @@ package nextstep.subway.line.domain;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.common.ServiceException;
+import nextstep.subway.common.exception.ServiceException;
+import nextstep.subway.line.exception.DuplicationStationException;
 import nextstep.subway.station.domain.Station;
 
 public class SectionTest {
@@ -16,7 +17,7 @@ public class SectionTest {
         // then
         Assertions.assertThatThrownBy(() -> {
                       Section section = new Section(gangNam, gangNam);
-                  }).isInstanceOf(ServiceException.class)
+                  }).isInstanceOf(DuplicationStationException.class)
                   .hasMessage("상행선과 하행선은 동일할 수 없습니다.");
 
     }

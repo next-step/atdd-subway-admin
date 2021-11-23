@@ -1,4 +1,4 @@
-package nextstep.subway.common;
+package nextstep.subway.common.exception;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -8,6 +8,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import nextstep.subway.common.ErrorResponse;
+import nextstep.subway.common.exception.ServiceException;
 
 @ControllerAdvice
 public class SubwayAdvice {
