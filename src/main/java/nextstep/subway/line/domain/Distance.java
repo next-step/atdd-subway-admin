@@ -8,6 +8,7 @@ import java.util.Objects;
 
 @Embeddable
 public class Distance {
+    private static final int MIN_DISTANCE = 0;
 
     @Column
     private int distance;
@@ -25,7 +26,7 @@ public class Distance {
     }
 
     private void validateDistance(int distance) {
-        if (distance <= 0) {
+        if (distance < MIN_DISTANCE) {
             throw new IllegalDistanceException();
         }
     }
