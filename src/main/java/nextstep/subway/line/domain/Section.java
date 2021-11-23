@@ -15,9 +15,11 @@ public class Section {
     private Line line;
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_section_upstation"))
     private Station upStation;
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_section_downstation"))
     private Station downStation;
 
     @Embedded
@@ -30,5 +32,17 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = new Distance(distance);
+    }
+
+    public void addLine(Line line) {
+        this.line = line;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 }

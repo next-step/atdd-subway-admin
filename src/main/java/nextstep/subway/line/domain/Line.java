@@ -15,7 +15,7 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
     @OneToMany(mappedBy = "line")
-    private final List<Section> sections = new ArrayList<>();
+    private List<Section> sections = new ArrayList<>();
 
     public Line() {
     }
@@ -48,5 +48,6 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section) {
         sections.add(section);
+        section.addLine(this);
     }
 }
