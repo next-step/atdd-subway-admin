@@ -1,7 +1,5 @@
 package nextstep.subway.line.application;
 
-import static java.util.stream.Collectors.*;
-
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -36,10 +34,8 @@ public class LineService {
     }
 
     public List<LineResponse> findAllLine() {
-        List<Line> all = lineRepository.findAll();
-        return all.stream()
-                  .map(LineResponse::of)
-                  .collect(toList());
+        List<Line> findAll = lineRepository.findAll();
+        return LineResponse.ofList(findAll);
     }
 
     public LineResponse findLineById(final Long id) {

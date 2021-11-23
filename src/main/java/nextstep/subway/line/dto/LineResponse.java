@@ -1,7 +1,8 @@
 package nextstep.subway.line.dto;
 
+import static java.util.stream.Collectors.*;
+
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import nextstep.subway.line.domain.Line;
@@ -32,6 +33,12 @@ public class LineResponse {
     }
 
     public LineResponse() {
+    }
+
+    public static List<LineResponse> ofList(List<Line> findAll) {
+        return findAll.stream()
+                      .map(LineResponse::of)
+                      .collect(toList());
     }
 
     public Long getId() {
