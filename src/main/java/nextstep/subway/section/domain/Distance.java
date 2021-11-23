@@ -10,7 +10,7 @@ import javax.persistence.Embeddable;
 import nextstep.subway.common.ServiceException;
 
 @Embeddable
-public class Distance implements Serializable {
+public class Distance {
 
     @Column
     private int distance = 0;
