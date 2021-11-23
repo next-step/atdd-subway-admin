@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StationAcceptanceTest extends AcceptanceTest {
 
     public static ExtractableResponse<Response> 지하철역_등록(String name) {
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", name);
 
         return ApiUtils.post("/stations", params);

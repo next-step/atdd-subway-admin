@@ -18,7 +18,7 @@ public class ApiUtils {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> post(String url, Map<String, String> params) {
+    public static ExtractableResponse<Response> post(String url, Map<String, Object> params) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
