@@ -1,18 +1,14 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.Section;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static java.util.Comparator.comparingDouble;
 import static java.util.stream.Collectors.*;
 
 public class LineResponse {
