@@ -1,8 +1,7 @@
 package nextstep.subway.line.dto;
 
-import nextstep.subway.line.domain.Line;
-
 import java.time.LocalDateTime;
+import nextstep.subway.line.domain.Line;
 
 public class LineResponse {
     private Long id;
@@ -23,7 +22,8 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(),
+            line.getModifiedDate());
     }
 
     public Long getId() {
