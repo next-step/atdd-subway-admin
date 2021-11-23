@@ -47,7 +47,7 @@ public class Section {
         return new Section(line, Station.of(upStationId), Station.of(downStationId), distance);
     }
 
-    public void updateForInsertMiddle(Section section) {
+    public void updateForConnect(Section section) {
         this.upStation = section.upStation;
         this.distance = this.distance.subtract(section.distance);
     }

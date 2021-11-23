@@ -31,10 +31,11 @@ public class Sections {
     }
 
     public void connect(Section section) {
-        Optional<Section> optUpBoundSection = upBoundSection(section);
-        if (optUpBoundSection.isPresent()) {
-            Section upBoundSection = optUpBoundSection.get();
-            upBoundSection.updateForInsertMiddle(section);
+        Optional<Section> optExistedSection = upBoundSection(section);
+        if (optExistedSection.isPresent()) {
+            Section existedSection = optExistedSection.get();
+            validateDistanceWhenConnectInExistedSection(existedSection, section);
+            existedSection.updateForConnect(section);
         }
         this.values.add(section);
     }
@@ -108,6 +109,12 @@ public class Sections {
         return this.values.stream()
             .map(Section::getDownStation)
             .collect(toSet());
+    }
+
+    private void validateDistanceWhenConnectInExistedSection(Section existedSection, Section section) {
+        if (existedSection.getDistance().lessThanOrEqual(section.getDistance())) {
+            throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 작아야 합니다");
+        }
     }
 
     List<Section> getValues() {

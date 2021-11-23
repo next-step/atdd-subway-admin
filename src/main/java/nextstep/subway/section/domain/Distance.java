@@ -33,6 +33,10 @@ public class Distance {
         return new Distance(this.value - distance.value);
     }
 
+    public boolean lessThanOrEqual(Distance other) {
+        return this.value <= other.value;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

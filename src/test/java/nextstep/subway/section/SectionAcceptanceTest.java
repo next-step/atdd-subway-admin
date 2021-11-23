@@ -130,7 +130,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> 구간_사이에_기존_구간과_동일한_거리로_구간_추가(StationResponse 청계산입구역) {
         return post("/lines/" + 신분당선.getId() + "/sections",
-            new SectionRequest(강남역.getId(), 청계산입구역.getId(), 8));
+            new SectionRequest(강남역.getId(), 청계산입구역.getId(), 10));
     }
 
     private ExtractableResponse<Response> 이미_등록된_구간을_등록() {
