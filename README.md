@@ -59,3 +59,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 * 지하철 노선 조회
 * 지하철 노선 수정
 * 지하철 노선 삭제
+
+## 기능 목록(2단계)
+* 노선 생성 시 두 종점역 추가
+* 노선 조회 시 역 목록도 함께 조회
+  * 상행역 부터 하행역 순으로 정렬

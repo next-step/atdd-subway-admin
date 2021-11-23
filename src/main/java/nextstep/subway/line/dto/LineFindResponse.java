@@ -1,6 +1,8 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
@@ -19,16 +21,37 @@ public class LineFindResponse {
     public LineFindResponse() {
     }
 
-    public LineFindResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    private LineFindResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
+        this.stations = stations;
     }
 
     public static LineFindResponse of(Line line) {
-        return new LineFindResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
+        List<StationResponse> stations = createStations(line);
+        return new LineFindResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate(), stations);
+    }
+
+    public static List<LineFindResponse> ofList(List<Line> lines) {
+        List<LineFindResponse> lineFindResponses = new ArrayList<>();
+        for (Line line : lines) {
+            lineFindResponses.add(of(line));
+        }
+        return lineFindResponses;
+    }
+
+    private static List<StationResponse> createStations(Line line) {
+        List<StationResponse> stations = new ArrayList<>();
+        Sections sections = line.getSections();
+        List<Section> sectionList = sections.getSections();
+        for (Section section : sectionList) {
+            stations.add(StationResponse.of(section.getUpStation()));
+        }
+        stations.add(StationResponse.of(sectionList.get(sectionList.size() - 1).getDownStation()));
+        return stations;
     }
 
     public Long getId() {

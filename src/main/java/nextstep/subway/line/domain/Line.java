@@ -1,9 +1,13 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 
 import javax.persistence.*;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -17,7 +21,10 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    public Line() {
+    @Embedded
+    private Sections sections = new Sections();
+
+    protected Line() {
     }
 
     public Line(String name, String color) {
@@ -42,16 +49,11 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Line line = (Line) o;
-        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color);
+    public Sections getSections() {
+        return sections;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, color);
+    public void addSection(Section section) {
+        this.sections.add(section);
     }
 }
