@@ -17,9 +17,12 @@ import java.util.Objects;
 @Entity
 @Embeddable
 @Table(
-        indexes = @Index(name = "section_id_up_station_id_down_station_id_unique_index", columnList = "id,upStationId,downStationId", unique = true)
+        indexes = @Index(
+                name = "section_id_up_station_id_down_station_id_unique_index",
+                columnList = "id,upStationId,downStationId",
+                unique = true
+        )
 )
-
 public class Section extends BaseEntity {
 
     private static final String UP_STATION_NOT_NULL_ERROR_MESSAGE = "상행역은 빈값일 수 없습니다.";
