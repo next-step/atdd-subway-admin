@@ -76,6 +76,43 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_등록됨(response);
     }
 
+    @DisplayName("역 사이에 새로운 구간을 등록하는 경우, 기존 역 사이 길이보다 크거나 같으면 등록 실패")
+    @Test
+    void 역_사이에_등록시_거리가_잘못된_경우_등록_실패() {
+        // given
+        StationResponse 청계산입구역 = 지하철_역_생성(new StationRequest("청계산입구역")).as(StationResponse.class);
+
+        // when
+        ExtractableResponse<Response> response = 구간_사이에_기존_구간과_동일한_거리로_구간_추가(신분당선.getId(), 청계산입구역);
+
+        // then
+        구간_등록_실패(response);
+    }
+
+    @DisplayName("상행역, 하행역이 모두 노선에 등록되어 있으면 등록 실패")
+    @Test
+    void 상행역_하행역_이미_노선에_등록된_경우_등록_실패() {
+        // when
+        ExtractableResponse<Response> response = 이미_등록된_구간을_등록();
+
+        // then
+        구간_등록_실패(response);
+    }
+
+    @DisplayName("상행역 하행역 둘 중 하나도 노선에 포함 안된 경우 등록 실패")
+    @Test
+    void 상행역_하행역_둘_중_하나도_포함_안된_경우_등록_실패() {
+        // given
+        StationResponse 양재역 = 지하철_역_생성(new StationRequest("양재역")).as(StationResponse.class);
+        StationResponse 양재시민의숲역 = 지하철_역_생성(new StationRequest("양재시민의숲역")).as(StationResponse.class);
+
+        // when
+        ExtractableResponse<Response> response = 상행역_하행역_둘_중_하나도_노선에_없는_역을_등록(양재역, 양재시민의숲역);
+
+        // then
+        구간_등록_실패(response);
+    }
+
     private ExtractableResponse<Response> 지하철_노선에_구간_추가(Long lineId, StationResponse 청계산입구역) {
         return post("/lines/" + lineId + "/sections",
             new SectionRequest(강남역.getId(), 청계산입구역.getId(), 8));
@@ -91,7 +128,27 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             new SectionRequest(광교역.getId(), 청계산입구역.getId(), 8));
     }
 
+    private ExtractableResponse<Response> 구간_사이에_기존_구간과_동일한_거리로_구간_추가(Long lineId, StationResponse 청계산입구역) {
+        return post("/lines/" + lineId + "/sections",
+            new SectionRequest(강남역.getId(), 청계산입구역.getId(), 8));
+    }
+
+    private ExtractableResponse<Response> 이미_등록된_구간을_등록() {
+        return post("/lines/" + 신분당선.getId() + "/sections",
+            new SectionRequest(강남역.getId(), 광교역.getId(), 8));
+    }
+
+    private ExtractableResponse<Response> 상행역_하행역_둘_중_하나도_노선에_없는_역을_등록(StationResponse 양재역,
+        StationResponse 양재시민의숲역) {
+        return post("/lines/" + 신분당선.getId() + "/sections",
+            new SectionRequest(양재역.getId(), 양재시민의숲역.getId(), 8));
+    }
+
     private void 구간_등록됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private void 구간_등록_실패(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
