@@ -1,27 +1,18 @@
 package nextstep.subway.common;
 
+import org.springframework.http.HttpStatus;
+
 public class ErrorResponse {
-    private int code;
+    private HttpStatus httpStatus;
     private String message;
 
     public ErrorResponse() {
-        code = 0;
+        httpStatus = HttpStatus.BAD_REQUEST;
         message = "데이터 저장중 오류가 발생하였습니다.";
     }
 
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
+    public ErrorResponse(HttpStatus httpStatus, String message) {
+        this.httpStatus = httpStatus;
         this.message = message;
     }
 }
