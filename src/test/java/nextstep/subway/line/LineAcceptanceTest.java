@@ -120,16 +120,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_조회_요청
         long expectedId = createResponse1.jsonPath().getLong("id");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/lines/"+expectedId)
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(expectedId);
 
         // then
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getLong("id")).isEqualTo(expectedId);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(long id) {
+        return RestAssured.given().log().all()
+            .when()
+            .get("/lines/"+id)
+            .then().log().all()
+            .extract();
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -160,6 +164,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_수정됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> responseAfterUpdate = 지하철_노선_조회_요청(createdId);
+        assertThat(responseAfterUpdate.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(responseAfterUpdate.jsonPath().getString("name")).isEqualTo("구분당선");
+        assertThat(responseAfterUpdate.jsonPath().getString("color")).isEqualTo("bg-blue-600");
     }
 
     @DisplayName("지하철 노선을 제거한다.")
