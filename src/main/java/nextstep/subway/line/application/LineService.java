@@ -8,16 +8,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class LineService {
-    private LineRepository lineRepository;
 
-    public LineService(LineRepository lineRepository) {
+    private final LineRepository lineRepository;
+
+    public LineService(final LineRepository lineRepository) {
         this.lineRepository = lineRepository;
     }
 
-    public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+    @Transactional
+    public LineResponse saveLine(final LineRequest request) {
+        final Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
     }
 }
