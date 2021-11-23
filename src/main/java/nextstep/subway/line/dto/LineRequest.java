@@ -49,4 +49,8 @@ public class LineRequest {
     public String getColor(){
         return color;
     }
+
+    public int getDistance() {
+        return distance;
+    }
 }

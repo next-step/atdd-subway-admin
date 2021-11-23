@@ -6,12 +6,15 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,9 +50,9 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findOneLine(Long id) {
-        Line findLine = lineRepository.findById(id)
+        Line foundLine = lineRepository.findById(id)
                 .orElseThrow(() -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_LINE));
-        return LineResponse.of(findLine);
+        return LineResponse.of(foundLine);
     }
 
     public void deleteLineById(Long id) {
@@ -64,6 +67,26 @@ public class LineService {
                 .orElseThrow(() -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_STATION));
         modifyLine.update(lineRequest.toLine(upStaion, downStaion));
         return LineResponse.of(modifyLine);
+    }
+
+    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
+        sectionRequest.checkValidRequestValue();
+
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_LINE));
+        Section newSection = createSection(line, sectionRequest);
+        line.addSection(newSection);
+        return LineResponse.of(lineRepository.save(line));
+    }
+
+    private Section createSection(Line line, SectionRequest sectionRequest) {
+        Station preStation = findStation(sectionRequest.getUpStationId());
+        Station station = findStation(sectionRequest.getDownStationId());
+        return new Section(line, preStation, station, sectionRequest.getDistance());
+    }
+
+    private Station findStation(Long id) {
+        return Optional.ofNullable(stationRepository.getOne(id)).get();
     }
 
     private void checkDuplicateLineName(String name) {
