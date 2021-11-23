@@ -25,7 +25,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     public static final StationRequest 최초_상행종점역 = StationRequest.of("최초_상행종점역");
     public static final StationRequest 변경_상행종점역 = StationRequest.of("변경_상행종점역");
     public static final StationRequest 최초_하행종점역 = StationRequest.of("최초_하행종점역");
-    public static final StationRequest 변경_하행_종점역 = StationRequest.of("변경_하행_종점역");
+    public static final StationRequest 변경_하행종점역 = StationRequest.of("변경_하행종점역");
     public static final StationRequest 사이_추가_역 = StationRequest.of("사이_추가_역");
 
     @DisplayName("지하철역을 생성한다.")

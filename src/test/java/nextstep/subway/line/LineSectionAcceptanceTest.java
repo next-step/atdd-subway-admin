@@ -29,7 +29,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     private Long 변경_상행종점역_ID;
     private Long 최초_상행종점역_ID;
     private Long 최초_하행종점역_ID;
-    private Long 변경_하행_종점역_ID;
+    private Long 변경_하행종점역_ID;
     private Long 사이_추가_역_ID;
 
     private static final int 거리_5 = 5;
@@ -40,7 +40,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         변경_상행종점역_ID = 지하철_역_등록되어_있음(변경_상행종점역);
         최초_상행종점역_ID = 지하철_역_등록되어_있음(최초_상행종점역);
         최초_하행종점역_ID = 지하철_역_등록되어_있음(최초_하행종점역);
-        변경_하행_종점역_ID = 지하철_역_등록되어_있음(변경_하행_종점역);
+        변경_하행종점역_ID = 지하철_역_등록되어_있음(변경_하행종점역);
         사이_추가_역_ID = 지하철_역_등록되어_있음(사이_추가_역);
 
         final LineRequest 구간_테스트_노선 = LineRequest.of("구간_테스트_노선", "사일런트라이트색", 최초_상행종점역_ID, 최초_하행종점역_ID, 거리_100);
@@ -83,7 +83,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("새로운 역을 하행 종점에 등록한다.")
     @Test
     void createSection3() {
-        SectionRequest request = SectionRequest.of(최초_하행종점역_ID, 변경_하행_종점역_ID, 거리_5);
+        SectionRequest request = SectionRequest.of(최초_하행종점역_ID, 변경_하행종점역_ID, 거리_5);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
@@ -93,7 +93,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(CREATED.value());
         LineResponse lineResponse = responseLine(response);
-        assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(최초_상행종점역_ID, 최초_하행종점역_ID, 변경_하행_종점역_ID);
+        assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(최초_상행종점역_ID, 최초_하행종점역_ID, 변경_하행종점역_ID);
     }
 
     @DisplayName("역 사이에 새로운 역 거리가 유효하지 않게 등록한다.")
@@ -114,6 +114,20 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createSectionFail2() {
         SectionRequest request = SectionRequest.of(최초_상행종점역_ID, 최초_하행종점역_ID, 거리_5);
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .when()
+                .post(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
+                .then().log().all().extract();
+
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없어야 한다.")
+    @Test
+    void createSectionFail3() {
+        SectionRequest request = SectionRequest.of(변경_상행종점역_ID, 변경_하행종점역_ID, 거리_5);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)

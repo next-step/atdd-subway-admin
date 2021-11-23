@@ -8,10 +8,7 @@ import nextstep.subway.station.dto.StationResponse;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -28,20 +25,28 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
-        validate(section);
+        if (!sections.isEmpty()) {
+            validate(section);
 
-        //존재하는지
-        sections.stream()
-                .filter(it -> it.getStation().equals(section.getStation()))
-                .findFirst()
-                .ifPresent(it -> it.updateStation(section.getNextStation(), section.getDistance()));
-
+            sections.stream()
+                    .filter(it -> it.getStation().equals(section.getStation()))
+                    .findFirst()
+                    .ifPresent(it -> it.updateStation(section.getNextStation(), section.getDistance()));
+        }
         this.sections.add(section);
     }
 
     private void validate(Section section) {
         validateDistance(section);
         validateDuplicate(section);
+        validateExist(section);
+    }
+
+    private void validateExist(Section section) {
+        if (!getStations().contains(section.getStation()) &&
+                !getStations().contains(section.getNextStation())) {
+            throw new SectionNotCreateException("구간에 역이 존재하지 않습니다.");
+        }
     }
 
     private void validateDuplicate(Section section) {
@@ -57,7 +62,6 @@ public class Sections {
             if (!it.isPermitDistance(section.getDistance())) throw new SectionNotCreateException("유효한 길이가 아닙니다.");
         });
     }
-
 
     public List<Station> getStations() {
         Station firstStation = findFirstStation();
