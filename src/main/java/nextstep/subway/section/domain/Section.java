@@ -53,4 +53,8 @@ public class Section extends BaseEntity {
     public Long getId() {
         return id;
     }
+
+    public void addLine(Line line){
+        this.line = line;
+    }
 }

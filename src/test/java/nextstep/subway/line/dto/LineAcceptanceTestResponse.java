@@ -1,4 +1,4 @@
-package nextstep.subway.line;
+package nextstep.subway.line.dto;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -12,7 +12,7 @@ public class LineAcceptanceTestResponse {
 
     }
 
-    public static void checkCreatedLine(ExtractableResponse<Response> response) {
+    public static void checkCreate(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotNull();
     }
@@ -21,7 +21,7 @@ public class LineAcceptanceTestResponse {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    public static  void isStatusOk(ExtractableResponse<Response> response) {
+    public static void isStatusOk(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 

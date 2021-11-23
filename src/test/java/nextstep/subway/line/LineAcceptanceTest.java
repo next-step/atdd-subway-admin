@@ -3,16 +3,18 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineAcceptanceTestRequest;
+import nextstep.subway.line.dto.LineAcceptanceTestResponse;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.section.domain.dto.SectionResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static nextstep.subway.line.LineAcceptanceTestRequest.*;
-import static nextstep.subway.line.LineAcceptanceTestResponse.isNoContent;
-import static nextstep.subway.line.LineAcceptanceTestResponse.isStatusOk;
+import static nextstep.subway.line.dto.LineAcceptanceTestRequest.*;
+import static nextstep.subway.line.dto.LineAcceptanceTestResponse.isNoContent;
+import static nextstep.subway.line.dto.LineAcceptanceTestResponse.isStatusOk;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -29,7 +31,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성됨
-        LineAcceptanceTestResponse.checkCreatedLine(response);
+        LineAcceptanceTestResponse.checkCreate(response);
     }
 
 
@@ -121,8 +123,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void compareValues(LineResponse createLineResponse, LineResponse selectLineResponse) {
-        List<StationResponse> createStations = createLineResponse.getStations();
-        List<StationResponse> selectStations = selectLineResponse.getStations();
+        List<SectionResponse> createStations = createLineResponse.getStations();
+        List<SectionResponse> selectStations = selectLineResponse.getStations();
 
         assertAll(
                 () -> assertThat(createLineResponse.getId()).isEqualTo(selectLineResponse.getId()),
@@ -132,7 +134,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private void checkDupilicateStationName(List<StationResponse> createStations, List<StationResponse> selectStations) {
+    private void checkDupilicateStationName(List<SectionResponse> createStations, List<SectionResponse> selectStations) {
         for (int i = 0; i < createStations.size(); i++) {
             assertThat(createStations.get(i).getName()).isEqualTo(selectStations.get(i).getName());
         }
@@ -151,10 +153,4 @@ public class LineAcceptanceTest extends AcceptanceTest {
         compareValues(createLineResponse1, selectLineResponses.get(0));
         compareValues(createLineResponse2, selectLineResponses.get(1));
     }
-
-
-
-
-
-
 }

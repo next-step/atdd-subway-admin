@@ -1,16 +1,14 @@
-package nextstep.subway.line;
+package nextstep.subway.line.dto;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.station.StationAcceptanceTestRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 public class LineAcceptanceTestRequest {
 
-    private LineAcceptanceTestRequest(){
+    private LineAcceptanceTestRequest() {
 
     }
 
@@ -48,6 +46,11 @@ public class LineAcceptanceTestRequest {
         return new LineRequest(name, color, upStationId, downStationId, distance);
     }
 
+    public static ExtractableResponse<Response> createLineRequest(LineRequest lineRequest) {
+        return createLine(lineRequest.getName(), lineRequest.getColor()
+                , lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+    }
+
     public static ExtractableResponse<Response> selectAllLines() {
         return RestAssured.given().log().all()
                 .when()
@@ -83,12 +86,8 @@ public class LineAcceptanceTestRequest {
                 .extract();
     }
 
-
-
     private static Long searchStationId(String name) {
         ExtractableResponse<Response> createResponse = StationAcceptanceTestRequest.createStation(name);
         return Long.parseLong(createResponse.header("Location").split("/")[2]);
     }
-
-
 }
