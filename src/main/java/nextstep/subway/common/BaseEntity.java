@@ -25,8 +25,4 @@ public class BaseEntity {
         return modifiedDate;
     }
 
-    public void updateModifiedDate() {
-        this.modifiedDate = LocalDateTime.now();
-    }
-
 }

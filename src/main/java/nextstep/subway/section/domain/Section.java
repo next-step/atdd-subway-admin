@@ -41,7 +41,6 @@ public class Section extends BaseEntity {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-        this.updateModifiedDate();
     }
 
     public Long getId() {
