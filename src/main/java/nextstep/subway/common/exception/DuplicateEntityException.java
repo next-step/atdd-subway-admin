@@ -1,8 +1,6 @@
 package nextstep.subway.common.exception;
 
-import org.springframework.dao.DataIntegrityViolationException;
-
-public class DuplicateEntityException extends DataIntegrityViolationException {
+public class DuplicateEntityException extends RuntimeException {
     private static final long serialVersionUID = 2L;
 
     public DuplicateEntityException(String message) {
