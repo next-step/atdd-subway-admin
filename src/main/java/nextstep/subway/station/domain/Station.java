@@ -3,6 +3,9 @@ package nextstep.subway.station.domain;
 import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import java.util.Objects;
@@ -12,6 +15,9 @@ import java.util.Objects;
         uniqueConstraints = @UniqueConstraint(name = "uk_station_name", columnNames = {"name"})
 )
 public class Station extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
 
     protected Station() {
@@ -30,24 +36,29 @@ public class Station extends BaseEntity {
         return name;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         Station station = (Station) o;
-        return Objects.equals(name, station.name);
+        return Objects.equals(id, station.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name);
+        return Objects.hashCode(id);
     }
 
     @Override
     public String toString() {
         return "Station{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 '}';
     }
 }

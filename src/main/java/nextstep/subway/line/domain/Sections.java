@@ -52,4 +52,9 @@ public class Sections {
     public List<Station> getStationsOrderByUptoDown() {
         return SortStations.of(this.sections).sortUpToDown();
     }
+
+    @Override
+    public String toString() {
+        return sections.toString();
+    }
 }

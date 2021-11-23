@@ -8,6 +8,9 @@ import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -24,6 +27,9 @@ import java.util.Objects;
         )
 )
 public class Section extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private static final String UP_STATION_NOT_NULL_ERROR_MESSAGE = "상행역은 빈값일 수 없습니다.";
     private static final String DOWN_STATION_NOT_NULL_ERROR_MESSAGE = "하행역은 빈값일 수 없습니다.";
@@ -76,13 +82,15 @@ public class Section extends BaseEntity {
     public Station getDownStation() {
         return downStation;
     }
-
+    public Long getId() {
+        return id;
+    }
     @Override
     public String toString() {
         return "Section{" +
                 "distance=" + distance +
                 ", upStation=" + upStation +
                 ", downStation=" + downStation +
-                '}';
+                "}\n";
     }
 }

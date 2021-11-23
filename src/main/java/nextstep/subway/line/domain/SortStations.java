@@ -29,7 +29,8 @@ public class SortStations {
     }
 
     public List<Station> sortUpToDown() {
-        addDownStationByUpStationRecursive(getMaxTopStation());
+        final Station maxTopStation = getMaxTopStation();
+        addDownStationByUpStationRecursive(maxTopStation);
         return Collections.unmodifiableList(sortedStations);
     }
 

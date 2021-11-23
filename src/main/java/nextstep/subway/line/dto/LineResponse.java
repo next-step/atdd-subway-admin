@@ -17,17 +17,15 @@ public class LineResponse {
     private final LocalDateTime modifiedDate;
     private final List<StationResponse> stations = new ArrayList<>();
 
-    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-    }
-
-    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<StationResponse> stations) {
-        this(id, name, color, createdDate, modifiedDate);
-        this.stations.addAll(stations);
+        if (!stations.isEmpty()) {
+            this.stations.addAll(stations);
+        }
     }
 
     public static LineResponse of(Line line, List<StationResponse> stations) {
@@ -35,7 +33,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate(), Collections.emptyList());
     }
 
     public Long getId() {
