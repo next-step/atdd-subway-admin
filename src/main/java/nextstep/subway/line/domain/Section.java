@@ -61,6 +61,14 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
+    public int getDistanceToInt() {
+        return distance.getDistance();
+    }
+
+    public boolean isEqualOrMoreDistance(Section section) {
+        return distance.isEqualOrMoreDistance(section.distance);
+    }
+
     private void validateDuplicateStation(Station upStation, Station downStation) {
         if (upStation.equals(downStation)) {
             throw new IllegalArgumentException(ERROR_MESSAGE_DUPLICATE_STATION);

@@ -36,4 +36,8 @@ public class Distance {
             throw new IllegalArgumentException(ERROR_MESSAGE_DISTANCE_BOUND);
         }
     }
+
+    public boolean isEqualOrMoreDistance(Distance distance) {
+        return this.distance <= distance.distance;
+    }
 }
