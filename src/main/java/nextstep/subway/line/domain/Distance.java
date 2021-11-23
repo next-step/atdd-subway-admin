@@ -2,12 +2,14 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.line.exception.IllegalDistanceException;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
 public class Distance {
 
+    @Column
     private int distance;
 
     protected Distance() {
