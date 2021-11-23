@@ -1,6 +1,7 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -10,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class LineResponseTest {
+    @DisplayName("Line에서 LineResponse로 변환한다")
     @Test
     void testOf() {
         // givne - Line이 주어졌을때
@@ -25,6 +27,7 @@ public class LineResponseTest {
         );
     }
 
+    @DisplayName("Line 리스트를 LineResponse 리스트로 변환한다")
     @Test
     void testListOf() {
         // given - List<Line>이 주어졌을때

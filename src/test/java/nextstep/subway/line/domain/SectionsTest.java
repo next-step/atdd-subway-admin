@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.station.domain.Station;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SectionsTest {
+    @DisplayName("상행선-하행선 구간 먼저 추가된 순으로 정렬된 역들을 가져온다")
     @Test
     void testGetStations() {
         // given
