@@ -21,6 +21,7 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
+        validateDuplicate(request);
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
     }
@@ -35,12 +36,12 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        Line line = getLine(id);
+        Line line = findLineById(id);
         return LineResponse.of(line);
     }
 
     public LineResponse updateLine(LineRequest lineRequest, Long id) {
-        Line line = getLine(id);
+        Line line = findLineById(id);
         line.update(lineRequest.toLine());
         return LineResponse.of(line);
     }
@@ -49,7 +50,13 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    private Line getLine(Long id) {
+    private Line findLineById(Long id) {
         return lineRepository.findById(id).orElseThrow(BadRequestException::new);
+    }
+
+    private void validateDuplicate(LineRequest request) {
+        if (lineRepository.findByName(request.getName()).isPresent()) {
+            throw new BadRequestException();
+        }
     }
 }
