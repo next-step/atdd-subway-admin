@@ -10,6 +10,8 @@ import nextstep.subway.line.dto.UpdateLineResponseDto;
 import nextstep.subway.line.exception.DuplicateLineNameException;
 import nextstep.subway.line.exception.NotFoundLineByIdException;
 import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,7 +69,9 @@ public class LineService {
     }
 
     private LineResponse convertLineResponse(Line line) {
-        return LineResponse.of(line, stationService.convertStationsResponse(line.getStationsOrderByUptoDown()));
+        final List<Station> stations = line.getStationsOrderByUptoDown();
+        final List<StationResponse> stationResponses = stationService.convertStationsResponse(stations);
+        return LineResponse.of(line, stationResponses);
     }
 
     private Line getLineByIdOrElseThrow(long id) {

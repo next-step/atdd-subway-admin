@@ -17,6 +17,8 @@ import static javax.persistence.FetchType.LAZY;
 @Embeddable
 public class Section extends BaseEntity {
 
+    private static final String UP_STATION_NOT_NULL_ERROR_MESSAGE = "상행역은 빈값일 수 없습니다.";
+    private static final String DOWN_STATION_NOT_NULL_ERROR_MESSAGE = "하행역은 빈값일 수 없습니다.";
     @Embedded
     private Distance distance;
 
@@ -40,10 +42,10 @@ public class Section extends BaseEntity {
 
     private void validate(Station upStation, Station downStation) {
         if (Objects.isNull(upStation)) {
-            throw new IllegalArgumentException("상행역은 빈값일 수 없습니다.");
+            throw new IllegalArgumentException(UP_STATION_NOT_NULL_ERROR_MESSAGE);
         }
         if (Objects.isNull(downStation)) {
-            throw new IllegalArgumentException("하행역은 빈값일 수 없습니다.");
+            throw new IllegalArgumentException(DOWN_STATION_NOT_NULL_ERROR_MESSAGE);
         }
     }
 
