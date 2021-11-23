@@ -6,14 +6,14 @@ public class LineRequest {
 
     private String name;
     private String color;
-    private String upStationId;
-    private String downStationId;
+    private Long upStationId;
+    private Long downStationId;
     private String distance;
 
     public LineRequest() {
     }
 
-    public LineRequest(String name, String color, String upStationId, String downStationId,
+    public LineRequest(String name, String color, Long upStationId, Long downStationId,
         String distance) {
         this.name = name;
         this.color = color;
@@ -31,11 +31,11 @@ public class LineRequest {
     }
 
     public Long getUpStationId() {
-        return Long.valueOf(upStationId);
+        return upStationId;
     }
 
     public Long getDownStationId() {
-        return Long.valueOf(downStationId);
+        return downStationId;
     }
 
     public String getDistance() {

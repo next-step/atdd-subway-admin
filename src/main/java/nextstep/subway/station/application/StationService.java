@@ -48,7 +48,7 @@ public class StationService {
     }
 
     @Transactional(readOnly = true)
-    protected Station findStation(Long id) {
+    public Station findStation(Long id) {
         return stationRepository.findById(id)
             .orElseThrow(NotFoundException::new);
     }

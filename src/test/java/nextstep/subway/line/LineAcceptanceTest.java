@@ -10,7 +10,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.LineTestUtil;
+import nextstep.subway.utils.StationTestUtil;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -18,20 +21,38 @@ import org.springframework.http.HttpStatus;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    private Long stationId1;
+    private Long stationId2;
+    private Long stationId3;
+
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+        // given
+        ExtractableResponse<Response> createdStationResponse1 = StationTestUtil.지하철됨_역_생성_됨("잠실역");
+        ExtractableResponse<Response> createdStationResponse2 = StationTestUtil.지하철됨_역_생성_됨(
+            "몽촌토성역");
+        ExtractableResponse<Response> createdStationResponse3 = StationTestUtil.지하철됨_역_생성_됨(
+            "강동구청역");
+
+        stationId1 = createdStationResponse1.as(StationResponse.class).getId();
+        stationId2 = createdStationResponse2.as(StationResponse.class).getId();
+        stationId3 = createdStationResponse3.as(StationResponse.class).getId();
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given
-        Map<String, String> params = LineTestUtil.지하철_노선_생성_파라미터_맵핑("2호선");
-
         // when
-        ExtractableResponse<Response> response = LineTestUtil.지하철_노선_생성_요청(params);
+        ExtractableResponse<Response> createResponse = LineTestUtil.지하철_노선_등록되어_있음("2호선", "RED",
+            stationId1,
+            stationId2, 100);
 
         // then
         assertAll(
-            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-            () -> assertThat(response.header("Location")).isNotBlank()
+            () -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+            () -> assertThat(createResponse.header("Location")).isNotBlank()
         );
     }
 
@@ -39,11 +60,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        Map<String, String> params = LineTestUtil.지하철_노선_생성_파라미터_맵핑("2호선");
-        LineTestUtil.지하철_노선_생성_요청(params);
+        LineTestUtil.지하철_노선_등록되어_있음("2호선", "RED",
+            stationId1,
+            stationId2, 100);
 
         // when
-        ExtractableResponse<Response> response = LineTestUtil.지하철_노선_생성_요청(params);
+        ExtractableResponse<Response> response = LineTestUtil.지하철_노선_등록되어_있음("2호선", "RED",
+            stationId1,
+            stationId2, 100);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -54,16 +78,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        ExtractableResponse<Response> createResponse1 = LineTestUtil.지하철_노선_등록되어_있음("2호선");
-        ExtractableResponse<Response> createResponse2 = LineTestUtil.지하철_노선_등록되어_있음("3호선");
+        ExtractableResponse<Response> createResponse1 = LineTestUtil.지하철_노선_등록되어_있음("2호선", "RED",
+            stationId1,
+            stationId2, 100);
+        ExtractableResponse<Response> createResponse2 = LineTestUtil.지하철_노선_등록되어_있음("3호선", "ORANGE",
+            stationId1,
+            stationId3, 100);
 
         // when
         ExtractableResponse<Response> response = LineTestUtil.지하철_노선_목록_조회_요청("/lines");
 
         // then
-        List<Long> expectedLineIds = LineTestUtil.ids_추출_By_Location(Arrays.asList(createResponse1,
+        List<Long> expectedLineIds = LineTestUtil.ids_추출_ByLocation(Arrays.asList(createResponse1,
             createResponse2));
-        List<Long> resultLineIds = LineTestUtil.ids_추출_By_LineResponse(response);
+        List<Long> resultLineIds = LineTestUtil.ids_추출_ByLineResponse(response);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
@@ -73,8 +101,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> createResponse1 = LineTestUtil.지하철_노선_등록되어_있음("2호선");
-        long lineId = LineTestUtil.ids_추출_By_Location(Collections.singletonList(createResponse1))
+        ExtractableResponse<Response> createResponse1 = LineTestUtil.지하철_노선_등록되어_있음("2호선", "RED",
+            stationId1,
+            stationId2, 100);
+        long lineId = LineTestUtil.ids_추출_ByLocation(Collections.singletonList(createResponse1))
             .get(0);
 
         // when
@@ -88,9 +118,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> createResponse1 = LineTestUtil.지하철_노선_등록되어_있음("2호선");
+        ExtractableResponse<Response> createResponse1 = LineTestUtil.지하철_노선_등록되어_있음("2호선", "RED",
+            stationId1,
+            stationId2, 100);
         long lineId = Long.parseLong(createResponse1.header("Location").split("/")[2]);
-        Map<String, String> updateParams = LineTestUtil.지하철_노선_생성_파라미터_맵핑("3호선");
+        Map<String, String> updateParams = LineTestUtil.지하철_노선_생성_파라미터_맵핑("3호선", "RED");
 
         // when
         ExtractableResponse<Response> response = LineTestUtil.지하철_노선_수정_요청(updateParams, lineId);
@@ -108,7 +140,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = LineTestUtil.지하철_노선_등록되어_있음("2호선");
+        ExtractableResponse<Response> createResponse = LineTestUtil.지하철_노선_등록되어_있음("2호선", "RED",
+            stationId1,
+            stationId2, 100);
 
         // when
         ExtractableResponse<Response> response = LineTestUtil.지하철_노선_제거_요청(createResponse);
