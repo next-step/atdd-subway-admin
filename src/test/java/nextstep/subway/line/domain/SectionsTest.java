@@ -73,19 +73,13 @@ class SectionsTest {
         assertThatThrownBy(() -> sections.add(actual)).isInstanceOf(NotIncludeOneStationException.class);
     }
 
-    /*
-    * - [X] 하행역이 두 역 사이에 등록 될 경우
-      - [X] 상행역이 두 역 사이에 등록 될 경우
-      - [X] 상행 종점이 새로 등록될 경우
-      - [X] 하행 종점이 새로 등록될 경우
-    * */
     @Test
     @DisplayName("하행역이 두 역 사이에 등록 될 경우")
     void betweenDownStation() {
         Section actual = new Section(강남역, 잠실역, LINE_2호선, 1);
         sections.add(actual);
 
-        구간_검증(Arrays.asList(강남역, 잠실역, 역삼역, 양재역));
+        구간_검증(Arrays.asList(강남역, 잠실역, 역삼역, 양재역), 60);
     }
 
     @Test
@@ -94,7 +88,7 @@ class SectionsTest {
         Section actual = new Section(잠실역, 역삼역, LINE_2호선, 1);
         sections.add(actual);
 
-        구간_검증(Arrays.asList(강남역, 잠실역, 역삼역, 양재역));
+        구간_검증(Arrays.asList(강남역, 잠실역, 역삼역, 양재역), 60);
     }
 
     @Test
@@ -103,7 +97,7 @@ class SectionsTest {
         Section actual = new Section(양재역, 잠실역, LINE_2호선, 1);
         sections.add(actual);
 
-        구간_검증(Arrays.asList(강남역, 역삼역, 양재역, 잠실역));
+        구간_검증(Arrays.asList(강남역, 역삼역, 양재역, 잠실역), 61);
     }
 
     @Test
@@ -112,13 +106,14 @@ class SectionsTest {
         Section actual = new Section(사당역, 강남역, LINE_2호선, 1);
         sections.add(actual);
 
-        구간_검증(Arrays.asList(사당역, 강남역, 역삼역, 양재역));
+        구간_검증(Arrays.asList(사당역, 강남역, 역삼역, 양재역), 61);
     }
 
-    private void 구간_검증(List<Station> expected) {
+    private void 구간_검증(List<Station> expected, int totalDistance) {
         assertAll(
                 () -> assertThat(sections.getSections()).hasSize(3),
-                () -> assertThat(sections.getStations().getStations()).containsExactlyElementsOf(expected)
+                () -> assertThat(sections.getStations().getStations()).containsExactlyElementsOf(expected),
+                () -> assertThat(sections.sumDistance()).isEqualTo(totalDistance)
         );
     }
 }

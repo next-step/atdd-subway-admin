@@ -100,6 +100,12 @@ public class Sections {
         return new ArrayList<>(sections);
     }
 
+    public int sumDistance() {
+        return sections.stream()
+                .mapToInt(Section::getDistance)
+                .sum();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

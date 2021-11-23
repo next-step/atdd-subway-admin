@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +14,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static nextstep.subway.line.LineAcceptanceTest.지하철_노선_등록되어_있음;
 import static nextstep.subway.station.StationAcceptanceTest.지하철_역_등록되어_있음;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SectionAcceptanceTest extends AcceptanceTest {
     private StationResponse 강남역;
@@ -45,6 +51,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_구간_등록됨(response);
+        지하철_구간_목록_수정됨(response, Arrays.asList(강남역, 삼성역, 역삼역), 10);
     }
 
     @DisplayName("하행역이 두 역 사이에 등록 될 경우")
@@ -58,6 +65,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_구간_등록됨(response);
+        지하철_구간_목록_수정됨(response, Arrays.asList(강남역, 삼성역, 역삼역), 10);
     }
 
     @DisplayName("상행역이 두 역 사이에 등록 될 경우")
@@ -71,6 +79,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_구간_등록됨(response);
+        지하철_구간_목록_수정됨(response, Arrays.asList(강남역, 삼성역, 역삼역), 10);
     }
 
     @DisplayName("상행 종점이 새로 등록될 경우")
@@ -84,6 +93,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_구간_등록됨(response);
+        지하철_구간_목록_수정됨(response, Arrays.asList(삼성역, 강남역, 역삼역), 20);
     }
 
     @DisplayName("하행 종점이 새로 등록될 경우")
@@ -97,6 +107,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_구간_등록됨(response);
+        지하철_구간_목록_수정됨(response, Arrays.asList(강남역, 역삼역, 삼성역), 20);
     }
 
     @DisplayName("역 사이에 새로운 역을 등록할 때 기존 역 사이 길이보다 작아야 한다.")
@@ -170,6 +181,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_구간_등록됨(ExtractableResponse<Response> response) {
         요청_결과_검증(response, HttpStatus.OK);
+    }
+
+    private void 지하철_구간_목록_수정됨(ExtractableResponse<Response> response, List<StationResponse> excepted, int totalDistance) {
+        LineResponse actual = response.as(LineResponse.class);
+        assertAll(
+                () -> assertThat(actual.getStations()).hasSize(3),
+                () -> assertThat(actual.getStations()).containsExactlyElementsOf(excepted),
+                () -> assertThat(actual.getTotalDistance()).isEqualTo(totalDistance)
+        );
     }
 
     private void 지하철_구간_등록_실패됨(ExtractableResponse<Response> response) {

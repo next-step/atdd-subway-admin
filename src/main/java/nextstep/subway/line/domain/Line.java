@@ -41,6 +41,10 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
+    public int totalDistance() {
+        return sections.sumDistance();
+    }
+
     public Long getId() {
         return id;
     }
