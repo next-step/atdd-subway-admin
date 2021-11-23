@@ -3,7 +3,9 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
@@ -101,5 +103,9 @@ public class LineFixture {
 
     public static List<LineResponse> ofLineResponses(ExtractableResponse<Response> response) {
         return response.jsonPath().getList(".", LineResponse.class);
+    }
+
+    public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
+        return new Line(name, color, upStation, downStation, distance);
     }
 }
