@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static nextstep.subway.station.StationScenarioMethod.*;
 
-@DisplayName("지하철 역 관련 기능")
+@DisplayName("지하철 역 인수 테스트")
 class StationAcceptanceTest extends AcceptanceTest {
 
     private StationRequest 강남역 = new StationRequest("강남역");

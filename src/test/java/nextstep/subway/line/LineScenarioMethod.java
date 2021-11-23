@@ -33,12 +33,6 @@ class LineScenarioMethod {
         return createResponse.header("Location");
     }
 
-    public static String 지하철_노선_등록되어_있지_않음(String uri) {
-        ExtractableResponse<Response> findResponse = 지하철_노선_조회_요청(uri);
-        지하철_노선_조회_실패됨(findResponse);
-        return uri;
-    }
-
     public static ExtractableResponse<Response> 지하철_노선_조회_요청(String uri) {
         return RestAssuredApi.get(uri);
     }

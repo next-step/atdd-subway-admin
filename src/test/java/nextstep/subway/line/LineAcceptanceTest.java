@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static nextstep.subway.line.LineScenarioMethod.*;
 
-@DisplayName("지하철 노선 관련 기능")
+@DisplayName("지하철 노선 인수 테스트")
 class LineAcceptanceTest extends AcceptanceTest {
 
     private LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600");
@@ -74,7 +74,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findLineValidateNotFound() {
         // given
-        String notFoundUri = 지하철_노선_등록되어_있지_않음("lines/1");
+        String notFoundUri = "lines/1";
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(notFoundUri);
@@ -113,7 +113,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLineValidateEmptyResult() {
         // given
-        String notFoundUri = 지하철_노선_등록되어_있지_않음("lines/1");
+        String notFoundUri = "lines/1";
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(notFoundUri);
