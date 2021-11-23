@@ -51,10 +51,10 @@ public class Section {
             this.line.getSections().remove(this);
         }
 
-        addLine(line);
+        toLine(line);
     }
 
-    public void addLine(Line line) {
+    public void toLine(Line line) {
         if (!Objects.isNull(line)) {
             line.getSections().add(this);
         }

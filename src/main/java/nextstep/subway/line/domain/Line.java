@@ -63,7 +63,7 @@ public class Line extends BaseEntity {
 
     public void clearSections() {
         for (Section section: sections) {
-            section.addLine(null);
+            section.toLine(null);
         }
 
         this.sections.clear();
