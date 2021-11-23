@@ -14,7 +14,7 @@ import javax.persistence.OneToMany;
 import org.hibernate.annotations.BatchSize;
 
 @Embeddable
-public class Sections implements Serializable {
+public class Sections {
 
     @OneToMany(mappedBy = "line", fetch = LAZY, cascade = ALL)
     @BatchSize(size = 5)
