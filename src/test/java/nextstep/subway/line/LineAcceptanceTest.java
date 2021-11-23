@@ -87,12 +87,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 지하철_노선을_수정한다() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createLine = 지하철_노선_생성_요청("신분당선", "red");
+        Long createLineId = createLine.jsonPath().getObject(".", Line.class).getId();
 
         // when
         // 지하철_노선_수정_요청
+        Map<String, String> updateParams = 지하철_노선_파라미터_생성("2호선", "green");
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(createLineId, updateParams);
 
         // then
         // 지하철_노선_수정됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getString("name")).contains("2호선");
+        assertThat(response.jsonPath().getString("color")).contains("green");
     }
 
     @Test
@@ -108,9 +115,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
+        Map<String, String> params = 지하철_노선_파라미터_생성(name, color);
 
         return RestAssured
                 .given().log().all()
@@ -132,5 +137,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .given().log().all()
                 .when().get("/lines/{id}", id)
                 .then().log().all().extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(Long createLineId, Map<String, String> updateParams) {
+        return RestAssured
+                .given().log().all()
+                .body(updateParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch("/lines/{id}", createLineId)
+                .then().log().all().extract();
+    }
+
+    private Map<String, String> 지하철_노선_파라미터_생성(String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        return params;
     }
 }
