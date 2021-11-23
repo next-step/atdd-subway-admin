@@ -6,7 +6,9 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.DuplicateLineNameException;
 import nextstep.subway.line.exception.LineNotFoundException;
-import nextstep.subway.section.application.SectionService;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,12 +17,12 @@ import java.util.List;
 @Service
 @Transactional
 public class LineService {
-    private final SectionService sectionService;
     private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(SectionService sectionService, LineRepository lineRepository) {
-        this.sectionService = sectionService;
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
@@ -28,9 +30,17 @@ public class LineService {
                 .ifPresent(line -> { throw new DuplicateLineNameException(line); });
         Line line = lineRepository.save(request.toLine());
         if (request.hasSectionArguments()) {
-            sectionService.create(line, request.toSectionRequest());
+            addSectionToLine(request, line);
         }
         return LineResponse.of(line);
+    }
+
+    private void addSectionToLine(LineRequest request, Line line) {
+        Station upStation = stationRepository.findById(request.getUpStationId())
+                .orElseThrow(() -> new StationNotFoundException(request.getUpStationId()));
+        Station downStation = stationRepository.findById(request.getDownStationId())
+                .orElseThrow(() -> new StationNotFoundException(request.getUpStationId()));
+        line.addSection(upStation, downStation, request.getDistance());
     }
 
     public List<LineResponse> getLines() {

@@ -1,7 +1,6 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.dto.SectionRequest;
 
 import javax.validation.constraints.NotBlank;
 

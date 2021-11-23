@@ -1,6 +1,5 @@
-package nextstep.subway.section.dto;
+package nextstep.subway.line.dto;
 
-import nextstep.subway.line.dto.LineRequest;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

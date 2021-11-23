@@ -1,6 +1,4 @@
-package nextstep.subway.section.dto;
-
-import nextstep.subway.line.dto.LineRequest;
+package nextstep.subway.line.dto;
 
 public class SectionRequest {
     private Long id;
