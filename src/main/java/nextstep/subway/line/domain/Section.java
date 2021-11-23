@@ -90,4 +90,14 @@ public class Section extends BaseEntity {
     public int hashCode() {
         return Objects.hash(line, upStation, downStation, distance);
     }
+
+    public void updateUpStationTo(Station downStation, int distance) {
+        upStation = downStation;
+        this.distance -= distance;
+    }
+
+    public void updateDownStationTo(Station upStation, int distance) {
+        downStation = upStation;
+        this.distance -= distance;
+    }
 }
