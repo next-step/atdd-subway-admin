@@ -40,7 +40,7 @@ public class SectionTest {
             assertThat(yongsanStation.getName()).isEqualTo("용산역");
         });
 
-        Section upSection = sectionRepository.save(Section.of(new Distance(TEST_DISTANCE), SectionType.UP, seoulStation, yongsanStation));
+        Section upSection = sectionRepository.save(Section.ofUpStation(new Distance(TEST_DISTANCE), seoulStation, yongsanStation));
         Section downSection = sectionRepository.save(Section.fromDownStation(yongsanStation));
 
         Line line = lineRepository.save(new Line("1호선", "blue"));
@@ -50,7 +50,7 @@ public class SectionTest {
         lineRepository.flush();
 
         Line findLine = lineRepository.findById(line.getId()).get();
-        assertThat(findLine.getSections().size()).isEqualTo(2);
+        assertThat(findLine.getSortedSections().size()).isEqualTo(2);
 
     }
 

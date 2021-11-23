@@ -1,7 +1,6 @@
 package nextstep.subway.line.dto;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.line.domain.Line;
@@ -31,7 +30,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), convertStationResponses(line.getSections()),
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), convertStationResponses(line.getSortedSections()),
             line.getCreatedDate(), line.getModifiedDate());
     }
 

@@ -36,7 +36,7 @@ public class AcceptanceTest {
         databaseCleanup.execute();
     }
 
-    protected List<ExtractableResponse<Response>> given_목록저장되어있다(Object[] bodies, String url) {
+    protected List<ExtractableResponse<Response>> 목록을_저장한다(Object[] bodies, String url) {
         List<ExtractableResponse<Response>> responseList = new ArrayList<>();
         for (Object body : bodies) {
             responseList.add(저장한다(body, url));
@@ -45,7 +45,6 @@ public class AcceptanceTest {
     }
 
     protected ExtractableResponse<Response> 저장한다(Object body, String url) {
-        System.out.println(url);
         return given().body(body)
             .when()
             .post(url)

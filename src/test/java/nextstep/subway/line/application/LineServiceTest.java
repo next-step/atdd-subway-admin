@@ -41,7 +41,7 @@ public class LineServiceTest {
     void setUp() {
         Station startStation = new Station("시작");
         Station endStation = new Station("끝");
-        Section 시작 = Section.of(new Distance(TEST_DISTANCE), SectionType.UP, startStation, endStation);
+        Section 시작 = Section.ofUpStation(new Distance(TEST_DISTANCE), startStation, endStation);
         Section 끝 = Section.fromDownStation(endStation);
         line = new Line("1호선", "blue");
         line.addSections(Arrays.asList(시작, 끝));

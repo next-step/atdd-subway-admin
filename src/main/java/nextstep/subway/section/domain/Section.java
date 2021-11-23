@@ -43,7 +43,7 @@ public class Section extends BaseEntity implements Comparable<Section>{
     protected Section() {
     }
 
-    public Section(Distance distance, SectionType sectionType, Station station, Station linkStation) {
+    private Section(Distance distance, SectionType sectionType, Station station, Station linkStation) {
         this.distance = distance;
         this.sectionType = sectionType;
         setStation(station);
@@ -54,8 +54,12 @@ public class Section extends BaseEntity implements Comparable<Section>{
         return new Section(Distance.createDownDistance(), SectionType.DOWN, station, null);
     }
 
-    public static Section of(Distance distance, SectionType sectionType, Station station, Station linkStation) {
-        return new Section(distance, sectionType, station, linkStation);
+    public static Section ofUpStation(Distance distance, Station station, Station linkStation) {
+        return new Section(distance, SectionType.UP, station, linkStation);
+    }
+
+    public static Section ofMiddleStation(Distance distance, Station station, Station linkStation) {
+        return new Section(distance, SectionType.MIDDLE, station, linkStation);
     }
 
     /**
@@ -64,9 +68,10 @@ public class Section extends BaseEntity implements Comparable<Section>{
      * @param line
      */
     public void setLine(Line line) {
-        if (this.line == line) {
-            return;
+        if (this.line != null) {
+            this.line.removeSection(this);
         }
+
         this.line = line;
         line.addSection(this);
     }

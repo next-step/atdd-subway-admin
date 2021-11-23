@@ -33,7 +33,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        given_강남역저장되어있다();
+        강남역_저장한다();
 
         // when
         ExtractableResponse<Response> response = 저장한다(params, API_URL);
@@ -46,7 +46,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void create() {
         // when
-        ExtractableResponse<Response> response = 저장한다(params, API_URL);
+        ExtractableResponse<Response> response = 강남역_저장한다();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -57,7 +57,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getOne() {
         // given
-        ExtractableResponse<Response> saved = given_강남역저장되어있다();
+        ExtractableResponse<Response> saved = 강남역_저장한다();
 
         //when
         ExtractableResponse<Response> response = 조회한다(saved.header("Location"));
@@ -75,7 +75,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // given
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "역삼역");
-        List<ExtractableResponse<Response>> givenList = given_목록저장되어있다(new Object[]{params, params2}, API_URL);
+        List<ExtractableResponse<Response>> givenList = 목록을_저장한다(new Object[]{params, params2}, API_URL);
 
         // when
         ExtractableResponse<Response> response = 조회한다(API_URL);
@@ -94,7 +94,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void update() {
         // given
-        ExtractableResponse<Response> givenData = given_강남역저장되어있다();
+        ExtractableResponse<Response> givenData = 강남역_저장한다();
 
         //when
         String uri = givenData.header("Location");
@@ -108,7 +108,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void delete() {
         // given
-        ExtractableResponse<Response> givenData = given_강남역저장되어있다();
+        ExtractableResponse<Response> givenData = 강남역_저장한다();
 
         // when
         String uri = givenData.header("Location");
@@ -118,7 +118,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> given_강남역저장되어있다() {
+    private ExtractableResponse<Response> 강남역_저장한다() {
         return 저장한다(params, API_URL);
     }
 }

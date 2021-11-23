@@ -53,6 +53,10 @@ public class Line extends BaseEntity {
         section.setLine(this);
     }
 
+    public void removeSection(Section section) {
+        this.sections.remove(section);
+    }
+
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
@@ -70,7 +74,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
+    public List<Section> getSortedSections() {
         return sections.getSortedList();
     }
+
 }

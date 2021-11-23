@@ -29,16 +29,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void create() {
         //given
         //노선 생성 Request
-        //상행역, 하행역 존재
-        Map<SectionType, Long> idsMap = given_상행역하행역존재한다(new Station("서울역"), new Station("용산역"));
-
-        // 이름, 색상, 상행역id, 하행역id, 거리
-        LineRequest lineRequest =
-            new LineRequest("1호선", "Blue", idsMap.get(SectionType.UP), idsMap.get(SectionType.DOWN), 10);
-
         //when
         //지하철 노선 생성 (상행, 하행 역 정보 포함) 요청
-        ExtractableResponse<Response> response = 저장한다(lineRequest, API_URL);
+        ExtractableResponse<Response> response = 서울역용산역구간_1호선_저장한다();
 
         //then
         //지하철 노선 생성됨
@@ -54,9 +47,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        given_서울역용산역구간_1호선저장되어있다();
+        서울역용산역구간_1호선_저장한다();
         // 역 등록되어 있음
-        Map<SectionType, Long> idsMap = given_상행역하행역존재한다(new Station("강남역"), new Station("역삼역"));
+        Map<SectionType, Long> idsMap = 상행역_하행역_저장한다(new Station("강남역"), new Station("역삼역"));
 
         // when
         // 지하철_노선_생성_요청
@@ -73,9 +66,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getList() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> line1 = given_서울역용산역구간_1호선저장되어있다();
+        ExtractableResponse<Response> line1 = 서울역용산역구간_1호선_저장한다();
 
-        Map<SectionType, Long> idsMap = given_상행역하행역존재한다(new Station("강남역"), new Station("역삼역"));
+        Map<SectionType, Long> idsMap = 상행역_하행역_저장한다(new Station("강남역"), new Station("역삼역"));
         ExtractableResponse<Response> line2 = 저장한다(new LineRequest("2호선", "green", idsMap.get(SectionType.UP), idsMap.get(SectionType.DOWN), 10), API_URL);
 
         // when
@@ -99,7 +92,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getOne() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> givenData = given_서울역용산역구간_1호선저장되어있다();
+        ExtractableResponse<Response> givenData = 서울역용산역구간_1호선_저장한다();
 
         // when
         // 지하철_노선_조회_요청
@@ -119,7 +112,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void update() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> givenData = given_서울역용산역구간_1호선저장되어있다();
+        ExtractableResponse<Response> givenData = 서울역용산역구간_1호선_저장한다();
 
         // when
         // 지하철_노선_수정_요청
@@ -136,7 +129,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void delete() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> givenData = given_서울역용산역구간_1호선저장되어있다();
+        ExtractableResponse<Response> givenData = 서울역용산역구간_1호선_저장한다();
 
         // when
         // 지하철_노선_제거_요청
@@ -147,7 +140,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private Map<SectionType, Long> given_상행역하행역존재한다(Station upStation, Station downStation) {
+    private Map<SectionType, Long> 상행역_하행역_저장한다(Station upStation, Station downStation) {
         ExtractableResponse<Response> upResponse = 저장한다(upStation, STATION_API_URL);
         ExtractableResponse<Response> downResponse = 저장한다(downStation, STATION_API_URL);
 
@@ -158,8 +151,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return idsMap;
     }
 
-    private ExtractableResponse<Response> given_서울역용산역구간_1호선저장되어있다() {
-        Map<SectionType, Long> ids = given_상행역하행역존재한다(new Station("서울역"), new Station("용산역"));
+    private ExtractableResponse<Response> 서울역용산역구간_1호선_저장한다() {
+        Map<SectionType, Long> ids = 상행역_하행역_저장한다(new Station("서울역"), new Station("용산역"));
 
         // 이름, 색상, 상행역id, 하행역id, 거리
         LineRequest lineRequest =
