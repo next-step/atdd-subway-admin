@@ -6,14 +6,17 @@ import nextstep.subway.line.exception.NotEmptyLineNameException;
 import nextstep.subway.station.domain.Station;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import java.util.List;
 
 @Entity
+@Table(
+        uniqueConstraints = @UniqueConstraint(name = "uk_line_name", columnNames = {"name"})
+)
 public class Line extends BaseEntity {
-    @Column(unique = true)
     private String name;
     private String color;
     @Embedded

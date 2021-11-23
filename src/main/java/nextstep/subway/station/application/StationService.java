@@ -37,7 +37,6 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-
     public List<StationResponse> convertStationsResponse(List<Station> stations) {
         return stations.stream()
                 .map(StationResponse::of)

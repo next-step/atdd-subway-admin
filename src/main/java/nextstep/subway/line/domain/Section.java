@@ -7,6 +7,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -16,8 +17,9 @@ import java.util.Objects;
 @Entity
 @Embeddable
 @Table(
-        indexes = @Index(name = "section_id_upStationId_downStationId_unique_index", columnList = "id,upStationId,downStationId", unique = true)
+        indexes = @Index(name = "section_id_up_station_id_down_station_id_unique_index", columnList = "id,upStationId,downStationId", unique = true)
 )
+
 public class Section extends BaseEntity {
 
     private static final String UP_STATION_NOT_NULL_ERROR_MESSAGE = "상행역은 빈값일 수 없습니다.";
@@ -26,11 +28,11 @@ public class Section extends BaseEntity {
     private Distance distance;
 
     @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "upStationId")
+    @JoinColumn(name = "upStationId", foreignKey = @ForeignKey(name = "fk_section_up_station"))
     private Station upStation;
 
     @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "downStationId")
+    @JoinColumn(name = "downStationId", foreignKey = @ForeignKey(name = "fk_section_down_station"))
     private Station downStation;
 
     protected Section() {
