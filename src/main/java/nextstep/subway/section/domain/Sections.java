@@ -27,19 +27,28 @@ public class Sections {
     protected Sections() {
     }
 
-    private Sections(List<Section> values) {
+    public Sections(List<Section> values) {
         this.values = values;
     }
 
     public void connect(Section section) {
         Optional<Section> optExistedSection = upBoundSection(section);
+        updateWhenConnectInMiddleOfExistedSection(optExistedSection, section);
+
+        validateExistStations(section);
+
+        this.values.add(section);
+    }
+
+    private void updateWhenConnectInMiddleOfExistedSection(Optional<Section> optExistedSection,
+        Section section) {
         if (optExistedSection.isPresent()) {
             Section existedSection = optExistedSection.get();
             validateAlreadyExistedStations(section);
             validateDistanceWhenConnectInExistedSection(existedSection, section);
+
             existedSection.updateForConnect(section);
         }
-        this.values.add(section);
     }
 
     public static Sections empty() {
@@ -129,6 +138,12 @@ public class Sections {
     private void validateAlreadyExistedStations(Section section) {
         if (isExistedUpStationAndDownStation(section)) {
             throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다");
+        }
+    }
+
+    private void validateExistStations(Section section) {
+        if (!isExistedUpStationAndDownStation(section)) {
+            throw new IllegalArgumentException("상행역과 하행역 둘 다 포함되지 않은 역입니다");
         }
     }
 

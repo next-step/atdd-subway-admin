@@ -164,4 +164,16 @@ class SectionsTest {
             .withMessage("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다");
     }
 
+    @Test
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되지 않은 경우 예외 발생")
+    void 예외_케이스3() {
+        // given
+        Sections sections = line.getSections();
+
+        // when, then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> sections.connect(Section.of(line, 3L, 4L, 5))
+            )
+            .withMessage("상행역과 하행역 둘 다 포함되지 않은 역입니다");
+    }
 }

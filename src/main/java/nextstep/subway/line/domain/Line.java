@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import com.google.common.collect.Lists;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -35,7 +36,8 @@ public class Line extends BaseEntity {
     private Line(String name, String color, Long upStationId, Long downStationId, int distance) {
         this.name = LineName.from(name);
         this.color = LineColor.from(color);
-        this.sections.connect(Section.of(this, upStationId, downStationId, distance));
+        this.sections = new Sections(
+            Lists.newArrayList(Section.of(this, upStationId, downStationId, distance)));
     }
 
     public static Line from(String name, String color) {
