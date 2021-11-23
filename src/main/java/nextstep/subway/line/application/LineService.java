@@ -26,7 +26,7 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public List<LineResponse> readAllLines() {
-        final List<Line> lines = lineRepository.findAll();
+        final List<Line> lines = lineRepository.findAllWithSections();
         return LineResponse.of(lines);
     }
 
@@ -38,16 +38,16 @@ public class LineService {
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
         final Line line = readById(id);
-        line.update(lineRequest.toLine());
+        line.update(lineRequest.toLineForUpdate());
         return LineResponse.of(line);
+    }
+
+    public void deleteLine(Long id) {
+        lineRepository.deleteById(id);
     }
 
     private Line readById(Long id) {
         return lineRepository.findById(id)
                              .orElseThrow(() -> new NotFoundException("해당하는 Line이 없습니다. id = " + id));
-    }
-
-    public void deleteLine(Long id) {
-        lineRepository.deleteById(id);
     }
 }

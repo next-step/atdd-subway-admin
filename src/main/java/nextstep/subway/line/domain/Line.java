@@ -1,24 +1,49 @@
 package nextstep.subway.line.domain;
 
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
-
-import javax.persistence.*;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 
 @Entity
 public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
-    private String name;
-    private String color;
 
-    public Line() {
+    @Embedded
+    private LineName name;
+
+    @Embedded
+    private LineColor color;
+
+    @Embedded
+    private Sections sections = Sections.empty();
+
+    protected Line() {
     }
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
+    private Line(String name, String color) {
+        this.name = LineName.from(name);
+        this.color = LineColor.from(color);
+    }
+
+    private Line(String name, String color, Long upStationId, Long downStationId, int distance) {
+        this.name = LineName.from(name);
+        this.color = LineColor.from(color);
+        this.sections.add(Section.of(this, upStationId, downStationId, distance));
+    }
+
+    public static Line from(String name, String color) {
+        return new Line(name, color);
+    }
+
+    public static Line from(String name, String color, Long upStationId, Long downStationId, int distance) {
+        return new Line(name, color, upStationId, downStationId, distance);
     }
 
     public void update(Line line) {
@@ -30,11 +55,15 @@ public class Line extends BaseEntity {
         return id;
     }
 
-    public String getName() {
+    public LineName getName() {
         return name;
     }
 
-    public String getColor() {
+    public LineColor getColor() {
         return color;
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 }
