@@ -19,4 +19,8 @@ public class Distance {
 	public int getDistance() {
 		return distance;
 	}
+
+	public void divideDistance(Distance distance) {
+		this.distance -= distance.getDistance();
+	}
 }

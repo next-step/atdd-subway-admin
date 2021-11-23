@@ -12,7 +12,6 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.common.ErrorCode;
 import nextstep.subway.line.exception.SectionException;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 @Entity
 public class Section extends BaseEntity {
@@ -54,14 +53,6 @@ public class Section extends BaseEntity {
 		return downStation;
 	}
 
-	public StationResponse getUpStationResponse() {
-		return StationResponse.of(upStation);
-	}
-
-	public StationResponse getDownStationResponse() {
-		return StationResponse.of(downStation);
-	}
-
 	public Distance getDistance() {
 		return distance;
 	}
@@ -79,32 +70,44 @@ public class Section extends BaseEntity {
 		}
 	}
 
-	private boolean isSameUpStation(Section section) {
-		return upStation.equals(section.upStation);
+	public boolean isSameUpStation(Station station) {
+		return upStation.equals(station);
 	}
 
-	private boolean isSameDownStation(Section section) {
-		return downStation.equals(section.downStation);
+	public boolean isSameDownStation(Station station) {
+		return downStation.equals(station);
 	}
 
-	private boolean isSameUpDownStation(Section section) {
-		return isSameUpStation(section) && isSameDownStation(section);
+	public boolean isSameUpDownStation(Section compareSection) {
+		return isSameUpStation(compareSection.upStation) && isSameDownStation(compareSection.downStation);
 	}
 
-	private void validSameStation(Section section) {
-		if (isSameUpDownStation(section)) {
+	private void validSameStation(Section compareSection) {
+		if (isSameUpDownStation(compareSection)) {
 			throw new SectionException(ErrorCode.VALID_SAME_STATION_ERROR);
 		}
 	}
 
-	private boolean isInStations(Section section) {
-		return isSameUpStation(section) || isSameDownStation(section);
+	private boolean isInStations(Section compareSection) {
+		return isSameUpStation(compareSection.upStation) || isSameDownStation(compareSection.downStation);
 	}
 
-	private void validNotInStations(Section section) {
+	public void validNotInStations(Section section) {
 		if (!isInStations(section)) {
 			throw new SectionException(ErrorCode.VALID_NOT_IN_STATIONS_ERROR);
 		}
+	}
+
+	public void reSettingSection(Section expectSection) {
+		if (isSameUpStation(expectSection.upStation)) {
+			this.upStation = expectSection.downStation;
+		}
+
+		if (isSameDownStation(expectSection.downStation)) {
+			this.downStation = expectSection.upStation;
+		}
+
+		this.distance.divideDistance(expectSection.distance);
 	}
 
 	@Override
