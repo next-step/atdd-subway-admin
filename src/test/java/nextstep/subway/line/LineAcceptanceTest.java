@@ -164,14 +164,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> resultResponse,
         ExtractableResponse<Response> response1, ExtractableResponse<Response> response2) {
-
-        List<Long> expectedLineIds = Arrays.asList(response1, response2).stream()
-            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-            .collect(Collectors.toList());
-
-        List<Long> resultLineIds = resultResponse.jsonPath().getList(".", LineResponse.class).stream()
-            .map(it -> it.getId())
-            .collect(Collectors.toList());
+        response1.jsonPath().getObject("id", Long.class);
+        List<Long> expectedLineIds = Arrays.asList(
+            response1.jsonPath().getObject("id", Long.class),
+            response2.jsonPath().getObject("id", Long.class)
+        );
+        List<Long> resultLineIds = resultResponse.jsonPath().getList("id", Long.class);
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
