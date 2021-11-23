@@ -32,6 +32,11 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    public void addSection(Long id, SectionRequest section) {
+        Line persistLine = lineRepository.findByIdElseThrow(id);
+        persistLine.addSection(createSection(section, persistLine));
+    }
+
     private Section createSection(SectionRequest request, Line line) {
         Station upStation = stationRepository.findByIdElseThrow(request.getUpStationId());
         Station downStation = stationRepository.findByIdElseThrow(request.getDownStationId());
@@ -57,10 +62,5 @@ public class LineService {
     public void delete(Long id) {
         lineRepository.findByIdElseThrow(id);
         lineRepository.deleteById(id);
-    }
-
-    public void addSection(Long id, SectionRequest section) {
-        Line persistLine = lineRepository.findByIdElseThrow(id);
-        persistLine.addSection(createSection(section, persistLine));
     }
 }
