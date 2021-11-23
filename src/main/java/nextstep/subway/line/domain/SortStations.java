@@ -9,18 +9,23 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class SectionsSort {
+public class SortStations {
     private final List<Section> sections;
     private final Map<Station, Station> sectionMap;
     private final List<Station> sortedStations = new ArrayList<>();
 
-    private SectionsSort(List<Section> sections) {
+    private SortStations(List<Section> sections) {
         this.sections = sections;
         this.sectionMap = getStationMap();
     }
 
-    public static SectionsSort of(List<Section> sections) {
-        return new SectionsSort(sections);
+    private Map<Station, Station> getStationMap() {
+        return this.sections.stream()
+                .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
+    }
+
+    public static SortStations of(List<Section> sections) {
+        return new SortStations(sections);
     }
 
     public List<Station> sortUpToDown() {
@@ -28,9 +33,16 @@ public class SectionsSort {
         return Collections.unmodifiableList(sortedStations);
     }
 
-    private Map<Station, Station> getStationMap() {
-        return this.sections.stream()
-                .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
+    private Station getMaxTopStation() {
+        final List<Station> downStations = sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+
+        return sections.stream()
+                .map(Section::getUpStation)
+                .filter(upStation -> !downStations.contains(upStation))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     private void addDownStationByUpStationRecursive(final Station downStation) {
@@ -45,18 +57,4 @@ public class SectionsSort {
         }
         return Optional.empty();
     }
-
-    private Station getMaxTopStation() {
-
-        final List<Station> downStations = sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        return sections.stream()
-                .map(Section::getUpStation)
-                .filter(upStation -> !downStations.contains(upStation))
-                .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
-    }
-
 }

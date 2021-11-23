@@ -50,6 +50,6 @@ public class Sections {
     }
 
     public List<Station> getStationsOrderByUptoDown() {
-        return SectionsSort.of(this.sections).sortUpToDown();
+        return SortStations.of(this.sections).sortUpToDown();
     }
 }
