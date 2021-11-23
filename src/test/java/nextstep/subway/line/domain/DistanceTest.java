@@ -13,6 +13,6 @@ class DistanceTest {
         Assertions.assertThatThrownBy(() -> {
                       Distance distance = new Distance(-1);
                   }).isInstanceOf(ServiceException.class)
-                  .hasMessage("구간의 거리가 0 또는 0보다 작을 수 없습니다.");
+                  .hasMessage("구간의 거리가 0보다 작을 수 없습니다.");
     }
 }

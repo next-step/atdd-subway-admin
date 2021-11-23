@@ -69,14 +69,12 @@ public class LineResponse {
         return modifiedDate;
     }
 
-    private static List<StationResponse> toStations(Line line) {
+    public static List<StationResponse> toStations(Line line) {
         List<StationResponse> stations = new ArrayList<>();
         List<Section> sections = line.getSections();
         for (Section section : sections) {
-            stations.add(StationResponse.of(section.getDownStationId()));
-            stations.add(StationResponse.of(section.getUpStationId()));
+            stations.add(StationResponse.of(section.getStation()));
         }
-        Collections.sort(stations);
         return stations;
     }
 }

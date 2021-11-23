@@ -3,21 +3,20 @@ package nextstep.subway.common;
 import org.springframework.http.HttpStatus;
 
 public class ErrorResponse {
-    private ErrorCode errorCode;
+    private HttpStatus status;
     private String message;
 
-    public ErrorResponse() {
-        this.errorCode = ErrorCode.SERVER_ERROR;
-        this.message = "데이터 저장중 오류가 발생하였습니다.";
-    }
-
-    public ErrorResponse(ErrorCode errorCode, String message) {
-        this.errorCode = errorCode;
+    private ErrorResponse(HttpStatus status, String message) {
+        this.status = status;
         this.message = message;
     }
 
-    public ErrorCode getErrorCode() {
-        return errorCode;
+    public static ErrorResponse of (HttpStatus httpStatus, String message) {
+        return new ErrorResponse(httpStatus, message);
+    }
+
+    public HttpStatus getStatus() {
+        return status;
     }
 
     public String getMessage() {

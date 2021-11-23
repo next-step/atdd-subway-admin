@@ -1,15 +1,18 @@
 package nextstep.subway.common;
 
+import org.springframework.http.HttpStatus;
+
 public class ServiceException extends RuntimeException {
 
-    private ErrorCode errorCode;
+    private static final String SERVICE_MESSAGE = "요청중 에러가 발생했습니다.";
 
-    public ServiceException(ErrorCode errorCode) {
-        this.errorCode = errorCode;
+    ErrorResponse errorResponse;
+
+    public ServiceException() {
+        ErrorResponse.of(HttpStatus.BAD_REQUEST, SERVICE_MESSAGE);
     }
 
-    public ServiceException(ErrorCode errorCode, String message) {
+    public ServiceException(String message) {
         super(message);
-        this.errorCode = errorCode;
     }
 }

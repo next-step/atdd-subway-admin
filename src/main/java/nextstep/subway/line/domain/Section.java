@@ -2,12 +2,13 @@ package nextstep.subway.line.domain;
 
 import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.*;
-import static nextstep.subway.common.ErrorCode.*;
 
 import java.util.Objects;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -19,19 +20,22 @@ import nextstep.subway.common.ServiceException;
 import nextstep.subway.station.domain.Station;
 
 @Entity
-public class Section extends BaseEntity {
+public class Section extends BaseEntity implements Comparable<Section> {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_line_to_up_station_id"))
-    private Station upStation;
+    @Enumerated(value = EnumType.STRING)
+    private SectionType sectionType;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_line_to_down_station_id"))
-    private Station downStation;
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_line_to_station"))
+    private Station station;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_line_to_next_station"))
+    private Station nextStation;
 
     @Embedded
     private Distance distance = new Distance();
@@ -40,30 +44,23 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "line_id")
     private Line line;
 
-    public Section(Long upStationId, Long downStationId) {
-
-        if (Objects.isNull(upStationId)) {
-            throw new ServiceException(INPUT_INVALID_ERROR, "상행 값이 비어있습니다.");
-        }
-
-        if (Objects.isNull(downStationId)) {
-            throw new ServiceException(INPUT_INVALID_ERROR, "하행 값이 비어있습니다.");
-        }
-
-        if (upStationId.equals(downStationId)) {
-            throw new ServiceException(INPUT_INVALID_ERROR, "상행선과 하행선은 동일할 수 없습니다.");
-        }
-        this.upStation = new Station(upStationId);
-        this.downStation = new Station(downStationId);
-    }
-
-    public Section(Long upStationId, Long downStationId, Distance distance) {
-        this(upStationId, downStationId);
-        this.distance = distance;
-    }
-
     public Section(Station upStation, Station downStation) {
-        this(upStation.getId(), downStation.getId());
+
+        if (Objects.isNull(upStation)) {
+            throw new ServiceException("상행 값이 비어있습니다.");
+        }
+
+        if (upStation.equals(downStation)) {
+            throw new ServiceException("상행선과 하행선은 동일할 수 없습니다.");
+        }
+        this.station = upStation;
+        this.nextStation = downStation;
+    }
+
+    public Section(Station station, Station nextStation, SectionType sectionType, Distance distance) {
+        this(station, nextStation);
+        this.sectionType = sectionType;
+        this.distance = distance;
     }
 
     protected Section() {
@@ -73,12 +70,47 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
-    public Station getUpStationId() {
-        return upStation;
+    @Override
+    public int compareTo(Section target) {
+
+        if (isUpStation()) {
+            return -1;
+        }
+
+        if (isNotExistsNextStationOrEqualsNextStation(target) ) {
+            return 1;
+        }
+
+        if (isNotExistsTargetNextStation(target)) {
+            return -1;
+        }
+
+        return 0;
     }
 
-    public Station getDownStationId() {
-        return downStation;
+    private boolean isUpStation() {
+        return this.sectionType.equals(SectionType.UP);
+    }
+
+    private boolean isNotExistsNextStationOrEqualsNextStation(Section target) {
+        return (this.nextStation == null || this.nextStation.equals(target.station));
+    }
+
+    private boolean isNotExistsTargetNextStation(Section target) {
+        return target.nextStation == null ;
+    }
+
+
+    public SectionType getSectionType() {
+        return sectionType;
+    }
+
+    public Station getStation() {
+        return station;
+    }
+
+    public Station getNextStation() {
+        return nextStation;
     }
 
     public Distance getDistance() {

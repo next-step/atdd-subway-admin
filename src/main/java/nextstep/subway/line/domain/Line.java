@@ -32,9 +32,8 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void addSection(Section section) {
-        section.setLine(this);
-        sections.add(section);
+    public void addSection(List<Section> section) {
+        sections.add(section, this);
     }
 
     protected Line() {

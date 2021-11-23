@@ -14,11 +14,11 @@ public class SubwayAdvice {
 
     @ExceptionHandler(value = {EntityNotFoundException.class, DataIntegrityViolationException.class})
     public ResponseEntity<ErrorResponse> EntityNotFoundException(Exception e) {
-        return new ResponseEntity<>(new ErrorResponse(ErrorCode.DB_ERROR, e.getMessage()), BAD_REQUEST);
+        return new ResponseEntity<>(ErrorResponse.of(BAD_REQUEST, e.getMessage()), BAD_REQUEST);
     }
 
     @ExceptionHandler(value = {ServiceException.class})
     public ResponseEntity<ErrorResponse> serviceException(Exception e) {
-        return new ResponseEntity<>(new ErrorResponse(ErrorCode.SERVER_ERROR, e.getMessage()), INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(ErrorResponse.of(INTERNAL_SERVER_ERROR, e.getMessage()), INTERNAL_SERVER_ERROR);
     }
 }
