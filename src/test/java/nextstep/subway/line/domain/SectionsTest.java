@@ -17,11 +17,11 @@ class SectionsTest {
     void 지하철_상행_하행_에따른_노선_정렬_확인() {
         Line line = new Line("1호선", "red");
         Section section1 = new Section(new Station(2L, "구파발"), new Station(5L, "신촌역"), SectionType.DOWN, new Distance(10));
-        Section lastSection = new Section(new Station(5L, "신촌역"), new Station(55L,"대화역"), SectionType.DOWN, new Distance(10));
+        Section section5 = new Section(new Station(5L, "신촌역"), new Station(55L,"대화역"), SectionType.DOWN, new Distance(10));
         Section section4 = new Section(new Station(3L, "서울역"), new Station(2L, "구파발"), SectionType.DOWN, new Distance(5));
         Section section2 = new Section(new Station(1L, "강남역"), new Station(3L, "서울역"), SectionType.UP, new Distance(10));
-        Section section3 = new Section(new Station(55L, "대화역"), null, SectionType.DOWN, new Distance(10));
-        line.addSection(asList(section4, section1,section3,section2,lastSection));
+        Section lastSection = new Section(new Station(55L, "대화역"), null, SectionType.DOWN, new Distance(10));
+        line.addSection(asList(section4, section1, section5, section2, lastSection));
 
         List<Section> sections = line.getSections();
 

@@ -4,7 +4,7 @@ import nextstep.subway.station.domain.Station;
 
 import java.time.LocalDateTime;
 
-public class StationResponse implements Comparable<StationResponse>{
+public class StationResponse {
     private Long id;
     private String name;
     private LocalDateTime createdDate;
@@ -40,14 +40,4 @@ public class StationResponse implements Comparable<StationResponse>{
         return modifiedDate;
     }
 
-    @Override
-    public int compareTo(StationResponse o) {
-        if (this.id > o.id) {
-            return 1;
-        }
-        if (this.id < o.id) {
-            return -1;
-        }
-        return 0;
-    }
 }
