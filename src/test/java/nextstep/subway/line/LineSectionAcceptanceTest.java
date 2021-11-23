@@ -63,4 +63,20 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(최초_상행종점역_ID, 사이_추가_역_ID, 최초_하행종점역_ID);
     }
 
+    @DisplayName("새로운 역을 상행 종점에 등록한다.")
+    @Test
+    void createSection2() {
+        SectionRequest request = SectionRequest.of(변경_상행종점역_ID, 최초_상행종점역_ID, 거리_5);
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .when()
+                .post(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
+                .then().log().all().extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        LineResponse lineResponse = responseLine(response);
+        assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(변경_상행종점역_ID, 최초_상행종점역_ID, 최초_하행종점역_ID);
+    }
+
 }
