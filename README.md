@@ -53,6 +53,8 @@ npm run dev
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
 
+---
+
 ### [1단계] 지하철 노선 관리
 
 - [X] 지하철 노선 관련 기능의 인수 테스트 작성
@@ -67,6 +69,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [X] 스텝 메서드 만들기
   - [X] 스텝 메서드 한글명으로 바꾸기
   - [X] 스텝 메서드들을 다른 인수 테스트에서 재사용 가능하게 함
+
+---
 
 ### [2단계] 인수 테스트 리팩터링
 
@@ -97,21 +101,25 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [X] 노선 조회 시 역 목록을 함께 응답함
   - [X] 상행역 부터 하행역 순으로 정렬되어야 함
 
+---
+
 ### [3단계] 구간 추가 기능
 
 지하철 구간 등록 기능 구현하기
-- 구간 등록 API Request
-```
-POST /lines/1/sections HTTP/1.1
-accept: */*
-content-type: application/json; charset=UTF-8
-host: localhost:52165
 
-{
-    "downStationId": "4",
-    "upStationId": "2",
-    "distance": 10
-}
+- 구간 등록 API Request
+
+```
+  POST /lines/1/sections HTTP/1.1
+  accept: */*
+  content-type: application/json; charset=UTF-8
+  host: localhost:52165
+  
+  {
+      "downStationId": "4",
+      "upStationId": "2",
+      "distance": 10
+  }
 ```
 - [X] 기능 구현 전 구간 등록 인수 테스트 작성
 - [X] 예외 케이스 처리 인수 테스트 작성
@@ -126,3 +134,42 @@ host: localhost:52165
 - [X] 기능 구현
 - [X] 테스트 리펙터링
 - [X] 기능 리펙터링
+
+---
+
+### [4단계] 구간 제거 기능
+
+지하철 구간 제거 기능 구현하기(구간 제거보다는 역 제거가 맞는말 같음)
+
+- 구간 삭제 Request
+
+```
+  DELETE /lines/1/sections?stationId=2 HTTP/1.1
+  accept: */*
+  host: localhost:52165
+```
+
+- [X] 구간 삭제 인수 테스트 작성
+- [X] 예외 케이스 처리 인수 테스트 작성
+  - [X] 하행 종점이 제거될 경우 종점의 상행역이 종점이 된다.
+  - [X] 상행 종점(맨 처음역)이 제거되는 경우에도 다음으로 오는 역이 종점이 된다.
+  - [X] 중간역이 제거될 경우 재배치함
+    - [X] 삭제되는 역의 상행역과 하행역으로 재배치 된다.
+    - [X] 거리는 두 구간의 합으로 정한다.
+  - [X] 실패 인수 테스트 작성
+- [ ] 기능 구현
+- [ ] 기능 리펙터링
+- [ ] 테스트 리펙터링
+
+#### 삭제 경우의 수
+
+- 상행 종점이 경우
+- 하행 종점인 경우
+- 중간역인 경우
+
+#### 예외 발생 케이스
+
+- [ ] 노선에 등록되지 않은 역은 제거할 수 없다.
+- [ ] 구간이 하나인 노선은 제거할 수 없다.
+- [ ] 존재하지 않는 지하철 역으로 제거할 수 없다.
+- [ ] 존재하지 않는 노선에 구간을 제거할 수 없다.

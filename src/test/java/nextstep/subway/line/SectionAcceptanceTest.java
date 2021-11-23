@@ -29,6 +29,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private StationResponse 사당역;
     private String LineLocation;
 
+    public static ExtractableResponse<Response> 지하철_구간_등록_요청(SectionRequest request, String location) {
+        return RestAssured
+                .given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(location + "/sections")
+                .then().log().all().extract();
+    }
+
+    public static SectionRequest 구간_요청_파라미터_생성(Long upStationId, Long downStationId, int distance) {
+        return new SectionRequest(upStationId, downStationId, distance);
+    }
+
     @BeforeEach
     void beforeEach() {
         강남역 = 지하철_역_등록되어_있음("강남역").as(StationResponse.class);
@@ -151,7 +164,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("존재하지 않는 노선에 구간을 추가할 수 없다.")
     @Test
-    void notFoundLine() {
+    void notFoundLineInsert() {
         // given
         SectionRequest request = 구간_요청_파라미터_생성(강남역.getId(), 삼성역.getId(), 5);
 
@@ -162,25 +175,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_구간_등록_실패됨(response);
     }
 
-    private SectionRequest 구간_요청_파라미터_생성(Long upStationId, Long downStationId, int distance) {
-        return new SectionRequest(upStationId, downStationId, distance);
-    }
-
     private ExtractableResponse<Response> 존재하지_않는_노선에_구간_추가_요청(SectionRequest request) {
         return 지하철_구간_등록_요청(request, "lines/3");
-    }
-
-    private ExtractableResponse<Response> 지하철_구간_등록_요청(SectionRequest request, String location) {
-        return RestAssured
-                .given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(location + "/sections")
-                .then().log().all().extract();
-    }
-
-    private void 지하철_구간_등록됨(ExtractableResponse<Response> response) {
-        요청_결과_검증(response, HttpStatus.OK);
     }
 
     private void 지하철_구간_목록_수정됨(ExtractableResponse<Response> response, List<StationResponse> excepted, int totalDistance) {
@@ -190,6 +186,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(actual.getStations()).containsExactlyElementsOf(excepted),
                 () -> assertThat(actual.getTotalDistance()).isEqualTo(totalDistance)
         );
+    }
+
+    private void 지하철_구간_등록됨(ExtractableResponse<Response> response) {
+        요청_결과_검증(response, HttpStatus.OK);
     }
 
     private void 지하철_구간_등록_실패됨(ExtractableResponse<Response> response) {
