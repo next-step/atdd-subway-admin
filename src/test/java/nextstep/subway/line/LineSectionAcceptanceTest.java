@@ -64,20 +64,6 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(최초_상행종점역_ID, 사이_추가_역_ID, 최초_하행종점역_ID);
     }
 
-    @DisplayName("역 사이에 새로운 역 거리가 유효하지 않게 등록한다.")
-    @Test
-    void createSectionFail() {
-        SectionRequest request = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_100);
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(request)
-                .when()
-                .post(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
-                .then().log().all().extract();
-
-        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
-    }
-
     @DisplayName("새로운 역을 상행 종점에 등록한다.")
     @Test
     void createSection2() {
@@ -110,5 +96,32 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(최초_상행종점역_ID, 최초_하행종점역_ID, 변경_하행_종점역_ID);
     }
 
+    @DisplayName("역 사이에 새로운 역 거리가 유효하지 않게 등록한다.")
+    @Test
+    void createSectionFail() {
+        SectionRequest request = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_100);
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .when()
+                .post(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
+                .then().log().all().extract();
+
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없어야 한다.")
+    @Test
+    void createSectionFail2() {
+        SectionRequest request = SectionRequest.of(최초_상행종점역_ID, 최초_하행종점역_ID, 거리_5);
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .when()
+                .post(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
+                .then().log().all().extract();
+
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+    }
 
 }

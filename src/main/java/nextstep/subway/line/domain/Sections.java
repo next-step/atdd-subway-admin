@@ -41,12 +41,20 @@ public class Sections {
 
     private void validate(Section section) {
         validateDistance(section);
+        validateDuplicate(section);
+    }
+
+    private void validateDuplicate(Section section) {
+        if (getUpStations().contains(section.getStation()) &&
+                getDownStations().contains(section.getNextStation())) {
+            throw new SectionNotCreateException("이미 등록된 구간입니다.");
+        }
     }
 
     private void validateDistance(Section section) {
         Optional<Section> findSection = findSection(section);
         findSection.ifPresent(it -> {
-            if(!it.isPermitDistance(section.getDistance())) throw new SectionNotCreateException("유효한 길이가 아닙니다.");
+            if (!it.isPermitDistance(section.getDistance())) throw new SectionNotCreateException("유효한 길이가 아닙니다.");
         });
     }
 
