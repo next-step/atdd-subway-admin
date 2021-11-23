@@ -26,6 +26,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private static final Integer DISTANCE_10 = 10;
     private static final Integer DISTANCE_4 = 4;
+    private static final Integer DISTANCE_15 = 15;
     private static final String line1Name = "1호선";
     private static final String API_URL = "/lines";
     private static final String STATION_API_URL = "/stations";
@@ -34,6 +35,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private Long downStationId;
     private Long addStationId;
     private ExtractableResponse<Response> line1;
+    private String sectionUrl;
 
     @BeforeEach
     public void setUp() {
@@ -49,6 +51,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             idsMap.get(SectionType.DOWN), DISTANCE_10);
         line1 = 저장한다(lineRequest, API_URL);
 
+        sectionUrl = line1.header("Location")+"/sections";
         upStationId = idsMap.get(SectionType.UP);
         downStationId = idsMap.get(SectionType.DOWN);
         addStationId = getLongIdByResponse(addStationResponse);
@@ -171,16 +174,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("노선에 하행 구간 추가")
-    public void addDownSection() {
+    void addDownSection() {
         //given
         // 지하철 역 3개(서울역, 용산역, 추가역) 추가 되어 있음
         // 서울역-용산역을 구간으로 가진 1호선 등록되어 있음
-        String url = line1.header("Location")+"/sections";
 
         //when
         // 용산역-추가역 구간 추가
         SectionRequest sectionRequest = new SectionRequest(downStationId, addStationId, DISTANCE_10);
-        ExtractableResponse<Response> saveResponse = 저장한다(sectionRequest, url);
+        ExtractableResponse<Response> saveResponse = 저장한다(sectionRequest, sectionUrl);
 
         //then
         // 노선 정보에 추가역 추가되어 지하철 역 정보 3개(서울역,용산역,추가역 순으로) 목록 조회됨
@@ -189,15 +191,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("노선에 상행 구간 추가")
-    public void addUpSection() {
+    void addUpSection() {
         //given
         // 지하철 역 3개(서울역, 용산역, 추가역) 추가 되어 있음
         // 서울역-용산역을 구간으로 가진 1호선 등록되어 있음
-        String url = line1.header("Location")+"/sections";
         //when
         // 추가역-서울역 구간 추가
         SectionRequest sectionRequest = new SectionRequest(addStationId, upStationId, DISTANCE_10);
-        ExtractableResponse<Response> saveResponse = 저장한다(sectionRequest, url);
+        ExtractableResponse<Response> saveResponse = 저장한다(sectionRequest, sectionUrl);
 
         //then
         // 노선 정보에 역 추가되어 지하철 역 정보 3개(추가역,서울역,용산역 순으로) 목록 조회됨
@@ -206,20 +207,87 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("노선에 중간 구간 추가")
-    public void addMiddleSection() {
+    void addMiddleSection() {
         //given
         // 지하철 역 3개(서울역, 용산역, 추가역) 추가 되어 있음
         // 서울역-용산역(distance : 10)을 구간으로 가진 1호선 등록되어 있음
-        String url = line1.header("Location")+"/sections";
 
         //when
         // 서울역-추가역(distance: 4) 구간 추가
         SectionRequest sectionRequest = new SectionRequest(upStationId, addStationId, DISTANCE_4);
-        ExtractableResponse<Response> saveResponse = 저장한다(sectionRequest, url);
+        ExtractableResponse<Response> saveResponse = 저장한다(sectionRequest, sectionUrl);
 
         //then
         // 노선 정보에 추가역 추가되어 지하철 역 정보 3개(서울역,추가역,용산역 순으로) 목록 조회됨
         노선정보에구간추가되어_역정보목록정렬되어조회됨(saveResponse, Arrays.asList("서울역","추가역","용산역"));
+    }
+
+    @Test
+    @DisplayName("1호선에 구간 추가 시 상행, 하행이 이미 모두 등록된 경우 BusinessException 발생")
+    void addSectionExistBusinessException() {
+        //given
+        //서울역,용산역을 구간으로 가진 1호선 등록되어 있음
+
+        //when
+        //서울역,용산역을 상행-하행으로 구간 추가
+        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, DISTANCE_4);
+        ExtractableResponse<Response> saveResponse = 저장한다(sectionRequest, sectionUrl);
+
+        //then
+        //"상행역, 하행역이 이미 구간으로 등록되어 있습니다." 오류 메세지 반환
+        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("1호선에 구간 추가 시 상행, 하행이 모두 포함되어 있지 않은 경우 BusinessException 발생")
+    void addSectionNotIncludeBusinessException() {
+        //given
+        //서울역,용산역을 구간으로 가진 1호선 등록되어 있음
+        //강남역,역삼역이 저장되어 있음
+        Map<SectionType, Long> idsMap = 상행역_하행역_저장한다(new Station("강남역"), new Station("역삼역"));
+
+        //when
+        //강남역-역삼역을 상행-하행으로 구간 추가
+        SectionRequest sectionRequest = new SectionRequest(idsMap.get(SectionType.UP), idsMap.get(SectionType.DOWN), DISTANCE_4);
+        ExtractableResponse<Response> saveResponse = 저장한다(sectionRequest, sectionUrl);
+
+        //then
+        //"상행역과 하행역이 포함된 구간이 없습니다." 오류 메세지 반환
+        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("1호선에 구간 추가 시 새로등록되는 역이 기존 역사보다 길이가 긴 경우 BusinessException 발생")
+    void addSectionLongDistanceBusinessException() {
+        //given
+        //서울역,용산역을 10길이 구간으로 가진 1호선 등록되어 있음
+        //추가역 등록되어 있음
+
+        //when
+        //서울역-추가역을 상행-하행으로 15길이 구간 추가
+        SectionRequest sectionRequest = new SectionRequest(upStationId, addStationId, DISTANCE_15);
+        ExtractableResponse<Response> saveResponse = 저장한다(sectionRequest, sectionUrl);
+
+        //then
+        //"구간의 길이가 기존 구간보다 깁니다." 오류 메세지 반환
+        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("1호선에 구간 추가 시 새로등록되는 역이 기존 역사보다 길이가 같은 경우 BusinessException 발생")
+    void addSectionSameDistanceBusinessException() {
+        //given
+        //서울역,용산역을 10길이 구간으로 가진 1호선 등록되어 있음
+        //추가역 등록되어 있음
+
+        //when
+        //서울역-추가역을 상행-하행으로 10길이 구간 추가
+        SectionRequest sectionRequest = new SectionRequest(upStationId, addStationId, DISTANCE_10);
+        ExtractableResponse<Response> saveResponse = 저장한다(sectionRequest, sectionUrl);
+
+        //then
+        //"구간의 길이가 기존 구간의 길이와 같습니다." 오류 메세지 반환
+        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private void 노선정보에구간추가되어_역정보목록정렬되어조회됨(ExtractableResponse<Response> response, List<String> stationNames) {
