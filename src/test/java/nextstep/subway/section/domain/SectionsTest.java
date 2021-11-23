@@ -94,4 +94,46 @@ class SectionsTest {
             () -> assertThat(sections.getValues().get(1).getDistance().equals(Distance.from(3)))
         );
     }
+
+    @Test
+    @DisplayName("상행 종점에 새로운 구간이 추가되는 경우 추가만 된다")
+    void 상행_종점에_새_구간_추가() {
+        // given
+        Sections sections = line.getSections();
+
+        // when
+        sections.connect(Section.of(line, 3L, 1L, 3));
+
+        // then
+        assertAll(
+            () -> assertThat(sections.getValues()).hasSize(2),
+            () -> assertThat(sections.getValues().get(0).getUpStation().equals(Station.of(1L))),
+            () -> assertThat(sections.getValues().get(0).getDownStation().equals(Station.of(2L))),
+            () -> assertThat(sections.getValues().get(0).getDistance().equals(Distance.from(10))),
+            () -> assertThat(sections.getValues().get(1).getUpStation().equals(Station.of(3L))),
+            () -> assertThat(sections.getValues().get(1).getDownStation().equals(Station.of(1L))),
+            () -> assertThat(sections.getValues().get(1).getDistance().equals(Distance.from(3)))
+        );
+    }
+
+    @Test
+    @DisplayName("하행 종점에 새로운 구간이 추가되는 경우 추가만 된다")
+    void 하행_종점에_새_구간_추가() {
+        // given
+        Sections sections = line.getSections();
+
+        // when
+        sections.connect(Section.of(line, 2L, 3L, 3));
+
+        // then
+        assertAll(
+            () -> assertThat(sections.getValues()).hasSize(2),
+            () -> assertThat(sections.getValues().get(0).getUpStation().equals(Station.of(1L))),
+            () -> assertThat(sections.getValues().get(0).getDownStation().equals(Station.of(2L))),
+            () -> assertThat(sections.getValues().get(0).getDistance().equals(Distance.from(10))),
+            () -> assertThat(sections.getValues().get(1).getUpStation().equals(Station.of(2L))),
+            () -> assertThat(sections.getValues().get(1).getDownStation().equals(Station.of(3L))),
+            () -> assertThat(sections.getValues().get(1).getDistance().equals(Distance.from(3)))
+        );
+    }
 }
