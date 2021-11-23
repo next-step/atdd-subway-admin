@@ -58,4 +58,14 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+            "line=" + line.getName() +
+            ", upStation=" + upStation.getName() +
+            ", downStation=" + downStation.getName() +
+            ", distance=" + distance +
+            '}';
+    }
 }

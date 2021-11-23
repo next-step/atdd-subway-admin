@@ -3,6 +3,7 @@ package nextstep.subway.api;
 import io.restassured.mapper.TypeRef;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.HttpStatus;
 
@@ -10,22 +11,26 @@ import java.util.List;
 import java.util.Map;
 
 import static nextstep.subway.api.HttpMethod.지하철_노선_조회;
+import static nextstep.subway.fixture.StationFixture.역_생성_응답;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class AssertMethod {
-    public static void 지하철_노선_생성_확인(ExtractableResponse<Response> response, Map<String, String> params) {
+    public static void 지하철_노선_생성_확인(ExtractableResponse<Response> response, Line line, Map<String, String> upStation, Map<String, String> downStation) {
+        Long upStationId = 역_생성_응답.get(upStation.get("name")).getId();
+        Long downStationId = 역_생성_응답.get(downStation.get("name")).getId();
+
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
             () -> assertThat(response.header("Location")).isNotBlank(),
             () -> assertThat(response.as(LineResponse.class))
                 .extracting(LineResponse::getName, LineResponse::getColor, e -> e.getStations().get(0).getId(), e -> e.getStations().get(1).getId())
-                .contains(params.get("name"), params.get("color"), Long.valueOf(params.get("upStationId")), Long.valueOf(params.get("downStationId")))
+                .contains(line.getName(), line.getColor(), upStationId, downStationId)
         );
     }
 
-    public static void 지하철_노선_실패_확인(ExtractableResponse<Response> response) {
+    public static void 지하철_노선_생성_실패_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -42,7 +47,7 @@ public class AssertMethod {
             .contains(tuple(lineResponse.getId(), lineResponse.getColor(), lineResponse.getName()));
     }
 
-    public static void 지하철_노선_정상_응답_확인(ExtractableResponse response) {
+    public static void 지하철_노선_등록_정상_응답_확인(ExtractableResponse response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -52,10 +57,10 @@ public class AssertMethod {
             .contains(lineResponse.getId(), lineResponse.getName(), lineResponse.getColor());
     }
 
-    public static void 지하철_노선_수정_확인(ExtractableResponse response, Map<String, String> params) {
+    public static void 지하철_노선_수정_확인(ExtractableResponse response, Line params) {
         assertThat(response.as(LineResponse.class))
             .extracting(LineResponse::getName, LineResponse::getColor)
-            .contains(params.get("name"), params.get("color"));
+            .contains(params.getName(), params.getColor());
     }
 
     public static void 지하철_노선_삭제_확인(ExtractableResponse response) {

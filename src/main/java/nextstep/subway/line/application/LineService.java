@@ -2,21 +2,33 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class LineService {
+    private static final String EQUAL_SECTION_EXIST_EXCEPTION_STATEMENT = "같은 구간의 데이터가 존재합니다.";
+    private static final String OLD_DISTANCE_IS_GRATER_EQUAL_THAN_NEW_DISTANCE_EXCEPTION_STATEMENT = "기존거리보다 새로운 입력거리가 깁니다.";
+    private static final String ALREADY_UP_STATION_AND_DOWN_STATION_EXIST_EXCEPTION_STATEMENT = "상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.";
+    private static final String NONE_OF_UP_STATION_AND_DOWN_STATION_EXIST_EXCEPTION_STATEMENT = "상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.";
+    private static final String NOT_DEFINED_REQUEST_EXCEPTION_STATEMENT = "정의되지 않은 요청입니다.";
+
     private static final String LINE = "노선";
+    private static final String STATION = "역";
+    private static final String SECTION = "구간";
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
@@ -24,16 +36,6 @@ public class LineService {
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-    }
-
-    public LineResponse saveLine(LineRequest request) {
-        Station upStation = stationRepository.findById(request.getUpStationId()).get();
-        Station downStation = stationRepository.findById(request.getDownStationId()).get();
-        int distance = request.getDistance();
-
-        Line persistLine = lineRepository.save(request.toLine());
-        persistLine.addSection(upStation, downStation, distance);
-        return LineResponse.of(persistLine);
     }
 
     @Transactional(readOnly = true)
@@ -62,5 +64,106 @@ public class LineService {
     private Line getLineById(Long id) {
         return lineRepository.findById(id)
             .orElseThrow(() -> new NotFoundException(LINE));
+    }
+
+    public LineResponse saveLine(LineRequest request) {
+        Station upStation = stationRepository.findById(request.getUpStationId())
+            .orElseThrow(() -> new NotFoundException(STATION));
+        Station downStation = stationRepository.findById(request.getDownStationId())
+            .orElseThrow(() -> new NotFoundException(STATION));
+
+        Optional<Line> optionalLine = lineRepository.findByName(request.getName());
+        if (optionalLine.isPresent()) {
+            validate(upStation, downStation, optionalLine.get());
+
+            optionalLine.get().addSection(upStation, downStation, request.getDistance());
+            return LineResponse.of(optionalLine.get());
+        }
+
+        Line persistLine = lineRepository.save(request.toLine());
+        persistLine.addSection(upStation, downStation, request.getDistance());
+        return LineResponse.of(persistLine);
+    }
+
+    public LineResponse saveSection(LineRequest request, Long id) {
+        Station newUpStation = stationRepository.findById(request.getUpStationId())
+            .orElseThrow(() -> new NotFoundException(SECTION));
+        Station newDownStation = stationRepository.findById(request.getDownStationId())
+            .orElseThrow(() -> new NotFoundException(SECTION));
+
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundException(LINE));
+        validateSection(line, newUpStation, newDownStation);
+
+        Optional<LineResponse> optionalLineResponse = insertSection(request, newUpStation, newDownStation, line);
+        if (optionalLineResponse.isPresent()) {
+            return optionalLineResponse.get();
+        }
+
+        throw new DataIntegrityViolationException(NOT_DEFINED_REQUEST_EXCEPTION_STATEMENT);
+    }
+
+    private Optional<LineResponse> insertSection(final LineRequest request, final Station newUpStation, final Station newDownStation, final Line line) {
+        Optional<Section> optionalSection = line.findByUpStationId(newUpStation.getId());
+
+        // CASE #1 - 역 사이에 새로운 역을 등록할 경우
+        if (optionalSection.isPresent()) {
+            return Optional.of(insertBetweenStation(request, newDownStation, line, optionalSection.get()));
+        }
+
+        // CASE #2 - 새로운 역을 상행 종점으로 등록할 경우
+        optionalSection = line.findByUpStationId(newDownStation.getId());
+        if (optionalSection.isPresent()) {
+            return Optional.of(insertUpStationEnd(request, newUpStation, newDownStation, line, optionalSection.get()));
+        }
+
+        // CASE #3 - 새로운 역을 하행 종점으로 등록할 경우
+        optionalSection = line.findByDownStationId(newUpStation.getId());
+        if (optionalSection.isPresent()) {
+            return Optional.of(insertDownStationEnd(request, newUpStation, newDownStation, line));
+        }
+        return Optional.empty();
+    }
+
+    private void validateSection(Line line, final Station newUpStation, final Station newDownStation) {
+        List<Long> stationIds = line.getStationIds();
+        if (stationIds.contains(newUpStation.getId()) && stationIds.contains(newDownStation.getId())) {
+            throw new DataIntegrityViolationException(ALREADY_UP_STATION_AND_DOWN_STATION_EXIST_EXCEPTION_STATEMENT);
+        }
+
+        if (!stationIds.contains(newUpStation.getId()) && !stationIds.contains(newDownStation.getId())) {
+            throw new DataIntegrityViolationException(NONE_OF_UP_STATION_AND_DOWN_STATION_EXIST_EXCEPTION_STATEMENT);
+        }
+    }
+
+    private void validateDistance(int oldDistance, int newDistance) {
+        if (oldDistance <= newDistance) {
+            throw new DataIntegrityViolationException(OLD_DISTANCE_IS_GRATER_EQUAL_THAN_NEW_DISTANCE_EXCEPTION_STATEMENT);
+        }
+    }
+
+    private LineResponse insertBetweenStation(final LineRequest request, final Station newDownStation, final Line line, final Section section) {
+        validateDistance(section.getDistance(), request.getDistance());
+        line.getSections().remove(section);
+        line.addSection(section.getUpStation(), newDownStation, request.getDistance());
+        line.addSection(newDownStation, section.getDownStation(), section.getDistance() - request.getDistance());
+        return LineResponse.of(line);
+    }
+
+    private LineResponse insertUpStationEnd(final LineRequest request, final Station newUpStation, final Station newDownStation, final Line line, Section section) {
+        line.getSections().remove(section);
+        line.addSection(newUpStation, newDownStation, request.getDistance());
+        line.addSection(newDownStation, section.getDownStation(), section.getDistance());
+        return LineResponse.of(line);
+    }
+
+    private LineResponse insertDownStationEnd(final LineRequest request, final Station newUpStation, final Station newDownStation, final Line line) {
+        line.addSection(newUpStation, newDownStation, request.getDistance());
+        return LineResponse.of(line);
+    }
+
+    private void validate(Station upStation, Station downStation, Line line) {
+        if (line.getStations().containsAll(Arrays.asList(upStation, downStation))) {
+            throw new DataIntegrityViolationException(EQUAL_SECTION_EXIST_EXCEPTION_STATEMENT);
+        }
     }
 }
