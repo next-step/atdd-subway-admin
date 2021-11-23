@@ -6,6 +6,7 @@ import nextstep.subway.section.domain.Section;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
@@ -35,6 +36,26 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
+    public List<Section> getStationInOrder() {
+        List<Section> sectionsResult = new ArrayList<>();
+
+        Optional<Section> preStation = this.sections.stream()
+                .filter(st -> st.getPreStation() == null)
+                .findFirst();
+
+        while (preStation.isPresent()) {
+            final Section section = preStation.get();
+            sectionsResult.add(section);
+
+            preStation = sections.stream()
+                    .filter(st -> st.getPreStation() != null)
+                    .filter(st -> st.getPreStation().equals(section.getStation()))
+                    .findFirst();
+        }
+
+        return sectionsResult;
+    }
+
     public Long getId() {
         return id;
     }
@@ -51,7 +72,4 @@ public class Line extends BaseEntity {
         this.sections.add(section);
     }
 
-    public List<Section> getSections() {
-        return sections;
-    }
 }

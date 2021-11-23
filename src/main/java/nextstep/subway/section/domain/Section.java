@@ -20,11 +20,11 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "line_id")
     private Line line;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "pre_station_id")
     private Station preStation;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "station_id")
     private Station station;
 
@@ -60,5 +60,9 @@ public class Section extends BaseEntity {
 
     public Station getStation() {
         return station;
+    }
+
+    public Station getPreStation() {
+        return preStation;
     }
 }
