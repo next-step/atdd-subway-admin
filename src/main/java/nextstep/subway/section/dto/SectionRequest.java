@@ -1,5 +1,10 @@
 package nextstep.subway.section.dto;
 
+import org.springframework.data.domain.Pageable;
+
+import java.util.Arrays;
+import java.util.List;
+
 public class SectionRequest {
 
     private Long upStationId;
@@ -22,5 +27,9 @@ public class SectionRequest {
 
     public Integer getDistance() {
         return distance;
+    }
+
+    public List<Long> toIds() {
+        return Arrays.asList(upStationId, downStationId);
     }
 }

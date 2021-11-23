@@ -46,8 +46,10 @@ public class Line extends BaseEntity {
         return id;
     }
 
-    public void addSection(Station upStation, Station downStation, Integer distance) {
-        sections.add(Section.create(this, upStation, downStation, distance));
+    public Section addSection(Station upStation, Station downStation, Integer distance) {
+        Section section = Section.create(this, upStation, downStation, distance);
+        sections.add(section);
+        return section;
     }
 
     public String getName() {

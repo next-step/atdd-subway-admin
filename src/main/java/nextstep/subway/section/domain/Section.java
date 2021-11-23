@@ -4,6 +4,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "section", uniqueConstraints = {
@@ -44,6 +45,40 @@ public class Section {
         return new Section(line, upStation, downStation, distance);
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public boolean matchUpStationFromUpStation(Section section) {
+        return this.upStation.equals(section.getUpStation());
+    }
+
+    public boolean matchUpStation(Section section) {
+        return this.upStation.equals(section.getUpStation()) || this.upStation.equals(section.getDownStation());
+    }
+
+    public boolean matchDownStationFromDownStation(Section section) {
+        return this.downStation.equals(section.getDownStation());
+    }
+
+    public boolean matchDownStation(Section section) {
+        return this.downStation.equals(section.getUpStation()) || this.downStation.equals(section.getDownStation());
+    }
+
+    public boolean isGreaterOrEqualDistance(Section section) {
+        return this.distance >= section.getDistance();
+    }
+
+    public void changeUpStationToDownStation(Section section) {
+        this.upStation = section.getDownStation();
+        this.distance -= section.getDistance();
+    }
+
+    public void changeDownStationToUpStation(Section section) {
+        this.downStation = section.getUpStation();
+        this.distance -= section.getDistance();
+    }
+
     public Station getUpStation() {
         return upStation;
     }
@@ -52,6 +87,20 @@ public class Section {
         return downStation;
     }
 
+    public Integer getDistance() {
+        return distance;
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(line, upStation, downStation);
+    }
 }

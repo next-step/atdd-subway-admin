@@ -33,10 +33,11 @@ public class LineService {
 
         Line requestLine = request.toLine();
         requestLine.addSection(
-                stations.stream().filter(s -> s.matchId(request.getUpStationId())).findFirst().orElseThrow(() -> new IllegalArgumentException("")),
-                stations.stream().filter(s -> s.matchId(request.getDownStationId())).findFirst().orElseThrow(() -> new IllegalArgumentException("")),
+                stations.stream().filter(s -> s.matchId(request.getUpStationId())).findFirst().orElseThrow(() -> new IllegalArgumentException("상행역이 존재하지 않습니다.")),
+                stations.stream().filter(s -> s.matchId(request.getDownStationId())).findFirst().orElseThrow(() -> new IllegalArgumentException("하행역이 존재하지 않습ㄴ디ㅏ.")),
                 request.getDistance()
         );
+
         Line persistLine = lineRepository.save(requestLine);
 
         return LineResponse.of(persistLine);

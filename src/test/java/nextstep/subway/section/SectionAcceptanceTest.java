@@ -22,79 +22,105 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionTest() {
 
-        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", 7);
-        ExtractableResponse<Response> stationResponse = 지하철역_등록("신대방");
+        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
+        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
+        ExtractableResponse<Response> addStationResponse = 지하철역_등록("신대방");
 
-        long lineId = lineResponse.body().jsonPath().getLong("id");
-        long upStationId = stationResponse.body().jsonPath().getLong("id");
+        long upStationId = extractId(upStationResponse);
+        long downStationId = extractId(downStationResponse);
+        long addDownStationId = extractId(addStationResponse);
 
+        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 7);
+        long lineId = extractId(lineResponse);
+
+        int distance = 4;
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", upStationId);
-        params.put("downStationId", 4);
-        params.put("distance", 4);
+        params.put("downStationId", addDownStationId);
+        params.put("distance", distance);
 
         ExtractableResponse<Response> response = ApiUtils.post(String.format("/lines/%s/sections", lineId), params);
-
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.body().jsonPath().getInt("distance")).isEqualTo(distance);
     }
 
     @DisplayName("구간 추가하기 - 새로운 역을 상행 종점으로 등록할 경우")
     @Test
     void addUpSectionTest() {
 
-        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", 7);
-        ExtractableResponse<Response> stationResponse = 지하철역_등록("신대방");
+        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
+        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
+        ExtractableResponse<Response> addStationResponse = 지하철역_등록("신대방");
 
-        long lineId = lineResponse.body().jsonPath().getLong("id");
-        long upStationId = stationResponse.body().jsonPath().getLong("id");
+        long upStationId = extractId(upStationResponse);
+        long downStationId = extractId(downStationResponse);
+
+        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 7);
+
+        long lineId = extractId(lineResponse);
+        long addStationId = extractId(addStationResponse);
+
+        int distance = 4;
 
         Map<String, Object> params = new HashMap<>();
-        params.put("downStationId", 1);
-        params.put("upStationId", upStationId);
-        params.put("distance", 4);
+        params.put("downStationId", upStationId);
+        params.put("upStationId", addStationId);
+        params.put("distance", distance);
 
         ExtractableResponse<Response> response = ApiUtils.post(String.format("/lines/%s/sections", lineId), params);
-
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.body().jsonPath().getInt("distance")).isEqualTo(distance);
     }
 
     @DisplayName("구간 추가하기 - 새로운 역을 하행 종점으로 등록할 경우")
     @Test
     void addDownSectionTest() {
 
-        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", 10);
-        ExtractableResponse<Response> stationResponse = 지하철역_등록("신대방");
+        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
+        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
+        ExtractableResponse<Response> addStationResponse = 지하철역_등록("신대방");
 
-        long lineId = lineResponse.body().jsonPath().getLong("id");
-        long downStationId = stationResponse.body().jsonPath().getLong("id");
+        long upStationId = extractId(upStationResponse);
+        long downStationId = extractId(downStationResponse);
 
+        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 10);
+
+        long lineId = extractId(lineResponse);
+        long addStationId = extractId(addStationResponse);
+
+        int distance = 3;
         Map<String, Object> params = new HashMap<>();
-        params.put("downStationId", downStationId);
-        params.put("upStationId", 2);
-        params.put("distance", 3);
+        params.put("downStationId", addStationId);
+        params.put("upStationId", downStationId);
+        params.put("distance", distance);
 
         ExtractableResponse<Response> response = ApiUtils.post(String.format("/lines/%s/sections", lineId), params);
-
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.body().jsonPath().getInt("distance")).isEqualTo(distance);
     }
 
-    @DisplayName("구간 추가하기 - 기존 상행 하행 사이에 등록될 경우 예외처리")
+    @DisplayName("구간 추가하기 - 추가될 구간의 거리가 동일하거나 큰 경우 예외처리")
     @Test
     void addSection_DistanceGraterEqualExceptionTest() {
 
-        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", 7);
-        ExtractableResponse<Response> stationResponse = 지하철역_등록("신대방");
+        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
+        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
+
+        long upStationId = extractId(upStationResponse);
+        long downStationId = extractId(downStationResponse);
+
+        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 7);
+        ExtractableResponse<Response> addUpStationResponse = 지하철역_등록("신대방");
 
         long lineId = lineResponse.body().jsonPath().getLong("id");
-        long upStationId = stationResponse.body().jsonPath().getLong("id");
+        long addUpStationId = extractId(addUpStationResponse);
 
         Map<String, Object> params = new HashMap<>();
-        params.put("upStationId", upStationId);
-        params.put("downStationId", 4);
+        params.put("upStationId", addUpStationId);
+        params.put("downStationId", downStationId);
         params.put("distance", 7);
 
         ExtractableResponse<Response> response = ApiUtils.post(String.format("/lines/%s/sections", lineId), params);
-
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
@@ -102,17 +128,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_EqualSectionExceptionTest() {
 
-        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", 7);
+        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
+        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
 
-        long lineId = lineResponse.body().jsonPath().getLong("id");
+        long upStationId = extractId(upStationResponse);
+        long downStationId = extractId(downStationResponse);
+
+        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 7);
+        long lineId = extractId(lineResponse);
 
         Map<String, Object> params = new HashMap<>();
-        params.put("upStationId", 1);
-        params.put("downStationId", 2);
-        params.put("distance", 4);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", 7);
 
         ExtractableResponse<Response> response = ApiUtils.post(String.format("/lines/%s/sections", lineId), params);
-
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
@@ -120,23 +150,28 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_UpStationOrDownStation_NotContainsExceptionTest() {
 
-        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", 7);
-        ExtractableResponse<Response> upStationResponse = 지하철역_등록("신대방");
-        ExtractableResponse<Response> downStationResponse = 지하철역_등록("신림");
+        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
+        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
 
-        long lineId = lineResponse.body().jsonPath().getLong("id");
-        long upStationId = upStationResponse.body().jsonPath().getLong("id");
-        long downStationId = downStationResponse.body().jsonPath().getLong("id");
+        long upStationId = extractId(upStationResponse);
+        long downStationId = extractId(downStationResponse);
+
+        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 7);
+        long lineId = extractId(lineResponse);
+
+        ExtractableResponse<Response> addUpStationResponse = 지하철역_등록("신대방");
+        ExtractableResponse<Response> addDownStationResponse = 지하철역_등록("신림");
+
+        long addUpStationId = extractId(addUpStationResponse);
+        long addDownStationId = extractId(addDownStationResponse);
 
         Map<String, Object> params = new HashMap<>();
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
+        params.put("upStationId", addUpStationId);
+        params.put("downStationId", addDownStationId);
         params.put("distance", 4);
 
         ExtractableResponse<Response> response = ApiUtils.post(String.format("/lines/%s/sections", lineId), params);
-
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
-
 
 }
