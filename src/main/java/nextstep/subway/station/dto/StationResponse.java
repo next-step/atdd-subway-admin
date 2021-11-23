@@ -15,13 +15,9 @@ public class StationResponse {
 
     private LocalDateTime modifiedDate;
 
-//    private StationResponse() {
-//
-//    }
-
-    public StationResponse() {
-        ;;
+    private StationResponse() {
     }
+
 
     private StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;

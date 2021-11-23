@@ -12,7 +12,6 @@ import java.util.Objects;
  * description :
  */
 public class SectionRequest implements BaseRequest {
-
     private Long upStationId;
     private Long downStationId;
     private int distance;
@@ -35,27 +34,18 @@ public class SectionRequest implements BaseRequest {
         return Objects.equals(upStationId, downStationId);
     }
 
+    @Override
     public Long getDownStationId() {
         return downStationId;
     }
 
-    public void setDownStationId(Long downStationId) {
-        this.downStationId = downStationId;
-    }
-
+    @Override
     public Long getUpStationId() {
         return upStationId;
     }
 
-    public void setUpStationId(Long upStationId) {
-        this.upStationId = upStationId;
-    }
-
+    @Override
     public int getDistance() {
         return distance;
-    }
-
-    public void setDistance(int distance) {
-        this.distance = distance;
     }
 }

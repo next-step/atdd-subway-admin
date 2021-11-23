@@ -4,9 +4,6 @@ import nextstep.subway.line.domain.Line;
 
 import java.util.Objects;
 
-/**
- *  TODO : 일급 컬렉션 관련 수정하기
- */
 public class LineRequest implements BaseRequest {
     private String name;
 
@@ -46,14 +43,17 @@ public class LineRequest implements BaseRequest {
         return color;
     }
 
+    @Override
     public Long getUpStationId() {
         return upStationId;
     }
 
+    @Override
     public Long getDownStationId() {
         return downStationId;
     }
 
+    @Override
     public int getDistance() {
         return distance;
     }

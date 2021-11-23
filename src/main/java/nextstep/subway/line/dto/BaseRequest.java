@@ -9,4 +9,10 @@ package nextstep.subway.line.dto;
  */
 public interface BaseRequest {
     boolean hasDuplicateStations();
+
+    Long getUpStationId();
+
+    Long getDownStationId();
+
+    int getDistance();
 }

@@ -1,8 +1,10 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.entity.BaseEntity;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -17,10 +19,6 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    /**
-     * TODO :  1) 고아객체 설정에 대해 학습하기
-     *         2) 일급컬렉션으로 관리하기
-     */
     @Embedded
     private final Sections sections = new Sections();
 
@@ -54,8 +52,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Sections getSections() {
-        return sections;
+    public List<Station> getStations() {
+        return sections.getStations();
     }
 
     @Override

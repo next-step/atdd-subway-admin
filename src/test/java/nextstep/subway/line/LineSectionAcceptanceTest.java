@@ -11,19 +11,18 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import static nextstep.subway.line.LineAcceptanceTest.responseLine;
+import static nextstep.subway.line.LineAcceptanceTest.지하철_노선_등록되어_있음;
 import static nextstep.subway.station.StationAcceptanceTest.*;
-import static nextstep.subway.line.LineAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CREATED;
 
 @DisplayName("지하철 구간 관련 기능")
 public class LineSectionAcceptanceTest extends AcceptanceTest {
     private static final String BASE_URI = "lines";
-    private static final int DISTANCE_5 = 5;
-    private static final int DISTANCE_10 = 10;
 
     private Long 구간_테스트_노선_ID;
     private Long 변경_상행종점역_ID;
@@ -31,7 +30,6 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     private Long 최초_하행종점역_ID;
     private Long 변경_하행종점역_ID;
     private Long 사이_추가_역_ID;
-
     private static final int 거리_5 = 5;
     private static final int 거리_100 = 100;
 
@@ -51,91 +49,123 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("역 사이에 새로운 역을 등록한다")
     @Test
     void createSection() {
-        SectionRequest request = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_5);
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(request)
-                .when()
-                .post(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
-                .then().log().all().extract();
+        // given
+        SectionRequest 상행종점역_사이_추가역_거리_5 = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_5);
 
-        assertThat(response.statusCode()).isEqualTo(CREATED.value());
-        LineResponse lineResponse = responseLine(response);
-        assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(최초_상행종점역_ID, 사이_추가_역_ID, 최초_하행종점역_ID);
+        // when
+        ExtractableResponse<Response> response = 구간_생성_요청함(상행종점역_사이_추가역_거리_5);
+
+        // then
+        역사이_구간_생성됨(response);
     }
 
     @DisplayName("새로운 역을 상행 종점에 등록한다.")
     @Test
     void createSection2() {
-        SectionRequest request = SectionRequest.of(변경_상행종점역_ID, 최초_상행종점역_ID, 거리_5);
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(request)
-                .when()
-                .post(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
-                .then().log().all().extract();
+        // given
+        SectionRequest 변경_상행종점역_최초_상행종점역_거리_5 = SectionRequest.of(변경_상행종점역_ID, 최초_상행종점역_ID, 거리_5);
 
-        assertThat(response.statusCode()).isEqualTo(CREATED.value());
-        LineResponse lineResponse = responseLine(response);
-        assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(변경_상행종점역_ID, 최초_상행종점역_ID, 최초_하행종점역_ID);
+        // when
+        ExtractableResponse<Response> response = 구간_생성_요청함(변경_상행종점역_최초_상행종점역_거리_5);
+
+        // then
+        상행종점_구간_생성됨(response);
     }
 
     @DisplayName("새로운 역을 하행 종점에 등록한다.")
     @Test
     void createSection3() {
-        SectionRequest request = SectionRequest.of(최초_하행종점역_ID, 변경_하행종점역_ID, 거리_5);
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(request)
-                .when()
-                .post(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
-                .then().log().all().extract();
+        // given
+        SectionRequest 하행종점역_변경_하행종점역_거리_5 = SectionRequest.of(최초_하행종점역_ID, 변경_하행종점역_ID, 거리_5);
 
-        assertThat(response.statusCode()).isEqualTo(CREATED.value());
-        LineResponse lineResponse = responseLine(response);
-        assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(최초_상행종점역_ID, 최초_하행종점역_ID, 변경_하행종점역_ID);
+        // when
+        ExtractableResponse<Response> response = 구간_생성_요청함(하행종점역_변경_하행종점역_거리_5);
+
+        // then
+        하행종점_구간_생성됨(response);
     }
 
     @DisplayName("역 사이에 새로운 역 거리가 유효하지 않게 등록한다.")
     @Test
     void createSectionFail() {
-        SectionRequest request = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_100);
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(request)
-                .when()
-                .post(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
-                .then().log().all().extract();
+        // given
+        SectionRequest 구간_내_거리가_유효하지_않음 = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_100);
 
-        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+        // when
+        ExtractableResponse<Response> response = 구간_생성_요청함(구간_내_거리가_유효하지_않음);
+
+        // then
+        구간_생성_실패됨_거리__예외(response);
     }
+
 
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없어야 한다.")
     @Test
     void createSectionFail2() {
-        SectionRequest request = SectionRequest.of(최초_상행종점역_ID, 최초_하행종점역_ID, 거리_5);
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(request)
-                .when()
-                .post(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
-                .then().log().all().extract();
+        // given
+        SectionRequest 이미_등록된_구간 = SectionRequest.of(최초_상행종점역_ID, 최초_하행종점역_ID, 거리_5);
 
-        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+        // when
+        ExtractableResponse<Response> response = 구간_생성_요청함(이미_등록된_구간);
+
+        // then
+        구간_생성_실패됨_등록된_구간_예외(response);
     }
+
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없어야 한다.")
     @Test
     void createSectionFail3() {
-        SectionRequest request = SectionRequest.of(변경_상행종점역_ID, 변경_하행종점역_ID, 거리_5);
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        // given
+        SectionRequest 상행역_하행역_모두_포함_되어있지않음 = SectionRequest.of(변경_상행종점역_ID, 변경_하행종점역_ID, 거리_5);
+
+        // when
+        ExtractableResponse<Response> response = 구간_생성_요청함(상행역_하행역_모두_포함_되어있지않음);
+
+        // then
+        구간_생성_실패됨_역_없음_예외(response);
+    }
+
+    private ExtractableResponse<Response> 구간_생성_요청함(SectionRequest request) {
+        return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
                 .when()
                 .post(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
                 .then().log().all().extract();
-
-        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
     }
 
+    private void 역사이_구간_생성됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(CREATED.value());
+        LineResponse lineResponse = responseLine(response);
+        assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(최초_상행종점역_ID, 사이_추가_역_ID, 최초_하행종점역_ID);
+    }
+
+    private void 상행종점_구간_생성됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(CREATED.value());
+        LineResponse lineResponse = responseLine(response);
+        assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(변경_상행종점역_ID, 최초_상행종점역_ID, 최초_하행종점역_ID);
+    }
+
+
+    private void 하행종점_구간_생성됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(CREATED.value());
+        LineResponse lineResponse = responseLine(response);
+        assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(최초_상행종점역_ID, 최초_하행종점역_ID, 변경_하행종점역_ID);
+    }
+
+    private void 구간_생성_실패됨_등록된_구간_예외(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("이미 등록된 구간입니다.");
+    }
+
+    private void 구간_생성_실패됨_역_없음_예외(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("구간에 역이 존재하지 않습니다.");
+    }
+
+    private void 구간_생성_실패됨_거리__예외(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("유효한 길이가 아닙니다.");
+    }
 }

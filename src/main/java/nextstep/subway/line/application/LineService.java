@@ -21,17 +21,17 @@ import java.util.Optional;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    private final EntityManager em;
+    private final EntityManager entityManager;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository, EntityManager em) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository, EntityManager entityManager) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.em = em;
+        this.entityManager = entityManager;
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> showAllLinesWithSections() {
-        final List<Line> lines = em.createQuery(
+        final List<Line> lines = entityManager.createQuery(
                         "select distinct l from Line l " +
                                 "left join fetch l.sections s " +
                                 "left join fetch s.sections sc " +
@@ -43,7 +43,7 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public Line findByLineId(Long id) throws LineNotFoundException {
-        final Line line = em.createQuery(
+        final Line line = entityManager.createQuery(
                         "select distinct l from Line l" +
                                 " left join fetch l.sections s " +
                                 "left join fetch s.sections sc " +
@@ -57,27 +57,16 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) {
         checkStationIds(request);
-
         Line line = request.toLine();
-        line.addSection(createSection(request.getUpStationId(), request.getDownStationId(), request.getDistance()));
+        line.addSection(createSection(request));
         return LineResponse.of(lineRepository.save(line));
     }
 
     public LineResponse saveSection(Long id, SectionRequest request) {
         checkStationIds(request);
-
-        Line line = findByLineId(id);
-        line.addSection(createSection(request.getUpStationId(), request.getDownStationId(), request.getDistance()));
+        final Line line = findByLineId(id);
+        line.addSection(createSection(request));
         return LineResponse.of(lineRepository.save(line));
-    }
-
-    private Section createSection(Long upStationId, Long downStationId, int distance) {
-        final Station upStation = stationRepository.findById(upStationId)
-                .orElseThrow(StationNotFoundException::new);
-        final Station downStation = stationRepository.findById(downStationId)
-                .orElseThrow(StationNotFoundException::new);
-
-        return new Section(upStation, downStation, Distance.of(distance));
     }
 
     public LineResponse findOne(Long id) {
@@ -95,11 +84,17 @@ public class LineService {
         lineRepository.deleteById(line.getId());
     }
 
+    private Section createSection(BaseRequest request) {
+        final Station upStation = stationRepository.findById(request.getUpStationId())
+                .orElseThrow(StationNotFoundException::new);
+        final Station downStation = stationRepository.findById(request.getDownStationId())
+                .orElseThrow(StationNotFoundException::new);
+        return new Section(upStation, downStation, Distance.of(request.getDistance()));
+    }
+
     private void checkStationIds(BaseRequest request) {
         if (request.hasDuplicateStations()) {
             throw new DuplicateParameterException("상행, 하행역은 중복될 수 없습니다.");
         }
     }
-
-
 }

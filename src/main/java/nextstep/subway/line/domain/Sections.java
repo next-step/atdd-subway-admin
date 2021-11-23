@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * fileName : Sections
  * author : haedoang
  * date : 2021/11/23
- * description :
+ * description : Sections 일급 컬렉션
  */
 @Embeddable
 public class Sections {
@@ -27,13 +27,21 @@ public class Sections {
     public void add(Section section) {
         if (!sections.isEmpty()) {
             validate(section);
-
-            sections.stream()
-                    .filter(it -> it.getStation().equals(section.getStation()))
-                    .findFirst()
-                    .ifPresent(it -> it.updateStation(section.getNextStation(), section.getDistance()));
+            updateSection(section);
         }
         this.sections.add(section);
+    }
+
+    private void updateSection(Section section) {
+        sections.stream()
+                .filter(it -> it.getStation().equals(section.getStation()))
+                .findFirst()
+                .ifPresent(it -> it.updateStation(section.getNextStation(), section.getDistance()));
+    }
+
+    public List<Station> getStations() {
+        Station firstStation = findFirstStation();
+        return getOrderedStations(firstStation);
     }
 
     private void validate(Section section) {
@@ -43,15 +51,13 @@ public class Sections {
     }
 
     private void validateExist(Section section) {
-        if (!getStations().contains(section.getStation()) &&
-                !getStations().contains(section.getNextStation())) {
+        if (notExistStation(section)) {
             throw new SectionNotCreateException("구간에 역이 존재하지 않습니다.");
         }
     }
 
     private void validateDuplicate(Section section) {
-        if (getUpStations().contains(section.getStation()) &&
-                getDownStations().contains(section.getNextStation())) {
+        if (sections.stream().allMatch(it -> it.isDuplicate(section))) {
             throw new SectionNotCreateException("이미 등록된 구간입니다.");
         }
     }
@@ -59,13 +65,10 @@ public class Sections {
     private void validateDistance(Section section) {
         Optional<Section> findSection = findSection(section);
         findSection.ifPresent(it -> {
-            if (!it.isPermitDistance(section.getDistance())) throw new SectionNotCreateException("유효한 길이가 아닙니다.");
+            if (!it.isPermitDistance(section.getDistance())) {
+                throw new SectionNotCreateException("유효한 길이가 아닙니다.");
+            }
         });
-    }
-
-    public List<Station> getStations() {
-        Station firstStation = findFirstStation();
-        return getOrderedStations(firstStation);
     }
 
     private List<Station> getOrderedStations(Station station) {
@@ -75,6 +78,10 @@ public class Sections {
             station = findNextStation(station);
         }
         return result;
+    }
+
+    private boolean notExistStation(Section section) {
+        return !getStations().contains(section.getStation()) && !getStations().contains(section.getNextStation());
     }
 
     private Station findNextStation(Station station) {
@@ -92,14 +99,6 @@ public class Sections {
         return sections.stream().map(Section::getNextStation).collect(Collectors.toList());
     }
 
-    //첫째 구간 찾기
-    private Section findFirstSection() {
-        return sections.stream()
-                .filter(it -> !getDownStations().contains(it.getStation()))
-                .findFirst()
-                .orElseThrow(StationNotFoundException::new);
-    }
-
     private Optional<Section> findSection(Section section) {
         return sections.stream()
                 .filter(it -> it.getStation().equals(section.getStation()))
@@ -112,14 +111,5 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(StationNotFoundException::new)
                 .getStation();
-    }
-
-    //마지막 역
-    private Station findLastStation() {
-        return sections.stream()
-                .filter(it -> !getUpStations().contains(it.getNextStation()))
-                .findFirst()
-                .orElseThrow(StationNotFoundException::new)
-                .getNextStation();
     }
 }

@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-//TODO : 테스트 분리할 것
+
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
     private static final String BASE_URI = "lines";

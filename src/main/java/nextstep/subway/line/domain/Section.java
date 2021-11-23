@@ -60,6 +60,10 @@ public class Section extends BaseEntity {
         return this.distance > distance;
     }
 
+    public boolean isDuplicate(Section section) {
+        return station.equals(section.getStation()) && nextStation.equals(section.getNextStation());
+    }
+
     public Long getId() {
         return id;
     }
