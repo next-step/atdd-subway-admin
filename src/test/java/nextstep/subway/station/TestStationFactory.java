@@ -6,7 +6,7 @@ import nextstep.subway.utils.TestPostRequestFactory;
 
 public class TestStationFactory {
 
-    public static StationResponse 역_미리_생성(String name) {
+    public static StationResponse 역_생성(String name) {
         StationRequest stationRequest = new StationRequest(name);
 
         return TestPostRequestFactory.요청_post("/stations", stationRequest)

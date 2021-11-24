@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.station.TestStationFactory.역_미리_생성;
+import static nextstep.subway.station.TestStationFactory.역_생성;
 import static nextstep.subway.utils.TestGetRequestFactory.요청_get;
 import static nextstep.subway.utils.TestPostRequestFactory.요청_post;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -115,8 +115,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithStations() {
         // given
-        StationResponse stationResponse1 = 역_미리_생성("강남역");
-        StationResponse stationResponse2 = 역_미리_생성("역삼역");
+        StationResponse stationResponse1 = 역_생성("강남역");
+        StationResponse stationResponse2 = 역_생성("역삼역");
 
         // when
         ExtractableResponse<Response> saveResponse = 지하철_노선_종점역_추가하여_생성_요청(stationResponse1.getId(), stationResponse2.getId());
@@ -129,8 +129,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findLineWithStations() {
         // given
-        StationResponse stationResponse1 = 역_미리_생성("강남역");
-        StationResponse stationResponse2 = 역_미리_생성("역삼역");
+        StationResponse stationResponse1 = 역_생성("강남역");
+        StationResponse stationResponse2 = 역_생성("역삼역");
         LineResponse lineResponse = 지하철_노선_종점역_추가하여_생성_요청(stationResponse1.getId(), stationResponse2.getId()).body()
                 .as(LineResponse.class);
 
