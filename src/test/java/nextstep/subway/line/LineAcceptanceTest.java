@@ -5,21 +5,52 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+    @DisplayName("구간을_포함한_지하철_노선을_생성한다.")
+    @Test
+    void 구간을_포함한_지하철_노선을_생성한다() {
+        // given
+        // 지하철 역 생성
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "강남역");
+        makeStation(params1);
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "역삼역");
+        makeStation(params2);
+
+        // 노선 생성
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-red-600");
+        params.put("name", "신분당선");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+
+        // when
+        // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = requestLineCreation(params);
+
+        // then
+        // 지하철_노선_생성됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
+
+        assertThat(response.jsonPath().getList("stations", StationResponse.class).stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList())).containsAll(Arrays.asList("강남역", "역삼역"));
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void 지하철_노선을_생성한다() {
@@ -102,6 +133,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long expectedLineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
         Long resultLineId = response.jsonPath().getLong("id");
         assertThat(resultLineId).isEqualTo(expectedLineId);
+    }
+
+    private void makeStation(Map<String, String> params) {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
     }
 
     @DisplayName("지하철 노선을 수정한다.")
