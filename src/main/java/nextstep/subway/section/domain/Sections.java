@@ -8,6 +8,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
@@ -107,11 +108,12 @@ public class Sections {
         return null;
     }
 
-    private Section matchStation(Section section) {
+    private Optional<Section> matchStation(Section section) {
         return this.sections.stream()
-                .filter(s -> s.matchUpStation(section) || s.matchDownStation(section))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(STATION_NOT_CONTAINS_MESSAGE));
+                .filter(s -> s.matchUpStationFromUpStation(section) || s.matchDownStationFromDownStation(section))
+                .findFirst();
+//                .orElse(null);
+//                .orElseThrow(() -> new IllegalArgumentException(STATION_NOT_CONTAINS_MESSAGE));
     }
 
     private boolean validateNotContains(Station station) {
@@ -135,7 +137,9 @@ public class Sections {
     }
 
     private boolean validateGreaterEqualDistance(Section section) {
-        return isNotEmpty() && isGreaterEqualDistance(matchStation(section), section);
+        return matchStation(section)
+                .map(s -> isNotEmpty() && isGreaterEqualDistance(s, section))
+                .orElse(false);
     }
 
     private boolean validateIfRemoveNotExist() {
