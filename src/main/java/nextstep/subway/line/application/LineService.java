@@ -77,8 +77,8 @@ public class LineService {
 
     public void addSection(Long id, SectionAddRequest sectionAddRequest) {
         Line line = findLine(id);
-        Station upStation = findStation(Long.parseLong(sectionAddRequest.getUpStationId()));
-        Station downStation = findStation(Long.parseLong(sectionAddRequest.getDownStationId()));
+        Station upStation = findStation(sectionAddRequest.getUpStationId());
+        Station downStation = findStation(sectionAddRequest.getDownStationId());
 
         Section section = Section.of(upStation, downStation, sectionAddRequest.getDistance());
         line.addSection(section);
