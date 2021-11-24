@@ -154,6 +154,7 @@ public class Sections {
 	}
 
 	public void removeByStation(Station station) {
+		throwOnLessThanTwoSections();
 		Stations stationsInOrder = getStationsInOrder();
 		if (station.isHead(stationsInOrder) || station.isTail(stationsInOrder)) {
 			remove(findOne(section -> section.containsAnyStation(station)));
@@ -163,6 +164,12 @@ public class Sections {
 		Section first = findOne(section -> section.containsDownStation(station));
 		Section second = findOne(section -> section.containsUpStation(station));
 		first.merge(second, this);
+	}
+
+	private void throwOnLessThanTwoSections() {
+		if (values.size() < 2) {
+			throw new SectionRemoveFailException("구간이 2개 이상이어야 제거할 수 있습니다.");
+		}
 	}
 
 	private Section findOne(Predicate<Section> predicate) {

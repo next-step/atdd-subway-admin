@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.SectionAddFailException;
+import nextstep.subway.line.domain.SectionRemoveFailException;
 import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
@@ -84,6 +85,11 @@ public class LineController {
 
     @ExceptionHandler(SectionAddFailException.class)
     public ResponseEntity handleException(SectionAddFailException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(SectionRemoveFailException.class)
+    public ResponseEntity handleException(SectionRemoveFailException e) {
         return ResponseEntity.badRequest().build();
     }
 }
