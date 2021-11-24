@@ -37,6 +37,14 @@ public class Section extends BaseEntity {
         this.line.addSection(this);
     }
 
+    public void changeUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void changeDownStation(Station station) {
+        this.downStation = station;
+    }
+
     public Long getId() {
         return id;
     }

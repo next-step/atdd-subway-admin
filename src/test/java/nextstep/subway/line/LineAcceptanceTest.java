@@ -300,7 +300,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간 추가 기능")
     @Nested
     class AddSectionTest {
-        @DisplayName("역 사이에 새로운 역을 등록한다")
+        @DisplayName("상행선이 같은 새로운 구간을 등록한다")
         @Test
         void testInsertionSection() {
             // given
@@ -312,6 +312,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
             // when
             ExtractableResponse<Response> response = 지하철_노선_추가_요청(lineUrl, 강남역, 안양역, 40);
+
+            // then
+            지하철_구간이_생성된다(response);
+            상행선_하행선_순으로_정렬된_역을_포함한_지하철_노선을_응답한다(lineUrl, 강남역, 안양역, 광교역);
+        }
+
+        @DisplayName("하행선이 같은 새로운 구간을 등록한다")
+        @Test
+        void testInsertionTailSection() {
+            // given
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역").as(StationResponse.class);
+            ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), "100");
+            String lineUrl = 신분당선.header("Location");
+
+            // when
+            ExtractableResponse<Response> response = 지하철_노선_추가_요청(lineUrl, 안양역, 광교역, 40);
 
             // then
             지하철_구간이_생성된다(response);
