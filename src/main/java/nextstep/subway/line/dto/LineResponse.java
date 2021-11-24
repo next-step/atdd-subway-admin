@@ -4,7 +4,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -15,17 +14,19 @@ public class LineResponse {
     private final String color;
     private final LocalDateTime createdDate;
     private final LocalDateTime modifiedDate;
-    private final List<StationResponse> stations = new ArrayList<>();
+    private List<StationResponse> stations;
 
-    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<StationResponse> stations) {
+    private LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<StationResponse> stations) {
+        this(id, name, color, createdDate, modifiedDate);
+        this.stations = stations;
+    }
+
+    private LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-        if (!stations.isEmpty()) {
-            this.stations.addAll(stations);
-        }
     }
 
     public static LineResponse of(Line line, List<StationResponse> stations) {
@@ -33,7 +34,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate(), Collections.emptyList());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
     }
 
     public Long getId() {
@@ -53,7 +54,10 @@ public class LineResponse {
     }
 
     public List<StationResponse> getStations() {
-        return Collections.unmodifiableList(stations);
+        if (this.stations == null) {
+            return Collections.emptyList();
+        }
+        return this.stations;
     }
 
     @Override
