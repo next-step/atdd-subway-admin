@@ -47,7 +47,7 @@ public class Station extends BaseEntity {
         return name;
     }
 
-    public boolean isHead(Stations stations) {
+    public boolean isHeadOf(Stations stations) {
         if (stations.isEmpty()) {
             return false;
         }
@@ -55,7 +55,7 @@ public class Station extends BaseEntity {
         return equals(stations.getHead());
     }
 
-    public boolean isTail(Stations stations) {
+    public boolean isTailOf(Stations stations) {
         if (stations.isEmpty()) {
             return false;
         }

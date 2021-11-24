@@ -30,9 +30,9 @@ class StationTest {
 
 		// when & then
 		assertAll(
-			() -> assertThat(강남역().isHead(강남_역삼_선릉)).isTrue(),
-			() -> assertThat(역삼역().isHead(강남_역삼_선릉)).isFalse(),
-			() -> assertThat(선릉역().isHead(강남_역삼_선릉)).isFalse()
+			() -> assertThat(강남역().isHeadOf(강남_역삼_선릉)).isTrue(),
+			() -> assertThat(역삼역().isHeadOf(강남_역삼_선릉)).isFalse(),
+			() -> assertThat(선릉역().isHeadOf(강남_역삼_선릉)).isFalse()
 		);
 	}
 
@@ -44,9 +44,9 @@ class StationTest {
 
 		// when & then
 		assertAll(
-			() -> assertThat(강남역().isTail(강남_역삼_선릉)).isFalse(),
-			() -> assertThat(역삼역().isTail(강남_역삼_선릉)).isFalse(),
-			() -> assertThat(선릉역().isTail(강남_역삼_선릉)).isTrue()
+			() -> assertThat(강남역().isTailOf(강남_역삼_선릉)).isFalse(),
+			() -> assertThat(역삼역().isTailOf(강남_역삼_선릉)).isFalse(),
+			() -> assertThat(선릉역().isTailOf(강남_역삼_선릉)).isTrue()
 		);
 	}
 }

@@ -156,7 +156,7 @@ public class Sections {
 	public void removeByStation(Station station) {
 		throwOnLessThanTwoSections();
 		Stations stationsInOrder = getStationsInOrder();
-		if (station.isHead(stationsInOrder) || station.isTail(stationsInOrder)) {
+		if (station.isHeadOf(stationsInOrder) || station.isTailOf(stationsInOrder)) {
 			remove(findOne(section -> section.containsAnyStation(station)));
 			return;
 		}
