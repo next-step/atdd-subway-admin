@@ -162,7 +162,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long id = createResponse.body().jsonPath().getLong("id");
 
         Map<String, Object> params = new HashMap<>();
-        params.put("color", "bg-blue-700");
+        params.put("color", "bg-red-600");
+        params.put("name", "신분당선");
 
         // when
         // 지하철_노선_수정_요청
