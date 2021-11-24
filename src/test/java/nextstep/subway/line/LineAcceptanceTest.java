@@ -201,11 +201,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        final LineRequest createRequest = new LineRequest("신분당선", "bg-red-600");
+        final ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(createRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
 
         // when
         // 지하철_노선_제거_요청
+        final String uri = createResponse.header("Location");
+        final ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
+            .when()
+            .delete(uri)
+            .then().log().all()
+            .extract();
 
         // then
         // 지하철_노선_삭제됨
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        // 지하철_노선_삭제됨_2
+        final ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+            .when()
+            .get(uri)
+            .then().log().all()
+            .extract();
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }

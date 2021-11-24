@@ -58,4 +58,8 @@ public class LineService {
         return lineRepository.findById(id)
             .orElseThrow(NoSuchElementException::new);
     }
+
+    public void deleteStationById(final Long id) {
+        lineRepository.deleteById(id);
+    }
 }
