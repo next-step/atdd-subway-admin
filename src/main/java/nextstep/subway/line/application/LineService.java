@@ -29,6 +29,7 @@ public class LineService {
         this.sectionRepository = sectionRepository;
     }
 
+    @Transactional
     public LineResponse saveLine(LineRequest request) {
         validateDuplicateLine(request.getName());
 
@@ -39,11 +40,6 @@ public class LineService {
 
         Line persistLine = lineRepository.save(request.toLine(savedSection));
         return LineResponse.of(persistLine);
-    }
-
-    private Station findStationById(Long id) {
-        return stationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundStationException(id + " 지하철역이 없습니다"));
     }
 
     @Transactional(readOnly = true)
@@ -58,18 +54,24 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    @Transactional
     public void update(Long id, LineRequest lineRequest) {
         Line line = findById(id);
         line.update(lineRequest.getName(), lineRequest.getColor());
     }
 
+    public void delete(Long id) {
+        lineRepository.deleteById(id);
+    }
+
+    private Station findStationById(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundStationException(id + " 지하철역이 없습니다"));
+    }
+
     private Line findById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundLineException(id + " 노선이 없습니다."));
-    }
-
-    public void delete(Long id) {
-        lineRepository.deleteById(id);
     }
 
     private void validateDuplicateLine(String name) {

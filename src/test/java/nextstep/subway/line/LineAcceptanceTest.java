@@ -207,7 +207,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                         .stream()
                         .map(Station::getName)
                         .collect(Collectors.toList());
-        assertThat(names).containsExactly("강남역","잠실역");
+        assertThat(names).containsExactly(station1, station2);
     }
 
 
