@@ -119,6 +119,52 @@ licensed.
       
 ```
 
+## 노선과 구간의 관계
+
+노선(`Line`) 과 구간(`Section`) 의 관계는 OneToMany 입니다.
+
+```java
+
+@Embeddable
+public class Sections {
+
+    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
+    private List<Section> sections = new ArrayList<>();
+
+```
+
+1. 노선에 구간 등록시 구간이 없다면, 마지막 구간의 `nextStation` 은 null 로 추가 됩니다.
+
+`EX)
+2호선 -> 구간(강남-역삼) 추가`
+
+|id|line|station|nextStation|
+|---|---|-----|-----|
+|1|1|강남|역삼|
+|2|1|역삼|null|
+
+2. 마지막 구간을 연장해서 추가되는 케이스
+
+`EX)
+2호선 -> 구간(강남-역삼) 추가 and 역삼-선릉`
+
+`강남-역삼` 추가시 데이터
+
+|id|line|station|nextStation|
+|---|---|-----|-----|
+|1|1|강남|역삼|
+|2|1|역삼|null|
+
+`역삼-선릉` 마지막역 연장 추가시, `nextStation` 이 null 인 row 의 `station` 값을 추가되는 `nextStation` 값으로 업데이트 처리합니다.
+
+|id|line|station|nextStation|
+|---|---|-----|-----|
+|1|1|강남|역삼|
+|2|1|선릉|null|
+|3|1|역삼|선릉|
+
+----
+
 ## 1단계 - 지하철 노선 관리
 
 - **도메인 테스트**
