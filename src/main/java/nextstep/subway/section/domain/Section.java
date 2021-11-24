@@ -48,7 +48,7 @@ public class Section {
     }
 
     public void updateForConnect(Section section) {
-        this.upStation = section.upStation;
+        this.upStation = section.downStation;
         this.distance = this.distance.subtract(section.distance);
     }
 
