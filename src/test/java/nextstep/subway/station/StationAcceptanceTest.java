@@ -22,12 +22,12 @@ import nextstep.subway.station.dto.StationResponse;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
     
-    private StationRequest 서울대입구역 = StationRequest.from("서울대입구역");
-    private StationRequest 봉천역 = StationRequest.from("봉천역");
-    
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
+        // given
+        StationRequest 서울대입구역 = StationRequest.from("서울대입구역");
+        
         // when
         ExtractableResponse<Response> response = 지하철역_생성_요청(서울대입구역);
 
@@ -40,6 +40,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
+        StationRequest 서울대입구역 = StationRequest.from("서울대입구역");
         지하철역_등록되어_있음(서울대입구역);
 
         // when
@@ -53,6 +54,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
+        StationRequest 서울대입구역 = StationRequest.from("서울대입구역");
+        StationRequest 봉천역 = StationRequest.from("봉천역");
+        
         StationResponse 서울대입구역_응답 = 지하철역_등록되어_있음(서울대입구역);
         StationResponse 봉천역_응답 = 지하철역_등록되어_있음(봉천역);
 
@@ -69,6 +73,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
+        StationRequest 서울대입구역 = StationRequest.from("서울대입구역");
         StationResponse 서울대입구역_응답 = 지하철역_등록되어_있음(서울대입구역);
 
         // when
