@@ -23,6 +23,10 @@ public class Sections {
         sections = new ArrayList<>();
     }
 
+    public Sections(List<Section> sections) {
+        this.sections = sections;
+    }
+
     public void add(final Section nonPersistSection) {
         if (!sections.isEmpty()) {
             validateSection(nonPersistSection);
@@ -98,27 +102,34 @@ public class Sections {
 
     public void removeByStation(final Station deleteStation) {
         validateSectionsSize();
-        List<Section> foundSections = findSectionsIncludeStation(deleteStation);
-        validateIncludeSections(foundSections);
-        Section deleteSection = foundSections.get(0);
-        if (isNotTerminal(foundSections)) {
-            Section updatedSection = foundSections.get(1);
+        Sections foundSections = findSectionsIncludeStation(deleteStation);
+        Section deleteSection = foundSections.findSectionByHasStation(deleteStation);
+        if (foundSections.isNotTerminal()) {
+            Section updatedSection = foundSections.findOtherSectionByExceptSection(deleteSection);
             updatedSection.reArrangeDeleteSection(deleteSection, deleteStation);
         }
 
         sections.remove(deleteSection);
     }
 
-    private void validateIncludeSections(final List<Section> deleteSections) {
-        if (deleteSections.isEmpty()) {
-            throw new NotIncludeStation();
-        }
+    private Section findSectionByHasStation(final Station station) {
+        return sections.stream()
+                .filter(section -> section.hasStation(station))
+                .findFirst()
+                .orElseThrow(NotIncludeStation::new);
     }
 
-    private List<Section> findSectionsIncludeStation(final Station deleteStation) {
+    private Section findOtherSectionByExceptSection(Section exceptSection) {
         return sections.stream()
+                .filter(section -> !section.equals(exceptSection))
+                .findFirst()
+                .orElseThrow(NotFoundSection::new);
+    }
+
+    private Sections findSectionsIncludeStation(final Station deleteStation) {
+        return new Sections(sections.stream()
                 .filter(section -> section.hasStation(deleteStation))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     private void validateSectionsSize() {
@@ -127,7 +138,7 @@ public class Sections {
         }
     }
 
-    private boolean isNotTerminal(final List<Section> sections) {
+    private boolean isNotTerminal() {
         return sections.size() > 1;
     }
 
