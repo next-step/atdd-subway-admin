@@ -37,9 +37,9 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse findLineById(long id) {
+    public Optional<LineResponse> findLineById(long id) {
         Optional<Line> line = lineRepository.findById(id);
-        return line.map(LineResponse::of).orElse(null);
+        return line.map(LineResponse::of);
     }
 
     public void updateLine(Line newLine) {

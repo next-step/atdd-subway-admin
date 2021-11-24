@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class LineController {
@@ -41,11 +42,9 @@ public class LineController {
 
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        LineResponse line = lineService.findLineById(id);
-        if (line == null) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok().body(line);
+        Optional<LineResponse> line = lineService.findLineById(id);
+        return line.map(lineResponse -> ResponseEntity.ok().body(lineResponse))
+            .orElseGet(() -> ResponseEntity.ok().build());
     }
 
     @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -56,13 +55,13 @@ public class LineController {
     }
 
     @DeleteMapping("/lines/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
+    public ResponseEntity<LineResponse> handleIllegalArgsException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
     }
 }
