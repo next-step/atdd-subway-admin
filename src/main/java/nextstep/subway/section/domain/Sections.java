@@ -18,4 +18,8 @@ public class Sections {
 	public Sections(List<Section> sections) {
 		this.sections = sections;
 	}
+
+	public void add(Section section) {
+		sections.add(section);
+	}
 }
