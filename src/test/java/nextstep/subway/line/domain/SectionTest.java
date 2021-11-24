@@ -142,6 +142,7 @@ public class SectionTest {
 		// then
 		assertAll(
 			() -> assertThat(sections.getValues()).doesNotContain(secondSection),
+			() -> assertThat(sections.getValues()).hasSize(1),
 			() -> assertThat(sections.getValues().get(0).getDistance()).isEqualTo(7),
 			() -> assertThat(sections.getValues().get(0).getUpStation()).isEqualTo(강남역()),
 			() -> assertThat(sections.getValues().get(0).getDownStation()).isEqualTo(선릉역()));

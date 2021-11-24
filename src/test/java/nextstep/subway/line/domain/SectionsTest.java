@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import static nextstep.subway.station.StationFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -274,5 +275,18 @@ class SectionsTest {
 				StationFixture.강남역(),
 				StationFixture.역삼역())),
 			() -> assertThat(sections.getDistancesInOrder()).isEqualTo(Collections.singletonList(4)));
+	}
+
+	@DisplayName("구간들에서 구간이 하나인 경우 마지막 구간은 제거할 수 없다.")
+	@Test
+	void removeStationFail() {
+		// given
+		Sections sections = Sections.of(
+			new ArrayList<>(Collections.singletonList(
+				Section.of(1L, StationFixture.강남역(), StationFixture.역삼역(), 4))));
+
+		// when & then
+		assertThatThrownBy(() -> sections.removeByStation(StationFixture.강남역()))
+			.isInstanceOf(SectionRemoveFailException.class);
 	}
 }

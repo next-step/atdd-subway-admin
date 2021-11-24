@@ -95,6 +95,22 @@ public class SectionRemoveAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_지하철_역이_주어진_순서대로_조회됨(노선_2호선_생성_응답.getId(), Arrays.asList(강남역_생성_응답.getId(), 역삼역_생성_응답.getId()));
 	}
 
+	@DisplayName("구간이 하나인 노선에서 마지막 구간은 제거할 수 없다.")
+	@Test
+	void removeSectionFailOnOneSection() {
+		// given
+		StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
+		StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
+
+		LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 3));
+
+		// when
+		ExtractableResponse<Response> 지하철_구간_삭제_응답 = 지하철_구간_삭제_요청(노선_2호선_생성_응답.getId(), 강남역_생성_응답.getId());
+
+		// then
+		지하철_구간_삭제_실패됨(지하철_구간_삭제_응답);
+	}
+
 	private ExtractableResponse<Response> 지하철_구간_삭제_요청(Long lineId, Long stationId) {
 		return RestAssured.given().log().all()
 			.queryParam("stationId", stationId)
@@ -106,5 +122,9 @@ public class SectionRemoveAcceptanceTest extends AcceptanceTest {
 
 	private void 지하철_구간_삭제됨(ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+	}
+
+	private void 지하철_구간_삭제_실패됨(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 }
