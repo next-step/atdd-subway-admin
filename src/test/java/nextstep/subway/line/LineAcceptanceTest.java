@@ -87,6 +87,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_응답됨(response, expected);
     }
 
+    @DisplayName("존재하지 않는 지하철 노선을 조회하여 실패한다.")
+    @Test
+    void getLine_throwsExceptionWHenNoExist() {
+        // given
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(1L);
+
+        // then
+        지하철_노선_미존재_응답됨(response);
+    }
+
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
@@ -175,6 +187,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private void 지하철_노선_응답됨(ExtractableResponse<Response> response, LineResponse expected) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.as(LineResponse.class)).isEqualTo(expected);
+    }
+
+    private void 지하철_노선_미존재_응답됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(long id, Map<String, String> params) {

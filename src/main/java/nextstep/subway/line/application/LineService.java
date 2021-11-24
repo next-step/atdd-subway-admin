@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class LineService {
     }
 
     public LineResponse getLine(long id) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
         return LineResponse.of(line);
     }
 
