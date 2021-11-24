@@ -71,3 +71,26 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   * [x] 수정
   * [x] 삭제
 * [x] 기능 구현 후 인수 테스트 리팩터링
+### 피드백 공부 내용 정리
+클래스 레벨에서 @transactional 을 걸어주고 읽기 전용 메서드에서 @transactional(readOnly = true) 를 사용해주셨는데요
+반대로 클래스 레벨에서 @transactional(readOnly = true) 을 사용하고 데이터 변경이 있을때 @transactional을 걸어주는 건 어떨까요? [링크](https://github.com/next-step/atdd-subway-admin/pull/449#discussion_r755177519)
+~~~
+ @transactional(readOnly = true)을 사용하면
+  강제로 플러시 호출하지 않는 한 플러시가 일어나지 않는다.
+  따라서 엔티티의 등록, 수정, 삭제가 동작하지 않고
+  읽기 전용으로, 영속성 컨텍스트는 변경 감지를 위한 스냅샷을 보관하지 않으므로 성능이 향상된다.
+ - 참고 : https://willseungh0.tistory.com/75
+ 
+제 생각에는 말씀 해주신 방법을 적용하게 되면 아래와 같은 내용을 얻을 수 있을 거 같습니다.
+ * 성능 향상을 기대할수 있다.
+ * 개발자의 실수로 등록, 수정, 삭제가 발생되는 것을 방지 할 수 있다.
+~~~
+* 메소드 레퍼런스
+  * 메소드 레퍼런스(Method Reference)는 Lambda 표현식을 더 간단하게 표현하는 방법입니다.
+  * 메소드 레퍼런스는 ClassName::MethodName 형식으로 입력합니다. 메소드를 호출하는 것이지만 괄호()는 써주지 않고 생략합니다.
+  * 참고자료 : https://codechacha.com/ko/java8-method-reference/
+* Exception 공통처리 [링크](https://github.com/next-step/atdd-subway-admin/pull/449#discussion_r755182659)
+  * 참고자료1 : https://javachoi.tistory.com/253
+  * 참고자료2 : https://velog.io/@banjjoknim/RestControllerAdvice
+* AssertAll
+  * 참고: https://sas-study.tistory.com/316, https://escapefromcoding.tistory.com/358?category=1184809
