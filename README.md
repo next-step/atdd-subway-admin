@@ -84,7 +84,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
         - [x] 지하철 노선이 이미 등록되어 있는 경우 지하철 노선 생성에 실패한다.
         - [x] 지하철 노선의 구간을 생성한다.
             - [x] 종점역(상행, 하행)으로 지정한 지하철 역이 없는 경우 지하철 구간 생성에 실패한다.
-            - [x] 구간이 중복 중복되는 경우 예외가 발생한다.
             - [x] 구간의 거리가 최소 거리 이하인 경우 지하철 구간 생성에 실패한다.
     - [x] 지하철 노선 목록을 조회한다.
     - [x] 지하철 노선 1건을 조회한다.
@@ -136,12 +135,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
         Then 지하철 노선 생성이 실패한다.
   
     Scenario: 지하철 노선 생성이 실패한다.
-        Given 상행과 하행 종점역이 같다.
-        When 지하철 노선을 생성 요청한다.
-        Then 지하철 노선 생성이 실패한다.
-    
-    Scenario: 지하철 노선 생성이 실패한다.
-        Given 구간의 거리가 0 이하이다.
+        Given 구간의 거리가 최소 거리 이하이다.
         When 지하철 노선을 생성 요청한다.
         Then 지하철 노선 생성이 실패한다.
 

@@ -42,7 +42,7 @@ public class Section {
 
     private void validateDistance(int distance) {
         if (distance <= MIN_DISTANCE) {
-            throw new IllegalArgumentException("지하천 구간 사이의 거리는 " + MIN_DISTANCE + "보다 커야 합니다.");
+            throw new IllegalArgumentException("지하철 구간 사이의 거리는 " + MIN_DISTANCE + "보다 커야 합니다.");
         }
     }
 

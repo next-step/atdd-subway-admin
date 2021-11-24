@@ -12,6 +12,7 @@ import java.util.Map;
 
 import static nextstep.subway.line.LineScenarioMethod.*;
 import static nextstep.subway.station.StationScenarioMethod.지하철_종점역_정보;
+import static org.springframework.http.HttpStatus.*;
 
 @DisplayName("지하철 노선 인수 테스트")
 class LineAcceptanceTest extends AcceptanceTest {
@@ -42,7 +43,34 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선);
 
         // then
-        지하철_노선_생성_실패됨(response);
+        지하철_노선_생성_실패됨(response, BAD_REQUEST.value());
+    }
+
+    @DisplayName("지하철 종점역이 등록되어 있지 않은 경우 지하철 노선 생성에 실패한다.")
+    @Test
+    void createLineWithoutTerminus() {
+        // given
+        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선);
+
+        // then
+        지하철_노선_생성_실패됨(response, NOT_FOUND.value());
+    }
+
+    @DisplayName("구간의 거리가 최소 거리 이하인 경우 지하철 노선 생성에 실패한다.")
+    @Test
+    void createLineWithMinDistance() {
+        // given
+        Map<String, Long> terminus = 지하철_종점역_정보("강남", "광교");
+        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "bg-red-600", terminus, 0);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선);
+
+        // then
+        지하철_노선_생성_실패됨(response, INTERNAL_SERVER_ERROR.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")

@@ -31,8 +31,8 @@ class LineScenarioMethod {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+    public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response, int statusCode) {
+        assertThat(response.statusCode()).isEqualTo(statusCode);
     }
 
     public static String 지하철_노선_등록되어_있음(LineRequest request) {
