@@ -11,9 +11,10 @@ import java.util.Map;
 public class LineAcceptanceTestFactory {
     private static final String LINE_BASE_API_URL = "/lines";
 
-    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color) {
-        final Map<String, String> params = getLineCreateParams(name, color);
-        return 지하철_노선_생성_요청(params);
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color, Long upStationId, Long downStationId, int distance) {
+        final Map<String, String> params = getLineCreateParams(name, color, upStationId, downStationId, distance);
+        final ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
+        return 지하철_노선_조회_요청(response.jsonPath().getLong("id"));
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
@@ -36,10 +37,13 @@ public class LineAcceptanceTestFactory {
         return RestAssuredApiTest.update(LINE_BASE_API_URL, id, params);
     }
 
-    public static Map<String, String> getLineCreateParams(String name, String color) {
+    public static Map<String, String> getLineCreateParams(String name, String color, Long upStationId, Long downStationId, int distance) {
         final Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
+        params.put("upStationId", upStationId + "");
+        params.put("downStationId", downStationId + "");
+        params.put("distance", distance + "");
         return Collections.unmodifiableMap(params);
     }
 

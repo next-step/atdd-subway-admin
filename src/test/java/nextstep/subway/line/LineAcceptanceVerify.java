@@ -4,10 +4,10 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,13 +26,22 @@ public class LineAcceptanceVerify {
         assertThat(responseJson.getString("name")).isEqualTo(createdLineResponse.getName());
         assertThat(responseJson.getString("color")).isEqualTo(createdLineResponse.getColor());
         assertThat(responseJson.getLong("id")).isEqualTo(createdLineResponse.getId());
+        assertThat(responseJson.getList("stations", StationResponse.class)).containsAll(createdLineResponse.getStations());
     }
 
-    public static void 지하철_노선_생성_결과_검증(ExtractableResponse<Response> response, Map<String, String> params) {
-        final LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
+    public static void 지하철_노선_종점역_응답_순서_검증(ExtractableResponse<Response> response, Long upStationId, Long downStationId) {
+        List<StationResponse> stations = response.jsonPath().getList("stations", StationResponse.class);
+        final StationResponse upStation = stations.get(0);
+        final StationResponse downStation = stations.get(stations.size() - 1);
+        assertThat(upStation.getId()).isEqualTo(upStationId);
+        assertThat(downStation.getId()).isEqualTo(downStationId);
+    }
+
+
+    public static void 지하철_노선_생성_결과_검증(ExtractableResponse<Response> response) {
+        final Long createdId = response.jsonPath().getLong("id");
         assertAll(() -> {
-            assertThat(lineResponse.getColor()).isEqualTo(params.get("color"));
-            assertThat(lineResponse.getName()).isEqualTo(params.get("name"));
+            assertThat(createdId).isGreaterThan(0L);
         });
     }
 

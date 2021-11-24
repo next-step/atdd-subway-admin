@@ -3,33 +3,60 @@ package nextstep.subway.line.domain;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.exception.NotEmptyLineColorException;
 import nextstep.subway.line.exception.NotEmptyLineNameException;
+import nextstep.subway.station.domain.Station;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import java.util.List;
 
 @Entity
+@Table(
+        uniqueConstraints = @UniqueConstraint(name = "uk_line_name", columnNames = {"name"})
+)
 public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
     private String name;
     private String color;
+    @Embedded
+    private Sections sections;
 
-    public Line() {
+    protected Line() {
     }
 
-    public Line(String name, String color) {
+    private Line(String name, String color) {
         validate(name, color);
         this.name = name;
         this.color = color;
     }
 
+    private Line(String name, String color, Section section) {
+        this(name, color);
+        this.sections = Sections.of(section);
+    }
+
+    private Line(String name, String color, List<Section> sections) {
+        this(name, color);
+        this.sections = Sections.of(sections);
+    }
+
+    public static Line of(String name, String color, Section section) {
+        return new Line(name, color, section);
+    }
+
+    public static Line of(String name, String color, List<Section> sections) {
+        return new Line(name, color, sections);
+    }
+
     private void validate(String name, String color) {
+
         if (!StringUtils.hasText(name)) {
             throw new NotEmptyLineNameException();
         }
@@ -43,10 +70,6 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-    public Long getId() {
-        return id;
-    }
-
     public String getName() {
         return name;
     }
@@ -55,5 +78,11 @@ public class Line extends BaseEntity {
         return color;
     }
 
+    public Long getId() {
+        return id;
+    }
 
+    public List<Station> getStationsOrderByUptoDown() {
+        return this.sections.getStationsOrderByUptoDown();
+    }
 }
