@@ -22,6 +22,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     private static final String BASE_URI = "/stations";
     public static final StationRequest 강남역 = StationRequest.of("강남역");
     public static final StationRequest 역삼역 = StationRequest.of("역삼역");
+    public static final StationRequest 최초_상행종점역 = StationRequest.of("최초_상행종점역");
+    public static final StationRequest 변경_상행종점역 = StationRequest.of("변경_상행종점역");
+    public static final StationRequest 최초_하행종점역 = StationRequest.of("최초_하행종점역");
+    public static final StationRequest 변경_하행종점역 = StationRequest.of("변경_하행종점역");
+    public static final StationRequest 사이_추가_역 = StationRequest.of("사이_추가_역");
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -32,7 +37,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         지하철_역_생성됨(response);
     }
-
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test

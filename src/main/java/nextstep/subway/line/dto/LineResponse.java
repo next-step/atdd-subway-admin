@@ -1,7 +1,8 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.line.domain.Sections;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
@@ -11,9 +12,13 @@ import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
+
     private String name;
+
     private String color;
+
     private LocalDateTime createdDate;
+
     private LocalDateTime modifiedDate;
 
     private List<StationResponse> stations;
@@ -21,23 +26,17 @@ public class LineResponse {
     private LineResponse() {
     }
 
-    private LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<Section> sections) {
+    private LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<Station> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-        this.stations = new ArrayList<>(toStations(sections));
-    }
-
-    private List<StationResponse> toStations(List<Section> sections) {
-        List<StationResponse> stations = sections.stream().map(Section::getStation).map(StationResponse::of).collect(Collectors.toList());
-        stations.add(StationResponse.of(sections.get(sections.size() - 1).getNextStation()));
-        return stations;
+        this.stations = stations.stream().map(StationResponse::of).collect(Collectors.toList());
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate(), line.getSections());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate(), line.getStations());
     }
 
     public static List<LineResponse> ofList(List<Line> lines) {

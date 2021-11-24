@@ -1,6 +1,6 @@
 package nextstep.subway.station.application;
 
-import nextstep.subway.common.exception.NotFoundException;
+import nextstep.subway.common.exception.LineNotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 @Transactional
 public class StationService {
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
@@ -25,8 +25,8 @@ public class StationService {
     }
 
     @Transactional(readOnly = true)
-    public Station findByStationId(Long id) throws NotFoundException {
-        return stationRepository.findById(id).orElseThrow(() -> new NotFoundException("데이터가 존재하지 않습니다."));
+    public Station findByStationId(Long id) throws LineNotFoundException {
+        return stationRepository.findById(id).orElseThrow(LineNotFoundException::new);
     }
 
     public StationResponse saveStation(StationRequest request) {

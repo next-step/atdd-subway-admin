@@ -5,12 +5,11 @@ package nextstep.subway.common.exception;
  * fileName : NotFoundException
  * author : haedoang
  * date : 2021/11/18
- * description : 중복 데이터 관련 예외처리
+ * description : NoData 예외 처리 클래스
  */
-public class DuplicateParameterException extends RuntimeException {
+public class LineNotFoundException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
-    public DuplicateParameterException(String message) {
-        super(message);
+    public LineNotFoundException() {
     }
 }

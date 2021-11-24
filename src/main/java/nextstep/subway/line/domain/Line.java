@@ -1,24 +1,26 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.entity.BaseEntity;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 
 @Entity
 public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
+
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = new Sections();
 
     public Line() {
     }
@@ -34,7 +36,7 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        this.sections.add(section);
+        sections.add(section);
         section.addLine(this);
     }
 
@@ -50,8 +52,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public List<Station> getStations() {
+        return sections.getStations();
     }
 
     @Override
@@ -59,15 +61,13 @@ public class Line extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return Objects.equals(getId(), line.getId()) &&
-                Objects.equals(getName(), line.getName()) &&
-                Objects.equals(getColor(), line.getColor()) &&
-                Objects.equals(sections, line.sections);
+        return Objects.equals(getId(), line.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getColor(), sections);
+        return Objects.hash(getId());
     }
+
 
 }
