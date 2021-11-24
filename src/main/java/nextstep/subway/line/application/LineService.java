@@ -101,4 +101,11 @@ public class LineService {
 		Station downStation = stationFindById(sectionRequest.getDownStationId());
 		return new Section(line, downStation, upStation, sectionRequest.getDistance());
 	}
+
+	@Transactional
+	public void removeLineStation(Long lineId, Long stationId) {
+		Line line = lineFindById(lineId);
+		Station station = stationFindById(stationId);
+		line.getSections().removeLineStation(station);
+	}
 }
