@@ -10,21 +10,27 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
 
 @Service
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
+    private final StationService stationService;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
+        this.stationService = stationService;
     }
 
     public LineResponse save(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+        checkDuplicatedName(request.getName());
+        
+        return LineResponse.of(lineRepository.save(toLine(request)));
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         return lineRepository.findAll()
                 .stream()
@@ -32,13 +38,14 @@ public class LineService {
                 .collect(Collectors.toList());
     }
     
+    @Transactional(readOnly = true)
     public LineResponse find(Long id) {
         return LineResponse.of(findById(id));
     }
     
     public void update(Long id, LineRequest request) {
         Line line = findById(id);
-        line.update(request.toLine());
+        line.update(toLine(request));
     }
     
     public void delete(Long id) {
@@ -46,8 +53,22 @@ public class LineService {
         lineRepository.delete(line);
     }
     
+    @Transactional(readOnly = true)
     private Line findById(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("노선이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(id + "에 해당하는 노선이 없습니다."));
+    }
+    
+    private void checkDuplicatedName(String name) {
+        if (lineRepository.existsByName(name)) {
+            throw new IllegalArgumentException(String.format("라인 이름(%d)이 중복되었습니다.", name));
+        }
+    }
+
+    private Line toLine(LineRequest request) {
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+        
+        return request.toLine(upStation, downStation);
     }
 }
