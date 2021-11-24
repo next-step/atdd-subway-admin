@@ -356,6 +356,42 @@ public class LineAcceptanceTest extends AcceptanceTest {
             새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정한다(totalDistance, newDistance, lineUrl, response);
         }
 
+        @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
+        @Test
+        void testInsertAtFirst() {
+            // given
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역").as(StationResponse.class);
+            ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), "100");
+            String lineUrl = 신분당선.header("Location");
+
+            // when
+            ExtractableResponse<Response> response = 지하철_구간_추가_요청(lineUrl, 안양역, 강남역, 40);
+
+            // then
+            지하철_구간이_생성된다(response);
+            상행선_하행선_순으로_정렬된_역을_포함한_지하철_노선을_응답한다(lineUrl, 안양역, 강남역, 광교역);
+        }
+
+        @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
+        @Test
+        void testInsertAtLast() {
+            // given
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역").as(StationResponse.class);
+            ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), "100");
+            String lineUrl = 신분당선.header("Location");
+
+            // when
+            ExtractableResponse<Response> response = 지하철_구간_추가_요청(lineUrl, 광교역, 안양역, 40);
+
+            // then
+            지하철_구간이_생성된다(response);
+            상행선_하행선_순으로_정렬된_역을_포함한_지하철_노선을_응답한다(lineUrl, 강남역, 광교역, 안양역);
+        }
+
         private void 새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정한다(Integer totalDistance, Integer distance, String lineUrl, ExtractableResponse<Response> response) {
             assertThat(response.as(SectionResponse.class).getDistance()).isEqualTo(distance);
             ExtractableResponse<Response> sectionsResponse = Methods.get(lineUrl + "/sections");
