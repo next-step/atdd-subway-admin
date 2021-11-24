@@ -9,13 +9,13 @@ import nextstep.subway.station.domain.Station;
 
 public class SectionResponse {
 
-	private Long id;
-	private Line line;
-	private Station downStation;
-	private Station upStation;
-	private Distance distance;
-	private LocalDateTime createdDate;
-	private LocalDateTime modifiedDate;
+	private final Long id;
+	private final Line line;
+	private final Station downStation;
+	private final Station upStation;
+	private final Distance distance;
+	private final LocalDateTime createdDate;
+	private final LocalDateTime modifiedDate;
 
 	private SectionResponse(final Long id, final Line line, final Station downStation, final Station upStation,
 		final Distance distance,
