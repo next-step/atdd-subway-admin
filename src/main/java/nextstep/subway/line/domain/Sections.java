@@ -13,9 +13,10 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    protected Sections() {}
+    protected Sections() {
+    }
 
-    public void addSection(Section section) {
+    public Sections(Section section) {
         sections.add(section);
     }
 

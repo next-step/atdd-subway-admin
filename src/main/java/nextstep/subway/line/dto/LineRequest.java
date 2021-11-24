@@ -35,9 +35,7 @@ public class LineRequest {
     }
 
     public Line toLine(Section section) {
-        Line line = new Line(name, color);
-        line.addSection(section);
-        return line;
+        return new Line(name, color, section);
     }
 
     public Long getUpStationId() {

@@ -34,8 +34,9 @@ public class Section {
         this.distance = new Distance(distance);
     }
 
-    public void addLine(Line line) {
+    public Section addLine(Line line) {
         this.line = line;
+        return this;
     }
 
     public Station getUpStation() {

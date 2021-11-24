@@ -17,13 +17,13 @@ public class Line extends BaseEntity {
     @Embedded
     private Sections sections;
 
-    public Line() {
+    protected Line() {
     }
 
-    public Line(String name, String color) {
+    public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        this.sections = new Sections();
+        this.sections = new Sections(section.addLine(this));
     }
 
     public void update(String name, String color) {
@@ -41,11 +41,6 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    public void addSection(Section section) {
-        sections.addSection(section);
-        section.addLine(this);
     }
 
     public List<Station> getStations() {
