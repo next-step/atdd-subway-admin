@@ -20,7 +20,7 @@ import java.util.Set;
 @Embeddable
 public class Sections {
 
-    private static final String ERROR_MESSAGE_EQUAL_OR_MORE_DISTANCE = "기존 구간보다 길이가 길거나 같습니다.";
+    private static final String ERROR_MESSAGE_DISTANCE_IS_GREATER = "기존 구간보다 길이가 길거나 같습니다.";
     private static final String ERROR_MESSAGE_DISCONNECTED_SECTION = "연결될 수 없는 구간입니다.";
     private static final String ERROR_MESSAGE_EXISTED_SECTION = "이미 존재하는 구간입니다.";
 
@@ -127,7 +127,16 @@ public class Sections {
             return;
         }
 
-        addSection(requestSection, modifiedSection, requestSection.getDownStation(), modifiedSection.getDownStation());
+        if (modifiedSection.isDistanceGraterThan(requestSection)) {
+            throw new CannotAddSectionException(ERROR_MESSAGE_DISTANCE_IS_GREATER);
+        }
+
+        int diffDistance = modifiedSection.getDistance() - requestSection.getDistance();
+        Section newSection = Section.of(requestSection.getDownStation(), modifiedSection.getDownStation(), diffDistance);
+
+        sections.remove(modifiedSection);
+        sections.add(requestSection);
+        sections.add(newSection);
     }
 
     private void addSectionByDownStation(Section requestSection) {
@@ -141,29 +150,16 @@ public class Sections {
             return;
         }
 
-        addSection(requestSection, modifiedSection, modifiedSection.getUpStation(), requestSection.getUpStation());
-    }
-
-    private void addSection(Section requestSection,
-                            Section modifiedSection,
-                            Station newUpStation,
-                            Station newDownStation) {
-
         if (modifiedSection.isDistanceGraterThan(requestSection)) {
-            throw new CannotAddSectionException(ERROR_MESSAGE_EQUAL_OR_MORE_DISTANCE);
+            throw new CannotAddSectionException(ERROR_MESSAGE_DISTANCE_IS_GREATER);
         }
 
+        int diffDistance = modifiedSection.getDistance() - requestSection.getDistance();
+        Section newSection = Section.of(modifiedSection.getUpStation(), requestSection.getUpStation(), diffDistance);
+
         sections.remove(modifiedSection);
-
-        int totalDistance = modifiedSection.getDistance();
-        int diffDistance = totalDistance - requestSection.getDistance();
-
-        Section newSection = Section.of(newUpStation,
-                newDownStation,
-                diffDistance);
-
-        sections.add(newSection);
         sections.add(requestSection);
+        sections.add(newSection);
     }
 
     private Set<Station> findAllStation() {
