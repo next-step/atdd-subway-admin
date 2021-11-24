@@ -7,6 +7,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
@@ -18,6 +19,8 @@ public class Sections {
     private static final String SECTION_NOT_CORRECT_MESSAGE = "동일한 구간을 추가할 수 없습니다.";
     private static final String DISTANCE_GREATER_OR_CORRECT_MESSAGE = "거리가 작아야합니다.";
     private static final String SECTION_NOT_EXIST_MESSAGE = "구간이 1개일 때 삭제할 수 없습니다.";
+    private static final String SECTION_NOT_FOUND_MESSAGE = "찾는 구간이 존재하지 않습니다.";
+    private static final int MIN_SECTION_COUNT = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -42,6 +45,33 @@ public class Sections {
         }
     }
 
+    public void remove(Station station) {
+
+        if(validateNotContains(station)) {
+            throw new IllegalArgumentException(STATION_NOT_CONTAINS_MESSAGE);
+        }
+
+        if(validateIfRemoveNotExist()) {
+            throw new IllegalArgumentException(SECTION_NOT_EXIST_MESSAGE);
+        }
+
+        Section upSection = removeUpSection(station);
+        Section downSection = removeDownSection(station);
+
+        if(Objects.nonNull(upSection) && Objects.nonNull(downSection)) {
+            Section section = upSection.sumBySection(downSection);
+            this.sections.add(section);
+        }
+    }
+
+    private boolean addUpSection(Section section) {
+        return addSection(section.getDownStation(), section.getDistance(), s -> s.matchUpStationFromUpStation(section));
+    }
+
+    private boolean addDownSection(Section section) {
+        return addSection(section.getUpStation(), section.getDistance(), s -> s.matchDownStationFromDownStation(section));
+    }
+
     private boolean addSection(Station station, Integer distance, Predicate<Section> express) {
         if(this.sections.stream().anyMatch(express)) {
             List<Section> divideBySections = this.sections.stream()
@@ -54,29 +84,26 @@ public class Sections {
         return false;
     }
 
-    private boolean addUpSection(Section section) {
-        return addSection(section.getDownStation(), section.getDistance(), s -> s.matchUpStationFromUpStation(section));
+    private Section removeUpSection(Station station) {
+        return removeSection(s -> s.matchDownStation(station));
     }
 
-    private boolean addDownSection(Section section) {
-        return addSection(section.getUpStation(), section.getDistance(), s -> s.matchDownStationFromDownStation(section));
+    private Section removeDownSection(Station station) {
+        return removeSection(s -> s.matchUpStation(station));
     }
 
-    public void remove(Station station) {
+    private Section removeSection(Predicate<Section> express) {
+        if(this.sections.stream().anyMatch(express)) {
 
-        if(this.sections.stream().noneMatch(s -> s.matchStation(station))) {
-            throw new IllegalArgumentException(STATION_NOT_CONTAINS_MESSAGE);
+            Section section = this.sections.stream()
+                    .filter(express)
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException(SECTION_NOT_FOUND_MESSAGE));
+
+            this.sections.remove(section);
+            return section;
         }
-
-        if(this.sections.size() == 1) {
-            throw new IllegalArgumentException(SECTION_NOT_EXIST_MESSAGE);
-        }
-
-        List<Section> findSections = this.sections.stream()
-                .filter(s -> s.matchUpStation(station) || s.matchDownStation(station))
-                .collect(toList());
-
-        this.sections.remove(findSections);
+        return null;
     }
 
     private Section matchStation(Section section) {
@@ -84,6 +111,10 @@ public class Sections {
                 .filter(s -> s.matchUpStation(section) || s.matchDownStation(section))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(STATION_NOT_CONTAINS_MESSAGE));
+    }
+
+    private boolean validateNotContains(Station station) {
+        return this.sections.stream().noneMatch(s -> s.matchStation(station));
     }
 
     private boolean isGreaterEqualDistance(Section section, Section otherSection) {
@@ -104,6 +135,10 @@ public class Sections {
 
     private boolean validateGreaterEqualDistance(Section section) {
         return isNotEmpty() && isGreaterEqualDistance(matchStation(section), section);
+    }
+
+    private boolean validateIfRemoveNotExist() {
+        return this.sections.size() == MIN_SECTION_COUNT;
     }
 
     public List<Section> getSections() {

@@ -51,15 +51,20 @@ public class Section {
         return id;
     }
 
-    public boolean matchStation(Station station) {
-        return this.upStation.equals(station) || this.downStation.equals(station);
-    }
-
     public List<Section> divideByStation(Station station, Integer distance) {
         return Arrays.asList(
                 Section.create(this.line, upStation, station, this.distance - distance),
                 Section.create(this.line, station, downStation, distance)
         );
+    }
+
+    public Section sumBySection(Section section) {
+        int distance = this.distance + section.getDistance();
+        return Section.create(this.line, this.upStation, section.getDownStation(), distance);
+    }
+
+    public boolean matchStation(Station station) {
+        return this.upStation.equals(station) || this.downStation.equals(station);
     }
 
     public boolean matchUpStationFromUpStation(Section section) {
@@ -90,16 +95,6 @@ public class Section {
         return this.distance >= section.getDistance();
     }
 
-    public void changeUpStationToDownStation(Section section) {
-        this.upStation = section.getDownStation();
-        this.distance -= section.getDistance();
-    }
-
-    public void changeDownStationToUpStation(Section section) {
-        this.downStation = section.getUpStation();
-        this.distance -= section.getDistance();
-    }
-
     public Station getUpStation() {
         return upStation;
     }
@@ -111,6 +106,7 @@ public class Section {
     public Integer getDistance() {
         return distance;
     }
+
 
     @Override
     public boolean equals(Object o) {
