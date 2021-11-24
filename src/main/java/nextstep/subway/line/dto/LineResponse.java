@@ -35,6 +35,11 @@ public class LineResponse {
             StationResponse.listOf(line.getStations()));
     }
 
+    public static LineResponse withOutStationsOf(Line line) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(),
+            line.getCreatedDate(), line.getModifiedDate(), new ArrayList<>());
+    }
+
     public Long getId() {
         return id;
     }
