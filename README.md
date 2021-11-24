@@ -52,3 +52,19 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+## 요구 사항 기능
+
+- [x] 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기 
+  - 두 종점역은 구간의 형태로 관리되어야 함
+  - 구간 중에 downStation 쪽에 distance를 저장한다. (후방 노드에 distance가 remove에 작업이 좀 더 쉬울 것이라 예측)
+  - 종점역 정보는 선택으로 받는다. (역 정보가 들어올 수도, 노선만 추가될 수도 있다고 생각)
+- [x] 노선 조회 시 응답 결과에 역 목록 추가하기 
+  - 상행역 부터 하행역 순으로 정렬되어야 함
+
+## 고려한 점
+
+- 구간은 ArrayList로 정한다.
+  - LinkedList를 제외한 이유 : 지하철 역 특성상 add나 remove 되는 숫자는 적을 것이고 조회 횟수는 많을 것이라 생각하였기 때문
+  - hashMap을 제외한 이유 : LinkedHashMap을 이용해 공간 복잡도를 조금 더 소모하고 시간 복잡도를 줄이는 의도를 생각하였지만 종점 바뀔 시에 컨트롤하는 비용이 클 것 같아 제외
+  
