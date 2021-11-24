@@ -49,6 +49,10 @@ public class Section {
         return id;
     }
 
+    public boolean matchStation(Station station) {
+        return this.upStation.equals(station) || this.downStation.equals(station);
+    }
+
     public boolean matchUpStationFromUpStation(Section section) {
         return this.upStation.equals(section.getUpStation());
     }

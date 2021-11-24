@@ -228,6 +228,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
+    @DisplayName("구간 삭제 시 일치하는 상행, 하행이 없을경우 예외처리")
+    @Test
+    void removeSection_NotCorrectStationExceptionTest() {
+
+        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
+        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
+        ExtractableResponse<Response> removeStationResponse = 지하철역_등록("신대방");
+
+        long upStationId = extractId(upStationResponse);
+        long downStationId = extractId(downStationResponse);
+        long removeStationId = extractId(removeStationResponse);
+
+        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 7);
+        long lineId = extractId(lineResponse);
+
+        ExtractableResponse<Response> response = ApiUtils.delete(String.format("/lines/%d/sections?stationId=%d", lineId, removeStationId));
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+
     @DisplayName("구간이 하나일 때 구간 삭제 예외처리")
     @Test
     void removeSection_NotExistExceptionTest() {
@@ -242,7 +262,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         long lineId = extractId(lineResponse);
 
         ExtractableResponse<Response> response = ApiUtils.delete(String.format("/lines/%d/sections?stationId=%d", lineId, upStationId));
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
 }
