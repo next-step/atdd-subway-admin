@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.common.exception.ServiceException;
+
 import javax.persistence.Embeddable;
 
 @Embeddable
@@ -10,8 +12,8 @@ public class Distance {
     }
 
     public Distance(Integer distance) {
-        if (distance == null) {
-            throw new IllegalArgumentException("distance를 입력하세요");
+        if (distance == null || distance == 0) {
+            throw new ServiceException("distance를 입력하세요");
         }
         this.distance = distance;
     }
@@ -21,6 +23,10 @@ public class Distance {
     }
 
     public void minus(Integer distance) {
-        this.distance = this.distance - distance;
+        int result = this.distance - distance;
+        if (result <= 0) {
+            throw new ServiceException(String.format("새로 추가되는 길이가 총 길이보다 같거나 큽니다. 총 길이: %d, 추가된 길이: %d", this.distance, distance));
+        }
+        this.distance = result;
     }
 }
