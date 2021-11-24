@@ -1,11 +1,8 @@
 package nextstep.subway.line.ui;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import nextstep.subway.exception.DefaultException;
+import nextstep.subway.exception.LineDuplicateException;
+import nextstep.subway.exception.domain.ErrorMessage;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -25,8 +25,6 @@ import nextstep.subway.line.dto.LineResponse;
 @RestController
 @RequestMapping("/lines")
 public class LineController {
-    public static final String ERROR_DATA_INTEGRITY_VIOLATION = "이미 생성된 노선입니다.";
-    public static final String ERROR = "Error";
     private final LineService lineService;
 
     public LineController(final LineService lineService) {
@@ -60,14 +58,14 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().body(Map.of(ERROR, ERROR_DATA_INTEGRITY_VIOLATION));
+    @ExceptionHandler(LineDuplicateException.class)
+    public ResponseEntity handleIllegalArgsException(LineDuplicateException e) {
+        return ResponseEntity.badRequest().body(ErrorMessage.of(e.getMessage()));
     }
 
     @ExceptionHandler
-    public ResponseEntity defaultException(Exception e){
-        return ResponseEntity.badRequest().body(e);
+    public ResponseEntity defaultException(Exception e) {
+        return ResponseEntity.badRequest().body(ErrorMessage.of(DefaultException.UNEXPECTED_ERROR));
     }
 
 }

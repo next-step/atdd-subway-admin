@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nextstep.subway.exception.LineDuplicateException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -21,8 +22,19 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+        saveLineValidation(request);
+        Line line = lineRepository.save(request.toLine());
+        return LineResponse.of(line);
+    }
+
+    private void saveLineValidation(LineRequest request) {
+        if(isDuplicate(request.getName())){
+            throw new LineDuplicateException();
+        }
+    }
+
+    private boolean isDuplicate(String name) {
+        return lineRepository.findByName(name).isPresent();
     }
 
     @Transactional()
