@@ -28,7 +28,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600");
+        ExtractableResponse<Response> response = LineRequest.지하철_노선_생성_요청("신분당선", "bg-red-600");
 
         // then
         // 지하철_노선_생성됨
@@ -37,29 +37,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getString("id")).isNotBlank();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        return RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
-    }
+
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        지하철_노선_생성_요청("신분당선", "bg-red-600");
+        LineRequest.지하철_노선_생성_요청("신분당선", "bg-red-600");
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600");
+        ExtractableResponse<Response> response = LineRequest.지하철_노선_생성_요청("신분당선", "bg-red-600");
 
         // then
         // 지하철_노선_생성_실패됨
@@ -71,10 +60,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse1 = 지하철_노선_생성_요청("신분당선", "bg-red-600");
+        ExtractableResponse<Response> createResponse1 = LineRequest.지하철_노선_생성_요청("신분당선", "bg-red-600");
 
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse2 = 지하철_노선_생성_요청("2호선", "bg-green-600");
+        ExtractableResponse<Response> createResponse2 = LineRequest.지하철_노선_생성_요청("2호선", "bg-green-600");
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -98,7 +87,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("신분당선", "bg-red-600");
+        ExtractableResponse<Response> createResponse = LineRequest.지하철_노선_생성_요청("신분당선", "bg-red-600");
 
         // when
         // 지하철_노선_조회_요청
@@ -125,7 +114,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("신분당선", "bg-red-600");
+        ExtractableResponse<Response> createResponse = LineRequest.지하철_노선_생성_요청("신분당선", "bg-red-600");
 
         // when
         // 지하철_노선_수정_요청
@@ -156,7 +145,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("신분당선", "bg-red-600");
+        ExtractableResponse<Response> createResponse = LineRequest.지하철_노선_생성_요청("신분당선", "bg-red-600");
 
         // when
         // 지하철_노선_제거_요청
