@@ -6,15 +6,15 @@ import static nextstep.subway.station.StationAcceptanceTest.지하철_역_생성
 import static nextstep.subway.utils.AcceptanceTestUtil.delete;
 import static nextstep.subway.utils.AcceptanceTestUtil.post;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
-import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -131,10 +131,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_삭제됨(response);
 
         // when
-        Line line = 지하철_노선_목록_조회().as(Line.class);
+        List<LineResponse> lines = 지하철_노선_목록_조회()
+            .jsonPath().getList(".", LineResponse.class);
 
         // then
-        삭제후에는_노선_목록에서_조회되지_않음(line, 청계산입구역);
+        삭제후에는_노선_목록에서_조회되지_않음(lines.get(0), 청계산입구역);
 
     }
 
@@ -182,12 +183,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private void 구간_삭제됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    private void 삭제후에는_노선_목록에서_조회되지_않음(Line line, StationResponse 청계산입구역) {
-        assertThat(line.getSections().getValues()).hasSize(1);
-        assertThat(line.getSections().extractStationsApplyOrderingUpStationToDownStation())
-            .doesNotContain(Station.of(청계산입구역.getId()));
+    private void 삭제후에는_노선_목록에서_조회되지_않음(LineResponse line, StationResponse 청계산입구역) {
+        assertThat(line.getStations()).hasSize(2);
+        assertThat(line.getStations())
+            .extracting("id", "name")
+            .containsOnly(tuple(강남역.getId(), 강남역.getName()),
+                tuple(광교역.getId(), 광교역.getName()));
     }
 }
