@@ -114,7 +114,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lines).extracting(LineResponse::getName).contains("신분당선", "2호선");
         assertThat(lines).extracting(LineResponse::getColor).contains("bg-blue-600", "bg-red-600");
         assertThat(lines).flatExtracting(LineResponse::getStations).extracting(StationResponse::getName)
-                .contains("광교", "강남", "신설동", "까치산");
+                .containsExactly("강남", "광교", "신설동", "까치산");
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -144,7 +144,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(line.getName()).isEqualTo("신분당선");
         assertThat(line.getColor()).isEqualTo("bg-red-600");
         assertThat(line.getStations().size()).isEqualTo(2);
-        assertThat(line.getStations()).extracting(StationResponse::getName).contains("강남", "광교");
+        assertThat(line.getStations()).extracting(StationResponse::getName).containsExactly("강남", "광교");
     }
 
     @DisplayName("지하철 노선을 수정한다.")

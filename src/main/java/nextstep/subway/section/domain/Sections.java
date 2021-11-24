@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.station.domain.Station;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -24,6 +26,7 @@ public class Sections {
     private static final int MIN_SECTION_COUNT = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    @BatchSize(size = 200)
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
@@ -75,7 +78,7 @@ public class Sections {
     }
 
     private boolean addSection(Station station, Integer distance, Predicate<Section> express) {
-        if(this.sections.stream().anyMatch(express)) {
+        if(sectionStream().anyMatch(express)) {
             List<Section> divideBySections = this.sections.stream()
                     .filter(express)
                     .flatMap(s -> s.divideByStation(station, distance).stream())
@@ -95,7 +98,7 @@ public class Sections {
     }
 
     private Section removeSection(Predicate<Section> express) {
-        if(this.sections.stream().anyMatch(express)) {
+        if(sectionStream().anyMatch(express)) {
 
             Section section = this.sections.stream()
                     .filter(express)
@@ -112,8 +115,6 @@ public class Sections {
         return this.sections.stream()
                 .filter(s -> s.matchUpStationFromUpStation(section) || s.matchDownStationFromDownStation(section))
                 .findFirst();
-//                .orElse(null);
-//                .orElseThrow(() -> new IllegalArgumentException(STATION_NOT_CONTAINS_MESSAGE));
     }
 
     private boolean validateNotContains(Station station) {
@@ -144,6 +145,10 @@ public class Sections {
 
     private boolean validateIfRemoveNotExist() {
         return this.sections.size() == MIN_SECTION_COUNT;
+    }
+
+    private Stream<Section> sectionStream() {
+        return this.sections.stream();
     }
 
     public List<Section> getSections() {
