@@ -174,6 +174,61 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
+    @DisplayName("노선의 구간 제거(종점을 제거할경우)")
+    @Test
+    void removeSectionTest() {
+
+        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
+        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
+        ExtractableResponse<Response> addStationResponse = 지하철역_등록("신대방");
+
+        long upStationId = extractId(upStationResponse);
+        long downStationId = extractId(downStationResponse);
+        long addDownStationId = extractId(addStationResponse);
+
+        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 7);
+        long lineId = extractId(lineResponse);
+
+        int distance = 4;
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", upStationId);
+        params.put("downStationId", addDownStationId);
+        params.put("distance", distance);
+
+        ApiUtils.post(String.format("/lines/%s/sections", lineId), params);
+
+        ExtractableResponse<Response> response = ApiUtils.delete(String.format("/lines/%d/sections?stationId=%d", lineId, upStationId));
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("노선의 구간제거(중간역이 제거될경우)")
+    @Test
+    void removeSection() {
+
+        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
+        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
+        ExtractableResponse<Response> addStationResponse = 지하철역_등록("신대방");
+
+        long upStationId = extractId(upStationResponse);
+        long downStationId = extractId(downStationResponse);
+        long addDownStationId = extractId(addStationResponse);
+
+        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 7);
+        long lineId = extractId(lineResponse);
+
+        int distance = 4;
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", upStationId);
+        params.put("downStationId", addDownStationId);
+        params.put("distance", distance);
+
+        ApiUtils.post(String.format("/lines/%s/sections", lineId), params);
+
+        ExtractableResponse<Response> response = ApiUtils.delete(String.format("/lines/%d/sections?stationId=%d", lineId, addDownStationId));
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+
 
 
 }
