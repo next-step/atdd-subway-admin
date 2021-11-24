@@ -25,6 +25,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 	private static final String LINE_PATH = "/lines";
 	private static final String SECTION_PATH = "/sections";
+	private static final String STATION_ID = "stationId";
 	private static final String SLASH = "/";
 
 	private StationResponse 강남역;
@@ -120,5 +121,29 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		지하철_노선에_지하철역_등록_실패됨(response);
+	}
+
+	@DisplayName("지하철 노선의 역을 삭제한다.")
+	@Test
+	void deleteLineSection() {
+		// given
+		LineResponse 이미_등록된_노선 = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 구간_등록요청(강남역, 양재역, 5)).as(LineResponse.class);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선의_역을_삭제함(이미_등록된_노선.getId(), 양재역.getId());
+
+		// then
+		지하철_노선의_역이_삭제됨(response);
+	}
+
+	ExtractableResponse<Response> 지하철_노선의_역을_삭제함(Long lineId, Long stationId) {
+		return RestAssured.given().log().all()
+			.when().param(STATION_ID, stationId)
+			.delete(LINE_PATH + SLASH + lineId + SECTION_PATH)
+			.then().log().all().extract();
+	}
+
+	void 지하철_노선의_역이_삭제됨(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 }
