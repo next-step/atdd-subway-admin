@@ -12,6 +12,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.Stations;
 
 @Embeddable
 public class Sections {
@@ -57,14 +58,14 @@ public class Sections {
 	}
 
 	private void throwOnBothStationsNotRegistered(Section section) {
-		List<Station> stations = getStationsInOrder();
+		Stations stations = getStationsInOrder();
 		if (!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
 			throw new SectionAddFailException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
 		}
 	}
 
 	private void throwOnBothStationsAlreadyRegistered(Section section) {
-		List<Station> stations = getStationsInOrder();
+		Stations stations = getStationsInOrder();
 		if (stations.contains(section.getUpStation()) && stations.contains(section.getDownStation())) {
 			throw new SectionAddFailException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
 		}
@@ -83,7 +84,7 @@ public class Sections {
 
 		List<Section> sections = new ArrayList<>();
 		Map<Station, Section> sectionByUpStation = getSectionByUpStation();
-		List<Station> stationsInOrder = getStationsInOrder();
+		Stations stationsInOrder = getStationsInOrder();
 		for (int i = 0; i < stationsInOrder.size() - 1; i++) {
 			Station station = stationsInOrder.get(i);
 			sections.add(sectionByUpStation.get(station));
@@ -97,17 +98,17 @@ public class Sections {
 			.collect(Collectors.toMap(Section::getUpStation, (section) -> section));
 	}
 
-	public List<Station> getStationsInOrder() {
+	public Stations getStationsInOrder() {
 		if (isEmpty()) {
-			return Collections.emptyList();
+			return Stations.empty();
 		}
 
 		List<Station> stations = new ArrayList<>();
 		Map<Station, Station> downStationByUpStation = getDownStationByUpStation();
-		Station upStation = getHeadUpStation();
+		Station upStation = getHeadStation();
 		addStationsSequentially(stations, downStationByUpStation, upStation);
 
-		return stations;
+		return Stations.of(stations);
 	}
 
 	private void addStationsSequentially(
@@ -130,7 +131,7 @@ public class Sections {
 			.collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
 	}
 
-	private Station getHeadUpStation() {
+	private Station getHeadStation() {
 		List<Long> downStationIds = values.stream()
 			.map(Section::getDownStation)
 			.map(Station::getId)
@@ -145,5 +146,22 @@ public class Sections {
 
 	public int size() {
 		return values.size();
+	}
+
+	public void removeByStation(Station station) {
+		Stations stationsInOrder = getStationsInOrder();
+		if (station.isHead(stationsInOrder) || station.isTail(stationsInOrder)) {
+			values.remove(findOneByStation(station));
+			return;
+		}
+
+		// TODO
+	}
+
+	private Section findOneByStation(Station station) {
+		return values.stream()
+			.filter(section -> station.equals(section.getUpStation()) || station.equals(section.getDownStation()))
+			.findFirst()
+			.orElseThrow(IllegalStateException::new);
 	}
 }

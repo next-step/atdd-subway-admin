@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import nextstep.subway.line.SectionFixture;
 import nextstep.subway.station.StationFixture;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.Stations;
 
 @DisplayName("구간들")
 class SectionsTest {
@@ -47,10 +48,10 @@ class SectionsTest {
 			SectionFixture.역삼역_선릉역_구간()));
 
 		// when
-		List<Station> stations = sections.getStationsInOrder();
+		Stations stations = sections.getStationsInOrder();
 
 		// then
-		assertThat(stations).isEqualTo(Arrays.asList(
+		assertThat(stations.getValues()).isEqualTo(Arrays.asList(
 			StationFixture.강남역(),
 			StationFixture.역삼역(),
 			StationFixture.선릉역(),
@@ -86,7 +87,7 @@ class SectionsTest {
 		sections.add(SectionFixture.강남역_역삼역_구간());
 
 		// then
-		assertThat(sections.getStationsInOrder()).isEqualTo(Arrays.asList(
+		assertThat(sections.getStationsInOrder().getValues()).isEqualTo(Arrays.asList(
 			StationFixture.강남역(),
 			StationFixture.역삼역()));
 	}
@@ -125,7 +126,7 @@ class SectionsTest {
 
 		// then
 		assertAll(
-			() -> assertThat(sections.getStationsInOrder()).isEqualTo(Arrays.asList(
+			() -> assertThat(sections.getStationsInOrder().getValues()).isEqualTo(Arrays.asList(
 				StationFixture.강남역(),
 				StationFixture.역삼역(),
 				StationFixture.선릉역())),
@@ -144,7 +145,7 @@ class SectionsTest {
 
 		// then
 		assertAll(
-			() -> assertThat(sections.getStationsInOrder()).isEqualTo(Arrays.asList(
+			() -> assertThat(sections.getStationsInOrder().getValues()).isEqualTo(Arrays.asList(
 				StationFixture.강남역(),
 				StationFixture.역삼역(),
 				StationFixture.선릉역())),
@@ -189,7 +190,7 @@ class SectionsTest {
 
 		// then
 		assertAll(
-			() -> assertThat(sections.getStationsInOrder()).isEqualTo(Arrays.asList(
+			() -> assertThat(sections.getStationsInOrder().getValues()).isEqualTo(Arrays.asList(
 				StationFixture.강남역(),
 				StationFixture.역삼역(),
 				StationFixture.선릉역())),
@@ -208,10 +209,70 @@ class SectionsTest {
 
 		// then
 		assertAll(
-			() -> assertThat(sections.getStationsInOrder()).isEqualTo(Arrays.asList(
+			() -> assertThat(sections.getStationsInOrder().getValues()).isEqualTo(Arrays.asList(
 				StationFixture.강남역(),
 				StationFixture.역삼역(),
 				StationFixture.선릉역())),
 			() -> assertThat(sections.getDistancesInOrder()).isEqualTo(Arrays.asList(7, 3)));
+	}
+
+	@DisplayName("지하철 구간을 삭제한다. (세 역 중 첫번째 역이 제거될 경우)")
+	@Test
+	void removeByFirstStation() {
+		// given
+		Sections sections = Sections.of(
+			new ArrayList<>(Arrays.asList(
+				Section.of(1L, StationFixture.강남역(), StationFixture.역삼역(), 4),
+				Section.of(2L, StationFixture.역삼역(), StationFixture.선릉역(), 3))));
+
+		// when
+		sections.removeByStation(StationFixture.강남역());
+
+		// then
+		assertAll(
+			() -> assertThat(sections.getStationsInOrder().getValues()).isEqualTo(Arrays.asList(
+				StationFixture.역삼역(),
+				StationFixture.선릉역())),
+			() -> assertThat(sections.getDistancesInOrder()).isEqualTo(Collections.singletonList(3)));
+	}
+
+	@DisplayName("지하철 구간을 삭제한다. (세 역 중 두번째 역이 제거될 경우)")
+	@Test
+	void removeBySecondStation() {
+		// given
+		Sections sections = Sections.of(
+			new ArrayList<>(Arrays.asList(
+				Section.of(1L, StationFixture.강남역(), StationFixture.역삼역(), 4),
+				Section.of(2L, StationFixture.역삼역(), StationFixture.선릉역(), 3))));
+
+		// when
+		sections.removeByStation(StationFixture.역삼역());
+
+		// then
+		assertAll(
+			() -> assertThat(sections.getStationsInOrder().getValues()).isEqualTo(Arrays.asList(
+				StationFixture.강남역(),
+				StationFixture.선릉역())),
+			() -> assertThat(sections.getDistancesInOrder()).isEqualTo(Collections.singletonList(7)));
+	}
+
+	@DisplayName("지하철 구간을 삭제한다. (세 역 중 세번째 역이 제거될 경우)")
+	@Test
+	void removeByThirdStation() {
+		// given
+		Sections sections = Sections.of(
+			new ArrayList<>(Arrays.asList(
+				Section.of(1L, StationFixture.강남역(), StationFixture.역삼역(), 4),
+				Section.of(2L, StationFixture.역삼역(), StationFixture.선릉역(), 3))));
+
+		// when
+		sections.removeByStation(StationFixture.선릉역());
+
+		// then
+		assertAll(
+			() -> assertThat(sections.getStationsInOrder().getValues()).isEqualTo(Arrays.asList(
+				StationFixture.강남역(),
+				StationFixture.역삼역())),
+			() -> assertThat(sections.getDistancesInOrder()).isEqualTo(Collections.singletonList(4)));
 	}
 }

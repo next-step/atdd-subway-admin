@@ -22,6 +22,7 @@ import nextstep.subway.station.domain.StationRepository;
 public class LineService {
     private static final String MESSAGE_ON_UP_STATION_NOT_FOUND = "상행역을 찾을 수 없습니다.";
     private static final String MESSAGE_ON_DOWN_STATION_NOT_FOUND = "하행역을 찾을 수 없습니다.";
+    private static final String MESSAGE_ON_STATION_NOT_FOUND = "역을 찾을 수 없습니다.";
     private static final String MESSAGE_ON_LINE_NOT_FOUND = "노선을 찾을 수 없습니다.";
 
     private final LineRepository lineRepository;
@@ -84,8 +85,10 @@ public class LineService {
     }
 
     @Transactional
-    public void deleteSection(Long lineId, Long stationId) {
-        // TODO
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        Station station = findStationById(stationId, MESSAGE_ON_STATION_NOT_FOUND);
+        line.removeSectionByStation(station);
     }
 
     private Station findStationById(Long stationId, String messageOnStationNotFound) {

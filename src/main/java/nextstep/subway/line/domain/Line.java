@@ -51,11 +51,6 @@ public class Line extends BaseEntity {
         return new Line(name, color, section);
     }
 
-    public void update(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
-
     public Long getId() {
         return id;
     }
@@ -74,8 +69,18 @@ public class Line extends BaseEntity {
 
     public List<Long> getStationIdsInOrder() {
         return sections.getStationsInOrder()
+            .getValues()
             .stream()
             .map(Station::getId)
             .collect(Collectors.toList());
+    }
+
+    public void update(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
+    public void removeSectionByStation(Station station) {
+        sections.removeByStation(station);
     }
 }
