@@ -53,6 +53,13 @@ npm run dev
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
 
+## step4 요구사항
+* 구간 제거
+  * 중간 역이 제거되는 경우 구간 삭제 및 구간 연결
+* 구간 제거시 예외 케이스
+  * 노선에 등록되지 않은 역 제거
+  * 마지막 구간 제거
+
 ## step3 요구사항
 * 구간 등록
 * 역 사이에 구간이 등록되는 경우 거리 수정
