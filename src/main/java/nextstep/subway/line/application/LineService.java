@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.exception.LineDuplicateException;
+import nextstep.subway.exception.NotFoundLineException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -54,7 +55,8 @@ public class LineService {
     }
 
     public LineResponse update(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseGet(Line::new);
+        Line line = lineRepository.findById(id)
+            .orElseThrow(NotFoundLineException::new);
         line.update(lineRequest.toLine());
         return LineResponse.of(line);
     }

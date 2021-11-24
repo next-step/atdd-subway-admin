@@ -2,6 +2,7 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,6 +15,8 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.exception.LineDuplicateException;
+import nextstep.subway.exception.NotFoundLineException;
 import nextstep.subway.line.dto.LineRequest;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -90,13 +93,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         LineRequest 신분당선 = 지하철_노선_정보("신분당선", "red");
         ExtractableResponse<Response> 신분당선_생성_응답 = 지하철_노선_생성_요청(신분당선);
+        URI 신분당선_생성_응답_정보 = URI.create(신분당선_생성_응답.header("Location"));
         LineRequest 공항철도 = 지하철_노선_정보("공항철도", "blue");
 
         // when
-        ExtractableResponse<Response> 신분당선_수정_응답 = 지하철_노선_수정_요청(신분당선_생성_응답, 공항철도);
+        ExtractableResponse<Response> 신분당선_수정_응답 = 지하철_노선_수정_요청(신분당선_생성_응답_정보, 공항철도);
 
         // then
         지하철_노선_응답됨(신분당선_수정_응답);
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선을 수정한다.")
+    @Test
+    void notFoundLine() {
+        // given
+        // 지하철_노선_존재하지_않음
+        URI 존재하지_않는_노선 = URI.create(LINES_PATH + "/-1");
+        LineRequest 경의중앙선 = 지하철_노선_정보("경의중앙선", "green");
+
+        // when
+        ExtractableResponse<Response> 신분당선_수정_응답 = 지하철_노선_수정_요청(존재하지_않는_노선, 경의중앙선);
+
+        // then
+        지하철_노선_수정_실패됨(신분당선_수정_응답);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -142,13 +161,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all().extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_수정_요청(ExtractableResponse<Response> response,
-        LineRequest changeLine) {
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(URI updateUri, LineRequest changeLine) {
         return RestAssured
             .given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(changeLine)
-            .when().put(response.header("Location"))
+            .when().put(updateUri)
             .then().log().all().extract();
     }
 
@@ -176,7 +194,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.jsonPath().getObject("message", String.class)).isEqualTo("이미 생성된 노선입니다.");
+        assertThat(response.jsonPath().getObject("message", String.class)).isEqualTo(
+            LineDuplicateException.LINE_DUPLICATE);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -186,5 +205,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private void 지하철_노선_수정_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.jsonPath().getObject("message", String.class)).isEqualTo(
+            NotFoundLineException.NOT_FOUND_LINE);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }

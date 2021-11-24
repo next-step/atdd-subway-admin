@@ -3,6 +3,7 @@ package nextstep.subway.line.ui;
 import java.net.URI;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.exception.DefaultException;
 import nextstep.subway.exception.LineDuplicateException;
+import nextstep.subway.exception.NotFoundLineException;
 import nextstep.subway.exception.domain.ErrorMessage;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
@@ -59,8 +61,13 @@ public class LineController {
     }
 
     @ExceptionHandler(LineDuplicateException.class)
-    public ResponseEntity handleIllegalArgsException(LineDuplicateException e) {
+    public ResponseEntity handleLineDuplicateException(LineDuplicateException e) {
         return ResponseEntity.badRequest().body(ErrorMessage.of(e.getMessage()));
+    }
+
+    @ExceptionHandler(NotFoundLineException.class)
+    public ResponseEntity handleNotFoundLineException(NotFoundLineException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorMessage.of(e.getMessage()));
     }
 
     @ExceptionHandler
