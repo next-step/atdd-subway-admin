@@ -45,7 +45,7 @@ public class LineService {
     
     public void update(Long id, LineRequest request) {
         Line line = findById(id);
-        line.update(request.toLine());
+        line.update(toLine(request));
     }
     
     public void delete(Long id) {
@@ -64,13 +64,11 @@ public class LineService {
             throw new IllegalArgumentException(String.format("라인 이름(%d)이 중복되었습니다.", name));
         }
     }
-    
+
     private Line toLine(LineRequest request) {
         Station upStation = stationService.findById(request.getUpStationId());
         Station downStation = stationService.findById(request.getDownStationId());
         
-        Line line = request.toLine();
-        line.addSection(upStation, downStation, request.getDistance());
-        return line;
+        return request.toLine(upStation, downStation);
     }
 }

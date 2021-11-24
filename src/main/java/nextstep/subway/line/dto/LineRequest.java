@@ -50,13 +50,7 @@ public class LineRequest {
         return distance;
     }
 
-    public Line toLine() {
-        return Line.of(name, color);
-    }
-
     public Line toLine(Station upStation, Station downStation) {
-        Line line = Line.of(name, color);
-        line.addSection(upStation, downStation, distance);
-        return line;
+        return Line.of(name, color, upStation, downStation, distance);
     }
 }
