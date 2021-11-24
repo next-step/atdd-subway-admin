@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import org.assertj.core.api.AbstractIntegerAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private Map<String, String> 사이_구간;
     private Map<String, String> 상행_구간;
     private Map<String, String> 하행_구간;
+    private Map<String, String> 길이_같은_구간;
+    private Map<String, String> 상행_하행_같은_구간;
+    private Map<String, String> 상행_하행_다른_구간;
 
     @Override
     @BeforeEach
@@ -82,11 +86,55 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선_구간_생성됨(response);
     }
 
+    @DisplayName("구간 등록 시 기존 역 사이 길이보다 크거나 같은면 동록할 수 없다.")
+    @Test
+    void validateSection() {
+        //given
+        길이_같은_구간 = 지하철_노선_역_등록(지하철_역_ID(청계산입구), 판교역_ID);
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_생성_요청(길이_같은_구간, 신분당선_ID);
+
+        // then
+        지하철_노선_구간_생성_실패됨(response);
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 등록할 수 없다.")
+    @Test
+    void validateSection2() {
+        //given
+        상행_하행_같은_구간 = 지하철_노선_역_등록(양재역_ID, 판교역_ID);
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_생성_요청(상행_하행_같은_구간, 신분당선_ID);
+
+        // then
+        지하철_노선_구간_생성_실패됨(response);
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 등록할 수 없다")
+    @Test
+    void validateSection3() {
+        //given
+        상행_하행_다른_구간 = 지하철_노선_역_등록(지하철_역_ID(강남역), 지하철_역_ID(광교역));
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_생성_요청(상행_하행_다른_구간, 신분당선_ID);
+
+        // then
+        지하철_노선_구간_생성_실패됨(response);
+    }
+
     private HashMap 지하철_노선_하행_역_등록(Long id) {
         return new HashMap() {{
             put("upStationId", 판교역_ID);
             put("downStationId", id);
             put("distance", 4);
+        }};
+    }
+
+    private HashMap 지하철_노선_역_등록(Long upStationId, Long downStationId) {
+        return new HashMap() {{
+            put("upStationId", upStationId);
+            put("downStationId", downStationId);
+            put("distance", 10);
         }};
     }
 
@@ -120,5 +168,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .then()
                 .log().all()
                 .extract();
+    }
+
+    private AbstractIntegerAssert<?> 지하철_노선_구간_생성_실패됨(ExtractableResponse<Response> response) {
+        return assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

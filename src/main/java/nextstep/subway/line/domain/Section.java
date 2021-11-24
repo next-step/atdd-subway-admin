@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.exception.SectionDistanceException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -8,8 +9,10 @@ import java.util.Objects;
 
 @Entity
 public class Section extends BaseEntity {
+    private static final String SECTION_DISTANCE_ERROR_MESSAGE = "기존 역 사이보다 크거나 같은면 등록할 수 없습니다.";
     private static final String DISTANCE_ERROR_MESSAGE = "거리는 0보다 커야 합니다.";
     private static final String SAME_STATION_ERROR_MESSAGE = "같은 역은 구간이 될 수 없습니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -83,7 +86,7 @@ public class Section extends BaseEntity {
         if (o == null || getClass() != o.getClass())
             return false;
         Section section = (Section) o;
-        return getId().equals(section.getId());
+        return Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation);
     }
 
     @Override
@@ -92,12 +95,24 @@ public class Section extends BaseEntity {
     }
 
     public void updateUpStationTo(Station downStation, int distance) {
+        validateSectionDistance(distance);
         upStation = downStation;
         this.distance -= distance;
     }
 
     public void updateDownStationTo(Station upStation, int distance) {
+        validateSectionDistance(distance);
         downStation = upStation;
         this.distance -= distance;
+    }
+
+    private void validateSectionDistance(int distance) {
+        if (this.distance <= distance) {
+            throw new SectionDistanceException(SECTION_DISTANCE_ERROR_MESSAGE);
+        }
+    }
+
+    public boolean isDuplicate(Section section) {
+        return upStation.equals(section.getUpStation()) && downStation.equals(section.getDownStation());
     }
 }
