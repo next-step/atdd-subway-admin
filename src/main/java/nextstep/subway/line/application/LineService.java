@@ -57,7 +57,8 @@ public class LineService {
         return UpdateLineResponseDto.of(line);
     }
 
-    private void validateExistsByName(String name) {
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
+    protected void validateExistsByName(String name) {
         if (lineRepository.existsByName(name)) {
             throw new DuplicateLineNameException();
         }
