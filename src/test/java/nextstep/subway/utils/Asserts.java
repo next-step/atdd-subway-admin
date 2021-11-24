@@ -18,4 +18,8 @@ public class Asserts {
     public static void assertIsNotFound(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
+
+    public static void assertIsCreated(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
 }
