@@ -20,9 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
+
     @DisplayName("지하철역을 생성한다.")
     @Test
-    public static void createStation() {
+    void createStation() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
@@ -43,7 +44,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("이름을 입력받아서 지하철역을 생성한다.")
     @Test
-    public static ExtractableResponse<Response> createStation(String name) {
+    ExtractableResponse<Response> createStation(String name) {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", name);

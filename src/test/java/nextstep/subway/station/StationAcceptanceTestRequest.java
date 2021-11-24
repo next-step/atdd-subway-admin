@@ -10,6 +10,10 @@ import java.util.Map;
 
 public class StationAcceptanceTestRequest {
 
+    private StationAcceptanceTestRequest(){
+
+    }
+
     public static ExtractableResponse<Response> createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
@@ -21,6 +25,8 @@ public class StationAcceptanceTestRequest {
                 .post("/stations")
                 .then().log().all()
                 .extract();
+
+
 
         return response;
     }

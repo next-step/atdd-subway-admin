@@ -7,6 +7,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -28,19 +29,30 @@ public class Sections {
         this.sections.add(section);
     }
 
-    public List<Section> getStationsInOrder() {
+    public List<Station> getStationsInOrder() {
         // 출발지점 찾기
-//        Optional<Section> upLineStation = Optional.ofNullable(sections.get(0));
+
+        Optional<Section> startLineSection = sections.stream()
+                .filter(it -> it.getUpStation() == null).findFirst();
+
+        List<Station> result = new ArrayList<>();
+        while (startLineSection.isPresent()) {
+//            Section startStationId = startLineSection.get().getDownStation();
 //
-//        List<Section> result = new ArrayList<>();
-//        while (upLineStation.isPresent()) {
-//            Optional<Section> upStation = Optional.ofNullable(upLineStation.get());
+//
+//            result.add(startLineSection.get().getDownStation());
+//
 //            result.add(upStation.get());
 //            upStation = sections.stream()
-//                    .filter(it -> it.getUpStation().getId() == upLineStation.get().getId())
+//                    .filter(it -> it.getUpStation().getId() == startLineSection.get().getId())
 //                    .findFirst();
-//        }
-//        return result;
-        return null;
+        }
+
+        return result;
+
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }

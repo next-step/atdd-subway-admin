@@ -3,7 +3,7 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.*;
-import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.StationAcceptanceTestRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,8 +20,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
         // given
-        gangNamStation = StationAcceptanceTest.createStation("강남역").as(StationResponse.class);
-        gwangKyoStation = StationAcceptanceTest.createStation("광교역").as(StationResponse.class);
+        gangNamStation = StationAcceptanceTestRequest.createStation("강남역").as(StationResponse.class);
+        gwangKyoStation = StationAcceptanceTestRequest.createStation("광교역").as(StationResponse.class);
 
         LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600"
                 , gangNamStation.getId(), gwangKyoStation.getId(), 10);
@@ -32,7 +32,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("상행 종점에 section추가")
     public void insertUpstationSectionTest() {
-        StationResponse shinNonHyunStation = StationAcceptanceTest.createStation("신논현역").as(StationResponse.class);
+        StationResponse shinNonHyunStation = StationAcceptanceTestRequest.createStation("신논현역").as(StationResponse.class);
         LineSectionCreateRequest lineSectionCreateRequest =
                 new LineSectionCreateRequest(gangNamStation.getId(), shinNonHyunStation.getId(), 3);
 

@@ -6,7 +6,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineAcceptanceTestRequest;
 import nextstep.subway.line.dto.LineAcceptanceTestResponse;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.dto.SectionResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -124,8 +124,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void compareValues(LineResponse createLineResponse, LineResponse selectLineResponse) {
-        List<SectionResponse> createStations = createLineResponse.getStations();
-        List<SectionResponse> selectStations = selectLineResponse.getStations();
+        List<StationResponse> createStations = createLineResponse.getStations();
+        List<StationResponse> selectStations = selectLineResponse.getStations();
 
         assertAll(
                 () -> assertThat(createLineResponse.getId()).isEqualTo(selectLineResponse.getId()),
@@ -135,7 +135,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private void checkDupilicateStationName(List<SectionResponse> createStations, List<SectionResponse> selectStations) {
+    private void checkDupilicateStationName(List<StationResponse> createStations, List<StationResponse> selectStations) {
         for (int i = 0; i < createStations.size(); i++) {
             assertThat(createStations.get(i).getName()).isEqualTo(selectStations.get(i).getName());
         }

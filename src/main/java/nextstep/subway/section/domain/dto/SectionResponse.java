@@ -12,6 +12,10 @@ public class SectionResponse {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
+    public SectionResponse(){
+
+    }
+
     public SectionResponse(Long id, String name, int distance, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
