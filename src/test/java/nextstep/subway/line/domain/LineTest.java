@@ -1,4 +1,4 @@
-package nextstep.subway.line;
+package nextstep.subway.line.domain;
 
 import nextstep.subway.line.application.SectionNotFoundException;
 import nextstep.subway.line.domain.Line;
