@@ -23,7 +23,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStation() {
         // given
         // when
-        ExtractableResponse<Response> response = StationRequest.지하철역_생성("강남역");
+        ExtractableResponse<Response> response = StationRequestTestUtil.지하철역_생성("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -34,10 +34,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        StationRequest.지하철역_생성("강남역");
+        StationRequestTestUtil.지하철역_생성("강남역");
 
         // when
-        ExtractableResponse<Response> response = StationRequest.지하철역_생성("강남역");
+        ExtractableResponse<Response> response = StationRequestTestUtil.지하철역_생성("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -47,8 +47,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = StationRequest.지하철역_생성("강남역");
-        ExtractableResponse<Response> createResponse2 = StationRequest.지하철역_생성("역삼역");
+        ExtractableResponse<Response> createResponse1 = StationRequestTestUtil.지하철역_생성("강남역");
+        ExtractableResponse<Response> createResponse2 = StationRequestTestUtil.지하철역_생성("역삼역");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -72,7 +72,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = StationRequest.지하철역_생성("강남역");
+        ExtractableResponse<Response> createResponse = StationRequestTestUtil.지하철역_생성("강남역");
 
         // when
         String uri = createResponse.header("Location");

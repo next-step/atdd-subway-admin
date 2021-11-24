@@ -9,7 +9,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
-public class StationRequest {
+public class StationRequestTestUtil {
 	public static ExtractableResponse<Response> 지하철역_생성(String name) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);

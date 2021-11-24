@@ -9,7 +9,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
-public class LineRequest {
+public class LineRequestTestUtil {
 	public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);
