@@ -100,4 +100,23 @@ public class Section extends BaseEntity {
 
 		distance = distance - section.getDistance();
 	}
+
+	public boolean containsAnyStation(Station station) {
+		return station.equals(upStation) || station.equals(downStation);
+	}
+
+	public boolean containsUpStation(Station station) {
+		return station.equals(upStation);
+	}
+
+	public boolean containsDownStation(Station station) {
+		return station.equals(downStation);
+	}
+
+	public void merge(Section next, Sections sections) {
+		downStation = next.downStation;
+		distance = distance + next.distance;
+
+		sections.remove(next);
+	}
 }

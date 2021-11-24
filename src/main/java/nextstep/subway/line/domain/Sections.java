@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -69,6 +70,10 @@ public class Sections {
 		if (stations.contains(section.getUpStation()) && stations.contains(section.getDownStation())) {
 			throw new SectionAddFailException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
 		}
+	}
+
+	public List<Section> getValues() {
+		return values;
 	}
 
 	public List<Integer> getDistancesInOrder() {
@@ -151,17 +156,23 @@ public class Sections {
 	public void removeByStation(Station station) {
 		Stations stationsInOrder = getStationsInOrder();
 		if (station.isHead(stationsInOrder) || station.isTail(stationsInOrder)) {
-			values.remove(findOneByStation(station));
+			remove(findOne(section -> section.containsAnyStation(station)));
 			return;
 		}
 
-		// TODO
+		Section first = findOne(section -> section.containsDownStation(station));
+		Section second = findOne(section -> section.containsUpStation(station));
+		first.merge(second, this);
 	}
 
-	private Section findOneByStation(Station station) {
+	private Section findOne(Predicate<Section> predicate) {
 		return values.stream()
-			.filter(section -> station.equals(section.getUpStation()) || station.equals(section.getDownStation()))
+			.filter(predicate)
 			.findFirst()
 			.orElseThrow(IllegalStateException::new);
+	}
+
+	public void remove(Section section) {
+		values.remove(section);
 	}
 }
