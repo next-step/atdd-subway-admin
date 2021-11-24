@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -154,12 +155,45 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        final LineRequest createRequest = new LineRequest("신분당선", "bg-red-600");
+        final ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(createRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+        final Long createdLineId = createResponse.jsonPath()
+            .getObject(".", LineResponse.class)
+            .getId();
 
         // when
         // 지하철_노선_수정_요청
+        final LineRequest updateRequest = new LineRequest("구분당선", "bg-blue-600");
+        final ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
+            .body(updateRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines" + "/" + createdLineId)
+            .then().log().all()
+            .extract();
 
         // then
+        // 지하철_노선_응답됨
+        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_수정됨
+        final LineResponse actualLine = RestAssured.given().log().all()
+            .when()
+            .get("/lines/" + createdLineId.toString())
+            .then().log().all()
+            .extract()
+            .jsonPath()
+            .getObject(".", LineResponse.class);
+        assertAll(
+            () -> assertThat(actualLine.getId()).isEqualTo(createdLineId),
+            () -> assertThat(actualLine.getName()).isEqualTo(updateRequest.getName()),
+            () -> assertThat(actualLine.getColor()).isEqualTo(updateRequest.getColor())
+        );
     }
 
     @DisplayName("지하철 노선을 제거한다.")

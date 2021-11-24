@@ -40,8 +40,22 @@ public class LineService {
     }
 
     public LineResponse findLineById(final Long id) {
-        final Line line = lineRepository.findById(id)
-            .orElseThrow(NoSuchElementException::new);
+        final Line line = getLineById(id);
         return LineResponse.of(line);
+    }
+
+    @Transactional
+    public void updateLine(final Long id, final LineRequest lineRequest) {
+        final Line line = getLineById(id);
+        if (!lineRequest.getName().equals(line.getName())) {
+            lineNameShouldBeUnique(lineRequest.getName());
+        }
+        line.changeName(lineRequest.getName());
+        line.changeColor(lineRequest.getColor());
+    }
+
+    private Line getLineById(final Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(NoSuchElementException::new);
     }
 }
