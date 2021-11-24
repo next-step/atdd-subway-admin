@@ -13,12 +13,12 @@ class LineTest {
     @DisplayName("노선 이름과 노선 색을 변경한다.")
     void update() {
         // given
-        Line line = new Line("4호선", "bg-skyblue-600");
+        Line line = Line.of("4호선", "bg-skyblue-600");
         String name = "1호선";
         String color = "bg-blue-600";
 
         // when
-        line.update(new Line(name, color));
+        line.update(Line.of(name, color));
 
         // then
         assertThat(line.getName()).isEqualTo(name);

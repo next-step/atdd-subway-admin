@@ -17,7 +17,7 @@ class LineRepositoryTest {
     @DisplayName("노선 이름으로 노선을 조회한다.")
     void findByName() {
         // given
-        Line saveLine = lineRepository.save(new Line("4호선", "bg-skyblue-600"));
+        Line saveLine = lineRepository.save(Line.of("4호선", "bg-skyblue-600"));
 
         // when
         Line result = lineRepository.findByName(saveLine.getName()).get();

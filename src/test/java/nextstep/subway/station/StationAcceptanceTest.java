@@ -74,8 +74,26 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = 지하철역_등록되어_있음("강남역");
-        ExtractableResponse<Response> createResponse2 = 지하철역_등록되어_있음("역삼역");
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "강남역");
+        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "역삼역");
+        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -121,15 +139,17 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    public static ExtractableResponse<Response> 지하철역_등록되어_있음(String name) {
+    public static StationResponse 지하철역_등록되어_있음(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
-        return RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
                 .then().log().all()
                 .extract();
+
+        return response.jsonPath().getObject(".", StationResponse.class);
     }
 }
