@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class LineService {
     private final LineRepository lineRepository;
 
@@ -19,12 +19,12 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
+    @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
     }
 
-    @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
@@ -38,6 +38,7 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    @Transactional
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
         Line line = findByid(id);
         line.update(lineRequest.toLine());
@@ -51,6 +52,7 @@ public class LineService {
         );
     }
 
+    @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
