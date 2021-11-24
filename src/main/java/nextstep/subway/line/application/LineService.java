@@ -39,4 +39,10 @@ public class LineService {
 
         return LineResponse.of(line);
     }
+
+    public void updateLine(Long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id).orElseThrow(() -> new RuntimeException());
+        line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
+        lineRepository.save(line);
+    }
 }
