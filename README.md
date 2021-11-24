@@ -54,7 +54,7 @@ npm run dev
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
 
 
-## 기능목록
+## STEP 1 기능목록
 1. 노선 생성한다.
  - 노선 생성 요청을 한다.
  - 노선이 생성된다. 
@@ -69,3 +69,25 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 4. 노선을 삭제한다
  - 노선 삭제 요청을 한다.
+
+## STEP 2 
+1. Feature : 노선 생성하기  
+ Scenario : 노선 생성 시 상행, 하행 추가  
+  Given 상행, 하행에 등록할 지하철역이 등록되어있다.  
+  When 노선 생성을 요청한다.  
+  Then 사용자는 상태코드를 응답받는다.  
+    
+2. Feature : 노선 목록조회  
+ Scenario : 노선 목록 조회하기  
+  Given 노선을 생성한다.  
+  And 지하철역을 생성한다.  
+  When 생성한 노선을 조회한다.  
+  Then 사용자는 노선의 정보와 노선에 속한 지하철 역 정보를 응답받는다.  
+ 
+## STEP 3
+1. Feature : 노선에 구간 추가  
+  Scenario : 노선에 구간 추가하기
+   Given 노선 상행, 하행에 등록할 지하철 역 3개가 등록되어있다. 
+   And 노선이 추가되어있다.
+   When 노선에 구간 추가 요청을 한다.
+   Then 사용자는 상태코드를 응답받는다.

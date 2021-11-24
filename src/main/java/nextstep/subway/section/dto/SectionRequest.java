@@ -1,34 +1,20 @@
-package nextstep.subway.line.dto;
+package nextstep.subway.section.dto;
 
-import nextstep.subway.line.domain.Line;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class LineRequest {
-    private String name;
-    private String color;
+public class SectionRequest {
+
     private Long upStationId;
     private Long downStationId;
     private Integer distance;
 
-    public LineRequest() {
-    }
-
-    public LineRequest(String name, String color, Long upStationId, Long downStationId, Integer distance) {
-        this.name = name;
-        this.color = color;
+    public SectionRequest(Long upStationId, Long downStationId, Integer distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
     }
 
     public Long getUpStationId() {
@@ -43,13 +29,7 @@ public class LineRequest {
         return distance;
     }
 
-    public Line toLine() {
-        Line line = new Line(name, color);
-        return line;
-    }
-
     public List<Long> toIds() {
         return Arrays.asList(upStationId, downStationId);
     }
-
 }

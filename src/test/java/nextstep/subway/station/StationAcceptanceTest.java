@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.utils.ApiUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
+
+    public static ExtractableResponse<Response> 지하철역_등록(String name) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+
+        return ApiUtils.post("/stations", params);
+    }
+
+    public static Long extractId(ExtractableResponse<Response> response) {
+        return response.body().jsonPath().getLong("id");
+    }
+
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
