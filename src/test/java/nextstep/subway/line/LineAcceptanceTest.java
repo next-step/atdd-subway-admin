@@ -70,8 +70,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> saveResponse = 지하철_노선_생성_요청(lineRequest);
-        LineResponse lineResponse = 저장된_노선_응답(saveResponse);
+        ExtractableResponse<Response> saveLineResponse = 지하철_노선_생성_요청(lineRequest);
+        LineResponse lineResponse = 저장된_노선_응답(saveLineResponse);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineResponse.getId());
@@ -84,8 +84,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> saveResponse = 지하철_노선_생성_요청(lineRequest);
-        LineResponse savedLineResponse = 저장된_노선_응답(saveResponse);
+        ExtractableResponse<Response> saveLineResponse = 지하철_노선_생성_요청(lineRequest);
+        LineResponse savedLineResponse = 저장된_노선_응답(saveLineResponse);
 
         // when
         // 지하철_노선_수정_요청
@@ -100,8 +100,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> saveResponse = 지하철_노선_생성_요청(lineRequest);
-        LineResponse savedLineResponse = 저장된_노선_응답(saveResponse);
+        ExtractableResponse<Response> saveLineResponse = 지하철_노선_생성_요청(lineRequest);
+        LineResponse savedLineResponse = 저장된_노선_응답(saveLineResponse);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(savedLineResponse.getId());
@@ -115,30 +115,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithStations() {
         // given
-        StationResponse stationResponse1 = 역_생성("강남역");
-        StationResponse stationResponse2 = 역_생성("역삼역");
+        StationResponse upStation = 역_생성("강남역");
+        StationResponse downStation = 역_생성("역삼역");
 
         // when
-        ExtractableResponse<Response> saveResponse = 지하철_노선_종점역_추가하여_생성_요청(stationResponse1.getId(), stationResponse2.getId());
+        ExtractableResponse<Response> saveLineResponse = 지하철_노선_종점역_추가하여_생성_요청(upStation.getId(), downStation.getId());
 
         // then
-        지하철_노선_생성_응답됨(saveResponse);
+        지하철_노선_생성_응답됨(saveLineResponse);
     }
 
     @DisplayName("노선 조회, 역 목록 추가")
     @Test
     void findLineWithStations() {
         // given
-        StationResponse stationResponse1 = 역_생성("강남역");
-        StationResponse stationResponse2 = 역_생성("역삼역");
-        LineResponse lineResponse = 지하철_노선_종점역_추가하여_생성_요청(stationResponse1.getId(), stationResponse2.getId()).body()
+        StationResponse upStation = 역_생성("강남역");
+        StationResponse downStation = 역_생성("역삼역");
+        LineResponse saveLineResponse = 지하철_노선_종점역_추가하여_생성_요청(upStation.getId(), downStation.getId()).body()
                 .as(LineResponse.class);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineResponse.getId());
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(saveLineResponse.getId());
 
         // then
-        지하철_노선_역_목록_응답됨(Arrays.asList(stationResponse1.getId(), stationResponse2.getId()), response);
+        지하철_노선_역_목록_응답됨(Arrays.asList(upStation.getId(), downStation.getId()), response);
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
