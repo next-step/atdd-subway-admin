@@ -34,6 +34,12 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    public Line(String name, String color, Sections sections) {
+        this.name = name;
+        this.color = color;
+        this.sections = sections;
+    }
+
     public Line(String name, String color, Station upStation, Station downStation, Integer distance) {
         this.name = name;
         this.color = color;
@@ -62,7 +68,6 @@ public class Line extends BaseEntity {
     public String getColor() {
         return color;
     }
-
     public List<Station> getStationsUpToDown() {
         return sections.getStationsUpToDown();
     }
