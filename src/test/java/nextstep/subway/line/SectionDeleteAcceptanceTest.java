@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.utils.RestApiFixture;
 
+@DisplayName("지하철 노선 내 구간 삭제 기능")
 public class SectionDeleteAcceptanceTest extends AcceptanceTest {
 
 	private long 강남역_ID;

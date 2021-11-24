@@ -13,7 +13,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 
-@DisplayName("지하철 노선 내 구간 기능")
+@DisplayName("지하철 노선 내 구간 추가 기능")
 public class SectionCreateAcceptanceTest extends AcceptanceTest {
 
 	private long 강남역_ID;
