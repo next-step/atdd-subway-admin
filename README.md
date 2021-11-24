@@ -86,8 +86,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
  
 ## STEP 3
 1. Feature : 노선에 구간 추가  
-  Scenario : 노선에 구간 추가하기
-   Given 노선 상행, 하행에 등록할 지하철 역 3개가 등록되어있다. 
-   And 노선이 추가되어있다.
-   When 노선에 구간 추가 요청을 한다.
-   Then 사용자는 상태코드를 응답받는다.
+  Scenario : 노선에 구간 추가하기  
+   Given 노선 상행, 하행에 등록할 지하철 역 3개가 등록되어있다.  
+   And 노선이 추가되어있다.  
+   When 노선에 구간 추가 요청을 한다.  
+   Then 사용자는 상태코드를 응답받는다.  
