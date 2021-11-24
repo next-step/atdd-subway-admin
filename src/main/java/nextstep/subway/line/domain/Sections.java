@@ -44,6 +44,10 @@ public class Sections {
 	}
 
 	public static Sections of(List<Section> sections) {
+		if (sections == null) {
+			return new Sections(new ArrayList<>());
+		}
+
 		return new Sections(sections);
 	}
 
