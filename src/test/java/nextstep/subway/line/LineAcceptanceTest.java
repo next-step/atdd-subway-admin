@@ -6,17 +6,17 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineAcceptanceTestRequest;
 import nextstep.subway.line.dto.LineAcceptanceTestResponse;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.section.domain.dto.SectionResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static nextstep.subway.line.dto.LineAcceptanceTestRequest.*;
 import static nextstep.subway.line.dto.LineAcceptanceTestResponse.isNoContent;
 import static nextstep.subway.line.dto.LineAcceptanceTestResponse.isStatusOk;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -76,10 +76,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = selectAllLines();
+        ExtractableResponse<Response> searchedResponse = selectAllLines();
         // then
-        isStatusOk(response);
-        validLines(createResponse1, createResponse2, response);
+        isStatusOk(searchedResponse);
+        validLines(createResponse1, createResponse2, searchedResponse);
     }
 
 
@@ -102,15 +102,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineAcceptanceTestRequest.createLine("1호선", "blue", "청량리역", "영등포역", 10);
+        ExtractableResponse<Response> createResponse = LineAcceptanceTestRequest.createLine("1호선", "blue", "청량리역", "영등포역", 10);
         // when
         // 지하철_노선_제거_요청
-        ExtractableResponse<Response> response = removeLine("1");
+        String savedLineId = createResponse.header("Location").split("/")[2];
+        ExtractableResponse<Response> response = removeLine(savedLineId);
 
         // then
         // 지하철_노선_삭제됨
         isNoContent(response);
-
     }
 
 
@@ -120,25 +120,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineResponse selectLineResponse = selectResponse.jsonPath()
                 .getObject(".", LineResponse.class);
 
-        compareValues(createLineResponse, selectLineResponse);
-    }
-
-    private void compareValues(LineResponse createLineResponse, LineResponse selectLineResponse) {
-        List<StationResponse> createStations = createLineResponse.getStations();
-        List<StationResponse> selectStations = selectLineResponse.getStations();
-
-        assertAll(
-                () -> assertThat(createLineResponse.getId()).isEqualTo(selectLineResponse.getId()),
-                () -> assertThat(createLineResponse.getName()).isEqualTo(selectLineResponse.getName()),
-                () -> assertThat(createLineResponse.getColor()).isEqualTo(selectLineResponse.getColor()),
-                () -> checkDupilicateStationName(createStations, selectStations)
-        );
-    }
-
-    private void checkDupilicateStationName(List<StationResponse> createStations, List<StationResponse> selectStations) {
-        for (int i = 0; i < createStations.size(); i++) {
-            assertThat(createStations.get(i).getName()).isEqualTo(selectStations.get(i).getName());
-        }
+        compareLineInfo(Arrays.asList(createLineResponse), Arrays.asList(selectLineResponse));
     }
 
     private void validLines(ExtractableResponse<Response> createResponse1, ExtractableResponse<Response> createResponse2,
@@ -151,7 +133,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<LineResponse> selectLineResponses = response.jsonPath()
                 .getList(".", LineResponse.class);
 
-        compareValues(createLineResponse1, selectLineResponses.get(0));
-        compareValues(createLineResponse2, selectLineResponses.get(1));
+        List<LineResponse> createResponses = Arrays.asList(createLineResponse1, createLineResponse2);
+        compareLineInfo(createResponses, selectLineResponses);
+    }
+
+    private void compareLineInfo(List<LineResponse> createLineResponses, List<LineResponse> selectLineResponses) {
+        for (int i = 0; i < createLineResponses.size(); i++) {
+            assertThat(createLineResponses.get(i).getId()).isEqualTo(selectLineResponses.get(i).getId());
+
+            List<SectionResponse> createStations = createLineResponses.get(i).getSections();
+            List<SectionResponse> selectStations = selectLineResponses.get(i).getSections();
+            compareStation(createStations, selectStations);
+        }
+    }
+
+    private void compareStation(List<SectionResponse> createStations, List<SectionResponse> selectStations) {
+        for (int i = 0; i < createStations.size(); i++) {
+            SectionResponse createStation = createStations.get(i);
+            SectionResponse selectStation = selectStations.get(i);
+            assertThat(createStation.getId() == selectStation.getId());
+        }
     }
 }

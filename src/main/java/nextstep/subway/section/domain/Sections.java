@@ -16,7 +16,7 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public int size(){
+    public int size() {
         return this.sections.size();
     }
 
@@ -31,26 +31,41 @@ public class Sections {
 
     public List<Station> getStationsInOrder() {
         // 출발지점 찾기
-
-        Optional<Section> startLineSection = sections.stream()
-                .filter(it -> it.getUpStation() == null).findFirst();
+        Optional<Section> upLineSection = sections.stream()
+                .filter(it -> it.getDistance() == 0).findFirst();
 
         List<Station> result = new ArrayList<>();
-        while (startLineSection.isPresent()) {
-//            Section startStationId = startLineSection.get().getDownStation();
-//
-//
-//            result.add(startLineSection.get().getDownStation());
-//
-//            result.add(upStation.get());
-//            upStation = sections.stream()
-//                    .filter(it -> it.getUpStation().getId() == startLineSection.get().getId())
-//                    .findFirst();
+        while (upLineSection.isPresent()) {
+            Station downStation = upLineSection.get().getDownStation();
+
+            result.add(downStation);
+            upLineSection = sections.stream()
+                    .filter(it -> it.getDistance() != 0 && it.getUpStation().getId() == downStation.getId())
+                    .findFirst();
         }
-
         return result;
-
     }
+
+    public List<Section> getSectionInOrder() {
+        // 출발지점 찾기
+        Optional<Section> upSection = sections.stream()
+                .filter(it -> it.getDistance() == 0).findFirst();
+
+        List<Section> result = new ArrayList<>();
+        while (upSection.isPresent()) {
+            Section foundSection = upSection.get();
+            result.add(foundSection);
+            upSection = sections.stream()
+                    .filter(it -> it.getUpStation() != null && it.getUpStation().getId() == foundSection.getDownStation().getId())
+                    .findFirst();
+        }
+        return result;
+    }
+
+    private boolean isFirstSection(Section it) {
+        return it == null || it.getDistance() == 0;
+    }
+
 
     public List<Section> getSections() {
         return sections;
