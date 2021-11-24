@@ -25,8 +25,12 @@ public class Sections {
         if (sections.isEmpty()) {
             return new ArrayList<>();
         }
-        List<Station> stations = new ArrayList<>();
         Section section = getHeadSection();
+        return getOrderedStations(section);
+    }
+
+    private List<Station> getOrderedStations(Section section) {
+        List<Station> stations = new ArrayList<>();
         stations.add(section.getUpStation());
         stations.add(section.getDownStation());
         while ((section = getNextSection(section)) != null) {
