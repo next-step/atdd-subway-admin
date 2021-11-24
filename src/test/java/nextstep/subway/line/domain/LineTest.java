@@ -35,7 +35,7 @@ class LineTest {
                 Section.of(10, secondStation, thirdStation)
         )));
         // when
-        final List<Station> stationsOrderByUptoDown = line.getStationsBySort(LineStationUpToDownSortAble.of());
+        final List<Station> stationsOrderByUptoDown = line.getStationsOrderByUptoDown();
         // then
         assertThat(stationsOrderByUptoDown.get(0)).isEqualTo(firstStation);
         assertThat(stationsOrderByUptoDown.get(1)).isEqualTo(secondStation);

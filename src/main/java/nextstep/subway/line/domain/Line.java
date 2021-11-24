@@ -82,7 +82,7 @@ public class Line extends BaseEntity {
         return id;
     }
 
-    public List<Station> getStationsBySort(LineStationSortAble sortAble) {
-        return this.sections.getStationsBySort(sortAble);
+    public List<Station> getStationsOrderByUptoDown() {
+        return this.sections.getStationsOrderByUptoDown();
     }
 }

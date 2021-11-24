@@ -9,28 +9,23 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class LineStationUpToDownSortAble implements LineStationSortAble {
+public class LineStationUpToDownSortUtils {
 
-    private LineStationUpToDownSortAble() {
+    private LineStationUpToDownSortUtils() {
     }
 
-    public static LineStationUpToDownSortAble of() {
-        return new LineStationUpToDownSortAble();
-    }
-
-    @Override
-    public List<Station> sort(final List<Section> sections) {
+    public static List<Station> sort(final List<Section> sections) {
         final List<Station> sortedStations = new ArrayList<>();
         addDownStationByUpStationRecursive(getStationMap(sections), getMaxTopStation(sections), sortedStations);
         return Collections.unmodifiableList(sortedStations);
     }
 
-    private Map<Station, Station> getStationMap(final List<Section> sections) {
+    private static Map<Station, Station> getStationMap(final List<Section> sections) {
         return sections.stream()
                 .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
     }
 
-    private Station getMaxTopStation(final List<Section> sections) {
+    private static Station getMaxTopStation(final List<Section> sections) {
         final List<Station> downStations = sections.stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
@@ -42,13 +37,13 @@ public class LineStationUpToDownSortAble implements LineStationSortAble {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    private void addDownStationByUpStationRecursive(final Map<Station, Station> sectionMap, final Station downStation, final List<Station> sortedStations) {
+    private static void addDownStationByUpStationRecursive(final Map<Station, Station> sectionMap, final Station downStation, final List<Station> sortedStations) {
         sortedStations.add(downStation);
         getNextUpStation(sectionMap, downStation)
                 .ifPresent(upStation -> addDownStationByUpStationRecursive(sectionMap, upStation, sortedStations));
     }
 
-    private Optional<Station> getNextUpStation(final Map<Station, Station> sectionMap, final Station downStation) {
+    private static Optional<Station> getNextUpStation(final Map<Station, Station> sectionMap, final Station downStation) {
         if (sectionMap.containsKey(downStation)) {
             return Optional.of(sectionMap.get(downStation));
         }
