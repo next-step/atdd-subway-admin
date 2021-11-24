@@ -117,14 +117,7 @@ public class Sections {
     }
 
     private void addSectionByUpStation(Section requestSection) {
-        Section modifiedSection = findSectionByUpStation(requestSection);
-
-        if (modifiedSection == null) {
-            sections.add(requestSection);
-            return;
-        }
-
-        addNewSection(requestSection, modifiedSection);
+        addNewSection(requestSection, findSectionByUpStation(requestSection));
     }
 
     private Section findSectionByUpStation(Section requestSection) {
@@ -135,14 +128,7 @@ public class Sections {
     }
 
     private void addSectionByDownStation(Section requestSection) {
-        Section modifiedSection = findSectionByDownStation(requestSection);
-
-        if (modifiedSection == null) {
-            sections.add(requestSection);
-            return;
-        }
-
-        addNewSection(requestSection, modifiedSection);
+        addNewSection(requestSection, findSectionByDownStation(requestSection));
     }
 
     private Section findSectionByDownStation(Section requestSection) {
@@ -153,6 +139,11 @@ public class Sections {
     }
 
     private void addNewSection(Section requestSection, Section modifiedSection) {
+        if (modifiedSection == null) {
+            sections.add(requestSection);
+            return;
+        }
+
         if (modifiedSection.isDistanceGraterThan(requestSection)) {
             throw new CannotAddSectionException(ERROR_MESSAGE_DISTANCE_IS_GREATER);
         }
