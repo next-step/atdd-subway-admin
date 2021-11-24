@@ -15,6 +15,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -390,6 +392,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
             // then
             지하철_구간이_생성된다(response);
             상행선_하행선_순으로_정렬된_역을_포함한_지하철_노선을_응답한다(lineUrl, 강남역, 광교역, 안양역);
+        }
+
+        @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+        @ParameterizedTest
+        @CsvSource(value = {"100:100", "100:101"}, delimiter = ':')
+        void testDistanceFail(Integer totalDistance, Integer newDistance) {
+            // given
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역").as(StationResponse.class);
+            ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), totalDistance.toString());
+            String lineUrl = 신분당선.header("Location");
+
+            // when
+            ExtractableResponse<Response> response = 지하철_구간_추가_요청(lineUrl, 강남역, 안양역, newDistance);
+
+            // then
+            지하철_구간_생성에_실패한다(response);
+        }
+
+        private void 지하철_구간_생성에_실패한다(ExtractableResponse<Response> response) {
+            Asserts.assertIsBadRequest(response);
         }
 
         private void 새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정한다(Integer totalDistance, Integer distance, String lineUrl, ExtractableResponse<Response> response) {
