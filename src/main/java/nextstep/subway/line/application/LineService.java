@@ -3,12 +3,13 @@ package nextstep.subway.line.application;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -32,6 +33,14 @@ public class LineService {
 
     public LineResponse getLine(long id) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        return LineResponse.of(line);
+    }
+
+    public LineResponse updateLine(long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id).orElseThrow(IllegalAccessError::new);
+        line.update(lineRequest.toLine());
+        lineRepository.save(line);
+
         return LineResponse.of(line);
     }
 }
