@@ -112,10 +112,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_등록되어_있음("신분당선", "red");
 
         // when
-        // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(1L);
 
         // then
-        // 지하철_노선_삭제됨
+        지하철_노선_삭제됨(response);
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
@@ -191,5 +191,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(1L);
         지하철_노선_응답됨(getResponse, expected);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(long id) {
+        return RestAssured
+            .given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().delete("/lines/" + id)
+            .then().log().all().extract();
+    }
+
+    private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
