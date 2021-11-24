@@ -92,7 +92,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = LineRequestTestUtil.지하철_노선_생성_요청("신분당선", "bg-red-600");
+        ExtractableResponse<Response> createResponse = LineRequestTestUtil.종점역을_생성한_후_지하철_노선_생성_요청("신분당선", "bg-red-600",
+            "강남역", "역삼역", "10");
 
         // when
         // 지하철_노선_조회_요청
@@ -104,6 +105,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         long expectedId = createResponse.jsonPath().getLong("id");
         assertThat(response.jsonPath().getLong("id")).isEqualTo(expectedId);
+        assertThat(response.jsonPath().getList("stations").size()).isEqualTo(2);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -132,7 +134,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_수정됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        ExtractableResponse<Response> responseAfterUpdate = 지하철_노선_조회_요청(uri);
+        ExtractableResponse<Response> responseAfterUpdate = LineRequestTestUtil.지하철_노선_조회_요청(uri);
         assertThat(responseAfterUpdate.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(responseAfterUpdate.jsonPath().getString("name")).isEqualTo("구분당선");
         assertThat(responseAfterUpdate.jsonPath().getString("color")).isEqualTo("bg-blue-600");
