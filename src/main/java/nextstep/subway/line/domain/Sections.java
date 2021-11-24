@@ -21,8 +21,12 @@ public class Sections {
     protected Sections() {
     }
 
-    public Sections(List<Section> sections) {
+    private Sections(List<Section> sections) {
         this.sections = sections;
+    }
+    
+    public static Sections from(List<Section> sections) {
+        return new Sections(sections);
     }
 
     public List<Station> getStations() {
@@ -34,6 +38,10 @@ public class Sections {
 
     public void add(Section section) {
         sections.add(section);
+    }
+    
+    public int count() {
+        return sections.size();
     }
     
 
