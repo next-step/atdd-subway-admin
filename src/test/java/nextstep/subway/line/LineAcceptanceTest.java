@@ -8,16 +8,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import nextstep.subway.station.StationRequestTestUtil;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -27,7 +28,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = LineRequestTestUtil.지하철_노선_생성_요청("신분당선", "bg-red-600");
+        ExtractableResponse<Response> response = LineRequestTestUtil.종점역을_생성한_후_지하철_노선_생성_요청("신분당선", "bg-red-600", "강남역", "역삼역", "10");
 
         // then
         // 지하철_노선_생성됨
@@ -41,11 +42,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequestTestUtil.지하철_노선_생성_요청("신분당선", "bg-red-600");
+        ExtractableResponse<Response> responseUpStation = StationRequestTestUtil.지하철역_생성("강남역");
+        ExtractableResponse<Response> responseDownStation = StationRequestTestUtil.지하철역_생성("역삼역");
+        String upStationId = responseUpStation.jsonPath().getString("id");
+        String downStationId = responseDownStation.jsonPath().getString("id");
+
+        LineRequestTestUtil.종점_정보를_포함한_지하철_노선_생성_요청("신분당선", "bg-red-600", upStationId, downStationId, "10");
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = LineRequestTestUtil.지하철_노선_생성_요청("신분당선", "bg-red-600");
+        ExtractableResponse<Response> response = LineRequestTestUtil.종점_정보를_포함한_지하철_노선_생성_요청("신분당선", "bg-red-600",
+            upStationId, downStationId, "10");
 
         // then
         // 지하철_노선_생성_실패됨
