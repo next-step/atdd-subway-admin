@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -30,8 +31,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
         // then 지하철_노선_생성됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(response.header("Location")).isNotBlank()
+        );
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -98,9 +101,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청();
 
         // then 지하철_노선_응답됨
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body()).isNotNull();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.body()).isNotNull()
+        );
     }
 
     private ExtractableResponse<Response> 지하철_노선_조회_요청() {
@@ -124,8 +128,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then 지하철_노선_수정됨
         LineResponse finalResponse = response.jsonPath().getObject(".", LineResponse.class);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(finalResponse.getName()).isEqualTo("구분당선");
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(finalResponse.getName()).isEqualTo("구분당선")
+        );
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(Map<String, String> updateParams) {

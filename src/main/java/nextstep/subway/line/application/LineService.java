@@ -29,7 +29,7 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(line -> LineResponse.of(line))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
@@ -45,7 +45,8 @@ public class LineService {
     }
 
     private Line findByid(Long id) {
-        return lineRepository.findById(id).orElseThrow(() ->
+        return lineRepository.findById(id)
+                .orElseThrow(() ->
                 new NullPointerException("라인이 없습니다.")
         );
     }
