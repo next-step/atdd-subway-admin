@@ -78,4 +78,10 @@ public class LineService {
 		final Line savedLine = lineRepository.save(line); // @note: insert the new section, but not update(update when commit transaction)
 		return savedLine.findSectionBy(upStation, downStation).getId();
 	}
+
+	public void deleteSectionByStationId(Long lineId, Long stationId) {
+		final Line line = findLine(lineId);
+		final Station station = stationService.getStation(stationId);
+		line.deleteSection(station);
+	}
 }

@@ -1,8 +1,8 @@
 package nextstep.subway.line;
 
+import static nextstep.subway.common.SectionAcceptanceFixture.*;
 import static nextstep.subway.common.ServiceApiFixture.*;
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,11 +12,9 @@ import org.springframework.http.HttpStatus;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 내 구간 기능")
-public class SectionAcceptanceTest extends AcceptanceTest {
+public class SectionCreateAcceptanceTest extends AcceptanceTest {
 
 	private long 강남역_ID;
 	private long 판교역_ID;
@@ -110,14 +108,5 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			신분당선_ID, sectionAddRequest(판교역_ID, 판교역_ID, 4)
 		);
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-	}
-
-	private long createLineId(String name, String color, Long upStationId, Long downStationId, int distance) {
-		return postLines(lineAddRequest(name, color, upStationId, downStationId, distance))
-			.as(LineResponse.class).getId();
-	}
-
-	private long createStationId(String name) {
-		return postStations(name).as(StationResponse.class).getId();
 	}
 }

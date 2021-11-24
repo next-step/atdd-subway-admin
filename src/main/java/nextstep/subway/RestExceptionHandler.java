@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import nextstep.subway.common.EntityNotFoundException;
 import nextstep.subway.common.ErrorResponse;
+import nextstep.subway.line.exception.DeletableSectionNotFoundException;
 
 @RestControllerAdvice
 public class RestExceptionHandler {
@@ -23,6 +24,12 @@ public class RestExceptionHandler {
 
 	@ExceptionHandler
 	public ResponseEntity<ErrorResponse> handle(IllegalArgumentException e) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			.body(ErrorResponse.of(e.getMessage()));
+	}
+
+	@ExceptionHandler
+	public ResponseEntity<ErrorResponse> handle(DeletableSectionNotFoundException e) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 			.body(ErrorResponse.of(e.getMessage()));
 	}

@@ -18,6 +18,10 @@ public class ServiceApiFixture {
 		return RestApiFixture.post(sectionAddRequest, "/lines/{id}/sections", lineId);
 	}
 
+	public static ExtractableResponse<Response> deleteSections(Long lineId, Long stationId) {
+		return RestApiFixture.delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId);
+	}
+
 	public static LineAddRequest lineAddRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
 		return new LineAddRequest(name, color, upStationId, downStationId, distance);
 	}

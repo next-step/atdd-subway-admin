@@ -71,6 +71,10 @@ public class Line extends BaseEntity {
 		).orElseThrow(SectionNotFoundException::new);
 	}
 
+	public void deleteSection(Station station) {
+		sections.delete(station);
+	}
+
 	public Long getId() {
 		return id;
 	}
