@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.exception.DuplicateBothStationException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.exception.StationNotFoundException;
 
@@ -17,8 +18,21 @@ public class Sections {
         if (sections.contains(section)) {
             return;
         }
+        validateDuplicateBothStation(section);
         insertion(section);
         sections.add(section);
+    }
+
+    private void validateDuplicateBothStation(Section section) {
+        for (Section mySection : sections) {
+            throwExceptionIfDuplicateBothStation(section, mySection);
+        }
+    }
+
+    private void throwExceptionIfDuplicateBothStation(Section section, Section mySection) {
+        if (mySection.isDuplicate(section)) {
+            throw new DuplicateBothStationException(section.getUpStation(), section.getDownStation());
+        }
     }
 
     public List<Station> getStations() {

@@ -48,6 +48,11 @@ public class Section extends BaseEntity {
         this.distance.minus(section.getDistance());
     }
 
+    public boolean isDuplicate(Section section) {
+        return (upStation.isSameName(section.getUpStation()) && downStation.isSameName(section.getDownStation()))
+                || (upStation.isSameName(section.getDownStation()) && downStation.isSameName(section.getUpStation()));
+    }
+
     public Long getId() {
         return id;
     }

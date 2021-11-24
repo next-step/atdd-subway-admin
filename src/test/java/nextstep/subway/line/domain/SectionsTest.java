@@ -1,6 +1,9 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.common.exception.ServiceException;
+import nextstep.subway.line.exception.DuplicateBothStationException;
 import nextstep.subway.station.domain.Station;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -9,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SectionsTest {
@@ -165,5 +169,26 @@ public class SectionsTest {
                 () -> assertThat(section.getDistance()).isEqualTo(totalDistance - newDistance),
                 () -> assertThat(newSection.getDistance()).isEqualTo(newDistance)
         );
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void givenDuplicateBothStationsThenThrowException() {
+        // given
+        Station 강남역 = new Station("강남역");
+        Station 광교역 = new Station("광교역");
+        Station 광명역 = new Station("광명역");
+        Station 영등포역 = new Station("영등포역");
+        Sections sections = new Sections();
+        sections.add(new Section(new Line(), 강남역, 광교역, 100));
+        sections.add(new Section(new Line(), 광교역, 광명역, 100));
+        sections.add(new Section(new Line(), 광명역, 영등포역, 100));
+
+        // when
+        ThrowableAssert.ThrowingCallable throwingCallable = () -> sections.add(new Section(new Line(), 광명역, 영등포역, 60));
+
+        // then
+        assertThatThrownBy(throwingCallable)
+                .isInstanceOf(DuplicateBothStationException.class);
     }
 }
