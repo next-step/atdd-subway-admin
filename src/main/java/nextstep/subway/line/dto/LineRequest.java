@@ -8,13 +8,13 @@ public class LineRequest {
     private String color;
     private Long upStationId;
     private Long downStationId;
-    private String distance;
+    private int distance;
 
     public LineRequest() {
     }
 
     public LineRequest(String name, String color, Long upStationId, Long downStationId,
-        String distance) {
+        int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
@@ -38,7 +38,7 @@ public class LineRequest {
         return downStationId;
     }
 
-    public String getDistance() {
+    public int getDistance() {
         return distance;
     }
 

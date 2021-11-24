@@ -4,13 +4,12 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.utils.StationTestUtil;
+import nextstep.subway.utils.StationAcceptanceTestUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -23,7 +22,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStation() {
         // given
         // when
-        ExtractableResponse<Response> response = StationTestUtil.지하철됨_역_생성_됨("강남역");
+        ExtractableResponse<Response> response = StationAcceptanceTestUtil.지하철됨_역_생성_됨("강남역");
 
         // then
         assertAll(
@@ -37,11 +36,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         String stationName = "역삼역";
-        StationTestUtil.지하철됨_역_생성_됨(stationName);
-        Map<String, String> duplicateParams = StationTestUtil.지하철_역_생성_파라미터_맵핑(stationName);
+        StationAcceptanceTestUtil.지하철됨_역_생성_됨(stationName);
 
         // when
-        ExtractableResponse<Response> response = StationTestUtil.지하철_역_생성_요청(duplicateParams);
+        ExtractableResponse<Response> response = StationAcceptanceTestUtil.지하철됨_역_생성_됨(stationName);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -52,16 +50,18 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         // given
-        ExtractableResponse<Response> createResponse1 = StationTestUtil.지하철됨_역_생성_됨("강남역");
-        ExtractableResponse<Response> createResponse2 = StationTestUtil.지하철됨_역_생성_됨("역삼역");
+        ExtractableResponse<Response> createResponse1 = StationAcceptanceTestUtil.지하철됨_역_생성_됨(
+            "강남역");
+        ExtractableResponse<Response> createResponse2 = StationAcceptanceTestUtil.지하철됨_역_생성_됨(
+            "역삼역");
 
         // when
-        ExtractableResponse<Response> response = StationTestUtil.지하철_역_목록_조회();
+        ExtractableResponse<Response> response = StationAcceptanceTestUtil.지하철_역_목록_조회();
 
         // then
-        List<Long> expectedLineIds = StationTestUtil.ids_추출_By_Location(
+        List<Long> expectedLineIds = StationAcceptanceTestUtil.ids_추출_By_Location(
             Arrays.asList(createResponse1, createResponse2));
-        List<Long> resultLineIds = StationTestUtil.ids_추출_By_StationResponse(response);
+        List<Long> resultLineIds = StationAcceptanceTestUtil.ids_추출_By_StationResponse(response);
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
             () -> assertThat(resultLineIds).containsAll(expectedLineIds)
@@ -72,11 +72,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = StationTestUtil.지하철됨_역_생성_됨("강남역");
-        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> createResponse = StationAcceptanceTestUtil.지하철됨_역_생성_됨("강남역");
 
         // when
-        ExtractableResponse<Response> response = StationTestUtil.지하철_역_제거_함(uri);
+        ExtractableResponse<Response> response = StationAcceptanceTestUtil.지하철_역_제거_함(
+            createResponse);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());

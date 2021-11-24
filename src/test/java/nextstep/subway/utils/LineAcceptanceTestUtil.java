@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.MediaType;
 
-public class LineTestUtil {
+public class LineAcceptanceTestUtil {
 
-    private LineTestUtil() {
+    private LineAcceptanceTestUtil() {
     }
 
     public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(String lineName, String color,
@@ -22,10 +22,20 @@ public class LineTestUtil {
         return 지하철_노선_생성_요청(params);
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청(String url) {
+    public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
         return RestAssured.given().log().all()
             .when()
-            .get(url)
+            .get("/lines")
+            .then().log().all()
+            .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(
+        ExtractableResponse<Response> createResponse) {
+        long lineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
+        return RestAssured.given().log().all()
+            .when()
+            .get("/lines/" + lineId)
             .then().log().all()
             .extract();
     }
@@ -42,7 +52,8 @@ public class LineTestUtil {
     }
 
     public static ExtractableResponse<Response> 지하철_노선_수정_요청(Map<String, String> updateParams,
-        long lineId) {
+        ExtractableResponse<Response> createResponse) {
+        long lineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
         return RestAssured.given().log().all()
             .body(updateParams)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
