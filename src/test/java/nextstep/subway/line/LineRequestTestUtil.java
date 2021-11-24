@@ -61,5 +61,11 @@ public class LineRequestTestUtil {
 			.extract();
 	}
 
-
+	public static ExtractableResponse<Response> 지하철_노선_조회_요청(String url) {
+		return RestAssured.given().log().all()
+			.when()
+			.get(url)
+			.then().log().all()
+			.extract();
+	}
 }

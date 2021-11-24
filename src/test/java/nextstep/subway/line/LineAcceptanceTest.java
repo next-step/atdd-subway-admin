@@ -72,7 +72,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청("/lines");
+        ExtractableResponse<Response> response = LineRequestTestUtil.지하철_노선_조회_요청("/lines");
 
         // then
         // 지하철_노선_목록_응답됨
@@ -97,21 +97,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_조회_요청
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(uri);
+        ExtractableResponse<Response> response = LineRequestTestUtil.지하철_노선_조회_요청(uri);
 
         // then
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         long expectedId = createResponse.jsonPath().getLong("id");
         assertThat(response.jsonPath().getLong("id")).isEqualTo(expectedId);
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(String url) {
-        return RestAssured.given().log().all()
-            .when()
-            .get(url)
-            .then().log().all()
-            .extract();
     }
 
     @DisplayName("지하철 노선을 수정한다.")
