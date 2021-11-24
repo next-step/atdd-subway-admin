@@ -61,7 +61,7 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public int getDistanceToInt() {
+    public int getDistance() {
         return distance.getDistance();
     }
 

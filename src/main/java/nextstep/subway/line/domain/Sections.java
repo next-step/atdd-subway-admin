@@ -155,8 +155,8 @@ public class Sections {
 
         sections.remove(modifiedSection);
 
-        int totalDistance = modifiedSection.getDistanceToInt();
-        int diffDistance = totalDistance - requestSection.getDistanceToInt();
+        int totalDistance = modifiedSection.getDistance();
+        int diffDistance = totalDistance - requestSection.getDistance();
 
         Section newSection = Section.of(newUpStation,
                 newDownStation,
