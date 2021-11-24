@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -13,6 +12,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 @Embeddable
@@ -33,18 +33,30 @@ public class Sections {
 	}
 
 	public void add(Section section) {
+		if (!sectionList.isEmpty()) {
+			sectionList.forEach(inner -> inner.validSection(section));
+			sectionList
+				.stream()
+				.filter(inner -> inner.isSameUpDownStation(section))
+				.findAny()
+				.ifPresent(inner -> inner.reSettingSection(section));
+		}
+
 		sectionList.add(section);
 	}
 
 	public List<StationResponse> getStations() {
-		Set<StationResponse> upStations = sectionList.stream()
-			.map(Section::getUpStationResponse)
-			.collect(Collectors.toSet());
-		Set<StationResponse> downStations = sectionList.stream()
-			.map(Section::getDownStationResponse)
-			.collect(Collectors.toSet());
+		List<Station> upStations = sectionList.stream()
+			.map(Section::getUpStation)
+			.collect(Collectors.toList());
+		List<Station> downStations = sectionList.stream()
+			.map(Section::getDownStation)
+			.collect(Collectors.toList());
 
 		return Stream.of(upStations, downStations)
-			.flatMap(Collection::stream).distinct().collect(Collectors.toList());
+			.flatMap(Collection::stream)
+			.distinct()
+			.map(StationResponse::of)
+			.collect(Collectors.toList());
 	}
 }

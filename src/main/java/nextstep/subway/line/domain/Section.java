@@ -2,15 +2,16 @@ package nextstep.subway.line.domain;
 
 import java.util.Objects;
 
-import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.common.ErrorCode;
+import nextstep.subway.line.exception.SectionException;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 @Entity
 public class Section extends BaseEntity {
@@ -27,8 +28,8 @@ public class Section extends BaseEntity {
 	@JoinColumn(name = "down_station_id")
 	private Station downStation;
 
-	@Column(name = "distance")
-	private int distance;
+	@Embedded
+	private Distance distance;
 
 	protected Section() {
 	}
@@ -37,7 +38,7 @@ public class Section extends BaseEntity {
 		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
-		this.distance = distance;
+		this.distance = new Distance(distance);
 	}
 
 	public Line getLine() {
@@ -52,16 +53,61 @@ public class Section extends BaseEntity {
 		return downStation;
 	}
 
-	public StationResponse getUpStationResponse() {
-		return StationResponse.of(upStation);
-	}
-
-	public StationResponse getDownStationResponse() {
-		return StationResponse.of(downStation);
-	}
-
-	public int getDistance() {
+	public Distance getDistance() {
 		return distance;
+	}
+
+	public void validSection(Section section) {
+		validNotInStations(section);
+		validSameStation(section);
+		isInDistance(section);
+	}
+
+	private void isInDistance(Section section) {
+		if (distance.getDistance() < section.distance.getDistance()
+			|| distance.getDistance() == section.distance.getDistance()) {
+			throw new SectionException(ErrorCode.VALID_DISTANCE_ERROR);
+		}
+	}
+
+	public boolean isSameUpStation(Station station) {
+		return upStation.equals(station);
+	}
+
+	public boolean isSameDownStation(Station station) {
+		return downStation.equals(station);
+	}
+
+	public boolean isSameUpDownStation(Section compareSection) {
+		return isSameUpStation(compareSection.upStation) && isSameDownStation(compareSection.downStation);
+	}
+
+	private void validSameStation(Section compareSection) {
+		if (isSameUpDownStation(compareSection)) {
+			throw new SectionException(ErrorCode.VALID_SAME_STATION_ERROR);
+		}
+	}
+
+	private boolean isInStations(Section compareSection) {
+		return isSameUpStation(compareSection.upStation) || isSameDownStation(compareSection.downStation);
+	}
+
+	public void validNotInStations(Section section) {
+		if (!isInStations(section)) {
+			throw new SectionException(ErrorCode.VALID_NOT_IN_STATIONS_ERROR);
+		}
+	}
+
+	public void reSettingSection(Section expectSection) {
+		if (isSameUpStation(expectSection.upStation)) {
+			this.upStation = expectSection.downStation;
+		}
+
+		if (isSameDownStation(expectSection.downStation)) {
+			this.downStation = expectSection.upStation;
+		}
+
+		this.distance.divideDistance(expectSection.distance);
 	}
 
 	@Override
