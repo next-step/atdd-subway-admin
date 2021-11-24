@@ -4,10 +4,9 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -22,8 +21,8 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
     }
@@ -52,6 +51,10 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
+    public void addSections(List<Section> sections) {
+        sections.forEach(this.sections::add);
+    }
+
     public Long getId() {
         return id;
     }
@@ -65,8 +68,13 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return Collections.unmodifiableList(sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList()));
+        List<Station> stations = new LinkedList<>();
+        List<Section> orderedSections = sections.getSections();
+        Section firstSection = orderedSections.get(0);
+
+        stations.add(firstSection.getUpStation());
+        stations.addAll(sections.getDownStations());
+
+        return Collections.unmodifiableList(stations);
     }
 }

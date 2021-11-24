@@ -65,7 +65,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_목록_조회_결과_포함됨(response, 수인선);
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
+    @DisplayName("지하철 노선을 조회하면 한다.")
     @Test
     void findLine() {
         // given
@@ -79,6 +79,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선_조회_응답됨(response);
         지하철_노선_조회_결과_일치됨(response, 수인선);
+        지하철_노선_구간_정렬됨(response, terminus);
     }
 
     @DisplayName("지하철 노선이 등록되지 않은 경우 지하철 노선 조회가 실패한다.")

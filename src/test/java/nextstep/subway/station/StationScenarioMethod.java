@@ -64,8 +64,8 @@ public class StationScenarioMethod {
 
     public static Map<String, Long> 지하철_종점역_정보(String upStationName, String downStationName) {
         HashMap<String, Long> terminus = new HashMap<>();
-        terminus.put("upStationId", 지하철_종점역_생성됨(new StationRequest("upStationName")));
-        terminus.put("downStationId", 지하철_종점역_생성됨(new StationRequest("downStationName")));
+        terminus.put("upStationId", 지하철_종점역_생성됨(new StationRequest(upStationName)));
+        terminus.put("downStationId", 지하철_종점역_생성됨(new StationRequest(downStationName)));
         return terminus;
     }
 }

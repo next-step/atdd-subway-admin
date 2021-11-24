@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import com.jayway.jsonpath.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.assured.RestAssuredApi;
@@ -61,7 +62,13 @@ class LineScenarioMethod {
     public static void 지하철_노선_조회_결과_일치됨(ExtractableResponse<Response> response, LineRequest request) {
         assertThat(response.jsonPath().getObject(".", LineResponse.class))
                 .extracting("name", "color")
-                .contains(request.getName(), request.getColor());
+                .containsExactly(request.getName(), request.getColor());
+    }
+
+    public static void 지하철_노선_구간_정렬됨(ExtractableResponse<Response> response, Map<String, Long> terminus) {
+        List<Integer> stationIds = JsonPath.parse(response.jsonPath().getList("stations")).read("$[*].id");
+        assertThat(stationIds)
+                .containsExactly(terminus.get("upStationId").intValue(), terminus.get("downStationId").intValue());
     }
 
     public static ExtractableResponse<Response> 지하철_노선_수정_요청(String uri, LineEditRequest request) {
