@@ -92,13 +92,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(lineRequest1);
 
         // when
-        // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(createResponse);
 
         // then
-        // 지하철_노선_삭제됨
+        지하철_노선_삭제됨(response);
     }
 
     private ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest lineRequest) {
@@ -146,6 +146,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return response;
     }
 
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(ExtractableResponse<Response> createResponse) {
+        String uri = createResponse.header("Location");
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when().delete(uri)
+                .then().log().all().extract();
+        return response;
+    }
+
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         Assertions.assertThat(response.header("Location")).isNotBlank();
@@ -171,5 +181,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
