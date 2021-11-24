@@ -24,17 +24,38 @@ public class Section extends BaseEntity {
     @JoinColumn(nullable = false)
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    public Section(Line line, Station upStation, Station downStation, Integer distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
         this.line.addSection(this);
+    }
+
+    public void shiftBack(Section section) {
+        this.upStation = section.getDownStation();
+        this.distance.minus(section.getDistance());
+    }
+
+    public void shiftForward(Section section) {
+        this.downStation = section.getUpStation();
+        this.distance.minus(section.getDistance());
+    }
+
+    public boolean isDuplicate(Section section) {
+        return (upStation.isSameName(section.getUpStation()) && downStation.isSameName(section.getDownStation()))
+                || (upStation.isSameName(section.getDownStation()) && downStation.isSameName(section.getUpStation()));
+    }
+
+    public boolean anyMatched(Section section) {
+        return upStation.isSameName(section.getUpStation()) || upStation.isSameName(section.getDownStation()) ||
+                downStation.isSameName(section.getUpStation()) || downStation.isSameName(section.getDownStation());
     }
 
     public Long getId() {
@@ -53,8 +74,8 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public int getDistance() {
-        return distance;
+    public Integer getDistance() {
+        return distance.value();
     }
 
     @Override

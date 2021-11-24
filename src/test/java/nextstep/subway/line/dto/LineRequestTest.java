@@ -46,19 +46,4 @@ public class LineRequestTest {
         // then
         assertThat(hasNotSectionArguments).isTrue();
     }
-
-    @DisplayName("SectionRequest 객체를 생성한다")
-    @Test
-    void testToSectionRequest() {
-        // given
-        LineRequest request = new LineRequest("박달강남선", "blue", 1L, 2L, 191);
-        // when
-        SectionRequest sectionRequest = request.toSectionRequest();
-        // then
-        assertAll(
-                () -> assertThat(sectionRequest.getUpStationId()).isEqualTo(request.getUpStationId()),
-                () -> assertThat(sectionRequest.getDownStationId()).isEqualTo(request.getDownStationId()),
-                () -> assertThat(sectionRequest.getDistance()).isEqualTo(request.getDistance())
-        );
-    }
 }

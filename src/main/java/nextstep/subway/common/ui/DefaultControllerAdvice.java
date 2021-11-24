@@ -2,7 +2,6 @@ package nextstep.subway.common.ui;
 
 import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.common.exception.ServiceException;
-import nextstep.subway.common.ui.ErrorResponse;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +15,7 @@ import java.util.stream.Collectors;
 public class DefaultControllerAdvice {
 
     @ExceptionHandler(ServiceException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateLineNameException(ServiceException error) {
+    public ResponseEntity<ErrorResponse> handleServiceException(ServiceException error) {
         return new ResponseEntity<>(new ErrorResponse(error), HttpStatus.BAD_REQUEST);
     }
 
@@ -30,7 +29,7 @@ public class DefaultControllerAdvice {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleLineNotFoundException(NotFoundException error) {
+    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException error) {
         return new ResponseEntity<>(new ErrorResponse(error), HttpStatus.NOT_FOUND);
     }
 }

@@ -15,6 +15,10 @@ public class Station extends BaseEntity {
     public Station() {
     }
 
+    public boolean isSameName(Station station) {
+        return name.equals(station.name);
+    }
+
     public Station(String name) {
         this.name = name;
     }

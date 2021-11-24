@@ -2,8 +2,10 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.line.exception.DuplicateLineNameException;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.station.domain.Station;
@@ -35,12 +37,12 @@ public class LineService {
         return LineResponse.of(line);
     }
 
-    private void addSectionToLine(LineRequest request, Line line) {
+    private Section addSectionToLine(LineRequest request, Line line) {
         Station upStation = stationRepository.findById(request.getUpStationId())
                 .orElseThrow(() -> new StationNotFoundException(request.getUpStationId()));
         Station downStation = stationRepository.findById(request.getDownStationId())
                 .orElseThrow(() -> new StationNotFoundException(request.getUpStationId()));
-        line.addSection(upStation, downStation, request.getDistance());
+        return line.addSection(upStation, downStation, request.getDistance());
     }
 
     public List<LineResponse> getLines() {
@@ -64,5 +66,19 @@ public class LineService {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new LineNotFoundException(id));
         lineRepository.delete(line);
+    }
+
+    public SectionResponse saveSection(Long lineId, LineRequest request) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new LineNotFoundException(lineId));
+        Section section = addSectionToLine(request, line);
+        return SectionResponse.of(section);
+    }
+
+    public List<SectionResponse> getSections(Long lineId) {
+        return lineRepository.findById(lineId)
+                .map(Line::getSections)
+                .map(SectionResponse::listOf)
+                .orElseThrow(() -> new LineNotFoundException(lineId));
     }
 }

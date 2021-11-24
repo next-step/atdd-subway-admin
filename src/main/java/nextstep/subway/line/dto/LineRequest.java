@@ -57,8 +57,4 @@ public class LineRequest {
                 downStationId != null ||
                 distance > 0;
     }
-
-    public SectionRequest toSectionRequest() {
-        return SectionRequest.of(this);
-    }
 }
