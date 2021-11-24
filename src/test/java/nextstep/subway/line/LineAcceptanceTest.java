@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.Asserts;
@@ -311,7 +312,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             String lineUrl = 신분당선.header("Location");
 
             // when
-            ExtractableResponse<Response> response = 지하철_노선_추가_요청(lineUrl, 강남역, 안양역, 40);
+            ExtractableResponse<Response> response = 지하철_구간_추가_요청(lineUrl, 강남역, 안양역, 40);
 
             // then
             지하철_구간이_생성된다(response);
@@ -329,18 +330,45 @@ public class LineAcceptanceTest extends AcceptanceTest {
             String lineUrl = 신분당선.header("Location");
 
             // when
-            ExtractableResponse<Response> response = 지하철_노선_추가_요청(lineUrl, 안양역, 광교역, 40);
+            ExtractableResponse<Response> response = 지하철_구간_추가_요청(lineUrl, 안양역, 광교역, 40);
 
             // then
             지하철_구간이_생성된다(response);
             상행선_하행선_순으로_정렬된_역을_포함한_지하철_노선을_응답한다(lineUrl, 강남역, 안양역, 광교역);
         }
 
+        @DisplayName("역 사이에 새로운 역을 등록할 경우 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정")
+        @Test
+        void testDistance() {
+            // given
+            Integer totalDistance = 100;
+            Integer newDistance = 40;
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역").as(StationResponse.class);
+            ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), totalDistance.toString());
+            String lineUrl = 신분당선.header("Location");
+
+            // when
+            ExtractableResponse<Response> response = 지하철_구간_추가_요청(lineUrl, 강남역, 안양역, newDistance);
+
+            // then
+            새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정한다(totalDistance, newDistance, lineUrl, response);
+        }
+
+        private void 새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정한다(Integer totalDistance, Integer distance, String lineUrl, ExtractableResponse<Response> response) {
+            assertThat(response.as(SectionResponse.class).getDistance()).isEqualTo(distance);
+            ExtractableResponse<Response> sectionsResponse = Methods.get(lineUrl + "/sections");
+            List<SectionResponse> list = sectionsResponse.jsonPath().getList(".", SectionResponse.class);
+            Integer resultTotalDistance = list.stream().map(SectionResponse::getDistance).reduce(Integer::sum).get();
+            assertThat(resultTotalDistance).isEqualTo(totalDistance);
+        }
+
         private void 지하철_구간이_생성된다(ExtractableResponse<Response> response) {
             Asserts.assertIsCreated(response);
         }
 
-        private ExtractableResponse<Response> 지하철_노선_추가_요청(String lineUrl, StationResponse upStation, StationResponse downStation, Integer distance) {
+        private ExtractableResponse<Response> 지하철_구간_추가_요청(String lineUrl, StationResponse upStation, StationResponse downStation, Integer distance) {
             Map<String, Object> params = new HashMap<>();
             params.put("upStationId", upStation.getId());
             params.put("downStationId", downStation.getId());
