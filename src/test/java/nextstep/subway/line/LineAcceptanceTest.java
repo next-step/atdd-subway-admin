@@ -28,7 +28,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = LineRequestTestUtil.종점역을_생성한_후_지하철_노선_생성_요청("신분당선", "bg-red-600", "강남역", "역삼역", "10");
+        ExtractableResponse<Response> response = LineRequestTestUtil.종점역을_생성한_후_지하철_노선_생성_요청("신분당선", "bg-red-600",
+            "강남역", "역삼역", "10");
 
         // then
         // 지하철_노선_생성됨
@@ -118,7 +119,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = LineRequestTestUtil.지하철_노선_생성_요청("신분당선", "bg-red-600");
+        ExtractableResponse<Response> createResponse = LineRequestTestUtil.종점역을_생성한_후_지하철_노선_생성_요청("신분당선", "bg-red-600",
+            "강남역", "역삼역", "10");
 
         // when
         // 지하철_노선_수정_요청
@@ -149,8 +151,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = LineRequestTestUtil.지하철_노선_생성_요청("신분당선", "bg-red-600");
-
+        ExtractableResponse<Response> createResponse = LineRequestTestUtil.종점역을_생성한_후_지하철_노선_생성_요청("신분당선", "bg-red-600",
+            "강남역", "역삼역", "10");
+        
         // when
         // 지하철_노선_제거_요청
         String uri = createResponse.header("Location");
