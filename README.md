@@ -94,3 +94,17 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   * 참고자료2 : https://velog.io/@banjjoknim/RestControllerAdvice
 * AssertAll
   * 참고: https://sas-study.tistory.com/316, https://escapefromcoding.tistory.com/358?category=1184809
+
+## 2단계 - 인수 테스트 리팩터링
+### 요구사항 API 변경 대응하기
+* 인수테스트 추가 및 수정
+  * [ ] 노선 생성 시 종점역 (상행, 하행) 정보를 요청 파라미터에 함께 추가하기
+    * 두 종점역은 구간의 형태로 관리되어야 함
+  * [ ] 노선 조회 시 응답 결과에 역 목록 추가하기
+    * 상행역 부터 하행역 순으로 정렬되어야 함
+* 기능 구현
+  * [ ] 노선엔티티에 지하철 정보를 매핑
+  * [ ] 노선 생성
+  * [ ] 노선 목록 조회
+  
+
