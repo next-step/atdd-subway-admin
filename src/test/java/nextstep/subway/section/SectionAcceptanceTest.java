@@ -286,7 +286,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Station removeStation = stationRepository.save(new Station("대림"));
         Integer distance = 10;
         line.addSection(upStation, downStation, distance);
-        line.addSection(downStation, removeStation, 7);
+        line.addSection(downStation, removeStation, 10);
         lineRepository.save(line);
 
         boolean isRemove = line.removeSection(removeStation);
