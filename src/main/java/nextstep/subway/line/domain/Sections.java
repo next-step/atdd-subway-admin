@@ -13,7 +13,7 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
@@ -61,7 +61,7 @@ public class Sections {
             return;
         }
 
-        lastSection.ifPresent(it -> it.stationUpdate(section.getNextStation()));
+        lastSection.get().stationUpdate(section.getNextStation());
     }
 
     private Optional<Section> getLastSection() {
