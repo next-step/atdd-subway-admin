@@ -21,8 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private LineRequest lineRequest1 = new LineRequest("강남역", "초록색");
-    private LineRequest lineRequest2 = new LineRequest("교대역", "주황색");
+    private LineRequest lineRequest1 = new LineRequest("2호선", "초록색");
+    private LineRequest lineRequest2 = new LineRequest("3호선", "주황색");
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
