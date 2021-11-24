@@ -42,8 +42,17 @@ public class Line extends BaseEntity {
         this.sections = Sections.of(section);
     }
 
+    private Line(String name, String color, List<Section> sections) {
+        this(name, color);
+        this.sections = Sections.of(sections);
+    }
+
     public static Line of(String name, String color, Section section) {
         return new Line(name, color, section);
+    }
+
+    public static Line of(String name, String color, List<Section> sections) {
+        return new Line(name, color, sections);
     }
 
     private void validate(String name, String color) {

@@ -13,9 +13,9 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-class SectionsTest {
+class LineTest {
     @Autowired
-    private SectionRepository sectionRepository;
+    private LineRepository lineRepository;
     @Autowired
     private StationRepository stationRepository;
 
@@ -28,20 +28,19 @@ class SectionsTest {
         final Station thirdStation = stationRepository.save(Station.of("3번"));
         final Station forthStation = stationRepository.save(Station.of("4번"));
         final Station fifthStation = stationRepository.save(Station.of("5번"));
-        final Sections sections = Sections.of(sectionRepository.saveAll(Arrays.asList(
+        final Line line = lineRepository.save(Line.of("노선이름", "색상", Arrays.asList(
                 Section.of(10, thirdStation, forthStation),
                 Section.of(10, forthStation, fifthStation),
                 Section.of(10, firstStation, secondStation),
                 Section.of(10, secondStation, thirdStation)
         )));
         // when
-        final List<Station> stationsOrderByUptoDown = sections.getStationsOrderByUptoDown();
+        final List<Station> stationsOrderByUptoDown = line.getStationsOrderByUptoDown();
         // then
         assertThat(stationsOrderByUptoDown.get(0)).isEqualTo(firstStation);
         assertThat(stationsOrderByUptoDown.get(1)).isEqualTo(secondStation);
         assertThat(stationsOrderByUptoDown.get(2)).isEqualTo(thirdStation);
         assertThat(stationsOrderByUptoDown.get(3)).isEqualTo(forthStation);
         assertThat(stationsOrderByUptoDown.get(4)).isEqualTo(fifthStation);
-
     }
 }
