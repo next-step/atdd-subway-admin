@@ -85,11 +85,14 @@ public class LineService {
     }
 
     private Section createSection(BaseRequest request) {
-        final Station upStation = stationRepository.findById(request.getUpStationId())
-                .orElseThrow(StationNotFoundException::new);
-        final Station downStation = stationRepository.findById(request.getDownStationId())
-                .orElseThrow(StationNotFoundException::new);
+        final Station upStation = getStation(request.getUpStationId());
+        final Station downStation = getStation(request.getDownStationId());
         return new Section(upStation, downStation, Distance.of(request.getDistance()));
+    }
+
+    private Station getStation(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(StationNotFoundException::new);
     }
 
     private void checkStationIds(BaseRequest request) {
