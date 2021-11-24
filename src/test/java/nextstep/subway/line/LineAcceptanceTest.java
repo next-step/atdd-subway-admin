@@ -114,13 +114,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> createResponse1 = LineAcceptanceTestUtil.지하철_노선_등록되어_있음("2호선",
+        ExtractableResponse<Response> createResponse = LineAcceptanceTestUtil.지하철_노선_등록되어_있음("2호선",
             "RED", stationId1, stationId2, 100);
         Map<String, String> updateParams = LineAcceptanceTestUtil.지하철_노선_생성_파라미터_맵핑("3호선", "RED");
 
         // when
         ExtractableResponse<Response> response = LineAcceptanceTestUtil.지하철_노선_수정_요청(updateParams,
-            createResponse1);
+            createResponse);
 
         // then
         String responseLineName = response.jsonPath().get("name");

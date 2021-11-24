@@ -30,17 +30,17 @@ public class LineRepositoryTest {
     @Autowired
     StationRepository stationRepository;
 
-    private Station STATION1;
-    private Station STATION2;
-    private Station STATION3;
-    private Station STATION4;
+    private Station station1;
+    private Station station2;
+    private Station station3;
+    private Station station4;
 
     @BeforeEach()
     public void setUp() {
-        STATION1 = stationRepository.save(new Station(StationTest.STATION_NAME1));
-        STATION2 = stationRepository.save(new Station(StationTest.STATION_NAME2));
-        STATION3 = stationRepository.save(new Station(StationTest.STATION_NAME3));
-        STATION4 = stationRepository.save(new Station(StationTest.STATION_NAME4));
+        station1 = stationRepository.save(new Station(StationTest.STATION_NAME1));
+        station2 = stationRepository.save(new Station(StationTest.STATION_NAME2));
+        station3 = stationRepository.save(new Station(StationTest.STATION_NAME3));
+        station4 = stationRepository.save(new Station(StationTest.STATION_NAME4));
     }
 
     @Test
@@ -137,7 +137,7 @@ public class LineRepositoryTest {
     void addSection() {
         // given
         Line line = lineRepository.save(new Line(LineTest.LINE_NAME1, LineTest.LINE_COLOR1));
-        Section section = new Section(line, STATION1, STATION2, 100);
+        Section section = new Section(line, station1, station2, 100);
 
         // when
         line.addSection(section);
@@ -155,9 +155,9 @@ public class LineRepositoryTest {
     void getStations() {
         // given
         Line line = lineRepository.save(new Line(LineTest.LINE_NAME1, LineTest.LINE_COLOR1));
-        Section section1 = new Section(line, STATION1, STATION2, 100);
-        Section section2 = new Section(line, STATION2, STATION3, 100);
-        Section section3 = new Section(line, STATION3, STATION4, 100);
+        Section section1 = new Section(line, station1, station2, 100);
+        Section section2 = new Section(line, station2, station3, 100);
+        Section section3 = new Section(line, station3, station4, 100);
 
         // when
         노선_구간_추가_함(line, section1, section2, section3);

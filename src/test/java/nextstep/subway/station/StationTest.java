@@ -16,7 +16,6 @@ public class StationTest {
     public static final String STATION_NAME4 = "삼성역";
     public static final Station STATION1 = new Station(STATION_NAME1);
     public static final Station STATION2 = new Station(STATION_NAME2);
-    public static final Station STATION3 = new Station(STATION_NAME3);
 
     @Test
     @DisplayName("Station 생성 후 name 검증")
