@@ -232,6 +232,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeSection_NotCorrectStationExceptionTest() {
 
+<<<<<<< HEAD
         ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
         ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
         ExtractableResponse<Response> removeStationResponse = 지하철역_등록("신대방");
@@ -264,4 +265,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
+=======
+>>>>>>> step3
 }

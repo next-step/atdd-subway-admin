@@ -7,6 +7,9 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+
+import static java.util.stream.Collectors.toList;
 
 import static java.util.stream.Collectors.toList;
 
@@ -38,25 +41,29 @@ public class Sections {
             throw new IllegalArgumentException(DISTANCE_GREATER_OR_CORRECT_MESSAGE);
         }
 
-        if(this.sections.stream().anyMatch(s -> s.matchUpStationFromUpStation(section))) {
-            Section findSection = this.sections.stream()
-                    .filter(s -> s.matchUpStationFromUpStation(section))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalStateException(UP_STATION_NOT_CORRECT_MESSAGE));
-
-            findSection.changeUpStationToDownStation(section);
+        if(!addUpSection(section) && !addDownSection(section)) {
+            this.sections.add(section);
         }
+    }
 
-        if(this.sections.stream().anyMatch(s -> s.matchDownStationFromDownStation(section))) {
-            Section findSection = this.sections.stream()
-                    .filter(s -> s.matchDownStationFromDownStation(section))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalStateException(DOWN_STATION_NOT_CORRECT_MESSAGE));
+    private boolean addSection(Station station, Integer distance, Predicate<Section> express) {
+        if(this.sections.stream().anyMatch(express)) {
+            List<Section> divideBySections = this.sections.stream()
+                    .filter(express)
+                    .flatMap(s -> s.divideByStation(station, distance).stream())
+                    .collect(toList());
 
-            findSection.changeDownStationToUpStation(section);
+            return this.sections.addAll(divideBySections);
         }
+        return false;
+    }
 
-        this.sections.add(section);
+    private boolean addUpSection(Section section) {
+        return addSection(section.getDownStation(), section.getDistance(), s -> s.matchUpStationFromUpStation(section));
+    }
+
+    private boolean addDownSection(Section section) {
+        return addSection(section.getUpStation(), section.getDistance(), s -> s.matchDownStationFromDownStation(section));
     }
 
     public void remove(Station station) {
