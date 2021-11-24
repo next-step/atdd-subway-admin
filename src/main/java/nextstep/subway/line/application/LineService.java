@@ -37,6 +37,7 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    @Transactional
     public LineResponse updateLine(long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
         line.update(lineRequest.toLine());
