@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import nextstep.subway.station.domain.Station;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Where;
 
 @Entity
@@ -34,7 +35,8 @@ public class Section {
     private Station nextStation;
 
     @Column(name = "distance")
-    private Integer distance;
+    @ColumnDefault("0")
+    private Integer distance = 0;
 
     @Column(name = "deleted")
     private boolean deleted = Boolean.FALSE;
