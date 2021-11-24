@@ -150,6 +150,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(actualLineId).isEqualTo(createdLineId);
     }
 
+    @DisplayName("존재하지 않는 지하철 노선을 조회한다.")
+    @Test
+    void getLine_notFound() {
+        // when
+        // 지하철_노선_조회_요청
+        final ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+            .when()
+            .get("/lines/1")
+            .then().log().all()
+            .extract();
+
+        // then
+        // 지하철_노선_조회_불가
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
@@ -194,6 +210,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
             () -> assertThat(actualLine.getName()).isEqualTo(updateRequest.getName()),
             () -> assertThat(actualLine.getColor()).isEqualTo(updateRequest.getColor())
         );
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선을 수정한다.")
+    @Test
+    void updateLine_notFound() {
+        // when
+        // 지하철_노선_조회_요청
+        final LineRequest updateRequest = new LineRequest("신분당선", "bg-red-600");
+        final ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
+            .body(updateRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines/1")
+            .then().log().all()
+            .extract();
+
+        // then
+        // 지하철_노선_조회_불가
+        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
