@@ -12,8 +12,8 @@ public class Distance {
     }
 
     public Distance(Integer distance) {
-        if (distance == null || distance == 0) {
-            throw new ServiceException("distance를 입력하세요");
+        if (distance == null || distance <= 0) {
+            throw new ServiceException("distance는 1이상의 값을 입력하세요");
         }
         this.distance = distance;
     }
