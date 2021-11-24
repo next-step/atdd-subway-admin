@@ -61,8 +61,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         StationResponse 강남역 = StationApiRequests.지하철_역_생성됨("강남역");
-        Long 저장되지_않은_역_ID = 5L;
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 저장되지_않은_역_ID, 10);
+        Long 등록되지_않은_역_ID = 5L;
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 등록되지_않은_역_ID, 10);
         LineApiRequests.지하철_노선_생성_요청(lineRequest);
 
         // when
@@ -120,8 +120,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
-        Long lineId = 지하철_노선_등록되어_있음(lineRequest);
+        LineRequest lineRequest1 = 지하철_노선_생성_요청_생성("강남역","잠실역","2호선","bg-green-200",10);
+        Long lineId = 지하철_노선_등록되어_있음(lineRequest1);
         LineRequest updateRequest = new LineRequest("구분당선", "bg-blue-600");
 
         // when
@@ -138,8 +138,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
-        Long lineId = 지하철_노선_등록되어_있음(lineRequest);
+        LineRequest lineRequest1 = 지하철_노선_생성_요청_생성("강남역","잠실역","2호선","bg-green-200",10);
+        Long lineId = 지하철_노선_등록되어_있음(lineRequest1);
 
         // when
         // 지하철_노선_제거_요청
@@ -149,6 +149,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_삭제됨
         지하철_노선_삭제됨(lineId);
     }
+
+
 
     private void 지하철_노선_삭제됨(Long lineId) {
         ExtractableResponse<Response> response = LineApiRequests.지하철_노선_조회_요청(lineId);
