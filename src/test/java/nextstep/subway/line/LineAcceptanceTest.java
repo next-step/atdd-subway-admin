@@ -11,6 +11,8 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineResponses;
+import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.utils.RestAssuredUtils;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.DisplayName;
@@ -75,11 +77,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
+        // 지하철역_등록되어_있음
+        final Station upStation = StationAcceptanceTest.지하철역_생성("강남").as(Station.class);
+        final Station downStation = StationAcceptanceTest.지하철역_생성("삼성").as(Station.class);
+
         // 지하철_노선_등록되어_있음
         final ExtractableResponse<Response> createResponse = 지하철_노선_생성_및_검증(CREATE_LINE);
 
         // 지하철_노선_등록되어_있음
-        final LineRequest otherCreateLine = new LineRequest("3호선", "red lighten-3", 2L, 3L, 7);
+        final LineRequest otherCreateLine = new LineRequest(
+            "3호선", "red lighten-3", upStation.getId(), downStation.getId(), 7);
         final ExtractableResponse<Response> otherCreateResponse = 지하철_노선_생성_및_검증(otherCreateLine);
 
         // when

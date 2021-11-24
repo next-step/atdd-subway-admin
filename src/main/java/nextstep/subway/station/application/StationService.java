@@ -32,6 +32,11 @@ public class StationService {
             .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public Station findStationById(final Long id) {
+        return stationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("삭제되었거나 없는 역입니다."));
+    }
+
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
     }

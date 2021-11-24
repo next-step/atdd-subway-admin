@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.domain.Stations;
 
 @Entity
 public class Line extends BaseEntity {
@@ -30,10 +31,14 @@ public class Line extends BaseEntity {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public String getColor() {
-        return color;
+        return this.color;
+    }
+
+    public Stations toStations() {
+        return this.sections.toStations();
     }
 }
