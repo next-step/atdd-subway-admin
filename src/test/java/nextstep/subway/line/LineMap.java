@@ -12,6 +12,11 @@ public class LineMap {
         Map<String, String> params = new HashMap<>();
         params.put("color", color);
         params.put("name", name);
+        params.put("name", name);
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
+
         return params;
     }
 }

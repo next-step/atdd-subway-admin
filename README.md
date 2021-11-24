@@ -103,8 +103,9 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   * [ ] 노선 조회 시 응답 결과에 역 목록 추가하기
     * 상행역 부터 하행역 순으로 정렬되어야 함
 * 기능 구현
-  * [ ] 노선엔티티에 지하철 정보를 매핑
-  * [ ] 노선 생성
+  * [ ] 노선엔티티에 구역 정보를 매핑
+  * [x] 구역 생성
+  * [ ] 구역 일급 콜렉션
   * [ ] 노선 목록 조회
   
 
