@@ -16,6 +16,7 @@ import nextstep.subway.line.dto.LineResponse;
 @Service
 @Transactional
 public class LineService {
+    public static final int LINES_EMPTY = 0;
     private LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
@@ -29,7 +30,7 @@ public class LineService {
     }
 
     private void saveLineValidation(LineRequest request) {
-        if(isDuplicate(request.getName())){
+        if (isDuplicate(request.getName())) {
             throw new LineDuplicateException();
         }
     }
@@ -41,17 +42,27 @@ public class LineService {
     @Transactional()
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
-
+        findAllLinesValidation(lines);
         return lines.stream()
             .map(LineResponse::of)
             .collect(Collectors.toList());
     }
 
+    private void findAllLinesValidation(List<Line> lines) {
+        if (isLinesEmpty(lines)) {
+            throw new NotFoundLineException();
+        }
+    }
+
+    private boolean isLinesEmpty(List<Line> lines) {
+        return lines.size() <= LINES_EMPTY;
+    }
+
     @Transactional(readOnly = true)
     public LineResponse findId(Long id) {
-        return lineRepository.findById(id)
-            .map(LineResponse::of)
-            .orElseGet(LineResponse::new);
+        Line line = lineRepository.findById(id)
+            .orElseThrow(NotFoundLineException::new);
+        return LineResponse.of(line);
     }
 
     public LineResponse update(Long id, LineRequest lineRequest) {

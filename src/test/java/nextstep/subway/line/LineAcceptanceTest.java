@@ -39,7 +39,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
-    void createLine2() {
+    void duplicateLine() {
         // given
         // 지하철_노선_등록되어_있음
         LineRequest 신분당선 = 지하철_노선_정보("신분당선", "red");
@@ -71,6 +71,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_목록_포함됨(노선_목록_응답, 신분당선_생성_응답, 공항철도_생성_응답);
     }
 
+    @DisplayName("지하철 노선 목록이 없다.")
+    @Test
+    void notFoundLines() {
+        // when
+        ExtractableResponse<Response> 노선_목록_응답 = 지하철_노선_목록_조회();
+
+        // then
+        지하철_노선_존재하지_않음(노선_목록_응답);
+    }
+
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
@@ -78,12 +88,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         LineRequest 신분당선 = 지하철_노선_정보("신분당선", "red");
         ExtractableResponse<Response> 신분당선_생성_응답 = 지하철_노선_생성_요청(신분당선);
+        URI 신분당선_생성_응답_정보 = URI.create(신분당선_생성_응답.header("Location"));
 
         // when
-        ExtractableResponse<Response> 신분당선_조회_응답 = 지하철_노선_조회_요청(신분당선_생성_응답);
+        ExtractableResponse<Response> 신분당선_조회_응답 = 지하철_노선_조회_요청(신분당선_생성_응답_정보);
 
         // then
         지하철_노선_응답됨(신분당선_조회_응답);
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선 조회")
+    @Test
+    void notFoundLine() {
+        // given
+        // 존재하지 않는 지하철 노선
+        URI 존재하지_않는_지하철_노선_정보 = URI.create(LINES_PATH + "/2");
+
+        // when
+        ExtractableResponse<Response> 존재하지_않는_지하철_노선_조회_응답 = 지하철_노선_조회_요청(존재하지_않는_지하철_노선_정보);
+
+        // then
+        지하철_노선_존재하지_않음(존재하지_않는_지하철_노선_조회_응답);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -105,7 +130,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("존재하지 않는 지하철 노선을 수정한다.")
     @Test
-    void notFoundLine() {
+    void notFoundLineUpdate() {
         // given
         // 지하철_노선_존재하지_않음
         URI 존재하지_않는_노선 = URI.create(LINES_PATH + "/-1");
@@ -115,7 +140,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 신분당선_수정_응답 = 지하철_노선_수정_요청(존재하지_않는_노선, 경의중앙선);
 
         // then
-        지하철_노선_수정_실패됨(신분당선_수정_응답);
+        지하철_노선_존재하지_않음(신분당선_수정_응답);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -153,11 +178,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all().extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> response) {
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(URI uri) {
         return RestAssured
             .given().log().all()
-            .body(response.header("Location"))
-            .when().get(LINES_PATH)
+            .when().get(uri)
             .then().log().all().extract();
     }
 
@@ -207,7 +231,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private void 지하철_노선_수정_실패됨(ExtractableResponse<Response> response) {
+    private void 지하철_노선_존재하지_않음(ExtractableResponse<Response> response) {
         assertThat(response.jsonPath().getObject("message", String.class)).isEqualTo(
             NotFoundLineException.NOT_FOUND_LINE);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
