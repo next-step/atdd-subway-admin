@@ -16,7 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.exception.DuplicationStationException;
+import nextstep.subway.line.exception.DuplicationSectionStationException;
 import nextstep.subway.common.exception.NoResultDataException;
 import nextstep.subway.station.domain.Station;
 
@@ -52,7 +52,7 @@ public class Section extends BaseEntity implements Comparable<Section> {
         }
 
         if (upStation.equals(downStation)) {
-            throw new DuplicationStationException();
+            throw new DuplicationSectionStationException();
         }
         this.station = upStation;
         this.nextStation = downStation;
