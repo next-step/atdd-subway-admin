@@ -5,8 +5,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -69,14 +73,45 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
+        final LineRequest createRequest1 = new LineRequest("신분당선", "bg-red-600");
+        final ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+            .body(createRequest1)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
         // 지하철_노선_등록되어_있음
+        final LineRequest createRequest2 = new LineRequest("2호선", "bg-green-600");
+        final ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
+            .body(createRequest2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
 
         // when
         // 지하철_노선_목록_조회_요청
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines")
+            .then().log().all()
+            .extract();
 
         // then
         // 지하철_노선_목록_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_목록_포함됨
+        final List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
+            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+            .collect(Collectors.toList());
+        final List<Long> actualLineIds = response.jsonPath()
+            .getList(".", LineResponse.class)
+            .stream()
+            .map(LineResponse::getId)
+            .collect(Collectors.toList());
+        assertThat(actualLineIds).containsAll(expectedLineIds);
     }
 
     @DisplayName("지하철 노선을 조회한다.")

@@ -1,5 +1,7 @@
 package nextstep.subway.line.application;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -27,5 +29,12 @@ public class LineService {
         if (lineRepository.existsByName(requestedName)) {
             throw new IllegalArgumentException("이미 존재하는 지하철 노선 이름으로 지하철 노선을 생성할 수 없습니다.");
         }
+    }
+
+    public List<LineResponse> findLines() {
+        final List<Line> lines = lineRepository.findAll();
+        return lines.stream()
+            .map(LineResponse::of)
+            .collect(Collectors.toList());
     }
 }
