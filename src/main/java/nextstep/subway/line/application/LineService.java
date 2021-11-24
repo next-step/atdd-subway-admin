@@ -64,9 +64,7 @@ public class LineService {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 Line이 존재하지 않습니다. id = " + id));
 
-        Line updatedLine = new Line(request.getName(), request.getColor());
-
-        line.update(updatedLine);
+        line.update(new Line(request.getName(), request.getColor()));
     }
 
     @Transactional
