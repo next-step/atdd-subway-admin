@@ -24,8 +24,8 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionAddRequest;
 import nextstep.subway.station.dto.StationResponse;
 
-@DisplayName("지하철 구간 관련 기능")
-public class SectionAcceptanceTest extends AcceptanceTest {
+@DisplayName("지하철 구간 추가 관련 기능")
+public class SectionAddAcceptanceTest extends AcceptanceTest {
 
 	/**
 	 * [AS-IS] (강남역)---7m----(선릉역)
