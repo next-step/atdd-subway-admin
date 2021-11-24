@@ -34,8 +34,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createLineResponse = 지하철_노선_생성_요청(
                 "신분당선"
                 , "red"
-                , Long.parseLong(createStationResponse1.jsonPath().get("id").toString())
-                , Long.parseLong(createStationResponse2.jsonPath().get("id").toString())
+                , 역_ID(createStationResponse1)
+                , 역_ID(createStationResponse2)
                 , 10);
 
         // then
@@ -51,16 +51,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성_요청(
                 "신분당선"
                 , "red"
-                , Long.parseLong(createStationResponse1.jsonPath().get("id").toString())
-                , Long.parseLong(createStationResponse2.jsonPath().get("id").toString())
+                , 역_ID(createStationResponse1)
+                , 역_ID(createStationResponse2)
                 , 10);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(
                 "신분당선"
                 , "red"
-                , Long.parseLong(createStationResponse1.jsonPath().get("id").toString())
-                , Long.parseLong(createStationResponse2.jsonPath().get("id").toString())
+                , 역_ID(createStationResponse1)
+                , 역_ID(createStationResponse2)
                 , 10);
 
         // then
@@ -76,14 +76,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성_요청(
                 "신분당선"
                 , "red"
-                , Long.parseLong(createStationResponse1.jsonPath().get("id").toString())
-                , Long.parseLong(createStationResponse2.jsonPath().get("id").toString())
+                , 역_ID(createStationResponse1)
+                , 역_ID(createStationResponse2)
                 , 10);
         지하철_노선_생성_요청(
                 "2호선"
                 , "green"
-                , Long.parseLong(createStationResponse1.jsonPath().get("id").toString())
-                , Long.parseLong(createStationResponse2.jsonPath().get("id").toString())
+                , 역_ID(createStationResponse1)
+                , 역_ID(createStationResponse2)
                 , 10);
 
         // when
@@ -102,8 +102,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createLineResponse = 지하철_노선_생성_요청(
                 "신분당선"
                 , "red"
-                , Long.parseLong(createStationResponse1.jsonPath().get("id").toString())
-                , Long.parseLong(createStationResponse2.jsonPath().get("id").toString())
+                , 역_ID(createStationResponse1)
+                , 역_ID(createStationResponse2)
                 , 10);
         String lineId = createLineResponse.jsonPath().get("id").toString();
 
@@ -123,8 +123,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createLineResponse = 지하철_노선_생성_요청(
                 "신분당선"
                 , "red"
-                , Long.parseLong(createStationResponse1.jsonPath().get("id").toString())
-                , Long.parseLong(createStationResponse2.jsonPath().get("id").toString())
+                , 역_ID(createStationResponse1)
+                , 역_ID(createStationResponse2)
                 , 10);
         String lineId = createLineResponse.jsonPath().get("id").toString();
 
@@ -145,8 +145,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createLineResponse = 지하철_노선_생성_요청(
                 "신분당선"
                 , "red"
-                , Long.parseLong(createStationResponse1.jsonPath().get("id").toString())
-                , Long.parseLong(createStationResponse2.jsonPath().get("id").toString())
+                , 역_ID(createStationResponse1)
+                , 역_ID(createStationResponse2)
                 , 10);
 
         // when
@@ -248,5 +248,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, List<String> names) {
         assertThat(response.jsonPath().getList("name", String.class).containsAll(names)).isTrue();
+    }
+
+    private long 역_ID(ExtractableResponse<Response> response) {
+        String stationId = response.jsonPath().get("id").toString();
+        return Long.parseLong(stationId);
     }
 }
