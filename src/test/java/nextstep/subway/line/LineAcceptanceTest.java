@@ -418,12 +418,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
             // given
             StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
             StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
-            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역").as(StationResponse.class);
             ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), "100");
             String lineUrl = 신분당선.header("Location");
 
             // when
             ExtractableResponse<Response> response = 지하철_구간_추가_요청(lineUrl, 강남역, 광교역, 40);
+
+            // then
+            지하철_구간_생성에_실패한다(response);
+        }
+
+        @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+        @Test
+        void testNotMatchedStations() {
+            // given
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역").as(StationResponse.class);
+            StationResponse 광명역 = StationAcceptanceTest.지하철역_등록되어_있음("광명역").as(StationResponse.class);
+            ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), "100");
+            String lineUrl = 신분당선.header("Location");
+
+            // when
+            ExtractableResponse<Response> response = 지하철_구간_추가_요청(lineUrl, 안양역, 광명역, 40);
 
             // then
             지하철_구간_생성에_실패한다(response);
