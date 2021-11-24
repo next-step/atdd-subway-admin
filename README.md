@@ -85,7 +85,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
         - [x] 지하철 노선의 구간을 생성한다.
             - [x] 종점역(상행, 하행)으로 지정한 지하철 역이 없는 경우 지하철 구간 생성에 실패한다.
             - [x] 구간이 중복 중복되는 경우 예외가 발생한다.
-            - [x] 구간의 거리가 0 이하인 경우 지하철 구간 생성에 실패한다.
+            - [x] 구간의 거리가 최소 거리 이하인 경우 지하철 구간 생성에 실패한다.
     - [x] 지하철 노선 목록을 조회한다.
     - [x] 지하철 노선 1건을 조회한다.
         - [x] 지하철 노선을 상행역 부터 하행역 순으로 정렬한다.
@@ -148,12 +148,12 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     Scenario: 지하철 노선 목록을 조회한다.
         Given 지하철 노선이 등록되어있다.
         When 지하철 노선 목록을 조회 요청한다.
-        Then 지하철 구간 상행역 부터 하행역 순으로 노선 목록이 조회된다.
+        Then 지하철 노선 목록이 조회된다.
     
     Scenario: 지하철 노선 1건을 조회한다.
         Given 지하철 노선이 등록되어있다.
         When 지하철 노선을 조회 요청한다.
-        Then 지하철 노선이 조회된다.
+        Then 지하철 구간 상행역 부터 하행역 순으로 정렬되어 조회된다.
   
     Scenario: 지하철 노선 조회가 실패한다.
         Given 지하철 노선이 등록되어 있지 않다.

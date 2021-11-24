@@ -1,8 +1,6 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.line.application.SectionNotFoundException;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,9 +9,10 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static nextstep.subway.line.domain.Section.MIN_DISTANCE;
+import static org.assertj.core.api.Assertions.*;
 
+@DisplayName("지하철 노선")
 class LineTest {
 
     private List<Station> stations;
@@ -26,7 +25,19 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("지하철 노선을 상행역 부터 하행역 순으로 정렬한다.")
+    @DisplayName("구간 거리가 " + MIN_DISTANCE + " 이하인 경우 실패한다.")
+    void validateDistance() {
+        //given
+        Station upStation = Station.from("강남");
+        Station downStation = Station.from("광교");
+
+        //when //then
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> Line.of("신분당선", "bg-red-600", upStation, downStation, MIN_DISTANCE));
+    }
+
+    @Test
+    @DisplayName("구간 목록을 상행역 부터 하행역 순으로 정렬한다.")
     void sortedSections() {
         // given
         line.addSections(getSections(stations, line));
@@ -69,7 +80,7 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("종점역이 아닌 노선이 중복 중복되는 경우 예외가 발생한다.")
+    @DisplayName("구간이 중복 중복되는 경우 예외가 발생한다.")
     void validateBreakSections() {
         // given
         stations = Station.of("강남", "양재", "판교", "판교");

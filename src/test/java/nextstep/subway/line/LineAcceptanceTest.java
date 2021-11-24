@@ -65,7 +65,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_목록_조회_결과_포함됨(response, 수인선);
     }
 
-    @DisplayName("지하철 노선을 조회하면 한다.")
+    @DisplayName("지하철 구간 상행역 부터 하행역 순으로 정렬되어 조회된다.")
     @Test
     void findLine() {
         // given

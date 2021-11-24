@@ -9,7 +9,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 public class Section {
-    public static final int MIN_DISTANCE = 0;
+
+    protected static final int MIN_DISTANCE = 0;
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
