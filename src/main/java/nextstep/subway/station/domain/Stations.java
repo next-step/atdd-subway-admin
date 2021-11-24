@@ -44,7 +44,7 @@ public class Stations {
 
 	public Station getHead() {
 		if (isEmpty()) {
-			throw new IllegalStateException("역들이 비어있습니다.");
+			return null;
 		}
 
 		return values.get(0);
@@ -52,7 +52,7 @@ public class Stations {
 
 	public Station getTail() {
 		if (isEmpty()) {
-			throw new IllegalStateException("역들이 비어있습니다.");
+			return null;
 		}
 
 		return values.get(values.size() - 1);
