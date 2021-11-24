@@ -38,11 +38,11 @@ public class LineService {
     }
 
     public LineResponse getLineById(Long id) {
-        return LineResponse.of(lineRepository.findById(id).get());
+        return LineResponse.of(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
     }
 
     public LineResponse updateLine(LineRequest lineRequest, Long id) {
-        Line sourceLine = lineRepository.findById(id).get();
+        Line sourceLine = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
         sourceLine.update(lineRequest.toLine());
         Line persistLine = lineRepository.save(sourceLine);
         return LineResponse.of(persistLine);
