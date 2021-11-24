@@ -36,22 +36,14 @@ public class LineService {
 
 	@Transactional(readOnly = true)
 	public LineResponse findById(Long id) {
-		Optional<Line> optionalLine = lineRepository.findById(id);
-		return LineResponse.of(ifPresentGetElseException(optionalLine));
+		return LineResponse.of(lineRepository.findById(id)
+			.orElseThrow(() -> new IllegalArgumentException("조회 할 대상이 없습니다.")));
 	}
 
 	public LineResponse updateById(Long id, LineRequest lineRequest) {
-		Optional<Line> optionalLine = lineRepository.findById(id);
-		Line line = ifPresentGetElseException(optionalLine);
+		Line line  = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("조회 할 대상이 없습니다."));
 		line.update(lineRequest.toLine());
 		return LineResponse.of(line);
-	}
-
-	private Line ifPresentGetElseException(Optional<Line> optionalLine) {
-		if (!optionalLine.isPresent()) {
-			throw new IllegalArgumentException("존재하지 않는 노선입니다.");
-		}
-		return optionalLine.get();
 	}
 
 	public void deleteById(Long id) {
