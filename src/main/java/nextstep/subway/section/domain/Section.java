@@ -1,5 +1,7 @@
 package nextstep.subway.section.domain;
 
+import java.util.Objects;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,10 +21,10 @@ public class Section {
 	private Line line;
 
 	@ManyToOne
-	Station upStation;
+	private Station upStation;
 
 	@ManyToOne
-	Station downStation;
+	private Station downStation;
 
 	int distance;
 
@@ -62,5 +64,20 @@ public class Section {
 
 	public int getDistance() {
 		return distance;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Section section = (Section)o;
+		return Objects.equals(id, section.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
 	}
 }
