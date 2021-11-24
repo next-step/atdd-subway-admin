@@ -23,7 +23,7 @@ public class Section {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_line_station_to_line"), nullable = false)
+    @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"), nullable = false)
     private Line line;
 
     @ManyToOne

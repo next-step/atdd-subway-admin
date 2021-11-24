@@ -37,7 +37,7 @@ alter table station
     add constraint UK_gnneuc0peq2qi08yftdjhy7ok unique (name);
 
 alter table section
-    add constraint fk_line_station_to_line
+    add constraint fk_section_to_line
         foreign key (line_id)
             references line;
 

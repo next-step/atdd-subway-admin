@@ -46,9 +46,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // when
         ExtractableResponse<Response> createResponse = LineAcceptanceTestUtil.지하철_노선_등록되어_있음("2호선",
-            "RED",
-            stationId1,
-            stationId2, 100);
+            "RED", stationId1, stationId2, 100);
 
         // then
         assertAll(
@@ -62,14 +60,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         LineAcceptanceTestUtil.지하철_노선_등록되어_있음("2호선", "RED",
-            stationId1,
-            stationId2, 100);
+            stationId1, stationId2, 100);
 
         // when
         ExtractableResponse<Response> createResponse = LineAcceptanceTestUtil.지하철_노선_등록되어_있음("2호선",
-            "RED",
-            stationId1,
-            stationId2, 100);
+            "RED", stationId1, stationId2, 100);
 
         // then
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -81,11 +76,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         ExtractableResponse<Response> createResponse1 = LineAcceptanceTestUtil.지하철_노선_등록되어_있음("2호선",
-            "RED",
-            stationId1, stationId2, 100);
+            "RED", stationId1, stationId2, 100);
         ExtractableResponse<Response> createResponse2 = LineAcceptanceTestUtil.지하철_노선_등록되어_있음("3호선",
-            "ORANGE",
-            stationId1, stationId3, 100);
+            "ORANGE", stationId1, stationId3, 100);
 
         // when
         ExtractableResponse<Response> response = LineAcceptanceTestUtil.지하철_노선_목록_조회_요청();
@@ -95,8 +88,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
             Arrays.asList(createResponse1,
                 createResponse2));
         List<Long> resultLineIds = LineAcceptanceTestUtil.ids_추출_ByLineResponse(response);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(resultLineIds).containsAll(expectedLineIds)
+        );
     }
 
 
@@ -105,8 +100,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         ExtractableResponse<Response> createResponse = LineAcceptanceTestUtil.지하철_노선_등록되어_있음("2호선",
-            "RED",
-            stationId1, stationId2, 100);
+            "RED", stationId1, stationId2, 100);
 
         // when
         ExtractableResponse<Response> response = LineAcceptanceTestUtil.지하철_노선_조회_요청(
@@ -121,8 +115,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         ExtractableResponse<Response> createResponse1 = LineAcceptanceTestUtil.지하철_노선_등록되어_있음("2호선",
-            "RED",
-            stationId1, stationId2, 100);
+            "RED", stationId1, stationId2, 100);
         Map<String, String> updateParams = LineAcceptanceTestUtil.지하철_노선_생성_파라미터_맵핑("3호선", "RED");
 
         // when
@@ -143,8 +136,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         ExtractableResponse<Response> createResponse = LineAcceptanceTestUtil.지하철_노선_등록되어_있음("2호선",
-            "RED",
-            stationId1, stationId2, 100);
+            "RED", stationId1, stationId2, 100);
 
         // when
         ExtractableResponse<Response> response = LineAcceptanceTestUtil.지하철_노선_제거_요청(
