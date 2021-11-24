@@ -66,10 +66,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        지하철_노선_등록되어_있음(lineRequest1);
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(lineRequest1);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청();
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -79,10 +79,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        지하철_노선_등록되어_있음(lineRequest1);
+        ExtractableResponse<Response> createResponse1 = 지하철_노선_등록되어_있음(lineRequest1);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(lineRequest2);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(lineRequest2, createResponse1);
 
         // then
         지하철_노선_수정됨(response);
@@ -126,34 +126,42 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return response;
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회_요청() {
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> createResponse) {
+        String uri = getURI(createResponse);
+
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines/{lineId}", 1)
+                .when().get(uri)
                 .then().log().all()
                 .extract();
         return response;
     }
 
-    private ExtractableResponse<Response> 지하철_노선_수정_요청(LineRequest lineRequest2) {
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(LineRequest lineRequest2, ExtractableResponse<Response> createResponse) {
+        String uri = getURI(createResponse);
+
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
                 .body(lineRequest2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/{id}", 1)
+                .when().put(uri)
                 .then().log().all().extract();
         return response;
     }
 
     private ExtractableResponse<Response> 지하철_노선_제거_요청(ExtractableResponse<Response> createResponse) {
-        String uri = createResponse.header("Location");
+        String uri = getURI(createResponse);
 
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
                 .when().delete(uri)
                 .then().log().all().extract();
         return response;
+    }
+
+    private String getURI(ExtractableResponse<Response> createResponse) {
+        return createResponse.header("Location");
     }
 
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
