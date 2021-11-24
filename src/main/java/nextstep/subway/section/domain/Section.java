@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "section", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"line_id", "up_station_id", "down_station_id"})
-})
+@Table(name = "section", indexes = @Index(name = "idx_section", columnList = "line_id, up_station_id, down_station_id"))
 public class Section {
 
     @Id

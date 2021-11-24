@@ -44,6 +44,7 @@ public class SectionService {
         return SectionResponse.of(section);
     }
 
+    @Transactional
     public void removeSection(Long lineId, Long stationId) {
 
         Line line = lineRepository.findById(lineId)

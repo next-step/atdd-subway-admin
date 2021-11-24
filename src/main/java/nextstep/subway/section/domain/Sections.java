@@ -25,7 +25,6 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-
     public void add(Section section) {
 
         if(validateEqualSection(section)) {
@@ -45,7 +44,7 @@ public class Sections {
         }
     }
 
-    public void remove(Station station) {
+    public boolean remove(Station station) {
 
         if(validateNotContains(station)) {
             throw new IllegalArgumentException(STATION_NOT_CONTAINS_MESSAGE);
@@ -62,6 +61,8 @@ public class Sections {
             Section section = upSection.sumBySection(downSection);
             this.sections.add(section);
         }
+
+        return true;
     }
 
     private boolean addUpSection(Section section) {
