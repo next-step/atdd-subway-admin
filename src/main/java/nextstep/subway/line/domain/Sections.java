@@ -15,7 +15,7 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> values;
 
     protected Sections() {
@@ -47,7 +47,7 @@ public class Sections {
     }
 
     public Section findLastItem() {
-        return this.values.get(this.values.size() - 1);
+        return findLastSection();
     }
 
     public Integer size() {
@@ -110,7 +110,7 @@ public class Sections {
     }
 
     private boolean isDownStaionTeminal(Section section) {
-        return this.values.get(this.values.size() - 1)
+        return findLastSection()
                             .isEqualDownStation(section.getUpStation());
     }
 
@@ -149,6 +149,58 @@ public class Sections {
     private void checkNotContainStations(Optional<Section> upStationMaption, Optional<Section> downStationMaption) {
         if (upStationMaption.isEmpty() && downStationMaption.isEmpty()) {
             throw new IllegalArgumentException();
+        }
+    }
+
+    public void deleteSection(Station deletingStation) {
+        validateDelete();
+        
+        Section deletingSection = findSectionHasStation(deletingStation);
+
+        if (this.isTermanalStaion(deletingStation)) {
+            this.values.remove(deletingSection);
+            return;
+        }
+
+        Section workSection = findNextSection(deletingSection);
+        
+        workSection.plusDistance(deletingSection);
+        workSection.updateUpStation(deletingSection.getUpStation());
+
+        this.values.remove(deletingSection);
+    }
+
+    private Section findSectionHasStation(Station station) {
+        return this.values.stream()
+                            .filter(findSection -> findSection.hasStaion(station))
+                            .findFirst()
+                            .orElseThrow(() -> new NoSuchElementException("조회되는 구간이 없습니다."));
+    }
+
+    private Section findNextSection(Section section) {
+        return this.values.get(this.values.indexOf(section) + 1);
+    }
+
+    private boolean isTermanalStaion(Station station) {
+        if (this.findFirstItem().isEqualUpStation(station) ||
+            this.findLastItem().isEqualDownStation(station)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private Section findLastSection() {
+        return this.values.get(this.values.size() - 1);
+    }
+
+    private Section findFirstSection() {
+        return this.values.get(0);
+    }
+
+    private void validateDelete() {
+        if (this.values.size() <= 1) {
+            throw new IllegalArgumentException("구간이 1개 이하인 라인의 종점역은 삭제할 수 없습니다.");
         }
     }
 

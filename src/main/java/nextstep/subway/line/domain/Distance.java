@@ -29,20 +29,29 @@ public class Distance {
     }
 
     private void checkZeroValue(Integer value) {
-        if(value == 0) {
+        if (value == 0) {
             throw new IllegalArgumentException("0값이 입력되었습니다.");
         }
     }
 
     private void checkNegativeValue(Integer value) {
-        if(value < 0) {
+        if (value < 0) {
             throw new IllegalArgumentException("음수값이 입력되었습니다.");
         }
     }
 
-    public Distance minus(Distance distance) {
-        return Distance.valueOf(this.value - distance.value);
+    public void minus(Distance distance) {
+        if (this.value < distance.value) {
+            throw new IllegalArgumentException("기존구간 길이보다 긴 구간의 길이를 뺄 수 없습니다.");
+        }
+
+        this.value -= distance.value;
     }
+
+    public void plus(Distance distance) {
+        this.value += distance.value;
+    }
+
     public Integer value() {
         return this.value;
     }

@@ -70,6 +70,10 @@ public class Line extends BaseEntity {
         return stations;
     }
 
+    public void deleteStation(Station deletingStation) {
+        this.sections.deleteSection(deletingStation);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this) {

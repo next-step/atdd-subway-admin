@@ -23,11 +23,11 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
@@ -41,14 +41,19 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    private Section(Station upStation, Station downStation, Distance distance) {
+    private Section(Line line, Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+        this.line = line;
     }
 
     public static Section valueOf(Station upStation, Station downStation, Distance distance) {
-        return new Section(upStation, downStation, distance);
+        return new Section(null, upStation, downStation, distance);
+    }
+
+    public static Section valueOf(Line line, Station upStation, Station downStation, Distance distance) {
+        return new Section(line, upStation, downStation, distance);
     }
 
     public void addSectionAtLine(Line line) {
@@ -80,11 +85,24 @@ public class Section extends BaseEntity {
         return this.distance;
     }
 
+    public Line getLine() {
+        return this.line;
+    }
+
     public boolean hasStaion(Section findSection) {
-        if (this.upStation.equals(findSection.upStation) ||
-            this.upStation.equals(findSection.downStation) ||
-            this.downStation.equals(findSection.upStation) ||
-            this.downStation.equals(findSection.downStation)) {
+        if (this.upStation.equals(findSection.upStation) 
+            || this.upStation.equals(findSection.downStation) 
+            || this.downStation.equals(findSection.upStation) 
+            || this.downStation.equals(findSection.downStation)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean hasStaion(Station findStation) {
+        if (this.upStation.equals(findStation)
+            || this.downStation.equals(findStation)) {
             return true;
         }
 
@@ -92,7 +110,21 @@ public class Section extends BaseEntity {
     }
 
     public Distance minusDistance(Section minusingSection) {
-        return this.distance.minus(minusingSection.getDistance());
+        this.distance.minus(minusingSection.getDistance());
+        return this.distance;
+    }
+
+    public Distance plusDistance(Section plusingSection) {
+        this.distance.plus(plusingSection.getDistance());
+        return this.distance;
+    }
+
+    public void updateDownStation(Station station) {
+        this.downStation = station;
+    }
+
+    public void updateUpStation(Station station) {
+        this.upStation = station;
     }
 
     public SectionMatchingType findMatchingType(Section section) {
