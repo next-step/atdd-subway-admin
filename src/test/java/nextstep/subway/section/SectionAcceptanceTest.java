@@ -228,7 +228,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
+    @DisplayName("구간이 하나일 때 구간 삭제 예외처리")
+    @Test
+    void removeSection_NotExistExceptionTest() {
 
+        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
+        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
 
+        long upStationId = extractId(upStationResponse);
+        long downStationId = extractId(downStationResponse);
+
+        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 7);
+        long lineId = extractId(lineResponse);
+
+        ExtractableResponse<Response> response = ApiUtils.delete(String.format("/lines/%d/sections?stationId=%d", lineId, upStationId));
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
 
 }
