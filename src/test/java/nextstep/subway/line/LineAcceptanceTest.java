@@ -4,7 +4,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.ApiUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -105,6 +104,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_목록_조회_요청
         ExtractableResponse<Response> response = ApiUtils.get("/lines");
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-red-600");
+        params.put("name", "신분당선");
+
 
         // then
         // 지하철_노선_목록_응답됨
