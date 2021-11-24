@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
-    void createLine() {
+    void 지하철_노선을_생성한다() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
@@ -40,7 +40,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
-    void createLine2() {
+    void 기존에_존재하는_지하철_노선_이름으로_지하철_노선을_생성한다() {
         // given
         // 지하철_노선_등록되어_있음
         Map<String, String> params = new HashMap<>();
@@ -57,7 +57,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
-    void getLines() {
+    void 지하철_노선_목록을_조회한다() {
         /// given
         // 지하철_노선_등록되어_있음
         Map<String, String> params1 = new HashMap<>();
@@ -85,7 +85,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
-    void getLine() {
+    void 지하철_노선을_조회한다() {
         /// given
         // 지하철_노선_등록되어_있음
         Map<String, String> params = new HashMap<>();
@@ -106,7 +106,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
-    void updateLine() {
+    void 지하철_노선을_수정한다() {
         // given
         // 지하철_노선_등록되어_있음
         Map<String, String> params1 = new HashMap<>();
