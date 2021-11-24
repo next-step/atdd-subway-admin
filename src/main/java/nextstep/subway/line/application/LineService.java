@@ -18,7 +18,14 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(final LineRequest request) {
+        lineNameShouldBeUnique(request.getName());
         final Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
+    }
+
+    private void lineNameShouldBeUnique(final String requestedName) {
+        if (lineRepository.existsByName(requestedName)) {
+            throw new IllegalArgumentException("이미 존재하는 지하철 노선 이름으로 지하철 노선을 생성할 수 없습니다.");
+        }
     }
 }
