@@ -29,19 +29,28 @@ public class Sections {
             validate(section);
             updateSection(section);
         }
-        this.sections.add(section);
+        sections.add(section);
     }
 
     private void updateSection(Section section) {
-        sections.stream()
-                .filter(it -> it.getStation().equals(section.getStation()))
-                .findFirst()
-                .ifPresent(it -> it.updateStation(section.getNextStation(), section.getDistance()));
+        if(getStations().contains(section.getStation())) {
+            sections.stream()
+                    .filter(it -> it.isSameStation(section))
+                    .findFirst()
+                    .ifPresent(it -> it.updateStation(section));
+            return;
+        }
+        if(getStations().contains(section.getNextStation())) {
+            sections.stream()
+                    .filter(it -> it.isSameNextStation(section))
+                    .findFirst()
+                    .ifPresent(it -> it.updateNextStation(section));
+            return;
+        }
     }
 
     public List<Station> getStations() {
-        Station firstStation = findFirstStation();
-        return getOrderedStations(firstStation);
+        return getOrderedStations(findFirstStation());
     }
 
     private void validate(Section section) {
@@ -63,8 +72,7 @@ public class Sections {
     }
 
     private void validateDistance(Section section) {
-        Optional<Section> findSection = findSection(section);
-        findSection.ifPresent(it -> {
+        findSection(section).ifPresent(it -> {
             if (!it.isPermitDistance(section.getDistance())) {
                 throw new SectionNotCreateException("유효한 길이가 아닙니다.");
             }

@@ -46,11 +46,24 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
 
-    @DisplayName("역 사이에 새로운 역을 등록한다")
+    @DisplayName("역 사이에 새로운 역을 등록한다(upStation이 존재할 경우)")
     @Test
     void createSection() {
         // given
         SectionRequest 상행종점역_사이_추가역_거리_5 = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_5);
+
+        // when
+        ExtractableResponse<Response> response = 구간_생성_요청함(상행종점역_사이_추가역_거리_5);
+
+        // then
+        역사이_구간_생성됨(response);
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록한다(upStation이 존재하지 않을 경우)")
+    @Test
+    void createSection1() {
+        // given
+        SectionRequest 상행종점역_사이_추가역_거리_5 = SectionRequest.of(사이_추가_역_ID, 최초_하행종점역_ID, 거리_5);
 
         // when
         ExtractableResponse<Response> response = 구간_생성_요청함(상행종점역_사이_추가역_거리_5);
