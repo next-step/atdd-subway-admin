@@ -148,15 +148,16 @@ public class Sections {
             throw new CannotAddSectionException(ERROR_MESSAGE_DISTANCE_IS_GREATER);
         }
 
-        int diffDistance = modifiedSection.getDistance() - requestSection.getDistance();
-        Section newSection = createNewSection(requestSection, modifiedSection, diffDistance);
+        Section newSection = createNewSection(requestSection, modifiedSection);
 
         sections.remove(modifiedSection);
         sections.add(requestSection);
         sections.add(newSection);
     }
 
-    private Section createNewSection(Section requestSection, Section modifiedSection, int diffDistance) {
+    private Section createNewSection(Section requestSection, Section modifiedSection) {
+        int diffDistance = modifiedSection.getDistance() - requestSection.getDistance();
+
         if (modifiedSection.isEqualUpStation(requestSection)) {
             return Section.of(modifiedSection.getDownStation(), requestSection.getDownStation(), diffDistance);
         }
