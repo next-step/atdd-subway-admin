@@ -4,7 +4,6 @@ import nextstep.subway.common.ui.ErrorResponse;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.line.dto.SectionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
