@@ -111,6 +111,91 @@
    +  x 무엇인가?
        + 표준 라이브러리에 속하지 않는 다른 다양한 확장 패키지
 
+
+# 2단계 인수테스트 리팩토링 
+
+## 요구사항 
+
+- 노선 생성 시 종점역(상행, 하행) 추가가 필요함 
+- 두 종점역은 구간의 형태로 관리되어야 함
+- 노선 조회 시 응답 결과에 역 목록 추가하기
+- 상행역 부터 하행역 순으로 정렬되어야 함
+
+## 기능 정의 
+- [x] 노선 생성시 상행,하행 정보를 같이 생성한다.
+- [x] 상행역 부터 하행역 순으로 정렬되어야 함
+- [x] 거리는 0보다 작을 수 없다.
+- [x] 중복된 역이 등록 될 수 없다.
+- [x] 상행, 하행역은 등록된 id 값이어야한다.
+- [x] 수정 삭제 조회시 대상건 조회 방법 Query 생성
+- [x] 지하철역 전체 조회시 존재하지 않는경우 예외
+
+
+## 2번째 피드백 
+
+1. `@Embeddable` 사용시 무조건 `Serializable`을 구현하는 것이 아니라
+   - 복합키인 경우 구현해야한다. 
+2. @DynamicUpdate는 약 30개 이상이면 기본 방법보다 쿼리가 빠르지만 그 이하인 경우에는 느림 
+   - 그러나 30개 이상의 컬럼이라면 클래스를 쪼개야하는 시점이다.
+
+3. @OneToMany를 사용하는 경우 
+```java
+public class Article {
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true) 
+	private List<Image> images = new ArrayList<>();
+}
+```
+1. 위 경우 Article 수정했는데 Image 변경되는 상황이 연출된다. 
+2. 왜냐하면 `다` 쪽이 images 
+
+3. 하이버네이트 @Fetch(FetchMode.SUBSELECT)
+- 서브쿼리를 사용할 수 있다. 
+```java
+@Entity
+class Member{
+    @Id @GeneratedValue
+    private Long id;
+
+    @org.hibernate.annotations.Fetch(FetchMode.SUBSELECT)
+    @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
+    private List<Order> orders = new ArrayList<>();
+}
+```
+
+4. @BatchSize로 성능 최적화 가능 
+5. @Transactional(readOnly = true) 성능최적화 가능
+- 플러시 모드를 MANUAL로 설정한다.
+  이렇게하면 강제로 플러시 호출을 하지 않는 한 플러시가 일어나지 않는다.
+  엔티티의 플러시 모드는 AUTO, COMMIT 모드만 있다.
+  MANUAL 모드는 하이버네이트 세션에 있는 플러시모드이다. 이는 강제로 플러시를 호출하지 않으면 절대 플러시가 일어나지 않는 특징을 가지고 있다.
+  하이버네이트 세션은 JPA 엔티티 매니저를 하이버네이트로 구현한 구현체이다.
+플러시를 수행하지 않으므로 플러시할 떄 일어나는 스냅샷 비교와 같은 무거운 로직들이 실행되지 않으므로 성능이 향상된다.
+(그래도 스냅샷은 그대로 저장하는 듯. 단지 플러시만 일어나지 않는 것 같다.)
+물론 트랜잭션을 시작했으므로 트랜잭션 시작, 수행, 커밋의 과정은 이루어진다.
+6. [다형성저장엔티티](https://joont92.github.io/jpa/%ED%95%9C-%EC%BB%AC%EB%9F%BC%EC%97%90-%EC%97%AC%EB%9F%AC-%EC%97%94%ED%8B%B0%ED%8B%B0-%EC%A0%80%EC%9E%A5%ED%95%98%EA%B8%B0-feat-Any/)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 --------------------
 --------------------
 ### 인수 테스트(Acceptance Test)란? <br>

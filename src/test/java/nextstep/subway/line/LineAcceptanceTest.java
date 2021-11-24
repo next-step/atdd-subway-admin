@@ -1,21 +1,24 @@
 package nextstep.subway.line;
 
+import static nextstep.subway.fixtrue.TestFactory.*;
+import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.*;
-import static org.springframework.http.MediaType.*;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.PageRequest;
 
-import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.fixtrue.TestFactory;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -27,160 +30,154 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public static final String LINE_THREE = "3호선";
     public static final String LINE_THREE_YELLOW = "bg-yellow-600";
     public static final String ID = "id";
+    public static final String 신촌역 = "신촌역";
+    public static final String 서울역 = "서울역";
+    public static final String 용산역 = "용산역";
+    public static final String 강남역 = "강남역";
 
-    @DisplayName("지하철 노선을 생성한다.")
     @Test
-    void createLine() {
+    void 지하철_노선을_생성한다() {
 
-        LineRequest lineRequest = new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED);
+        StationResponse station1 = 지하철역_등록되어_있음(new StationRequest(신촌역));
+        StationResponse station2 = 지하철역_등록되어_있음(new StationRequest(강남역));
+        LineRequest lineRequest = new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, station1.getId(), station2.getId(), 10);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> post = post(lineRequest);
+        ExtractableResponse<Response> post = 지하철_노선_생성_요청(lineRequest);
 
         // then
         // 지하철_노선_생성됨
         assertThat(post.statusCode()).isEqualTo(CREATED.value());
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
-    void createLine2() {
+    void 기존에_존재하는_지하철_노선_이름으로_지하철_노선을_생성한다() {
         // given
         // 지하철_노선_등록되어_있음
-        LineResponse lineResponse = toLine(post(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED)));
-        LineRequest lineRequest = new LineRequest(lineResponse.getName(), lineResponse.getColor());
+        StationResponse station1 = 지하철역_등록되어_있음(new StationRequest(신촌역));
+        StationResponse station2 = 지하철역_등록되어_있음(new StationRequest(강남역));
+        LineRequest createLine = new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, station1.getId(), station2.getId(), 10);
+        지하철_노선_등록되어_있음(createLine);
 
         // when
-        // 존재하는 지하철 노선 생성
-        ExtractableResponse<Response> post = post(lineRequest);
+        // 존재하는 지하철 노선 생성 요청
+        ExtractableResponse<Response> post = 지하철_노선_생성_요청(createLine);
 
         // then
         // 지하철_노선_생성_실패됨
         assertThat(post.statusCode()).isEqualTo(BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
-    void getLines() {
+    void 지하철_노선_목록을_조회한다() {
+
         // given
-        post(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED));
-        post(new LineRequest(LINE_TWO, LINE_TWO_COLOR_GREEN));
+        StationResponse station1 = 지하철역_등록되어_있음(new StationRequest(신촌역));
+        StationResponse station2 = 지하철역_등록되어_있음(new StationRequest(강남역));
+        StationResponse station3 = 지하철역_등록되어_있음(new StationRequest(서울역));
+        StationResponse station4 = 지하철역_등록되어_있음(new StationRequest(용산역));
+        지하철_노선_등록되어_있음(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, station1.getId(), station2.getId(), 10));
+        지하철_노선_등록되어_있음(new LineRequest(LINE_TWO, LINE_TWO_COLOR_GREEN, station3.getId(), station4.getId(), 10));
 
         // when
-        // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> findResponse = get();
+        ExtractableResponse<Response> findResponse = 지하철_노선_조회_요청();
 
         // then
         assertThat(findResponse.statusCode()).isEqualTo(OK.value());
+        지하철_응답_내용_확인(findResponse);
     }
 
+    private void 지하철_응답_내용_확인(ExtractableResponse<Response> findResponse) {
+        JsonPath jsonPath = findResponse.jsonPath();
+        String lineName1 = jsonPath.getString("[0].name");
+        String subwayName1 = jsonPath.getString("[0].stations[0].name");
+        String lineName2 = jsonPath.getString("[1].name");
+        String subwayName2 = jsonPath.getString("[1].stations[0].name");
+        assertThat(lineName1).isEqualTo(LINE_ONE);
+        assertThat(subwayName1).isEqualTo(신촌역);
+        assertThat(lineName2).isEqualTo(LINE_TWO);
+        assertThat(subwayName2).isEqualTo(서울역);
+    }
 
-    @DisplayName("지하철 노선을 조회한다.")
     @Test
-    void getLine() {
+    void 지하철_노선을_조회한다() {
+
         // given
-        // 지하철_노선_등록되어_있음
-        Long id = postGetId(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED));
+        StationResponse station1 = 지하철역_등록되어_있음(new StationRequest(신촌역));
+        StationResponse station2 = 지하철역_등록되어_있음(new StationRequest(강남역));
+        LineResponse lineResponse = 지하철_노선_등록되어_있음(
+            new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, station1.getId(), station2.getId(), 10));
 
         // when
-        // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = get(id);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineResponse.getId());
 
         // then
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(OK.value());
     }
 
-
-    @DisplayName("지하철 노선을 수정한다.")
     @Test
-    void updateLine() {
+    void 지하철_노선을_수정한다() {
+
         // given
-        // 지하철_노선_등록되어_있음
-        LineRequest lineRequest = new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED);
-        Long id = postGetId(lineRequest);
+        StationResponse station1 = 지하철역_등록되어_있음(new StationRequest(서울역));
+        StationResponse station2 = 지하철역_등록되어_있음(new StationRequest(용산역));
+        LineResponse lineResponse = 지하철_노선_등록되어_있음(
+            new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, station1.getId(), station2.getId(), 10));
 
         // when
-        // 지하철_노선_수정_요청
-        LineRequest updateRequest = new LineRequest(LINE_THREE, LINE_THREE_YELLOW);
-        ExtractableResponse<Response> updateResponse = update(id, updateRequest);
+        LineRequest updateRequest = new LineRequest(LINE_THREE, LINE_THREE_YELLOW, station1.getId(), station2.getId(), 10);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(lineResponse.getId(), updateRequest);
 
         // then
-        // 지하철_노선_수정됨
-        LineResponse expected = toLine(updateResponse);
-        assertThat(updateResponse.statusCode()).isEqualTo(CREATED.value());
+        LineResponse expectedResponse = toResponseData(response, LineResponse.class);
         assertAll(
-            () -> assertThat(expected.getName().equals(LINE_THREE)).isTrue(),
-            () -> assertThat(expected.getColor().equals(LINE_THREE_YELLOW)).isTrue()
+            () -> assertThat(expectedResponse.getName().equals(LINE_THREE)).isTrue(),
+            () -> assertThat(expectedResponse.getColor().equals(LINE_THREE_YELLOW)).isTrue()
         );
     }
 
-    @DisplayName("지하철 노선을 제거한다.")
     @Test
-    void deleteLine() {
+    void 지하철_노선을_제거한다() {
+
         // given
-        // 지하철_노선_등록되어_있음
-        Long id = postGetId(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED));
+        StationResponse station1 = 지하철역_등록되어_있음(new StationRequest(서울역));
+        StationResponse station2 = 지하철역_등록되어_있음(new StationRequest(용산역));
+        LineResponse lineResponse = 지하철_노선_등록되어_있음(
+            new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, station1.getId(), station2.getId(), 10));
 
         // when
-        // 지하철_노선_제거_요청
-        ExtractableResponse<Response> response = delete(id);
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(lineResponse.getId());
 
         // then
         // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> post(Object obj) {
-        return given()
-            .body(obj)
-            .when().post("lines")
-            .then().log().all()
-            .extract();
+    private ExtractableResponse<Response> 지하철_노선_생성_요청(Object obj) {
+        return TestFactory.post("/lines", obj);
     }
 
-    private Long postGetId(LineRequest lineRequest) {
-        return toLine(post(lineRequest)).getId();
+    private LineResponse 지하철_노선_등록되어_있음(Object obj) {
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(obj);
+        return response.jsonPath().getObject(".", LineResponse.class);
     }
 
-    private LineResponse toLine(ExtractableResponse<Response> resource) {
-        return resource.jsonPath().getObject(".", LineResponse.class);
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
+        return TestFactory.get("lines/{id}", id);
     }
 
-    private ExtractableResponse<Response> get(Long id) {
-        return given()
-            .pathParam(ID, id)
-            .get("lines/{id}")
-            .then().log().all()
-            .extract();
-    }
-    private ExtractableResponse<Response> get() {
-        return given()
-            .body(PageRequest.of(1, 10))
-            .when().get("lines")
-            .then().log().all()
-            .extract();
+    private ExtractableResponse<Response> 지하철_노선_조회_요청() {
+        return TestFactory.get("lines");
     }
 
-    private ExtractableResponse<Response> update(Long id, Object obj) {
-        return given().body(obj).pathParam(ID, id)
-            .when().patch("lines/{id}")
-            .then().log().all()
-            .extract();
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, Object obj) {
+        return TestFactory.update("lines/{id}", id, obj);
     }
 
-    private ExtractableResponse<Response> delete(Long id) {
-        return given()
-            .param(ID, id)
-            .when().delete("lines")
-            .then().log().all().extract();
-    }
-
-    private RequestSpecification given() {
-        return RestAssured
-            .given().log().all()
-            .contentType(APPLICATION_JSON_VALUE);
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(Long id) {
+        return TestFactory.delete("lines/{id}", id);
     }
 
 }
