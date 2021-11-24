@@ -52,7 +52,7 @@ public class Sections {
         return this.sections.stream()
                 .filter(s -> s.matchUpStation(section) || s.matchDownStation(section))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("상행과 하행 모두 포함되지 않습니다.2"));
+                .orElseThrow(() -> new IllegalArgumentException("상행과 하행 모두 포함되지 않습니다."));
     }
 
     private boolean isGreaterEqualDistance(Section section, Section otherSection) {
