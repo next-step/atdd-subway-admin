@@ -62,11 +62,11 @@ public class LineService {
         return LineResponse.of(lineRepository.save(line));
     }
 
-    public LineResponse saveSection(Long id, SectionRequest request) {
+    public LineResponse addSection(Long id, SectionRequest request) {
         checkStationIds(request);
         final Line line = findByLineId(id);
         line.addSection(createSection(request));
-        return LineResponse.of(lineRepository.save(line));
+        return LineResponse.of(line);
     }
 
     public LineResponse findOne(Long id) {

@@ -32,7 +32,7 @@ public class LineController {
 
     @PostMapping("{id}/sections")
     public ResponseEntity<LineResponse> createSection(@PathVariable Long id, @RequestBody SectionRequest request) {
-        final LineResponse line = lineService.saveSection(id, request);
+        final LineResponse line = lineService.addSection(id, request);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
