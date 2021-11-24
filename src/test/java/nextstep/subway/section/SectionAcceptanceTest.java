@@ -30,7 +30,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Autowired
     private StationRepository stationRepository;
 
-    @DisplayName("구간 추가하기 - 기존 상행 하행 사이에 등록될 경우")
+    @DisplayName("기존 상행 하행 사이에 구간 등록할 경우")
     @Test
     void addSectionTest() {
 
@@ -56,7 +56,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().getInt("distance")).isEqualTo(distance);
     }
 
-    @DisplayName("구간 추가하기 - 새로운 역을 상행 종점으로 등록할 경우")
+    @DisplayName("새로운 역을 상행 종점으로 하여 구간을 등록할 경우")
     @Test
     void addUpSectionTest() {
 
@@ -84,7 +84,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().getInt("distance")).isEqualTo(distance);
     }
 
-    @DisplayName("구간 추가하기 - 새로운 역을 하행 종점으로 등록할 경우")
+    @DisplayName("새로운 역을 하행 종점으로 하여 구간을 등록할 경우")
     @Test
     void addDownSectionTest() {
 
@@ -111,7 +111,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().getInt("distance")).isEqualTo(distance);
     }
 
-    @DisplayName("구간 추가하기 - 추가될 구간의 거리가 동일하거나 큰 경우 예외처리")
+    @DisplayName("등록될 구간의 거리가 기존 구간 사이에 등록될 때 구간의 거리가 기존 구간 거리와 동일하거나 큰 경우 예외처리")
     @Test
     void addSection_DistanceGraterEqualExceptionTest() {
 
@@ -136,7 +136,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    @DisplayName("구간 추가 시 동일한 상행, 하행 등록 예외처리")
+    @DisplayName("등록될 구간이 기존 구간과 동일한 상행, 하행을 등록할 경우 예외처리")
     @Test
     void addSection_EqualSectionExceptionTest() {
 
@@ -158,7 +158,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    @DisplayName("구간 추가 시 상행과 하행역 둘 다 포함되어있지 않으면 예외처리")
+    @DisplayName("등록될 구간이 상행과 하행역 둘 다 포함되어있지 않으면 예외처리")
     @Test
     void addSection_UpStationOrDownStation_NotContainsExceptionTest() {
 
@@ -186,7 +186,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    @DisplayName("노선의 구간 삭제 시 삭제되는 역이 종점일경우")
+    @DisplayName("구간 삭제 시 삭제되는 역이 종점일경우")
     @Test
     void removeSectionTest() {
 
@@ -213,7 +213,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    @DisplayName("노선의 구간 삭제 시 삭제하는 역이 중간역일경우")
+    @DisplayName("구간 삭제 시 삭제하는 역이 중간역일경우")
     @Test
     void removeSection() {
 
