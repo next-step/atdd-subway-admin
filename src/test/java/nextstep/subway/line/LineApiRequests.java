@@ -7,7 +7,7 @@ import nextstep.subway.line.dto.LineRequest;
 import org.springframework.http.MediaType;
 
 public class LineApiRequests {
-    public static  ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
         return RestAssured
                 .given().log().all()
                 .body(lineRequest)
@@ -18,25 +18,15 @@ public class LineApiRequests {
                 .extract();
     }
 
-    public static  ExtractableResponse<Response> 지하철_노선_조회_요청(Long lineId) {
-        return RestAssured
-                .given().log().all()
-                .when()
-                .get("/lines/" + lineId)
-                .then().log().all()
-                .extract();
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long lineId) {
+        return get("/lines/" + lineId);
     }
 
-    public static  ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
-        return RestAssured
-                .given().log().all()
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
+    public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
+        return get("/lines");
     }
 
-    public static  void 지하철_노선_수정_요청(Long lineId, LineRequest updateRequest) {
+    public static void 지하철_노선_수정_요청(Long lineId, LineRequest updateRequest) {
         RestAssured
                 .given().log().all()
                 .body(updateRequest)
@@ -47,11 +37,20 @@ public class LineApiRequests {
                 .extract();
     }
 
-    public static  void 지하철_노선_제거_요청(Long lineId) {
+    public static void 지하철_노선_제거_요청(Long lineId) {
         RestAssured
                 .given().log().all()
                 .when()
                 .delete("/lines/" + lineId)
                 .then().log().all();
+    }
+
+    private static ExtractableResponse<Response> get(String uri) {
+        return RestAssured
+                .given().log().all()
+                .when()
+                .get(uri)
+                .then().log().all()
+                .extract();
     }
 }
