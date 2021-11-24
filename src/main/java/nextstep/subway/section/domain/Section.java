@@ -4,6 +4,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -47,6 +49,13 @@ public class Section {
 
     public Long getId() {
         return id;
+    }
+
+    public List<Section> divideByStation(Station station, Integer distance) {
+        return Arrays.asList(
+                Section.create(this.line, upStation, station, this.distance - distance),
+                Section.create(this.line, station, downStation, distance)
+        );
     }
 
     public boolean matchUpStationFromUpStation(Section section) {

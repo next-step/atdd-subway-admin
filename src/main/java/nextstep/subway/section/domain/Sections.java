@@ -1,10 +1,15 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.station.domain.Station;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+
+import static java.util.stream.Collectors.toList;
 
 @Embeddable
 public class Sections {
@@ -26,26 +31,29 @@ public class Sections {
             throw new IllegalArgumentException("거리가 작아야합니다.");
         }
 
-        if(this.sections.stream().anyMatch(s -> s.matchUpStationFromUpStation(section))) {
-            Section findSection = this.sections.stream()
-                    .filter(s -> s.matchUpStationFromUpStation(section))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("일치하는 상행역이 존재하지 않습니다."));
-
-            findSection.changeUpStationToDownStation(section);
+        if(!addUpSection(section) && !addDownSection(section)) {
+            this.sections.add(section);
         }
+    }
 
-        if(this.sections.stream().anyMatch(s -> s.matchDownStationFromDownStation(section))) {
+    private boolean addSection(Station station, Integer distance, Predicate<Section> express) {
+        if(this.sections.stream().anyMatch(express)) {
+            List<Section> divideBySections = this.sections.stream()
+                    .filter(express)
+                    .flatMap(s -> s.divideByStation(station, distance).stream())
+                    .collect(toList());
 
-            Section findSection = this.sections.stream()
-                    .filter(s -> s.matchDownStationFromDownStation(section))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("일치하는 하행역이 존재하지 않습니다."));
-
-            findSection.changeDownStationToUpStation(section);
+            return this.sections.addAll(divideBySections);
         }
+        return false;
+    }
 
-        this.sections.add(section);
+    private boolean addUpSection(Section section) {
+        return addSection(section.getDownStation(), section.getDistance(), s -> s.matchUpStationFromUpStation(section));
+    }
+
+    private boolean addDownSection(Section section) {
+        return addSection(section.getUpStation(), section.getDistance(), s -> s.matchDownStationFromDownStation(section));
     }
 
     private Section matchStation(Section section) {

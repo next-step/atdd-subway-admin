@@ -175,5 +175,4 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
 
-
 }
