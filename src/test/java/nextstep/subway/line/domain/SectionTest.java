@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import static nextstep.subway.line.domain.DistanceTest.*;
 import static nextstep.subway.station.domain.StationTest.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,16 +16,25 @@ public class SectionTest {
         //given
         final Station upStation = 지하철역_생성_및_검증("강남");
         final Station downStation = 지하철역_생성_및_검증("삼성");
+        final Distance distance = 지하철_노선_구간거리_생성_및_검증(7);
 
         //when
-        final Section section = 지하철_구간_생성(upStation, downStation);
+        final Section section = 지하철_구간_생성(upStation, downStation, distance);
 
         //then
         지하철_구간_생성됨(section, upStation, downStation);
     }
 
-    public static Section 지하철_구간_생성(final Station upStation, final Station downStation) {
-        return new Section(upStation, downStation);
+    public static Section 지하철_구간_생성(final Station upStation, final Station downStation, final Distance distance) {
+        return new Section(upStation, downStation, distance);
+    }
+
+    public static Section 지하철_구간_생성_및_검증(final Station upStation, final Station downStation, final Distance distance) {
+        final Section section = 지하철_구간_생성(upStation, downStation, distance);
+
+        지하철_구간_생성됨(section, upStation, downStation);
+
+        return section;
     }
 
     public static void 지하철_구간_생성됨(final Section section, final Station upStation, final Station downStation) {
@@ -46,8 +56,10 @@ public class SectionTest {
 
     public static void 중복된_역으로_지하철_구간_생성할_수_없음(final Station upStation, final Station downStation) {
         assertAll(
-            () -> assertThatIllegalArgumentException().isThrownBy(() -> 지하철_구간_생성(upStation, upStation)),
-            () -> assertThatIllegalArgumentException().isThrownBy(() -> 지하철_구간_생성(downStation, downStation))
+            () -> assertThatIllegalArgumentException().isThrownBy(() -> 지하철_구간_생성(upStation, upStation,
+                new Distance(20))),
+            () -> assertThatIllegalArgumentException().isThrownBy(() -> 지하철_구간_생성(downStation, downStation,
+                new Distance(20)))
         );
     }
 }

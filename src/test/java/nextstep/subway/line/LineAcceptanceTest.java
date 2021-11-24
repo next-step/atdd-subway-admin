@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    public static final LineRequest CREATE_LINE = new LineRequest("2호선", "red lighten-2");
+    public static final LineRequest CREATE_LINE = new LineRequest("2호선", "red lighten-2", 1L, 2L, 7);
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -79,7 +79,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> createResponse = 지하철_노선_생성_및_검증(CREATE_LINE);
 
         // 지하철_노선_등록되어_있음
-        final LineRequest otherCreateLine = new LineRequest("3호선", "red lighten-3");
+        final LineRequest otherCreateLine = new LineRequest("3호선", "red lighten-3", 2L, 3L, 7);
         final ExtractableResponse<Response> otherCreateResponse = 지하철_노선_생성_및_검증(otherCreateLine);
 
         // when
@@ -157,7 +157,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_수정_요청
         final String updateName = "3호선";
         final String updateColor = "red";
-        final LineRequest updateLine = new LineRequest(updateName, updateColor);
+        final LineRequest updateLine = new LineRequest(updateName, updateColor, 3L, 4L, 7);
 
         final String uri = 로케이션_가져오기(createResponse);
         final ExtractableResponse<Response> response = 지하철_노선_수정(updateLine, uri);
