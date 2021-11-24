@@ -20,8 +20,8 @@ import java.util.Objects;
 @Embeddable
 @Table(
         indexes = @Index(
-                name = "section_id_up_station_id_down_station_id_unique_index",
-                columnList = "id,upStationId,downStationId",
+                name = "up_station_id_down_station_id_unique_index",
+                columnList = "upStationId,downStationId",
                 unique = true
         )
 )
@@ -64,10 +64,6 @@ public class Section extends BaseEntity {
 
     public static Section of(int distance, Station upStation, Station downStation) {
         return new Section(distance, upStation, downStation);
-    }
-
-    public int getDistance() {
-        return distance.getDistance();
     }
 
     public Station getUpStation() {
