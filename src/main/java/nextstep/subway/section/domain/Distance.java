@@ -32,6 +32,10 @@ public class Distance {
         return new Distance(this.value - distance.value);
     }
 
+    public Distance add(Distance distance) {
+        return new Distance(this.value + distance.value);
+    }
+
     public boolean lessThanOrEqual(Distance other) {
         return this.value <= other.value;
     }

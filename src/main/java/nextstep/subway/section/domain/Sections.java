@@ -33,12 +33,32 @@ public class Sections {
     }
 
     public void connect(Section section) {
-        Optional<Section> optExistedSection = upBoundSection(section);
+        Optional<Section> optExistedSection = upBoundSection(section.getUpStation());
         validateForConnect(optExistedSection, section);
 
         updateWhenConnectInMiddleOfExistedSection(optExistedSection, section);
 
         this.values.add(section);
+    }
+
+    public void remove(Station station) {
+        Optional<Section> optUpBoundSection = upBoundSection(station);
+        Optional<Section> optDownBoundSection = downBoundSection(station);
+
+        if (optUpBoundSection.isPresent() && optDownBoundSection.isPresent()) {
+            updateWhenDeleteStationInMiddleOfSection(optUpBoundSection.get(), optDownBoundSection.get());
+            return;
+        }
+
+        if (optUpBoundSection.isPresent()) {
+            remove(optUpBoundSection.get()); // 하행 종점을 삭제하는 경우
+            return;
+        }
+
+        if (optDownBoundSection.isPresent()) {
+            remove(optDownBoundSection.get()); // 상행 종점을 삭제하는 경우
+            return;
+        }
     }
 
     private void validateForConnect(Optional<Section> optExistedSection, Section section) {
@@ -58,6 +78,12 @@ public class Sections {
             Section existedSection = optExistedSection.get();
             existedSection.updateForConnect(section);
         }
+    }
+
+    private void updateWhenDeleteStationInMiddleOfSection(Section upBoundSection,
+        Section downBoundSection) {
+        upBoundSection.updateForDelete(downBoundSection);
+        remove(downBoundSection);
     }
 
     public static Sections empty() {
@@ -91,9 +117,15 @@ public class Sections {
             .orElseThrow(() -> new IllegalStateException("상행역이 속하는 구간은 한 개가 있어야 합니다."));
     }
 
-    private Optional<Section> upBoundSection(Section standardSection) {
+    private Optional<Section> upBoundSection(Station station) {
         return this.values.stream()
-            .filter(section -> section.getUpStation().equals(standardSection.getUpStation()))
+            .filter(section -> section.getDownStation().equals(station))
+            .findFirst();
+    }
+
+    private Optional<Section> downBoundSection(Station station) {
+        return this.values.stream()
+            .filter(section -> section.getUpStation().equals(station))
             .findFirst();
     }
 
@@ -165,6 +197,10 @@ public class Sections {
     private boolean isExistedUpStationAndDownStation(Section section, Set<Station> stations) {
         return stations.contains(section.getUpStation())
             && stations.contains(section.getDownStation());
+    }
+
+    private void remove(Section section) {
+        this.values.remove(section);
     }
 
     public List<Section> getValues() {

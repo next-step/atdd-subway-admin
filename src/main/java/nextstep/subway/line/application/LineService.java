@@ -57,6 +57,11 @@ public class LineService {
                              .orElseThrow(() -> new NotFoundException("해당하는 Line이 없습니다. id = " + id));
     }
 
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = readWithSectionsById(lineId);
+        line.removeSection(stationId);
+    }
+
     private Line readWithSectionsById(Long id) {
         return lineRepository.findWithSectionsById(id)
             .orElseThrow(() -> new NotFoundException("해당하는 Line이 없습니다. id = " + id));

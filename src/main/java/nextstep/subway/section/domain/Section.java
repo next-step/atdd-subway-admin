@@ -52,6 +52,11 @@ public class Section {
         this.distance = this.distance.subtract(section.distance);
     }
 
+    public void updateForDelete(Section section) {
+        this.downStation = section.upStation;
+        this.distance = this.distance.add(section.getDistance());
+    }
+
     public Station getUpStation() {
         return upStation;
     }
