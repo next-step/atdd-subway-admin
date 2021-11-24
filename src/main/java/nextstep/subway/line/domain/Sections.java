@@ -149,7 +149,7 @@ public class Sections {
                             Station newUpStation,
                             Station newDownStation) {
 
-        if (modifiedSection.isEqualOrMoreDistance(requestSection)) {
+        if (modifiedSection.isDistanceGraterThan(requestSection)) {
             throw new CannotAddSectionException(ERROR_MESSAGE_EQUAL_OR_MORE_DISTANCE);
         }
 

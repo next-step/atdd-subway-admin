@@ -36,7 +36,7 @@ public class Distance {
         }
     }
 
-    public boolean isEqualOrMoreDistance(Distance distance) {
+    public boolean isGreaterThan(Distance distance) {
         return this.distance <= distance.distance;
     }
 }

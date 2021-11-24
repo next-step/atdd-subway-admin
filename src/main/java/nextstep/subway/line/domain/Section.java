@@ -65,8 +65,8 @@ public class Section extends BaseEntity {
         return distance.getDistance();
     }
 
-    public boolean isEqualOrMoreDistance(Section section) {
-        return distance.isEqualOrMoreDistance(section.distance);
+    public boolean isDistanceGraterThan(Section section) {
+        return distance.isGreaterThan(section.distance);
     }
 
     private void validateDuplicateStation(Station upStation, Station downStation) {

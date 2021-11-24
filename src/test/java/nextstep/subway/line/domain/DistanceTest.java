@@ -57,7 +57,7 @@ class DistanceTest {
             Distance 대상 = Distance.of(대상값);
 
             // when
-            boolean result = 기준.isEqualOrMoreDistance(대상);
+            boolean result = 기준.isGreaterThan(대상);
 
             // then
             assertThat(result)
@@ -73,7 +73,7 @@ class DistanceTest {
             Distance 대상 = Distance.of(대상값);
 
             // when
-            boolean result = 기준.isEqualOrMoreDistance(대상);
+            boolean result = 기준.isGreaterThan(대상);
 
             // then
             assertThat(result)
