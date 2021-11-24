@@ -6,8 +6,12 @@ import java.util.stream.Collectors;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,14 +20,27 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class LineService {
 	private final LineRepository lineRepository;
+	private final StationRepository stationRepository;
+	private final SectionRepository sectionRepository;
 
-	public LineService(LineRepository lineRepository) {
+	public LineService(LineRepository lineRepository, StationRepository stationRepository,
+		SectionRepository sectionRepository) {
 		this.lineRepository = lineRepository;
+		this.stationRepository = stationRepository;
+		this.sectionRepository = sectionRepository;
 	}
 
 	public LineResponse saveLine(LineRequest request) {
-		Line persistLine = lineRepository.save(request.toLine());
-		return LineResponse.of(persistLine);
+		Station upStation = findStationById(request.getUpStationId());
+		Station downStation = findStationById(request.getDownStationId());
+		Line savedLine = lineRepository.save(request.toLine());
+		sectionRepository.save(Section.create(savedLine, upStation, downStation, request.getDistance()));
+		return LineResponse.of(savedLine);
+	}
+
+	private Station findStationById(Long stationId){
+		return stationRepository.findById(stationId)
+			.orElseThrow(() -> new IllegalArgumentException());
 	}
 
 	@Transactional(readOnly = true)

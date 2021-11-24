@@ -11,20 +11,36 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-	private static LineRequest params = new LineRequest("천안역", "blue");
-	private static LineRequest otherParams = new LineRequest("서울역", "blue");
+	@Autowired
+	private StationRepository stationRepository;
+
+	private static LineRequest params = new LineRequest("신분당선", "pink", 1L, 2L, 10);
+	private static LineRequest otherParams = new LineRequest("1호선", "blue", 3L, 4L, 8);
+
+	@BeforeEach
+	public void createStation() {
+		stationRepository.save(new Station("양재역"));
+		stationRepository.save(new Station("판교역"));
+		stationRepository.save(new Station("두정역"));
+		stationRepository.save(new Station("천안역"));
+
+	}
 
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
-	void createLine() {
+	void createLineSuccess() {
 		// given
 		// when
 		// 지하철_노선_생성_요청
@@ -36,9 +52,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.header("Location")).isNotBlank();
 	}
 
-	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
+	@DisplayName("중복된 노선 이름으로 생성 요청시 실패 테스트")
 	@Test
-	void createLine2() {
+	void createDuplicateLineFail() {
 		// given
 		// 지하철_노선_등록되어_있음
 		requestCreateLines(params);
@@ -49,6 +65,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		// then
 		// 지하철_노선_생성_실패됨
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	@DisplayName("존재하지 않는 역으로 구간정보 전달시 노선 생성 요청시 실패 테스트")
+	@Test
+	void createLineNonStationFail() {
+		// given
+		// 존재하지 않는 역 id값 가지는 파라미터 생성
+		LineRequest params = new LineRequest("신분당선", "pink", 3L, 5L, 24);
+
+		// when
+		// 노선 생성 요청
+		Response response = requestCreateLines(params);
+
+		// then
+		// 노선 생성 실패
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
@@ -128,7 +160,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// then
 		// 지하철_노선_수정됨
 		LineResponse lineResponse = extractLineResponse(updateResponse);
-		assertThat(lineResponse.getName()).isEqualTo("서울역");
+		assertThat(lineResponse.getName()).isEqualTo("1호선");
 		assertThat(lineResponse.getId()).isEqualTo(extractIdByURL(url));
 	}
 

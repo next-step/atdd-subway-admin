@@ -23,5 +23,6 @@ public class AcceptanceTest {
         }
 
         databaseCleanup.execute();
+
     }
 }
