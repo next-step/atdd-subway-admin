@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -166,7 +167,7 @@ public class Sections {
             && stations.contains(section.getDownStation());
     }
 
-    List<Section> getValues() {
-        return values;
+    public List<Section> getValues() {
+        return Collections.unmodifiableList(values);
     }
 }
