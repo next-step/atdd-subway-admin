@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public abstract class AcceptanceTest<T, S, V> {
+public abstract class AcceptanceTest {
     @LocalServerPort
     int port;
 
@@ -67,7 +67,7 @@ public abstract class AcceptanceTest<T, S, V> {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    protected void 목록에_포함_검증(V responses, final S... createdResponses) {
+    protected <T, S> void 목록에_포함_검증(final T responses, final S... createdResponses) {
         assertAll(
                 () -> assertThat(responses).isNotNull(),
                 () -> {
@@ -81,7 +81,7 @@ public abstract class AcceptanceTest<T, S, V> {
         );
     }
 
-    protected ExtractableResponse<Response> 데이터_생성_요청(final T request, final String uri) {
+    protected <T> ExtractableResponse<Response> 데이터_생성_요청(final T request, final String uri) {
         return RestAssured.given()
                 .log().all()
                 .body(request)
