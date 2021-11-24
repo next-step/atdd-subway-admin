@@ -4,6 +4,7 @@ import static nextstep.subway.line.LineAcceptanceTest.지하철_노선_생성;
 import static nextstep.subway.station.StationAcceptanceTest.지하철_역_생성;
 import static nextstep.subway.utils.AcceptanceTestUtil.post;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -48,6 +49,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         구간_등록됨(response);
+        응답_결과에_노선과_역_정보가_포함됨(response, 청계산입구역);
     }
 
     @DisplayName("상행 종점 구간으로 등록한다.")
@@ -61,6 +63,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         구간_등록됨(response);
+        응답_결과에_노선과_역_정보가_포함됨(response, 청계산입구역);
     }
 
     @DisplayName("하행 종점 구간으로 등록한다.")
@@ -74,6 +77,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         구간_등록됨(response);
+        응답_결과에_노선과_역_정보가_포함됨(response, 청계산입구역);
     }
 
     @DisplayName("역 사이에 새로운 구간을 등록하는 경우, 기존 역 사이 길이보다 크거나 같으면 등록 실패")
@@ -145,10 +149,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private void 구간_등록됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     private void 구간_등록_실패(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 응답_결과에_노선과_역_정보가_포함됨(ExtractableResponse<Response> response,
+        StationResponse 청계산입구역) {
+        LineResponse line = response.as(LineResponse.class);
+        assertThat(line.getStations()).hasSize(3);
+        assertThat(line.getStations()).extracting("id", "name")
+            .contains(tuple(강남역.getId(), 강남역.getName()),
+                tuple(광교역.getId(), 광교역.getName()),
+                tuple(청계산입구역.getId(), 청계산입구역.getName()));
     }
 }

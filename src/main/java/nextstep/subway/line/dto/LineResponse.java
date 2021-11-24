@@ -4,6 +4,7 @@ import nextstep.subway.line.domain.Line;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 import static java.util.stream.Collectors.toList;
@@ -37,6 +38,15 @@ public class LineResponse {
             line.getColor().getValue(),
             StationResponse.of(
                 line.getSections().extractStationsApplyOrderingUpStationToDownStation()),
+            line.getCreatedDate(),
+            line.getModifiedDate());
+    }
+
+    public static LineResponse of(Line line, List<Station> stations) {
+        return new LineResponse(line.getId(),
+            line.getName().getValue(),
+            line.getColor().getValue(),
+            StationResponse.of(stations),
             line.getCreatedDate(),
             line.getModifiedDate());
     }
