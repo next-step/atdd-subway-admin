@@ -58,11 +58,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철_노선_등록되어_있음("신분당선", "red");
-        지하철_노선_등록되어_있음("2호선", "green");
+        long id1 = 지하철_노선_등록되어_있음("신분당선", "red");
+        long id2 = 지하철_노선_등록되어_있음("2호선", "green");
         LocalDateTime now = LocalDateTime.now();
-        List<LineResponse> expected = Arrays.asList(new LineResponse(1L, "신분당선", "red", now, now),
-            new LineResponse(2L, "2호선", "green", now, now));
+        List<LineResponse> expected = Arrays.asList(new LineResponse(id1, "신분당선", "red", now, now),
+            new LineResponse(id2, "2호선", "green", now, now));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -76,12 +76,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        지하철_노선_등록되어_있음("신분당선", "red");
+        long id = 지하철_노선_등록되어_있음("신분당선", "red");
         LocalDateTime now = LocalDateTime.now();
-        LineResponse expected = new LineResponse(1L, "신분당선", "red", now, now);
+        LineResponse expected = new LineResponse(id, "신분당선", "red", now, now);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(1L);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(id);
 
         // then
         지하철_노선_응답됨(response, expected);
@@ -103,15 +103,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        지하철_노선_등록되어_있음("신분당선", "red");
+        long id = 지하철_노선_등록되어_있음("신분당선", "red");
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "green");
         LocalDateTime now = LocalDateTime.now();
-        LineResponse expected = new LineResponse(1L, "2호선", "green", now, now);
+        LineResponse expected = new LineResponse(id, "2호선", "green", now, now);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(1L, params);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(id, params);
 
         // then
         지하철_노선_수정됨(response, expected);
@@ -136,10 +136,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        지하철_노선_등록되어_있음("신분당선", "red");
+        long id = 지하철_노선_등록되어_있음("신분당선", "red");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_제거_요청(1L);
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(id);
 
         // then
         지하철_노선_삭제됨(response);
@@ -160,11 +160,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color) {
+    private long 지하철_노선_등록되어_있음(String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
-        return 지하철_노선_생성_요청(params);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
+        return Long.parseLong(response.header("Location").split("/")[2]);
     }
 
     private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
@@ -220,7 +221,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private void 지하철_노선_수정됨(ExtractableResponse<Response> response, LineResponse expected) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(1L);
+        ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(expected.getId());
         지하철_노선_응답됨(getResponse, expected);
     }
 
