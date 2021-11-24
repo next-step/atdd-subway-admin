@@ -83,6 +83,11 @@ public class LineService {
         line.addSection(section);
     }
 
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        // TODO
+    }
+
     private Station findStationById(Long stationId, String messageOnStationNotFound) {
         return stationRepository.findById(stationId)
             .orElseThrow(() -> new NoSuchElementException(messageOnStationNotFound));

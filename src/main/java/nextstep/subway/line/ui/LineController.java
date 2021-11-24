@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.line.application.LineService;
@@ -63,6 +64,12 @@ public class LineController {
     public ResponseEntity addSection(@PathVariable Long lineId, @RequestBody SectionAddRequest sectionAddRequest) {
         lineService.addSection(lineId, sectionAddRequest);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/lines/{lineId}/sections")
+    public ResponseEntity deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
+        lineService.deleteSection(lineId, stationId);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
