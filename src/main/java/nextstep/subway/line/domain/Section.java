@@ -34,6 +34,20 @@ public class Section extends BaseEntity {
 
 	private int distance;
 
+	private int sequence;
+
+	public Station getUpStation() {
+		return upStation;
+	}
+
+	public Station getDownStation() {
+		return downStation;
+	}
+
+	public int getSequence() {
+		return sequence;
+	}
+
 	protected Section() {
 	}
 
@@ -48,6 +62,7 @@ public class Section extends BaseEntity {
 
 	private void setLine(Line line) {
 		this.line = line;
+		this.sequence = line.sectionsSize() + 1;
 		line.addSection(this);
 	}
 

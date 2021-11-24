@@ -64,6 +64,9 @@ public class LineService {
 	}
 
 	public void deleteById(Long id) {
+		Section section = sectionRepository.findByLineId(id)
+			.orElseThrow(() -> new IllegalArgumentException("조회 할 대상이 없습니다."));
+		sectionRepository.deleteById(section.getId());
 		lineRepository.deleteById(id);
 	}
 }

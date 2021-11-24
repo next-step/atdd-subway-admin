@@ -84,7 +84,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
-	@DisplayName("지하철 노선 목록을 조회한다.")
+	@DisplayName("지하철 노선 목록을 전체 조회.")
 	@Test
 	void getLines() {
 		// given
@@ -129,6 +129,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(extractLineResponse(findResponse).getId()).isEqualTo(extractIdByURL(url));
 	}
 
+	@DisplayName("지하철 노선 내 구간 조회 성공")
+	@Test
+	void getLineAndSectionSuccess() {
+		// given
+		// 지하철_노선_등록
+		Response createResponse = requestCreateLines(params);
+		String url = extractUrlByResponse(createResponse);
+
+		// when
+		// 지하철_노선_조회_요청
+		Response findResponse = requestFindLine(url);
+
+		// then
+		// 노선 내 지하철 역 확인
+		LineResponse findLineResponse = extractLineResponse(findResponse);
+		assertThat(findLineResponse.getStations().get(0).getName()).isEqualTo("양재역");
+	}
+
 	@DisplayName("지하철 노선 조회 실패")
 	@Test
 	void getLineFail() {
@@ -145,7 +163,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
-	@DisplayName("지하철 노선을 수정 성공")
+	@DisplayName("지하철 노선 수정 성공")
 	@Test
 	void updateLineSuccess() {
 		// given
@@ -164,7 +182,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(lineResponse.getId()).isEqualTo(extractIdByURL(url));
 	}
 
-	@DisplayName("지하철 노선을 수정 실패")
+	@DisplayName("지하철 노선 수정 실패")
 	@Test
 	void updateLineFail() {
 		// given
