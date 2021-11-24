@@ -26,14 +26,14 @@ public class Sections {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_line_section"))
-    private List<Section> values = new ArrayList<>();
+    private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
 
     }
 
     private Sections(List<Section> sections) {
-        this.values = sections;
+        this.sections = sections;
     }
 
     public static Sections of(List<Section> sections) {
@@ -41,8 +41,8 @@ public class Sections {
     }
 
     public void addSection(Section requestSection) {
-        if (values.isEmpty()) {
-            values.add(requestSection);
+        if (sections.isEmpty()) {
+            sections.add(requestSection);
             return;
         }
 
@@ -55,7 +55,7 @@ public class Sections {
         Map<Station, Station> upToDownStation = new HashMap<>();
         Map<Station, Station> downToUpStation = new HashMap<>();
 
-        values.forEach(section -> {
+        sections.forEach(section -> {
             upToDownStation.put(section.getUpStation(), section.getDownStation());
             downToUpStation.put(section.getDownStation(), section.getUpStation());
         });
@@ -118,12 +118,12 @@ public class Sections {
 
     private void addSectionByUpStation(Section requestSection) {
         Map<Station, Section> upToDownSections = new HashMap<>();
-        values.forEach(section -> upToDownSections.put(section.getUpStation(), section));
+        sections.forEach(section -> upToDownSections.put(section.getUpStation(), section));
 
         Section modifiedSection = upToDownSections.get(requestSection.getUpStation());
 
         if (modifiedSection == null) {
-            values.add(requestSection);
+            sections.add(requestSection);
             return;
         }
 
@@ -132,12 +132,12 @@ public class Sections {
 
     private void addSectionByDownStation(Section requestSection) {
         Map<Station, Section> downToUpSections = new HashMap<>();
-        values.forEach(section -> downToUpSections.put(section.getDownStation(), section));
+        sections.forEach(section -> downToUpSections.put(section.getDownStation(), section));
 
         Section modifiedSection = downToUpSections.get(requestSection.getDownStation());
 
         if (modifiedSection == null) {
-            values.add(requestSection);
+            sections.add(requestSection);
             return;
         }
 
@@ -153,7 +153,7 @@ public class Sections {
             throw new CannotAddSectionException(ERROR_MESSAGE_EQUAL_OR_MORE_DISTANCE);
         }
 
-        values.remove(modifiedSection);
+        sections.remove(modifiedSection);
 
         int totalDistance = modifiedSection.getDistanceToInt();
         int diffDistance = totalDistance - requestSection.getDistanceToInt();
@@ -162,14 +162,14 @@ public class Sections {
                 newDownStation,
                 diffDistance);
 
-        values.add(newSection);
-        values.add(requestSection);
+        sections.add(newSection);
+        sections.add(requestSection);
     }
 
     private Set<Station> findAllStation() {
         Set<Station> existedStation = new HashSet<>();
 
-        values.forEach(section -> {
+        sections.forEach(section -> {
             existedStation.add(section.getUpStation());
             existedStation.add(section.getDownStation());
         });
