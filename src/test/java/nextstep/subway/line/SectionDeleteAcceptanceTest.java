@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,10 +13,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static nextstep.subway.line.LineAcceptanceTest.지하철_노선_등록되어_있음;
+import static nextstep.subway.line.LineAcceptanceTest.지하철_노선_조회_요청;
 import static nextstep.subway.line.SectionAcceptanceTest.구간_요청_파라미터_생성;
 import static nextstep.subway.line.SectionAcceptanceTest.지하철_구간_등록_요청;
 import static nextstep.subway.station.StationAcceptanceTest.지하철_역_등록되어_있음;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SectionDeleteAcceptanceTest extends AcceptanceTest {
 
@@ -47,6 +54,7 @@ public class SectionDeleteAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_삭제_요청(삼성역.getId(), LineLocation);
         //then
         지하철_구간_삭제됨(response);
+        지하철_구간_검증(Arrays.asList(강남역, 역삼역), 10);
     }
 
     @DisplayName("상행 종점이 제거될 경우 종점의 하행역이 상행 종점이 된다.")
@@ -56,6 +64,7 @@ public class SectionDeleteAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_삭제_요청(강남역.getId(), LineLocation);
         //then
         지하철_구간_삭제됨(response);
+        지하철_구간_검증(Arrays.asList(역삼역, 삼성역), 5);
     }
 
     @DisplayName("중간역이 제거 될 경우 두 구간을 재배치한다.")
@@ -65,6 +74,16 @@ public class SectionDeleteAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_삭제_요청(역삼역.getId(), LineLocation);
         //then
         지하철_구간_삭제됨(response);
+        지하철_구간_검증(Arrays.asList(강남역, 삼성역), 15);
+    }
+
+    private void 지하철_구간_검증(List<StationResponse> excepted, int totalDistance) {
+        ExtractableResponse<Response> lineResponse = 지하철_노선_조회_요청(LineLocation);
+        LineResponse actual = lineResponse.as(LineResponse.class);
+        assertAll(
+                () -> assertThat(actual.getStations()).containsExactlyElementsOf(excepted),
+                () -> assertThat(actual.getTotalDistance()).isEqualTo(totalDistance)
+        );
     }
 
     @DisplayName("노선에 등록되지 않은 역은 제거할 수 없다.")

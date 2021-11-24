@@ -41,6 +41,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(String url) {
+        return RestAssured
+                .given().log().all()
+                .when().get(url)
+                .then().log().all().extract();
+    }
+
     @BeforeEach
     void beforeEach() {
         강남역 = 지하철_역_등록되어_있음("강남역").as(StationResponse.class);
@@ -124,17 +131,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createLine = 지하철_노선_등록되어_있음(수인분당선);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createLine);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createLine.header("Location"));
 
         // then
         지하철_노선_응답됨(response);
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> createResponse) {
-        return RestAssured
-                .given().log().all()
-                .when().get(createResponse.header("Location"))
-                .then().log().all().extract();
     }
 
     private void 지하철_노선_응답됨(ExtractableResponse<Response> response) {
