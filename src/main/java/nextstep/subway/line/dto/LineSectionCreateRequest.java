@@ -5,13 +5,13 @@ public class LineSectionCreateRequest {
     private Long upStationId;
     private int distance;
 
-    public LineSectionCreateRequest() {
+    private LineSectionCreateRequest() {
     }
 
 
-    public LineSectionCreateRequest(Long downStationId, Long upStationId, int distance) {
-        this.downStationId = downStationId;
+    public LineSectionCreateRequest(Long upStationId, Long downStationId,  int distance) {
         this.upStationId = upStationId;
+        this.downStationId = downStationId;
         this.distance = distance;
     }
 

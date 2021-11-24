@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,7 +85,8 @@ public class LineService {
     }
 
     private Station findStation(Long id) {
-        return Optional.ofNullable(stationRepository.getOne(id)).get();
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_STATION));
     }
 
     private void checkDuplicateLineName(String name) {

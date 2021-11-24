@@ -16,6 +16,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     private StationResponse gangNamStation;
     private StationResponse gwangKyoStation;
     private String lineUri;
+
     @BeforeEach
     public void setUp() {
         super.setUp();
@@ -34,11 +35,11 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     public void insertUpstationSectionTest() {
         StationResponse shinNonHyunStation = StationAcceptanceTestRequest.createStation("신논현역").as(StationResponse.class);
         LineSectionCreateRequest lineSectionCreateRequest =
-                new LineSectionCreateRequest(gangNamStation.getId(), shinNonHyunStation.getId(), 3);
+                new LineSectionCreateRequest(shinNonHyunStation.getId(), gangNamStation.getId(), 3);
 
         ExtractableResponse response = LineSectionAcceptanceTestRequest.addSectionInLine(lineUri, lineSectionCreateRequest.getUpStationId(),
                 lineSectionCreateRequest.getDownStationId(), lineSectionCreateRequest.getDistance());
-       LineAcceptanceTestResponse.isStatusOk(response);
+        LineAcceptanceTestResponse.isStatusOk(response);
     }
 
 

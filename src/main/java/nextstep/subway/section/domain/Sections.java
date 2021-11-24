@@ -1,5 +1,7 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.exception.InputDataErrorCode;
+import nextstep.subway.exception.InputDataErrorException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -22,28 +24,49 @@ public class Sections {
 
     public List<Station> getStations() {
         return this.sections.stream().
-                map(Section::getUpStation).collect(Collectors.toList());
+                map(Section::getDownStation).collect(Collectors.toList());
     }
 
     public void addSection(Section section) {
+        checkValidSection(section);
+
+//        if (isAddUpLine(section)) {
+//
+//        }
         this.sections.add(section);
     }
 
-    public List<Station> getStationsInOrder() {
-        // 출발지점 찾기
-        Optional<Section> upLineSection = sections.stream()
-                .filter(it -> it.getDistance() == 0).findFirst();
+//    private boolean isAddUpLine(Section section) {
+//        return sections.stream()
+//                .filter(it -> it.getDownStation().equals(section.getUpStation()))
+//                .findFirst()
+//                .ifPresent(it-> it.add);
+//    }
 
-        List<Station> result = new ArrayList<>();
-        while (upLineSection.isPresent()) {
-            Station downStation = upLineSection.get().getDownStation();
-
-            result.add(downStation);
-            upLineSection = sections.stream()
-                    .filter(it -> it.getDistance() != 0 && it.getUpStation().getId() == downStation.getId())
-                    .findFirst();
+    private void checkValidSection(Section section) {
+        if (isExist(section)) {
+            throw new InputDataErrorException(InputDataErrorCode.THE_SECTION_ALREADY_EXISTS);
         }
-        return result;
+
+        if (!enrollBothStationInLine(section)) {
+            throw new InputDataErrorException(InputDataErrorCode.ONE_OF_THE_TWO_STATIONS_IS_NOT_REGISTERD_ON_LINE);
+        }
+    }
+
+    private boolean enrollBothStationInLine(Section section) {
+        return getStations().stream()
+                .filter(it -> it.getId() == section.getUpStation().getId() || it.getId() == section.getDownStation().getId())
+                .collect(Collectors.toList()).size() == 2;
+    }
+
+    private boolean isExist(Section section) {
+        return this.sections.stream()
+                .filter(it -> isSameSection(section, it))
+                .findFirst().isPresent();
+    }
+
+    private boolean isSameSection(Section section, Section it) {
+        return it.getUpStation().getId() == section.getUpStation().getId() && it.getDownStation().getId() == section.getDownStation().getId();
     }
 
     public List<Section> getSectionInOrder() {
@@ -61,11 +84,6 @@ public class Sections {
         }
         return result;
     }
-
-    private boolean isFirstSection(Section it) {
-        return it == null || it.getDistance() == 0;
-    }
-
 
     public List<Section> getSections() {
         return sections;

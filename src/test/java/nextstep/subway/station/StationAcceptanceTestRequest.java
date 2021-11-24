@@ -25,9 +25,6 @@ public class StationAcceptanceTestRequest {
                 .post("/stations")
                 .then().log().all()
                 .extract();
-
-
-
         return response;
     }
 }
