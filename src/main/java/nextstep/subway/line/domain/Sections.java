@@ -127,13 +127,14 @@ public class Sections {
 	}
 
 	private Station getHeadUpStation() {
-		List<Station> downStations = values.stream()
+		List<Long> downStationIds = values.stream()
 			.map(Section::getDownStation)
+			.map(Station::getId)
 			.collect(Collectors.toList());
 
 		return values.stream()
 			.map(Section::getUpStation)
-			.filter(upStation -> !downStations.contains(upStation))
+			.filter(upStation -> !downStationIds.contains(upStation.getId()))
 			.findFirst()
 			.orElseThrow(IllegalStateException::new);
 	}
