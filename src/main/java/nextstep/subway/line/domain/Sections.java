@@ -100,11 +100,11 @@ public class Sections {
                 .orElse(null);
     }
 
-    private void insertion(Section section) {
-        findByUpStation(section.getUpStation())
-                .ifPresent(find -> find.shiftBack(section));
-        findByDownStation(section.getDownStation())
-                .ifPresent(find -> find.shiftForward(section));
+    private void insertion(Section newSection) {
+        findByUpStation(newSection.getUpStation())
+                .ifPresent(section -> section.shiftBack(newSection));
+        findByDownStation(newSection.getDownStation())
+                .ifPresent(section -> section.shiftForward(newSection));
     }
 
     public List<Section> getSections() {
