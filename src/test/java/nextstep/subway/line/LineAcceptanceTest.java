@@ -158,7 +158,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_제거됨(response);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId, int distance) {
         LineRequest params = new LineRequest(name, color, upStationId, downStationId, distance);
 
         return RestAssured.given().log().all()
@@ -250,7 +250,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("name", String.class).containsAll(names)).isTrue();
     }
 
-    private long 역_ID(ExtractableResponse<Response> response) {
+    public static long 역_ID(ExtractableResponse<Response> response) {
         String stationId = response.jsonPath().get("id").toString();
         return Long.parseLong(stationId);
     }
