@@ -71,8 +71,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철_노선_생성_요청("신분당선", "red", 1L, 2L, 10);
-        지하철_노선_생성_요청("2호선", "green", 1L, 2L, 10);
+        ExtractableResponse<Response> createStationResponse1 = 지하철_역_생성_요청("강남역");
+        ExtractableResponse<Response> createStationResponse2 = 지하철_역_생성_요청("광교역");
+        지하철_노선_생성_요청(
+                "신분당선"
+                , "red"
+                , Long.parseLong(createStationResponse1.jsonPath().get("id").toString())
+                , Long.parseLong(createStationResponse2.jsonPath().get("id").toString())
+                , 10);
+        지하철_노선_생성_요청(
+                "2호선"
+                , "green"
+                , Long.parseLong(createStationResponse1.jsonPath().get("id").toString())
+                , Long.parseLong(createStationResponse2.jsonPath().get("id").toString())
+                , 10);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
