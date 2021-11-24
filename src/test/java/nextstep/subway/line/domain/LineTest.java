@@ -21,7 +21,7 @@ class LineTest {
 
     @DisplayName("역목록은 상행역 부터 하행역 순으로 정렬 되어야 한다.")
     @Test
-    void getStationsOrderByUptoDown() {
+    void getStationsBySort() {
         // given
         final Station firstStation = stationRepository.save(Station.of("1번"));
         final Station secondStation = stationRepository.save(Station.of("2번"));
@@ -35,7 +35,7 @@ class LineTest {
                 Section.of(10, secondStation, thirdStation)
         )));
         // when
-        final List<Station> stationsOrderByUptoDown = line.getStationsOrderByUptoDown();
+        final List<Station> stationsOrderByUptoDown = line.getStationsBySort(LineStationUpToDownSortAble.of());
         // then
         assertThat(stationsOrderByUptoDown.get(0)).isEqualTo(firstStation);
         assertThat(stationsOrderByUptoDown.get(1)).isEqualTo(secondStation);

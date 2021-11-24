@@ -49,8 +49,8 @@ public class Sections {
         return new Sections(sections);
     }
 
-    public List<Station> getStationsOrderByUptoDown() {
-        return SortStations.of(this.sections).sortUpToDown();
+    public List<Station> getStationsBySort(LineStationSortAble sortAble) {
+        return sortAble.sort(this.sections);
     }
 
     @Override

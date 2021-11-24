@@ -2,6 +2,8 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.LineStationSortAble;
+import nextstep.subway.line.domain.LineStationUpToDownSortAble;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineCreateResponse;
 import nextstep.subway.line.dto.LineRequest;
@@ -29,10 +31,12 @@ public class LineService {
 
     private final LineRepository lineRepository;
     private final StationService stationService;
+    private final LineStationSortAble lineStationSort;
 
     public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
+        this.lineStationSort = LineStationUpToDownSortAble.of();
     }
 
     @Transactional
@@ -74,7 +78,7 @@ public class LineService {
     }
 
     private List<StationResponse> getStationResponses(Line line) {
-        final List<Station> stations = line.getStationsOrderByUptoDown();
+        final List<Station> stations = line.getStationsBySort(lineStationSort);
         return stationService.convertStationsResponse(stations);
     }
 
