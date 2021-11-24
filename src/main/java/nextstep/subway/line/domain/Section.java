@@ -74,4 +74,12 @@ public class Section extends BaseEntity {
             throw new IllegalArgumentException(ERROR_MESSAGE_DUPLICATE_STATION);
         }
     }
+
+    public boolean isEqualUpStation(Section section) {
+        return upStation.equals(section.upStation);
+    }
+
+    public boolean isEqualDownStation(Section section) {
+        return downStation.equals(section.downStation);
+    }
 }

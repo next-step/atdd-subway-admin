@@ -117,49 +117,64 @@ public class Sections {
     }
 
     private void addSectionByUpStation(Section requestSection) {
-        Map<Station, Section> upToDownSections = new HashMap<>();
-        sections.forEach(section -> upToDownSections.put(section.getUpStation(), section));
-
-        Section modifiedSection = upToDownSections.get(requestSection.getUpStation());
+        Section modifiedSection = findSectionByUpStation(requestSection);
 
         if (modifiedSection == null) {
             sections.add(requestSection);
             return;
         }
 
+        addNewSection(requestSection, modifiedSection);
+    }
+
+    private Section findSectionByUpStation(Section requestSection) {
+        Map<Station, Section> upToDownSections = new HashMap<>();
+        sections.forEach(section -> upToDownSections.put(section.getUpStation(), section));
+
+        return upToDownSections.get(requestSection.getUpStation());
+    }
+
+    private void addSectionByDownStation(Section requestSection) {
+        Section modifiedSection = findSectionByDownStation(requestSection);
+
+        if (modifiedSection == null) {
+            sections.add(requestSection);
+            return;
+        }
+
+        addNewSection(requestSection, modifiedSection);
+    }
+
+    private Section findSectionByDownStation(Section requestSection) {
+        Map<Station, Section> downToUpSections = new HashMap<>();
+        sections.forEach(section -> downToUpSections.put(section.getDownStation(), section));
+
+        return downToUpSections.get(requestSection.getDownStation());
+    }
+
+    private void addNewSection(Section requestSection, Section modifiedSection) {
         if (modifiedSection.isDistanceGraterThan(requestSection)) {
             throw new CannotAddSectionException(ERROR_MESSAGE_DISTANCE_IS_GREATER);
         }
 
         int diffDistance = modifiedSection.getDistance() - requestSection.getDistance();
-        Section newSection = Section.of(requestSection.getDownStation(), modifiedSection.getDownStation(), diffDistance);
+        Section newSection = createNewSection(requestSection, modifiedSection, diffDistance);
 
         sections.remove(modifiedSection);
         sections.add(requestSection);
         sections.add(newSection);
     }
 
-    private void addSectionByDownStation(Section requestSection) {
-        Map<Station, Section> downToUpSections = new HashMap<>();
-        sections.forEach(section -> downToUpSections.put(section.getDownStation(), section));
-
-        Section modifiedSection = downToUpSections.get(requestSection.getDownStation());
-
-        if (modifiedSection == null) {
-            sections.add(requestSection);
-            return;
+    private Section createNewSection(Section requestSection, Section modifiedSection, int diffDistance) {
+        if (modifiedSection.isEqualUpStation(requestSection)) {
+            return Section.of(modifiedSection.getDownStation(), requestSection.getDownStation(), diffDistance);
         }
 
-        if (modifiedSection.isDistanceGraterThan(requestSection)) {
-            throw new CannotAddSectionException(ERROR_MESSAGE_DISTANCE_IS_GREATER);
+        if (modifiedSection.isEqualDownStation(requestSection)) {
+            return Section.of(modifiedSection.getUpStation(), requestSection.getUpStation(), diffDistance);
         }
 
-        int diffDistance = modifiedSection.getDistance() - requestSection.getDistance();
-        Section newSection = Section.of(modifiedSection.getUpStation(), requestSection.getUpStation(), diffDistance);
-
-        sections.remove(modifiedSection);
-        sections.add(requestSection);
-        sections.add(newSection);
+        throw new IllegalArgumentException();
     }
 
     private Set<Station> findAllStation() {
