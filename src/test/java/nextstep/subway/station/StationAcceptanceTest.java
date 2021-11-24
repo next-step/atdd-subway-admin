@@ -25,11 +25,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        // given
-        StationRequest 서울대입구역 = StationRequest.from("서울대입구역");
-        
-        // when
-        ExtractableResponse<Response> response = 지하철역_생성_요청(서울대입구역);
+        // given, when
+        ExtractableResponse<Response> response = 지하철역_생성_요청("서울대입구역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -40,11 +37,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        StationRequest 서울대입구역 = StationRequest.from("서울대입구역");
-        지하철역_등록되어_있음(서울대입구역);
+        지하철역_등록되어_있음("서울대입구역");
 
         // when
-        ExtractableResponse<Response> response = 지하철역_생성_요청(서울대입구역);
+        ExtractableResponse<Response> response = 지하철역_생성_요청("서울대입구역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -54,11 +50,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        StationRequest 서울대입구역 = StationRequest.from("서울대입구역");
-        StationRequest 봉천역 = StationRequest.from("봉천역");
-        
-        StationResponse 서울대입구역_응답 = 지하철역_등록되어_있음(서울대입구역);
-        StationResponse 봉천역_응답 = 지하철역_등록되어_있음(봉천역);
+        StationResponse 서울대입구역_응답 = 지하철역_등록되어_있음("서울대입구역");
+        StationResponse 봉천역_응답 = 지하철역_등록되어_있음("봉천역");
 
         // when
         ExtractableResponse<Response> response = 지하철역_목록_조회_요청();
@@ -73,8 +66,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        StationRequest 서울대입구역 = StationRequest.from("서울대입구역");
-        StationResponse 서울대입구역_응답 = 지하철역_등록되어_있음(서울대입구역);
+        StationResponse 서울대입구역_응답 = 지하철역_등록되어_있음("서울대입구역");
 
         // when
         ExtractableResponse<Response> response =  지하철역_제거_요청(서울대입구역_응답);
@@ -83,10 +75,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
     
-    private static ExtractableResponse<Response> 지하철역_생성_요청(StationRequest request) {
+    private static ExtractableResponse<Response> 지하철역_생성_요청(String name) {
         return RestAssured
                 .given().log().all()
-                .body(request)
+                .body(StationRequest.from(name))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
@@ -94,8 +86,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
     
-    public static StationResponse 지하철역_등록되어_있음(StationRequest request) {
-        return 지하철역_생성_요청(request).as(StationResponse.class);
+    public static StationResponse 지하철역_등록되어_있음(String name) {
+        return 지하철역_생성_요청(name).as(StationResponse.class);
     }
     
     private ExtractableResponse<Response> 지하철역_목록_조회_요청() {
