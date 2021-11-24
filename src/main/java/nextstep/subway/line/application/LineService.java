@@ -32,13 +32,13 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    public LineResponse addSection(Long id, SectionRequest section) {
+    public LineResponse addSection(final Long id, final SectionRequest section) {
         Line persistLine = lineRepository.findByIdElseThrow(id);
         persistLine.addSection(createSection(section, persistLine));
         return LineResponse.of(persistLine);
     }
 
-    private Section createSection(SectionRequest request, Line line) {
+    private Section createSection(final SectionRequest request, final Line line) {
         Station upStation = stationRepository.findByIdElseThrow(request.getUpStationId());
         Station downStation = stationRepository.findByIdElseThrow(request.getDownStationId());
         return new Section(upStation, downStation, line, request.getDistance());
@@ -55,19 +55,19 @@ public class LineService {
                 .orElse(new Line()));
     }
 
-    public void update(Long id, LineRequest updatedLine) {
+    public void update(final Long id, final LineRequest updatedLine) {
         Line line = lineRepository.findByIdElseThrow(id);
         line.update(Line.of(updatedLine));
     }
 
-    public void delete(Long id) {
+    public void delete(final Long id) {
         lineRepository.findByIdElseThrow(id);
         lineRepository.deleteById(id);
     }
 
-    public void removeSectionByStationId(Long id, Long stationId) {
+    public void removeSectionByStationId(final Long id, final Long stationId) {
         Line persistLine = lineRepository.findByIdElseThrow(id);
         Station deleteStation = stationRepository.findByIdElseThrow(stationId);
-        persistLine.removeSectionByStation(deleteStation);
+        persistLine.remove(deleteStation);
     }
 }

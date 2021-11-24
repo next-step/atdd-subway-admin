@@ -110,7 +110,7 @@ class SectionsTest {
     @Test
     @DisplayName("중간역 삭제")
     void deleteMiddleStation() {
-        sections.removeSectionByStation(역삼역);
+        sections.removeByStation(역삼역);
 
         구간_검증(Arrays.asList(강남역, 양재역), 60);
     }
@@ -118,7 +118,7 @@ class SectionsTest {
     @Test
     @DisplayName("상행 종점 삭제")
     void deleteFirstStation() {
-        sections.removeSectionByStation(강남역);
+        sections.removeByStation(강남역);
 
         구간_검증(Arrays.asList(역삼역, 양재역), 50);
     }
@@ -126,7 +126,7 @@ class SectionsTest {
     @Test
     @DisplayName("하행 종점 삭제")
     void deleteLastStation() {
-        sections.removeSectionByStation(양재역);
+        sections.removeByStation(양재역);
 
         구간_검증(Arrays.asList(강남역, 역삼역), 10);
     }
@@ -134,15 +134,15 @@ class SectionsTest {
     @Test
     @DisplayName("구간에 포함되어있지 않은 역은 삭제할 수 없습니다.")
     void notIncludeStationNotDelete() {
-        assertThatThrownBy(() -> sections.removeSectionByStation(잠실역))
+        assertThatThrownBy(() -> sections.removeByStation(잠실역))
                 .isInstanceOf(NotIncludeStation.class);
     }
 
     @Test
     @DisplayName("구간이 하나만 존재하면 삭제할 수 없습니다.")
     void notDeleteOneSection() {
-        sections.removeSectionByStation(강남역);
-        assertThatThrownBy(() -> sections.removeSectionByStation(양재역))
+        sections.removeByStation(강남역);
+        assertThatThrownBy(() -> sections.removeByStation(양재역))
                 .isInstanceOf(NotDeleteOneSectionException.class);
     }
 

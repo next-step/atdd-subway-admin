@@ -23,7 +23,7 @@ public class Sections {
         sections = new ArrayList<>();
     }
 
-    public void add(Section nonPersistSection) {
+    public void add(final Section nonPersistSection) {
         if (!sections.isEmpty()) {
             validateSection(nonPersistSection);
             calculateBetweenStation(nonPersistSection);
@@ -32,7 +32,7 @@ public class Sections {
         sections.add(nonPersistSection);
     }
 
-    private void calculateBetweenStation(Section nonPersistSection) {
+    private void calculateBetweenStation(final Section nonPersistSection) {
         sections.stream()
                 .filter(section -> section.isIncludeSection(nonPersistSection))
                 .findAny()
@@ -96,7 +96,7 @@ public class Sections {
                 .orElse(new Section());
     }
 
-    public void removeSectionByStation(Station deleteStation) {
+    public void removeByStation(final Station deleteStation) {
         validateSectionsSize();
         List<Section> foundSections = findSectionsIncludeStation(deleteStation);
         validateIncludeSections(foundSections);
@@ -109,13 +109,13 @@ public class Sections {
         sections.remove(deleteSection);
     }
 
-    private void validateIncludeSections(List<Section> deleteSections) {
+    private void validateIncludeSections(final List<Section> deleteSections) {
         if (deleteSections.isEmpty()) {
             throw new NotIncludeStation();
         }
     }
 
-    private List<Section> findSectionsIncludeStation(Station deleteStation) {
+    private List<Section> findSectionsIncludeStation(final Station deleteStation) {
         return sections.stream()
                 .filter(section -> section.hasStation(deleteStation))
                 .collect(Collectors.toList());
@@ -127,7 +127,7 @@ public class Sections {
         }
     }
 
-    private boolean isNotTerminal(List<Section> sections) {
+    private boolean isNotTerminal(final List<Section> sections) {
         return sections.size() > 1;
     }
 

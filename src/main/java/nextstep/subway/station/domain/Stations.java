@@ -7,24 +7,16 @@ import java.util.Objects;
 public class Stations {
     private final List<Station> stations;
 
-    public Stations(List<Station> stations) {
+    public Stations(final List<Station> stations) {
         this.stations = stations;
     }
 
-    public boolean isIn(Station station) {
+    public boolean isIn(final Station station) {
         return stations.contains(station);
     }
 
     public List<Station> getStations() {
         return new ArrayList<>(stations);
-    }
-
-    public boolean isFirstStation(Station station) {
-        return stations.get(0).equals(station);
-    }
-
-    public boolean isLastStation(Station station) {
-        return stations.get(stations.size() - 1).equals(station);
     }
 
     @Override

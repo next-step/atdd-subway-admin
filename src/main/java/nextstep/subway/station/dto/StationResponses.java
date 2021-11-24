@@ -18,7 +18,7 @@ public class StationResponses {
         return of(sections.getStations());
     }
 
-    private static StationResponses of(Stations stations){
+    private static StationResponses of(Stations stations) {
         return new StationResponses(stations.getStations()
                 .stream()
                 .map(StationResponse::of)

@@ -159,7 +159,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [X] 실패 인수 테스트 작성
 - [X] 기능 구현
 - [X] 기능 리펙터링
-- [ ] 테스트 리펙터링
+- [X] 테스트 리펙터링
 
 #### 삭제 경우의 수
 

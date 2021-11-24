@@ -61,7 +61,7 @@ public class Section extends BaseEntity {
                 || isEqualsDownStation(nonPersistSection.downStation);
     }
 
-    public boolean hasStation(Station station) {
+    public boolean hasStation(final Station station) {
         return isEqualsUpStation(station)
                 || isEqualsDownStation(station);
     }
@@ -74,7 +74,7 @@ public class Section extends BaseEntity {
         return downStation.equals(station);
     }
 
-    public void reArrangeDeleteSection(Section deleteSection, Station deleteStation) {
+    public void reArrangeDeleteSection(final Section deleteSection, final Station deleteStation) {
         if (deleteSection.isEqualsUpStation(deleteStation)) {
             downStation = deleteSection.downStation;
         }

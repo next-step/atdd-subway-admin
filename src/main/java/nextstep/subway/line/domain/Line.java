@@ -27,11 +27,11 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public static Line of(LineRequest lineRequest) {
+    public static Line of(final LineRequest lineRequest) {
         return new Line(lineRequest.getName(), lineRequest.getColor());
     }
 
-    public void addSection(Section section) {
+    public void addSection(final Section section) {
         sections.add(section);
     }
 
@@ -40,8 +40,8 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-    public void removeSectionByStation(Station deleteStation) {
-        sections.removeSectionByStation(deleteStation);
+    public void remove(final Station deleteStation) {
+        sections.removeByStation(deleteStation);
     }
 
     public int totalDistance() {
