@@ -24,25 +24,28 @@ public class Section extends BaseEntity {
     @JoinColumn(nullable = false)
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    public Section(Line line, Station upStation, Station downStation, Integer distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
         this.line.addSection(this);
     }
 
-    public void changeUpStation(Station station) {
-        this.upStation = station;
+    public void shiftBack(Section section) {
+        this.upStation = section.getDownStation();
+        this.distance.minus(section.getDistance());
     }
 
-    public void changeDownStation(Station station) {
-        this.downStation = station;
+    public void shiftForward(Section section) {
+        this.downStation = section.getUpStation();
+        this.distance.minus(section.getDistance());
     }
 
     public Long getId() {
@@ -61,8 +64,8 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public int getDistance() {
-        return distance;
+    public Integer getDistance() {
+        return distance.value();
     }
 
     @Override

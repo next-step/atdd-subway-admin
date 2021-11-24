@@ -68,4 +68,10 @@ public class LineController {
         SectionResponse section = lineService.saveSection(lineId, lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections/" + section.getId())).body(section);
     }
+
+    @GetMapping("/{id}/sections")
+    public ResponseEntity<List<SectionResponse>> getSections(@PathVariable("id") Long lineId) {
+        List<SectionResponse> sections = lineService.getSections(lineId);
+        return ResponseEntity.ok(sections);
+    }
 }

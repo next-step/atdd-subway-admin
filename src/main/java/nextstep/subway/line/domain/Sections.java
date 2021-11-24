@@ -67,12 +67,12 @@ public class Sections {
 
     private void insertion(Section section) {
         findByUpStation(section.getUpStation())
-                .ifPresent(find -> {
-                    find.changeUpStation(section.getDownStation());
-                });
+                .ifPresent(find -> find.shiftBack(section));
         findByDownStation(section.getDownStation())
-                .ifPresent(find -> {
-                    find.changeDownStation(section.getUpStation());
-                });
+                .ifPresent(find -> find.shiftForward(section));
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }

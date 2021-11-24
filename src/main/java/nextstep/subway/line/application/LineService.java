@@ -74,4 +74,11 @@ public class LineService {
         Section section = addSectionToLine(request, line);
         return SectionResponse.of(section);
     }
+
+    public List<SectionResponse> getSections(Long lineId) {
+        return lineRepository.findById(lineId)
+                .map(Line::getSections)
+                .map(SectionResponse::listOf)
+                .orElseThrow(() -> new LineNotFoundException(lineId));
+    }
 }

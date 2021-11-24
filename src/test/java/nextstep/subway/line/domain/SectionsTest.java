@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SectionsTest {
     @DisplayName("상행선-하행선 구간 먼저 추가된 순으로 정렬된 역들을 가져온다")
@@ -140,5 +141,29 @@ public class SectionsTest {
         assertThat(sections.getStations())
                 .map(Station::getName)
                 .containsExactly("강남역", "광교역", "광명역", "영등포역");
+    }
+
+    @DisplayName("구간이 삽입되면 새로운 길이를 뺀 나머지를 변경되는 구간의 길이로 설정한다")
+    @Test
+    void testInsertionSectionDistance() {
+        // given
+        int totalDistance = 100;
+        int newDistance = 60;
+        Station 강남역 = new Station("강남역");
+        Station 광교역 = new Station("광교역");
+        Station 영등포역 = new Station("영등포역");
+        Sections sections = new Sections();
+        Section section = new Section(new Line(), 강남역, 광교역, totalDistance);
+        sections.add(section);
+
+        // when
+        Section newSection = new Section(new Line(), 강남역, 영등포역, newDistance);
+        sections.add(newSection);
+
+        // then
+        assertAll(
+                () -> assertThat(section.getDistance()).isEqualTo(totalDistance - newDistance),
+                () -> assertThat(newSection.getDistance()).isEqualTo(newDistance)
+        );
     }
 }
