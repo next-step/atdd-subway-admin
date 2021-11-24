@@ -195,9 +195,9 @@ public class Sections {
         }
     }
 
-    private Optional<Station> findStation(Station upStation, Set<Station> existedStation) {
+    private Optional<Station> findStation(Station targetStation, Set<Station> existedStation) {
         return existedStation.stream()
-                .filter(station -> station.equals(upStation))
+                .filter(targetStation::equals)
                 .findFirst();
     }
 }
