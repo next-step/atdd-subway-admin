@@ -50,14 +50,14 @@ public class SectionTest {
     @DisplayName("입력받은 구간이 두 역 사이에 포함되어있다.")
     void isIncludeOneStationTest() {
         Section actual = new Section(강남역, 양재역, LINE_2호선, 10);
-        assertThat(section.isIncludeOneStation(actual)).isTrue();
+        assertThat(section.isIncludeSection(actual)).isTrue();
     }
 
     @Test
     @DisplayName("입력받은 구간이 종점을 포함하고 있다.")
     void isIncludeOneEndStationTest() {
         Section actual = new Section(양재역, 강남역, LINE_2호선, 10);
-        assertThat(section.isIncludeOneStation(actual)).isFalse();
+        assertThat(section.isIncludeSection(actual)).isFalse();
     }
 
     @ParameterizedTest
@@ -67,7 +67,7 @@ public class SectionTest {
     @DisplayName("하행역이 구간 사이에 있을 경우")
     void downStationBetweenSection(int distance) {
         Section actual = new Section(강남역, 양재역, LINE_2호선, distance);
-        section.reArrangeSection(actual);
+        section.reArrangeAddSection(actual);
         assertAll(
                 () -> assertThat(section.getUpStation()).isEqualTo(양재역),
                 () -> assertThat(section.getDistance()).isEqualTo(10 - actual.getDistance())
@@ -81,7 +81,7 @@ public class SectionTest {
     @DisplayName("상행역이 구간 사이에 있을 경우")
     void upStationBetweenSection(int distance) {
         Section actual = new Section(양재역, 역삼역, LINE_2호선, distance);
-        section.reArrangeSection(actual);
+        section.reArrangeAddSection(actual);
         assertAll(
                 () -> assertThat(section.getDownStation()).isEqualTo(양재역),
                 () -> assertThat(section.getDistance()).isEqualTo(10 - actual.getDistance())
@@ -92,7 +92,30 @@ public class SectionTest {
     @DisplayName("기존 구간의 길이보다 크거나 같으면 등록 할 수 없다.")
     void distanceOver() {
         Section actual = new Section(강남역, 양재역, LINE_2호선, 10);
-        assertThatThrownBy(() -> section.reArrangeSection(actual)).isInstanceOf(DistanceOverException.class);
+        assertThatThrownBy(() -> section.reArrangeAddSection(actual)).isInstanceOf(DistanceOverException.class);
+    }
 
+    @Test
+    @DisplayName("삭제하는 역이 상행역인 경우(중간역 삭제)")
+    void deleteUpStation() {
+        Section deleteSection = new Section(역삼역, 양재역, LINE_2호선, 10);
+        section.reArrangeDeleteSection(deleteSection, 역삼역);
+
+        assertAll(
+                () -> assertThat(section.getDownStation()).isEqualTo(양재역),
+                () -> assertThat(section.getDistance()).isEqualTo(20)
+        );
+    }
+
+    @Test
+    @DisplayName("삭제하는 역이 하행역인 경우(중간역 삭제)")
+    void deleteDownStation() {
+        Section deleteSection = new Section(사당역, 강남역, LINE_2호선, 10);
+        section.reArrangeDeleteSection(deleteSection, 강남역);
+
+        assertAll(
+                () -> assertThat(section.getUpStation()).isEqualTo(사당역),
+                () -> assertThat(section.getDistance()).isEqualTo(20)
+        );
     }
 }

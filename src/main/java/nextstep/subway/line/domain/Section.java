@@ -56,6 +56,16 @@ public class Section extends BaseEntity {
         return distance;
     }
 
+    public boolean isIncludeSection(final Section nonPersistSection) {
+        return isEqualsUpStation(nonPersistSection.upStation)
+                || isEqualsDownStation(nonPersistSection.downStation);
+    }
+
+    public boolean hasStation(Station station) {
+        return isEqualsUpStation(station)
+                || isEqualsDownStation(station);
+    }
+
     public boolean isEqualsUpStation(final Station station) {
         return upStation.equals(station);
     }
@@ -64,13 +74,19 @@ public class Section extends BaseEntity {
         return downStation.equals(station);
     }
 
+    public void reArrangeDeleteSection(Section deleteSection, Station deleteStation) {
+        if (deleteSection.isEqualsUpStation(deleteStation)) {
+            downStation = deleteSection.downStation;
+        }
 
-    public boolean isIncludeOneStation(final Section nonPersistSection) {
-        return isEqualsUpStation(nonPersistSection.upStation)
-                || isEqualsDownStation(nonPersistSection.downStation);
+        if (deleteSection.isEqualsDownStation(deleteStation)) {
+            upStation = deleteSection.upStation;
+        }
+
+        distance += deleteSection.distance;
     }
 
-    public void reArrangeSection(final Section nonPersistSection) {
+    public void reArrangeAddSection(final Section nonPersistSection) {
         if (distance <= nonPersistSection.distance) {
             throw new DistanceOverException();
         }

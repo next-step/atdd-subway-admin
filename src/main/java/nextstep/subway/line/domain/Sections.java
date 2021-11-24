@@ -1,8 +1,6 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.exception.NotFoundStationException;
-import nextstep.subway.exception.NotIncludeOneStationException;
-import nextstep.subway.exception.SameSectionStationException;
+import nextstep.subway.exception.*;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.Stations;
 
@@ -16,7 +14,9 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private static final int MIN_SECTIONS_SIZE = 2;
+
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private final List<Section> sections;
 
     public Sections() {
@@ -34,14 +34,14 @@ public class Sections {
 
     private void calculateBetweenStation(Section nonPersistSection) {
         sections.stream()
-                .filter(section -> section.isIncludeOneStation(nonPersistSection))
+                .filter(section -> section.isIncludeSection(nonPersistSection))
                 .findAny()
-                .ifPresent(section -> section.reArrangeSection(nonPersistSection));
+                .ifPresent(section -> section.reArrangeAddSection(nonPersistSection));
     }
 
     private void validateSection(final Section nonPersistSection) {
-        boolean isSameUpStation = getStations().isMatch(nonPersistSection.getUpStation());
-        boolean isSameDownStation = getStations().isMatch(nonPersistSection.getDownStation());
+        boolean isSameUpStation = getStations().isIn(nonPersistSection.getUpStation());
+        boolean isSameDownStation = getStations().isIn(nonPersistSection.getDownStation());
         validateSameSectionStation(isSameUpStation, isSameDownStation);
         notIncludeOneStation(isSameUpStation, isSameDownStation);
     }
@@ -94,6 +94,41 @@ public class Sections {
                 .filter(section -> section.isEqualsUpStation(findStation))
                 .findFirst()
                 .orElse(new Section());
+    }
+
+    public void removeSectionByStation(Station deleteStation) {
+        validateSectionsSize();
+        List<Section> foundSections = findSectionsIncludeStation(deleteStation);
+        validateIncludeSections(foundSections);
+        Section deleteSection = foundSections.get(0);
+        if (isNotTerminal(foundSections)) {
+            Section updatedSection = foundSections.get(1);
+            updatedSection.reArrangeDeleteSection(deleteSection, deleteStation);
+        }
+
+        sections.remove(deleteSection);
+    }
+
+    private void validateIncludeSections(List<Section> deleteSections) {
+        if (deleteSections.isEmpty()) {
+            throw new NotIncludeStation();
+        }
+    }
+
+    private List<Section> findSectionsIncludeStation(Station deleteStation) {
+        return sections.stream()
+                .filter(section -> section.hasStation(deleteStation))
+                .collect(Collectors.toList());
+    }
+
+    private void validateSectionsSize() {
+        if (sections.size() < MIN_SECTIONS_SIZE) {
+            throw new NotDeleteOneSectionException();
+        }
+    }
+
+    private boolean isNotTerminal(List<Section> sections) {
+        return sections.size() > 1;
     }
 
     public List<Section> getSections() {

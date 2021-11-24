@@ -157,8 +157,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - [X] 삭제되는 역의 상행역과 하행역으로 재배치 된다.
     - [X] 거리는 두 구간의 합으로 정한다.
   - [X] 실패 인수 테스트 작성
-- [ ] 기능 구현
-- [ ] 기능 리펙터링
+- [X] 기능 구현
+- [X] 기능 리펙터링
 - [ ] 테스트 리펙터링
 
 #### 삭제 경우의 수

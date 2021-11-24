@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -9,16 +10,14 @@ import java.util.Objects;
 @Entity
 @Table(name = "line")
 public class Line extends BaseEntity {
+    @Embedded
+    private final Sections sections = new Sections();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(unique = true)
     private String name;
     private String color;
-
-    @Embedded
-    private final Sections sections = new Sections();
 
     public Line() {
     }
@@ -39,6 +38,10 @@ public class Line extends BaseEntity {
     public void update(final Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public void removeSectionByStation(Station deleteStation) {
+        sections.removeSectionByStation(deleteStation);
     }
 
     public int totalDistance() {

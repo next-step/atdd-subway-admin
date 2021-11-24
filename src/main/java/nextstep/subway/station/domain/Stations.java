@@ -19,8 +19,12 @@ public class Stations {
         return new ArrayList<>(stations);
     }
 
-    public boolean isMatch(Station nonPersistStation) {
-        return stations.stream().anyMatch(nonPersistStation::equals);
+    public boolean isFirstStation(Station station) {
+        return stations.get(0).equals(station);
+    }
+
+    public boolean isLastStation(Station station) {
+        return stations.get(stations.size() - 1).equals(station);
     }
 
     @Override
