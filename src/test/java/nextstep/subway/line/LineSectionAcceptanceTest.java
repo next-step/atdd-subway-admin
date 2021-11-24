@@ -63,10 +63,10 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createSection1() {
         // given
-        SectionRequest 상행종점역_사이_추가역_거리_5 = SectionRequest.of(사이_추가_역_ID, 최초_하행종점역_ID, 거리_5);
+        SectionRequest 사이_추가역_하행종점역_거리_5 = SectionRequest.of(사이_추가_역_ID, 최초_하행종점역_ID, 거리_5);
 
         // when
-        ExtractableResponse<Response> response = 구간_생성_요청함(상행종점역_사이_추가역_거리_5);
+        ExtractableResponse<Response> response = 구간_생성_요청함(사이_추가역_하행종점역_거리_5);
 
         // then
         역사이_구간_생성됨(response);

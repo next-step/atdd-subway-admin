@@ -33,19 +33,18 @@ public class Sections {
     }
 
     private void updateSection(Section section) {
-        if(getStations().contains(section.getStation())) {
+        if(getUpStations().contains(section.getStation())) {
             sections.stream()
                     .filter(it -> it.isSameStation(section))
                     .findFirst()
                     .ifPresent(it -> it.updateStation(section));
             return;
         }
-        if(getStations().contains(section.getNextStation())) {
+        if(getDownStations().contains(section.getNextStation())) {
             sections.stream()
                     .filter(it -> it.isSameNextStation(section))
                     .findFirst()
                     .ifPresent(it -> it.updateNextStation(section));
-            return;
         }
     }
 
