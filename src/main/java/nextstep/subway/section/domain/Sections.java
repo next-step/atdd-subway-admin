@@ -8,6 +8,8 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+
 @Embeddable
 public class Sections {
 
@@ -67,7 +69,11 @@ public class Sections {
             throw new IllegalArgumentException(SECTION_NOT_EXIST_MESSAGE);
         }
 
+        List<Section> findSections = this.sections.stream()
+                .filter(s -> s.matchUpStation(station) || s.matchDownStation(station))
+                .collect(toList());
 
+        this.sections.remove(findSections);
     }
 
     private Section matchStation(Section section) {
@@ -96,7 +102,6 @@ public class Sections {
     private boolean validateGreaterEqualDistance(Section section) {
         return isNotEmpty() && isGreaterEqualDistance(matchStation(section), section);
     }
-
 
     public List<Section> getSections() {
         return sections;

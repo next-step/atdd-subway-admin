@@ -58,7 +58,11 @@ public class Section {
     }
 
     public boolean matchUpStation(Section section) {
-        return this.upStation.equals(section.getUpStation()) || this.upStation.equals(section.getDownStation());
+        return matchUpStation(section.getUpStation()) || matchUpStation(section.getDownStation());
+    }
+
+    public boolean matchUpStation(Station station) {
+        return this.upStation.equals(station);
     }
 
     public boolean matchDownStationFromDownStation(Section section) {
@@ -66,7 +70,11 @@ public class Section {
     }
 
     public boolean matchDownStation(Section section) {
-        return this.downStation.equals(section.getUpStation()) || this.downStation.equals(section.getDownStation());
+        return matchDownStation(section.getUpStation()) || matchDownStation(section.getDownStation());
+    }
+
+    public boolean matchDownStation(Station station) {
+        return this.downStation.equals(station);
     }
 
     public boolean isGreaterOrEqualDistance(Section section) {

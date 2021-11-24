@@ -247,7 +247,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-
     @DisplayName("구간이 하나일 때 구간 삭제 예외처리")
     @Test
     void removeSection_NotExistExceptionTest() {
