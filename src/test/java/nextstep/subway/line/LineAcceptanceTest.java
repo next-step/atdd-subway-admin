@@ -412,6 +412,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
             지하철_구간_생성에_실패한다(response);
         }
 
+        @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+        @Test
+        void testDuplicateBothStations() {
+            // given
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역").as(StationResponse.class);
+            ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), "100");
+            String lineUrl = 신분당선.header("Location");
+
+            // when
+            ExtractableResponse<Response> response = 지하철_구간_추가_요청(lineUrl, 강남역, 광교역, 40);
+
+            // then
+            지하철_구간_생성에_실패한다(response);
+        }
+
         private void 지하철_구간_생성에_실패한다(ExtractableResponse<Response> response) {
             Asserts.assertIsBadRequest(response);
         }
