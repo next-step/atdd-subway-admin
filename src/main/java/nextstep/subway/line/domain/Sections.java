@@ -20,9 +20,7 @@ public class Sections {
             return;
         }
         validateDuplicateBothStation(section);
-        validateNotMatchedStation(section);
         insertion(section);
-        sections.add(section);
     }
 
     private void validateDuplicateBothStation(Section section) {
@@ -35,18 +33,6 @@ public class Sections {
         if (mySection.isDuplicate(section)) {
             throw new DuplicateBothStationException(section.getUpStation(), section.getDownStation());
         }
-    }
-
-    private void validateNotMatchedStation(Section section) {
-        if (sections.isEmpty()) {
-            return;
-        }
-        for (Section mySection : sections) {
-            if (mySection.anyMatched(section)) {
-                return;
-            }
-        }
-        throw new NotMatchedStationException(section.getUpStation(), section.getDownStation());
     }
 
     public List<Station> getStations() {
@@ -101,10 +87,31 @@ public class Sections {
     }
 
     private void insertion(Section newSection) {
-        findByUpStation(newSection.getUpStation())
-                .ifPresent(section -> section.shiftBack(newSection));
-        findByDownStation(newSection.getDownStation())
-                .ifPresent(section -> section.shiftForward(newSection));
+        findSectionByUpStationOrDownStation(newSection)
+                .ifPresent(section -> section.shift(newSection));
+
+        if (hasAnyMatchedStation(newSection)) {
+            sections.add(newSection);
+            return;
+        }
+
+        throw new NotMatchedStationException(newSection.getUpStation(), newSection.getDownStation());
+    }
+
+    private boolean hasAnyMatchedStation(Section section) {
+        if (sections.isEmpty()) {
+            return true;
+        }
+        return sections.stream()
+                .anyMatch(mySection -> mySection.anyMatched(section));
+    }
+
+    private Optional<Section> findSectionByUpStationOrDownStation(Section section) {
+        Optional<Section> upStation = findByUpStation(section.getUpStation());
+        if (upStation.isPresent()) {
+            return upStation;
+        }
+        return findByDownStation(section.getDownStation());
     }
 
     public List<Section> getSections() {

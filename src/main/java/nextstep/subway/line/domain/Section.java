@@ -39,13 +39,22 @@ public class Section extends BaseEntity {
     }
 
     public void shiftBack(Section section) {
-        this.upStation = section.getDownStation();
-        this.distance.minus(section.getDistance());
+        if (this.upStation.isSameName(section.getUpStation())) {
+            this.upStation = section.getDownStation();
+            this.distance.minus(section.getDistance());
+        }
     }
 
     public void shiftForward(Section section) {
-        this.downStation = section.getUpStation();
-        this.distance.minus(section.getDistance());
+        if (this.downStation.isSameName(section.getDownStation())) {
+            this.downStation = section.getUpStation();
+            this.distance.minus(section.getDistance());
+        }
+    }
+
+    public void shift(Section section) {
+        shiftBack(section);
+        shiftForward(section);
     }
 
     public boolean isDuplicate(Section section) {
