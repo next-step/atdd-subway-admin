@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.line.exception.DuplicateBothStationException;
+import nextstep.subway.line.exception.NotMatchedStationException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.exception.StationNotFoundException;
 
@@ -19,6 +20,7 @@ public class Sections {
             return;
         }
         validateDuplicateBothStation(section);
+        validateNotMatchedStation(section);
         insertion(section);
         sections.add(section);
     }
@@ -33,6 +35,18 @@ public class Sections {
         if (mySection.isDuplicate(section)) {
             throw new DuplicateBothStationException(section.getUpStation(), section.getDownStation());
         }
+    }
+
+    private void validateNotMatchedStation(Section section) {
+        if (sections.isEmpty()) {
+            return;
+        }
+        for (Section mySection : sections) {
+            if (mySection.anyMatched(section)) {
+                return;
+            }
+        }
+        throw new NotMatchedStationException(section.getUpStation(), section.getDownStation());
     }
 
     public List<Station> getStations() {

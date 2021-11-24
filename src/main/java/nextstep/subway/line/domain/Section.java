@@ -53,6 +53,11 @@ public class Section extends BaseEntity {
                 || (upStation.isSameName(section.getDownStation()) && downStation.isSameName(section.getUpStation()));
     }
 
+    public boolean anyMatched(Section section) {
+        return upStation.isSameName(section.getUpStation()) || upStation.isSameName(section.getDownStation()) ||
+                downStation.isSameName(section.getUpStation()) || downStation.isSameName(section.getDownStation());
+    }
+
     public Long getId() {
         return id;
     }
