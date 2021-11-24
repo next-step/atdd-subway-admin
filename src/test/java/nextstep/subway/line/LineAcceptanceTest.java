@@ -117,6 +117,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_수정됨(response, expected);
     }
 
+    @DisplayName("존재하지 않는 지하철 노선을 수정하여 실패한다.")
+    @Test
+    void updateLine_throwsExceptionWHenNoExist() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "2호선");
+        params.put("color", "green");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(1L, params);
+
+        // then
+        지하철_노선_미존재_응답됨(response);
+    }
+
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
