@@ -8,6 +8,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 @Entity
@@ -50,6 +51,10 @@ public class Line extends BaseEntity {
 
 	public void addSection(Section section) {
 		sections.add(section);
+	}
+
+	public void removeLineStation(Station station) {
+		sections.removeLineStation(station);
 	}
 
 	@Override
