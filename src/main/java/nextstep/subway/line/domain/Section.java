@@ -67,6 +67,11 @@ public class Section extends BaseEntity {
                 downStation.isSameName(section.getUpStation()) || downStation.isSameName(section.getDownStation());
     }
 
+    public void merge(Section section) {
+        this.upStation = section.getUpStation();
+        this.distance.plus(section.getDistance());
+    }
+
     public Long getId() {
         return id;
     }

@@ -128,15 +128,19 @@ public class Sections {
     }
 
     public void deleteSectionByStation(Station station) {
-        findStationByUpStationOrDownStation(station)
+        findByDownStation(station)
+                .ifPresent(section -> {
+                    Section nextSection = getNextSection(section);
+                    mergeIntoNextSection(section, nextSection);
+                    sections.remove(section);
+                });
+        findByUpStation(station)
                 .ifPresent(section -> sections.remove(section));
     }
 
-    private Optional<Section> findStationByUpStationOrDownStation(Station station) {
-        Optional<Section> upStation = findByUpStation(station);
-        if (upStation.isPresent()) {
-            return upStation;
+    private void mergeIntoNextSection(Section section, Section nextSection) {
+        if (nextSection != null) {
+            nextSection.merge(section);
         }
-        return findByDownStation(station);
     }
 }
