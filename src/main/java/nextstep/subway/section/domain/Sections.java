@@ -22,13 +22,13 @@ public class Sections {
     private static final int LAST_STATION_COUNT = 1;
 
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Section> values = new ArrayList<>();
+    private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
     }
 
-    public Sections(List<Section> values) {
-        this.values = values;
+    public Sections(List<Section> sections) {
+        this.sections = sections;
     }
 
     public void connect(Section section) {
@@ -37,7 +37,7 @@ public class Sections {
 
         updateWhenConnectInMiddleOfExistedSection(optExistedSection, section);
 
-        this.values.add(section);
+        this.sections.add(section);
     }
 
     private void validateForConnect(Optional<Section> optExistedSection, Section section) {
@@ -78,20 +78,20 @@ public class Sections {
     }
 
     private Map<Long, Section> toMapForSectionByUpStationId() {
-        return this.values.stream()
+        return this.sections.stream()
             .collect(toMap(section -> section.getUpStation().getId(), Function.identity()));
     }
 
     private Section upBoundLastSection() {
         final Station upBoundLastStation = upBoundLastStation();
-        return this.values.stream()
+        return this.sections.stream()
             .filter(section -> section.getUpStation().equals(upBoundLastStation))
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("상행역이 속하는 구간은 한 개가 있어야 합니다."));
     }
 
     private Optional<Section> upBoundSection(Section standardSection) {
-        return this.values.stream()
+        return this.sections.stream()
             .filter(section -> section.getUpStation().equals(standardSection.getUpStation()))
             .findFirst();
     }
@@ -119,13 +119,13 @@ public class Sections {
     }
 
     private Set<Station> getUpStations() {
-        return this.values.stream()
+        return this.sections.stream()
             .map(Section::getUpStation)
             .collect(toSet());
     }
 
     private Set<Station> getDownStations() {
-        return this.values.stream()
+        return this.sections.stream()
             .map(Section::getDownStation)
             .collect(toSet());
     }
@@ -166,7 +166,7 @@ public class Sections {
             && stations.contains(section.getDownStation());
     }
 
-    List<Section> getValues() {
-        return values;
+    List<Section> getSections() {
+        return sections;
     }
 }

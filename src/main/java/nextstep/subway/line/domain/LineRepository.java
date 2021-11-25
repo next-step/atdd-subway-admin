@@ -9,13 +9,13 @@ import org.springframework.data.repository.query.Param;
 public interface LineRepository extends JpaRepository<Line, Long> {
 
     @Query("SELECT l FROM Line l"
-        + " JOIN FETCH l.sections.values s"
+        + " JOIN FETCH l.sections.sections s"
         + " JOIN FETCH s.upStation"
         + " JOIN FETCH s.downStation")
     List<Line> findAllWithSections();
 
     @Query("SELECT l FROM Line l"
-        + " JOIN FETCH l.sections.values s"
+        + " JOIN FETCH l.sections.sections s"
         + " JOIN FETCH s.upStation"
         + " JOIN FETCH s.downStation"
         + " WHERE l.id = :id")

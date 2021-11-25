@@ -86,13 +86,13 @@ class SectionsTest {
 
         // then
         assertAll(
-            () -> assertThat(sections.getValues()).hasSize(2),
-            () -> assertThat(sections.getValues().get(0).getUpStation().equals(Station.of(3L))),
-            () -> assertThat(sections.getValues().get(0).getDownStation().equals(Station.of(2L))),
-            () -> assertThat(sections.getValues().get(0).getDistance().equals(Distance.from(7))),
-            () -> assertThat(sections.getValues().get(1).getUpStation().equals(Station.of(1L))),
-            () -> assertThat(sections.getValues().get(1).getDownStation().equals(Station.of(3L))),
-            () -> assertThat(sections.getValues().get(1).getDistance().equals(Distance.from(3)))
+            () -> assertThat(sections.getSections()).hasSize(2),
+            () -> assertThat(sections.getSections().get(0).getUpStation().equals(Station.of(3L))),
+            () -> assertThat(sections.getSections().get(0).getDownStation().equals(Station.of(2L))),
+            () -> assertThat(sections.getSections().get(0).getDistance().equals(Distance.from(7))),
+            () -> assertThat(sections.getSections().get(1).getUpStation().equals(Station.of(1L))),
+            () -> assertThat(sections.getSections().get(1).getDownStation().equals(Station.of(3L))),
+            () -> assertThat(sections.getSections().get(1).getDistance().equals(Distance.from(3)))
         );
     }
 
@@ -107,13 +107,13 @@ class SectionsTest {
 
         // then
         assertAll(
-            () -> assertThat(sections.getValues()).hasSize(2),
-            () -> assertThat(sections.getValues().get(0).getUpStation().equals(Station.of(1L))),
-            () -> assertThat(sections.getValues().get(0).getDownStation().equals(Station.of(2L))),
-            () -> assertThat(sections.getValues().get(0).getDistance().equals(Distance.from(10))),
-            () -> assertThat(sections.getValues().get(1).getUpStation().equals(Station.of(3L))),
-            () -> assertThat(sections.getValues().get(1).getDownStation().equals(Station.of(1L))),
-            () -> assertThat(sections.getValues().get(1).getDistance().equals(Distance.from(3)))
+            () -> assertThat(sections.getSections()).hasSize(2),
+            () -> assertThat(sections.getSections().get(0).getUpStation().equals(Station.of(1L))),
+            () -> assertThat(sections.getSections().get(0).getDownStation().equals(Station.of(2L))),
+            () -> assertThat(sections.getSections().get(0).getDistance().equals(Distance.from(10))),
+            () -> assertThat(sections.getSections().get(1).getUpStation().equals(Station.of(3L))),
+            () -> assertThat(sections.getSections().get(1).getDownStation().equals(Station.of(1L))),
+            () -> assertThat(sections.getSections().get(1).getDistance().equals(Distance.from(3)))
         );
     }
 
@@ -128,13 +128,13 @@ class SectionsTest {
 
         // then
         assertAll(
-            () -> assertThat(sections.getValues()).hasSize(2),
-            () -> assertThat(sections.getValues().get(0).getUpStation().equals(Station.of(1L))),
-            () -> assertThat(sections.getValues().get(0).getDownStation().equals(Station.of(2L))),
-            () -> assertThat(sections.getValues().get(0).getDistance().equals(Distance.from(10))),
-            () -> assertThat(sections.getValues().get(1).getUpStation().equals(Station.of(2L))),
-            () -> assertThat(sections.getValues().get(1).getDownStation().equals(Station.of(3L))),
-            () -> assertThat(sections.getValues().get(1).getDistance().equals(Distance.from(3)))
+            () -> assertThat(sections.getSections()).hasSize(2),
+            () -> assertThat(sections.getSections().get(0).getUpStation().equals(Station.of(1L))),
+            () -> assertThat(sections.getSections().get(0).getDownStation().equals(Station.of(2L))),
+            () -> assertThat(sections.getSections().get(0).getDistance().equals(Distance.from(10))),
+            () -> assertThat(sections.getSections().get(1).getUpStation().equals(Station.of(2L))),
+            () -> assertThat(sections.getSections().get(1).getDownStation().equals(Station.of(3L))),
+            () -> assertThat(sections.getSections().get(1).getDistance().equals(Distance.from(3)))
         );
     }
 
