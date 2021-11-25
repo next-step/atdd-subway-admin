@@ -130,6 +130,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선_구간_실패함(response,"이미 등록된 구간입니다.");
     }
 
+    @DisplayName("상행역과 하행역 둘 중 하나도 노선에 등록되어있지 않은 구간을 등록한다.")
+    @Test
+    void notExistsStationInLine() {
+        // given
+        // 지하철 역 생성됨
+        // 지하철 노선 생성됨
+        StationResponse 홍대입구역 = StationApiRequests.지하철_역_생성됨("홍대입구역");
+        StationResponse 신촌역 = StationApiRequests.지하철_역_생성됨("신촌역");
+        SectionRequest sectionRequest = new SectionRequest(홍대입구역.getId(), 신촌역.getId(), 10);
+
+        // when
+        // 노선 구간 등록 요청
+        ExtractableResponse<Response> response = SectionApiRequests.지하철_노선_구간_등록_요청(서울2호선, sectionRequest);
+
+        // then
+        // 노선에 구간 등록됨.
+        지하철_노선_구간_실패함(response,"상행역과 하행역 둘중 하나는 노선에 등록되어 있어야 합니다.");
+    }
+
     private void 지하철_노선_구간_실패함(ExtractableResponse<Response> response, String message) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
         assertThat(response.jsonPath().getObject("message", String.class)).isEqualTo(message);
