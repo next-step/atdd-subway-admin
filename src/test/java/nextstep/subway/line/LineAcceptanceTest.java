@@ -38,19 +38,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(lineRequest);
+        // then
+        // 지하철_노선_생성됨
+        지하철_노선_생성됨(createResponse, lineRequest);
+    }
+
+    private void 지하철_노선_생성됨(ExtractableResponse<Response> createResponse, LineRequest lineRequest) {
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        LineResponse lineResponse = createResponse.jsonPath().getObject(".", LineResponse.class);
+        assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName());
+        assertThat(lineResponse.getColor()).isEqualTo(lineRequest.getColor());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
+        return RestAssured.given().log().all()
           .accept(MediaType.ALL_VALUE)
           .contentType(MediaType.APPLICATION_JSON_VALUE)
           .body(lineRequest)
           .when()
           .post("/lines")
           .then().log().all().extract();
-        // then
-        // 지하철_노선_생성됨
-        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        LineResponse lineResponse = createResponse.jsonPath().getObject(".", LineResponse.class);
-        assertThat(lineResponse.getName()).isEqualTo("1호선");
-        assertThat(lineResponse.getColor()).isEqualTo("blue");
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -58,12 +66,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
+        LineRequest lineRequest = new LineRequest("2호선", "green");
+        지하철_노선_생성_요청(lineRequest);
 
         // when
         // 지하철_노선_생성_요청
+        ExtractableResponse<Response> errorResponse = 지하철_노선_생성_요청(lineRequest);
 
         // then
         // 지하철_노선_생성_실패됨
+        지하철_노선_생성_실패됨(errorResponse);
+    }
+
+    private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> errorResponse) {
+        assertThat(errorResponse.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
