@@ -6,6 +6,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineFindResponse;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -59,6 +60,18 @@ public class LineService {
     public void deleteLine(Long id) {
         lineRepository.findById(id).orElseThrow(() -> new NotFoundResourceException("존재하지 않는 노선입니다. (입력값: " + id + ")"));
         lineRepository.deleteById(id);
+    }
+
+    public LineFindResponse addSection(Long lindId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(lindId).orElseThrow(() -> new NotFoundResourceException("존재하지 않는 노선입니다. (입력값: " + lindId + ")"));
+        Station upStation = findStation(sectionRequest.getUpStationId());
+        Station downStation = findStation(sectionRequest.getDownStationId());
+
+        Section section = sectionRequest.toSection(line, upStation, downStation);
+
+        line.addSection(section);
+
+        return LineFindResponse.of(line);
     }
 
     private void validateDuplicatedLineName(String name) {

@@ -4,6 +4,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -15,12 +16,12 @@ public class Section {
     @ManyToOne(fetch = FetchType.LAZY)
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Station downStation;
 
     private int distance;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Line line;
 
     protected Section() {
@@ -31,6 +32,22 @@ public class Section {
         this.downStation = downStation;
         this.distance = distance;
         this.line = line;
+    }
+
+    public static Section of(Line line, Station upStation, Station downStation, int distance) {
+        return new Section(upStation, downStation, distance, line);
+    }
+
+    public void updateSection(Section section) {
+        Station beforeDownStation = this.downStation;
+        int beforeDistance = this.distance;
+
+        this.downStation = section.downStation;
+        this.distance = section.distance;
+
+        section.upStation = section.downStation;
+        section.downStation = beforeDownStation;
+        section.distance = beforeDistance - this.distance;
     }
 
     public Long getId() {
@@ -51,5 +68,13 @@ public class Section {
 
     public Line getLine() {
         return line;
+    }
+
+    public boolean isSameUpStation(Section section) {
+        return section.isSameUpStation(this.upStation);
+    }
+
+    private boolean isSameUpStation(Station upStation) {
+        return Objects.equals(this.upStation, upStation);
     }
 }

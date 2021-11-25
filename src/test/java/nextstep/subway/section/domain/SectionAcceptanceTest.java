@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineFindResponse;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static nextstep.subway.line.LineAcceptanceTest.지하철_노선_등록되어_있음;
 import static nextstep.subway.station.StationAcceptanceTest.지하철역_등록되어_있음;
@@ -39,7 +42,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection() {
         // when
-        // 지하철_노선에_지하철역_등록_요청
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청();
+
+        // then
+        지하철_노선에_지하철역_등록됨(response);
+    }
+
+    private void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        LineFindResponse lineFindResponse = response.jsonPath().getObject(".", LineFindResponse.class);
+        List<StationResponse> stations = lineFindResponse.getStations();
+        List<String> stationNames = stations.stream().map(s -> s.getName()).collect(Collectors.toList());
+        assertThat(stationNames).containsExactly(강남역.getName(), 양재역.getName(), 판교역.getName());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청() {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", String.valueOf(강남역.getId()));
         params.put("downStationId", String.valueOf(양재역.getId()));
@@ -51,9 +68,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines/{id}/sections", 신분당선.getId())
                 .then().log().all().extract();
-
-        // then
-        // 지하철_노선에_지하철역_등록됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        return response;
     }
 }

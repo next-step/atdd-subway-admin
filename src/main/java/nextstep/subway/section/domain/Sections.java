@@ -32,6 +32,12 @@ public class Sections {
     }
 
     public void add(Section section) {
+        this.sections
+                .stream()
+                .filter(s -> s.isSameUpStation(section))
+                .findFirst()
+                .ifPresent(s -> s.updateSection(section));
+
         this.sections.add(section);
     }
 
