@@ -11,7 +11,6 @@ import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.Asserts;
 import nextstep.subway.utils.Methods;
-import org.assertj.core.api.AbstractIntegerAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -501,6 +500,37 @@ public class LineAcceptanceTest extends AcceptanceTest {
             // then
             지하철_구간_삭제_응답한다(response);
             상행선_하행선_순으로_정렬된_역을_포함한_지하철_노선을_응답한다(lineUrl, 강남역, 광교역, 안양역);
+        }
+
+        @DisplayName("중간역을 삭제한다")
+        @Test
+        void testRemoveMiddleStation() {
+            // given
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역").as(StationResponse.class);
+            StationResponse 박달역 = StationAcceptanceTest.지하철역_등록되어_있음("박달역").as(StationResponse.class);
+            String lineUrl = 지하철_라인과_구간이_추가되어짐(강남역, 광교역, 안양역, 박달역);
+            int totalDistance = 총_구간의_길이(lineUrl);
+
+            // when
+            ExtractableResponse<Response> response = 지하철_구간_삭제_요청(광교역, lineUrl);
+
+            // then
+            지하철_구간_삭제_응답한다(response);
+            상행선_하행선_순으로_정렬된_역을_포함한_지하철_노선을_응답한다(lineUrl, 강남역, 안양역, 박달역);
+            총_구간의_길이가_변하지_않는다(lineUrl, totalDistance);
+        }
+
+        private void 총_구간의_길이가_변하지_않는다(String lineUrl, int totalDistance) {
+            Integer resultTotalDistance = 총_구간의_길이(lineUrl);
+            assertThat(resultTotalDistance).isEqualTo(totalDistance);
+        }
+
+        private Integer 총_구간의_길이(String lineUrl) {
+            ExtractableResponse<Response> sectionsResponse = Methods.get(lineUrl + "/sections");
+            List<SectionResponse> list = sectionsResponse.jsonPath().getList(".", SectionResponse.class);
+            return list.stream().map(SectionResponse::getDistance).reduce(Integer::sum).get();
         }
 
         private void 지하철_구간_삭제_응답한다(ExtractableResponse<Response> response) {
