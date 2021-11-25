@@ -45,11 +45,7 @@ public class LineRequest {
         return name.equals(lineName);
     }
 
-    public Line toLine() {
-        return new Line(name, color);
-    }
-
-    public Line toLine(Station upStation, Station downStation, int distance) {
-        return new Line(name, color, upStation, downStation, distance);
+    public Line toLine(Station upStation, Station downStation) {
+        return Line.of(name, color, upStation, downStation, distance);
     }
 }

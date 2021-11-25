@@ -25,18 +25,18 @@ public class Line extends BaseEntity {
     public Line() {
     }
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
-
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        generateSections(upStation, downStation, distance);
+        addSection(null, upStation, 0);
+        addSection(upStation, downStation, distance);
     }
 
-    private void generateSections(Station upStation, Station downStation, int distance) {
+    public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
+        return new Line(name, color, upStation, downStation, distance);
+    }
+
+    private void addSection(Station upStation, Station downStation, int distance) {
         new Section(this, upStation, downStation, distance);
     }
 
@@ -59,13 +59,5 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    public void clearSections() {
-        for (Section section: sections) {
-            section.toLine(null);
-        }
-
-        this.sections.clear();
     }
 }
