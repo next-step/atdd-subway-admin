@@ -1,12 +1,14 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.exception.SectionNotCreateException;
+import nextstep.subway.common.exception.SectionNotDeleteException;
 import nextstep.subway.common.exception.StationNotFoundException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,29 +23,31 @@ import java.util.stream.Collectors;
  */
 @Embeddable
 public class Sections {
+    @Transient
+    private static final int MIN_SECTIONS_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section addSection) {
-        validate(addSection);
+        addValidate(addSection);
         insertSection(addSection);
         sections.add(addSection);
     }
 
     public void delete(Station station) {
+        deleteValidate(station);
         getSection(station).ifPresent(
-                it -> {
-                    if (it.isSameStation(station)) {
+                section -> {
+                    if (section.isSameStation(station)) {
                         findPrevSection(station).ifPresent(
-                                that -> that.removeSection(it)
+                                prevSection -> prevSection.removeSection(section)
                         );
                     }
-                    sections.remove(it);
+                    sections.remove(section);
                 }
         );
     }
-
 
     public List<Station> getStations() {
         return getOrderedStations(findFirstStation());
@@ -55,12 +59,27 @@ public class Sections {
         );
     }
 
-    private void validate(Section section) {
+    private void addValidate(Section section) {
         if (!sections.isEmpty()) {
             validateDistance(section);
             validateDuplicate(section);
             validateExist(section);
         }
+    }
+
+    private void deleteValidate(Station station) {
+        validateSectionSize();
+        validateExistStation(station);
+    }
+
+    private void validateSectionSize() {
+        if (sections.size() <= MIN_SECTIONS_SIZE) {
+            throw new SectionNotDeleteException("구간을 더 이상 제거할 수 없습니다.");
+        }
+    }
+
+    private void validateExistStation(Station station) {
+        getSection(station).orElseThrow(() -> new SectionNotDeleteException("구간에 역이 존재하지 않습니다."));
     }
 
     private void validateExist(Section section) {
@@ -133,26 +152,4 @@ public class Sections {
                 .filter(it -> it.isSameNextStation(station))
                 .findFirst();
     }
-
-//    private List<Station> getUpStations() {
-//        return sections.stream().map(Section::getStation).collect(Collectors.toList());
-//    }
-
-//    private Optional<Section> findSection(Section findSection) {
-//        return sections.stream()
-//                .filter(section -> section.getStation().equals(findSection.getStation()))
-//                .findFirst();
-//    }
-
-//    private Optional<Section> getSectionByStation(Section target) {
-//        return sections.stream()
-//                .filter(section -> section.isSameStation(target))
-//                .findFirst();
-//    }
-//
-//    private Optional<Section> getSectionByNextStation(Section target) {
-//        return sections.stream()
-//                .filter(section -> section.isSameNextStation(target))
-//                .findFirst();
-//    }
 }

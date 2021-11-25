@@ -229,6 +229,40 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_등록한_구간_포함됨(getResponse, Arrays.asList(최초_상행종점역_ID, 사이_추가_역_ID));
     }
 
+    @DisplayName("노선에 등록되어 있지 않은 역을 제거한다.")
+    @Test
+    void deleteNoDataStation() {
+        // given
+        SectionRequest 상행종점역_사이_추가역_거리_5 = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_5);
+        구간_생성_요청함(구간_테스트_노선_ID, 상행종점역_사이_추가역_거리_5);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .param("stationId", 변경_하행종점역_ID)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
+                .then().log().all().extract();
+
+        // then
+        구간_삭제_실패됨_없_없음_예외(response);
+    }
+
+    @DisplayName("구간이 하나인 경우 노선을 삭제한다")
+    @Test
+    void deleteWhenOnlyOneSection() {
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .param("stationId", 최초_상행종점역_ID)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
+                .then().log().all().extract();
+
+        // then
+        구간_삭제_실패됨_마지막_구간_예외(response);
+    }
+
     private ExtractableResponse<Response> 구간_생성_요청함(Long lineId, SectionRequest request) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -261,4 +295,15 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
         assertThat(response.asString()).isEqualTo("유효한 길이가 아닙니다.");
     }
+
+    private void 구간_삭제_실패됨_없_없음_예외(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("구간에 역이 존재하지 않습니다.");
+    }
+
+    private void 구간_삭제_실패됨_마지막_구간_예외(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("구간을 더 이상 제거할 수 없습니다.");
+    }
+
 }
