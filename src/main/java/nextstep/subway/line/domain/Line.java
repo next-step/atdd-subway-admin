@@ -29,6 +29,9 @@ public class Line extends BaseEntity {
     @Embedded
     private Sections sections = new Sections();
 
+    @Embedded
+    private LineStations lineStations = new LineStations();
+
     protected Line() {
     }
 
@@ -47,18 +50,24 @@ public class Line extends BaseEntity {
 
     public void delete() {
         this.deleted = true;
+        this.lineStations.delete();
     }
 
     public boolean isDeleted() {
         return deleted;
     }
 
+    @Deprecated
     public void addSection(Section section) {
         sections.add(section);
     }
 
-    public List<Station> getStations() {
-        return sections.getStations();
+    public void addLineStation(LineStation lineStation) {
+        lineStations.add(lineStation);
+    }
+
+    public List<LineStation> getStations() {
+        return lineStations.getStations();
     }
 
     public List<Section> getSections() {
