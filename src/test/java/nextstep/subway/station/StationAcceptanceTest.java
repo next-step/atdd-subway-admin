@@ -22,12 +22,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStation() {
         // given
         // when
-        ExtractableResponse<Response> response = StationAcceptanceTestUtil.지하철됨_역_생성_됨("강남역");
+        ExtractableResponse<Response> 지하철역_등록_응답 = StationAcceptanceTestUtil.지하철됨_역_생성_됨("강남역");
 
         // then
         assertAll(
-            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-            () -> assertThat(response.header("Location")).isNotBlank()
+            () -> assertThat(지하철역_등록_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+            () -> assertThat(지하철역_등록_응답.header("Location")).isNotBlank()
         );
     }
 
@@ -39,10 +39,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationAcceptanceTestUtil.지하철됨_역_생성_됨(stationName);
 
         // when
-        ExtractableResponse<Response> response = StationAcceptanceTestUtil.지하철됨_역_생성_됨(stationName);
+        ExtractableResponse<Response> 지하철역_등록_응답 = StationAcceptanceTestUtil.지하철됨_역_생성_됨(
+            stationName);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(지하철역_등록_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
 
@@ -50,21 +51,22 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         // given
-        ExtractableResponse<Response> createResponse1 = StationAcceptanceTestUtil.지하철됨_역_생성_됨(
+        ExtractableResponse<Response> 지하철역_등록_응답1 = StationAcceptanceTestUtil.지하철됨_역_생성_됨(
             "강남역");
-        ExtractableResponse<Response> createResponse2 = StationAcceptanceTestUtil.지하철됨_역_생성_됨(
+        ExtractableResponse<Response> 지하철역_등록_응답2 = StationAcceptanceTestUtil.지하철됨_역_생성_됨(
             "역삼역");
 
         // when
-        ExtractableResponse<Response> response = StationAcceptanceTestUtil.지하철_역_목록_조회();
+        ExtractableResponse<Response> 지하철역_목록_응답 = StationAcceptanceTestUtil.지하철_역_목록_조회();
 
         // then
-        List<Long> expectedLineIds = StationAcceptanceTestUtil.ids_추출_By_Location(
-            Arrays.asList(createResponse1, createResponse2));
-        List<Long> resultLineIds = StationAcceptanceTestUtil.ids_추출_By_StationResponse(response);
+        List<Long> 생성된_지하철역_예상_ID_목록 = StationAcceptanceTestUtil.ids_추출_By_Location(
+            Arrays.asList(지하철역_등록_응답1, 지하철역_등록_응답2));
+        List<Long> 지하철역_목록_조회_지하철역_ID_목록 = StationAcceptanceTestUtil.ids_추출_By_StationResponse(
+            지하철역_목록_응답);
         assertAll(
-            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(resultLineIds).containsAll(expectedLineIds)
+            () -> assertThat(지하철역_목록_응답.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(지하철역_목록_조회_지하철역_ID_목록).containsAll(생성된_지하철역_예상_ID_목록)
         );
     }
 
@@ -72,14 +74,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = StationAcceptanceTestUtil.지하철됨_역_생성_됨("강남역");
+        ExtractableResponse<Response> 지하철역_등록_응답 = StationAcceptanceTestUtil.지하철됨_역_생성_됨("강남역");
 
         // when
-        ExtractableResponse<Response> response = StationAcceptanceTestUtil.지하철_역_제거_함(
-            createResponse);
+        ExtractableResponse<Response> 지하철역_제거_응답 = StationAcceptanceTestUtil.지하철_역_제거_함(
+            지하철역_등록_응답);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(지하철역_제거_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
 }
