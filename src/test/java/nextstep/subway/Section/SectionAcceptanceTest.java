@@ -24,6 +24,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private Long 양재역_ID;
     private Long 판교역_ID;
     private Long 신분당선_ID;
+    private Long 양재시민의숲_ID;
     private Map<String, String> 사이_구간;
     private Map<String, String> 상행_구간;
     private Map<String, String> 하행_구간;
@@ -37,6 +38,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         super.setUp();
         양재역_ID = 지하철_역_ID(양재역);
         판교역_ID = 지하철_역_ID(판교역);
+        양재시민의숲_ID = 지하철_역_ID(양재시민의숲);
         노선_신분당선 = new HashMap() {{
             put("name", "신분당선");
             put("color", "red");
@@ -120,6 +122,35 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_구간_생성_실패됨(response);
+    }
+
+    @DisplayName("노선의 구간을 제거한다.")
+    @Test
+    void deleteSection() {
+        // when
+
+        사이_구간 = 지하철_노선_사이_역_등록(양재시민의숲_ID);
+        지하철_노선_구간_생성_요청(사이_구간, 신분당선_ID);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_제거_요청(신분당선_ID, 양재시민의숲_ID);
+
+        // then
+        지하철_노선_구간_삭제됨(response);
+
+    }
+
+    private void 지하철_노선_구간_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_구간_제거_요청(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .queryParam("stationId", stationId)
+                .when()
+                .delete("/lines/{lineId}/sections", lineId)
+                .then().log().all()
+                .extract();
     }
 
     private HashMap 지하철_노선_하행_역_등록(Long id) {
