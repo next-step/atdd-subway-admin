@@ -158,19 +158,13 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteInsideStation() {
         // given
-        SectionRequest 상행종점역_사이_추가역_거리_5 = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_5);
-        구간_생성_요청함(구간_테스트_노선_ID, 상행종점역_사이_추가역_거리_5);
+        구간_생성_요청함(구간_테스트_노선_ID, SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_5));
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .param("stationId", 사이_추가_역_ID)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 구간_삭제_요청함(구간_테스트_노선_ID, 사이_추가_역_ID);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        노선에_구간_삭제됨(response);
 
         // when
         ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(구간_테스트_노선_ID);
@@ -179,23 +173,19 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_등록한_구간_포함됨(getResponse, Arrays.asList(최초_상행종점역_ID, 최초_하행종점역_ID));
     }
 
+
+
     @DisplayName("상행역을 제거한다.")
     @Test
     void deleteUpStation() {
         // given
-        SectionRequest 상행종점역_사이_추가역_거리_5 = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_5);
-        구간_생성_요청함(구간_테스트_노선_ID, 상행종점역_사이_추가역_거리_5);
+        구간_생성_요청함(구간_테스트_노선_ID, SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_5));
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .param("stationId", 최초_상행종점역_ID)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 구간_삭제_요청함(구간_테스트_노선_ID, 최초_상행종점역_ID);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        노선에_구간_삭제됨(response);
 
         // when
         ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(구간_테스트_노선_ID);
@@ -208,19 +198,13 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteDownStation() {
         // given
-        SectionRequest 상행종점역_사이_추가역_거리_5 = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_5);
-        구간_생성_요청함(구간_테스트_노선_ID, 상행종점역_사이_추가역_거리_5);
+        구간_생성_요청함(구간_테스트_노선_ID, SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_5));
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .param("stationId", 최초_하행종점역_ID)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 구간_삭제_요청함(구간_테스트_노선_ID, 최초_하행종점역_ID);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        노선에_구간_삭제됨(response);
 
         // when
         ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(구간_테스트_노선_ID);
@@ -233,16 +217,10 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteNoDataStation() {
         // given
-        SectionRequest 상행종점역_사이_추가역_거리_5 = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_5);
-        구간_생성_요청함(구간_테스트_노선_ID, 상행종점역_사이_추가역_거리_5);
+        구간_생성_요청함(구간_테스트_노선_ID, SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_5));
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .param("stationId", 변경_하행종점역_ID)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 구간_삭제_요청함(구간_테스트_노선_ID, 변경_하행종점역_ID);
 
         // then
         구간_삭제_실패됨_없_없음_예외(response);
@@ -252,12 +230,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteWhenOnlyOneSection() {
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .param("stationId", 최초_상행종점역_ID)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 구간_삭제_요청함(구간_테스트_노선_ID, 변경_하행종점역_ID);
 
         // then
         구간_삭제_실패됨_마지막_구간_예외(response);
@@ -304,6 +277,19 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     private void 구간_삭제_실패됨_마지막_구간_예외(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
         assertThat(response.asString()).isEqualTo("구간을 더 이상 제거할 수 없습니다.");
+    }
+
+    private void 노선에_구간_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private ExtractableResponse<Response> 구간_삭제_요청함(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .param("stationId", stationId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete(BASE_URI + "/{id}/sections", lineId)
+                .then().log().all().extract();
     }
 
 }
