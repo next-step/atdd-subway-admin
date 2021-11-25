@@ -1,21 +1,14 @@
 package nextstep.subway.line.domain;
 
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import nextstep.subway.common.exception.SectionNotCreateException;
 import nextstep.subway.line.dto.Distance;
-import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 /**
  * packageName : nextstep.subway.line.domain

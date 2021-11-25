@@ -3,12 +3,13 @@ package nextstep.subway.line.domain;
 import nextstep.subway.common.exception.SectionNotCreateException;
 import nextstep.subway.common.exception.StationNotFoundException;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -24,27 +25,27 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public void add(Section section) {
+    public void add(Section addSection) {
         if (!sections.isEmpty()) {
-            validate(section);
-            updateSection(section);
+            validate(addSection);
+            updateSection(addSection);
         }
-        sections.add(section);
+        sections.add(addSection);
     }
 
-    private void updateSection(Section section) {
-        if(getUpStations().contains(section.getStation())) {
+    private void updateSection(Section addSection) {
+        if(getUpStations().contains(addSection.getStation())) {
             sections.stream()
-                    .filter(it -> it.isSameStation(section))
+                    .filter(section -> section.isSameStation(addSection))
                     .findFirst()
-                    .ifPresent(it -> it.updateStation(section));
+                    .ifPresent(section -> section.updateStation(addSection));
             return;
         }
-        if(getDownStations().contains(section.getNextStation())) {
+        if(getDownStations().contains(addSection.getNextStation())) {
             sections.stream()
-                    .filter(it -> it.isSameNextStation(section))
+                    .filter(section -> section.isSameNextStation(addSection))
                     .findFirst()
-                    .ifPresent(it -> it.updateNextStation(section));
+                    .ifPresent(section -> section.updateNextStation(addSection));
         }
     }
 
@@ -106,15 +107,15 @@ public class Sections {
         return sections.stream().map(Section::getNextStation).collect(Collectors.toList());
     }
 
-    private Optional<Section> findSection(Section section) {
+    private Optional<Section> findSection(Section findSection) {
         return sections.stream()
-                .filter(it -> it.getStation().equals(section.getStation()))
+                .filter(section -> section.getStation().equals(findSection.getStation()))
                 .findFirst();
     }
 
     private Station findFirstStation() {
         return sections.stream()
-                .filter(it -> !getDownStations().contains(it.getStation()))
+                .filter(section -> !getDownStations().contains(section.getStation()))
                 .findFirst()
                 .orElseThrow(StationNotFoundException::new)
                 .getStation();

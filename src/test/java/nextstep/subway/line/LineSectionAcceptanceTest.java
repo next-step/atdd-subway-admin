@@ -35,6 +35,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     private Long 사이_추가_역_ID;
     private static final int 거리_5 = 5;
     private static final int 거리_100 = 100;
+    private static final int 거리_150 = 150;
 
     @BeforeEach
     void setUpLine() {
@@ -107,17 +108,20 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_등록한_구간_포함됨(response, Arrays.asList(최초_상행종점역_ID, 최초_하행종점역_ID, 변경_하행종점역_ID));
     }
 
-    @DisplayName("역 사이에 새로운 역 거리가 유효하지 않게 등록한다.")
+    @DisplayName("새로운 역을 등록할 경우 기존 구간 길이보다 크거나 같으면 등록할 수 없다")
     @Test
     void createSectionFail() {
         // given
-        SectionRequest 구간_내_거리가_유효하지_않음 = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_100);
+        SectionRequest 기존_구간과_같은_거리인_경우 = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_100);
+        SectionRequest 기존_구간보다_길이가_큰_경우 = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_150);
 
         // when
-        ExtractableResponse<Response> response = 구간_생성_요청함(구간_테스트_노선_ID, 구간_내_거리가_유효하지_않음);
+        ExtractableResponse<Response> response = 구간_생성_요청함(구간_테스트_노선_ID, 기존_구간과_같은_거리인_경우);
+        ExtractableResponse<Response> response2 = 구간_생성_요청함(구간_테스트_노선_ID, 기존_구간보다_길이가_큰_경우);
 
         // then
         구간_생성_실패됨_거리_예외(response);
+        구간_생성_실패됨_거리_예외(response2);
     }
 
 

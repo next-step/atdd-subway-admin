@@ -1,12 +1,10 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.entity.BaseEntity;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.Distance;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-
 import java.util.Objects;
 
 import static javax.persistence.FetchType.LAZY;
