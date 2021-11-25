@@ -31,24 +31,23 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public void addSection(Section section) {
-        if (isNotExistsUpAndDownStation(section)) {
+    public void addSection(Section inputSection) {
+        if (isNotExistsUpAndDownStation(inputSection)) {
             throw new NotFoundUpAndDownStation();
         }
 
-        Section newSection = null;
-        if(sections.stream().anyMatch(sec -> sec.equalsUpStation(section))) {
-            Section savedSection = sections.stream().filter(sec -> sec.equalsUpStation(section)).findAny().get();
-            newSection = savedSection.updateSectionEqualUpStation(section);
+        // 내부 구간 추가
+        Section savedSection = this.sections.stream()
+                .filter(section -> section.equalsUpStation(inputSection) || section.equalsDownStation(inputSection))
+                .findAny()
+                .get();
+        List<Section> sections = savedSection.updateSection(inputSection);
+        int index = this.sections.indexOf(savedSection);
+        this.sections.remove(savedSection);
+        this.sections.addAll(index, sections);
 
+        // 외부 구간 추가
 
-        } else if(sections.stream().anyMatch(sec -> sec.equalsDownStation(section))) {
-            Section savedSection = sections.stream().filter(sec -> sec.equalsDownStation(section)).findAny().get();
-            newSection = savedSection.updateSectionEqualDownStation(section);
-        }
-
-
-        sections.add(newSection);
     }
 
     private boolean isNotExistsUpAndDownStation(Section section) {

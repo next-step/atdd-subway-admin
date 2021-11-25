@@ -58,21 +58,6 @@ class SectionsTest {
         assertThat(savedNames).containsExactly("강남역", "삼성역", "잠실역");
     }
 
-    @DisplayName("하행역이 동일한 새 구간을 등록한다.")
-    @Test
-    void addSection() {
-        Station 삼성역 = new Station("삼성역");
-        Section section = new Section(강남역, 삼성역, 4);
-
-        sections.addSection(section);
-
-        List<String> savedNames = sections.getStations()
-                .stream()
-                .map(StationResponse::getName)
-                .collect(Collectors.toList());
-        assertThat(savedNames).containsExactly("강남역", "삼성역", "잠실역");
-    }
-
     @DisplayName("상행역과 하행역 둘 중 하나도 노선에 등록되어있지 않은 구간을 등록한다.")
     @Test
     void notExistsStationInLine() {

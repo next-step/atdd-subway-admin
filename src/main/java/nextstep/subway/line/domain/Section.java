@@ -1,6 +1,5 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -37,8 +36,14 @@ public class Section {
         this.distance = new Distance(distance);
     }
 
-    public static Section of(Station upStation, Station downStation, int distance) {
-        return new Section(upStation,downStation,distance);
+    public Section(Station upStation, Station downStation, Distance distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
+    public static Section of(Station upStation, Station downStation, Distance distance) {
+        return new Section(upStation, downStation, distance);
     }
 
     public Section addLine(Line line) {
@@ -74,19 +79,20 @@ public class Section {
         return this.downStation.equals(section.downStation);
     }
 
-    public Section updateSectionEqualUpStation(Section section) {
-//        Station middleUpStation = section.upStation;
-//        Station middleDownStation = section.downStation;
-        Section newSection = Section.of(section.downStation, this.downStation, this.distance.minus(section.distance));
-        this.downStation = section.getDownStation();
-        this.distance = section.distance;
-        return newSection;
-    }
+    public List<Section> updateSection(Section inputSection) {
+        Station inputUpStation = inputSection.upStation;
+        Station inputDownStation = inputSection.downStation;
+        Distance inputDistance = inputSection.distance;
 
-    public Section updateSectionEqualDownStation(Section section) {
-        this.downStation = section.getUpStation();
-        this.distance = new Distance(this.distance.minus(section.distance));
-        return section;
+        if (this.upStation.equals(inputUpStation)) {
+            Section frontSection = Section.of(this.upStation, inputDownStation, inputDistance);
+            Section backSection = Section.of(inputDownStation, this.downStation, distance.minus(inputDistance));
+            return Arrays.asList(frontSection,backSection);
+        }
+
+        Section frontSection = Section.of(this.upStation, inputUpStation, distance.minus(inputDistance));
+        Section backSection = Section.of(inputDownStation, this.downStation, inputDistance);
+        return Arrays.asList(frontSection,backSection);
     }
 
 }
