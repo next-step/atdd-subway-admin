@@ -57,12 +57,11 @@ public class LineService {
         Line line = readWithSectionsById(lineId);
         line.addSection(sectionRequest.toSectionWith(line));
 
-        List<Long> order = line.getStationIds();
-        List<Station> stations = stationRepository.findAllById(order);
+        List<Long> sortedStationIds = line.getStationIds();
+        List<Station> stations = stationRepository.findAllById(sortedStationIds);
 
         return LineResponse.of(line, stations.stream()
-            .sorted(comparing(station -> order
-                .indexOf(station.getId())))
+            .sorted(comparing(station -> sortedStationIds.indexOf(station.getId())))
             .collect(toList()));
     }
 
