@@ -67,4 +67,14 @@ class StationAcceptanceTest extends AcceptanceTest {
         // then
         지하철_역_삭제됨(response);
     }
+
+    @DisplayName("지하철 역이 등록되어 있지 않은 경우 지하철 역 제거가 실패한다.")
+    @Test
+    void deleteStationValidateEmptyResult() {
+        // given
+
+        // when
+
+        // then
+    }
 }

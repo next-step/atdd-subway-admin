@@ -18,7 +18,7 @@ import static org.springframework.http.HttpStatus.*;
 @DisplayName("지하철 노선 인수 테스트")
 class LineAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("지하철 구간을 포함하여 지하철 노선을 생성한다.")
+    @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given
@@ -34,7 +34,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선이 이미 등록되어 있는 경우 지하철 노선 생성에 실패한다.")
     @Test
-    void createLineWithDuplicateName() {
+    void createLineWithSameLine() {
         // given
         Map<String, Long> terminus = 지하철_종점역_정보("강남", "광교");
         LineRequest 신분당선 = 지하철_노선_정보("신분당선", "bg-red-600", terminus, 13);
@@ -47,7 +47,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성_실패됨(response, BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철 종점역이 등록되어 있지 않은 경우 지하철 노선 생성에 실패한다.")
+    @DisplayName("지하철 역이 등록되어 있지 않은 경우 지하철 노선 생성에 실패한다.")
     @Test
     void createLineWithoutTerminus() {
         // given
@@ -61,18 +61,14 @@ class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성_실패됨(response, NOT_FOUND.value());
     }
 
-    @DisplayName("구간의 거리가 최소 거리 이하인 경우 지하철 노선 생성에 실패한다.")
+    @DisplayName("지하철 구간이 등록되어 있지 않은 경우 지하철 노선 생성에 실패한다.")
     @Test
-    void createLineWithMinDistance() {
+    void createLineWithoutSection() {
         // given
-        Map<String, Long> terminus = 지하철_종점역_정보("강남", "광교");
-        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "bg-red-600", terminus, 0);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선);
 
         // then
-        지하철_노선_생성_실패됨(response, INTERNAL_SERVER_ERROR.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -95,7 +91,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_목록_조회_결과_포함됨(response, 수인선);
     }
 
-    @DisplayName("지하철 구간 상행역 부터 하행역 순으로 정렬되어 조회된다.")
+    @DisplayName("지하철 노선 1건을 조회한다.")
     @Test
     void findLine() {
         // given
@@ -143,6 +139,16 @@ class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_수정_결과_일치됨(createdLocationUri, 구분당선);
     }
 
+    @DisplayName("지하철 노선이 등록되지 않은 경우 지하철 노선 수정이 실패한다.")
+    @Test
+    void updateLineValidateNotFound() {
+        // given
+
+        // when
+
+        // then
+    }
+
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
@@ -158,7 +164,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제됨(response);
     }
 
-    @DisplayName("지하철 노선이 등록되지 않은 경우 지하철 노선 제거에 실패한다.")
+    @DisplayName("지하철 노선이 등록되지 않은 경우 지하철 노선 제거가 실패한다.")
     @Test
     void deleteLineValidateEmptyResult() {
         // given
