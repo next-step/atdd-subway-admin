@@ -1,12 +1,12 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,9 +23,10 @@ public class Sections {
         sections.add(section);
     }
 
-    public List<Station> getStations() {
+    public List<StationResponse> getStations() {
         return sections.stream()
                 .flatMap(section -> section.getStations().stream())
+                .map(station -> StationResponse.of(station))
                 .distinct()
                 .collect(Collectors.toList());
     }

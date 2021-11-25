@@ -1,10 +1,12 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,9 +26,12 @@ class LineTest {
         Section secondSection = new Section(upStationAnsan, downStationOido, 15);
         line.addSection(secondSection);
 
-        List<Station> stations = line.getStations();
+        List<String> stationNames = line.getStations()
+                .stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
 
-        assertThat(stations).containsExactly(upStationSadang,upStationAnsan,downStationOido);
+        assertThat(stationNames).containsExactly(upStationSadang.getName(), upStationAnsan.getName(), downStationOido.getName());
     }
 
 }

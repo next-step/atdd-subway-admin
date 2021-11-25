@@ -205,7 +205,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<String> names =
                 lineResponse.getStations()
                         .stream()
-                        .map(Station::getName)
+                        .map(StationResponse::getName)
                         .collect(Collectors.toList());
         assertThat(names).containsExactly(station1, station2);
     }

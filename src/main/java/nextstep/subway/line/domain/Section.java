@@ -3,10 +3,8 @@ package nextstep.subway.line.domain;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Entity
 public class Section {
@@ -14,15 +12,15 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_section_line"))
     private Line line;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_section_upstation"))
     private Station upStation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_section_downstation"))
     private Station downStation;
 
@@ -44,7 +42,7 @@ public class Section {
     }
 
     public List<Station> getStations() {
-        return Arrays.asList(upStation,downStation);
+        return Arrays.asList(upStation, downStation);
     }
 
     public Station getUpStation() {
