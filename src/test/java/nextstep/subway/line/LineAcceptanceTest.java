@@ -43,7 +43,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest lineRequest = 지하철_노선_생성_요청_생성("강남역","잠실역","신분당선", "bg-red-600",10);
+        LineRequest lineRequest = 지하철_노선_요청_정보("강남역","잠실역","신분당선", "bg-red-600",10);
         LineApiRequests.지하철_노선_생성_요청(lineRequest);
 
         // when
@@ -80,8 +80,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        LineRequest lineRequest1 = 지하철_노선_생성_요청_생성("강남역", "잠실역", "2호선", "bg-green-200", 10);
-        LineRequest lineRequest2 = 지하철_노선_생성_요청_생성("사당역", "동작역", "4호선", "bg-blue-400", 20);
+        LineRequest lineRequest1 = 지하철_노선_요청_정보("강남역", "잠실역", "2호선", "bg-green-200", 10);
+        LineRequest lineRequest2 = 지하철_노선_요청_정보("사당역", "동작역", "4호선", "bg-blue-400", 20);
         Long id1 = 지하철_노선_등록되어_있음(lineRequest1);
         Long id2 = 지하철_노선_등록되어_있음(lineRequest2);
 
@@ -102,7 +102,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest lineRequest1 = 지하철_노선_생성_요청_생성("강남역","잠실역","2호선","bg-green-200",10);
+        LineRequest lineRequest1 = 지하철_노선_요청_정보("강남역","잠실역","2호선","bg-green-200",10);
         Long lineId = 지하철_노선_등록되어_있음(lineRequest1);
 
         // when
@@ -120,7 +120,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest lineRequest1 = 지하철_노선_생성_요청_생성("강남역","잠실역","2호선","bg-green-200",10);
+        LineRequest lineRequest1 = 지하철_노선_요청_정보("강남역","잠실역","2호선","bg-green-200",10);
         Long lineId = 지하철_노선_등록되어_있음(lineRequest1);
         LineRequest updateRequest = new LineRequest("구분당선", "bg-blue-600");
 
@@ -138,7 +138,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest lineRequest1 = 지하철_노선_생성_요청_생성("강남역","잠실역","2호선","bg-green-200",10);
+        LineRequest lineRequest1 = 지하철_노선_요청_정보("강남역","잠실역","2호선","bg-green-200",10);
         Long lineId = 지하철_노선_등록되어_있음(lineRequest1);
 
         // when
@@ -164,7 +164,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(result.getColor()).isEqualTo(lineRequest.getColor());
     }
 
-    private LineRequest 지하철_노선_생성_요청_생성(String station1, String station2, String lineName, String color, int distance) {
+    private LineRequest 지하철_노선_요청_정보(String station1, String station2, String lineName, String color, int distance) {
         StationResponse stationResponse1 = StationApiRequests.지하철_역_생성됨(station1);
         StationResponse stationResponse2 = StationApiRequests.지하철_역_생성됨(station2);
         return new LineRequest(lineName, color, stationResponse1.getId(), stationResponse2.getId(), distance);
@@ -205,7 +205,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<String> names =
                 lineResponse.getStations()
                         .stream()
-                        .map(Station::getName)
+                        .map(StationResponse::getName)
                         .collect(Collectors.toList());
         assertThat(names).containsExactly(station1, station2);
     }

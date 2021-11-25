@@ -46,8 +46,4 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
-    @ExceptionHandler({NotFoundLineException.class})
-    public ResponseEntity handleNotFoundLineException(NotFoundLineException e) {
-        return ResponseEntity.noContent().build();
-    }
 }

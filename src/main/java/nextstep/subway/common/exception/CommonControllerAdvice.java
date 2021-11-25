@@ -1,5 +1,6 @@
 package nextstep.subway.common.exception;
 
+import nextstep.subway.line.exception.NotFoundLineException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,4 +13,10 @@ public class CommonControllerAdvice {
     public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
     }
+
+    @ExceptionHandler({NotFoundLineException.class})
+    public ResponseEntity handleNotFoundLineException(NotFoundLineException e) {
+        return ResponseEntity.noContent().build();
+    }
+
 }
