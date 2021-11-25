@@ -10,7 +10,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -81,7 +80,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_목록_응답됨
         checkResponseStatus(response, HttpStatus.OK);
         // 지하철_노선_목록_포함됨
-        checkContainsResponses(createdResponse1, createdResponse2, response);
+        checkContainsLine(LineFixture.ofLineResponses(createdResponse1, createdResponse2), response);
+
     }
 
     @DisplayName("지하철 노선을 구간과 함께 조회한다.")
@@ -89,9 +89,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLineWithSection() {
         // given
         // 지하철_노선_등록되어_있음
-        LineResponse createdLineResponse = LineFixture.ofLineResponse(
-                requestCreateLineWithStation("역삼역", "강남역", 9, "2호선", "green")
-        );
+        ExtractableResponse<Response> createdResponse =
+                requestCreateLineWithStation("역삼역", "강남역", 9, "2호선", "green");
+        LineResponse createdLineResponse = LineFixture.ofLineResponse(createdResponse);
 
         // when
         // 지하철_노선_조회_요청
@@ -100,6 +100,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_응답됨
         checkResponseStatus(response, HttpStatus.OK);
+        // 지하철_노선_동일_확인됨
+        checkSameLine(createdResponse, response);
     }
 
 
@@ -119,7 +121,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         checkResponseStatus(response, HttpStatus.NO_CONTENT);
-
+        // 지하철_노선_삭제_확인됨
         ExtractableResponse<Response> getResponse = LineFixture.requestGetLineById(createdLineResponse.getId());
         checkResponseStatus(getResponse, HttpStatus.BAD_REQUEST);
     }
@@ -131,8 +133,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return LineFixture.requestCreateLine(params);
     }
 
-    private void checkContainsResponses(ExtractableResponse<Response> createdResponse1, ExtractableResponse<Response> createdResponse2, ExtractableResponse<Response> response) {
-        List<LineResponse> expectedLines = Arrays.asList(LineFixture.ofLineResponse(createdResponse1), LineFixture.ofLineResponse(createdResponse2));
+    private void checkSameLine(ExtractableResponse<Response> createdResponse, ExtractableResponse<Response> originResponse) {
+        assertThat(LineFixture.ofLineResponse(createdResponse)).isEqualTo(LineFixture.ofLineResponse(originResponse));
+    }
+
+    private void checkContainsLine(List<LineResponse> expectedLines, ExtractableResponse<Response> response) {
         List<LineResponse> lines = LineFixture.ofLineResponses(response);
         assertThat(lines).containsAll(expectedLines);
     }

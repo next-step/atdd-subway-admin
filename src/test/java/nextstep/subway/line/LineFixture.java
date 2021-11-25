@@ -6,9 +6,11 @@ import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class LineFixture {
     private LineFixture() {
@@ -81,5 +83,10 @@ public class LineFixture {
 
     public static List<LineResponse> ofLineResponses(ExtractableResponse<Response> response) {
         return response.jsonPath().getList(".", LineResponse.class);
+    }
+
+    @SafeVarargs
+    public static List<LineResponse> ofLineResponses(ExtractableResponse<Response>... createdResponses) {
+        return Arrays.stream(createdResponses).map(LineFixture::ofLineResponse).collect(Collectors.toList());
     }
 }
