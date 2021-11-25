@@ -142,6 +142,18 @@ public class Sections {
             .findFirst();
     }
 
+    private Optional<Section> upBoundSection(Station station) {
+        return this.sections.stream()
+            .filter(section -> section.getDownStation().equals(station))
+            .findFirst();
+    }
+
+    private Optional<Section> downBoundSection(Station station) {
+        return this.sections.stream()
+            .filter(section -> section.getUpStation().equals(station))
+            .findFirst();
+    }
+
     private Station upBoundLastStation() {
         Set<Station> upStations = getUpStations();
         upStations.removeAll(getDownStations());
@@ -229,7 +241,7 @@ public class Sections {
         this.sections.remove(section);
     }
 
-    public List<Section> getValues() {
+    public List<Section> getSections() {
         return Collections.unmodifiableList(sections);
     }
 }
