@@ -54,7 +54,7 @@ public class LineService {
         Line line = lineRepository.findById(lineUpdateRequest.getId())
                 .orElseThrow(() ->
                         new EntityNotFoundException("노선이 존재하지 않습니다."));
-        line.update(lineUpdateRequest);
+        line.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
 
         return LineResponse.of(line);
     }

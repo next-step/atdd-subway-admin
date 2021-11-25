@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.application.dto.LineUpdateRequest;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -30,11 +29,6 @@ public class Line extends BaseEntity {
         addSection(section);
     }
 
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
-    }
-
     public Long getId() {
         return id;
     }
@@ -51,9 +45,9 @@ public class Line extends BaseEntity {
         return sections;
     }
 
-    public void update(LineUpdateRequest lineUpdateRequest) {
-        this.name = lineUpdateRequest.getName();
-        this.color = lineUpdateRequest.getColor();
+    public void update(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 
     public void addSection(Section section) {
