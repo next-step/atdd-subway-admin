@@ -88,13 +88,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
+        지하철_노선_생성_요청(new LineRequest("1호선", "blue"));
+        지하철_노선_생성_요청(new LineRequest("2호선", "green"));
 
         // when
         // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response =
+          RestAssured
+            .given().log().all()
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .when().get("/lines")
+            .then().log().all()
+            .extract();
 
         // then
         // 지하철_노선_목록_응답됨
         // 지하철_노선_목록_포함됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().jsonPath().getList(".", LineResponse.class).size()).isEqualTo(2);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
