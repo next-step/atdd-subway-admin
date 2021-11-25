@@ -13,6 +13,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static nextstep.subway.line.LineAcceptanceTest.responseLine;
 import static nextstep.subway.line.LineAcceptanceTest.지하철_노선_등록되어_있음;
 import static nextstep.subway.station.StationAcceptanceTest.*;
@@ -56,8 +59,11 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 구간_생성_요청함(구간_테스트_노선_ID, 상행종점역_사이_추가역_거리_5);
 
         // then
-        역사이_구간_생성됨(response);
+        지하철_노선에_구간_생성됨(response);
+        지하철_노선에_등록한_구간_포함됨(response, Arrays.asList(최초_상행종점역_ID, 사이_추가_역_ID, 최초_하행종점역_ID));
+
     }
+
 
     @DisplayName("역 사이에 새로운 역을 등록한다(upStation이 존재하지 않을 경우)")
     @Test
@@ -69,7 +75,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 구간_생성_요청함(구간_테스트_노선_ID, 사이_추가역_하행종점역_거리_5);
 
         // then
-        역사이_구간_생성됨(response);
+        지하철_노선에_구간_생성됨(response);
+        지하철_노선에_등록한_구간_포함됨(response, Arrays.asList(최초_상행종점역_ID, 사이_추가_역_ID, 최초_하행종점역_ID));
     }
 
     @DisplayName("새로운 역을 상행 종점에 등록한다.")
@@ -82,7 +89,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 구간_생성_요청함(구간_테스트_노선_ID, 변경_상행종점역_최초_상행종점역_거리_5);
 
         // then
-        상행종점_구간_생성됨(response);
+        지하철_노선에_구간_생성됨(response);
+        지하철_노선에_등록한_구간_포함됨(response, Arrays.asList(변경_상행종점역_ID, 최초_상행종점역_ID, 최초_하행종점역_ID));
     }
 
     @DisplayName("새로운 역을 하행 종점에 등록한다.")
@@ -95,7 +103,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 구간_생성_요청함(구간_테스트_노선_ID, 하행종점역_변경_하행종점역_거리_5);
 
         // then
-        하행종점_구간_생성됨(response);
+        지하철_노선에_구간_생성됨(response);
+        지하철_노선에_등록한_구간_포함됨(response, Arrays.asList(최초_상행종점역_ID, 최초_하행종점역_ID, 변경_하행종점역_ID));
     }
 
     @DisplayName("역 사이에 새로운 역 거리가 유효하지 않게 등록한다.")
@@ -108,7 +117,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 구간_생성_요청함(구간_테스트_노선_ID, 구간_내_거리가_유효하지_않음);
 
         // then
-        구간_생성_실패됨_거리__예외(response);
+        구간_생성_실패됨_거리_예외(response);
     }
 
 
@@ -148,22 +157,13 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private void 역사이_구간_생성됨(ExtractableResponse<Response> response) {
+    private void 지하철_노선에_구간_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(CREATED.value());
-        LineResponse lineResponse = responseLine(response);
-        assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(최초_상행종점역_ID, 사이_추가_역_ID, 최초_하행종점역_ID);
     }
 
-    private void 상행종점_구간_생성됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(CREATED.value());
+    private void 지하철_노선에_등록한_구간_포함됨(ExtractableResponse<Response> response, List<Long> expected) {
         LineResponse lineResponse = responseLine(response);
-        assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(변경_상행종점역_ID, 최초_상행종점역_ID, 최초_하행종점역_ID);
-    }
-
-    private void 하행종점_구간_생성됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(CREATED.value());
-        LineResponse lineResponse = responseLine(response);
-        assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(최초_상행종점역_ID, 최초_하행종점역_ID, 변경_하행종점역_ID);
+        assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactlyElementsOf(expected);
     }
 
     private void 구간_생성_실패됨_등록된_구간_예외(ExtractableResponse<Response> response) {
@@ -176,7 +176,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.asString()).isEqualTo("구간에 역이 존재하지 않습니다.");
     }
 
-    private void 구간_생성_실패됨_거리__예외(ExtractableResponse<Response> response) {
+    private void 구간_생성_실패됨_거리_예외(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
         assertThat(response.asString()).isEqualTo("유효한 길이가 아닙니다.");
     }
