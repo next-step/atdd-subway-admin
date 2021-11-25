@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.exceptions.DuplicateLineException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -17,6 +18,9 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
+        if (lineRepository.findByName(request.getName()).isPresent()) {
+            throw new DuplicateLineException("중복된 지하철 노선 이름이 있습니다.");
+        }
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
     }
