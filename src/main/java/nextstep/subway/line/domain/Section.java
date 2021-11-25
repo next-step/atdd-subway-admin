@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.Entity;
@@ -37,6 +38,7 @@ public class Section {
     }
 
     public static Section of(Station upStation, Station downStation, int distance) {
+        validateDuplicate(upStation, downStation);
         return new Section(upStation, downStation, distance);
     }
 
@@ -46,5 +48,11 @@ public class Section {
 
     public void changeLine(Line line) {
         this.line = line;
+    }
+
+    private static void validateDuplicate(Station upStation, Station downStation) {
+        if (upStation.equals(downStation)) {
+            throw new BadRequestException();
+        }
     }
 }
