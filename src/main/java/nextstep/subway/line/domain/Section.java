@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.exception.TooLongDistanceException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.Embeddable;
@@ -28,7 +29,6 @@ import java.util.Objects;
 public class Section extends BaseEntity {
     private static final String UP_STATION_NOT_NULL_ERROR_MESSAGE = "상행역은 빈값일 수 없습니다.";
     private static final String DOWN_STATION_NOT_NULL_ERROR_MESSAGE = "하행역은 빈값일 수 없습니다.";
-    private static final String TOO_LONG_DISTANCE_ERROR_MESSAGE = "기존 역 사이 길이보다 큰 거리 입니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,7 +73,7 @@ public class Section extends BaseEntity {
 
     protected void updateUpStation(Station upStation, int distance) {
         if (this.distance.isLessThanOrEqualTo(distance)) {
-            throw new IllegalArgumentException(TOO_LONG_DISTANCE_ERROR_MESSAGE);
+            throw new TooLongDistanceException();
         }
         this.upStation = upStation;
         this.distance = this.distance.minus(distance);
@@ -81,7 +81,7 @@ public class Section extends BaseEntity {
 
     protected void updateDownStation(Station downStation, int distance) {
         if (this.distance.isLessThanOrEqualTo(distance)) {
-            throw new IllegalArgumentException(TOO_LONG_DISTANCE_ERROR_MESSAGE);
+            throw new TooLongDistanceException();
         }
         this.downStation = downStation;
         this.distance = this.distance.minus(distance);

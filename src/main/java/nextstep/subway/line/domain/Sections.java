@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.exception.LineAlreadyBothRegisteredException;
+import nextstep.subway.line.exception.NotExistEitherStationException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -17,8 +19,6 @@ import java.util.Set;
 @Embeddable
 public class Sections {
     private static final String NOT_NULL_ERROR_MESSAGE = "종점역은 빈값이 될 수 없습니다.";
-    private static final String ALREADY_BOTH_REGISTERED_ERROR_MESSAGE = "상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.";
-    private static final String NOT_EXIST_EITHER_STATION_ERROR_MESSAGE = "상행역과 하행역 둘 중 하나도 포함되어 있지 않습니다.";
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "lineId", foreignKey = @ForeignKey(name = "fk_section_to_line"))
@@ -80,11 +80,11 @@ public class Sections {
 
     private void validateStationExist(boolean isDownStationExisted, boolean isUpStationExisted) {
         if (isDownStationExisted && isUpStationExisted) {
-            throw new IllegalArgumentException(ALREADY_BOTH_REGISTERED_ERROR_MESSAGE);
+            throw new LineAlreadyBothRegisteredException();
         }
 
         if (!isDownStationExisted && !isUpStationExisted) {
-            throw new IllegalArgumentException(NOT_EXIST_EITHER_STATION_ERROR_MESSAGE);
+            throw new NotExistEitherStationException();
         }
     }
 
