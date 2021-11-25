@@ -19,7 +19,7 @@ class LineTest {
     void setUp() {
         upStation = new Station("강남역");
         downStation = new Station("역삼역");
-        line = new Line("2호선", "green", upStation, downStation, 9);
+        line = Line.of("2호선", "green", upStation, downStation, 9);
     }
 
     @DisplayName("노선을 생성한다.")
@@ -32,7 +32,7 @@ class LineTest {
         );
     }
 
-    @DisplayName("노선을 수정한다.")
+    @DisplayName("노선은 이름과 색깔을 수정할 수 있다.")
     @Test
     void updateLine() {
         // when

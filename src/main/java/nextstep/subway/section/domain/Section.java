@@ -3,6 +3,7 @@ package nextstep.subway.section.domain;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -30,7 +31,8 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
@@ -39,7 +41,7 @@ public class Section {
         changeLine(line);
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public static Section of(Line line, Station upStation, Station downStation, int distance) {
@@ -75,6 +77,6 @@ public class Section {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.getDistance();
     }
 }
