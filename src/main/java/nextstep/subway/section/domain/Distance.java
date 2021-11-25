@@ -56,4 +56,9 @@ public class Distance {
     public int hashCode() {
         return Objects.hash(value);
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
 }

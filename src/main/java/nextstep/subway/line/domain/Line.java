@@ -1,6 +1,9 @@
 package nextstep.subway.line.domain;
 
+import static java.util.stream.Collectors.toList;
+
 import com.google.common.collect.Lists;
+import java.util.List;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -47,6 +50,13 @@ public class Line extends BaseEntity {
 
     public static Line from(String name, String color, Long upStationId, Long downStationId, int distance) {
         return new Line(name, color, upStationId, downStationId, distance);
+    }
+
+    public List<Long> getStationIds() {
+        return sections.extractStationsWithOrdering()
+            .stream()
+            .map(Station::getId)
+            .collect(toList());
     }
 
     public void update(Line line) {

@@ -30,7 +30,7 @@ class SectionsTest {
         // when
         // then
         assertThatIllegalStateException().isThrownBy(
-                sections::extractStationsApplyOrderingUpStationToDownStation
+                sections::extractStationsWithOrdering
             )
             .withMessage("상행 종착역은 한 개가 있어야 합니다.");
 
@@ -43,7 +43,7 @@ class SectionsTest {
         Sections sections = line.getSections();
 
         // when
-        List<Station> result = sections.extractStationsApplyOrderingUpStationToDownStation();
+        List<Station> result = sections.extractStationsWithOrdering();
 
         // then
         assertAll(
@@ -63,7 +63,7 @@ class SectionsTest {
         sections.connect(Section.of(line, 6L, 5L, 2));
 
         // when
-        List<Station> result = sections.extractStationsApplyOrderingUpStationToDownStation();
+        List<Station> result = sections.extractStationsWithOrdering();
 
         // then
         assertAll(
@@ -76,7 +76,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("구간 중간에 새로운 구간이 추가되는 경우, 기존 구간의 상행역과 거리가 수정된다.")
+    @DisplayName("구간 중간에 새로운 구간이 상행역 기준으로 추가되는 경우, 기존 구간의 상행역과 거리가 수정된다.")
     void 구간_중간에_새_구간_추가() {
         // given
         Sections sections = line.getSections();
@@ -86,13 +86,33 @@ class SectionsTest {
 
         // then
         assertAll(
-            () -> assertThat(sections.getValues()).hasSize(2),
-            () -> assertThat(sections.getValues().get(0).getUpStation().equals(Station.of(3L))),
-            () -> assertThat(sections.getValues().get(0).getDownStation().equals(Station.of(2L))),
-            () -> assertThat(sections.getValues().get(0).getDistance().equals(Distance.from(7))),
-            () -> assertThat(sections.getValues().get(1).getUpStation().equals(Station.of(1L))),
-            () -> assertThat(sections.getValues().get(1).getDownStation().equals(Station.of(3L))),
-            () -> assertThat(sections.getValues().get(1).getDistance().equals(Distance.from(3)))
+            () -> assertThat(sections.getSections()).hasSize(2),
+            () -> assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(Station.of(3L)),
+            () -> assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(Station.of(2L)),
+            () -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(Distance.from(7)),
+            () -> assertThat(sections.getSections().get(1).getUpStation()).isEqualTo(Station.of(1L)),
+            () -> assertThat(sections.getSections().get(1).getDownStation()).isEqualTo(Station.of(3L)),
+            () -> assertThat(sections.getSections().get(1).getDistance()).isEqualTo(Distance.from(3))
+        );
+    }
+
+    @Test
+    @DisplayName("구간 중간에 새로운 구간이 하행역 기준으로 추가되는 경우, 기존 구간의 하행역과 거리가 수정된다.")
+    void 구간_중간에_새_구간_추가2() {
+        // given
+        Sections sections = line.getSections();
+
+        // when
+        sections.connect(Section.of(line, 3L, 2L, 3));
+
+        assertAll(
+            () -> assertThat(sections.getSections()).hasSize(2),
+            () -> assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(Station.of(1L)),
+            () -> assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(Station.of(3L)),
+            () -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(Distance.from(7)),
+            () -> assertThat(sections.getSections().get(1).getUpStation()).isEqualTo(Station.of(3L)),
+            () -> assertThat(sections.getSections().get(1).getDownStation()).isEqualTo(Station.of(2L)),
+            () -> assertThat(sections.getSections().get(1).getDistance()).isEqualTo(Distance.from(3))
         );
     }
 
@@ -107,13 +127,13 @@ class SectionsTest {
 
         // then
         assertAll(
-            () -> assertThat(sections.getValues()).hasSize(2),
-            () -> assertThat(sections.getValues().get(0).getUpStation().equals(Station.of(1L))),
-            () -> assertThat(sections.getValues().get(0).getDownStation().equals(Station.of(2L))),
-            () -> assertThat(sections.getValues().get(0).getDistance().equals(Distance.from(10))),
-            () -> assertThat(sections.getValues().get(1).getUpStation().equals(Station.of(3L))),
-            () -> assertThat(sections.getValues().get(1).getDownStation().equals(Station.of(1L))),
-            () -> assertThat(sections.getValues().get(1).getDistance().equals(Distance.from(3)))
+            () -> assertThat(sections.getSections()).hasSize(2),
+            () -> assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(Station.of(1L)),
+            () -> assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(Station.of(2L)),
+            () -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(Distance.from(10)),
+            () -> assertThat(sections.getSections().get(1).getUpStation()).isEqualTo(Station.of(3L)),
+            () -> assertThat(sections.getSections().get(1).getDownStation()).isEqualTo(Station.of(1L)),
+            () -> assertThat(sections.getSections().get(1).getDistance()).isEqualTo(Distance.from(3))
         );
     }
 
@@ -128,18 +148,18 @@ class SectionsTest {
 
         // then
         assertAll(
-            () -> assertThat(sections.getValues()).hasSize(2),
-            () -> assertThat(sections.getValues().get(0).getUpStation().equals(Station.of(1L))),
-            () -> assertThat(sections.getValues().get(0).getDownStation().equals(Station.of(2L))),
-            () -> assertThat(sections.getValues().get(0).getDistance().equals(Distance.from(10))),
-            () -> assertThat(sections.getValues().get(1).getUpStation().equals(Station.of(2L))),
-            () -> assertThat(sections.getValues().get(1).getDownStation().equals(Station.of(3L))),
-            () -> assertThat(sections.getValues().get(1).getDistance().equals(Distance.from(3)))
+            () -> assertThat(sections.getSections()).hasSize(2),
+            () -> assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(Station.of(1L)),
+            () -> assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(Station.of(2L)),
+            () -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(Distance.from(10)),
+            () -> assertThat(sections.getSections().get(1).getUpStation()).isEqualTo(Station.of(2L)),
+            () -> assertThat(sections.getSections().get(1).getDownStation()).isEqualTo(Station.of(3L)),
+            () -> assertThat(sections.getSections().get(1).getDistance()).isEqualTo(Distance.from(3))
         );
     }
 
     @Test
-    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 예외 발생")
+    @DisplayName("역 사이에 새로운 역을 상행역 기준으로 등록할 경우 기존 역 사이 길이보다 크거나 같으면 예외 발생")
     void 구간_추가_예외_케이스1() {
         // given
         Sections sections = line.getSections();
@@ -147,6 +167,19 @@ class SectionsTest {
         // when, then
         assertThatIllegalArgumentException().isThrownBy(
                 () -> sections.connect(Section.of(line, 1L, 3L, 10))
+            )
+            .withMessage("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 작아야 합니다");
+    }
+
+    @Test
+    @DisplayName("역 사이에 새로운 역을 하행역 기준으로 등록할 경우 기존 역 사이 길이보다 크거나 같으면 예외 발생")
+    void 구간_추가_예외_케이스1_2() {
+        // given
+        Sections sections = line.getSections();
+
+        // when, then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> sections.connect(Section.of(line, 3L, 2L, 10))
             )
             .withMessage("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 작아야 합니다");
     }

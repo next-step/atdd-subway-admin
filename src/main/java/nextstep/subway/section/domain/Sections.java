@@ -23,22 +23,23 @@ public class Sections {
     private static final int LAST_STATION_COUNT = 1;
 
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Section> values = new ArrayList<>();
+    private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
     }
 
-    public Sections(List<Section> values) {
-        this.values = values;
+    public Sections(List<Section> sections) {
+        this.sections = sections;
     }
 
     public void connect(Section section) {
-        Optional<Section> optExistedSection = upBoundSection(section.getUpStation());
-        validateForConnect(optExistedSection, section);
+        Section upBoundSection = upBoundSection(section).orElse(null);
+        Section downBoundSection = downBoundSection(section).orElse(null);
 
-        updateWhenConnectInMiddleOfExistedSection(optExistedSection, section);
+        validateForConnect(upBoundSection, downBoundSection, section);
+        updateWhenConnectInMiddleOfSection(upBoundSection, downBoundSection, section);
 
-        this.values.add(section);
+        this.sections.add(section);
     }
 
     public void remove(Station station) {
@@ -61,23 +62,35 @@ public class Sections {
         }
     }
 
-    private void validateForConnect(Optional<Section> optExistedSection, Section section) {
+    private void validateForConnect(Section upBoundSection, Section downBoundSection,
+        Section section) {
         Set<Station> stations = getAllStations();
 
-        if (optExistedSection.isPresent()) {
-            Section existedSection = optExistedSection.get();
-            validateAlreadyExistedStations(section, stations);
-            validateDistanceWhenConnectInExistedSection(existedSection, section);
-        }
+        validateAlreadyExistedStations(section, stations);
+        validateDistanceWhenConnect(upBoundSection, downBoundSection, section);
         validateExistUpStationOrDownStation(section, stations);
     }
 
-    private void updateWhenConnectInMiddleOfExistedSection(Optional<Section> optExistedSection,
+    private void updateWhenConnectInMiddleOfSection(Section upBoundSection,
+        Section downBoundSection,
         Section section) {
-        if (optExistedSection.isPresent()) {
-            Section existedSection = optExistedSection.get();
-            existedSection.updateForConnect(section);
+        Set<Station> stations = getAllStations();
+        if (connectableByUpStation(upBoundSection, stations.contains(section.getUpStation()))) {
+            upBoundSection.connectByUpStation(section);
+            return;
         }
+
+        if (connectableByDownStation(downBoundSection, stations.contains(section.getDownStation()))) {
+            downBoundSection.connectByDownStation(section);
+        }
+    }
+
+    private boolean connectableByUpStation(Section upBoundSection, boolean contains) {
+        return upBoundSection != null && contains;
+    }
+
+    private boolean connectableByDownStation(Section downBoundSection, boolean contains) {
+        return downBoundSection != null && contains;
     }
 
     private void updateWhenDeleteStationInMiddleOfSection(Section upBoundSection,
@@ -90,7 +103,7 @@ public class Sections {
         return new Sections(new ArrayList<>());
     }
 
-    public List<Station> extractStationsApplyOrderingUpStationToDownStation() {
+    public List<Station> extractStationsWithOrdering() {
         List<Station> stations = new ArrayList<>();
 
         final Map<Long, Section> sectionByUpStationId = toMapForSectionByUpStationId();
@@ -105,27 +118,27 @@ public class Sections {
     }
 
     private Map<Long, Section> toMapForSectionByUpStationId() {
-        return this.values.stream()
+        return this.sections.stream()
             .collect(toMap(section -> section.getUpStation().getId(), Function.identity()));
     }
 
     private Section upBoundLastSection() {
         final Station upBoundLastStation = upBoundLastStation();
-        return this.values.stream()
+        return this.sections.stream()
             .filter(section -> section.getUpStation().equals(upBoundLastStation))
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("상행역이 속하는 구간은 한 개가 있어야 합니다."));
     }
 
-    private Optional<Section> upBoundSection(Station station) {
-        return this.values.stream()
-            .filter(section -> section.getDownStation().equals(station))
+    private Optional<Section> upBoundSection(Section standardSection) {
+        return this.sections.stream()
+            .filter(section -> section.getUpStation().equals(standardSection.getUpStation()))
             .findFirst();
     }
 
-    private Optional<Section> downBoundSection(Station station) {
-        return this.values.stream()
-            .filter(section -> section.getUpStation().equals(station))
+    private Optional<Section> downBoundSection(Section standardSection) {
+        return this.sections.stream()
+            .filter(section -> section.getDownStation().equals(standardSection.getDownStation()))
             .findFirst();
     }
 
@@ -152,13 +165,13 @@ public class Sections {
     }
 
     private Set<Station> getUpStations() {
-        return this.values.stream()
+        return this.sections.stream()
             .map(Section::getUpStation)
             .collect(toSet());
     }
 
     private Set<Station> getDownStations() {
-        return this.values.stream()
+        return this.sections.stream()
             .map(Section::getDownStation)
             .collect(toSet());
     }
@@ -170,9 +183,22 @@ public class Sections {
         return stations;
     }
 
-    private void validateDistanceWhenConnectInExistedSection(Section existedSection,
+    private void validateDistanceWhenConnect(Section upBoundSection, Section downBoundSection,
         Section section) {
-        if (existedSection.getDistance().lessThanOrEqual(section.getDistance())) {
+
+        if (upBoundSection != null) {
+            validateDistanceWhenConnect(upBoundSection, section);
+            return;
+        }
+
+        if (downBoundSection != null) {
+            validateDistanceWhenConnect(downBoundSection, section);
+        }
+    }
+
+    private void validateDistanceWhenConnect(Section existedSection,
+        Section section) {
+        if (existedSection.isLessThanOrEqualDistance(section)) {
             throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 작아야 합니다");
         }
     }
@@ -200,10 +226,10 @@ public class Sections {
     }
 
     private void remove(Section section) {
-        this.values.remove(section);
+        this.sections.remove(section);
     }
 
     public List<Section> getValues() {
-        return Collections.unmodifiableList(values);
+        return Collections.unmodifiableList(sections);
     }
 }
