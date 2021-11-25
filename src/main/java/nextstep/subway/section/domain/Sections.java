@@ -51,19 +51,17 @@ public class Sections {
             return;
         }
 
-        if (upBoundSection != null) {
-            remove(upBoundSection); // 하행 종점을 삭제하는 경우
-            return;
-        }
-
-        if (downBoundSection != null) {
-            remove(downBoundSection); // 상행 종점을 삭제하는 경우
-            return;
-        }
+        removeLastSection(upBoundSection, downBoundSection);
     }
 
-    private boolean isStationInMiddleOfSection(Section upBoundSection, Section downBoundSection) {
-        return upBoundSection != null && downBoundSection != null;
+    private void removeLastSection(Section upBoundSection, Section downBoundSection) {
+        if (isDownBoundSection(upBoundSection, downBoundSection)) {
+            remove(upBoundSection); // 하행 종점을 삭제하는 경우
+        }
+
+        if (isUpBoundSection(upBoundSection, downBoundSection)) {
+            remove(downBoundSection); // 상행 종점을 삭제하는 경우
+        }
     }
 
     private void validateForConnect(Section upBoundSection, Section downBoundSection,
@@ -244,7 +242,19 @@ public class Sections {
         this.sections.remove(section);
     }
 
-    public List<Section> getSections() {
+    private boolean isStationInMiddleOfSection(Section upBoundSection, Section downBoundSection) {
+        return upBoundSection != null && downBoundSection != null;
+    }
+
+    private boolean isDownBoundSection(Section upBoundSection, Section downBoundSection) {
+        return upBoundSection != null && downBoundSection == null;
+    }
+
+    private boolean isUpBoundSection(Section upBoundSection, Section downBoundSection) {
+        return downBoundSection != null && upBoundSection == null;
+    }
+
+    List<Section> getSections() {
         return Collections.unmodifiableList(sections);
     }
 }
