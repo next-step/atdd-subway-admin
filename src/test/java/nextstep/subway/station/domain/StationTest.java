@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("역 도메인 관련 기능")
 class StationTest {
-
     private Station station;
 
     @BeforeEach

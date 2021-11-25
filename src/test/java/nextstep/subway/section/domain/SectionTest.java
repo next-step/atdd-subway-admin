@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("구간 도메인 관련 기능")
 class SectionTest {
-
     private Station upStation;
     private Station downStation;
     private Line line;

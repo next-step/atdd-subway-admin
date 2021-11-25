@@ -10,7 +10,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("노선 도메인 관련 기능")
 class LineTest {
-
     private Station upStation;
     private Station downStation;
     private Line line;
