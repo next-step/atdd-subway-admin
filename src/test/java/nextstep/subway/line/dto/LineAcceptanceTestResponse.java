@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineAcceptanceTestResponse {
 
-    private LineAcceptanceTestResponse(){
+    private LineAcceptanceTestResponse() {
 
     }
 
@@ -25,7 +25,7 @@ public class LineAcceptanceTestResponse {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    public static void isNoContent(ExtractableResponse<Response> response){
+    public static void isNoContent(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 

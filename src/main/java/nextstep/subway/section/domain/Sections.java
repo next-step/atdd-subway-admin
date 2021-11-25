@@ -27,16 +27,94 @@ public class Sections {
                 map(Section::getDownStation).collect(Collectors.toList());
     }
 
-    public void addSection(Section section) {
-        this.sections.add(section);
+    public void addSection(Section newSection) {
+        Section upStation = sections.stream()
+                .filter(it -> it.getUpStation() == newSection.getUpStation())
+                .findFirst()
+                .orElse(null);
+
+        Section downStation = sections.stream()
+                .filter(it -> it.getDownStation() == newSection.getDownStation())
+                .findFirst()
+                .orElse(null);
+        createSection(newSection, upStation, downStation);
     }
 
-//    private boolean isAddUpLine(Section section) {
-//        return sections.stream()
-//                .filter(it -> it.getDownStation().equals(section.getUpStation()))
-//                .findFirst()
-//                .ifPresent(it-> it.add);
-//    }
+    private void createSection(Section newSection, Section upStation, Section downStation) {
+
+        if (upStation == null && downStation == null) {
+            //하행종점 A-B-C-NEW
+            this.sections.add(newSection);
+        }
+
+        //상행 종점 NEW-A-B-C
+        if (isAddFirstSection(upStation, downStation)) {
+            addUpFirstSection(newSection, downStation);
+        }
+
+        if (isMiddleLeftSection(upStation, downStation)) {
+            //중간 A-NEW-B-C
+            if (newSection.getDistance() >= downStation.getDistance()) {
+                throw new InputDataErrorException(InputDataErrorCode.DISTANCE_OF_THE_OLD_SECTION_IS_LESS_THAN_NEW_SECTION_DISTANCE);
+            }
+            addMiddleLeftSection(newSection, downStation);
+        }
+
+        if (isMiddleRightSection(upStation, downStation)) {
+            //중간 A-B-NEW-C
+            if (newSection.getDistance() >= upStation.getDistance()) {
+                throw new InputDataErrorException(InputDataErrorCode.DISTANCE_OF_THE_OLD_SECTION_IS_LESS_THAN_NEW_SECTION_DISTANCE);
+            }
+            addMiddleRightSection(newSection, upStation);
+        }
+
+
+    }
+
+    private boolean isMiddleRightSection(Section upStation, Section downStation) {
+        return upStation != null && upStation.getDownStation() != null && downStation == null;
+    }
+
+    private boolean isMiddleLeftSection(Section upStation, Section downStation) {
+        return upStation == null && downStation != null && downStation.getUpStation() != null;
+    }
+
+    private boolean isAddFirstSection(Section upStation, Section downStation) {
+        return upStation == null && downStation != null && downStation.getUpStation() == null;
+    }
+
+    private void addMiddleRightSection(Section newSection, Section upStation) {
+        Section upSection = new Section(upStation.getLine(), upStation.getUpStation(), newSection.getDownStation(), newSection.getDistance());
+        Section downSection = new Section(upStation.getLine(), newSection.getDownStation(), upStation.getDownStation(), upStation.getDistance() - newSection.getDistance());
+        int insertIndex = upStation.getId().intValue() - 1;
+
+        sections.remove(insertIndex);
+        sections.add(insertIndex, upSection);
+        sections.add(insertIndex + 1, downSection);
+    }
+
+    private void addMiddleLeftSection(Section newSection, Section downStation) {
+        Section upSection = new Section(downStation.getLine(), downStation.getUpStation(), newSection.getUpStation(), downStation.getDistance() - newSection.getDistance());
+        Section downSection = new Section(downStation.getLine(), newSection.getUpStation(), downStation.getDownStation(), newSection.getDistance());
+        int insertIndex = downStation.getId().intValue() - 1;
+
+        sections.remove(insertIndex);
+        sections.add(insertIndex, upSection);
+        sections.add(insertIndex + 1, downSection);
+    }
+
+    private void addUpFirstSection(Section newSection, Section downStation) {
+        downStation.updateUpStationTo(newSection.getUpStation());
+        downStation.updateDistance(newSection.getDistance());
+
+        Section emptySection = new Section(newSection.getLine(), null, downStation.getUpStation(), 0);
+        addFirstSection(emptySection);
+    }
+
+    private void addFirstSection(Section section) {
+        this.sections.add(0, section);
+    }
+
 
     private void checkValidSection(Section section) {
         if (isExist(section)) {

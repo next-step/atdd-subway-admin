@@ -113,7 +113,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         isNoContent(response);
     }
 
-
     private void validLine(ExtractableResponse<Response> createResponse, ExtractableResponse<Response> selectResponse) {
         LineResponse createLineResponse = createResponse.jsonPath()
                 .getObject(".", LineResponse.class);
@@ -151,7 +150,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         for (int i = 0; i < createStations.size(); i++) {
             SectionResponse createStation = createStations.get(i);
             SectionResponse selectStation = selectStations.get(i);
-            assertThat(createStation.getId() == selectStation.getId());
+            assertThat(createStation.getId()).isEqualTo(selectStation.getId());
         }
     }
 }

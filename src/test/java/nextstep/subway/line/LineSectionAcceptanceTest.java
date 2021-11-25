@@ -1,13 +1,19 @@
 package nextstep.subway.line;
 
 import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.*;
+import nextstep.subway.section.domain.dto.SectionResponse;
 import nextstep.subway.station.StationAcceptanceTestRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관련 기능")
 public class LineSectionAcceptanceTest extends AcceptanceTest {
@@ -16,6 +22,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     private StationResponse gangNamStation;
     private StationResponse gwangKyoStation;
     private String lineUri;
+    private String lindId;
 
     @BeforeEach
     public void setUp() {
@@ -28,6 +35,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
                 , gangNamStation.getId(), gwangKyoStation.getId(), 10);
 
         lineUri = LineAcceptanceTestRequest.createLineRequest(lineRequest).header("Location");
+        lindId = lineUri.split("/")[2];
     }
 
     @Test
@@ -37,9 +45,11 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         LineSectionCreateRequest lineSectionCreateRequest =
                 new LineSectionCreateRequest(shinNonHyunStation.getId(), gangNamStation.getId(), 3);
 
-        ExtractableResponse response = LineSectionAcceptanceTestRequest.addSectionInLine(lineUri, lineSectionCreateRequest.getUpStationId(),
+        ExtractableResponse<Response> response = LineSectionAcceptanceTestRequest.addSectionInLine(lineUri, lineSectionCreateRequest.getUpStationId(),
                 lineSectionCreateRequest.getDownStationId(), lineSectionCreateRequest.getDistance());
-        LineAcceptanceTestResponse.isStatusOk(response);
+
+        LineSectionAcceptanceTestResponse.isStatusOk(response);
+        checkValid(response);
     }
 
     @Test
@@ -49,12 +59,60 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         LineSectionCreateRequest lineSectionCreateRequest =
                 new LineSectionCreateRequest(gwangKyoStation.getId(), suwonStation.getId(), 3);
 
-        ExtractableResponse response = LineSectionAcceptanceTestRequest.addSectionInLine(lineUri, lineSectionCreateRequest.getUpStationId(),
+        ExtractableResponse<Response> response = LineSectionAcceptanceTestRequest.addSectionInLine(lineUri, lineSectionCreateRequest.getUpStationId(),
                 lineSectionCreateRequest.getDownStationId(), lineSectionCreateRequest.getDistance());
-        LineAcceptanceTestResponse.isStatusOk(response);
+        LineSectionAcceptanceTestResponse.isStatusOk(response);
+        checkValid(response);
     }
 
+    @Test
+    @DisplayName("중간 왼쪽에 new section추가")
+    public void insertMiddleLeftStationSectionTest() {
+        StationResponse suwonStation = StationAcceptanceTestRequest.createStation("수원역").as(StationResponse.class);
+        LineSectionCreateRequest lineSectionCreateRequest =
+                new LineSectionCreateRequest(gwangKyoStation.getId(), suwonStation.getId(), 3);
 
+        ExtractableResponse<Response> response = LineSectionAcceptanceTestRequest.addSectionInLine(lineUri, lineSectionCreateRequest.getUpStationId(),
+                lineSectionCreateRequest.getDownStationId(), lineSectionCreateRequest.getDistance());
+        LineSectionAcceptanceTestResponse.isStatusOk(response);
+        checkValid(response);
+    }
 
+    @Test
+    @DisplayName("중간 오른쪽에 new section추가")
+    public void insertMiddleRightStationSectionTest() {
+        StationResponse suwonStation = StationAcceptanceTestRequest.createStation("수원역").as(StationResponse.class);
+        LineSectionCreateRequest lineSectionCreateRequest =
+                new LineSectionCreateRequest(gangNamStation.getId(), suwonStation.getId(), 3);
 
+        ExtractableResponse<Response> response = LineSectionAcceptanceTestRequest.addSectionInLine(lineUri, lineSectionCreateRequest.getUpStationId(),
+                lineSectionCreateRequest.getDownStationId(), lineSectionCreateRequest.getDistance());
+
+        LineSectionAcceptanceTestResponse.isStatusOk(response);
+
+        checkValid(response);
+    }
+
+    private void checkValid(ExtractableResponse addedResponse) {
+        ExtractableResponse<Response> searchLineResponse = LineAcceptanceTestRequest.selectOneLine(lindId);
+
+        LineResponse searchedLineResponse = searchLineResponse.jsonPath()
+                .getObject(".", LineResponse.class);
+
+        LineResponse addedResponses = addedResponse.jsonPath()
+                .getObject(".", LineResponse.class);
+
+        List<SectionResponse> addedSectionResponse = addedResponses.getSections();
+        List<SectionResponse> searchResponse = searchedLineResponse.getSections();
+
+        compareStation(addedSectionResponse, searchResponse);
+    }
+
+    private void compareStation(List<SectionResponse> addSectionResponse, List<SectionResponse> searchResponse) {
+        for (int i = 0; i < addSectionResponse.size(); i++) {
+            SectionResponse createStation = addSectionResponse.get(i);
+            SectionResponse selectStation = searchResponse.get(i);
+            assertThat(createStation.getId()).isEqualTo(selectStation.getId());
+        }
+    }
 }

@@ -58,7 +58,15 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
-    public void updatePreStationTo(Station upStation) {
+    public void updateUpStationTo(Station upStation) {
         this.upStation = upStation;
+    }
+
+    public void updateDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public Line getLine() {
+        return line;
     }
 }
