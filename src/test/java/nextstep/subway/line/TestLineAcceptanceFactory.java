@@ -4,7 +4,15 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestLineAcceptanceFactory {
 
@@ -15,9 +23,7 @@ public class TestLineAcceptanceFactory {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
-        LineRequest lineRequest = 지하철_노선_파라미터_생성(name, color);
-
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
         return RestAssured
                 .given().log().all()
                 .body(lineRequest)
@@ -49,7 +55,44 @@ public class TestLineAcceptanceFactory {
                 .then().log().all().extract();
     }
 
+    public static List<Long> 지하철_노선_목록_ID_추출(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(".", LineResponse.class).stream()
+                .map(LineResponse::getId)
+                .collect(Collectors.toList());
+    }
+
+    @SafeVarargs
+    public static final List<Long> 지하철_노선_ID_추출(ExtractableResponse<Response>... createResponse) {
+        return Arrays.stream(createResponse)
+                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+                .collect(Collectors.toList());
+    }
+
+    public static void 지하철_노선_목록_포함됨(List<Long> expectedLineIds, List<Long> resultLineIds) {
+        assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
     public static LineRequest 지하철_노선_파라미터_생성(String name, String color) {
         return LineRequest.of(name, color);
+    }
+
+    public static LineRequest 지하철_노선과_종점역정보_파라미터_생성(String name, String color, Long upStationId, Long downStationId, int distance) {
+        return LineRequest.of(name, color, upStationId, downStationId, distance);
+    }
+
+    public static void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    public static void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    public static void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
