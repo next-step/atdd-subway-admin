@@ -185,15 +185,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_제거_요청
-        ExtractableResponse<Response> response = RestAssured
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청();
+
+        // then
+        // 지하철_노선_삭제됨
+        지하철_노선_삭제됨(response);
+    }
+
+    private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_제거_요청() {
+        return RestAssured
           .given().log().all()
           .accept(MediaType.ALL_VALUE)
           .when().delete("/lines/1")
           .then().log().all()
           .extract();
-
-        // then
-        // 지하철_노선_삭제됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
