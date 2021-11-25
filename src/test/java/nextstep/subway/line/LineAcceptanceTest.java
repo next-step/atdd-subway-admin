@@ -537,6 +537,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
             지하철_구간_삭제에_실패한다(response);
         }
 
+        @DisplayName("존재하지 않는 역으로 삭제한다")
+        @Test
+        void testRemoveHasNotSection() {
+            // given
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+            StationResponse 광명역 = StationAcceptanceTest.지하철역_등록되어_있음("광명역").as(StationResponse.class);
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역").as(StationResponse.class);
+            String lineUrl = 지하철_라인과_구간이_추가되어짐(강남역, 광교역, 광명역);
+
+            // when
+            ExtractableResponse<Response> response = 지하철_구간_삭제_요청(안양역, lineUrl);
+
+            // then
+            역을_찾을_수_없다고_응답한다(response);
+        }
+
+        private void 역을_찾을_수_없다고_응답한다(ExtractableResponse<Response> response) {
+            Asserts.assertIsNotFound(response);
+        }
+
         private void 지하철_구간_삭제에_실패한다(ExtractableResponse<Response> response) {
             Asserts.assertIsBadRequest(response);
         }

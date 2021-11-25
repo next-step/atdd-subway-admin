@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.common.exception.ServiceException;
 import nextstep.subway.line.exception.DuplicateBothStationException;
 import nextstep.subway.line.exception.NotMatchedStationException;
 import nextstep.subway.station.domain.Station;
@@ -12,6 +13,8 @@ import java.util.*;
 
 @Embeddable
 public class Sections {
+    private final static int MIN_SECTION_COUNT = 1;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -128,6 +131,7 @@ public class Sections {
     }
 
     public void deleteSectionByStation(Station station) {
+        validateDeleteSection(station);
         findByDownStation(station)
                 .ifPresent(section -> {
                     Section nextSection = getNextSection(section);
@@ -136,6 +140,16 @@ public class Sections {
                 });
         findByUpStation(station)
                 .ifPresent(section -> sections.remove(section));
+    }
+
+    private void validateDeleteSection(Station station) {
+        if (sections.size() <= MIN_SECTION_COUNT) {
+            throw new ServiceException("남은 구간은 삭제할 수 없습니다.");
+        }
+
+        Optional<Section> upStation = findByUpStation(station);
+        (upStation.isPresent() ? upStation : findByDownStation(station))
+                .orElseThrow(() -> {throw new StationNotFoundException(station.getId());});
     }
 
     private void mergeIntoNextSection(Section section, Section nextSection) {
