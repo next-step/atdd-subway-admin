@@ -8,6 +8,7 @@ import org.springframework.util.StringUtils;
 
 @Embeddable
 public class LineName {
+
     @Column(name = "name", unique = true)
     private String value;
 
@@ -24,10 +25,9 @@ public class LineName {
     }
 
     private void validate(String value) {
-        if (StringUtils.hasText(value)) {
-            return;
+        if (!StringUtils.hasText(value)) {
+            throw new IllegalArgumentException("라인 이름은 빈 값일 수 없습니다.");
         }
-        throw new IllegalArgumentException("라인 이름은 빈 값일 수 없습니다.");
     }
 
     public String getValue() {
@@ -36,11 +36,13 @@ public class LineName {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
-        LineName lineName = (LineName)o;
+        }
+        LineName lineName = (LineName) o;
         return Objects.equals(value, lineName.value);
     }
 

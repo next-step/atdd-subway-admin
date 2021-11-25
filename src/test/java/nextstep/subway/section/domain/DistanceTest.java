@@ -34,4 +34,36 @@ class DistanceTest {
         assertThat(result).isEqualTo(Distance.from(5));
     }
 
+    @Test
+    @DisplayName("거리 차 구할 때, 0이 되는 경우 에러 발생")
+    void 거리_차1() {
+        Distance distance1 = Distance.from(5);
+        Distance distance2 = Distance.from(5);
+
+        assertThatIllegalArgumentException().isThrownBy(
+            () -> distance1.subtract(distance2)
+        );
+    }
+
+    @Test
+    @DisplayName("거리 차 구할 때, 음수 되는 경우 에러 발생")
+    void 거리_차2() {
+        Distance distance1 = Distance.from(5);
+        Distance distance2 = Distance.from(7);
+
+        assertThatIllegalArgumentException().isThrownBy(
+            () -> distance1.subtract(distance2)
+        );
+    }
+
+    @Test
+    @DisplayName("거리 차 구하기")
+    void 거리_차3() {
+        Distance distance1 = Distance.from(8);
+        Distance distance2 = Distance.from(3);
+
+        final Distance result = distance1.subtract(distance2);
+
+        assertThat(result).isEqualTo(Distance.from(5));
+    }
 }

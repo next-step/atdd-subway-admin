@@ -143,7 +143,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         노선_삭제됨(response);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성(LineRequest lineRequest) {
+    public static ExtractableResponse<Response> 지하철_노선_생성(LineRequest lineRequest) {
         return post("/lines", lineRequest);
     }
 
