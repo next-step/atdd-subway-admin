@@ -84,6 +84,12 @@ public class LineService {
         lineRepository.deleteById(line.getId());
     }
 
+    public void removeSectionByStationId(Long lineId, String stationId) {
+        final Line line = findByLineId(lineId);
+        Station station = getStation(Long.parseLong(stationId));
+        line.deleteSection(station);
+    }
+
     private Section createSection(BaseRequest request) {
         final Station upStation = getStation(request.getUpStationId());
         final Station downStation = getStation(request.getDownStationId());

@@ -159,7 +159,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
         return RestAssured.given().log().all()
                 .when().get(BASE_URI + "/{id}", id)
                 .then().log().all()

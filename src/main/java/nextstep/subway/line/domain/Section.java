@@ -52,8 +52,15 @@ public class Section extends BaseEntity {
         return station.equals(section.station);
     }
 
+    public boolean isSameStation(Station target) {
+        return station.equals(target);
+    }
+
     public boolean isSameNextStation(Section section) {
         return nextStation.equals(section.nextStation);
+    }
+    public boolean isSameNextStation(Station target) {
+        return nextStation.equals(target);
     }
 
     public void addSection(Section addSection) {
@@ -66,6 +73,11 @@ public class Section extends BaseEntity {
         this.distance -= addSection.distance;
     }
 
+    public void removeSection(Section deleteSection) {
+        this.nextStation = deleteSection.nextStation;
+        this.distance += deleteSection.distance;
+    }
+
     public void addLine(Line line) {
         this.line = line;
     }
@@ -74,8 +86,12 @@ public class Section extends BaseEntity {
         return distance > target;
     }
 
-    public boolean isDuplicate(Section section) {
+    public boolean isSameSection(Section section) {
         return station.equals(section.getStation()) && nextStation.equals(section.getNextStation());
+    }
+
+    public boolean hasStation(Station station) {
+        return this.station.equals(station) || this.nextStation.equals(station);
     }
 
     public Long getId() {
@@ -86,13 +102,6 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-//    public Distance getDistance() {
-//        return distance;
-//    }
-
-    private void decrease(int target) {
-        this.distance -= target;
-    }
     public Station getStation() {
         return station;
     }
@@ -117,6 +126,5 @@ public class Section extends BaseEntity {
     public int hashCode() {
         return Objects.hash(getId());
     }
-
 
 }

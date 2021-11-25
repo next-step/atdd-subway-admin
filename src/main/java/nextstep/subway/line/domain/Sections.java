@@ -31,18 +31,32 @@ public class Sections {
         sections.add(addSection);
     }
 
+    public void delete(Station station) {
+        getSection(station).ifPresent(
+                it -> {
+                    if (it.isSameStation(station)) {
+                        findPrevSection(station).ifPresent(
+                                that -> that.removeSection(it)
+                        );
+                    }
+                    sections.remove(it);
+                }
+        );
+    }
+
+
+    public List<Station> getStations() {
+        return getOrderedStations(findFirstStation());
+    }
+
     private void insertSection(Section addSection) {
         getSection(addSection).ifPresent(
                 section -> section.addSection(addSection)
         );
     }
 
-    public List<Station> getStations() {
-        return getOrderedStations(findFirstStation());
-    }
-
     private void validate(Section section) {
-        if(!sections.isEmpty()) {
+        if (!sections.isEmpty()) {
             validateDistance(section);
             validateDuplicate(section);
             validateExist(section);
@@ -56,7 +70,7 @@ public class Sections {
     }
 
     private void validateDuplicate(Section section) {
-        if (sections.stream().allMatch(it -> it.isDuplicate(section))) {
+        if (sections.stream().allMatch(it -> it.isSameSection(section))) {
             throw new SectionNotCreateException("이미 등록된 구간입니다.");
         }
     }
@@ -79,7 +93,8 @@ public class Sections {
     }
 
     private boolean notExistStation(Section section) {
-        return !getStations().contains(section.getStation()) && !getStations().contains(section.getNextStation());
+        return getStations().stream()
+                .noneMatch(station -> station.equals(section.getStation()) || station.equals(section.getNextStation()));
     }
 
     private Station findNextStation(Station station) {
@@ -99,12 +114,24 @@ public class Sections {
                 .findFirst();
     }
 
+    private Optional<Section> getSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.hasStation(station))
+                .findFirst();
+    }
+
     private Station findFirstStation() {
         return sections.stream()
                 .filter(section -> !getDownStations().contains(section.getStation()))
                 .findFirst()
                 .orElseThrow(StationNotFoundException::new)
                 .getStation();
+    }
+
+    private Optional<Section> findPrevSection(Station station) {
+        return sections.stream()
+                .filter(it -> it.isSameNextStation(station))
+                .findFirst();
     }
 
 //    private List<Station> getUpStations() {
