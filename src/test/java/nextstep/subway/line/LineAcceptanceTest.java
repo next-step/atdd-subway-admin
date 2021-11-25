@@ -1,6 +1,5 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -9,16 +8,15 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.station.TestStationFactory.역_생성;
-import static nextstep.subway.utils.TestGetRequestFactory.요청_get;
-import static nextstep.subway.utils.TestPostRequestFactory.요청_post;
+import static nextstep.subway.utils.TestRequestFactory.요청;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -110,33 +108,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
-        return 요청_post(DEFAULT_PATH, lineRequest);
+        return 요청(HttpMethod.POST,DEFAULT_PATH, lineRequest);
     }
 
     private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
-        return 요청_get(DEFAULT_PATH);
+        return 요청(HttpMethod.GET, DEFAULT_PATH, null);
     }
 
     private ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
-        return 요청_get(DEFAULT_PATH + "/" + id);
+        return 요청(HttpMethod.GET, DEFAULT_PATH + "/" + id, null);
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(String name, String color, Long id) {
         LineRequest updateLineRequest = new LineRequest(name, color);
 
-        return RestAssured
-                .given().log().all()
-                .body(updateLineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/" + id)
-                .then().log().all().extract();
+        return 요청(HttpMethod.PUT, "/lines/" + id, updateLineRequest);
     }
 
     private ExtractableResponse<Response> 지하철_노선_제거_요청(Long id) {
-        return RestAssured
-                .given().log().all()
-                .when().delete("/lines/" + id)
-                .then().log().all().extract();
+        return 요청(HttpMethod.DELETE, "/lines/" + id, null);
     }
 
     private ExtractableResponse<Response> 지하철_노선_종점역_추가하여_생성_요청(String upStationName, String downStationName, String name, String color) {
