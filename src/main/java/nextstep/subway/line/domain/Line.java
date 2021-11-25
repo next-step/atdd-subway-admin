@@ -11,18 +11,23 @@ public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
+
     private String color;
+
     @Embedded
     private Sections sections;
 
     protected Line() {
     }
 
-    public Line(String name, String color, Section section) {
+    public Line(String name, String color, Station upStation, Station downStation, int distance ) {
         this.name = name;
         this.color = color;
+
+        Section section = new Section(upStation, downStation, distance);
         this.sections = new Sections(section.addLine(this));
     }
 
