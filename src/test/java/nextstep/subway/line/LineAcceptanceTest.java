@@ -11,6 +11,7 @@ import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.Asserts;
 import nextstep.subway.utils.Methods;
+import org.assertj.core.api.AbstractIntegerAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -461,18 +462,44 @@ public class LineAcceptanceTest extends AcceptanceTest {
         private void 지하철_구간이_생성된다(ExtractableResponse<Response> response) {
             Asserts.assertIsCreated(response);
         }
+    }
 
-        private ExtractableResponse<Response> 지하철_구간_추가_요청(String lineUrl, StationResponse upStation, StationResponse downStation, Integer distance) {
-            Map<String, Object> params = new HashMap<>();
-            params.put("upStationId", upStation.getId());
-            params.put("downStationId", downStation.getId());
-            params.put("distance", distance);
-            return RestAssured
-                    .given().log().all()
-                    .body(params)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .when().post(lineUrl + "/sections")
-                    .then().log().all().extract();
+    @DisplayName("구간 제거 기능")
+    @Nested
+    class RemoveSectionTest {
+        @DisplayName("출발역을 삭제한다")
+        @Test
+        void testInsertionSection() {
+            // given
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역").as(StationResponse.class);
+            StationResponse 박달역 = StationAcceptanceTest.지하철역_등록되어_있음("박달역").as(StationResponse.class);
+            String lineUrl = 지하철_라인과_구간이_추가되어짐(강남역, 광교역, 안양역);
+
+            // when
+            ExtractableResponse<Response> response = 지하철_구간_삭제_요청(강남역, lineUrl);
+
+            // then
+            지하철_구간_삭제_응답한다(response);
+            상행선_하행선_순으로_정렬된_역을_포함한_지하철_노선을_응답한다(lineUrl, 광교역, 안양역, 박달역);
+        }
+
+        private void 지하철_구간_삭제_응답한다(ExtractableResponse<Response> response) {
+            Asserts.assertIsOk(response);
+        }
+
+        private ExtractableResponse<Response> 지하철_구간_삭제_요청(StationResponse station, String lineUrl) {
+            return Methods.delete(lineUrl + "/sections?stationId=" + station.getId());
+        }
+
+        private String 지하철_라인과_구간이_추가되어짐(StationResponse ... stations) {
+            ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", stations[0].getId().toString(), stations[1].getId().toString(), "100");
+            String lineUrl = 신분당선.header("Location");
+            for (int i = 1, n = stations.length - 1; i < n; i++) {
+                지하철_구간_추가_요청(lineUrl, stations[i], stations[i+1], 40);
+            }
+            return lineUrl;
         }
     }
 
@@ -612,6 +639,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> 지하철_노선_삭제_요청(Long id) {
         return Methods.delete("/lines/" + id);
+    }
+
+    private ExtractableResponse<Response> 지하철_구간_추가_요청(String lineUrl, StationResponse upStation, StationResponse downStation, Integer distance) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", upStation.getId());
+        params.put("downStationId", downStation.getId());
+        params.put("distance", distance);
+        return RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(lineUrl + "/sections")
+                .then().log().all().extract();
     }
 
     /**
