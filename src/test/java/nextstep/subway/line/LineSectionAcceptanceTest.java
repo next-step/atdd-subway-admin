@@ -53,7 +53,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 상행종점역_사이_추가역_거리_5 = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_5);
 
         // when
-        ExtractableResponse<Response> response = 구간_생성_요청함(상행종점역_사이_추가역_거리_5);
+        ExtractableResponse<Response> response = 구간_생성_요청함(구간_테스트_노선_ID, 상행종점역_사이_추가역_거리_5);
 
         // then
         역사이_구간_생성됨(response);
@@ -66,7 +66,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 사이_추가역_하행종점역_거리_5 = SectionRequest.of(사이_추가_역_ID, 최초_하행종점역_ID, 거리_5);
 
         // when
-        ExtractableResponse<Response> response = 구간_생성_요청함(사이_추가역_하행종점역_거리_5);
+        ExtractableResponse<Response> response = 구간_생성_요청함(구간_테스트_노선_ID, 사이_추가역_하행종점역_거리_5);
 
         // then
         역사이_구간_생성됨(response);
@@ -79,7 +79,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 변경_상행종점역_최초_상행종점역_거리_5 = SectionRequest.of(변경_상행종점역_ID, 최초_상행종점역_ID, 거리_5);
 
         // when
-        ExtractableResponse<Response> response = 구간_생성_요청함(변경_상행종점역_최초_상행종점역_거리_5);
+        ExtractableResponse<Response> response = 구간_생성_요청함(구간_테스트_노선_ID, 변경_상행종점역_최초_상행종점역_거리_5);
 
         // then
         상행종점_구간_생성됨(response);
@@ -92,7 +92,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 하행종점역_변경_하행종점역_거리_5 = SectionRequest.of(최초_하행종점역_ID, 변경_하행종점역_ID, 거리_5);
 
         // when
-        ExtractableResponse<Response> response = 구간_생성_요청함(하행종점역_변경_하행종점역_거리_5);
+        ExtractableResponse<Response> response = 구간_생성_요청함(구간_테스트_노선_ID, 하행종점역_변경_하행종점역_거리_5);
 
         // then
         하행종점_구간_생성됨(response);
@@ -105,7 +105,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 구간_내_거리가_유효하지_않음 = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_100);
 
         // when
-        ExtractableResponse<Response> response = 구간_생성_요청함(구간_내_거리가_유효하지_않음);
+        ExtractableResponse<Response> response = 구간_생성_요청함(구간_테스트_노선_ID, 구간_내_거리가_유효하지_않음);
 
         // then
         구간_생성_실패됨_거리__예외(response);
@@ -119,7 +119,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 이미_등록된_구간 = SectionRequest.of(최초_상행종점역_ID, 최초_하행종점역_ID, 거리_5);
 
         // when
-        ExtractableResponse<Response> response = 구간_생성_요청함(이미_등록된_구간);
+        ExtractableResponse<Response> response = 구간_생성_요청함(구간_테스트_노선_ID, 이미_등록된_구간);
 
         // then
         구간_생성_실패됨_등록된_구간_예외(response);
@@ -133,18 +133,18 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 상행역_하행역_모두_포함_되어있지않음 = SectionRequest.of(변경_상행종점역_ID, 변경_하행종점역_ID, 거리_5);
 
         // when
-        ExtractableResponse<Response> response = 구간_생성_요청함(상행역_하행역_모두_포함_되어있지않음);
+        ExtractableResponse<Response> response = 구간_생성_요청함(구간_테스트_노선_ID, 상행역_하행역_모두_포함_되어있지않음);
 
         // then
         구간_생성_실패됨_역_없음_예외(response);
     }
 
-    private ExtractableResponse<Response> 구간_생성_요청함(SectionRequest request) {
+    private ExtractableResponse<Response> 구간_생성_요청함(Long lineId, SectionRequest request) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
                 .when()
-                .post(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
+                .post(BASE_URI + "/{id}/sections", lineId)
                 .then().log().all().extract();
     }
 
@@ -159,7 +159,6 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         LineResponse lineResponse = responseLine(response);
         assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(변경_상행종점역_ID, 최초_상행종점역_ID, 최초_하행종점역_ID);
     }
-
 
     private void 하행종점_구간_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(CREATED.value());

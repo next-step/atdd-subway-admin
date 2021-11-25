@@ -56,7 +56,7 @@ public class Section extends BaseEntity {
     }
 
     public void updateStation(Section section) {
-        this.station = section.station;
+        this.station = section.nextStation;
         this.distance -= section.distance;
     }
 
