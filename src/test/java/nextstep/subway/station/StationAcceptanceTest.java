@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import javax.persistence.criteria.Expression;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,18 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }};
     public static final Map<String, String> 역삼역 = new HashMap() {{
         put("name", "역삼역");
+    }};
+    public static final Map<String, String> 양재역 = new HashMap() {{
+        put("name", "양재역");
+    }};
+    public static final Map<String, String> 판교역 = new HashMap() {{
+        put("name", "판교역");
+    }};
+    public static final Map<String, String> 청계산입구 = new HashMap() {{
+        put("name", "청계산입구");
+    }};
+    public static final Map<String, String> 광교역 = new HashMap() {{
+        put("name", "광교역");
     }};
 
     @DisplayName("지하철역을 생성한다.")

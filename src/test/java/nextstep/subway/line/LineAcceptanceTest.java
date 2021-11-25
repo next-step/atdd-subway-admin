@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineAcceptanceTest extends AcceptanceTest {
     private static final String URL = "/lines";
     private static Map<String, String> 노선_2호선;
-    private static Map<String, String> 노선_신분당선;
+    public static Map<String, String> 노선_신분당선;
     private static Map<String, String> 노선_같은_종점;
     private static Map<String, String> 노선_구간_거리_0;
     private Long upStationId;
@@ -265,5 +265,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    public static Long 지하철_노선_ID(Map<String, String> params) {
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .jsonPath()
+                .getLong("id");
     }
 }

@@ -1,11 +1,11 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,8 +23,8 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @OneToMany(mappedBy = "line")
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
     }
@@ -57,11 +57,11 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 
     public List<Station> getStations() {
-        return sections.stream()
+        return sections.getSections().stream()
                 .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
                 .distinct()
                 .collect(Collectors.toList());
@@ -70,6 +70,12 @@ public class Line extends BaseEntity {
     public List<StationResponse> getStationResponses() {
         return getStations().stream()
                 .map(StationResponse::of)
+                .collect(Collectors.toList());
+    }
+
+    public List<SectionResponse> getSectionResponses() {
+        return getSections().stream()
+                .map(SectionResponse::of)
                 .collect(Collectors.toList());
     }
 
