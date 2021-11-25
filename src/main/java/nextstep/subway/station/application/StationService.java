@@ -61,4 +61,10 @@ public class StationService {
             throw new DuplicateException("이미 등록된 역 이름을 사용할 수 없습니다.");
         });
     }
+
+    public void validateSavers(Long... stationIds) {
+        for (Long id : stationIds) {
+            findStation(id);
+        }
+    }
 }
