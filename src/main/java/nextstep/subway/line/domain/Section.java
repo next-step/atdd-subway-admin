@@ -3,6 +3,10 @@ package nextstep.subway.line.domain;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 @Entity
 public class Section {
@@ -37,6 +41,10 @@ public class Section {
     public Section addLine(Line line) {
         this.line = line;
         return this;
+    }
+
+    public List<Station> getStations() {
+        return Arrays.asList(upStation,downStation);
     }
 
     public Station getUpStation() {
