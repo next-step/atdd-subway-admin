@@ -4,13 +4,16 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 public class Line extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @Column(unique = true)
@@ -18,8 +21,8 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @OneToMany
-    private List<Station> stations = new LinkedList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
     }
@@ -29,13 +32,27 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public static Line from(String name, String color) {
+    private Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this.name = name;
+        this.color = color;
+        sections.add(Section.of(upStation, downStation, distance, this));
+    }
+
+    public static Line of(String name, String color) {
         return new Line(name, color);
+    }
+
+    public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
+        return new Line(name, color, upStation, downStation, distance);
     }
 
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public void addSections(List<Section> sections) {
+        sections.forEach(this.sections::add);
     }
 
     public Long getId() {
@@ -51,6 +68,13 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return stations;
+        List<Station> stations = new LinkedList<>();
+        List<Section> orderedSections = sections.getSections();
+        Section firstSection = orderedSections.get(0);
+
+        stations.add(firstSection.getUpStation());
+        stations.addAll(sections.getDownStations());
+
+        return Collections.unmodifiableList(stations);
     }
 }
