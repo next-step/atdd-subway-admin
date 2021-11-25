@@ -179,7 +179,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제_실패됨(response);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(String color, String name, StationResponse upStationResponse, StationResponse downStationResponse, String distance) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String color, String name, StationResponse upStationResponse, StationResponse downStationResponse, String distance) {
         Map<String, String> params = new HashMap<>();
         params.put("color", color);
         params.put("name", name);
@@ -195,11 +195,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
+    public static void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-    private LineResponse 지하철_노선_등록되어_있음(String color, String name, StationResponse upStationResponse, StationResponse downStationResponse, String distance) {
+    public static LineResponse 지하철_노선_등록되어_있음(String color, String name, StationResponse upStationResponse, StationResponse downStationResponse, String distance) {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(color, name, upStationResponse, downStationResponse, distance);
         지하철_노선_생성됨(response);
         return response.jsonPath().getObject(".", LineResponse.class);
