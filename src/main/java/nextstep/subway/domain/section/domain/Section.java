@@ -1,7 +1,7 @@
 package nextstep.subway.domain.section.domain;
 
-import nextstep.subway.domain.common.BaseEntity;
 import nextstep.subway.domain.line.domain.Line;
+import nextstep.subway.domain.common.BaseEntity;
 import nextstep.subway.domain.station.domain.Station;
 
 import javax.persistence.*;
@@ -13,8 +13,8 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "distance")
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
@@ -36,7 +36,7 @@ public class Section extends BaseEntity {
     }
 
     public Section(final Station preStation, final Station station, final int distance) {
-        this.distance = distance;
+        this.distance = new Distance(distance);
         this.preStation = preStation;
         this.station = station;
     }
@@ -53,6 +53,22 @@ public class Section extends BaseEntity {
         line.addSection(this);
     }
 
+    public void changePreStation(Station station) {
+        this.preStation = station;
+    }
+
+    public void changeStation(Station station) {
+        this.station = station;
+    }
+
+
+    public Distance oldSectionDistance(Section section) {
+        return this.distance.minus(section.getDistance());
+    }
+
+    public void changeDistinct(final Distance distance) {
+        this.distance = distance;
+    }
 
     public Long getId() {
         return id;
@@ -64,5 +80,9 @@ public class Section extends BaseEntity {
 
     public Station getPreStation() {
         return preStation;
+    }
+
+    public Distance getDistance() {
+        return distance;
     }
 }

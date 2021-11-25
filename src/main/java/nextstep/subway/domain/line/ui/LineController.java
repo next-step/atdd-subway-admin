@@ -3,6 +3,7 @@ package nextstep.subway.domain.line.ui;
 import nextstep.subway.domain.line.application.LineService;
 import nextstep.subway.domain.line.dto.LineRequest;
 import nextstep.subway.domain.line.dto.LineResponse;
+import nextstep.subway.domain.line.dto.SectionRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,5 +45,11 @@ public class LineController {
     @GetMapping("/{lineNo}")
     public ResponseEntity<LineResponse> findLine(@PathVariable("lineNo") Long lineNo) {
         return ResponseEntity.ok(lineService.findDetailLine(lineNo));
+    }
+
+    @PostMapping("/{lineNo}/sections")
+    public ResponseEntity<LineResponse> createSection(@PathVariable("lineNo") Long lineNo,
+                                                      @RequestBody SectionRequest sectionRequest) {
+        return ResponseEntity.created(URI.create("/lines" + lineNo)).body(lineService.saveSection(lineNo, sectionRequest));
     }
 }

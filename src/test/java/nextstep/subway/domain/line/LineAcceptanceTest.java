@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 @DisplayName("지하철 노선 관련 기능")
-class LineAcceptanceTest extends AcceptanceTest {
+public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("종점역 정보를 포함한 지하철 노선을 생성한다.")
     @Test
@@ -168,7 +168,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
 
-    private ExtractableResponse<Response> 종점역_정보를_포함한_지하철_노선_생성(final StationResponse lastStopAscending, final StationResponse lastStopDescending, String lineName, String lineColor, int sectionDistance) {
+    public ExtractableResponse<Response> 종점역_정보를_포함한_지하철_노선_생성(final StationResponse lastStopAscending, final StationResponse lastStopDescending, String lineName, String lineColor, int sectionDistance) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(new LineRequest(lineName, lineColor, lastStopAscending.getId(), lastStopDescending.getId(), sectionDistance))
@@ -190,7 +190,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private StationResponse 종점역_생성(String stationName) {
+    public StationResponse 종점역_생성(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
@@ -203,5 +203,9 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         return response.as(StationResponse.class);
+    }
+
+    public StationResponse 추가역_생성(String stationName) {
+        return 종점역_생성(stationName);
     }
 }

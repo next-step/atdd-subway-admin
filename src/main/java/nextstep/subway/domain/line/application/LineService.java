@@ -4,10 +4,12 @@ import nextstep.subway.domain.line.domain.Line;
 import nextstep.subway.domain.line.domain.LineRepository;
 import nextstep.subway.domain.line.dto.LineRequest;
 import nextstep.subway.domain.line.dto.LineResponse;
+import nextstep.subway.domain.line.dto.SectionRequest;
 import nextstep.subway.domain.line.mapper.LineMapper;
 import nextstep.subway.domain.section.domain.Section;
 import nextstep.subway.domain.station.application.StationService;
 import nextstep.subway.domain.station.domain.Station;
+import nextstep.subway.global.error.exception.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,6 +71,16 @@ public class LineService {
     @Transactional(readOnly = true)
     public Line findLine(final Long lineId) {
         return lineRepository.findById(lineId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 지하철 노선은 존재하지 않습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("해당 지하철 노선은 존재하지 않습니다."));
+    }
+
+    public LineResponse saveSection(final Long lineNo, final SectionRequest sectionRequest) {
+        final Line line = this.findLine(lineNo);
+        final Station upStation = stationService.findStation(sectionRequest.getUpStationId());
+        final Station downStation = stationService.findStation(sectionRequest.getDownStationId());
+
+        line.createSection(new Section(upStation, downStation, sectionRequest.getDistance()));
+
+        return findDetailLine(line.getId());
     }
 }

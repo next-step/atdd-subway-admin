@@ -4,6 +4,7 @@ import nextstep.subway.domain.station.domain.Station;
 import nextstep.subway.domain.station.domain.StationRepository;
 import nextstep.subway.domain.station.dto.StationRequest;
 import nextstep.subway.domain.station.dto.StationResponse;
+import nextstep.subway.global.error.exception.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +41,6 @@ public class StationService {
     @Transactional(readOnly = true)
     public Station findStation(Long stationId) {
         return stationRepository.findById(stationId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 지하철 역은 존재하지 않습니다."));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("ID가 %d인 지하철 역은 존재하지 않습니다", stationId)));
     }
 }

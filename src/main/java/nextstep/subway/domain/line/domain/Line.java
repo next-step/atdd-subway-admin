@@ -50,6 +50,10 @@ public class Line extends BaseEntity {
         this.sections.addSection(section);
     }
 
+    public void createSection(final Section section) {
+        this.sections.createSection(section);
+    }
+
     public List<Section> getSections() {
         return sections.getStationInOrder();
     }
