@@ -32,29 +32,27 @@ public class Sections {
     }
 
     public void connect(Section section) {
-        Optional<Section> optExistedSection = upBoundSection(section);
-        validateForConnect(optExistedSection, section);
+        Section existedSection = upBoundSection(section).orElse(null);
+        validateForConnect(existedSection, section);
 
-        updateWhenConnectInMiddleOfExistedSection(optExistedSection, section);
+        updateWhenConnectInMiddleOfExistedSection(existedSection, section);
 
         this.sections.add(section);
     }
 
-    private void validateForConnect(Optional<Section> optExistedSection, Section section) {
+    private void validateForConnect(Section existedSection, Section section) {
         Set<Station> stations = getAllStations();
 
-        if (optExistedSection.isPresent()) {
-            Section existedSection = optExistedSection.get();
+        if (existedSection != null) {
             validateAlreadyExistedStations(section, stations);
             validateDistanceWhenConnectInExistedSection(existedSection, section);
         }
         validateExistUpStationOrDownStation(section, stations);
     }
 
-    private void updateWhenConnectInMiddleOfExistedSection(Optional<Section> optExistedSection,
+    private void updateWhenConnectInMiddleOfExistedSection(Section existedSection,
         Section section) {
-        if (optExistedSection.isPresent()) {
-            Section existedSection = optExistedSection.get();
+        if (existedSection != null) {
             existedSection.updateForConnect(section);
         }
     }
