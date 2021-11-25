@@ -1,4 +1,4 @@
-package nextstep.subway.line.application.exception;
+package nextstep.subway.exception;
 
 public class DuplicateLineNameException extends RuntimeException{
 
