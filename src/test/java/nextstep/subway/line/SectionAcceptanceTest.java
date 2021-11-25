@@ -110,13 +110,29 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         // 노선에 구간 등록됨.
-        지하철_노선_구간_실패함(response);
+        지하철_노선_구간_실패함(response, "노선의 길이가 기존 노선의 길이보다 작아야 합니다.");
     }
 
-    private void 지하철_노선_구간_실패함(ExtractableResponse<Response> response) {
+    @DisplayName("이미 노선에 등록된 구간을 등록한다.")
+    @Test
+    void existsSection() {
+        // given
+        // 지하철 역 생성됨
+        // 지하철 노선 생성됨
+        SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 잠실역.getId(), 10);
+
+        // when
+        // 노선 구간 등록 요청
+        ExtractableResponse<Response> response = SectionApiRequests.지하철_노선_구간_등록_요청(서울2호선, sectionRequest);
+
+        // then
+        // 노선에 구간 등록됨.
+        지하철_노선_구간_실패함(response,"이미 등록된 구간입니다.");
+    }
+
+    private void 지하철_노선_구간_실패함(ExtractableResponse<Response> response, String message) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        String message = response.jsonPath().getObject("message", String.class);
-        assertThat(message).isEqualTo("노선 생성 실패 테스트");
+        assertThat(response.jsonPath().getObject("message", String.class)).isEqualTo(message);
     }
 
     private void 지하철_노선_구간_등록됨(ExtractableResponse<Response> response) {
