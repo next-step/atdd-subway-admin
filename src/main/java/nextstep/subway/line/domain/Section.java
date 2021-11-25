@@ -9,9 +9,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 public class Section {
-
-    protected static final int MIN_DISTANCE = 0;
-
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
@@ -24,7 +21,8 @@ public class Section {
     @JoinColumn(nullable = false)
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Line line;
@@ -33,17 +31,10 @@ public class Section {
     }
 
     private Section(Station upStation, Station downStation, int distance, Line line) {
-        validateDistance(distance);
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
         this.line = line;
-    }
-
-    private void validateDistance(int distance) {
-        if (distance <= MIN_DISTANCE) {
-            throw new IllegalArgumentException("지하철 구간 사이의 거리는 " + MIN_DISTANCE + "보다 커야 합니다.");
-        }
     }
 
     public static Section of(Station upStation, Station downStation, int distance, Line line) {
@@ -63,7 +54,7 @@ public class Section {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.getDistance();
     }
 
     public Line getLine() {

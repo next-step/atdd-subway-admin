@@ -6,7 +6,6 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -16,19 +15,15 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
 
-    @Transient
-    private boolean isChanged;
-
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public Sections() {
+    protected Sections() {
     }
 
     public void add(Section section) {
         validateDuplication(section);
         this.sections.add(section);
-        this.isChanged = true;
     }
 
     private void validateDuplication(Section section) {
@@ -74,11 +69,7 @@ public class Sections {
     }
 
     public List<Section> getSections() {
-        if (isChanged) {
-            sortSections();
-            this.isChanged = false;
-        }
-
+        sortSections();
         return sections;
     }
 }

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static nextstep.subway.line.domain.Section.MIN_DISTANCE;
+import static nextstep.subway.line.domain.Distance.MIN_DISTANCE;
 import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("지하철 노선")

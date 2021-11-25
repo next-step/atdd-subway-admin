@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 
 import static nextstep.subway.line.LineScenarioMethod.*;
+import static nextstep.subway.station.StationScenarioMethod.등록되지_않은_지하철_종점역;
 import static nextstep.subway.station.StationScenarioMethod.지하철_종점역_정보;
 import static org.springframework.http.HttpStatus.*;
 
@@ -50,7 +51,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithoutTerminus() {
         // given
-        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        Map<String, Long> terminus = 등록되지_않은_지하철_종점역();
+        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "bg-red-600", terminus, 13);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선);

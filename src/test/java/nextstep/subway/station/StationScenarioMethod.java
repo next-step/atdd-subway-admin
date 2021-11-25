@@ -68,4 +68,11 @@ public class StationScenarioMethod {
         terminus.put("downStationId", 지하철_종점역_생성됨(new StationRequest(downStationName)));
         return terminus;
     }
+
+    public static Map<String, Long> 등록되지_않은_지하철_종점역() {
+        HashMap<String, Long> terminus = new HashMap<>();
+        terminus.put("upStationId", 1L);
+        terminus.put("downStationId", 2L);
+        return terminus;
+    }
 }
