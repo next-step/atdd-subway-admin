@@ -22,7 +22,9 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     private int distance;
+
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "STATION_ID")
@@ -43,6 +45,7 @@ public class Section extends BaseEntity {
         this.station = station;
         this.nextStation = nextStation;
         this.distance = distance.intValue();
+//        this.distance = distance;
     }
 
     public boolean isSameStation(Section section) {
@@ -53,22 +56,22 @@ public class Section extends BaseEntity {
         return nextStation.equals(section.nextStation);
     }
 
-    public void updateStation(Section section) {
-        this.station = section.nextStation;
-        this.distance -= section.distance;
-    }
-
-    public void updateNextStation(Section section) {
-        this.nextStation = section.station;
-        this.distance -= section.distance;
+    public void addSection(Section addSection) {
+        if(addSection.isSameStation(this)) {
+            this.station = addSection.nextStation;
+        }
+        if(addSection.isSameNextStation(this)) {
+            this.nextStation = addSection.station;
+        }
+        this.distance -= addSection.distance;
     }
 
     public void addLine(Line line) {
         this.line = line;
     }
 
-    public boolean isPermitDistance(int distance) {
-        return this.distance > distance;
+    public boolean isPermitDistance(int target) {
+        return distance > target;
     }
 
     public boolean isDuplicate(Section section) {
@@ -83,6 +86,13 @@ public class Section extends BaseEntity {
         return distance;
     }
 
+//    public Distance getDistance() {
+//        return distance;
+//    }
+
+    private void decrease(int target) {
+        this.distance -= target;
+    }
     public Station getStation() {
         return station;
     }
@@ -107,4 +117,6 @@ public class Section extends BaseEntity {
     public int hashCode() {
         return Objects.hash(getId());
     }
+
+
 }

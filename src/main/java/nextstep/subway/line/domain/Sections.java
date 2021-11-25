@@ -26,27 +26,15 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section addSection) {
-        if (!sections.isEmpty()) {
-            validate(addSection);
-            updateSection(addSection);
-        }
+        validate(addSection);
+        insertSection(addSection);
         sections.add(addSection);
     }
 
-    private void updateSection(Section addSection) {
-        if(getUpStations().contains(addSection.getStation())) {
-            sections.stream()
-                    .filter(section -> section.isSameStation(addSection))
-                    .findFirst()
-                    .ifPresent(section -> section.updateStation(addSection));
-            return;
-        }
-        if(getDownStations().contains(addSection.getNextStation())) {
-            sections.stream()
-                    .filter(section -> section.isSameNextStation(addSection))
-                    .findFirst()
-                    .ifPresent(section -> section.updateNextStation(addSection));
-        }
+    private void insertSection(Section addSection) {
+        getSection(addSection).ifPresent(
+                section -> section.addSection(addSection)
+        );
     }
 
     public List<Station> getStations() {
@@ -54,9 +42,11 @@ public class Sections {
     }
 
     private void validate(Section section) {
-        validateDistance(section);
-        validateDuplicate(section);
-        validateExist(section);
+        if(!sections.isEmpty()) {
+            validateDistance(section);
+            validateDuplicate(section);
+            validateExist(section);
+        }
     }
 
     private void validateExist(Section section) {
@@ -72,7 +62,7 @@ public class Sections {
     }
 
     private void validateDistance(Section section) {
-        findSection(section).ifPresent(it -> {
+        getSection(section).ifPresent(it -> {
             if (!it.isPermitDistance(section.getDistance())) {
                 throw new SectionNotCreateException("유효한 길이가 아닙니다.");
             }
@@ -99,17 +89,13 @@ public class Sections {
                 .getNextStation();
     }
 
-    private List<Station> getUpStations() {
-        return sections.stream().map(Section::getStation).collect(Collectors.toList());
-    }
-
     private List<Station> getDownStations() {
         return sections.stream().map(Section::getNextStation).collect(Collectors.toList());
     }
 
-    private Optional<Section> findSection(Section findSection) {
+    private Optional<Section> getSection(Section target) {
         return sections.stream()
-                .filter(section -> section.getStation().equals(findSection.getStation()))
+                .filter(section -> section.isSameStation(target) || section.isSameNextStation(target))
                 .findFirst();
     }
 
@@ -120,4 +106,26 @@ public class Sections {
                 .orElseThrow(StationNotFoundException::new)
                 .getStation();
     }
+
+//    private List<Station> getUpStations() {
+//        return sections.stream().map(Section::getStation).collect(Collectors.toList());
+//    }
+
+//    private Optional<Section> findSection(Section findSection) {
+//        return sections.stream()
+//                .filter(section -> section.getStation().equals(findSection.getStation()))
+//                .findFirst();
+//    }
+
+//    private Optional<Section> getSectionByStation(Section target) {
+//        return sections.stream()
+//                .filter(section -> section.isSameStation(target))
+//                .findFirst();
+//    }
+//
+//    private Optional<Section> getSectionByNextStation(Section target) {
+//        return sections.stream()
+//                .filter(section -> section.isSameNextStation(target))
+//                .findFirst();
+//    }
 }

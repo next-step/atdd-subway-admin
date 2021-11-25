@@ -1,5 +1,6 @@
 package nextstep.subway.line.dto;
 
+import javax.persistence.Embeddable;
 import java.util.Objects;
 
 /**
@@ -9,14 +10,18 @@ import java.util.Objects;
  * date : 2021/11/21
  * description :
  */
+@Embeddable
 public class Distance {
     public static final int MIN_DISTANCE = 1;
 
-    private final int distance;
+    private int distance;
 
     private Distance(int distance) {
         validate(distance);
         this.distance = distance;
+    }
+
+    protected Distance() {
     }
 
     public static Distance of(int distance) {
@@ -42,5 +47,9 @@ public class Distance {
     @Override
     public int hashCode() {
         return Objects.hash(distance);
+    }
+
+    public boolean isPermit(Distance distance) {
+        return this.distance > distance.distance;
     }
 }
