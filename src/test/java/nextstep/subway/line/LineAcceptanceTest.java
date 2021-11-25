@@ -32,6 +32,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         checkResponseStatus(response, HttpStatus.CREATED);
     }
 
+    @DisplayName("지하철 노선을 구역 없이 생성한다.")
+    @Test
+    void createLineWithoutSectionException() {
+        // when
+        // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = LineFixture.requestCreateLine("2호선", "green");
+
+        // then
+        // 지하철_노선_생성됨
+        checkResponseStatus(response, HttpStatus.BAD_REQUEST);
+    }
+
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
