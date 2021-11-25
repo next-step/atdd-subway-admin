@@ -154,9 +154,9 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         구간_생성_실패됨_역_없음_예외(response);
     }
 
-    @DisplayName("역 사이의 역 구간을 제거한다.")
+    @DisplayName("사이의 역을 제거한다.")
     @Test
-    void deleteSection() {
+    void deleteInsideStation() {
         // given
         SectionRequest 상행종점역_사이_추가역_거리_5 = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_5);
         구간_생성_요청함(구간_테스트_노선_ID, 상행종점역_사이_추가역_거리_5);
@@ -173,12 +173,60 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // when
-        LineResponse lineResponse
-                = responseLine(지하철_노선_조회_요청(구간_테스트_노선_ID));
+        ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(구간_테스트_노선_ID);
 
         // then
-        assertThat(lineResponse.getStations()).hasSize(2);
-        assertThat(lineResponse.getStations()).extracting(StationResponse::getId).containsExactly(최초_상행종점역_ID, 최초_하행종점역_ID);
+        지하철_노선에_등록한_구간_포함됨(getResponse, Arrays.asList(최초_상행종점역_ID, 최초_하행종점역_ID));
+    }
+
+    @DisplayName("상행역을 제거한다.")
+    @Test
+    void deleteUpStation() {
+        // given
+        SectionRequest 상행종점역_사이_추가역_거리_5 = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_5);
+        구간_생성_요청함(구간_테스트_노선_ID, 상행종점역_사이_추가역_거리_5);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .param("stationId", 최초_상행종점역_ID)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
+                .then().log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // when
+        ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(구간_테스트_노선_ID);
+
+        // then
+        지하철_노선에_등록한_구간_포함됨(getResponse, Arrays.asList(사이_추가_역_ID, 최초_하행종점역_ID));
+    }
+
+    @DisplayName("하행역을 제거한다.")
+    @Test
+    void deleteDownStation() {
+        // given
+        SectionRequest 상행종점역_사이_추가역_거리_5 = SectionRequest.of(최초_상행종점역_ID, 사이_추가_역_ID, 거리_5);
+        구간_생성_요청함(구간_테스트_노선_ID, 상행종점역_사이_추가역_거리_5);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .param("stationId", 최초_하행종점역_ID)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete(BASE_URI + "/{id}/sections", 구간_테스트_노선_ID)
+                .then().log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // when
+        ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(구간_테스트_노선_ID);
+
+        // then
+        지하철_노선에_등록한_구간_포함됨(getResponse, Arrays.asList(최초_상행종점역_ID, 사이_추가_역_ID));
     }
 
     private ExtractableResponse<Response> 구간_생성_요청함(Long lineId, SectionRequest request) {
