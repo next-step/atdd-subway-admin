@@ -32,29 +32,44 @@ public class Sections {
     }
 
     public void connect(Section section) {
-        Section existedSection = upBoundSection(section).orElse(null);
-        validateForConnect(existedSection, section);
+        Section upBoundSection = upBoundSection(section).orElse(null);
+        Section downBoundSection = downBoundSection(section).orElse(null);
 
-        updateWhenConnectInMiddleOfSection(existedSection, section);
+        validateForConnect(upBoundSection, downBoundSection, section);
+        updateWhenConnectInMiddleOfSection(upBoundSection, downBoundSection, section);
 
         this.sections.add(section);
     }
 
-    private void validateForConnect(Section existedSection, Section section) {
+    private void validateForConnect(Section upBoundSection, Section downBoundSection,
+        Section section) {
         Set<Station> stations = getAllStations();
 
-        if (existedSection != null) {
-            validateAlreadyExistedStations(section, stations);
-            validateDistanceWhenConnect(existedSection, section);
-        }
+        validateAlreadyExistedStations(section, stations);
+        validateDistanceWhenConnect(upBoundSection, downBoundSection, section);
         validateExistUpStationOrDownStation(section, stations);
     }
 
-    private void updateWhenConnectInMiddleOfSection(Section existedSection,
+    private void updateWhenConnectInMiddleOfSection(Section upBoundSection,
+        Section downBoundSection,
         Section section) {
-        if (existedSection != null) {
-            existedSection.updateForConnect(section);
+        Set<Station> stations = getAllStations();
+        if (connectableByUpStation(upBoundSection, stations.contains(section.getUpStation()))) {
+            upBoundSection.connectByUpStation(section);
+            return;
         }
+
+        if (connectableByDownStation(downBoundSection, stations.contains(section.getDownStation()))) {
+            downBoundSection.connectByDownStation(section);
+        }
+    }
+
+    private boolean connectableByUpStation(Section upBoundSection, boolean contains) {
+        return upBoundSection != null && contains;
+    }
+
+    private boolean connectableByDownStation(Section downBoundSection, boolean contains) {
+        return downBoundSection != null && contains;
     }
 
     public static Sections empty() {
@@ -91,6 +106,12 @@ public class Sections {
     private Optional<Section> upBoundSection(Section standardSection) {
         return this.sections.stream()
             .filter(section -> section.getUpStation().equals(standardSection.getUpStation()))
+            .findFirst();
+    }
+
+    private Optional<Section> downBoundSection(Section standardSection) {
+        return this.sections.stream()
+            .filter(section -> section.getDownStation().equals(standardSection.getDownStation()))
             .findFirst();
     }
 
@@ -133,6 +154,19 @@ public class Sections {
         stations.addAll(getUpStations());
         stations.addAll(getDownStations());
         return stations;
+    }
+
+    private void validateDistanceWhenConnect(Section upBoundSection, Section downBoundSection,
+        Section section) {
+
+        if (upBoundSection != null) {
+            validateDistanceWhenConnect(upBoundSection, section);
+            return;
+        }
+
+        if (downBoundSection != null) {
+            validateDistanceWhenConnect(downBoundSection, section);
+        }
     }
 
     private void validateDistanceWhenConnect(Section existedSection,

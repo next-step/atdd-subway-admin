@@ -47,8 +47,13 @@ public class Section {
         return new Section(line, Station.of(upStationId), Station.of(downStationId), distance);
     }
 
-    public void updateForConnect(Section section) {
+    public void connectByUpStation(Section section) {
         this.upStation = section.downStation;
+        this.distance = this.distance.subtract(section.distance);
+    }
+
+    public void connectByDownStation(Section section) {
+        this.downStation = section.upStation;
         this.distance = this.distance.subtract(section.distance);
     }
 
