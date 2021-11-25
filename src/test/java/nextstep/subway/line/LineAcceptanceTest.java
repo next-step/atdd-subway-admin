@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    @DisplayName("지하철 노선을 구역과 함께 생성한다.")
+    @DisplayName("지하철 노선을 구역과 함께 생성할 수 있다.")
     @Test
     void createLineWithSection() {
         // when
@@ -31,7 +31,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         checkResponseStatus(response, HttpStatus.CREATED);
     }
 
-    @DisplayName("지하철 노선을 구역 없이 생성한다.")
+    @DisplayName("지하철 노선을 구역 없이 생성할 수 없다.")
     @Test
     void createLineWithoutSectionException() {
         // when
@@ -44,7 +44,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
 
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
+    @DisplayName("지하철 노선 중복으로 생성할 수 없다.")
     @Test
     void createLine2() {
         // given
@@ -105,7 +105,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
 
-    @DisplayName("지하철 노선을 구간과 함께 제거한다.")
+    @DisplayName("지하철 노선을 구간과 함께 제거할 수 있다.")
     @Test
     void deleteLineWithSection() {
         // given
