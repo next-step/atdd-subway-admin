@@ -94,17 +94,50 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("linesResponse", Line.class)).hasSize(2);
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
+    @DisplayName("지하철 노선 조회 성공")
     @Test
-    void getLine() {
+    void getLineSuccess() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createBlueResponse = LineTestFixture.지하철_노선_등록되어_있음("1호선", "blue");
+        assertThat(createBlueResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        ExtractableResponse<Response> createGreenResponse = LineTestFixture.지하철_노선_등록되어_있음("2호선", "green");
+        assertThat(createGreenResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
         // 지하철_노선_조회_요청
+        Line line = createBlueResponse.as(Line.class);
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .pathParam("id", line.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines/{id}")
+                .then().log().all()
+                .extract();
 
         // then
         // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getObject(".", Line.class).getName()).isEqualTo(line.getName());
+    }
+
+    @DisplayName("지하철 노선 조회 실패")
+    @Test
+    void getLineFail() {
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .pathParam("id", 1L)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines/{id}")
+                .then().log().all()
+                .extract();
+
+        // then
+        // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("지하철 노선을 수정한다.")
