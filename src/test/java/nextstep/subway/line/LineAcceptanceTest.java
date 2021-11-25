@@ -93,19 +93,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response =
-          RestAssured
-            .given().log().all()
-            .accept(MediaType.APPLICATION_JSON_VALUE)
-            .when().get("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
         // 지하철_노선_목록_응답됨
         // 지하철_노선_목록_포함됨
+        지하철_노선_목록_조회됨(response);
+    }
+
+    private void 지하철_노선_목록_조회됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.body().jsonPath().getList(".", LineResponse.class).size()).isEqualTo(2);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
+        return RestAssured
+          .given().log().all()
+          .accept(MediaType.APPLICATION_JSON_VALUE)
+          .when().get("/lines")
+          .then().log().all()
+          .extract();
     }
 
     @DisplayName("지하철 노선을 조회한다.")
