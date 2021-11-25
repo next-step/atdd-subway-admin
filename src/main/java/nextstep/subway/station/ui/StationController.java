@@ -3,13 +3,13 @@ package nextstep.subway.station.ui;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
-import nextstep.subway.station.dto.StationResponseList;
+import nextstep.subway.station.dto.StationResponses;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/stations")
@@ -38,8 +38,8 @@ public class StationController {
      * @return
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity showStations() {
-        StationResponseList stations = stationService.findAllStations();
+    public ResponseEntity<StationResponses> showStations() {
+        StationResponses stations = stationService.findAllStations();
         return ResponseEntity.ok(stations);
     }
 
@@ -50,7 +50,7 @@ public class StationController {
      * @return
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
+    public ResponseEntity<HttpStatus> deleteStation(@PathVariable Long id) {
         stationService.deleteStationById(id);
         return ResponseEntity.noContent().build();
     }

@@ -4,7 +4,7 @@ import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
-import nextstep.subway.station.dto.StationResponseList;
+import nextstep.subway.station.dto.StationResponses;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,9 +35,9 @@ public class StationService {
     }
 
     @Transactional(readOnly = true)
-    public StationResponseList findAllStations() {
+    public StationResponses findAllStations() {
         List<Station> stations = stationRepository.findAll();
-        return new StationResponseList(stations);
+        return new StationResponses(stations);
     }
 
     public void deleteStationById(Long id) {
