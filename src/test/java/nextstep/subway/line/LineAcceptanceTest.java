@@ -15,8 +15,8 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.exception.LineDuplicateException;
-import nextstep.subway.exception.NotFoundLineException;
+import nextstep.subway.line.exception.LineDuplicateException;
+import nextstep.subway.line.exception.NotFoundLineException;
 import nextstep.subway.line.dto.LineRequest;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -69,16 +69,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선_응답됨(노선_목록_응답);
         지하철_노선_목록_포함됨(노선_목록_응답, 신분당선_생성_응답, 공항철도_생성_응답);
-    }
-
-    @DisplayName("지하철 노선 목록이 없다.")
-    @Test
-    void notFoundLines() {
-        // when
-        ExtractableResponse<Response> 노선_목록_응답 = 지하철_노선_목록_조회();
-
-        // then
-        지하철_노선_존재하지_않음(노선_목록_응답);
     }
 
     @DisplayName("지하철 노선을 조회한다.")

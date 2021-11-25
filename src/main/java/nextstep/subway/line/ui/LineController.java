@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.exception.DefaultException;
-import nextstep.subway.exception.LineDuplicateException;
-import nextstep.subway.exception.NotFoundLineException;
+import nextstep.subway.line.exception.LineDuplicateException;
+import nextstep.subway.line.exception.NotFoundLineException;
 import nextstep.subway.exception.domain.ErrorMessage;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
