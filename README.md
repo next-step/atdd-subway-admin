@@ -1,3 +1,17 @@
+#지하철 노선도 미션
+
+## 1단계 지하철 노선 관리
+
+### 지하철 노선관련 인수테스트 작성 및 기능 구현
+* [X] 지하철 노선을 생성한다.
+* [X] 기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.
+* [X] 지하철 노선 목록을 조회한다.
+* [X] 지하철 노선을 조회한다.
+* [X] 지하철 노선을 수정한다.
+* [X] 지하철 노선을 제거한다.
+* [X] 오류 발생 시 Bad Request 발생한다.
+---
+
 <p align="center">
     <img width="200px;" src="https://raw.githubusercontent.com/woowacourse/atdd-subway-admin-frontend/master/images/main_logo.png"/>
 </p>
