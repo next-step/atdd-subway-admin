@@ -1,6 +1,7 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.common.exception.DuplicateEntityException;
+import nextstep.subway.common.exception.InvalidEntityRequiredException;
 import nextstep.subway.common.exception.NotFoundEntityException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,12 +46,6 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.findLineById(id));
     }
 
-    @PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> updateLineById(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        LineResponse line = lineService.update(id, lineRequest);
-        return ResponseEntity.ok().body(line);
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<LineResponse> deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
@@ -63,13 +57,13 @@ public class LineController {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(NotFoundEntityException.class)
-    public ResponseEntity<LineResponse> handleNotFoundEntityException(NotFoundEntityException e) {
+    @ExceptionHandler(InvalidEntityRequiredException.class)
+    public ResponseEntity<StationResponse> handleIllegalArgsException(InvalidEntityRequiredException e) {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<StationResponse> handleIllegalArgsException(IllegalArgumentException e) {
+    @ExceptionHandler(NotFoundEntityException.class)
+    public ResponseEntity<LineResponse> handleNotFoundEntityException(NotFoundEntityException e) {
         return ResponseEntity.badRequest().build();
     }
 }

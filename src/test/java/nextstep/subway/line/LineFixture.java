@@ -51,26 +51,6 @@ public class LineFixture {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> requestUpdateLine(Long id, String name, String color) {
-        Map<String, String> params = createParams(name, color);
-
-        return RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/" + id)
-                .then().log().all().extract();
-    }
-
-    public static ExtractableResponse<Response> requestUpdateLine(Long id, Map<String, String> params) {
-        return RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/" + id)
-                .then().log().all().extract();
-    }
-
     public static ExtractableResponse<Response> requestGetLines() {
         return RestAssured
                 .given().log().all()

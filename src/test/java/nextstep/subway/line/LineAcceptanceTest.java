@@ -50,11 +50,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        LineFixture.requestCreateLine("2호선", "green");
+        requestCreateLineWithStation("역삼역", "강남역", 9, "2호선", "green");
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = LineFixture.requestCreateLine("2호선", "green");
+        ExtractableResponse<Response> response =
+                requestCreateLineWithStation("신사역", "삼성역", 9, "2호선", "green");
 
         // then
         // 지하철_노선_생성_실패됨
@@ -101,25 +102,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         checkResponseStatus(response, HttpStatus.OK);
     }
 
-    @DisplayName("지하철 노선을 구역과 함께 수정한다.")
-    @Test
-    void updateLineWithSection() {
-        // given
-        // 지하철_노선_등록되어_있음
-        LineResponse createdLineResponse = LineFixture.ofLineResponse(
-                requestCreateLineWithStation("역삼역", "강남역", 9, "2호선", "green")
-        );
-
-        // when
-        // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response =
-                requestUpdateLineWithStation(createdLineResponse.getId(), "신사역", "삼성역", 3, "3호선", "orange");
-
-        // then
-        // 지하철_노선_생성됨
-        checkResponseStatus(response, HttpStatus.OK);
-    }
-
 
     @DisplayName("지하철 노선을 구간과 함께 제거한다.")
     @Test
@@ -139,7 +121,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         checkResponseStatus(response, HttpStatus.NO_CONTENT);
 
         ExtractableResponse<Response> getResponse = LineFixture.requestGetLineById(createdLineResponse.getId());
-        checkResponseStatus(getResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        checkResponseStatus(getResponse, HttpStatus.BAD_REQUEST);
     }
 
     private ExtractableResponse<Response> requestCreateLineWithStation(String upStationName, String downStationName, int distance, String lineName, String colorName) {
@@ -147,14 +129,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         StationResponse downStation = StationFixture.ofStationResponse(StationFixture.requestCreateStations(downStationName));
         Map<String, String> params = LineFixture.createParams(lineName, colorName, upStation.getId(), downStation.getId(), distance);
         return LineFixture.requestCreateLine(params);
-    }
-
-
-    private ExtractableResponse<Response> requestUpdateLineWithStation(Long lineId, String upStationName, String downStationName, int distance, String lineName, String colorName) {
-        StationResponse upStation = StationFixture.ofStationResponse(StationFixture.requestCreateStations(upStationName));
-        StationResponse downStation = StationFixture.ofStationResponse(StationFixture.requestCreateStations(downStationName));
-        Map<String, String> params = LineFixture.createParams(lineName, colorName, upStation.getId(), downStation.getId(), distance);
-        return LineFixture.requestUpdateLine(lineId, params);
     }
 
     private void checkContainsResponses(ExtractableResponse<Response> createdResponse1, ExtractableResponse<Response> createdResponse2, ExtractableResponse<Response> response) {

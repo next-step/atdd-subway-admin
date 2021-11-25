@@ -1,12 +1,12 @@
 package nextstep.subway.line.application;
 
 import nextstep.subway.common.exception.DuplicateEntityException;
+import nextstep.subway.common.exception.InvalidEntityRequiredException;
 import nextstep.subway.common.exception.NotFoundEntityException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
@@ -26,9 +26,12 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        validateUniqueName(request);
-        Line persistLine = lineRepository.save(request.toLine());
-        changeSections(persistLine, request);
+        validateLine(request);
+
+        Station upStation = stationService.findStationById(request.getUpStationId());
+        Station downStation = stationService.findStationById(request.getDownStationId());
+        Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
+
         return LineResponse.of(persistLine);
     }
 
@@ -47,36 +50,15 @@ public class LineService {
         return LineResponse.of(line);
     }
 
-    @Transactional
-    public LineResponse update(Long id, LineRequest lineRequest) {
-        Line persistLine = lineRepository.findById(id)
-                .orElseThrow(() -> new NotFoundEntityException(id));
-
-        if (!lineRequest.isSameName(persistLine.getName())) {
-            validateUniqueName(lineRequest);
-        }
-
-        updateSections(persistLine, lineRequest);
-        persistLine.update(lineRequest.toLine());
-        return LineResponse.of(persistLine);
-    }
-
-    private void changeSections(Line line, LineRequest request) {
-        Station upStation = stationService.findStationById(request.getUpStationId());
-        Station downStation = stationService.findStationById(request.getDownStationId());
-        Section.of(line, upStation, downStation, request.getDistance());
-    }
-
-    private void updateSections(Line line, LineRequest request) {
-        line.clearSections();
-        changeSections(line, request);
-    }
-
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
 
-    private void validateUniqueName(LineRequest request) {
+    private void validateLine(LineRequest request) {
+        if (request.getUpStationId() == null || request.getDownStationId() == null) {
+            throw new InvalidEntityRequiredException(request.getName());
+        }
+
         if (lineRepository.existsByName(request.getName())) {
             throw new DuplicateEntityException();
         }
