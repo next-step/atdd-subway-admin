@@ -1,8 +1,6 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.exception.NotFoundStationException;
-import nextstep.subway.exception.NotIncludeOneStationException;
-import nextstep.subway.exception.SameSectionStationException;
+import nextstep.subway.exception.*;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.Stations;
 
@@ -16,14 +14,20 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private static final int MIN_SECTIONS_SIZE = 2;
+
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private final List<Section> sections;
 
     public Sections() {
         sections = new ArrayList<>();
     }
 
-    public void add(Section nonPersistSection) {
+    public Sections(List<Section> sections) {
+        this.sections = sections;
+    }
+
+    public void add(final Section nonPersistSection) {
         if (!sections.isEmpty()) {
             validateSection(nonPersistSection);
             calculateBetweenStation(nonPersistSection);
@@ -32,16 +36,16 @@ public class Sections {
         sections.add(nonPersistSection);
     }
 
-    private void calculateBetweenStation(Section nonPersistSection) {
+    private void calculateBetweenStation(final Section nonPersistSection) {
         sections.stream()
-                .filter(section -> section.isIncludeOneStation(nonPersistSection))
+                .filter(section -> section.isIncludeSection(nonPersistSection))
                 .findAny()
-                .ifPresent(section -> section.reArrangeSection(nonPersistSection));
+                .ifPresent(section -> section.reArrangeAddSection(nonPersistSection));
     }
 
     private void validateSection(final Section nonPersistSection) {
-        boolean isSameUpStation = getStations().isMatch(nonPersistSection.getUpStation());
-        boolean isSameDownStation = getStations().isMatch(nonPersistSection.getDownStation());
+        boolean isSameUpStation = getStations().isIn(nonPersistSection.getUpStation());
+        boolean isSameDownStation = getStations().isIn(nonPersistSection.getDownStation());
         validateSameSectionStation(isSameUpStation, isSameDownStation);
         notIncludeOneStation(isSameUpStation, isSameDownStation);
     }
@@ -94,6 +98,48 @@ public class Sections {
                 .filter(section -> section.isEqualsUpStation(findStation))
                 .findFirst()
                 .orElse(new Section());
+    }
+
+    public void removeByStation(final Station deleteStation) {
+        validateSectionsSize();
+        Sections foundSections = findSectionsIncludeStation(deleteStation);
+        Section deleteSection = foundSections.findSectionByHasStation(deleteStation);
+        if (foundSections.isNotTerminal()) {
+            Section updatedSection = foundSections.findOtherSectionByExceptSection(deleteSection);
+            updatedSection.reArrangeDeleteSection(deleteSection, deleteStation);
+        }
+
+        sections.remove(deleteSection);
+    }
+
+    private Section findSectionByHasStation(final Station station) {
+        return sections.stream()
+                .filter(section -> section.hasStation(station))
+                .findFirst()
+                .orElseThrow(NotIncludeStation::new);
+    }
+
+    private Section findOtherSectionByExceptSection(Section exceptSection) {
+        return sections.stream()
+                .filter(section -> !section.equals(exceptSection))
+                .findFirst()
+                .orElseThrow(NotFoundSection::new);
+    }
+
+    private Sections findSectionsIncludeStation(final Station deleteStation) {
+        return new Sections(sections.stream()
+                .filter(section -> section.hasStation(deleteStation))
+                .collect(Collectors.toList()));
+    }
+
+    private void validateSectionsSize() {
+        if (sections.size() < MIN_SECTIONS_SIZE) {
+            throw new NotDeleteOneSectionException();
+        }
+    }
+
+    private boolean isNotTerminal() {
+        return sections.size() > 1;
     }
 
     public List<Section> getSections() {

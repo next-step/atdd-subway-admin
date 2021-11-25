@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -12,7 +13,6 @@ public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(unique = true)
     private String name;
     private String color;
@@ -28,17 +28,21 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public static Line of(LineRequest lineRequest) {
+    public static Line of(final LineRequest lineRequest) {
         return new Line(lineRequest.getName(), lineRequest.getColor());
     }
 
-    public void addSection(Section section) {
+    public void addSection(final Section section) {
         sections.add(section);
     }
 
     public void update(final Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public void remove(final Station deleteStation) {
+        sections.removeByStation(deleteStation);
     }
 
     public int totalDistance() {

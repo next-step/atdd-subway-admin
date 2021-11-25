@@ -7,20 +7,16 @@ import java.util.Objects;
 public class Stations {
     private final List<Station> stations;
 
-    public Stations(List<Station> stations) {
+    public Stations(final List<Station> stations) {
         this.stations = stations;
     }
 
-    public boolean isIn(Station station) {
+    public boolean isIn(final Station station) {
         return stations.contains(station);
     }
 
     public List<Station> getStations() {
         return new ArrayList<>(stations);
-    }
-
-    public boolean isMatch(Station nonPersistStation) {
-        return stations.stream().anyMatch(nonPersistStation::equals);
     }
 
     @Override
