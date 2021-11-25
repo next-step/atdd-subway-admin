@@ -22,5 +22,9 @@ public class Distance {
         }
     }
 
+    public int minus(Distance distance) {
+        return this.distance - distance.distance;
+    }
+
 
 }

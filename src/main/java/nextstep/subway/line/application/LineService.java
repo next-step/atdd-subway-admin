@@ -2,8 +2,12 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.Sections;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.line.exception.DuplicateLineException;
 import nextstep.subway.line.exception.NotFoundLineException;
 import nextstep.subway.station.domain.Station;
@@ -54,6 +58,22 @@ public class LineService {
         line.update(lineRequest.getName(), lineRequest.getColor());
     }
 
+    @Transactional
+    public SectionResponse saveSection(Long id, SectionRequest request) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NotFoundLineException(id));
+
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
+
+        Section section = Section.of(upStation, downStation, request.getDistance());
+
+
+
+
+        return null;
+    }
+
     public void delete(Long id) {
         lineRepository.deleteById(id);
     }
@@ -65,7 +85,7 @@ public class LineService {
 
     private Line findById(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new NotFoundLineException(id + " 노선이 없습니다."));
+                .orElseThrow(() -> new NotFoundLineException(id));
     }
 
     private void validateDuplicateLine(String name) {

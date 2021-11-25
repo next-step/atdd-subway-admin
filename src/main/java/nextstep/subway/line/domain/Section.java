@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -36,6 +37,10 @@ public class Section {
         this.distance = new Distance(distance);
     }
 
+    public static Section of(Station upStation, Station downStation, int distance) {
+        return new Section(upStation,downStation,distance);
+    }
+
     public Section addLine(Line line) {
         this.line = line;
         return this;
@@ -52,4 +57,36 @@ public class Section {
     public Station getDownStation() {
         return downStation;
     }
+
+    public boolean isNotContainUnAndDownStation(Section section) {
+        if (!this.upStation.equals(section.upStation) && !this.upStation.equals(section.downStation)
+                && !this.downStation.equals(section.upStation) && !this.downStation.equals(section.downStation)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean equalsUpStation(Section section) {
+        return this.upStation.equals(section.upStation);
+    }
+
+    public boolean equalsDownStation(Section section) {
+        return this.downStation.equals(section.downStation);
+    }
+
+    public Section updateSectionEqualUpStation(Section section) {
+//        Station middleUpStation = section.upStation;
+//        Station middleDownStation = section.downStation;
+        Section newSection = Section.of(section.downStation, this.downStation, this.distance.minus(section.distance));
+        this.downStation = section.getDownStation();
+        this.distance = section.distance;
+        return newSection;
+    }
+
+    public Section updateSectionEqualDownStation(Section section) {
+        this.downStation = section.getUpStation();
+        this.distance = new Distance(this.distance.minus(section.distance));
+        return section;
+    }
+
 }
