@@ -154,7 +154,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = RestAssured
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청();
+
+        // then
+        // 지하철_노선_수정됨
+        지하철_노선_수정됨(response);
+    }
+
+    private void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_수정_요청() {
+        return RestAssured
           .given().log().all()
           .body(new LineRequest("분당선", "bg-blue-600"))
           .accept(MediaType.ALL_VALUE)
@@ -162,10 +174,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
           .when().put("/lines/1")
           .then().log().all()
           .extract();
-
-        // then
-        // 지하철_노선_수정됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 제거한다.")

@@ -41,4 +41,9 @@ public class LineService {
         Line line = lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException("노선을 찾을 수 없습니다."));
         return LineResponse.of(line);
     }
+
+    public void update(Long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException("노선을 찾을 수 없습니다."));
+        line.update(lineRequest.toLine());
+    }
 }
