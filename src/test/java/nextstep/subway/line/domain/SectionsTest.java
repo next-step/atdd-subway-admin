@@ -214,4 +214,20 @@ public class SectionsTest {
         // then
         assertThat(sections.getStations()).containsExactly(광교역, 광명역, 영등포역);
     }
+
+    @DisplayName("출발역으로 구간을 삭제한다")
+    @Test
+    void testDeleteSectionByTerminalStation() {
+        // given
+        Station 강남역 = new Station("강남역");
+        Station 광교역 = new Station("광교역");
+        Station 광명역 = new Station("광명역");
+        Station 영등포역 = new Station("영등포역");
+        List<Section> sectionList = getSectionList(강남역, 광교역, 광명역, 영등포역);
+        Sections sections = new Sections(sectionList);
+        // when
+        sections.deleteSectionByStation(영등포역);
+        // then
+        assertThat(sections.getStations()).containsExactly(강남역, 광교역, 광명역);
+    }
 }

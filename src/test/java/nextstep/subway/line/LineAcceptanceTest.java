@@ -496,7 +496,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             String lineUrl = 지하철_라인과_구간이_추가되어짐(강남역, 광교역, 안양역, 박달역);
 
             // when
-            ExtractableResponse<Response> response = 지하철_구간_삭제_요청(강남역, lineUrl);
+            ExtractableResponse<Response> response = 지하철_구간_삭제_요청(박달역, lineUrl);
 
             // then
             지하철_구간_삭제_응답한다(response);

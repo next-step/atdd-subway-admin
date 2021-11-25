@@ -128,7 +128,15 @@ public class Sections {
     }
 
     public void deleteSectionByStation(Station station) {
-        findByUpStation(station)
+        findStationByUpStationOrDownStation(station)
                 .ifPresent(section -> sections.remove(section));
+    }
+
+    private Optional<Section> findStationByUpStationOrDownStation(Station station) {
+        Optional<Section> upStation = findByUpStation(station);
+        if (upStation.isPresent()) {
+            return upStation;
+        }
+        return findByDownStation(station);
     }
 }
