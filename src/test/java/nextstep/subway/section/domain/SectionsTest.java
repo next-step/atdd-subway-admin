@@ -30,7 +30,7 @@ class SectionsTest {
         // when
         // then
         assertThatIllegalStateException().isThrownBy(
-                sections::extractStationsApplyOrderingUpStationToDownStation
+                sections::extractStationsWithOrdering
             )
             .withMessage("상행 종착역은 한 개가 있어야 합니다.");
 
@@ -43,7 +43,7 @@ class SectionsTest {
         Sections sections = line.getSections();
 
         // when
-        List<Station> result = sections.extractStationsApplyOrderingUpStationToDownStation();
+        List<Station> result = sections.extractStationsWithOrdering();
 
         // then
         assertAll(
@@ -63,7 +63,7 @@ class SectionsTest {
         sections.connect(Section.of(line, 6L, 5L, 2));
 
         // when
-        List<Station> result = sections.extractStationsApplyOrderingUpStationToDownStation();
+        List<Station> result = sections.extractStationsWithOrdering();
 
         // then
         assertAll(

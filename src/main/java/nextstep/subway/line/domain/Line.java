@@ -53,7 +53,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Long> getStationIds() {
-        return sections.extractStationsApplyOrderingUpStationToDownStation()
+        return sections.extractStationsWithOrdering()
             .stream()
             .map(Station::getId)
             .collect(toList());

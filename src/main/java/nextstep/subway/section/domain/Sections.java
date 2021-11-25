@@ -35,7 +35,7 @@ public class Sections {
         Section existedSection = upBoundSection(section).orElse(null);
         validateForConnect(existedSection, section);
 
-        updateWhenConnectInMiddleOfExistedSection(existedSection, section);
+        updateWhenConnectInMiddleOfSection(existedSection, section);
 
         this.sections.add(section);
     }
@@ -45,12 +45,12 @@ public class Sections {
 
         if (existedSection != null) {
             validateAlreadyExistedStations(section, stations);
-            validateDistanceWhenConnectInExistedSection(existedSection, section);
+            validateDistanceWhenConnect(existedSection, section);
         }
         validateExistUpStationOrDownStation(section, stations);
     }
 
-    private void updateWhenConnectInMiddleOfExistedSection(Section existedSection,
+    private void updateWhenConnectInMiddleOfSection(Section existedSection,
         Section section) {
         if (existedSection != null) {
             existedSection.updateForConnect(section);
@@ -61,7 +61,7 @@ public class Sections {
         return new Sections(new ArrayList<>());
     }
 
-    public List<Station> extractStationsApplyOrderingUpStationToDownStation() {
+    public List<Station> extractStationsWithOrdering() {
         List<Station> stations = new ArrayList<>();
 
         final Map<Long, Section> sectionByUpStationId = toMapForSectionByUpStationId();
@@ -135,7 +135,7 @@ public class Sections {
         return stations;
     }
 
-    private void validateDistanceWhenConnectInExistedSection(Section existedSection,
+    private void validateDistanceWhenConnect(Section existedSection,
         Section section) {
         if (existedSection.getDistance().lessThanOrEqual(section.getDistance())) {
             throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 작아야 합니다");
