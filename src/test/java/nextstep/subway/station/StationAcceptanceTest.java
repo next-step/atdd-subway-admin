@@ -48,15 +48,15 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         // given
-        ExtractableResponse<Response> createResponse1 = 지하철_역_생성_요청("강남역");
-        ExtractableResponse<Response> createResponse2 = 지하철_역_생성_요청("역삼역");
+        ExtractableResponse<Response> 강남역_생성_응답 = 지하철_역_생성_요청("강남역");
+        ExtractableResponse<Response> 역삼역_생성_응답 = 지하철_역_생성_요청("역삼역");
 
         // when
         ExtractableResponse<Response> response = 지하철_역_목록_조회_요청();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+        List<Long> expectedLineIds = Arrays.asList(강남역_생성_응답, 역삼역_생성_응답).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
@@ -69,10 +69,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_역_생성_요청("강남역");
+        ExtractableResponse<Response> 강남역_생성_응답 = 지하철_역_생성_요청("강남역");
 
         // when
-        String uri = createResponse.header("Location");
+        String uri = 강남역_생성_응답.header("Location");
         ExtractableResponse<Response> response = 지하철_역_제거_요청(uri);
 
         // then

@@ -31,14 +31,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createSection() {
         // given
-        ExtractableResponse<Response> upStationResponse = 지하철_역_생성_요청("강남역");
-        ExtractableResponse<Response> downStationResponse = 지하철_역_생성_요청("광교역");
+        ExtractableResponse<Response> 강남역_생성_응답 = 지하철_역_생성_요청("강남역");
+        ExtractableResponse<Response> 광교역_생성_응답 = 지하철_역_생성_요청("광교역");
 
         // when
-        지하철_노선_생성_요청("신분당선", "red", 역_ID(upStationResponse), 역_ID(downStationResponse), 10);
+        지하철_노선_생성_요청("신분당선", "red", 역_ID(강남역_생성_응답), 역_ID(광교역_생성_응답), 10);
 
         // then
-        지하철_구간_생성됨(역_ID(upStationResponse), 역_ID(downStationResponse));
+        지하철_구간_생성됨(역_ID(강남역_생성_응답), 역_ID(광교역_생성_응답));
     }
 
     private void 지하철_구간_생성됨(long upStationId, long downStationId) {

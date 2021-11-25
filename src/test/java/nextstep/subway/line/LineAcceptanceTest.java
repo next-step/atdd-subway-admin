@@ -27,40 +27,40 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        ExtractableResponse<Response> createStationResponse1 = 지하철_역_생성_요청("강남역");
-        ExtractableResponse<Response> createStationResponse2 = 지하철_역_생성_요청("광교역");
+        ExtractableResponse<Response> 강남역_생성_응답 = 지하철_역_생성_요청("강남역");
+        ExtractableResponse<Response> 광교역_생성_응답 = 지하철_역_생성_요청("광교역");
 
         // when
-        ExtractableResponse<Response> createLineResponse = 지하철_노선_생성_요청(
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(
                 "신분당선"
                 , "red"
-                , 역_ID(createStationResponse1)
-                , 역_ID(createStationResponse2)
+                , 역_ID(강남역_생성_응답)
+                , 역_ID(광교역_생성_응답)
                 , 10);
 
         // then
-        지하철_노선_생성됨(createLineResponse);
+        지하철_노선_생성됨(response);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
         // given
-        ExtractableResponse<Response> createStationResponse1 = 지하철_역_생성_요청("강남역");
-        ExtractableResponse<Response> createStationResponse2 = 지하철_역_생성_요청("광교역");
+        ExtractableResponse<Response> 강남역_생성_응답 = 지하철_역_생성_요청("강남역");
+        ExtractableResponse<Response> 광교역_생성_응답 = 지하철_역_생성_요청("광교역");
         지하철_노선_생성_요청(
                 "신분당선"
                 , "red"
-                , 역_ID(createStationResponse1)
-                , 역_ID(createStationResponse2)
+                , 역_ID(강남역_생성_응답)
+                , 역_ID(광교역_생성_응답)
                 , 10);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(
                 "신분당선"
                 , "red"
-                , 역_ID(createStationResponse1)
-                , 역_ID(createStationResponse2)
+                , 역_ID(강남역_생성_응답)
+                , 역_ID(광교역_생성_응답)
                 , 10);
 
         // then
@@ -71,19 +71,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        ExtractableResponse<Response> createStationResponse1 = 지하철_역_생성_요청("강남역");
-        ExtractableResponse<Response> createStationResponse2 = 지하철_역_생성_요청("광교역");
+        ExtractableResponse<Response> 강남역_생성_응답 = 지하철_역_생성_요청("강남역");
+        ExtractableResponse<Response> 광교역_생성_응답 = 지하철_역_생성_요청("광교역");
         지하철_노선_생성_요청(
                 "신분당선"
                 , "red"
-                , 역_ID(createStationResponse1)
-                , 역_ID(createStationResponse2)
+                , 역_ID(강남역_생성_응답)
+                , 역_ID(광교역_생성_응답)
                 , 10);
         지하철_노선_생성_요청(
                 "2호선"
                 , "green"
-                , 역_ID(createStationResponse1)
-                , 역_ID(createStationResponse2)
+                , 역_ID(강남역_생성_응답)
+                , 역_ID(광교역_생성_응답)
                 , 10);
 
         // when
@@ -97,15 +97,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> createStationResponse1 = 지하철_역_생성_요청("강남역");
-        ExtractableResponse<Response> createStationResponse2 = 지하철_역_생성_요청("광교역");
-        ExtractableResponse<Response> createLineResponse = 지하철_노선_생성_요청(
+        ExtractableResponse<Response> 강남역_생성_응답 = 지하철_역_생성_요청("강남역");
+        ExtractableResponse<Response> 광교역_생성_응답 = 지하철_역_생성_요청("광교역");
+        ExtractableResponse<Response> 신분당선_생성_응답 = 지하철_노선_생성_요청(
                 "신분당선"
                 , "red"
-                , 역_ID(createStationResponse1)
-                , 역_ID(createStationResponse2)
+                , 역_ID(강남역_생성_응답)
+                , 역_ID(광교역_생성_응답)
                 , 10);
-        String lineId = createLineResponse.jsonPath().get("id").toString();
+        String lineId = 신분당선_생성_응답.jsonPath().get("id").toString();
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(Long.parseLong(lineId));
@@ -118,15 +118,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> createStationResponse1 = 지하철_역_생성_요청("강남역");
-        ExtractableResponse<Response> createStationResponse2 = 지하철_역_생성_요청("광교역");
-        ExtractableResponse<Response> createLineResponse = 지하철_노선_생성_요청(
+        ExtractableResponse<Response> 강남역_생성_응답 = 지하철_역_생성_요청("강남역");
+        ExtractableResponse<Response> 광교역_생성_응답 = 지하철_역_생성_요청("광교역");
+        ExtractableResponse<Response> 신분당선_생성_응답 = 지하철_노선_생성_요청(
                 "신분당선"
                 , "red"
-                , 역_ID(createStationResponse1)
-                , 역_ID(createStationResponse2)
+                , 역_ID(강남역_생성_응답)
+                , 역_ID(광교역_생성_응답)
                 , 10);
-        String lineId = createLineResponse.jsonPath().get("id").toString();
+        String lineId = 신분당선_생성_응답.jsonPath().get("id").toString();
 
         // when
         LineRequest lineRequest = new LineRequest("2호선", "green");
@@ -140,19 +140,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createStationResponse1 = 지하철_역_생성_요청("강남역");
-        ExtractableResponse<Response> createStationResponse2 = 지하철_역_생성_요청("광교역");
-        ExtractableResponse<Response> createLineResponse = 지하철_노선_생성_요청(
+        ExtractableResponse<Response> 강남역_생성_응답 = 지하철_역_생성_요청("강남역");
+        ExtractableResponse<Response> 광교역_생성_응답 = 지하철_역_생성_요청("광교역");
+        ExtractableResponse<Response> 신분당선_생성_응답 = 지하철_노선_생성_요청(
                 "신분당선"
                 , "red"
-                , 역_ID(createStationResponse1)
-                , 역_ID(createStationResponse2)
+                , 역_ID(강남역_생성_응답)
+                , 역_ID(광교역_생성_응답)
                 , 10);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_제거_요청(createLineResponse.header("Location"));
-        지하철_역_제거_요청(createStationResponse1.header("Location"));
-        지하철_역_제거_요청(createStationResponse2.header("Location"));
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(신분당선_생성_응답.header("Location"));
+        지하철_역_제거_요청(강남역_생성_응답.header("Location"));
+        지하철_역_제거_요청(광교역_생성_응답.header("Location"));
 
         // then
         지하철_노선_제거됨(response);
