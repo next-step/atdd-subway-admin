@@ -28,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class LineAcceptanceTest extends AcceptanceTest {
     Long 강남역_아이디;
     Long 역삼역_아이디;
-    Long 신논현역_아이디;
     int 구간_거리;
 
     @BeforeEach
@@ -36,7 +35,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         super.setUp();
         강남역_아이디 = 지하철_역_등록되어_있음("강남역").as(StationResponse.class).getId();
         역삼역_아이디 = 지하철_역_등록되어_있음("역삼역").as(StationResponse.class).getId();
-        신논현역_아이디 = 지하철_역_등록되어_있음("신논현역").as(StationResponse.class).getId();
         구간_거리 = 10;
     }
 
@@ -126,9 +124,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void findAllLines() {
-        // given.as(LineResponse.class);
+        // given
         final LineResponse 노란노선 = 지하철_노선_등록되어_있음("노란노선", "노랑색", 강남역_아이디, 역삼역_아이디, 구간_거리).as(LineResponse.class);
-        final LineResponse 초록노선 = 지하철_노선_등록되어_있음("초록노선", "초록노선", 역삼역_아이디, 신논현역_아이디, 구간_거리).as(LineResponse.class);
+        final LineResponse 초록노선 = 지하철_노선_등록되어_있음("초록노선", "초록노선", 강남역_아이디, 역삼역_아이디, 구간_거리).as(LineResponse.class);
         // when
         final ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
         // then
@@ -202,7 +200,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLineWithDuplicatedName() {
         // given
         final LineResponse 파란노선 = 지하철_노선_등록되어_있음("파란노선", "파란색", 강남역_아이디, 역삼역_아이디, 구간_거리).as(LineResponse.class);
-        final Map<String, String> params = getLineCreateParams("파란노선", "색상", 역삼역_아이디, 신논현역_아이디, 구간_거리);
+        final Map<String, String> params = getLineCreateParams("파란노선", "색상", 강남역_아이디, 역삼역_아이디, 구간_거리);
         // when
         final ExtractableResponse<Response> response = 지하철_노선_수정_요청(파란노선.getId(), params);
         // then

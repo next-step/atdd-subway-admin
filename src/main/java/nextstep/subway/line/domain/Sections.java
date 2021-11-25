@@ -16,7 +16,7 @@ public class Sections {
     private static final String NOT_NULL_ERROR_MESSAGE = "종점역은 빈값이 될 수 없습니다.";
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "sectionId", foreignKey = @ForeignKey(name = "fk_section_to_line"))
+    @JoinColumn(name = "lineId", foreignKey = @ForeignKey(name = "fk_section_to_line"))
     private final List<Section> sections = new ArrayList<>();
 
     protected Sections() {

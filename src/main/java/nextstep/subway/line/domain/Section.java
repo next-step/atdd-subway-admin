@@ -20,8 +20,8 @@ import java.util.Objects;
 @Embeddable
 @Table(
         indexes = @Index(
-                name = "up_station_id_down_station_id_unique_index",
-                columnList = "upStationId,downStationId",
+                name = "line_id_up_station_id_down_station_id_unique_index",
+                columnList = "lineId,upStationId,downStationId",
                 unique = true
         )
 )
