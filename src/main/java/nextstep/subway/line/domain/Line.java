@@ -65,11 +65,14 @@ public class Line extends BaseEntity {
 		sections.add(Section.of(this, upStation, downStation, distance));
 	}
 
-	public Section findSectionBy(Station upStation, Station downStation, int distance) {
+	public Section findSectionBy(Station upStation, Station downStation) {
 		return sections.findAny(section -> section.equalsUpStation(upStation)
 			&& section.equalsDownStation(downStation)
-			&& section.getDistance() == distance
 		).orElseThrow(SectionNotFoundException::new);
+	}
+
+	public void deleteSection(Station station) {
+		sections.delete(station);
 	}
 
 	public Long getId() {

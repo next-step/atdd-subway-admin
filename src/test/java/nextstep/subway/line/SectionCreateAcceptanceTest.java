@@ -1,8 +1,8 @@
 package nextstep.subway.line;
 
+import static nextstep.subway.common.SectionAcceptanceFixture.*;
 import static nextstep.subway.common.ServiceApiFixture.*;
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,12 +12,9 @@ import org.springframework.http.HttpStatus;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.SectionResponse;
-import nextstep.subway.station.dto.StationResponse;
 
-@DisplayName("지하철 노선 내 구간 기능")
-public class SectionAcceptanceTest extends AcceptanceTest {
+@DisplayName("지하철 노선 내 구간 추가 기능")
+public class SectionCreateAcceptanceTest extends AcceptanceTest {
 
 	private long 강남역_ID;
 	private long 판교역_ID;
@@ -40,17 +37,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			신분당선_ID, sectionAddRequest(판교역_ID, 광교역_ID, 4)
 		);
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-		assertThat(response.header("Location")).isNotBlank();
-
-		final SectionResponse sectionResponse = response.as(SectionResponse.class);
-		assertAll(
-			() -> assertThat(sectionResponse.getId()).isNotNull(),
-			() -> assertThat(sectionResponse.getUpStation().getId()).isEqualTo(판교역_ID),
-			() -> assertThat(sectionResponse.getDownStation().getId()).isEqualTo(광교역_ID),
-			() -> assertThat(sectionResponse.getDistance()).isEqualTo(4),
-			() -> assertThat(sectionResponse.getCreatedDate()).isNotNull(),
-			() -> assertThat(sectionResponse.getModifiedDate()).isNotNull()
-		);
+		final String sectionId = response.header("Location").split("/")[4];
+		assertThat(sectionId).isNotBlank();
 	}
 
 	@DisplayName("구간추가/상행종착")
@@ -120,14 +108,5 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			신분당선_ID, sectionAddRequest(판교역_ID, 판교역_ID, 4)
 		);
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-	}
-
-	private long createLineId(String name, String color, Long upStationId, Long downStationId, int distance) {
-		return postLines(lineAddRequest(name, color, upStationId, downStationId, distance))
-			.as(LineResponse.class).getId();
-	}
-
-	private long createStationId(String name) {
-		return postStations(name).as(StationResponse.class).getId();
 	}
 }

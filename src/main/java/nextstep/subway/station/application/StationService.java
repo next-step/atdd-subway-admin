@@ -11,6 +11,7 @@ import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.exception.StationNotFoundException;
 
 @Service
 @Transactional
@@ -43,5 +44,10 @@ public class StationService {
     public Map<Long, Station> getStationsIn(Long... ids) {
         return stationRepository.findByIdIn(ids).stream()
             .collect(Collectors.toMap(Station::getId, station -> station));
+    }
+
+    public Station getStation(Long id) {
+        return stationRepository.findById(id)
+            .orElseThrow(StationNotFoundException::new);
     }
 }
