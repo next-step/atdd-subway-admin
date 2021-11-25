@@ -82,8 +82,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         LineRequest lineRequest1 = 지하철_노선_요청_정보("강남역", "잠실역", "2호선", "bg-green-200", 10);
         LineRequest lineRequest2 = 지하철_노선_요청_정보("사당역", "동작역", "4호선", "bg-blue-400", 20);
-        Long id1 = 지하철_노선_등록되어_있음(lineRequest1);
-        Long id2 = 지하철_노선_등록되어_있음(lineRequest2);
+        Long id1 = LineHelper.지하철_노선_등록되어_있음(lineRequest1);
+        Long id2 = LineHelper.지하철_노선_등록되어_있음(lineRequest2);
 
 
         // when
@@ -103,7 +103,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         LineRequest lineRequest1 = 지하철_노선_요청_정보("강남역","잠실역","2호선","bg-green-200",10);
-        Long lineId = 지하철_노선_등록되어_있음(lineRequest1);
+        Long lineId = LineHelper.지하철_노선_등록되어_있음(lineRequest1);
 
         // when
         // 지하철_노선_조회_요청
@@ -121,7 +121,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         LineRequest lineRequest1 = 지하철_노선_요청_정보("강남역","잠실역","2호선","bg-green-200",10);
-        Long lineId = 지하철_노선_등록되어_있음(lineRequest1);
+        Long lineId = LineHelper.지하철_노선_등록되어_있음(lineRequest1);
         LineRequest updateRequest = new LineRequest("구분당선", "bg-blue-600");
 
         // when
@@ -139,7 +139,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         LineRequest lineRequest1 = 지하철_노선_요청_정보("강남역","잠실역","2호선","bg-green-200",10);
-        Long lineId = 지하철_노선_등록되어_있음(lineRequest1);
+        Long lineId = LineHelper.지하철_노선_등록되어_있음(lineRequest1);
 
         // when
         // 지하철_노선_제거_요청
@@ -168,11 +168,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         StationResponse stationResponse1 = StationApiRequests.지하철_역_생성됨(station1);
         StationResponse stationResponse2 = StationApiRequests.지하철_역_생성됨(station2);
         return new LineRequest(lineName, color, stationResponse1.getId(), stationResponse2.getId(), distance);
-    }
-
-    private Long 지하철_노선_등록되어_있음(LineRequest lineRequest) {
-        ExtractableResponse<Response> createResponse = LineApiRequests.지하철_노선_생성_요청(lineRequest);
-        return Long.valueOf(createResponse.header("Location").split("/")[2]);
     }
 
     private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, List<Long> givenLines) {
