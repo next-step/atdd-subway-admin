@@ -59,7 +59,7 @@ public class LineService {
             throw new InvalidEntityRequiredException(request.getName());
         }
 
-        if (lineRepository.existsByName(request.getName())) {
+        if (lineRepository.existsByName(request.getLineName())) {
             throw new DuplicateEntityException();
         }
     }

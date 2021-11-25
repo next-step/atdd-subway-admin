@@ -11,6 +11,7 @@ public class Station extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Embedded
     private StationName name;
 
     public Station() {
