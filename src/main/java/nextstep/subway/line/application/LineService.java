@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import javassist.NotFoundException;
 import nextstep.subway.exceptions.DuplicateLineException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,5 +35,10 @@ public class LineService {
           .stream()
           .map(LineResponse::of)
           .collect(Collectors.toList());
+    }
+
+    public LineResponse findById(Long id) {
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException("노선을 찾을 수 없습니다."));
+        return LineResponse.of(line);
     }
 }
