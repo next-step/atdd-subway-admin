@@ -1,9 +1,11 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.common.exception.DuplicateEntityException;
+import nextstep.subway.common.exception.NotFoundEntityException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -57,7 +59,17 @@ public class LineController {
     }
 
     @ExceptionHandler(DuplicateEntityException.class)
-    public ResponseEntity<LineResponse> handleIllegalArgsException(DuplicateEntityException e) {
+    public ResponseEntity<LineResponse> handleDuplicateEntityException(DuplicateEntityException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(NotFoundEntityException.class)
+    public ResponseEntity<LineResponse> handleNotFoundEntityException(NotFoundEntityException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<StationResponse> handleIllegalArgsException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().build();
     }
 }

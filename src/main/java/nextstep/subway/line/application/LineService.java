@@ -62,11 +62,9 @@ public class LineService {
     }
 
     private void changeSections(Line line, LineRequest request) {
-        if (request.getUpStationId() != null && request.getDownStationId() != null) {
-            Station upStation = stationService.findStationById(request.getUpStationId());
-            Station downStation = stationService.findStationById(request.getDownStationId());
-            Section.of(line, upStation, downStation, request.getDistance());
-        }
+        Station upStation = stationService.findStationById(request.getUpStationId());
+        Station downStation = stationService.findStationById(request.getDownStationId());
+        Section.of(line, upStation, downStation, request.getDistance());
     }
 
     private void updateSections(Line line, LineRequest request) {
