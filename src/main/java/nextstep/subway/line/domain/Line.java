@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line extends BaseEntity {
@@ -32,7 +33,12 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    @Deprecated
     public void addSection(List<Section> section) {
+        sections.add(section, this);
+    }
+
+    public void addSection(Section section) {
         sections.add(section, this);
     }
 
@@ -56,7 +62,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
+    public List<Station> getSections() {
         return sections.getStations();
     }
 }

@@ -1,5 +1,9 @@
 package nextstep.subway.line.domain;
 
 public enum SectionType {
-    UP, DOWN;
+    FIRST, MIDDLE, LAST;
+
+    public static boolean equalsFirst(Section section) {
+        return section.getSectionType().equals(FIRST);
+    }
 }

@@ -2,6 +2,7 @@ package nextstep.subway.line.application;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -37,15 +38,16 @@ public class LineService {
 
     private List<Section> createSection(LineRequest request) {
         Station station = stationService.findByIdThrow(request.getUpStationId());
-        Station nextStation = stationService.findByIdThrow(request.getDownStationId());
-        Section section = new Section(station, nextStation, SectionType.UP, new Distance(request.getDistance()));
-        Section nextSection = new Section(nextStation, null, SectionType.DOWN, new Distance(0));
-        return Arrays.asList(section, nextSection);
+        Station downStation = stationService.findByIdThrow(request.getDownStationId());
+        Section firstStation = new Section(station, downStation, SectionType.FIRST, new Distance(request.getDistance()));
+        Section lastStation = new Section(station, downStation, SectionType.LAST, new Distance(request.getDistance()));
+        return Arrays.asList(firstStation, lastStation);
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLine() {
         List<Line> lines = lineRepository.findAll();
+
         return LineResponse.ofList(lines);
     }
 
