@@ -36,7 +36,7 @@ public class Section extends BaseEntity {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-        setLine(line);
+        this.line = line;
     }
 
     public Station getUpStation() {
@@ -47,8 +47,7 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public void setLine(Line line) {
-        line.addSection(this);
-        this.line = line;
+    public static Section of(Line line, Station upStation, Station downStation, int distance) {
+        return new Section(upStation, downStation, line, distance);
     }
 }
