@@ -5,7 +5,9 @@ public enum ErrorCode {
 	STATION_NULL_POINTER_ERROR("STATION01", "해당 역은 존재하지 않습니다."),
 	VALID_DISTANCE_ERROR("SECTION02", "상, 하행 종점보다 크거나 같을 수 없습니다."),
 	VALID_SAME_STATION_ERROR("SECTION03", "상, 하행 종점역이 같은 구간은 추가할 수 없습니다."),
-	VALID_NOT_IN_STATIONS_ERROR("SECTION04", "상, 하행 종점역을 하나라도 포함하지 않는 구간은 추가할 수 없습니다.");
+	VALID_NOT_IN_STATIONS_ERROR("SECTION04", "상, 하행 종점역을 하나라도 포함하지 않는 구간은 추가할 수 없습니다."),
+	VALID_CAN_NOT_REMOVE_LAST_STATION("SECTION05", "구간이 하나인 노선의 마지막 구간은 제거할 수 없습니다."),
+	VALID_CAN_NOT_REMOVE_NOT_IN_STATIONS("SECTION06", "구간에 존재하지 않는 역은 제거할 수 없습니다.");
 
 	private final String errorCode;
 	private final String errorMessage;

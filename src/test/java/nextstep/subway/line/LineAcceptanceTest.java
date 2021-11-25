@@ -20,6 +20,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -74,8 +75,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLineNoSuchStation() {
 		// given
-		StationResponse 을지로입구역 = new StationResponse();
-		StationResponse 왕십리역 = new StationResponse();
+		StationResponse 을지로입구역 = StationResponse.of(new Station("을지로입구역"));
+		StationResponse 왕십리역 = StationResponse.of(new Station("왕십리역"));
 
 		// when
 		ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선_생성_요청값(을지로입구역, 왕십리역));

@@ -110,4 +110,23 @@ class SectionTest {
 			() -> assertThat(section.getDownStation()).isEqualTo(expectSection.getUpStation())
 		);
 	}
+
+	@DisplayName("종점 사이의 역을 지울 때 구간을 재설정하는 테스트")
+	@Test
+	void removeStationBetweenStations() {
+		// given
+		Station expectUpStation = new Station("정자역");
+		Station expectDownStation = new Station("광교역");
+		Section expectSection = new Section(line, expectUpStation, expectDownStation, 3);
+		section.reSettingSection(expectSection);
+
+		// when
+		section.removeSection(expectSection);
+
+		// then
+		assertAll(
+			() -> assertThat(section.getDistance().getDistance()).isEqualTo(10),
+			() -> assertThat(section.getDownStation()).isEqualTo(expectSection.getDownStation())
+		);
+	}
 }
