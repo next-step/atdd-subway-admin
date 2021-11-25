@@ -1,5 +1,6 @@
 package nextstep.subway.station.application;
 
+import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
@@ -13,27 +14,33 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class StationService {
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
     }
 
-    public StationResponse saveStation(StationRequest stationRequest) {
-        Station persistStation = stationRepository.save(stationRequest.toStation());
+    public StationResponse saveStation(StationRequest request) {
+        validateDuplicate(request);
+        Station persistStation = stationRepository.save(request.toStation());
         return StationResponse.of(persistStation);
     }
 
     @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
-
         return stations.stream()
-                .map(station -> StationResponse.of(station))
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
+    }
+
+    private void validateDuplicate(StationRequest request) {
+        if (stationRepository.existsByName(request.getName())) {
+            throw new BadRequestException();
+        }
     }
 }

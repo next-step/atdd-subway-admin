@@ -1,6 +1,5 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -9,8 +8,13 @@ import nextstep.subway.line.dto.LineRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
+import static nextstep.subway.line.TestLineAcceptanceFactory.지하철_노선_목록_조회_요청;
+import static nextstep.subway.line.TestLineAcceptanceFactory.지하철_노선_생성_요청;
+import static nextstep.subway.line.TestLineAcceptanceFactory.지하철_노선_수정_요청;
+import static nextstep.subway.line.TestLineAcceptanceFactory.지하철_노선_제거_요청;
+import static nextstep.subway.line.TestLineAcceptanceFactory.지하철_노선_조회_요청;
+import static nextstep.subway.line.TestLineAcceptanceFactory.지하철_노선_파라미터_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -116,48 +120,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> 지하철_노선_제거_요청(Long deleteLineId) {
-        return RestAssured
-                .given().log().all()
-                .when().delete("/lines/{id}", deleteLineId)
-                .then().log().all().extract();
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
-        LineRequest lineRequest = 지하철_노선_파라미터_생성(name, color);
-
-        return RestAssured
-                .given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all().extract();
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
-        return RestAssured
-                .given().log().all()
-                .when().get("/lines")
-                .then().log().all().extract();
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
-        return RestAssured
-                .given().log().all()
-                .when().get("/lines/{id}", id)
-                .then().log().all().extract();
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_수정_요청(Long createLineId, LineRequest updateParams) {
-        return RestAssured
-                .given().log().all()
-                .body(updateParams)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().patch("/lines/{id}", createLineId)
-                .then().log().all().extract();
-    }
-
-    private LineRequest 지하철_노선_파라미터_생성(String name, String color) {
-        return LineRequest.of(name, color);
+    @Test
+    void 지하철_노선을_종점역_정보와_함께_생성한다() {
+        LineRequest 지하철_노선_파라미터_생성 = 지하철_노선_파라미터_생성("신분당선", "red");
     }
 }
