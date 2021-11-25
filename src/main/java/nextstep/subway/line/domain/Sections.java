@@ -94,9 +94,9 @@ public class Sections {
         }
     }
 
-    private void validateDistance(Section section) {
-        getSection(section).ifPresent(it -> {
-            if (!it.isPermitDistance(section.getDistance())) {
+    private void validateDistance(Section target) {
+        getSection(target).ifPresent(section -> {
+            if (!section.isPermitDistance(target)) {
                 throw new SectionNotCreateException("유효한 길이가 아닙니다.");
             }
         });

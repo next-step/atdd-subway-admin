@@ -22,9 +22,7 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     private int distance;
-
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "STATION_ID")
@@ -45,7 +43,6 @@ public class Section extends BaseEntity {
         this.station = station;
         this.nextStation = nextStation;
         this.distance = distance.intValue();
-//        this.distance = distance;
     }
 
     public boolean isSameStation(Section section) {
@@ -59,15 +56,16 @@ public class Section extends BaseEntity {
     public boolean isSameNextStation(Section section) {
         return nextStation.equals(section.nextStation);
     }
+
     public boolean isSameNextStation(Station target) {
         return nextStation.equals(target);
     }
 
     public void addSection(Section addSection) {
-        if(addSection.isSameStation(this)) {
+        if (addSection.isSameStation(station)) {
             this.station = addSection.nextStation;
         }
-        if(addSection.isSameNextStation(this)) {
+        if (addSection.isSameNextStation(nextStation)) {
             this.nextStation = addSection.station;
         }
         this.distance -= addSection.distance;
@@ -82,8 +80,8 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
-    public boolean isPermitDistance(int target) {
-        return distance > target;
+    public boolean isPermitDistance(Section target) {
+        return distance > target.distance;
     }
 
     public boolean isSameSection(Section section) {
