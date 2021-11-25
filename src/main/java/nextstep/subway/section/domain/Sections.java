@@ -28,11 +28,6 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-        checkValidSection(section);
-
-//        if (isAddUpLine(section)) {
-//
-//        }
         this.sections.add(section);
     }
 

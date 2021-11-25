@@ -32,7 +32,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("상행 종점에 section추가")
-    public void insertUpstationSectionTest() {
+    public void insertUpStationSectionTest() {
         StationResponse shinNonHyunStation = StationAcceptanceTestRequest.createStation("신논현역").as(StationResponse.class);
         LineSectionCreateRequest lineSectionCreateRequest =
                 new LineSectionCreateRequest(shinNonHyunStation.getId(), gangNamStation.getId(), 3);
@@ -41,6 +41,20 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
                 lineSectionCreateRequest.getDownStationId(), lineSectionCreateRequest.getDistance());
         LineAcceptanceTestResponse.isStatusOk(response);
     }
+
+    @Test
+    @DisplayName("하행 종점에 section추가")
+    public void insertDownStationSectionTest() {
+        StationResponse suwonStation = StationAcceptanceTestRequest.createStation("수원역").as(StationResponse.class);
+        LineSectionCreateRequest lineSectionCreateRequest =
+                new LineSectionCreateRequest(gwangKyoStation.getId(), suwonStation.getId(), 3);
+
+        ExtractableResponse response = LineSectionAcceptanceTestRequest.addSectionInLine(lineUri, lineSectionCreateRequest.getUpStationId(),
+                lineSectionCreateRequest.getDownStationId(), lineSectionCreateRequest.getDistance());
+        LineAcceptanceTestResponse.isStatusOk(response);
+    }
+
+
 
 
 }
