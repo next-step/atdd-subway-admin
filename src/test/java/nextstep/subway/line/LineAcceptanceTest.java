@@ -120,12 +120,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        지하철_노선_생성_요청(new LineRequest("1호선", "blue"));
 
         // when
         // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = RestAssured
+          .given().log().all()
+          .accept(MediaType.APPLICATION_JSON_VALUE)
+          .when().get("/lines/1")
+          .then().log().all()
+          .extract();
 
         // then
         // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getObject(".", LineResponse.class).getName()).isEqualTo("1호선");
     }
 
     @DisplayName("지하철 노선을 수정한다.")
