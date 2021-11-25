@@ -11,12 +11,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("노선 도메인 관련 기능")
 class LineTest {
 
+    private Station upStation;
+    private Station downStation;
     private Line line;
 
     @BeforeEach
     void setUp() {
-        Station upStation = new Station("강남역");
-        Station downStation = new Station("역삼역");
+        upStation = new Station("강남역");
+        downStation = new Station("역삼역");
         line = new Line("2호선", "green", upStation, downStation, 9);
     }
 
@@ -34,7 +36,7 @@ class LineTest {
     @Test
     void updateLine() {
         // when
-        final Line updateLine = new Line("3호선", "orange");
+        final Line updateLine = new Line("3호선", "orange", upStation, downStation, 9);
         line.update(updateLine);
 
         // then

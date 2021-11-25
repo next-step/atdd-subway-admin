@@ -41,7 +41,7 @@ class SectionTest {
     @Test
     void updateSectionWithLine() {
         // when
-        final Line newLine = new Line("3호선", "orange");
+        final Line newLine = new Line("3호선", "orange", upStation, downStation, 9);
         section.changeLine(newLine);
 
         // then
