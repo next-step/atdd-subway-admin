@@ -20,4 +20,10 @@ public class ControllerExceptionHandler {
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(exception.getMessage()));
     }
+
+    @ExceptionHandler(CannotAddSectionException.class)
+    public ResponseEntity<ErrorResponse> handleCannotAddSectionException(CannotAddSectionException exception) {
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(exception.getMessage()));
+    }
 }

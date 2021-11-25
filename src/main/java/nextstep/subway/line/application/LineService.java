@@ -6,6 +6,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionAddRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -48,11 +49,6 @@ public class LineService {
         return line;
     }
 
-    private Station findStation(Long stationId) {
-        return stationRepository.findById(stationId)
-                .orElseThrow(() -> new CannotFindEntityException(ERROR_MESSAGE_CANNOT_FIND_STATION));
-    }
-
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
@@ -64,20 +60,37 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public List<LineResponse> findById(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new CannotFindEntityException(ERROR_MESSAGE_CANNOT_FIND_LINE));
+        Line line = findLine(id);
 
         return Collections.singletonList(LineResponse.of(line));
     }
 
     public void updateById(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new CannotFindEntityException(ERROR_MESSAGE_CANNOT_FIND_LINE));
+        Line line = findLine(id);
 
         line.update(lineRequest.toLine());
     }
 
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    public void addSection(Long id, SectionAddRequest sectionAddRequest) {
+        Line line = findLine(id);
+        Station upStation = findStation(sectionAddRequest.getUpStationId());
+        Station downStation = findStation(sectionAddRequest.getDownStationId());
+
+        Section section = Section.of(upStation, downStation, sectionAddRequest.getDistance());
+        line.addSection(section);
+    }
+
+    private Line findLine(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new CannotFindEntityException(ERROR_MESSAGE_CANNOT_FIND_LINE));
+    }
+
+    private Station findStation(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new CannotFindEntityException(ERROR_MESSAGE_CANNOT_FIND_STATION));
     }
 }

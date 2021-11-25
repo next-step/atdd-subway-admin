@@ -4,6 +4,7 @@ import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,6 +42,42 @@ class DistanceTest {
             // then
             assertThatThrownBy(throwingCallable)
                     .isInstanceOf(IllegalArgumentException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("거리 비교 테스트")
+    class 거리_비교_테스트 {
+        @DisplayName("비교 대상 거리가 미만값")
+        @ParameterizedTest(name = "{displayName} ({index}) -> param = [{arguments}]")
+        @CsvSource(value = {"10:9", "10:1"}, delimiter = ':')
+        void 비교_대상_거리가_이하값(int 기준값, int 대상값) {
+            // given
+            Distance 기준 = Distance.of(기준값);
+            Distance 대상 = Distance.of(대상값);
+
+            // when
+            boolean result = 기준.isGreaterThan(대상);
+
+            // then
+            assertThat(result)
+                    .isFalse();
+        }
+
+        @DisplayName("비교 대상 거리가 이상값")
+        @ParameterizedTest(name = "{displayName} ({index}) -> param = [{arguments}]")
+        @CsvSource(value = {"10:10", "10:11", "10:100"}, delimiter = ':')
+        void 비교_대상_거리가_이상값(int 기준값, int 대상값) {
+            // given
+            Distance 기준 = Distance.of(기준값);
+            Distance 대상 = Distance.of(대상값);
+
+            // when
+            boolean result = 기준.isGreaterThan(대상);
+
+            // then
+            assertThat(result)
+                    .isTrue();
         }
     }
 }

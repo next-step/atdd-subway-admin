@@ -19,6 +19,10 @@ public class SectionTestFixture {
         return Station.of(3L, "교대역");
     }
 
+    public static Station 서초역() {
+        return Station.of(4L, "서초역");
+    }
+
     public static Section 강남역_역삼역_구간() {
         return Section.of(1L, 강남역(), 역삼역(), 10);
     }
