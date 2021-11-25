@@ -22,8 +22,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SectionAcceptanceTest extends AcceptanceTest {
 
     private StationResponse 강남역;
-    private Long 서울2호선;
     private StationResponse 잠실역;
+    private Long 서울2호선;
+    private int 기존노선길이 = 10;
 
     @BeforeEach
     void setUpSectionAcceptanceTest() {
@@ -31,7 +32,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         강남역 = StationApiRequests.지하철_역_생성됨("강남역");
         잠실역 = StationApiRequests.지하철_역_생성됨("잠실역");
-        LineRequest lineRequest = new LineRequest("2호선", "bg-red-600", 강남역.getId(), 잠실역.getId(), 10);
+        LineRequest lineRequest = new LineRequest("2호선", "bg-red-600", 강남역.getId(), 잠실역.getId(), 기존노선길이);
         서울2호선 = LineHelper.지하철_노선_등록되어_있음(lineRequest);
     }
 
@@ -92,6 +93,30 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // 노선에 구간 등록됨.
         지하철_노선_구간_등록됨(response);
         지하철_노선에_등록된_역_확인(서울2호선,"강남역","잠실역","강변역");
+    }
+
+    @DisplayName("기존 역 사이 길이보다 크거나 같은 구간을 등록한다.")
+    @Test
+    void overDistance() {
+        // given
+        // 지하철 역 생성됨
+        // 지하철 노선 생성됨
+        StationResponse 삼성역 = StationApiRequests.지하철_역_생성됨("삼성역");
+        SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 삼성역.getId(), 20);
+
+        // when
+        // 노선 구간 등록 요청
+        ExtractableResponse<Response> response = SectionApiRequests.지하철_노선_구간_등록_요청(서울2호선, sectionRequest);
+
+        // then
+        // 노선에 구간 등록됨.
+        지하철_노선_구간_실패함(response);
+    }
+
+    private void 지하철_노선_구간_실패함(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        String message = response.jsonPath().getObject("message", String.class);
+        assertThat(message).isEqualTo("노선 생성 실패 테스트");
     }
 
     private void 지하철_노선_구간_등록됨(ExtractableResponse<Response> response) {
