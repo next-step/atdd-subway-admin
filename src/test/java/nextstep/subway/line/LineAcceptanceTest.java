@@ -522,6 +522,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
             총_구간의_길이가_변하지_않는다(lineUrl, totalDistance);
         }
 
+        @DisplayName("마지막 남은 구간을 삭제한다")
+        @Test
+        void testRemoveLastSection() {
+            // given
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+            String lineUrl = 지하철_라인과_구간이_추가되어짐(강남역, 광교역);
+
+            // when
+            ExtractableResponse<Response> response = 지하철_구간_삭제_요청(강남역, lineUrl);
+
+            // then
+            지하철_구간_삭제에_실패한다(response);
+        }
+
+        private void 지하철_구간_삭제에_실패한다(ExtractableResponse<Response> response) {
+            Asserts.assertIsBadRequest(response);
+        }
+
         private void 총_구간의_길이가_변하지_않는다(String lineUrl, int totalDistance) {
             Integer resultTotalDistance = 총_구간의_길이(lineUrl);
             assertThat(resultTotalDistance).isEqualTo(totalDistance);
