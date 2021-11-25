@@ -469,13 +469,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     class RemoveSectionTest {
         @DisplayName("출발역을 삭제한다")
         @Test
-        void testInsertionSection() {
+        void testRemoveStartStation() {
             // given
             StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
             StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
             StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역").as(StationResponse.class);
             StationResponse 박달역 = StationAcceptanceTest.지하철역_등록되어_있음("박달역").as(StationResponse.class);
-            String lineUrl = 지하철_라인과_구간이_추가되어짐(강남역, 광교역, 안양역);
+            String lineUrl = 지하철_라인과_구간이_추가되어짐(강남역, 광교역, 안양역, 박달역);
 
             // when
             ExtractableResponse<Response> response = 지하철_구간_삭제_요청(강남역, lineUrl);
@@ -483,6 +483,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
             // then
             지하철_구간_삭제_응답한다(response);
             상행선_하행선_순으로_정렬된_역을_포함한_지하철_노선을_응답한다(lineUrl, 광교역, 안양역, 박달역);
+        }
+
+        @DisplayName("종착역을 삭제한다")
+        @Test
+        void testRemoveTerminalStation() {
+            // given
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역").as(StationResponse.class);
+            StationResponse 박달역 = StationAcceptanceTest.지하철역_등록되어_있음("박달역").as(StationResponse.class);
+            String lineUrl = 지하철_라인과_구간이_추가되어짐(강남역, 광교역, 안양역, 박달역);
+
+            // when
+            ExtractableResponse<Response> response = 지하철_구간_삭제_요청(강남역, lineUrl);
+
+            // then
+            지하철_구간_삭제_응답한다(response);
+            상행선_하행선_순으로_정렬된_역을_포함한_지하철_노선을_응답한다(lineUrl, 강남역, 광교역, 안양역);
         }
 
         private void 지하철_구간_삭제_응답한다(ExtractableResponse<Response> response) {
