@@ -8,10 +8,12 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,13 +34,13 @@ public class LineService {
         Station downStation = findStation(request.getDownStationId());
 
         Line persistLine = lineRepository.save(requestToLIne(request, upStation, downStation));
-        return LineResponse.of(persistLine);
+        return lineToResponse(persistLine);
     }
 
     public List<LineResponse> findLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
-                .map(line -> LineResponse.of(line))
+                .map(line -> lineToResponse(line))
                 .collect(Collectors.toList());
     }
 
@@ -47,7 +49,7 @@ public class LineService {
                 .orElseThrow(() ->
                         new EntityNotFoundException("노선이 존재하지 않습니다."));
 
-        return LineResponse.of(line);
+        return lineToResponse(line);
     }
 
     @Transactional
@@ -57,7 +59,7 @@ public class LineService {
                         new EntityNotFoundException("노선이 존재하지 않습니다."));
         line.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
 
-        return LineResponse.of(line);
+        return lineToResponse(line);
     }
 
     @Transactional
@@ -65,12 +67,26 @@ public class LineService {
         lineRepository.deleteById(lineId);
     }
 
+    private Station findStation(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException());
+    }
+
     private Line requestToLIne(LineRequest request, Station upStation, Station downStation) {
         return new Line(request.getName(), request.getColor(), new Section(upStation, downStation, request.getDistance()));
     }
 
-    private Station findStation(Long id) {
-        return stationRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException());
+    private LineResponse lineToResponse(Line line) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate(), createStationResponses(line));
+    }
+
+    private List<StationResponse> createStationResponses(Line line) {
+        List<StationResponse> stationResponses = new LinkedList<>();
+        line.getSections()
+                .forEach(section -> {
+                    stationResponses.add(StationResponse.of(section.getUpStation()));
+                    stationResponses.add(StationResponse.of(section.getDownStation()));
+                });
+        return stationResponses;
     }
 }
