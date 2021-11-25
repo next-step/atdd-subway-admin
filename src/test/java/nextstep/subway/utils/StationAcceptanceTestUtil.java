@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.MediaType;
 
-public class StationTestUtil {
+public class StationAcceptanceTestUtil {
 
-    private StationTestUtil() {
+    private StationAcceptanceTestUtil() {
     }
 
     public static ExtractableResponse<Response> 지하철_역_생성_요청(Map<String, String> params) {
@@ -41,7 +41,9 @@ public class StationTestUtil {
             .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_역_제거_함(String uri) {
+    public static ExtractableResponse<Response> 지하철_역_제거_함(
+        ExtractableResponse<Response> createResponse) {
+        String uri = createResponse.header("Location");
         return RestAssured.given().log().all()
             .when()
             .delete(uri)

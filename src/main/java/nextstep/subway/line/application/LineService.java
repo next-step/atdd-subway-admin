@@ -7,8 +7,11 @@ import nextstep.subway.common.exception.DuplicateException;
 import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,13 +21,20 @@ public class LineService {
 
     private final LineRepository lineRepository;
 
-    public LineService(LineRepository lineRepository) {
+    private final StationService stationService;
+
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
+        this.stationService = stationService;
     }
 
     public LineResponse saveLine(LineRequest request) {
         Line line = request.toLine();
         validateDuplicateLine(line);
+        Station upStation = stationService.findStation(request.getUpStationId());
+        Station downStation = stationService.findStation(request.getDownStationId());
+        Section section = new Section(line, upStation, downStation, 100);
+        line.addSection(section);
 
         Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
@@ -40,7 +50,7 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         return lineRepository.findAll().stream()
-            .map(LineResponse::of)
+            .map(LineResponse::withOutStationsOf)
             .collect(Collectors.toList());
     }
 

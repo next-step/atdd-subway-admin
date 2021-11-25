@@ -72,6 +72,7 @@ licensed.
 - > https://developer.jboss.org/docs/DOC-13933  
   java.lang.Object 문서에 따르면 hashCode()에 대해 항상 0을 반환하는 것이 완벽해야 합니다. 고유한 개체에 대해 고유한 숫자를 반환하기 위해 hashCode()를 구현하면 성능이 향상될 수 있다는 긍정적인 효과가 있습니다. 단점은 hashCode()의 동작이 equals()와 일치해야 한다는 것입니다. 객체 a와 b의 경우 a.equals(b)가 true이면 a.hashCode() == b.hashCode()보다 true여야 합니다. 그러나 a.equals(b)가 false를 반환하면 a.hashCode() == b.hashCode()가 여전히 true일 수 있습니다. hashCode()를 'return 0'으로 구현하는 것은 이러한 기준을 충족하지만 HashSet 또는 HashMap과 같은 Hash 기반 컬렉션에서는 매우 비효율적입니다.
 - [Java equals()와 hashCode()에 대해](https://nesoy.github.io/articles/2018-06/Java-equals-hashcode)
+- [Spring Batch JPA 에서 N+1 문제 해결](https://jojoldu.tistory.com/414)
 
 # 지하철 미션
 
@@ -110,7 +111,59 @@ licensed.
       Given 지하철 노선 등록 되어 있음
       When 등록된 지하철 노선 제거 요청
       Then  NO_CONTENT 정상 응답 받음
+
+    Scenario: 지하철 노선을 생성시 노선의 상행,하행을 포함하여 생성한다.
+      Given 지하철 노선 생성 파라미터 맵핑(상행,하행 포함)
+      When 지하철 노선 생성 요청
+      Then  지하철 노선 생성 됨
+      
 ```
+
+## 노선과 구간의 관계
+
+노선(`Line`) 과 구간(`Section`) 의 관계는 OneToMany 입니다.
+
+```java
+
+@Embeddable
+public class Sections {
+
+    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
+    private List<Section> sections = new ArrayList<>();
+
+```
+
+1. 노선에 구간 등록시 구간이 없다면, 마지막 구간의 `nextStation` 은 null 로 추가 됩니다.
+
+`EX)
+2호선 -> 구간(강남-역삼) 추가`
+
+|id|line|station|nextStation|
+|---|---|-----|-----|
+|1|1|강남|역삼|
+|2|1|역삼|null|
+
+2. 마지막 구간을 연장해서 추가되는 케이스
+
+`EX)
+2호선 -> 구간(강남-역삼) 추가 and 역삼-선릉`
+
+`강남-역삼` 추가시 데이터
+
+|id|line|station|nextStation|
+|---|---|-----|-----|
+|1|1|강남|역삼|
+|2|1|역삼|null|
+
+`역삼-선릉` 마지막역 연장 추가시, `nextStation` 이 null 인 row 의 `station` 값을 추가되는 `nextStation` 값으로 업데이트 처리합니다.
+
+|id|line|station|nextStation|
+|---|---|-----|-----|
+|1|1|강남|역삼|
+|2|1|선릉|null|
+|3|1|역삼|선릉|
+
+----
 
 ## 1단계 - 지하철 노선 관리
 
@@ -141,4 +194,17 @@ licensed.
         - 지하철_노선_수정_요청
         - 지하철_노선_제거_요청
         - 지하철_노선_등록되어_있음
-        - 지하철_노선_생성_파라미터_맵핑  
+        - 지하철_노선_생성_파라미터_맵핑
+
+## 2단계 - 인수 테스트 리팩터링
+
+- [X] Line 도메인에 Section 도메인 추가하기
+    - Line-Section `OneToMany` 관계
+- [X] Section 도메인 생성하기
+- [X] 노선에 구간 추가 기능
+- 노선에 구간 추가 테스트
+    - [X] 최초 생성시 마지막 구간 생성 테스트
+    - [X] 여러게 구간 추가 테스트
+- [X] 노선 조회시 상행역부터 하행역 순으로 정렬되어 조회
+- [X] 노선 인수 테스트
+    - `지하철 노선을 생성시 노선의 상행,하행을 포함하여 생성한다.`

@@ -1,10 +1,12 @@
 package nextstep.subway.line.domain;
 
 import java.security.InvalidParameterException;
+import java.util.List;
 import java.util.Objects;
 import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
+import nextstep.subway.station.domain.Station;
 import org.hibernate.annotations.Where;
 
 @Entity
@@ -23,6 +25,9 @@ public class Line extends BaseEntity {
 
     @Column(name = "deleted")
     private boolean deleted = Boolean.FALSE;
+
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
     }
@@ -46,6 +51,18 @@ public class Line extends BaseEntity {
 
     public boolean isDeleted() {
         return deleted;
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
+    public List<Section> getSections() {
+        return sections.getSections();
     }
 
     public Long getId() {

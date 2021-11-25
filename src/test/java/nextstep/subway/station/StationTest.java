@@ -10,8 +10,10 @@ import org.junit.jupiter.api.Test;
 
 public class StationTest {
 
-    public static final String STATION_NAME1 = "잠실역";
-    public static final String STATION_NAME2 = "강남역";
+    public static final String STATION_NAME1 = "강남역";
+    public static final String STATION_NAME2 = "역삼역";
+    public static final String STATION_NAME3 = "선릉역";
+    public static final String STATION_NAME4 = "삼성역";
     public static final Station STATION1 = new Station(STATION_NAME1);
     public static final Station STATION2 = new Station(STATION_NAME2);
 
