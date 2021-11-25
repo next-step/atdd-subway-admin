@@ -23,13 +23,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private StationResponse 강남역;
     private Long 서울2호선;
+    private StationResponse 잠실역;
 
     @BeforeEach
     void setUpSectionAcceptanceTest() {
         super.setUp();
 
         강남역 = StationApiRequests.지하철_역_생성됨("강남역");
-        StationResponse 잠실역 = StationApiRequests.지하철_역_생성됨("잠실역");
+        잠실역 = StationApiRequests.지하철_역_생성됨("잠실역");
         LineRequest lineRequest = new LineRequest("2호선", "bg-red-600", 강남역.getId(), 잠실역.getId(), 10);
         서울2호선 = LineHelper.지하철_노선_등록되어_있음(lineRequest);
     }
@@ -71,6 +72,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // 노선에 구간 등록됨.
         지하철_노선_구간_등록됨(response);
         지하철_노선에_등록된_역_확인(서울2호선,"사당역","강남역","잠실역");
+    }
+
+    @DisplayName("새로운 구간의 역을 하행 종점으로 등록한다.")
+    @Test
+    void addDownSection() {
+        // given
+        // 지하철 역 생성됨
+        // 지하철 노선 생성됨
+        StationResponse 강변역 = StationApiRequests.지하철_역_생성됨("강변역");
+        SectionRequest sectionRequest = new SectionRequest(잠실역.getId(), 강변역.getId(), 7);
+
+
+        // when
+        // 노선 구간 등록 요청
+        ExtractableResponse<Response> response = SectionApiRequests.지하철_노선_구간_등록_요청(서울2호선, sectionRequest);
+
+        // then
+        // 노선에 구간 등록됨.
+        지하철_노선_구간_등록됨(response);
+        지하철_노선에_등록된_역_확인(서울2호선,"강남역","잠실역","강변역");
     }
 
     private void 지하철_노선_구간_등록됨(ExtractableResponse<Response> response) {
