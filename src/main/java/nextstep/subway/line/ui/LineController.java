@@ -28,7 +28,7 @@ public class LineController {
     @GetMapping
     public ResponseEntity getLines() {
         LinesResponse lines = lineService.getLines();
-        return ResponseEntity.ok().body(lines);
+        return ResponseEntity.ok(lines.getLines());
     }
 
     @GetMapping("/{id}")
@@ -41,7 +41,7 @@ public class LineController {
         }
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable("id") Long id, @RequestBody LineRequest lineRequest) {
         try {
             LineResponse line = lineService.updateLine(id, lineRequest);

@@ -6,24 +6,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LinesResponse {
-    private List<LineResponse> linesResponse;
+    private List<LineResponse> lines;
 
     public LinesResponse() {
-        this.linesResponse = new ArrayList<>();
+        this.lines = new ArrayList<>();
     }
 
     public LinesResponse(List<Line> lines) {
         this();
         for(Line line : lines){
-            linesResponse.add(LineResponse.of(line));
+            this.lines.add(LineResponse.of(line));
         }
     }
 
-    public List<LineResponse> getLinesResponse() {
-        return linesResponse;
+    public List<LineResponse> getLines() {
+        return lines;
     }
 
-    public void setLinesResponse(List<LineResponse> linesResponse) {
-        this.linesResponse = linesResponse;
+    public void setLines(List<LineResponse> lines) {
+        this.lines = lines;
     }
 }

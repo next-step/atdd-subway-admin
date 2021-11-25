@@ -90,7 +90,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_목록_응답됨
         // 지하철_노선_목록_포함됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("linesResponse", Line.class)).hasSize(2);
+        assertThat(response.jsonPath().getList("lines", Line.class)).hasSize(2);
     }
 
     @DisplayName("지하철 노선 조회 성공")
@@ -147,7 +147,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .pathParam("id", line.getId())
-                .when().patch("/lines/{id}")
+                .when().put("/lines/{id}")
                 .then().log().all()
                 .extract();
 
