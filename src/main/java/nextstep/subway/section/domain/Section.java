@@ -58,7 +58,7 @@ public class Section {
     }
 
     public void updateForDelete(Section section) {
-        this.downStation = section.upStation;
+        this.downStation = section.downStation;
         this.distance = this.distance.add(section.getDistance());
     }
 

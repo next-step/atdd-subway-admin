@@ -43,23 +43,27 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        Optional<Section> optUpBoundSection = upBoundSection(station);
-        Optional<Section> optDownBoundSection = downBoundSection(station);
+        Section upBoundSection = upBoundSection(station).orElse(null);
+        Section downBoundSection = downBoundSection(station).orElse(null);
 
-        if (optUpBoundSection.isPresent() && optDownBoundSection.isPresent()) {
-            updateWhenDeleteStationInMiddleOfSection(optUpBoundSection.get(), optDownBoundSection.get());
+        if (isStationInMiddleOfSection(upBoundSection, downBoundSection)) {
+            removeStationInMiddleOfSection(upBoundSection, downBoundSection);
             return;
         }
 
-        if (optUpBoundSection.isPresent()) {
-            remove(optUpBoundSection.get()); // 하행 종점을 삭제하는 경우
+        if (upBoundSection != null) {
+            remove(upBoundSection); // 하행 종점을 삭제하는 경우
             return;
         }
 
-        if (optDownBoundSection.isPresent()) {
-            remove(optDownBoundSection.get()); // 상행 종점을 삭제하는 경우
+        if (downBoundSection != null) {
+            remove(downBoundSection); // 상행 종점을 삭제하는 경우
             return;
         }
+    }
+
+    private boolean isStationInMiddleOfSection(Section upBoundSection, Section downBoundSection) {
+        return upBoundSection != null && downBoundSection != null;
     }
 
     private void validateForConnect(Section upBoundSection, Section downBoundSection,
@@ -93,8 +97,7 @@ public class Sections {
         return downBoundSection != null && contains;
     }
 
-    private void updateWhenDeleteStationInMiddleOfSection(Section upBoundSection,
-        Section downBoundSection) {
+    private void removeStationInMiddleOfSection(Section upBoundSection, Section downBoundSection) {
         upBoundSection.updateForDelete(downBoundSection);
         remove(downBoundSection);
     }
