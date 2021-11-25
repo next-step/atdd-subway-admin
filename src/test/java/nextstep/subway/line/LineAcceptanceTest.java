@@ -4,7 +4,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.ApiUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -105,6 +104,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_목록_조회_요청
         ExtractableResponse<Response> response = ApiUtils.get("/lines");
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-red-600");
+        params.put("name", "신분당선");
+
 
         // then
         // 지하철_노선_목록_응답됨
@@ -114,7 +117,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lines).extracting(LineResponse::getName).contains("신분당선", "2호선");
         assertThat(lines).extracting(LineResponse::getColor).contains("bg-blue-600", "bg-red-600");
         assertThat(lines).flatExtracting(LineResponse::getStations).extracting(StationResponse::getName)
-                .contains("광교", "강남", "신설동", "까치산");
+                .containsExactly("강남", "광교", "신설동", "까치산");
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -144,7 +147,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(line.getName()).isEqualTo("신분당선");
         assertThat(line.getColor()).isEqualTo("bg-red-600");
         assertThat(line.getStations().size()).isEqualTo(2);
-        assertThat(line.getStations()).extracting(StationResponse::getName).contains("강남", "광교");
+        assertThat(line.getStations()).extracting(StationResponse::getName).containsExactly("강남", "광교");
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -159,7 +162,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long id = createResponse.body().jsonPath().getLong("id");
 
         Map<String, Object> params = new HashMap<>();
-        params.put("color", "bg-blue-700");
+        params.put("color", "bg-red-600");
+        params.put("name", "신분당선");
 
         // when
         // 지하철_노선_수정_요청

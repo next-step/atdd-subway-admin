@@ -25,4 +25,12 @@ public class SectionController {
         SectionResponse section = sectionService.addSection(lineId, request);
         return ResponseEntity.created(URI.create(String.format("/lines/%d/sections/%d", lineId, section.getId()))).body(section);
     }
+
+    @DeleteMapping(value = "/{lineId}/sections", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity removeSection(@PathVariable Long lineId,
+                                        @RequestParam Long stationId) {
+
+        sectionService.removeSection(lineId, stationId);
+        return ResponseEntity.noContent().build();
+    }
 }

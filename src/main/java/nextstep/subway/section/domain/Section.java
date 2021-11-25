@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "section", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"line_id", "up_station_id", "down_station_id"})
-})
+@Table(name = "section", indexes = @Index(name = "idx_section", columnList = "line_id, up_station_id, down_station_id"))
 public class Section {
 
     @Id
@@ -58,12 +56,25 @@ public class Section {
         );
     }
 
+    public Section sumBySection(Section section) {
+        int distance = this.distance + section.getDistance();
+        return Section.create(this.line, this.upStation, section.getDownStation(), distance);
+    }
+
+    public boolean matchStation(Station station) {
+        return this.upStation.equals(station) || this.downStation.equals(station);
+    }
+
     public boolean matchUpStationFromUpStation(Section section) {
         return this.upStation.equals(section.getUpStation());
     }
 
     public boolean matchUpStation(Section section) {
-        return this.upStation.equals(section.getUpStation()) || this.upStation.equals(section.getDownStation());
+        return matchUpStation(section.getUpStation()) || matchUpStation(section.getDownStation());
+    }
+
+    public boolean matchUpStation(Station station) {
+        return this.upStation.equals(station);
     }
 
     public boolean matchDownStationFromDownStation(Section section) {
@@ -71,21 +82,15 @@ public class Section {
     }
 
     public boolean matchDownStation(Section section) {
-        return this.downStation.equals(section.getUpStation()) || this.downStation.equals(section.getDownStation());
+        return matchDownStation(section.getUpStation()) || matchDownStation(section.getDownStation());
+    }
+
+    public boolean matchDownStation(Station station) {
+        return this.downStation.equals(station);
     }
 
     public boolean isGreaterOrEqualDistance(Section section) {
         return this.distance >= section.getDistance();
-    }
-
-    public void changeUpStationToDownStation(Section section) {
-        this.upStation = section.getDownStation();
-        this.distance -= section.getDistance();
-    }
-
-    public void changeDownStationToUpStation(Section section) {
-        this.downStation = section.getUpStation();
-        this.distance -= section.getDistance();
     }
 
     public Station getUpStation() {
