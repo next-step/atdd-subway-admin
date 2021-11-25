@@ -1,18 +1,18 @@
 package nextstep.subway.line.dto;
 
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 import nextstep.subway.line.domain.Line;
 
 import java.time.LocalDateTime;
-import nextstep.subway.station.dto.StationResponse;
 
 public class LineResponse {
 
     private Long id;
     private String name;
     private String color;
-    private List<StationResponse> stations = new ArrayList<>();
+    private List<LineStationResponse> stations = new ArrayList<>();
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
@@ -20,7 +20,7 @@ public class LineResponse {
     }
 
     public LineResponse(Long id, String name, String color, LocalDateTime createdDate,
-        LocalDateTime modifiedDate, List<StationResponse> stations) {
+        LocalDateTime modifiedDate, List<LineStationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -31,13 +31,18 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(),
-            line.getCreatedDate(), line.getModifiedDate(),
-            StationResponse.listOf(line.getStations()));
+            line.getCreatedDate(), line.getModifiedDate(), Lists.newArrayList());
     }
 
+    public static LineResponse of(Line line, List<LineStationResponse> stations) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(),
+            line.getCreatedDate(), line.getModifiedDate(), stations);
+    }
+
+    @Deprecated
     public static LineResponse withOutStationsOf(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(),
-            line.getCreatedDate(), line.getModifiedDate(), new ArrayList<>());
+            line.getCreatedDate(), line.getModifiedDate(), Lists.newArrayList());
     }
 
     public Long getId() {
@@ -60,7 +65,7 @@ public class LineResponse {
         return modifiedDate;
     }
 
-    public List<StationResponse> getStations() {
+    public List<LineStationResponse> getStations() {
         return stations;
     }
 }
