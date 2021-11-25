@@ -11,25 +11,26 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
 @Entity
 @Table(name = "section")
-public class Section {
+public class Section extends BaseEntity {
 	@Column(name = "id")
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
 	private Line line;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_to_up_station"))
 	private Station upStation;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_to_down_station"))
 	private Station downStation;
 
@@ -98,5 +99,24 @@ public class Section {
 		}
 
 		distance = distance - section.getDistance();
+	}
+
+	public boolean containsAnyStation(Station station) {
+		return station.equals(upStation) || station.equals(downStation);
+	}
+
+	public boolean containsUpStation(Station station) {
+		return station.equals(upStation);
+	}
+
+	public boolean containsDownStation(Station station) {
+		return station.equals(downStation);
+	}
+
+	public void merge(Section next, Sections sections) {
+		downStation = next.downStation;
+		distance = distance + next.distance;
+
+		sections.remove(next);
 	}
 }

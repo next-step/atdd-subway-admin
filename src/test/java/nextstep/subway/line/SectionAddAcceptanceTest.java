@@ -24,8 +24,8 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionAddRequest;
 import nextstep.subway.station.dto.StationResponse;
 
-@DisplayName("지하철 구간 관련 기능")
-public class SectionAcceptanceTest extends AcceptanceTest {
+@DisplayName("지하철 구간 추가 관련 기능")
+public class SectionAddAcceptanceTest extends AcceptanceTest {
 
 	/**
 	 * [AS-IS] (강남역)---7m----(선릉역)
@@ -50,7 +50,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		지하철_구간_등록됨(지하철_구간_등록_응답);
-		지하철_노선에_지하철_역이_순서대로_등록됨(노선_2호선_생성_응답.getId(), Arrays.asList(
+		지하철_노선에_지하철_역이_주어진_순서대로_조회됨(노선_2호선_생성_응답.getId(), Arrays.asList(
 			강남역_생성_응답.getId(),
 			역삼역_생성_응답.getId(),
 			선릉역_생성_응답.getId()));
@@ -79,7 +79,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		지하철_구간_등록됨(지하철_구간_등록_응답);
-		지하철_노선에_지하철_역이_순서대로_등록됨(노선_2호선_생성_응답.getId(), Arrays.asList(
+		지하철_노선에_지하철_역이_주어진_순서대로_조회됨(노선_2호선_생성_응답.getId(), Arrays.asList(
 			강남역_생성_응답.getId(),
 			역삼역_생성_응답.getId(),
 			선릉역_생성_응답.getId()));
@@ -109,7 +109,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		지하철_구간_등록됨(지하철_구간_등록_응답);
-		지하철_노선에_지하철_역이_순서대로_등록됨(노선_2호선_생성_응답.getId(), Arrays.asList(
+		지하철_노선에_지하철_역이_주어진_순서대로_조회됨(노선_2호선_생성_응답.getId(), Arrays.asList(
 			강남역_생성_응답.getId(),
 			역삼역_생성_응답.getId(),
 			선릉역_생성_응답.getId()));
@@ -195,7 +195,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_구간_등록_실패됨(지하철_구간_등록_응답);
 	}
 
-	private ExtractableResponse<Response> 지하철_구간_등록_요청(Long lineId, SectionAddRequest request) {
+	private static ExtractableResponse<Response> 지하철_구간_등록_요청(Long lineId, SectionAddRequest request) {
 		return RestAssured.given().log().all()
 			.body(request)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -209,7 +209,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
-	private void 지하철_노선에_지하철_역이_순서대로_등록됨(Long lineId, List<Long> expectedStationIds) {
+	public static void 지하철_노선에_지하철_역이_주어진_순서대로_조회됨(Long lineId, List<Long> expectedStationIds) {
 		ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineId);
 		LineResponse lineResponse = response.as(LineResponse.class);
 		List<Long> actualStationIds = lineResponse.getStations()
@@ -222,5 +222,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 	private void 지하철_구간_등록_실패됨(ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	public static void 지하철_구간_등록되어_있음(Long lineId, SectionAddRequest request) {
+		지하철_구간_등록_요청(lineId, request);
 	}
 }

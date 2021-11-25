@@ -4,6 +4,9 @@ import static nextstep.subway.station.StationFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -86,5 +89,62 @@ public class SectionTest {
 		// when & then
 		assertThatThrownBy(() -> givenSection.divideBy(newSection))
 			.isInstanceOf(SectionAddFailException.class);
+	}
+
+	@DisplayName("상행역 하행역을 가지는지 확인한다.")
+	@Test
+	public void containsAnyStation() {
+		// given
+		Section 강남_역삼_구간 = Section.of(강남역(), 역삼역(), 7);
+
+		// when & then
+		assertAll(
+			() -> assertThat(강남_역삼_구간.containsAnyStation(강남역())).isTrue(),
+			() -> assertThat(강남_역삼_구간.containsAnyStation(역삼역())).isTrue(),
+			() -> assertThat(강남_역삼_구간.containsAnyStation(선릉역())).isFalse());
+	}
+
+	@DisplayName("상행역을 가지는지 확인한다.")
+	@Test
+	public void containsUpStation() {
+		// given
+		Section 강남_역삼_구간 = Section.of(강남역(), 역삼역(), 7);
+
+		// when & then
+		assertAll(
+			() -> assertThat(강남_역삼_구간.containsUpStation(강남역())).isTrue(),
+			() -> assertThat(강남_역삼_구간.containsUpStation(역삼역())).isFalse());
+	}
+
+	@DisplayName("하행역을 가지는지 확인한다.")
+	@Test
+	public void containsDownStation() {
+		// given
+		Section 강남_역삼_구간 = Section.of(강남역(), 역삼역(), 7);
+
+		// when & then
+		assertAll(
+			() -> assertThat(강남_역삼_구간.containsDownStation(강남역())).isFalse(),
+			() -> assertThat(강남_역삼_구간.containsDownStation(역삼역())).isTrue());
+	}
+
+	@DisplayName("현재 구간을 다른 구간과 합친다.")
+	@Test
+	public void merge() {
+		// given
+		Section firstSection = Section.of(1L, 강남역(), 역삼역(), 4);
+		Section secondSection = Section.of(2L, 역삼역(), 선릉역(), 3);
+		Sections sections = Sections.of(new ArrayList<>(Arrays.asList(firstSection, secondSection)));
+
+		// when
+		firstSection.merge(secondSection, sections);
+
+		// then
+		assertAll(
+			() -> assertThat(sections.getValues()).doesNotContain(secondSection),
+			() -> assertThat(sections.getValues()).hasSize(1),
+			() -> assertThat(sections.getValues().get(0).getDistance()).isEqualTo(7),
+			() -> assertThat(sections.getValues().get(0).getUpStation()).isEqualTo(강남역()),
+			() -> assertThat(sections.getValues().get(0).getDownStation()).isEqualTo(선릉역()));
 	}
 }

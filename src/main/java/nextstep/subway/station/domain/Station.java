@@ -47,6 +47,22 @@ public class Station extends BaseEntity {
         return name;
     }
 
+    public boolean isHeadOf(Stations stations) {
+        if (stations.isEmpty()) {
+            return false;
+        }
+
+        return equals(stations.getHead());
+    }
+
+    public boolean isTailOf(Stations stations) {
+        if (stations.isEmpty()) {
+            return false;
+        }
+
+        return equals(stations.getTail());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)

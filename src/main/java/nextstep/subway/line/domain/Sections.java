@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -12,6 +13,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.Stations;
 
 @Embeddable
 public class Sections {
@@ -44,6 +46,10 @@ public class Sections {
 	}
 
 	public static Sections of(List<Section> sections) {
+		if (sections == null) {
+			return new Sections(new ArrayList<>());
+		}
+
 		return new Sections(sections);
 	}
 
@@ -53,17 +59,21 @@ public class Sections {
 	}
 
 	private void throwOnBothStationsNotRegistered(Section section) {
-		List<Station> stations = getStationsInOrder();
+		Stations stations = getStationsInOrder();
 		if (!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
 			throw new SectionAddFailException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
 		}
 	}
 
 	private void throwOnBothStationsAlreadyRegistered(Section section) {
-		List<Station> stations = getStationsInOrder();
+		Stations stations = getStationsInOrder();
 		if (stations.contains(section.getUpStation()) && stations.contains(section.getDownStation())) {
 			throw new SectionAddFailException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
 		}
+	}
+
+	public List<Section> getValues() {
+		return values;
 	}
 
 	public List<Integer> getDistancesInOrder() {
@@ -79,7 +89,7 @@ public class Sections {
 
 		List<Section> sections = new ArrayList<>();
 		Map<Station, Section> sectionByUpStation = getSectionByUpStation();
-		List<Station> stationsInOrder = getStationsInOrder();
+		Stations stationsInOrder = getStationsInOrder();
 		for (int i = 0; i < stationsInOrder.size() - 1; i++) {
 			Station station = stationsInOrder.get(i);
 			sections.add(sectionByUpStation.get(station));
@@ -93,17 +103,17 @@ public class Sections {
 			.collect(Collectors.toMap(Section::getUpStation, (section) -> section));
 	}
 
-	public List<Station> getStationsInOrder() {
+	public Stations getStationsInOrder() {
 		if (isEmpty()) {
-			return Collections.emptyList();
+			return Stations.empty();
 		}
 
 		List<Station> stations = new ArrayList<>();
 		Map<Station, Station> downStationByUpStation = getDownStationByUpStation();
-		Station upStation = getHeadUpStation();
+		Station upStation = getHeadStation();
 		addStationsSequentially(stations, downStationByUpStation, upStation);
 
-		return stations;
+		return Stations.of(stations);
 	}
 
 	private void addStationsSequentially(
@@ -126,19 +136,50 @@ public class Sections {
 			.collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
 	}
 
-	private Station getHeadUpStation() {
-		List<Station> downStations = values.stream()
+	private Station getHeadStation() {
+		List<Long> downStationIds = values.stream()
 			.map(Section::getDownStation)
+			.map(Station::getId)
 			.collect(Collectors.toList());
 
 		return values.stream()
 			.map(Section::getUpStation)
-			.filter(upStation -> !downStations.contains(upStation))
+			.filter(upStation -> !downStationIds.contains(upStation.getId()))
 			.findFirst()
 			.orElseThrow(IllegalStateException::new);
 	}
 
 	public int size() {
 		return values.size();
+	}
+
+	public void removeByStation(Station station) {
+		throwOnLessThanTwoSections();
+		Stations stationsInOrder = getStationsInOrder();
+		if (station.isHeadOf(stationsInOrder) || station.isTailOf(stationsInOrder)) {
+			remove(findOne(section -> section.containsAnyStation(station)));
+			return;
+		}
+
+		Section first = findOne(section -> section.containsDownStation(station));
+		Section second = findOne(section -> section.containsUpStation(station));
+		first.merge(second, this);
+	}
+
+	private void throwOnLessThanTwoSections() {
+		if (values.size() < 2) {
+			throw new SectionRemoveFailException("구간이 2개 이상이어야 제거할 수 있습니다.");
+		}
+	}
+
+	private Section findOne(Predicate<Section> predicate) {
+		return values.stream()
+			.filter(predicate)
+			.findFirst()
+			.orElseThrow(IllegalStateException::new);
+	}
+
+	public void remove(Section section) {
+		values.remove(section);
 	}
 }
