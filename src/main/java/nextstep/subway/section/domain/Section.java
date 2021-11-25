@@ -50,6 +50,13 @@ public class Section extends BaseEntity {
     }
 
     public void setLine(Line line) {
+        isExistLine();
         this.line = line;
+    }
+
+    private void isExistLine() {
+        if (line != null) {
+            line.removeSection(this);
+        }
     }
 }
