@@ -26,12 +26,13 @@ import java.util.Objects;
         )
 )
 public class Section extends BaseEntity {
+    private static final String UP_STATION_NOT_NULL_ERROR_MESSAGE = "상행역은 빈값일 수 없습니다.";
+    private static final String DOWN_STATION_NOT_NULL_ERROR_MESSAGE = "하행역은 빈값일 수 없습니다.";
+    private static final String TOO_LONG_DISTANCE_ERROR_MESSAGE = "기존 역 사이 길이보다 큰 거리 입니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private static final String UP_STATION_NOT_NULL_ERROR_MESSAGE = "상행역은 빈값일 수 없습니다.";
-    private static final String DOWN_STATION_NOT_NULL_ERROR_MESSAGE = "하행역은 빈값일 수 없습니다.";
     @Embedded
     private Distance distance;
 
@@ -42,6 +43,10 @@ public class Section extends BaseEntity {
     @ManyToOne(optional = false)
     @JoinColumn(name = "downStationId", foreignKey = @ForeignKey(name = "fk_section_down_station"))
     private Station downStation;
+
+    public int getDistance() {
+        return distance.getDistance();
+    }
 
     protected Section() {
     }
@@ -66,6 +71,22 @@ public class Section extends BaseEntity {
         return new Section(distance, upStation, downStation);
     }
 
+    protected void updateUpStation(Station upStation, int distance) {
+        if (this.distance.isLessThanOrEqualTo(distance)) {
+            throw new IllegalArgumentException(TOO_LONG_DISTANCE_ERROR_MESSAGE);
+        }
+        this.upStation = upStation;
+        this.distance = this.distance.minus(distance);
+    }
+
+    protected void updateDownStation(Station downStation, int distance) {
+        if (this.distance.isLessThanOrEqualTo(distance)) {
+            throw new IllegalArgumentException(TOO_LONG_DISTANCE_ERROR_MESSAGE);
+        }
+        this.downStation = downStation;
+        this.distance = this.distance.minus(distance);
+    }
+
     public Station getUpStation() {
         return upStation;
     }
@@ -73,9 +94,16 @@ public class Section extends BaseEntity {
     public Station getDownStation() {
         return downStation;
     }
+
     public Long getId() {
         return id;
     }
+
+
+    public boolean matchDistance(int distance) {
+        return this.distance.match(distance);
+    }
+
     @Override
     public String toString() {
         return "Section{" +
@@ -84,4 +112,6 @@ public class Section extends BaseEntity {
                 ", downStation=" + downStation +
                 "}\n";
     }
+
+
 }

@@ -54,4 +54,20 @@ public class Distance {
     public String toString() {
         return String.valueOf(distance);
     }
+
+    public int getDistance() {
+        return this.distance;
+    }
+
+    public boolean isLessThanOrEqualTo(int distance) {
+        return this.distance <= distance;
+    }
+
+    public Distance minus(int distance) {
+        return Distance.of(this.distance - distance);
+    }
+
+    public boolean match(int distance) {
+        return this.distance == distance;
+    }
 }

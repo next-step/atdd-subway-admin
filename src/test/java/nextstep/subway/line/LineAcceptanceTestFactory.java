@@ -10,6 +10,9 @@ import java.util.Map;
 
 public class LineAcceptanceTestFactory {
     private static final String LINE_BASE_API_URL = "/lines";
+    private static final String LINE_ADD_SECTION_URL = LINE_BASE_API_URL + "/{lineId}/sections";
+    private static final String LINE_DELETE_API_URL = LINE_BASE_API_URL + "/{id}";
+    private static final String LINE_UPDATE_API_URL = LINE_BASE_API_URL + "/{id}";
 
     public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color, Long upStationId, Long downStationId, int distance) {
         final Map<String, String> params = getLineCreateParams(name, color, upStationId, downStationId, distance);
@@ -18,23 +21,35 @@ public class LineAcceptanceTestFactory {
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
-        return RestAssuredApiTest.create(LINE_BASE_API_URL, params);
+        return RestAssuredApiTest.post(LINE_BASE_API_URL, params);
     }
 
     public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
-        return RestAssuredApiTest.fetch(LINE_BASE_API_URL);
+        return RestAssuredApiTest.get(LINE_BASE_API_URL);
     }
 
     public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
-        return RestAssuredApiTest.fetch(LINE_BASE_API_URL, id);
+        return RestAssuredApiTest.get(LINE_BASE_API_URL, id);
     }
 
     public static ExtractableResponse<Response> 지하철_노선_제거_요청(Long id) {
-        return RestAssuredApiTest.delete(LINE_BASE_API_URL, id);
+        return RestAssuredApiTest.delete(LINE_DELETE_API_URL, id);
     }
 
     public static ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, Map<String, String> params) {
-        return RestAssuredApiTest.update(LINE_BASE_API_URL, id, params);
+        return RestAssuredApiTest.update(LINE_UPDATE_API_URL, id, params);
+    }
+
+    public static ExtractableResponse<Response> 지하철_구간_추가_요청(Long id, Map<String, String> params) {
+        return RestAssuredApiTest.post(LINE_ADD_SECTION_URL, id, params);
+    }
+
+    public static Map<String, String> getAddSectionParams(Long upStationId, Long downStationId, int distance) {
+        final Map<String, String> params = new HashMap<>();
+        params.put("upStationId", upStationId + "");
+        params.put("downStationId", downStationId + "");
+        params.put("distance", distance + "");
+        return Collections.unmodifiableMap(params);
     }
 
     public static Map<String, String> getLineCreateParams(String name, String color, Long upStationId, Long downStationId, int distance) {

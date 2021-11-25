@@ -29,12 +29,13 @@ public class LineAcceptanceVerify {
         assertThat(responseJson.getList("stations", StationResponse.class)).containsAll(createdLineResponse.getStations());
     }
 
-    public static void 지하철_노선_종점역_응답_순서_검증(ExtractableResponse<Response> response, Long upStationId, Long downStationId) {
+    public static void 지하철_노선_종점역_순서_검증(ExtractableResponse<Response> response, List<Long> expectedStationIds) {
         List<StationResponse> stations = response.jsonPath().getList("stations", StationResponse.class);
-        final StationResponse upStation = stations.get(0);
-        final StationResponse downStation = stations.get(stations.size() - 1);
-        assertThat(upStation.getId()).isEqualTo(upStationId);
-        assertThat(downStation.getId()).isEqualTo(downStationId);
+        List<Long> stationIds = stations.stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+        assertThat(stationIds).containsExactlyElementsOf(expectedStationIds);
     }
 
 

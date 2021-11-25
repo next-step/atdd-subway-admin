@@ -108,4 +108,11 @@ public class LineService {
             throw new NotFoundStationByIdException(errorMessage);
         }
     }
+
+    @Transactional
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
+        final Line line = getLineByIdOrElseThrow(lineId);
+        final Section section = getSectionOrElseThrow(sectionRequest);
+        line.addSection(section);
+    }
 }
