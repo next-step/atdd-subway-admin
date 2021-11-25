@@ -107,14 +107,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_조회_요청
         Line line = createBlueResponse.as(Line.class);
-
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .pathParam("id", line.getId())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines/{id}")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = LineTestFixture.지하철_노선_조회(line.getId());
 
         // then
         // 지하철_노선_응답됨
@@ -126,13 +119,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLineFail() {
 
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .pathParam("id", 1L)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines/{id}")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = LineTestFixture.지하철_노선_조회(1L);
 
         // then
         // 지하철_노선_응답됨
@@ -176,11 +163,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createBlueResponse = LineTestFixture.지하철_노선_등록되어_있음("1호선", "blue");
+        assertThat(createBlueResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
         // 지하철_노선_제거_요청
+        Line line = createBlueResponse.as(Line.class);
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParam("id", line.getId())
+                .when().delete("/lines/{id}")
+                .then().log().all()
+                .extract();
 
         // then
         // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> findResponse = LineTestFixture.지하철_노선_조회(line.getId());
+        assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
