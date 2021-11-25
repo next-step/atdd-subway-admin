@@ -4,26 +4,20 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.utils.CommonTestApiClient;
 import org.springframework.http.MediaType;
 
 public class LineApiRequests {
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
-        return RestAssured
-                .given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        return CommonTestApiClient.post(lineRequest, "/lines");
     }
 
     public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long lineId) {
-        return get("/lines/" + lineId);
+        return CommonTestApiClient.get("/lines/" + lineId);
     }
 
     public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
-        return get("/lines");
+        return CommonTestApiClient.get("/lines");
     }
 
     public static void 지하철_노선_수정_요청(Long lineId, LineRequest updateRequest) {
@@ -45,12 +39,4 @@ public class LineApiRequests {
                 .then().log().all();
     }
 
-    private static ExtractableResponse<Response> get(String uri) {
-        return RestAssured
-                .given().log().all()
-                .when()
-                .get(uri)
-                .then().log().all()
-                .extract();
-    }
 }

@@ -1,6 +1,6 @@
 package nextstep.subway.line.dto;
 
-public class SectionRequest {
+public class SectionRequest implements ApiRequest {
     private Long upStationId;
     private Long downStationId;
     private int distance;

@@ -3,7 +3,7 @@ package nextstep.subway.line.dto;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
-public class LineRequest {
+public class LineRequest implements ApiRequest {
     private String name;
     private String color;
     private Long upStationId;
