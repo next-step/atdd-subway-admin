@@ -150,12 +150,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        지하철_노선_생성_요청(new LineRequest("1호선", "blue"));
 
         // when
         // 지하철_노선_수정_요청
+        ExtractableResponse<Response> response = RestAssured
+          .given().log().all()
+          .body(new LineRequest("분당선", "bg-blue-600"))
+          .accept(MediaType.ALL_VALUE)
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .when().put("/lines/1")
+          .then().log().all()
+          .extract();
 
         // then
         // 지하철_노선_수정됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
