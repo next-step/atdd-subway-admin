@@ -52,6 +52,10 @@ public class Section {
         this.distance = this.distance.subtract(section.distance);
     }
 
+    public boolean isLessThanOrEqualDistance(Section other) {
+        return this.distance.lessThanOrEqual(other.distance);
+    }
+
     public Station getUpStation() {
         return upStation;
     }

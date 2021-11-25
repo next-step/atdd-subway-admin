@@ -137,7 +137,7 @@ public class Sections {
 
     private void validateDistanceWhenConnect(Section existedSection,
         Section section) {
-        if (existedSection.getDistance().lessThanOrEqual(section.getDistance())) {
+        if (existedSection.isLessThanOrEqualDistance(section)) {
             throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 작아야 합니다");
         }
     }
