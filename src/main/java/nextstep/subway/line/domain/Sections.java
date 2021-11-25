@@ -15,6 +15,15 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
+    protected Sections() {
+    }
+
+    public Sections(List<Section> sections) {
+        for (Section section : sections) {
+            add(section);
+        }
+    }
+
     public void add(Section section) {
         if (sections.contains(section)) {
             return;
@@ -116,5 +125,10 @@ public class Sections {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void deleteSectionByStation(Station station) {
+        findByUpStation(station)
+                .ifPresent(section -> sections.remove(section));
     }
 }

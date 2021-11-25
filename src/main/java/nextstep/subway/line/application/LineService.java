@@ -38,10 +38,8 @@ public class LineService {
     }
 
     private Section addSectionToLine(LineRequest request, Line line) {
-        Station upStation = stationRepository.findById(request.getUpStationId())
-                .orElseThrow(() -> new StationNotFoundException(request.getUpStationId()));
-        Station downStation = stationRepository.findById(request.getDownStationId())
-                .orElseThrow(() -> new StationNotFoundException(request.getUpStationId()));
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
         return line.addSection(upStation, downStation, request.getDistance());
     }
 
@@ -63,14 +61,12 @@ public class LineService {
     }
 
     public void deleteLine(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new LineNotFoundException(id));
+        Line line = findLineById(id);
         lineRepository.delete(line);
     }
 
     public SectionResponse saveSection(Long lineId, LineRequest request) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new LineNotFoundException(lineId));
+        Line line = findLineById(lineId);
         Section section = addSectionToLine(request, line);
         return SectionResponse.of(section);
     }
@@ -79,6 +75,22 @@ public class LineService {
         return lineRepository.findById(lineId)
                 .map(Line::getSections)
                 .map(SectionResponse::listOf)
+                .orElseThrow(() -> new LineNotFoundException(lineId));
+    }
+
+    public void deleteSectionByStationId(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        Station station = findStationById(stationId);
+        line.deleteSectionByStation(station);
+    }
+
+    private Station findStationById(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new StationNotFoundException(stationId));
+    }
+
+    private Line findLineById(Long lineId) {
+        return lineRepository.findById(lineId)
                 .orElseThrow(() -> new LineNotFoundException(lineId));
     }
 }
