@@ -5,13 +5,11 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.dto.LineRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -92,7 +90,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        Map<String, String> updateParams = 지하철_노선_파라미터_생성("2호선", "green");
+        LineRequest updateParams = 지하철_노선_파라미터_생성("2호선", "green");
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(createLineId, updateParams);
 
         // then
@@ -126,11 +124,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
-        Map<String, String> params = 지하철_노선_파라미터_생성(name, color);
+        LineRequest lineRequest = 지하철_노선_파라미터_생성(name, color);
 
         return RestAssured
                 .given().log().all()
-                .body(params)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all().extract();
@@ -150,7 +148,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_수정_요청(Long createLineId, Map<String, String> updateParams) {
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(Long createLineId, LineRequest updateParams) {
         return RestAssured
                 .given().log().all()
                 .body(updateParams)
@@ -159,10 +157,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private Map<String, String> 지하철_노선_파라미터_생성(String name, String color) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        return params;
+    private LineRequest 지하철_노선_파라미터_생성(String name, String color) {
+        return LineRequest.of(name, color);
     }
 }

@@ -14,6 +14,10 @@ public class LineRequest {
         this.color = color;
     }
 
+    public static LineRequest of(String name, String color) {
+        return new LineRequest(name, color);
+    }
+
     public String getName() {
         return name;
     }
