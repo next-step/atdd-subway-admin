@@ -1,11 +1,10 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.Stations;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -17,7 +16,7 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
     @Embedded
-    private Stations stations = new Stations();
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -44,6 +43,10 @@ public class Line extends BaseEntity {
         return color;
     }
 
+    public Sections getSections() {
+        return sections;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -57,7 +60,7 @@ public class Line extends BaseEntity {
         return Objects.hash(name);
     }
 
-    public List<Station> getStations() {
-        return this.stations.getStations();
+    public void removeLine(Section section) {
+        this.sections.getSections().remove(section);
     }
 }
