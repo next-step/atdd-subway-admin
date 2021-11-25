@@ -27,21 +27,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     String DEFAULT_PATH = "/lines";
     LineRequest lineRequest = new LineRequest("2호선", "green");
 
-    @DisplayName("지하철 노선을 생성한다.")
-    @Test
-    void createLine() {
-        // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
-
-        // then
-        지하철_노선_생성_응답됨(response);
-    }
-
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
         // given
-        지하철_노선_생성_요청(lineRequest);
+        지하철_노선_종점역_추가하여_생성_요청("강남역", "역삼역", "2호선", "green");
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
@@ -54,37 +44,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        LineRequest secondLine = new LineRequest("2호선", "green");
-        LineRequest thirdLine = new LineRequest("3호선", "orange");
-        지하철_노선_생성_요청(secondLine);
-        지하철_노선_생성_요청(thirdLine);
+        지하철_노선_종점역_추가하여_생성_요청("구로역", "신도림역", "1호선", "blue");
+        지하철_노선_종점역_추가하여_생성_요청("강남역", "역삼역", "2호선", "green");
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
-        지하철_노선_목록_응답됨(Arrays.asList(secondLine.getName(), thirdLine.getName()), response);
-    }
-
-    @DisplayName("지하철 노선을 조회한다.")
-    @Test
-    void getLine() {
-        // given
-        ExtractableResponse<Response> saveLineResponse = 지하철_노선_생성_요청(lineRequest);
-        LineResponse lineResponse = 저장된_노선_응답(saveLineResponse);
-
-        // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineResponse.getId());
-
-        // then
-        지하철_노선_조회_응답됨(lineResponse, response);
+        지하철_노선_목록_응답됨(Arrays.asList("1호선", "2호선"), response);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> saveLineResponse = 지하철_노선_생성_요청(lineRequest);
+        ExtractableResponse<Response> saveLineResponse = 지하철_노선_종점역_추가하여_생성_요청("강남역", "역삼역", "2호선", "green");
         LineResponse savedLineResponse = 저장된_노선_응답(saveLineResponse);
 
         // when
@@ -100,7 +74,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> saveLineResponse = 지하철_노선_생성_요청(lineRequest);
+        ExtractableResponse<Response> saveLineResponse = 지하철_노선_종점역_추가하여_생성_요청("강남역", "역삼역", "2호선", "green");
         LineResponse savedLineResponse = 저장된_노선_응답(saveLineResponse);
 
         // when
@@ -114,12 +88,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선 생성시 두 종점역 추가하기")
     @Test
     void createLineWithStations() {
-        // given
-        StationResponse upStation = 역_생성("강남역");
-        StationResponse downStation = 역_생성("역삼역");
-
-        // when
-        ExtractableResponse<Response> saveLineResponse = 지하철_노선_종점역_추가하여_생성_요청(upStation.getId(), downStation.getId());
+        // given, when
+        ExtractableResponse<Response> saveLineResponse = 지하철_노선_종점역_추가하여_생성_요청("강남역", "역삼역", "2호선", "green");
 
         // then
         지하철_노선_생성_응답됨(saveLineResponse);
@@ -129,16 +99,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findLineWithStations() {
         // given
-        StationResponse upStation = 역_생성("강남역");
-        StationResponse downStation = 역_생성("역삼역");
-        LineResponse saveLineResponse = 지하철_노선_종점역_추가하여_생성_요청(upStation.getId(), downStation.getId()).body()
+        LineResponse saveLineResponse = 지하철_노선_종점역_추가하여_생성_요청("강남역", "역삼역", "2호선", "green").body()
                 .as(LineResponse.class);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(saveLineResponse.getId());
 
         // then
-        지하철_노선_역_목록_응답됨(Arrays.asList(upStation.getId(), downStation.getId()), response);
+        지하철_노선_역_목록_응답됨(Arrays.asList(saveLineResponse.getStations().get(0).getId(), saveLineResponse.getStations().get(1).getId()), response);
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
@@ -171,8 +139,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_종점역_추가하여_생성_요청(Long stationId1, Long stationId2) {
-        LineRequest lineRequestWithStations = new LineRequest("2호선", "green", stationId1, stationId2, 10);
+    private ExtractableResponse<Response> 지하철_노선_종점역_추가하여_생성_요청(String upStationName, String downStationName, String name, String color) {
+        StationResponse upStation = 역_생성(upStationName);
+        StationResponse downStation = 역_생성(downStationName);
+
+        LineRequest lineRequestWithStations = new LineRequest(name, color, upStation.getId(), downStation.getId(), 10);
         return 지하철_노선_생성_요청(lineRequestWithStations);
     }
 
