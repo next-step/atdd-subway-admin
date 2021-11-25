@@ -31,14 +31,23 @@ public class LineController {
         return ResponseEntity.ok().body(lines);
     }
 
-    @GetMapping
-    @RequestMapping("/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity getLine(@PathVariable("id") Long id) {
         try {
             LineResponse line = lineService.getLine(id);
             return ResponseEntity.ok(line);
-        }catch (NotFoundException e){
-            return ResponseEntity.notFound().build();
+        } catch (NotFoundException e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity updateLine(@PathVariable("id") Long id, @RequestBody LineRequest lineRequest) {
+        try {
+            LineResponse line = lineService.updateLine(id, lineRequest);
+            return ResponseEntity.ok(line);
+        } catch (NotFoundException e) {
+            return ResponseEntity.noContent().build();
         }
     }
 }

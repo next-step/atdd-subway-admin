@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -137,7 +136,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_응답됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -145,12 +144,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createBlueResponse = LineTestFixture.지하철_노선_등록되어_있음("1호선", "blue");
+        assertThat(createBlueResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
         // 지하철_노선_수정_요청
+        Line line = createBlueResponse.as(Line.class);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "3호선");
+        params.put("color", "red");
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParam("id", line.getId())
+                .when().patch("/lines/{id}")
+                .then().log().all()
+                .extract();
 
         // then
         // 지하철_노선_수정됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getObject(".", Line.class)).isEqualTo(line);
+        assertThat(response.jsonPath().getObject(".", Line.class).getName()).isEqualTo("3호선");
     }
 
     @DisplayName("지하철 노선을 제거한다.")

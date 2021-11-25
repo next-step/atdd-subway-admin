@@ -3,7 +3,6 @@ package nextstep.subway.line.application;
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.Lines;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesResponse;
@@ -32,8 +31,15 @@ public class LineService {
         return new LinesResponse(lines);
     }
 
-    public LineResponse getLine(Long id) throws NotFoundException{
+    public LineResponse getLine(Long id) throws NotFoundException {
         Optional<Line> persistLine = lineRepository.findById(id);
         return LineResponse.of(persistLine.orElseThrow(NotFoundException::new));
+    }
+
+    public LineResponse updateLine(Long id, LineRequest request) throws NotFoundException {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(NotFoundException::new);
+        line.update(new Line(request.getName(), request.getColor()));
+        return LineResponse.of(line);
     }
 }
