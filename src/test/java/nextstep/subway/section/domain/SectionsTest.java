@@ -1,12 +1,34 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.station.domain.Station;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SectionsTest {
+
+    private Sections sections;
+    private Station station1;
+    private Station station2;
+    private int distance;
+
+    @BeforeEach
+    void setUp() {
+        sections = new Sections();
+
+        station1 = new Station("강남역");
+        station2 = new Station("판교역");
+        distance = 10;
+        Section section = new Section(station1, station2, distance, null);
+
+        sections.add(section);
+    }
 
     @Test
     @DisplayName("첫 지하철 구간을 추가한다.")
@@ -23,20 +45,108 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("지하철 구간을 추가한다.")
-    void add_not_first() {
+    @DisplayName("역 사이에 노선을 등록한다.(같은 상행역)")
+    void add_same_up_station() {
         // given
-        Sections sections = new Sections();
-        Station station = new Station("강남역");
-        Section section = new Section(station, new Station("판교역"), 10, null);
-        sections.add(section);
-
-        Section newSection = new Section(station, new Station("양재역"), 3, null);
+        Station newStation = new Station("양재역");
+        int newDistance = 3;
+        Section newSection = new Section(station1, newStation, newDistance, null);
 
         // when
         sections.add(newSection);
 
         // then
-        assertThat(sections.getSections().size()).isEqualTo(2);
+        List<Section> sectionList = sections.getSections();
+        checkResult(sectionList, newStation, station2, distance - newDistance, station1, newStation, newDistance);
+    }
+
+    @Test
+    @DisplayName("역 사이에 노선을 등록한다.(같은 하행역)")
+    void add_same_down_station() {
+        // given
+        Station newStation = new Station("양재역");
+        int newDistance = 3;
+
+        Section newSection = new Section(newStation, station2, newDistance, null);
+
+        // when
+        sections.add(newSection);
+
+        // then
+        List<Section> sectionList = sections.getSections();
+        checkResult(sectionList, station1, newStation, distance - newDistance, newStation, station2, newDistance);
+    }
+
+    @Test
+    @DisplayName("새로운 역을 상행 종점으로 등록한다.")
+    void add_up_station() {
+        // given
+        Station newStation = new Station("양재역");
+        int newDistance = 3;
+
+        Section newSection = new Section(newStation, station1, newDistance, null);
+
+        // when
+        sections.add(newSection);
+
+        // then
+        List<Section> sectionList = sections.getSections();
+        checkResult(sectionList, station1, station2, distance, newStation, station1, newDistance);
+    }
+
+    @Test
+    @DisplayName("새로운 역을 하행 종점으로 등록한다.")
+    void add_down_station() {
+        // given
+        Station newStation = new Station("양재역");
+        int newDistance = 3;
+
+        Section newSection = new Section(station2, newStation, newDistance, null);
+
+        // when
+        sections.add(newSection);
+
+        // then
+        List<Section> sectionList = sections.getSections();
+        checkResult(sectionList, station1, station2, distance, station2, newStation, newDistance);
+    }
+
+    @Test
+    @DisplayName("지하철 역들을 상행 -> 하행 순으로 정렬하여 리턴한다.")
+    void orderedStations() {
+        // given
+        Station station1 = new Station("강남역");
+        Station station2 = new Station("양재역");
+        Station station3 = new Station("판교역");
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(new Section(station2, station3, 7, null));
+        sectionList.add(new Section(station1, station2, 3, null));
+
+        Sections sections = new Sections(sectionList);
+
+        // when
+        List<Station> stations = sections.orderedStations();
+
+        // then
+        List<String> names = createStationNames(stations);
+        assertThat(names).containsExactly("강남역", "양재역", "판교역");
+    }
+
+    private List<String> createStationNames(List<Station> stations) {
+        List<String> names = stations.stream()
+                .map(s -> s.getName())
+                .collect(Collectors.toList());
+        return names;
+    }
+
+    private void checkResult(List<Section> sectionList,
+                             Station upStation1, Station downStation1, int distance1,
+                             Station upStation2, Station downStation2, int distance2) {
+        assertThat(sectionList.get(0).getUpStation()).isEqualTo(upStation1);
+        assertThat(sectionList.get(0).getDownStation()).isEqualTo(downStation1);
+        assertThat(sectionList.get(0).getDistance()).isEqualTo(distance1);
+        assertThat(sectionList.get(1).getUpStation()).isEqualTo(upStation2);
+        assertThat(sectionList.get(1).getDownStation()).isEqualTo(downStation2);
+        assertThat(sectionList.get(1).getDistance()).isEqualTo(distance2);
     }
 }

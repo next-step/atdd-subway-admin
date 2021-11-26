@@ -16,12 +16,12 @@ public class Section {
     @ManyToOne(fetch = FetchType.LAZY)
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Station downStation;
 
     private int distance;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Line line;
 
     protected Section() {
@@ -38,16 +38,14 @@ public class Section {
         return new Section(upStation, downStation, distance, line);
     }
 
-    public void updateSection(Section section) {
-        Station beforeDownStation = this.downStation;
-        int beforeDistance = this.distance;
+    public void updateUpSection(Section section) {
+        this.upStation = section.downStation;
+        this.distance -= section.distance;
+    }
 
-        this.downStation = section.downStation;
-        this.distance = section.distance;
-
-        section.upStation = section.downStation;
-        section.downStation = beforeDownStation;
-        section.distance = beforeDistance - this.distance;
+    public void updateDownSection(Section section) {
+        this.downStation = section.upStation;
+        this.distance -= section.distance;
     }
 
     public Long getId() {
@@ -68,13 +66,5 @@ public class Section {
 
     public Line getLine() {
         return line;
-    }
-
-    public boolean isSameUpStation(Section section) {
-        return section.isSameUpStation(this.upStation);
-    }
-
-    private boolean isSameUpStation(Station upStation) {
-        return Objects.equals(this.upStation, upStation);
     }
 }

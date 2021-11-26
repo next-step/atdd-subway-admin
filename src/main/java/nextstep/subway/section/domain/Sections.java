@@ -6,9 +6,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Embeddable
 public class Sections {
@@ -27,26 +25,65 @@ public class Sections {
         return new Sections();
     }
 
-    public List<Section> getSections() {
-        return Collections.unmodifiableList(sections);
-    }
-
     public void add(Section section) {
         this.sections
                 .stream()
-                .filter(s -> s.isSameUpStation(section))
+                .filter(s -> s.getUpStation() == section.getUpStation())
                 .findFirst()
-                .ifPresent(s -> s.updateSection(section));
+                .ifPresent(s -> s.updateUpSection(section));
+
+        this.sections
+                .stream()
+                .filter(s -> s.getDownStation() == section.getDownStation())
+                .findFirst()
+                .ifPresent(s -> s.updateDownSection(section));
 
         this.sections.add(section);
     }
 
     public List<Station> orderedStations() {
+        Section firstSection = findFirstSection();
+        return createStations(firstSection);
+    }
+
+    private List<Station> createStations(Section section) {
         List<Station> stations = new ArrayList<>();
-        for (Section section : this.sections) {
-            stations.add(section.getUpStation());
+        stations.add(section.getUpStation());
+        stations.add(section.getDownStation());
+
+        Optional<Section> optionalSection = findNextSection(section);
+        while (optionalSection.isPresent()) {
+            Section nextSection = optionalSection.get();
+            stations.add(nextSection.getDownStation());
+            optionalSection = findNextSection(nextSection);
         }
-        stations.add(this.sections.get(this.sections.size() - 1).getDownStation());
         return stations;
+    }
+
+    private Optional<Section> findNextSection(Section section) {
+        return this.sections
+                .stream()
+                .filter(s -> s.getUpStation() == section.getDownStation())
+                .findFirst();
+    }
+
+    private Section findFirstSection() {
+        List<Station> upStations = new ArrayList<>();
+        List<Station> downStations = new ArrayList<>();
+        for (Section section : this.sections) {
+            upStations.add(section.getUpStation());
+            downStations.add(section.getDownStation());
+        }
+        upStations.removeAll(downStations);
+        Station firstStation = upStations.get(0);
+
+        return this.sections
+                .stream()
+                .filter(s -> s.getUpStation() == firstStation)
+                .findFirst().get();
+    }
+
+    public List<Section> getSections() {
+        return Collections.unmodifiableList(sections);
     }
 }
