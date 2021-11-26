@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.exception.TooLongDistanceException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.Embeddable;
@@ -20,18 +21,18 @@ import java.util.Objects;
 @Embeddable
 @Table(
         indexes = @Index(
-                name = "up_station_id_down_station_id_unique_index",
-                columnList = "upStationId,downStationId",
+                name = "line_id_up_station_id_down_station_id_unique_index",
+                columnList = "lineId,upStationId,downStationId",
                 unique = true
         )
 )
 public class Section extends BaseEntity {
+    private static final String UP_STATION_NOT_NULL_ERROR_MESSAGE = "상행역은 빈값일 수 없습니다.";
+    private static final String DOWN_STATION_NOT_NULL_ERROR_MESSAGE = "하행역은 빈값일 수 없습니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private static final String UP_STATION_NOT_NULL_ERROR_MESSAGE = "상행역은 빈값일 수 없습니다.";
-    private static final String DOWN_STATION_NOT_NULL_ERROR_MESSAGE = "하행역은 빈값일 수 없습니다.";
     @Embedded
     private Distance distance;
 
@@ -42,6 +43,10 @@ public class Section extends BaseEntity {
     @ManyToOne(optional = false)
     @JoinColumn(name = "downStationId", foreignKey = @ForeignKey(name = "fk_section_down_station"))
     private Station downStation;
+
+    public int getDistance() {
+        return distance.getDistance();
+    }
 
     protected Section() {
     }
@@ -66,6 +71,24 @@ public class Section extends BaseEntity {
         return new Section(distance, upStation, downStation);
     }
 
+    protected void updateUpStation(Station upStation, int distance) {
+        this.upStation = upStation;
+        this.distance = this.distance.minus(distance);
+    }
+
+    protected void updateDownStation(Station downStation, int distance) {
+        this.downStation = downStation;
+        this.distance = this.distance.minus(distance);
+    }
+
+    public boolean matchAnyStation(final Station target) {
+        return Objects.equals(upStation, target) || Objects.equals(downStation, target);
+    }
+
+    public boolean matchDistance(int distance) {
+        return this.distance.match(distance);
+    }
+
     public Station getUpStation() {
         return upStation;
     }
@@ -73,9 +96,11 @@ public class Section extends BaseEntity {
     public Station getDownStation() {
         return downStation;
     }
+
     public Long getId() {
         return id;
     }
+
     @Override
     public String toString() {
         return "Section{" +

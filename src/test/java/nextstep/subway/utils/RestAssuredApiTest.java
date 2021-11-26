@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class RestAssuredApiTest {
 
-    public static ExtractableResponse<Response> fetch(String url, Long id) {
+    public static ExtractableResponse<Response> get(String url, Long id) {
         return RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -19,7 +19,7 @@ public class RestAssuredApiTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> fetch(String Url) {
+    public static ExtractableResponse<Response> get(String Url) {
         return RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -30,11 +30,13 @@ public class RestAssuredApiTest {
     }
 
     public static ExtractableResponse<Response> delete(String url, Long id) {
+        System.out.println("url :: " + url);
+        System.out.println("id :: " + id);
         return RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .delete(url + "/{id}", id)
+                .delete(url, id)
                 .then().log().all()
                 .extract();
     }
@@ -45,12 +47,23 @@ public class RestAssuredApiTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
                 .when()
-                .put(url + "/{id}", id)
+                .put(url, id)
                 .then().log().all()
                 .extract();
     }
 
-    public static ExtractableResponse<Response> create(String url, Map<String, String> params) {
+    public static ExtractableResponse<Response> post(String url, Long id, Map<String, String> params) {
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when()
+                .post(url, id)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> post(String url, Map<String, String> params) {
         return RestAssured
                 .given().log().all()
                 .body(params)

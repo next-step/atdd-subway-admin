@@ -85,4 +85,12 @@ public class Line extends BaseEntity {
     public List<Station> getStationsOrderByUptoDown() {
         return this.sections.getStationsOrderByUptoDown();
     }
+
+    public void addSection(Section section) {
+        this.sections.addSection(section);
+    }
+
+    public List<Section> getSections() {
+        return sections.getSections();
+    }
 }

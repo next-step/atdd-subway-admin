@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DataJpaTest
 class LineTest {
@@ -37,10 +38,61 @@ class LineTest {
         // when
         final List<Station> stationsOrderByUptoDown = line.getStationsOrderByUptoDown();
         // then
-        assertThat(stationsOrderByUptoDown.get(0)).isEqualTo(firstStation);
-        assertThat(stationsOrderByUptoDown.get(1)).isEqualTo(secondStation);
-        assertThat(stationsOrderByUptoDown.get(2)).isEqualTo(thirdStation);
-        assertThat(stationsOrderByUptoDown.get(3)).isEqualTo(forthStation);
-        assertThat(stationsOrderByUptoDown.get(4)).isEqualTo(fifthStation);
+        assertThat(stationsOrderByUptoDown).containsExactlyElementsOf(Arrays.asList(firstStation, secondStation, thirdStation, forthStation, fifthStation));
     }
+
+    @DisplayName("등록된 역 사이의 추가될 경우 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정된다.")
+    @Test
+    void addSectionWithInnerSection() {
+        // given
+        final Station firstStation = stationRepository.save(Station.of("1번"));
+        final Station secondStation = stationRepository.save(Station.of("2번"));
+        final Station thirdStation = stationRepository.save(Station.of("3번"));
+        final Station forthStation = stationRepository.save(Station.of("4번"));
+        final int totalDistance = 12;
+        final int newDistance = 4;
+        final int newDistance2 = 2;
+        Line line = lineRepository.save(Line.of("노선이름", "색상", Section.of(totalDistance, firstStation, forthStation)));
+        // when
+        line.addSection(Section.of(newDistance, firstStation, secondStation));
+        line.addSection(Section.of(newDistance2, secondStation, thirdStation));
+        // then
+        final List<Section> sections = line.getSections();
+        final List<Station> stationsOrderByUptoDown = line.getStationsOrderByUptoDown();
+        assertAll(() -> {
+            assertThat(sections.get(0).matchDistance(totalDistance - newDistance - newDistance2)).isTrue();
+            assertThat(sections.get(1).matchDistance(newDistance)).isTrue();
+            assertThat(sections.get(2).matchDistance(newDistance2)).isTrue();
+            assertThat(stationsOrderByUptoDown).containsExactlyElementsOf(Arrays.asList(firstStation, secondStation, thirdStation, forthStation));
+        });
+    }
+
+
+    @DisplayName("등록된 역 바깥쪽으로 지하철 역 구간을 추가할 수 있다.")
+    @Test
+    void addSectionWithOuterSection() {
+        // given
+        final Station firstStation = stationRepository.save(Station.of("1번"));
+        final Station secondStation = stationRepository.save(Station.of("2번"));
+        final Station thirdStation = stationRepository.save(Station.of("3번"));
+        final Station forthStation = stationRepository.save(Station.of("4번"));
+        final int totalDistance = 12;
+        final int newDistance = 4;
+        final int newDistance2 = 2;
+        Line line = lineRepository.save(Line.of("노선이름", "색상", Section.of(totalDistance, secondStation, thirdStation)));
+        // when
+        line.addSection(Section.of(newDistance, firstStation, secondStation));
+        line.addSection(Section.of(newDistance2, thirdStation, forthStation));
+        // then
+        final List<Section> sections = line.getSections();
+        final List<Station> stationsOrderByUptoDown = line.getStationsOrderByUptoDown();
+        assertAll(() -> {
+            assertThat(sections.get(0).matchDistance(totalDistance)).isTrue();
+            assertThat(sections.get(1).matchDistance(newDistance)).isTrue();
+            assertThat(sections.get(2).matchDistance(newDistance2)).isTrue();
+            assertThat(stationsOrderByUptoDown).containsExactlyElementsOf(Arrays.asList(firstStation, secondStation, thirdStation, forthStation));
+        });
+    }
+
+
 }

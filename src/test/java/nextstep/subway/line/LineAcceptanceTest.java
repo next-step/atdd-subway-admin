@@ -28,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class LineAcceptanceTest extends AcceptanceTest {
     Long 강남역_아이디;
     Long 역삼역_아이디;
-    Long 신논현역_아이디;
     int 구간_거리;
 
     @BeforeEach
@@ -36,7 +35,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         super.setUp();
         강남역_아이디 = 지하철_역_등록되어_있음("강남역").as(StationResponse.class).getId();
         역삼역_아이디 = 지하철_역_등록되어_있음("역삼역").as(StationResponse.class).getId();
-        신논현역_아이디 = 지하철_역_등록되어_있음("신논현역").as(StationResponse.class).getId();
         구간_거리 = 10;
     }
 
@@ -126,9 +124,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void findAllLines() {
-        // given.as(LineResponse.class);
+        // given
         final LineResponse 노란노선 = 지하철_노선_등록되어_있음("노란노선", "노랑색", 강남역_아이디, 역삼역_아이디, 구간_거리).as(LineResponse.class);
-        final LineResponse 초록노선 = 지하철_노선_등록되어_있음("초록노선", "초록노선", 역삼역_아이디, 신논현역_아이디, 구간_거리).as(LineResponse.class);
+        final LineResponse 초록노선 = 지하철_노선_등록되어_있음("초록노선", "초록노선", 강남역_아이디, 역삼역_아이디, 구간_거리).as(LineResponse.class);
         // when
         final ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
         // then
@@ -156,7 +154,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선_응답됨(response);
         지하철_노선_응답_항목_검증(response, 초록노선);
-        지하철_노선_종점역_응답_순서_검증(response, 강남역_아이디, 역삼역_아이디);
+        지하철_노선_종점역_순서_검증(response, Arrays.asList(강남역_아이디, 역삼역_아이디));
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -202,7 +200,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLineWithDuplicatedName() {
         // given
         final LineResponse 파란노선 = 지하철_노선_등록되어_있음("파란노선", "파란색", 강남역_아이디, 역삼역_아이디, 구간_거리).as(LineResponse.class);
-        final Map<String, String> params = getLineCreateParams("파란노선", "색상", 역삼역_아이디, 신논현역_아이디, 구간_거리);
+        final Map<String, String> params = getLineCreateParams("파란노선", "색상", 강남역_아이디, 역삼역_아이디, 구간_거리);
         // when
         final ExtractableResponse<Response> response = 지하철_노선_수정_요청(파란노선.getId(), params);
         // then
@@ -243,6 +241,64 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제가_실패됨(response, "해당 노선의 아이디가 존재하지 않습니다.");
     }
 
+    @DisplayName("노선에 구간을 추가한다.")
+    @Test
+    void addSection() {
+        // given
+        LineResponse 신분당선 = 지하철_노선_등록되어_있음("신분당선", "신분당색상", 강남역_아이디, 역삼역_아이디, 10).as(LineResponse.class);
+        Long 논현역_아이디 = 지하철_역_등록되어_있음("논현역").as(StationResponse.class).getId();
+        Map<String, String> sectionAddParams = getAddSectionParams(강남역_아이디, 논현역_아이디, 2);
+        // when
+        final ExtractableResponse<Response> addSectionResponse = 지하철_구간_추가_요청(신분당선.getId(), sectionAddParams);
+        // then
+        지하철_노선_추가가_성공됨(addSectionResponse);
+    }
+
+    @ParameterizedTest(name = "역 사이의 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록 할 수 없다. [{0}]")
+    @ValueSource(ints = {10, 11, 100})
+    void addSectionWithBigDistance(int distance) {
+        // given
+        LineResponse 신분당선 = 지하철_노선_등록되어_있음("신분당선", "신분당색상", 강남역_아이디, 역삼역_아이디, 10).as(LineResponse.class);
+        Long 논현역_아이디 = 지하철_역_등록되어_있음("논현역").as(StationResponse.class).getId();
+        Map<String, String> sectionAddParams = getAddSectionParams(강남역_아이디, 논현역_아이디, distance);
+        // when
+        final ExtractableResponse<Response> addSectionResponse = 지하철_구간_추가_요청(신분당선.getId(), sectionAddParams);
+        // then
+        지하철_노선_추가가_실패됨(addSectionResponse, "기존 역 사이 길이보다 큰 거리 입니다.");
+    }
+
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
+    @Test
+    void addSectionWithAlreadyBothRegistered() {
+        // given
+        LineResponse 신분당선 = 지하철_노선_등록되어_있음("신분당선", "신분당색상", 강남역_아이디, 역삼역_아이디, 10).as(LineResponse.class);
+        Map<String, String> sectionAddParams = getAddSectionParams(강남역_아이디, 역삼역_아이디, 2);
+        // when
+        final ExtractableResponse<Response> addSectionResponse = 지하철_구간_추가_요청(신분당선.getId(), sectionAddParams);
+        // then
+        지하철_노선_추가가_실패됨(addSectionResponse, "상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 추가할 수 없다.")
+    @Test
+    void addSectionWithNotExistEitherStation() {
+        // given
+        LineResponse 신분당선 = 지하철_노선_등록되어_있음("신분당선", "신분당색상", 강남역_아이디, 역삼역_아이디, 10).as(LineResponse.class);
+        Long 화곡역_아이디 = 지하철_역_등록되어_있음("화곡역").as(StationResponse.class).getId();
+        Long 마곡역_아이디 = 지하철_역_등록되어_있음("마곡역").as(StationResponse.class).getId();
+        Map<String, String> sectionAddParams = getAddSectionParams(화곡역_아이디, 마곡역_아이디, 2);
+
+        // when
+        final ExtractableResponse<Response> addSectionResponse = 지하철_구간_추가_요청(신분당선.getId(), sectionAddParams);
+        // then
+        지하철_노선_추가가_실패됨(addSectionResponse, "상행역과 하행역 둘 중 하나도 포함되어 있지 않습니다.");
+    }
+
+    private void 지하철_노선_추가가_성공됨(ExtractableResponse<Response> response) {
+        assertHttpStatusOk(response);
+    }
+
     private void 지하철_노선_수정이_실패됨(ExtractableResponse<Response> response, String errorMessage) {
         assertBadRequestAndMessage(response, errorMessage);
     }
@@ -276,6 +332,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_조회가_실패됨(ExtractableResponse<Response> response, String errorMessage) {
+        assertBadRequestAndMessage(response, errorMessage);
+    }
+
+    private void 지하철_노선_추가가_실패됨(ExtractableResponse<Response> response, String errorMessage) {
         assertBadRequestAndMessage(response, errorMessage);
     }
 }

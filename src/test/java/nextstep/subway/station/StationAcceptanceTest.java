@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import static nextstep.subway.station.StationAcceptanceTestFactory.*;
-import static nextstep.subway.utils.RestAssuredApiTest.create;
+import static nextstep.subway.utils.RestAssuredApiTest.post;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
@@ -24,7 +24,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // given
         Map<String, String> params = getStationCreateParam("강남역");
         // when
-        ExtractableResponse<Response> response = create("/stations", params);
+        ExtractableResponse<Response> response = post("/stations", params);
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();

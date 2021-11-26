@@ -53,21 +53,21 @@ public class LineService {
         return UpdateLineResponseDto.of(line);
     }
 
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     protected void validateExistsByName(String name) {
         if (lineRepository.existsByName(name)) {
             throw new DuplicateLineNameException();
         }
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LineResponse> findAllLines() {
         return lineRepository.findAll().stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public LineResponse findById(long id) {
         final Line line = getLineByIdOrElseThrow(id);
         final List<StationResponse> stationResponses = getStationResponses(line);
@@ -79,7 +79,8 @@ public class LineService {
         return stationService.convertStationsResponse(stations);
     }
 
-    private Line getLineByIdOrElseThrow(long id) {
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    protected Line getLineByIdOrElseThrow(long id) {
         return lineRepository.findById(id)
                 .orElseThrow(NotFoundLineByIdException::new);
     }
@@ -93,7 +94,7 @@ public class LineService {
         }
     }
 
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     protected Section getSectionOrElseThrow(SectionRequest sectionRequest) {
         final int distance = sectionRequest.getDistance();
         final Station upStation = getStationByIdWithErrorMessage(sectionRequest.getUpStationId(), NOT_FOUND_UP_STATION_ERROR_MESSAGE);
@@ -107,5 +108,12 @@ public class LineService {
         } catch (NotFoundStationByIdException exception) {
             throw new NotFoundStationByIdException(errorMessage);
         }
+    }
+
+    @Transactional
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
+        final Line line = getLineByIdOrElseThrow(lineId);
+        final Section section = getSectionOrElseThrow(sectionRequest);
+        line.addSection(section);
     }
 }
