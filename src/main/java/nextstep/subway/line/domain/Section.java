@@ -72,17 +72,11 @@ public class Section extends BaseEntity {
     }
 
     protected void updateUpStation(Station upStation, int distance) {
-        if (this.distance.isLessThanOrEqualTo(distance)) {
-            throw new TooLongDistanceException();
-        }
         this.upStation = upStation;
         this.distance = this.distance.minus(distance);
     }
 
     protected void updateDownStation(Station downStation, int distance) {
-        if (this.distance.isLessThanOrEqualTo(distance)) {
-            throw new TooLongDistanceException();
-        }
         this.downStation = downStation;
         this.distance = this.distance.minus(distance);
     }

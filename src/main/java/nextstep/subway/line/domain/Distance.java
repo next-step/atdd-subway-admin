@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.line.exception.IllegalDistanceException;
+import nextstep.subway.line.exception.TooLongDistanceException;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -59,12 +60,15 @@ public class Distance {
         return this.distance;
     }
 
-    public boolean isLessThanOrEqualTo(int distance) {
-        return this.distance <= distance;
+    public Distance minus(int distance) {
+        if (isLessThanOrEqualTo(distance)) {
+            throw new TooLongDistanceException();
+        }
+        return Distance.of(this.distance - distance);
     }
 
-    public Distance minus(int distance) {
-        return Distance.of(this.distance - distance);
+    private boolean isLessThanOrEqualTo(int distance) {
+        return this.distance <= distance;
     }
 
     public boolean match(int distance) {
