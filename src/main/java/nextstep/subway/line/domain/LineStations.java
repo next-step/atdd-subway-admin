@@ -4,7 +4,6 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -22,40 +21,28 @@ public class LineStations {
     protected LineStations() {
     }
 
-    public void add(LineStation lineStation) {
-        Optional<LineStation> changeSection = lineStations.stream()
-            .filter(it -> Objects.equals(it.getNextStationId(), lineStation.getNextStationId()))
-            .findFirst();
+    public void add(LineStation addLineStation) {
+        validate(addLineStation);
 
-        if (changeSection.isPresent()
-            && changeSection.get().getDistance() <= lineStation.getDistance()
-        ) {
-            System.out.println("===");
-            // 변경할께 있으면,
-            // 길이 비교해서 미만이어야 통과 아니면 다 실패
-            throw new InvalidParameterException("길이가 불편함");
-        }
-        System.out.println("===1");
-        if (!changeSection.isPresent()) {
-            addLastLineStation(lineStation);
-        }
-        System.out.println("===2");
-        changeSection.ifPresent(value -> value.nextStationIdUpdate(lineStation.getStationId()));
+        lineStations.stream()
+            .filter(addLineStation::isNext)
+            .findFirst()
+            .ifPresent(next -> next.nextStationIdUpdate(addLineStation));
 
-        lineStations.add(lineStation);
+        lineStations.stream()
+            .filter(LineStation::isLast)
+            .findFirst()
+            .ifPresent(it -> it.stationIdUpdate(addLineStation));
+
+        lineStations.add(addLineStation);
+        addLastLineStation(addLineStation);
     }
 
-    private void addLastLineStation(LineStation lineStation) {
+    public void addLastLineStation(LineStation addLineStation) {
         Optional<LineStation> optionalLastSection = getLastLineStation();
 
         if (!optionalLastSection.isPresent()) {
-            lineStations.add(LineStation.lastOf(lineStation));
-            return;
-        }
-
-        LineStation lastLineStation = optionalLastSection.get();
-        if (Objects.equals(lastLineStation.getStationId(), lineStation.getStationId())) {
-            lastLineStation.stationIdUpdate(lineStation.getNextStationId());
+            lineStations.add(LineStation.lastOf(addLineStation));
         }
     }
 
@@ -82,9 +69,38 @@ public class LineStations {
         }
     }
 
+    private void validate(LineStation addLineStation) {
+        if (!lineStations.isEmpty()) {
+            validateDuplicate(addLineStation);
+            validateExist(addLineStation);
+        }
+    }
+
+    private void validateExist(LineStation addLineStation) {
+        if (isAddableMatch(addLineStation)) {
+            throw new InvalidParameterException("추가 할 수 있는 상행,하행 구간이 없습니다.");
+        }
+    }
+
+    private void validateDuplicate(LineStation addLineStation) {
+        if (isDuplicate(addLineStation)) {
+            throw new InvalidParameterException("이미 등록된 구간이 있습니다.");
+        }
+    }
+
+    private boolean isDuplicate(LineStation addLineStation) {
+        return lineStations.stream()
+            .anyMatch(addLineStation::isDuplicate);
+    }
+
+    private boolean isAddableMatch(LineStation addLineStation) {
+        return lineStations.stream()
+            .noneMatch(addLineStation::isAddableMatch);
+    }
+
     private Optional<LineStation> getLastLineStation() {
         return lineStations.stream()
-            .filter(it -> Objects.isNull(it.getNextStationId()))
+            .filter(LineStation::isLast)
             .findFirst();
     }
 }

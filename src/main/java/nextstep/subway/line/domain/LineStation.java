@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 
+import java.security.InvalidParameterException;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,8 +24,6 @@ public class LineStation {
     private Long nextStationId;
 
     private Integer distance;
-
-    private Integer duration;
 
     @Column(name = "deleted")
     private boolean deleted = Boolean.FALSE;
@@ -54,13 +53,40 @@ public class LineStation {
         return deleted;
     }
 
-    public void stationIdUpdate(Long stationId) {
-        this.stationId = stationId;
+    public void stationIdUpdate(LineStation lineStation) {
+        if (Objects.equals(this.stationId, lineStation.stationId)) {
+            this.stationId = lineStation.nextStationId;
+        }
     }
 
-    public void nextStationIdUpdate(Long nextStationId) {
-        this.nextStationId = nextStationId;
+    public void nextStationIdUpdate(LineStation lineStation) {
+        if (this.distance <= lineStation.distance) {
+            throw new InvalidParameterException("추가역은 기존 구간길이 보다 미만이어야 합니다.");
+        }
+        this.nextStationId = lineStation.stationId;
     }
+
+    public boolean isNext(LineStation lineStation) {
+        return this.getNextStationId().equals(lineStation.nextStationId);
+    }
+
+    public boolean isLast() {
+        return Objects.isNull(nextStationId);
+    }
+
+    public boolean isAddableMatch(LineStation lineStation) {
+        return this.stationId.equals(lineStation.nextStationId)
+            || this.stationId.equals(lineStation.stationId)
+            || this.nextStationId.equals(lineStation.stationId);
+    }
+
+    public boolean isDuplicate(LineStation lineStation) {
+        boolean isStationE = this.stationId.equals(lineStation.stationId);
+        boolean isNextStationE = this.nextStationId.equals(
+            lineStation.nextStationId);
+        return (isStationE && isNextStationE);
+    }
+
 
     public Long getStationId() {
         return stationId;
@@ -72,10 +98,6 @@ public class LineStation {
 
     public Integer getDistance() {
         return distance;
-    }
-
-    public Integer getDuration() {
-        return duration;
     }
 
     @Override

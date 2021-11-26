@@ -8,20 +8,17 @@ public class LineStationResponse {
 
     private StationResponse station;
     private Integer distance;
-    private Integer duration;
 
     public LineStationResponse() {
     }
 
-    public LineStationResponse(StationResponse station, Integer distance,
-        Integer duration) {
+    public LineStationResponse(StationResponse station, Integer distance) {
         this.station = station;
         this.distance = distance;
-        this.duration = duration;
     }
 
     public static LineStationResponse of(LineStation it, StationResponse station) {
-        return new LineStationResponse(station, it.getDistance(), it.getDuration());
+        return new LineStationResponse(station, it.getDistance());
     }
 
     public StationResponse getStation() {
@@ -30,9 +27,5 @@ public class LineStationResponse {
 
     public Integer getDistance() {
         return distance;
-    }
-
-    public Integer getDuration() {
-        return duration;
     }
 }
