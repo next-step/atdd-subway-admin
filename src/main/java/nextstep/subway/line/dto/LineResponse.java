@@ -1,9 +1,9 @@
 package nextstep.subway.line.dto;
 
-import nextstep.subway.line.domain.Line;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
+
+import nextstep.subway.line.domain.Line;
 
 public class LineResponse {
     private Long id;

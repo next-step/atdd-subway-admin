@@ -28,20 +28,23 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public List<LineResponse> getLines() {
-        return lineRepository.findAll().stream()
+        return lineRepository.findAll()
+            .stream()
             .map(LineResponse::from)
             .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse getLine(long id) {
-        Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        Line line = lineRepository.findById(id)
+            .orElseThrow(NoSuchElementException::new);
         return LineResponse.from(line);
     }
 
     @Transactional
     public LineResponse updateLine(long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        Line line = lineRepository.findById(id)
+            .orElseThrow(NoSuchElementException::new);
         line.update(lineRequest.toLine());
         lineRepository.save(line);
 
