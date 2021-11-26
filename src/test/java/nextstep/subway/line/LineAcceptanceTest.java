@@ -36,6 +36,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("name", "신분당선");
         params.put("upStationId", responseExtractableResponse1.response().jsonPath().get("id").toString());
         params.put("downStationId", responseExtractableResponse2.response().jsonPath().get("id").toString());
+        params.put("distance", "1");
 
         // when
         // 지하철_노선_생성_요청

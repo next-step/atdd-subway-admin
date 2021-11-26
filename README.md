@@ -66,5 +66,5 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ### 기능 목록
 - [x] 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기
 - [x] 두 종점역은 구간의 형태로 관리되어야 함
-- [ ] 노선 조회 시 응답 결과에 역 목록 추가하기
+- [x] 노선 조회 시 응답 결과에 역 목록 추가하기
     - 상행역 부터 하행역 순으로 정렬되어야 함
