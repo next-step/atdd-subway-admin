@@ -18,48 +18,48 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class LineService {
     public static final String THE_REQUESTED_INFORMATION_DOES_NOT_EXIST = "The requested information does not exist.";
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
-    private SectionRepository sectionRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
+    private final SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
+    public LineService(final LineRepository lineRepository, final StationRepository stationRepository, final SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
         this.sectionRepository = sectionRepository;
     }
 
     @Transactional
-    public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        Station upStation = stationRepository.findById(request.getUpStationId()).get();
-        Station downStation = stationRepository.findById(request.getDownStationId()).get();
-        upStation.setLine(persistLine);
-        downStation.setLine(persistLine);
+    public LineResponse saveLine(final LineRequest request) {
+        final Line persistLine = lineRepository.save(request.toLine());
+        final Station upStation = stationRepository.findById(request.getUpStationId()).get();
+        final Station downStation = stationRepository.findById(request.getDownStationId()).get();
+        upStation.addLine(persistLine);
+        downStation.addLine(persistLine);
         sectionRepository.save(new Section(persistLine, upStation, downStation, request.getDistance()));
-        List<Station> stations = stationRepository.findByLine(persistLine);
-        return LineResponse.from(persistLine, stations);
+        final List<Station> stations = stationRepository.findByLine(persistLine);
+        return LineResponse.of(persistLine, stations);
     }
 
     public List<LineResponse> findAllLines() {
-        List<Line> lines = lineRepository.findAll();
+        final List<Line> lines = lineRepository.findAll();
         return LineResponse.from(lines);
     }
 
-    public void deleteLineById(Long id) {
+    public void deleteLineById(final Long id) {
         lineRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)
-    public LineResponse findByLineId(Long id) {
-        Line line = lineRepository.findById(id)
+    public LineResponse findByLineId(final Long id) {
+        final Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(THE_REQUESTED_INFORMATION_DOES_NOT_EXIST));
-        List<Station> stations = stationRepository.findByLine(line);
-        return LineResponse.from(line, stations);
+        final List<Station> stations = stationRepository.findByLine(line);
+        return LineResponse.of(line, stations);
     }
 
     @Transactional
-    public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id)
+    public LineResponse updateLine(final Long id, final LineRequest lineRequest) {
+        final Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(THE_REQUESTED_INFORMATION_DOES_NOT_EXIST));
         line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
         return LineResponse.from(line);
