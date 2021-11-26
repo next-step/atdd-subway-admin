@@ -24,13 +24,11 @@ public class LineStationService {
     }
 
     public void createLineStation(Long lineId, LineStationRequest lineStationRequest) {
-        stationService.validateAllExist(Arrays.asList(lineStationRequest.getUpStationId(),
-            lineStationRequest.getDownStationId()));
         Line line = lineService.findLine(lineId);
 
         Station station = stationService.findStation(lineStationRequest.getUpStationId());
         Station nextStation = stationService.findStation(lineStationRequest.getDownStationId());
-        
+
         LineStation lineStation = LineStation.of(station.getId(), nextStation.getId(),
             Distance.of(lineStationRequest.getDistance()));
         line.addLineStation(lineStation);

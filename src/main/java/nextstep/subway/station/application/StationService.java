@@ -66,14 +66,6 @@ public class StationService {
     }
 
     @Transactional(readOnly = true)
-    public void validateAllExist(List<Long> stationIds) {
-        long existCount = stationRepository.countAllById(stationIds);
-        if (existCount != stationIds.size()) {
-            throw new NotFoundException("존재 하지 않는 역이 있습니다.");
-        }
-    }
-
-    @Transactional(readOnly = true)
     public Map<Long, Station> findAllById(List<Long> stationIds) {
         return stationRepository.findAllById(stationIds)
             .stream()
