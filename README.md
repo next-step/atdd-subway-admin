@@ -82,3 +82,14 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [X] 트랜잭션 확인
 - [X] 인수 테스트 리팩터링
     - [X] id 가져오기
+
+#### 코드 리뷰사항
+- [ ] `@transactional` 어노테이션 변경
+- [ ] 객체지향 생활체조 원칙 규칙 4: 한 줄에 점을 하나만 찍는다.
+- [ ] 한개의 매개변수의 경우 from 둘 이상의 매개변수를 받아서 반환하는 경우 of
+- [ ] 테스트 메서드명 한글로 작성
+- [ ] 공통으로 사용할 수 있는 여지가 있는 테스트용 private 메서드를 외부 클래스로 분리
+
+     
+## 참고 링크
+[생성자 대신 정적 팩터리 메서드를 고려하라](https://ssoco.tistory.com/61)
