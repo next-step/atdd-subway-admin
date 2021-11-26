@@ -33,6 +33,12 @@ public class StationAcceptanceTestUtil {
     }
 
 
+    public static Long 지하철됨_역_생성_됨_toId(String stationName) {
+        Map<String, String> params = 지하철_역_생성_파라미터_맵핑(stationName);
+        ExtractableResponse<Response> response = 지하철_역_생성_요청(params);
+        return response.as(StationResponse.class).getId();
+    }
+
     public static ExtractableResponse<Response> 지하철_역_목록_조회() {
         return RestAssured.given().log().all()
             .when()
