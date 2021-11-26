@@ -19,7 +19,7 @@ public class LineStationAcceptanceTestUtil {
         assertThat(response.statusCode()).isEqualTo(expected.value());
     }
 
-    public static void 지하철_노선에_지하척역_순서_정렬됨(ExtractableResponse<Response> response,
+    public static void 지하철_노선에_지하철역_순서_정렬됨(ExtractableResponse<Response> response,
         List<Long> expectedStationIds) {
         LineResponse line = response.as(LineResponse.class);
 
