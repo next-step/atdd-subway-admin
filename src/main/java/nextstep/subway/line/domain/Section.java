@@ -46,6 +46,22 @@ public class Section {
         return id;
     }
 
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
     public void changeLine(Line line) {
         this.line = line;
     }

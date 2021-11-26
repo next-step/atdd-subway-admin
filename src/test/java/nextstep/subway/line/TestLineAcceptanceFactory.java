@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -55,17 +56,30 @@ public class TestLineAcceptanceFactory {
                 .then().log().all().extract();
     }
 
-    public static List<Long> 지하철_노선_목록_ID_추출(ExtractableResponse<Response> response) {
+    public static ExtractableResponse<Response> 지하철_노선에_종점역정보_추가_요청(Long lineId, SectionRequest sectionRequest) {
+        return RestAssured
+                .given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines/{id}/sections", lineId)
+                .then().log().all().extract();
+    }
+
+    public static List<Long> 지하철_노선_목록_IDs_추출(ExtractableResponse<Response> response) {
         return response.jsonPath().getList(".", LineResponse.class).stream()
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
     }
 
     @SafeVarargs
-    public static final List<Long> 지하철_노선_ID_추출(ExtractableResponse<Response>... createResponse) {
+    public static List<Long> 지하철_노선_IDs_추출(ExtractableResponse<Response>... createResponse) {
         return Arrays.stream(createResponse)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
+    }
+
+    public static Long 지하철_노선_ID_추출(ExtractableResponse<Response> createResponse) {
+        return Long.valueOf(createResponse.header("Location").split("/")[2]);
     }
 
     public static void 지하철_노선_목록_포함됨(List<Long> expectedLineIds, List<Long> resultLineIds) {
@@ -78,6 +92,10 @@ public class TestLineAcceptanceFactory {
 
     public static LineRequest 지하철_노선과_종점역정보_파라미터_생성(String name, String color, Long upStationId, Long downStationId, int distance) {
         return LineRequest.of(name, color, upStationId, downStationId, distance);
+    }
+
+    public static SectionRequest 종점역정보_파라미터_생성(Long upStationId, Long downStationId, int distance) {
+        return SectionRequest.of(upStationId, downStationId, distance);
     }
 
     public static void 지하철_노선_생성됨(ExtractableResponse<Response> response) {

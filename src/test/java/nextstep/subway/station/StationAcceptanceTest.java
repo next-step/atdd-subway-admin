@@ -3,7 +3,6 @@ package nextstep.subway.station;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +10,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역_ID_추출;
-import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역_목록_ID_추출;
+import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역_IDs_추출;
+import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역_목록_IDs_추출;
 import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역_목록_응답됨;
 import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역_목록_조회_요청;
 import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역_목록_포함됨;
@@ -61,8 +61,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_역_목록_응답됨(지하철_역_목록_조회_요청_응답);
-        List<Long> expectedLineIds = 지하철_역_ID_추출(강남역_응답, 역삼역_응답);
-        List<Long> resultLineIds = 지하철_역_목록_ID_추출(지하철_역_목록_조회_요청_응답);
+        List<Long> expectedLineIds = 지하철_역_IDs_추출(강남역_응답, 역삼역_응답);
+        List<Long> resultLineIds = 지하철_역_목록_IDs_추출(지하철_역_목록_조회_요청_응답);
         지하철_역_목록_포함됨(expectedLineIds, resultLineIds);
     }
 
@@ -71,7 +71,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // given
         StationRequest 강남역 = 지하철_역_파라미터_생성("강남역");
         ExtractableResponse<Response> 지하철_역_생성_요청_응답 = 지하철_역_생성_요청(강남역);
-        Long 강남역_ID = 지하철_역_생성_요청_응답.jsonPath().getObject(".", Station.class).getId();
+        Long 강남역_ID = 지하철_역_ID_추출(지하철_역_생성_요청_응답);
 
         // when
         ExtractableResponse<Response> 지하철_역_삭제_요청_응답 = 지하철_역_삭제_요청(강남역_ID);

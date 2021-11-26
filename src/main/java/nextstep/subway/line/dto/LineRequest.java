@@ -9,15 +9,16 @@ public class LineRequest {
     private Long downStationId;
     private int distance;
 
-    public LineRequest() {
+    private LineRequest() {
+
     }
 
-    public LineRequest(String name, String color) {
+    private LineRequest(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+    private LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
         this(name, color);
         this.upStationId = upStationId;
         this.downStationId = downStationId;
@@ -53,10 +54,10 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(name, color);
+        return Line.of(name, color);
     }
 
     public boolean hasStationInfo() {
-        return upStationId != null || downStationId != null || distance != 0;
+        return upStationId != null || downStationId != null || distance > 0;
     }
 }
