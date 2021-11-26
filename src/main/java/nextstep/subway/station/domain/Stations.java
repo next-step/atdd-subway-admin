@@ -13,11 +13,7 @@ public class Stations {
     public Stations() {
     }
 
-    public void addStation(Station station) {
+    public void addStation(final Station station) {
         stations.add(station);
-    }
-
-    public List<Station> getStations() {
-        return stations;
     }
 }
