@@ -10,11 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -60,9 +60,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = 지하철역_등록되어_있음("강남역");
-
-        ExtractableResponse<Response> createResponse2 = 지하철역_등록되어_있음("역삼역");
+        ExtractableResponse<Response> createResponse1 = 지하철역_등록_응답("강남역");
+        ExtractableResponse<Response> createResponse2 = 지하철역_등록_응답("역삼역");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -73,11 +72,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(it -> it.getId())
+                .map(StationResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
@@ -86,7 +85,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철역_등록되어_있음("강남역");
+        ExtractableResponse<Response> createResponse = 지하철역_등록_응답("강남역");
 
         // when
         String uri = createResponse.header("Location");
@@ -110,9 +109,15 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철역_등록되어_있음(String name) {
+    public static ExtractableResponse<Response> 지하철역_등록_응답(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         return 지하철역_등록_요청(params);
+    }
+
+    public static StationResponse 지하철역_등록되어_있음(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        return 지하철역_등록_요청(params).as(StationResponse.class);
     }
 }
