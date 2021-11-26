@@ -25,17 +25,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철 역 생성
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "강남역");
-        makeStation(params1);
+        ExtractableResponse<Response> responseExtractableResponse1 = makeStation(params1);
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "역삼역");
-        makeStation(params2);
+        ExtractableResponse<Response> responseExtractableResponse2 = makeStation(params2);
 
         // 노선 생성
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
-        params.put("upStationId", "1");
-        params.put("downStationId", "2");
+        params.put("upStationId", responseExtractableResponse1.response().jsonPath().get("id"));
+        params.put("downStationId", responseExtractableResponse2.response().jsonPath().get("id"));
 
         // when
         // 지하철_노선_생성_요청
@@ -135,8 +135,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineId).isEqualTo(expectedLineId);
     }
 
-    private void makeStation(Map<String, String> params) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+    private ExtractableResponse<Response> makeStation(Map<String, String> params) {
+        return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
