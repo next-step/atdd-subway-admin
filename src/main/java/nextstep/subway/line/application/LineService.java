@@ -23,12 +23,18 @@ public class LineService {
     private static final String EQUAL_SECTION_EXIST_EXCEPTION_STATEMENT = "같은 구간의 데이터가 존재합니다.";
     private static final String OLD_DISTANCE_IS_GRATER_EQUAL_THAN_NEW_DISTANCE_EXCEPTION_STATEMENT = "기존거리보다 새로운 입력거리가 깁니다.";
     private static final String ALREADY_UP_STATION_AND_DOWN_STATION_EXIST_EXCEPTION_STATEMENT = "상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.";
-    private static final String NONE_OF_UP_STATION_AND_DOWN_STATION_EXIST_EXCEPTION_STATEMENT = "상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.";
+    private static final String CANNOT_ADD_WITH_NONE_OF_UP_STATION_AND_DOWN_STATION_EXIST_EXCEPTION_STATEMENT = "상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.";
+
+    private static final String CANNOT_DELETE_SECTION_WITH_DATA_SIZE_LESS_EQUAL_THAN_ONE_EXCEPTION_STATEMENT = "구간 데이터가 하나 이하이므로 제거할 수 없습니다.";
+    private static final String NOT_CANNOT_DELETE_SECTION_EXCEPTION_STATEMENT = "존재하지 않는 구간 데이터 입니다.";
+
     private static final String NOT_DEFINED_REQUEST_EXCEPTION_STATEMENT = "정의되지 않은 요청입니다.";
 
     private static final String LINE = "노선";
     private static final String STATION = "역";
     private static final String SECTION = "구간";
+
+    private static final int SECTION_DATA_MIN_SIZE = 2;
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
@@ -103,24 +109,36 @@ public class LineService {
     }
 
     private Optional<LineResponse> insertSection(final LineRequest request, final Station newUpStation, final Station newDownStation, final Line line) {
-        Optional<Section> optionalSection = line.findByUpStationId(newUpStation.getId());
+        Optional<Section> optionalSection;
 
-        // CASE #1 - 역 사이에 새로운 역을 등록할 경우
+        // CASE #1-A - 역 사이에 새로운 역을 등록할 경우(상행역 일치)
+        optionalSection = line.findSectionByUpStationId(newUpStation.getId());
         if (optionalSection.isPresent()) {
-            return Optional.of(insertBetweenStation(request, newDownStation, line, optionalSection.get()));
+            return Optional.of(insertBetweenStation(request.getDistance(), newDownStation, line, optionalSection.get()));
+        }
+
+        // CASE #1-B - 역 사이에 새로운 역을 등록할 경우(하행역 일치)
+        optionalSection = line.findSectionByDownStationId(newDownStation.getId());
+        if (optionalSection.isPresent()) {
+            return Optional.of(insertBetweenStation(optionalSection.get().getDistance() - request.getDistance()
+                , newUpStation
+                , line
+                , optionalSection.get())
+            );
         }
 
         // CASE #2 - 새로운 역을 상행 종점으로 등록할 경우
-        optionalSection = line.findByUpStationId(newDownStation.getId());
+        optionalSection = line.findSectionByUpStationId(newDownStation.getId());
         if (optionalSection.isPresent()) {
             return Optional.of(insertUpStationEnd(request, newUpStation, newDownStation, line, optionalSection.get()));
         }
 
         // CASE #3 - 새로운 역을 하행 종점으로 등록할 경우
-        optionalSection = line.findByDownStationId(newUpStation.getId());
+        optionalSection = line.findSectionByDownStationId(newUpStation.getId());
         if (optionalSection.isPresent()) {
             return Optional.of(insertDownStationEnd(request, newUpStation, newDownStation, line));
         }
+
         return Optional.empty();
     }
 
@@ -131,7 +149,7 @@ public class LineService {
         }
 
         if (!stationIds.contains(newUpStation.getId()) && !stationIds.contains(newDownStation.getId())) {
-            throw new DataIntegrityViolationException(NONE_OF_UP_STATION_AND_DOWN_STATION_EXIST_EXCEPTION_STATEMENT);
+            throw new DataIntegrityViolationException(CANNOT_ADD_WITH_NONE_OF_UP_STATION_AND_DOWN_STATION_EXIST_EXCEPTION_STATEMENT);
         }
     }
 
@@ -141,11 +159,11 @@ public class LineService {
         }
     }
 
-    private LineResponse insertBetweenStation(final LineRequest request, final Station newDownStation, final Line line, final Section section) {
-        validateDistance(section.getDistance(), request.getDistance());
-        line.getSections().remove(section);
-        line.addSection(section.getUpStation(), newDownStation, request.getDistance());
-        line.addSection(newDownStation, section.getDownStation(), section.getDistance() - request.getDistance());
+    private LineResponse insertBetweenStation(final int newDistance, final Station newStation, final Line line, final Section originalSection) {
+        validateDistance(originalSection.getDistance(), newDistance);
+        line.getSections().remove(originalSection);
+        line.addSection(originalSection.getUpStation(), newStation, newDistance);
+        line.addSection(newStation, originalSection.getDownStation(), originalSection.getDistance() - newDistance);
         return LineResponse.of(line);
     }
 
@@ -159,6 +177,46 @@ public class LineService {
     private LineResponse insertDownStationEnd(final LineRequest request, final Station newUpStation, final Station newDownStation, final Line line) {
         line.addSection(newUpStation, newDownStation, request.getDistance());
         return LineResponse.of(line);
+    }
+
+    public void deleteSectionById(Long lineId, Long stationId) {
+        Line line = getLineById(lineId);
+
+        if (line.getSections().size() < SECTION_DATA_MIN_SIZE) {
+            throw new DataIntegrityViolationException(CANNOT_DELETE_SECTION_WITH_DATA_SIZE_LESS_EQUAL_THAN_ONE_EXCEPTION_STATEMENT);
+        }
+
+        // Case #1 상행역 끝
+        Long endUpStationId = line.getEndUpStationId();
+        if (stationId.equals(endUpStationId)) {
+            Section targetSection = line.findSectionByUpStationId(stationId).get();
+            line.getSections().remove(targetSection);
+            return;
+        }
+
+        // Case #2 하행역 끝
+        Long endDownStationId = line.getEndDownStationId();
+        if (stationId.equals(endDownStationId)) {
+            Section targetSection = line.findSectionByDownStationId(stationId).get();
+            line.getSections().remove(targetSection);
+            return;
+        }
+
+        // Case #3 중간역
+        if (line.getStationIds().contains(stationId)) {
+            Section targetSection = line.findSectionByUpStationId(stationId).get();
+            Section upperSectionFromTarget = line.findSectionByDownStationId(stationId).get();
+            line.getSections().remove(targetSection);
+            line.getSections().remove(upperSectionFromTarget);
+            line.addSection(
+                upperSectionFromTarget.getUpStation(),
+                targetSection.getDownStation(),
+                upperSectionFromTarget.getDistance() + targetSection.getDistance()
+            );
+            return;
+        }
+
+        throw new DataIntegrityViolationException(NOT_CANNOT_DELETE_SECTION_EXCEPTION_STATEMENT);
     }
 
     private void validate(Station upStation, Station downStation, Line line) {
