@@ -62,3 +62,12 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [x] 지하철 노선을 조회한다.
 - [x] 지하철 노선을 수정한다.
 - [x] 지하철 노선을 제거한다.
+
+step1 리뷰 코멘트 작성<br>
+https://github.com/next-step/atdd-subway-admin/pull/478
+
+## step2 - 인수 테스트 리팩터링
+- [] 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기
+  - 두 종점역은 구간의 형태로 관리되어야 함
+- [] 노선 조회 시 응답 결과에 역 목록 추가하기
+  - 상행역 부터 하행역 순으로 정렬되어야 함
