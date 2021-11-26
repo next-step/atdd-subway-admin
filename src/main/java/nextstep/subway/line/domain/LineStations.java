@@ -15,7 +15,7 @@ import javax.persistence.OneToMany;
 public class LineStations {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "line_id")
+    @JoinColumn(name = "line_id", nullable = false)
     private List<LineStation> lineStations = new ArrayList<>();
 
     protected LineStations() {
