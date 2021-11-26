@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 
+import java.util.Arrays;
 import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineStation;
@@ -22,8 +23,8 @@ public class LineStationService {
     }
 
     public void createLineStation(Long lineId, LineStationRequest lineStationRequest) {
-        stationService.validateSavers(lineStationRequest.getUpStationId(),
-            lineStationRequest.getDownStationId());
+        stationService.validateAllExist(Arrays.asList(lineStationRequest.getUpStationId(),
+            lineStationRequest.getDownStationId()));
         Line line = lineService.findLine(lineId);
 
         LineStation lineStation = LineStation.of(lineStationRequest.getUpStationId(),

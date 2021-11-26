@@ -1,5 +1,6 @@
 package nextstep.subway.station.application;
 
+import java.security.InvalidParameterException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -65,9 +66,10 @@ public class StationService {
     }
 
     @Transactional(readOnly = true)
-    public void validateSavers(Long... stationIds) {
-        for (Long id : stationIds) {
-            findStation(id);
+    public void validateAllExist(List<Long> stationIds) {
+        long existCount = stationRepository.countAllById(stationIds);
+        if (existCount != stationIds.size()) {
+            throw new InvalidParameterException("존재 하지 않는 역이 있습니다.");
         }
     }
 
