@@ -78,7 +78,7 @@ public class LineService {
                 .orElseThrow(() -> new LineNotFoundException(lineId));
     }
 
-    public void deleteSectionByStationId(Long lineId, Long stationId) {
+    public void deleteSection(Long lineId, Long stationId) {
         Line line = findLineById(lineId);
         Station station = findStationById(stationId);
         line.deleteSectionByStation(station);
