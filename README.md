@@ -108,4 +108,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   * [ ] 구역 일급 콜렉션
   * [ ] 노선 목록 조회
   
-
+### 공부 정리
+FetchType.LAZY
+* 참고자료: https://ict-nroo.tistory.com/132
