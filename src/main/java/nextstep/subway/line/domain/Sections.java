@@ -62,14 +62,14 @@ public class Sections {
     private void updateUpStation(Section section) {
         sections.stream()
                 .filter(it -> it.getUpStation() == section.getUpStation())
-                .findFirst()
+                .findAny()
                 .ifPresent(it -> it.updateUpStation(section.getDownStation(), section.getDistance()));
     }
 
     private void updateDownStation(Section section) {
         sections.stream()
                 .filter(it -> it.getDownStation() == section.getDownStation())
-                .findFirst()
+                .findAny()
                 .ifPresent(it -> it.updateDownStation(section.getUpStation(), section.getDistance()));
     }
 
