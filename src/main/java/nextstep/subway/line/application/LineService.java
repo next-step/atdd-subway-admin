@@ -78,7 +78,7 @@ public class LineService {
         Station downStation = findStationById(lineRequest.getDownStationId());
         Line line = findById(lineId);
 
-        line = line.addSection(Distance.valueOf(lineRequest.getDistance()), upStation, downStation);
+        line = line.addLineStation(Distance.valueOf(lineRequest.getDistance()), upStation, downStation);
 
         return LineResponse.of(line);
     }
@@ -99,8 +99,8 @@ public class LineService {
 
     private Line saveUpDownSection(LineRequest request, Station upStation, Station downStation, Line line) {
         saveSection(LineStation
-            .ofUpSection(upStation, line, Distance.valueOf(request.getDistance()), downStation));
-        saveSection(LineStation.fromDownSection(downStation, line));
+            .ofUpLineStation(upStation, line, Distance.valueOf(request.getDistance()), downStation));
+        saveSection(LineStation.fromDownLineStation(downStation, line));
         return line;
     }
 }

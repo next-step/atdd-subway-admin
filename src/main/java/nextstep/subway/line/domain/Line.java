@@ -39,14 +39,14 @@ public class Line extends BaseEntity {
      *
      * @param lineStation
      */
-    public void addSection(LineStation lineStation) {
+    public void addLineStation(LineStation lineStation) {
         this.lineStations.add(lineStation);
         if (!lineStation.equalsLine(this)) {
             lineStation.toLine(this);
         }
     }
 
-    public void removeSection(LineStation lineStation) {
+    public void removeLineStation(LineStation lineStation) {
         this.lineStations.remove(lineStation);
     }
 
@@ -67,61 +67,59 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<LineStation> getSortedSections() {
+    public List<LineStation> getSortedLineStations() {
         return lineStations.getSortedList();
     }
 
-    public boolean containsSection(LineStation lineStation) {
+    public boolean containsLineStation(LineStation lineStation) {
         return this.lineStations.contains(lineStation);
     }
 
-    public Line addSection(Distance distance, Station upStation, Station downStation) {
+    public Line addLineStation(Distance distance, Station upStation, Station downStation) {
         LineStation upLineStation = lineStations.findByStation(upStation);
         LineStation downLineStation = lineStations.findByStation(downStation);
 
         validate(upLineStation, downLineStation);
 
         if (upLineStation != null) {
-            addDownSection(distance, upLineStation, downStation);
+            addDownLineStation(distance, upLineStation, downStation);
             return this;
         }
 
         if (downLineStation != null) {
-            addUpSection(distance, downLineStation, upStation);
+            addUpLineStation(distance, downLineStation, upStation);
             return this;
         }
         return this;
     }
 
-    private void addDownSection(Distance distance, LineStation upLineStation, Station downStation) {
+    private void addDownLineStation(Distance distance, LineStation upLineStation, Station downStation) {
         if (upLineStation.isDownStation()) {
             upLineStation.update(distance, LineStationType.MIDDLE, downStation);
-            LineStation downLineStation = LineStation.fromDownSection(downStation, this);
+            LineStation downLineStation = LineStation.fromDownLineStation(downStation, this);
             lineStations.add(downLineStation);
             return;
         }
 
-        addMiddleSection(upLineStation, downStation, distance, upLineStation.getNextStation());
+        addMiddleLineStation(distance, upLineStation, downStation, upLineStation.getNextStation());
     }
 
-    private void addUpSection(Distance distance, LineStation downLineStation, Station upStation) {
+    private void addUpLineStation(Distance distance, LineStation downLineStation, Station upStation) {
         if (downLineStation.isUpStation()) {
             downLineStation.update(LineStationType.MIDDLE);
             LineStation upLineStation =
-                LineStation.ofUpSection(upStation, this, distance, downLineStation.getStation());
+                LineStation.ofUpLineStation(upStation, this, distance, downLineStation.getStation());
             lineStations.add(upLineStation);
             return;
         }
 
         LineStation upLineStation = lineStations.findByNextStation(downLineStation.getStation());
-        addMiddleSection(upLineStation, upStation, distance, downLineStation.getStation());
+        addMiddleLineStation(distance, upLineStation, upStation, downLineStation.getStation());
     }
 
-    private void addMiddleSection(LineStation updateLineStation, Station addStation, Distance distance,
-        Station linkStation) {
+    private void addMiddleLineStation(Distance distance, LineStation updateLineStation, Station addStation, Station nextStation){
         updateLineStation.update(updateLineStation.calculateDistance(distance), addStation);
-        LineStation middleLineStation = LineStation
-            .ofMiddleSection(addStation, this, distance, linkStation);
+        LineStation middleLineStation = LineStation.ofMiddleLineStation(addStation, this, distance, nextStation);
         lineStations.add(middleLineStation);
     }
 

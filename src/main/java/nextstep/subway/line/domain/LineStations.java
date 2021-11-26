@@ -19,7 +19,7 @@ public class LineStations {
         this.lineStations = new ArrayList<>();
     }
 
-    public void add(LineStation lineStation) {
+    void add(LineStation lineStation) {
         if (contains(lineStation)) {
             return;
         }

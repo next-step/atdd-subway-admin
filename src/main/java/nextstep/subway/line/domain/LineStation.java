@@ -49,15 +49,15 @@ public class LineStation extends BaseEntity implements Comparable<LineStation> {
         setStation(station);
     }
 
-    public static LineStation fromDownSection(Station station, Line line) {
+    public static LineStation fromDownLineStation(Station station, Line line) {
         return new LineStation(Distance.createDownDistance(), LineStationType.DOWN, station).toLine(line);
     }
 
-    public static LineStation ofUpSection(Station station, Line line, Distance distance, Station nextStation) {
+    public static LineStation ofUpLineStation(Station station, Line line, Distance distance, Station nextStation) {
         return new LineStation(distance, LineStationType.UP, station).toLine(line).withNextStation(nextStation);
     }
 
-    public static LineStation ofMiddleSection(Station station, Line line, Distance distance, Station nextStation) {
+    public static LineStation ofMiddleLineStation(Station station, Line line, Distance distance, Station nextStation) {
         return new LineStation(distance, LineStationType.MIDDLE, station).toLine(line).withNextStation(nextStation);
     }
 
@@ -68,12 +68,12 @@ public class LineStation extends BaseEntity implements Comparable<LineStation> {
      */
     public LineStation toLine(Line line) {
         if (this.line != null) {
-            this.line.removeSection(this);
+            this.line.removeLineStation(this);
         }
 
         this.line = line;
-        if (!line.containsSection(this)) {
-            line.addSection(this);
+        if (!line.containsLineStation(this)) {
+            line.addLineStation(this);
         }
         return this;
     }
@@ -103,14 +103,14 @@ public class LineStation extends BaseEntity implements Comparable<LineStation> {
     }
 
     public boolean isDownStation() {
-        if (this.lineStationType.equals(LineStationType.DOWN)) {
+        if (LineStationType.DOWN.equals(this.lineStationType)) {
             return true;
         }
         return false;
     }
 
     public boolean isUpStation() {
-        if (this.lineStationType.equals(LineStationType.UP)) {
+        if (LineStationType.UP.equals(this.lineStationType)) {
             return true;
         }
         return false;
@@ -125,17 +125,23 @@ public class LineStation extends BaseEntity implements Comparable<LineStation> {
     }
 
     public boolean hasNextStation(Station nextStation) {
-        if (this.nextStation.equals(nextStation)) {
+        if (this.nextStation != null && this.nextStation.equals(nextStation)) {
             return true;
         }
         return false;
     }
 
     public boolean equalsLine(Line line) {
+        if (this.line == null) {
+            return false;
+        }
         return this.line.equals(line);
     }
 
     public boolean hasStation(Station station) {
+        if (this.station == null) {
+            return false;
+        }
         return this.station.equals(station);
     }
 
@@ -157,7 +163,7 @@ public class LineStation extends BaseEntity implements Comparable<LineStation> {
     @Override
     public int compareTo(LineStation o) {
 
-        if (lineStationType.equals(LineStationType.UP)) {
+        if (LineStationType.UP.equals(lineStationType)) {
             return -1;
         }
 
