@@ -27,27 +27,22 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
-
-        return lines.stream()
-                .map(line -> LineResponse.of(line))
-                .collect(Collectors.toList());
+        return LineResponse.listOf(lines);
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new RuntimeException());
-
+        Line line = lineRepository.findById(id).orElseThrow(() -> new RuntimeException("요청 노선이 존재하지 않음"));
         return LineResponse.of(line);
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new RuntimeException());
+        Line line = lineRepository.findById(id).orElseThrow(() -> new RuntimeException("요청 노선이 존재하지 않음"));
         line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
-        lineRepository.save(line);
     }
 
     public void deleteLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new RuntimeException());
+        Line line = lineRepository.findById(id).orElseThrow(() -> new RuntimeException("요청 노선이 존재하지 않음"));
         lineRepository.delete(line);
     }
 }
