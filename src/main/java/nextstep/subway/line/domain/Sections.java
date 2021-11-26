@@ -65,7 +65,7 @@ public class Sections {
         return stations;
     }
 
-    public Section getHeadSection() {
+    protected Section getHeadSection() {
         List<Station> upStations = new ArrayList<>();
         List<Station> downStations = new ArrayList<>();
         for (Section section : sections) {
