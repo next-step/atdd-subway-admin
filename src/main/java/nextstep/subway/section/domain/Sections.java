@@ -33,8 +33,8 @@ public class Sections {
     }
 
     public void connect(Section section) {
-        Section upBoundSection = upBoundSection(section).orElse(null);
-        Section downBoundSection = downBoundSection(section).orElse(null);
+        Section upBoundSection = upBoundSection(section).orElse(Section.DUMMY_SECTION);
+        Section downBoundSection = downBoundSection(section).orElse(Section.DUMMY_SECTION);
 
         validateForConnect(upBoundSection, downBoundSection, section);
         updateWhenConnectInMiddleOfSection(upBoundSection, downBoundSection, section);
@@ -43,8 +43,8 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        Section upBoundSection = upBoundSection(station).orElse(null);
-        Section downBoundSection = downBoundSection(station).orElse(null);
+        Section upBoundSection = upBoundSection(station).orElse(Section.DUMMY_SECTION);
+        Section downBoundSection = downBoundSection(station).orElse(Section.DUMMY_SECTION);
 
         validateForRemove(station);
 
@@ -95,11 +95,11 @@ public class Sections {
     }
 
     private boolean connectableByUpStation(Section upBoundSection, boolean contains) {
-        return upBoundSection != null && contains;
+        return !upBoundSection.isDummy() && contains;
     }
 
     private boolean connectableByDownStation(Section downBoundSection, boolean contains) {
-        return downBoundSection != null && contains;
+        return !downBoundSection.isDummy() && contains;
     }
 
     private void removeStationInMiddleOfSection(Section upBoundSection, Section downBoundSection) {
@@ -206,12 +206,12 @@ public class Sections {
     private void validateDistanceWhenConnect(Section upBoundSection, Section downBoundSection,
         Section section) {
 
-        if (upBoundSection != null) {
+        if (!upBoundSection.isDummy()) {
             validateDistanceWhenConnect(upBoundSection, section);
             return;
         }
 
-        if (downBoundSection != null) {
+        if (!downBoundSection.isDummy()) {
             validateDistanceWhenConnect(downBoundSection, section);
         }
     }
@@ -262,15 +262,15 @@ public class Sections {
     }
 
     private boolean isStationInMiddleOfSection(Section upBoundSection, Section downBoundSection) {
-        return upBoundSection != null && downBoundSection != null;
+        return !upBoundSection.isDummy() && !downBoundSection.isDummy();
     }
 
     private boolean isDownBoundSection(Section upBoundSection, Section downBoundSection) {
-        return upBoundSection != null && downBoundSection == null;
+        return !upBoundSection.isDummy() && downBoundSection.isDummy();
     }
 
     private boolean isUpBoundSection(Section upBoundSection, Section downBoundSection) {
-        return downBoundSection != null && upBoundSection == null;
+        return !downBoundSection.isDummy() && upBoundSection.isDummy();
     }
 
     List<Section> getSections() {
