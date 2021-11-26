@@ -1,6 +1,7 @@
 package nextstep.subway.station;
 
 import static com.google.common.primitives.Longs.*;
+import static io.restassured.RestAssured.*;
 import static nextstep.subway.fixtrue.Param.*;
 import static nextstep.subway.fixtrue.TestFactory.*;
 import static org.assertj.core.api.Assertions.*;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -66,7 +68,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                                           .map(it -> it.getId())
+                                           .map(StationResponse::getId)
                                            .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(asList(createResponse1.getId(), createResponse2.getId()));
     }
@@ -95,7 +97,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     public static ExtractableResponse<Response> 지하철역_조회_요청() {
-        return get("/stations");
+        return given().log().all()
+                      .contentType(MediaType.APPLICATION_JSON_VALUE)
+                      .accept(MediaType.APPLICATION_JSON_VALUE)
+                      .get("/stations")
+                      .then().log().all()
+                      .extract();
     }
 
     public static ExtractableResponse<Response> 지하철역_삭제_요청(Long id) {

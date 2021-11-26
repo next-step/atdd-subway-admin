@@ -1,7 +1,7 @@
 package nextstep.subway.station.application;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,5 +41,11 @@ public class StationService {
 
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
+    }
+
+    public StationResponse findByStationName(String name) {
+        Optional<Station> stationByName = stationRepository.findStationByName(name);
+        Station station = stationByName.orElseThrow(StationNotFoundException::new);
+        return StationResponse.of(station);
     }
 }
