@@ -36,4 +36,8 @@ public class StationService {
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
     }
+
+    public Station findByIdOrElseThrow(Long upStationId) {
+        return stationRepository.findById(upStationId).orElseThrow(() -> new IllegalArgumentException("해당 ID의 역이 존재하지 않습니다"));
+    }
 }
