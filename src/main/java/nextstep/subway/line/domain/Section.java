@@ -48,6 +48,16 @@ public class Section extends BaseEntity {
         this.distance.minus(section.getDistance());
     }
 
+    public void shift(Section section) {
+        if (this.upStation.isSameName(section.getUpStation())) {
+            shiftBack(section);
+            return;
+        }
+        if (this.downStation.isSameName(section.getDownStation())) {
+            shiftForward(section);
+        }
+    }
+
     public boolean isDuplicate(Section section) {
         return (upStation.isSameName(section.getUpStation()) && downStation.isSameName(section.getDownStation()))
                 || (upStation.isSameName(section.getDownStation()) && downStation.isSameName(section.getUpStation()));
@@ -56,6 +66,11 @@ public class Section extends BaseEntity {
     public boolean anyMatched(Section section) {
         return upStation.isSameName(section.getUpStation()) || upStation.isSameName(section.getDownStation()) ||
                 downStation.isSameName(section.getUpStation()) || downStation.isSameName(section.getDownStation());
+    }
+
+    public void merge(Section section) {
+        this.upStation = section.getUpStation();
+        this.distance.plus(section.getDistance());
     }
 
     public Long getId() {

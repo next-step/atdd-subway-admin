@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.common.exception.ServiceException;
 import nextstep.subway.line.exception.DuplicateBothStationException;
 import nextstep.subway.line.exception.NotMatchedStationException;
 import nextstep.subway.station.domain.Station;
@@ -12,17 +13,26 @@ import java.util.*;
 
 @Embeddable
 public class Sections {
+    private final static int MIN_SECTION_COUNT = 1;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
+
+    protected Sections() {
+    }
+
+    public Sections(List<Section> sections) {
+        for (Section section : sections) {
+            add(section);
+        }
+    }
 
     public void add(Section section) {
         if (sections.contains(section)) {
             return;
         }
         validateDuplicateBothStation(section);
-        validateNotMatchedStation(section);
-        insertion(section);
-        sections.add(section);
+        insert(section);
     }
 
     private void validateDuplicateBothStation(Section section) {
@@ -35,18 +45,6 @@ public class Sections {
         if (mySection.isDuplicate(section)) {
             throw new DuplicateBothStationException(section.getUpStation(), section.getDownStation());
         }
-    }
-
-    private void validateNotMatchedStation(Section section) {
-        if (sections.isEmpty()) {
-            return;
-        }
-        for (Section mySection : sections) {
-            if (mySection.anyMatched(section)) {
-                return;
-            }
-        }
-        throw new NotMatchedStationException(section.getUpStation(), section.getDownStation());
     }
 
     public List<Station> getStations() {
@@ -67,7 +65,7 @@ public class Sections {
         return stations;
     }
 
-    public Section getHeadSection() {
+    protected Section getHeadSection() {
         List<Station> upStations = new ArrayList<>();
         List<Station> downStations = new ArrayList<>();
         for (Section section : sections) {
@@ -100,14 +98,68 @@ public class Sections {
                 .orElse(null);
     }
 
-    private void insertion(Section newSection) {
-        findByUpStation(newSection.getUpStation())
-                .ifPresent(section -> section.shiftBack(newSection));
-        findByDownStation(newSection.getDownStation())
-                .ifPresent(section -> section.shiftForward(newSection));
+    private void insert(Section newSection) {
+        findOverlapSection(newSection).ifPresent(section -> section.shift(newSection));
+
+        if (hasAnyMatchedStation(newSection)) {
+            sections.add(newSection);
+            return;
+        }
+
+        throw new NotMatchedStationException(newSection.getUpStation(), newSection.getDownStation());
+    }
+
+    private boolean hasAnyMatchedStation(Section section) {
+        if (sections.isEmpty()) {
+            return true;
+        }
+        return sections.stream()
+                .anyMatch(mySection -> mySection.anyMatched(section));
+    }
+
+    private Optional<Section> findOverlapSection(Section section) {
+        Optional<Section> upStation = findByUpStation(section.getUpStation());
+        if (upStation.isPresent()) {
+            return upStation;
+        }
+        return findByDownStation(section.getDownStation());
     }
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void deleteSectionByStation(Station station) {
+        validateDeleteSection(station);
+        findByDownStation(station).ifPresent(section -> {
+            Section nextSection = getNextSection(section);
+            mergeIntoNextSection(section, nextSection);
+            sections.remove(section);
+        });
+        findByUpStation(station).ifPresent(section -> sections.remove(section));
+    }
+
+    private void validateDeleteSection(Station station) {
+        if (sections.size() <= MIN_SECTION_COUNT) {
+            throw new ServiceException("남은 구간은 삭제할 수 없습니다.");
+        }
+
+        findAnyMatchedSectionBy(station)
+                .orElseThrow(() -> {throw new StationNotFoundException(station.getId());});
+    }
+
+    private Optional<Section> findAnyMatchedSectionBy(Station station) {
+        Optional<Section> upStation = findByUpStation(station);
+        if (upStation.isPresent()) {
+            return upStation;
+        }
+
+        return findByDownStation(station);
+    }
+
+    private void mergeIntoNextSection(Section section, Section nextSection) {
+        if (nextSection != null) {
+            nextSection.merge(section);
+        }
     }
 }

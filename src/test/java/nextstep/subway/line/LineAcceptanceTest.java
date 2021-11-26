@@ -39,8 +39,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         @BeforeEach
         void setUp() {
-            강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
-            광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+            강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
+            광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역");
         }
 
         @DisplayName("지하철 노선을 생성한다.")
@@ -156,8 +156,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         @Test
         void getLineWithSection() {
             // given
-            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
-            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역");
             ExtractableResponse<Response> createResponse1 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), "10");
             ExtractableResponse<Response> createResponse2 = 지하철_노선_등록되어_있음("신분당선2", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), "10");
 
@@ -200,8 +200,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         @Test
         void getLineWithSection() {
             // given
-            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
-            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역");
             ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), "10");
 
             // when
@@ -307,9 +307,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         @Test
         void testInsertionSection() {
             // given
-            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
-            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
-            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역").as(StationResponse.class);
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역");
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역");
             ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), "100");
             String lineUrl = 신분당선.header("Location");
 
@@ -325,9 +325,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         @Test
         void testInsertionTailSection() {
             // given
-            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
-            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
-            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역").as(StationResponse.class);
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역");
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역");
             ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), "100");
             String lineUrl = 신분당선.header("Location");
 
@@ -345,9 +345,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
             // given
             Integer totalDistance = 100;
             Integer newDistance = 40;
-            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
-            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
-            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역").as(StationResponse.class);
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역");
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역");
             ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), totalDistance.toString());
             String lineUrl = 신분당선.header("Location");
 
@@ -362,9 +362,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         @Test
         void testInsertAtFirst() {
             // given
-            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
-            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
-            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역").as(StationResponse.class);
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역");
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역");
             ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), "100");
             String lineUrl = 신분당선.header("Location");
 
@@ -380,9 +380,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         @Test
         void testInsertAtLast() {
             // given
-            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
-            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
-            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역").as(StationResponse.class);
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역");
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역");
             ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), "100");
             String lineUrl = 신분당선.header("Location");
 
@@ -399,9 +399,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         @CsvSource(value = {"100:100", "100:101"}, delimiter = ':')
         void testDistanceFail(Integer totalDistance, Integer newDistance) {
             // given
-            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
-            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
-            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역").as(StationResponse.class);
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역");
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역");
             ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), totalDistance.toString());
             String lineUrl = 신분당선.header("Location");
 
@@ -416,8 +416,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         @Test
         void testDuplicateBothStations() {
             // given
-            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
-            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역");
             ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), "100");
             String lineUrl = 신분당선.header("Location");
 
@@ -432,10 +432,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         @Test
         void testNotMatchedStations() {
             // given
-            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
-            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
-            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역").as(StationResponse.class);
-            StationResponse 광명역 = StationAcceptanceTest.지하철역_등록되어_있음("광명역").as(StationResponse.class);
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역");
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역");
+            StationResponse 광명역 = StationAcceptanceTest.지하철역_등록되어_있음("광명역");
             ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역.getId().toString(), 광교역.getId().toString(), "100");
             String lineUrl = 신분당선.header("Location");
 
@@ -461,18 +461,133 @@ public class LineAcceptanceTest extends AcceptanceTest {
         private void 지하철_구간이_생성된다(ExtractableResponse<Response> response) {
             Asserts.assertIsCreated(response);
         }
+    }
 
-        private ExtractableResponse<Response> 지하철_구간_추가_요청(String lineUrl, StationResponse upStation, StationResponse downStation, Integer distance) {
-            Map<String, Object> params = new HashMap<>();
-            params.put("upStationId", upStation.getId());
-            params.put("downStationId", downStation.getId());
-            params.put("distance", distance);
-            return RestAssured
-                    .given().log().all()
-                    .body(params)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .when().post(lineUrl + "/sections")
-                    .then().log().all().extract();
+    @DisplayName("구간 제거 기능")
+    @Nested
+    class RemoveSectionTest {
+        @DisplayName("출발역을 삭제한다")
+        @Test
+        void testRemoveStartStation() {
+            // given
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역");
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역");
+            StationResponse 박달역 = StationAcceptanceTest.지하철역_등록되어_있음("박달역");
+            String lineUrl = 지하철_라인과_구간이_추가되어짐(강남역, 광교역, 안양역, 박달역);
+
+            // when
+            ExtractableResponse<Response> response = 지하철_구간_삭제_요청(강남역, lineUrl);
+
+            // then
+            지하철_구간_삭제_응답한다(response);
+            상행선_하행선_순으로_정렬된_역을_포함한_지하철_노선을_응답한다(lineUrl, 광교역, 안양역, 박달역);
+        }
+
+        @DisplayName("종착역을 삭제한다")
+        @Test
+        void testRemoveTerminalStation() {
+            // given
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역");
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역");
+            StationResponse 박달역 = StationAcceptanceTest.지하철역_등록되어_있음("박달역");
+            String lineUrl = 지하철_라인과_구간이_추가되어짐(강남역, 광교역, 안양역, 박달역);
+
+            // when
+            ExtractableResponse<Response> response = 지하철_구간_삭제_요청(박달역, lineUrl);
+
+            // then
+            지하철_구간_삭제_응답한다(response);
+            상행선_하행선_순으로_정렬된_역을_포함한_지하철_노선을_응답한다(lineUrl, 강남역, 광교역, 안양역);
+        }
+
+        @DisplayName("중간역을 삭제한다")
+        @Test
+        void testRemoveMiddleStation() {
+            // given
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역");
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역");
+            StationResponse 박달역 = StationAcceptanceTest.지하철역_등록되어_있음("박달역");
+            String lineUrl = 지하철_라인과_구간이_추가되어짐(강남역, 광교역, 안양역, 박달역);
+            int totalDistance = 총_구간의_길이(lineUrl);
+
+            // when
+            ExtractableResponse<Response> response = 지하철_구간_삭제_요청(광교역, lineUrl);
+
+            // then
+            지하철_구간_삭제_응답한다(response);
+            상행선_하행선_순으로_정렬된_역을_포함한_지하철_노선을_응답한다(lineUrl, 강남역, 안양역, 박달역);
+            총_구간의_길이가_변하지_않는다(lineUrl, totalDistance);
+        }
+
+        @DisplayName("마지막 남은 구간을 삭제한다")
+        @Test
+        void testRemoveLastSection() {
+            // given
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역");
+            String lineUrl = 지하철_라인과_구간이_추가되어짐(강남역, 광교역);
+
+            // when
+            ExtractableResponse<Response> response = 지하철_구간_삭제_요청(강남역, lineUrl);
+
+            // then
+            지하철_구간_삭제에_실패한다(response);
+        }
+
+        @DisplayName("존재하지 않는 역으로 삭제한다")
+        @Test
+        void testRemoveHasNotSection() {
+            // given
+            StationResponse 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
+            StationResponse 광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역");
+            StationResponse 광명역 = StationAcceptanceTest.지하철역_등록되어_있음("광명역");
+            StationResponse 안양역 = StationAcceptanceTest.지하철역_등록되어_있음("안양역");
+            String lineUrl = 지하철_라인과_구간이_추가되어짐(강남역, 광교역, 광명역);
+
+            // when
+            ExtractableResponse<Response> response = 지하철_구간_삭제_요청(안양역, lineUrl);
+
+            // then
+            역을_찾을_수_없다고_응답한다(response);
+        }
+
+        private void 역을_찾을_수_없다고_응답한다(ExtractableResponse<Response> response) {
+            Asserts.assertIsNotFound(response);
+        }
+
+        private void 지하철_구간_삭제에_실패한다(ExtractableResponse<Response> response) {
+            Asserts.assertIsBadRequest(response);
+        }
+
+        private void 총_구간의_길이가_변하지_않는다(String lineUrl, int totalDistance) {
+            Integer resultTotalDistance = 총_구간의_길이(lineUrl);
+            assertThat(resultTotalDistance).isEqualTo(totalDistance);
+        }
+
+        private Integer 총_구간의_길이(String lineUrl) {
+            ExtractableResponse<Response> sectionsResponse = Methods.get(lineUrl + "/sections");
+            List<SectionResponse> list = sectionsResponse.jsonPath().getList(".", SectionResponse.class);
+            return list.stream().map(SectionResponse::getDistance).reduce(Integer::sum).get();
+        }
+
+        private void 지하철_구간_삭제_응답한다(ExtractableResponse<Response> response) {
+            Asserts.assertIsOk(response);
+        }
+
+        private ExtractableResponse<Response> 지하철_구간_삭제_요청(StationResponse station, String lineUrl) {
+            return Methods.delete(lineUrl + "/sections?stationId=" + station.getId());
+        }
+
+        private String 지하철_라인과_구간이_추가되어짐(StationResponse ... stations) {
+            ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", stations[0].getId().toString(), stations[1].getId().toString(), "100");
+            String lineUrl = 신분당선.header("Location");
+            for (int i = 1, n = stations.length - 1; i < n; i++) {
+                지하철_구간_추가_요청(lineUrl, stations[i], stations[i+1], 40);
+            }
+            return lineUrl;
         }
     }
 
@@ -612,6 +727,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> 지하철_노선_삭제_요청(Long id) {
         return Methods.delete("/lines/" + id);
+    }
+
+    private ExtractableResponse<Response> 지하철_구간_추가_요청(String lineUrl, StationResponse upStation, StationResponse downStation, Integer distance) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", upStation.getId());
+        params.put("downStationId", downStation.getId());
+        params.put("distance", distance);
+        return RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(lineUrl + "/sections")
+                .then().log().all().extract();
     }
 
     /**

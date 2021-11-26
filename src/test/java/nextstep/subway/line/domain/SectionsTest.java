@@ -1,8 +1,10 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.common.exception.ServiceException;
 import nextstep.subway.line.exception.DuplicateBothStationException;
 import nextstep.subway.line.exception.NotMatchedStationException;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.StationNotFoundException;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -197,5 +199,109 @@ public class SectionsTest {
         // then
         assertThatThrownBy(throwingCallable)
                 .isInstanceOf(NotMatchedStationException.class);
+    }
+
+    @DisplayName("출발역으로 구간을 삭제한다")
+    @Test
+    void testDeleteSectionByStation() {
+        // given
+        Station 강남역 = new Station("강남역");
+        Station 광교역 = new Station("광교역");
+        Station 광명역 = new Station("광명역");
+        Station 영등포역 = new Station("영등포역");
+        List<Section> sectionList = getSectionList(강남역, 광교역, 광명역, 영등포역);
+        Sections sections = new Sections(sectionList);
+        // when
+        sections.deleteSectionByStation(강남역);
+        // then
+        assertThat(sections.getStations()).containsExactly(광교역, 광명역, 영등포역);
+    }
+
+    @DisplayName("출발역으로 구간을 삭제한다")
+    @Test
+    void testDeleteSectionByTerminalStation() {
+        // given
+        Station 강남역 = new Station("강남역");
+        Station 광교역 = new Station("광교역");
+        Station 광명역 = new Station("광명역");
+        Station 영등포역 = new Station("영등포역");
+        List<Section> sectionList = getSectionList(강남역, 광교역, 광명역, 영등포역);
+        Sections sections = new Sections(sectionList);
+        // when
+        sections.deleteSectionByStation(영등포역);
+        // then
+        assertThat(sections.getStations()).containsExactly(강남역, 광교역, 광명역);
+    }
+
+    @DisplayName("중간역으로 구간을 삭제한다")
+    @Test
+    void testDeleteSectionByMiddleStation() {
+        // given
+        Station 강남역 = new Station("강남역");
+        Station 광교역 = new Station("광교역");
+        Station 광명역 = new Station("광명역");
+        Station 영등포역 = new Station("영등포역");
+        List<Section> sectionList = getSectionList(강남역, 광교역, 광명역, 영등포역);
+        Sections sections = new Sections(sectionList);
+        // when
+        sections.deleteSectionByStation(광교역);
+        // then
+        assertThat(sections.getStations()).containsExactly(강남역, 광명역, 영등포역);
+    }
+
+    @DisplayName("중간역으로 구간을 삭제해도 총 길이는 변하지 않는다")
+    @Test
+    void testDeleteSectionByMiddleStationThenNotChangedDistance() {
+        // given
+        Station 강남역 = new Station("강남역");
+        Station 광교역 = new Station("광교역");
+        Station 광명역 = new Station("광명역");
+        Station 영등포역 = new Station("영등포역");
+        List<Section> sectionList = getSectionList(강남역, 광교역, 광명역, 영등포역);
+        Sections sections = new Sections(sectionList);
+        Integer totalDistance = sections.getSections().stream()
+                .map(Section::getDistance)
+                .reduce(Integer::sum)
+                .get();
+        // when
+        sections.deleteSectionByStation(광교역);
+        // then
+        Integer resultDistance = sections.getSections().stream()
+                .map(Section::getDistance)
+                .reduce(Integer::sum)
+                .get();
+        assertThat(resultDistance).isEqualTo(totalDistance);
+    }
+
+    @DisplayName("마지막 남은 구간을 삭제하면 오류 발생")
+    @Test
+    void testDeleteLastSection() {
+        // given
+        Station 강남역 = new Station("강남역");
+        Station 광교역 = new Station("광교역");
+        List<Section> sectionList = getSectionList(강남역, 광교역);
+        Sections sections = new Sections(sectionList);
+        // when
+        ThrowableAssert.ThrowingCallable throwingCallable = () -> sections.deleteSectionByStation(광교역);
+        // then
+        assertThatThrownBy(throwingCallable)
+                .isInstanceOf(ServiceException.class);
+    }
+
+    @DisplayName("없는 역으로 구간을 삭제하면 오류 발생")
+    @Test
+    void testDeleteHasNotStation() {
+        // given
+        Station 강남역 = new Station("강남역");
+        Station 광교역 = new Station("광교역");
+        Station 광명역 = new Station("광명역");
+        Station 박달역 = new Station("박달역");
+        List<Section> sectionList = getSectionList(강남역, 광교역, 광명역);
+        Sections sections = new Sections(sectionList);
+        // when
+        ThrowableAssert.ThrowingCallable throwingCallable = () -> sections.deleteSectionByStation(박달역);
+        // then
+        assertThatThrownBy(throwingCallable)
+                .isInstanceOf(StationNotFoundException.class);
     }
 }

@@ -29,4 +29,8 @@ public class Distance {
         }
         this.distance = result;
     }
+
+    public void plus(Integer distance) {
+        this.distance += distance;
+    }
 }
