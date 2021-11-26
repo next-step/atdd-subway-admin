@@ -14,7 +14,7 @@ public class LinesResponse {
 
     public LinesResponse(List<Line> lines) {
         this();
-        for(Line line : lines){
+        for (Line line : lines) {
             this.lines.add(LineResponse.of(line));
         }
     }

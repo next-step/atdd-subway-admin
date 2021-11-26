@@ -38,14 +38,14 @@ public class LineService {
 
     public LineResponse updateLine(Long id, LineRequest request) throws NotFoundException {
         Line line = lineRepository.findById(id)
-                                  .orElseThrow(NotFoundException::new);
+                .orElseThrow(NotFoundException::new);
         line.update(new Line(request.getName(), request.getColor()));
         return LineResponse.of(line);
     }
 
     public LineResponse deleteLine(Long id) {
         Line line = lineRepository.findById(id)
-                                  .orElseThrow(NotFoundException::new);
+                .orElseThrow(NotFoundException::new);
         lineRepository.delete(line);
         return LineResponse.of(line);
     }
