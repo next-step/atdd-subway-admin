@@ -1,9 +1,9 @@
 package nextstep.subway.line.application;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import nextstep.subway.common.exception.DuplicateException;
 import nextstep.subway.common.exception.NotFoundException;
@@ -71,8 +71,8 @@ public class LineService {
             .collect(Collectors.toList());
 
         Map<Long, Station> stations = stationService.findAllById(stationIds);
-        List<LineStationResponse> lineStationResponses = extractLineStationResponses(line,
-            stations);
+        List<LineStationResponse> lineStationResponses = extractLineStationResponses(
+            line.getStations(), stations);
 
         return LineResponse.of(line, lineStationResponses);
     }
@@ -100,11 +100,14 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    protected List<LineStationResponse> extractLineStationResponses(Line line,
+    protected List<LineStationResponse> extractLineStationResponses(List<LineStation> lineStations,
         Map<Long, Station> stations) {
-        return line.getStations().stream()
-            .map(it -> LineStationResponse.of(it,
-                StationResponse.of(stations.get(it.getStationId()))))
-            .collect(Collectors.toList());
+        List<LineStationResponse> result = new ArrayList<>();
+        for (LineStation lineStation : lineStations) {
+            Station station = stations.get(lineStation.getStationId());
+            result.add(LineStationResponse.of(StationResponse.of(station), lineStation));
+        }
+
+        return result;
     }
 }

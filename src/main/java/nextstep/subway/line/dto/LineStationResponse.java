@@ -19,8 +19,8 @@ public class LineStationResponse {
         this.distance = distance;
     }
 
-    public static LineStationResponse of(LineStation it, StationResponse station) {
-        return new LineStationResponse(station, it.getDistanceValue());
+    public static LineStationResponse of(StationResponse station, LineStation lineStation) {
+        return new LineStationResponse(station, lineStation.getDistanceValue());
     }
 
     public Long getId() {
