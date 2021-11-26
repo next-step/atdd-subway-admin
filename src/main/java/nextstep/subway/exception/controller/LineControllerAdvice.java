@@ -1,5 +1,8 @@
-package nextstep.subway.line.ui.exception;
+package nextstep.subway.exception.controller;
 
+import nextstep.subway.exception.DuplicateLineNameException;
+import nextstep.subway.exception.dto.ErrorResponse;
+import nextstep.subway.exception.NotFoundLineException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
