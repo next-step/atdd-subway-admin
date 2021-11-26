@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import static nextstep.subway.line.LineAcceptanceTestUtils.*;
+import static nextstep.subway.station.StationAcceptanceTestUtils.*;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,12 +20,31 @@ import nextstep.subway.line.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+    private long stationId1;
+    private long stationId2;
+    private long stationId3;
+    private long stationId4;
+
+    @Override
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+
+        stationId1 = 지하철_역_등록되어_있음("강남역");
+        stationId2 = 지하철_역_등록되어_있음("양재역");
+        stationId3 = 지하철_역_등록되어_있음("잠실역");
+        stationId4 = 지하철_역_등록되어_있음("사당역");
+    }
+
     @Test
     void 지하철_노선을_생성한다() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "red");
+        params.put("upStationId", String.valueOf(stationId1));
+        params.put("downStationId", String.valueOf(stationId2));
+        params.put("distance", "10");
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
@@ -35,10 +56,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 기존에_존재하는_지하철_노선_이름으로_지하철_노선을_생성한다() {
         // given
-        지하철_노선_등록되어_있음("신분당선", "red");
+        지하철_노선_등록되어_있음("신분당선", "red", stationId1, stationId2, 10);
+
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "red");
+        params.put("upStationId", String.valueOf(stationId1));
+        params.put("downStationId", String.valueOf(stationId2));
+        params.put("distance", "10");
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
@@ -50,8 +75,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_목록을_조회한다() {
         // given
-        long id1 = 지하철_노선_등록되어_있음("신분당선", "red");
-        long id2 = 지하철_노선_등록되어_있음("2호선", "green");
+        long id1 = 지하철_노선_등록되어_있음("신분당선", "red", stationId1, stationId2, 10);
+        long id2 = 지하철_노선_등록되어_있음("2호선", "green", stationId3, stationId4, 10);
         LocalDateTime now = LocalDateTime.now();
         List<LineResponse> expected = Arrays.asList(new LineResponse(id1, "신분당선", "red", now, now),
             new LineResponse(id2, "2호선", "green", now, now));
@@ -67,7 +92,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선을_조회한다() {
         // given
-        long id = 지하철_노선_등록되어_있음("신분당선", "red");
+        long id = 지하철_노선_등록되어_있음("신분당선", "red", stationId1, stationId2, 10);
         LocalDateTime now = LocalDateTime.now();
         LineResponse expected = new LineResponse(id, "신분당선", "red", now, now);
 
@@ -92,7 +117,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선을_수정한다() {
         // given
-        long id = 지하철_노선_등록되어_있음("신분당선", "red");
+        long id = 지하철_노선_등록되어_있음("신분당선", "red", stationId1, stationId2, 10);
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "green");
@@ -123,7 +148,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선을_제거한다() {
         // given
-        long id = 지하철_노선_등록되어_있음("신분당선", "red");
+        long id = 지하철_노선_등록되어_있음("신분당선", "red", stationId1, stationId2, 10);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(id);

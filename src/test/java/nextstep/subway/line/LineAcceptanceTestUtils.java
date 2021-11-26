@@ -39,10 +39,13 @@ public class LineAcceptanceTestUtils {
             .isNotBlank();
     }
 
-    public static long 지하철_노선_등록되어_있음(String name, String color) {
+    public static long 지하철_노선_등록되어_있음(String name, String color, long upStationId, long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
+        params.put("upStationId", String.valueOf(upStationId));
+        params.put("downStationId", String.valueOf(downStationId));
+        params.put("distance", String.valueOf(distance));
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
         return Long.parseLong(
             response.header("Location")
