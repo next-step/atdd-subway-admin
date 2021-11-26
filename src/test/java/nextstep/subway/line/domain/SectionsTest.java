@@ -2,10 +2,6 @@ package nextstep.subway.line.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -25,12 +21,11 @@ public class SectionsTest {
         Station downStation2 = Station.from("양재역");
         Line line2 = Line.of("신분당선", "빨간색", upStation2, downStation2, 20);
         
-        List<Section> sectionList = new ArrayList<Section>();
-        sectionList.add(Section.of(line1, upStation1, downStation1, 15));
-        sectionList.add(Section.of(line2, upStation2, downStation2, 20));
+        Section section1 = Section.of(line1, upStation1, downStation1, 15);
+        Section section2 = Section.of(line2, upStation2, downStation2, 20);
         
         // when
-        Sections sections = Sections.from(sectionList);
+        Sections sections = Sections.from(section1, section2);
         
         // then
         assertThat(sections.count()).isEqualTo(2);
@@ -44,7 +39,7 @@ public class SectionsTest {
         Station downStation = Station.from("교대역");
         Line line = Line.of("2호선", "초록색", upStation, downStation, 15);
         
-        Sections sections = Sections.from(new ArrayList<>(Arrays.asList(Section.of(line, upStation, downStation, 15))));
+        Sections sections = Sections.from(Section.of(line, upStation, downStation, 15));
         
         // when
         Station newUpStation = Station.from("서울대입구역");

@@ -25,8 +25,10 @@ public class Sections {
         this.sections = sections;
     }
     
-    public static Sections from(List<Section> sections) {
-        return new Sections(sections);
+    public static Sections from(Section...sections) {
+        return new Sections(Stream
+                .of(sections)
+                .collect(Collectors.toList()));
     }
 
     public List<Station> getStations() {
@@ -36,11 +38,11 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public void add(Section section) {
+    void add(Section section) {
         sections.add(section);
     }
     
-    public int count() {
+    int count() {
         return sections.size();
     }
     
