@@ -87,6 +87,14 @@ public class Section extends BaseEntity {
         this.distance = this.distance.minus(distance);
     }
 
+    public boolean matchAnyStation(final Station target) {
+        return Objects.equals(upStation, target) || Objects.equals(downStation, target);
+    }
+
+    public boolean matchDistance(int distance) {
+        return this.distance.match(distance);
+    }
+
     public Station getUpStation() {
         return upStation;
     }
@@ -97,14 +105,6 @@ public class Section extends BaseEntity {
 
     public Long getId() {
         return id;
-    }
-
-
-    public boolean matchAnyStation(final Station station) {
-        return this.upStation.equals(station) || this.downStation.equals(station);
-    }
-    public boolean matchDistance(int distance) {
-        return this.distance.match(distance);
     }
 
     @Override
