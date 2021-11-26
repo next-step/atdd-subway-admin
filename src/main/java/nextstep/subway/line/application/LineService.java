@@ -27,7 +27,7 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Section section = makeSection(request);
+        Section section = createSection(request);
         Line persistLine = lineRepository.save(request.toLine(section));
         return LineResponse.of(persistLine);
     }
@@ -46,7 +46,7 @@ public class LineService {
 
     public LineResponse updateLine(Long id, LineRequest request) {
         Line line = findById(id);
-        line.update(request.toLine(makeSection(request)));
+        line.update(request.toLine(createSection(request)));
 
         return LineResponse.of(line);
     }
@@ -65,9 +65,9 @@ public class LineService {
             .orElseThrow(StationNotFoundException::new);
     }
 
-    private Section makeSection(LineRequest request) {
+    private Section createSection(LineRequest request) {
         Station upStation = findStationById(request.getUpStationId());
         Station downStation = findStationById(request.getDownStationId());
-        return new Section(upStation, downStation, request.getDistance());
+        return Section.of(upStation, downStation, request.getDistance());
     }
 }
