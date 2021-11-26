@@ -156,10 +156,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_수정됨(LineResponse lineResponse, LineResponse updatedLine) {
         assertAll(
-                () -> assertThat(updatedLine.getId().equals(lineResponse.getId())).isTrue(),
-                () -> assertThat(updatedLine.getName().equals(lineResponse.getName())).isFalse(),
-                () -> assertThat(updatedLine.getColor().equals(lineResponse.getColor())).isFalse(),
-                () -> assertThat(updatedLine.getStations().equals(lineResponse.getStations())).isFalse()
+                () -> assertThat(updatedLine.getId()).isEqualTo(lineResponse.getId()),
+                () -> assertThat(updatedLine.getName()).isNotEqualTo(lineResponse.getName()),
+                () -> assertThat(updatedLine.getColor()).isNotEqualTo(lineResponse.getColor()),
+                () -> assertThat(updatedLine.getStations()).isNotEqualTo(lineResponse.getStations())
         );
     }
 
