@@ -1,9 +1,10 @@
 package nextstep.subway.domain.line.domain;
 
-import nextstep.subway.domain.section.domain.Section;
 import nextstep.subway.domain.section.domain.Distance;
+import nextstep.subway.domain.section.domain.Section;
 import nextstep.subway.domain.section.exception.AlreadyRegisterSectionException;
 import nextstep.subway.domain.section.exception.StandardStationNotFoundException;
+import nextstep.subway.global.error.exception.EntityNotFoundException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -11,7 +12,6 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Embeddable
 public class Sections {
@@ -22,21 +22,22 @@ public class Sections {
     public List<Section> getStationInOrder() {
         List<Section> sectionsResult = new ArrayList<>();
 
-        Optional<Section> preStation = this.sections.stream()
-                .filter(st -> st.getPreStation() == null)
-                .findFirst();
-
-        while (preStation.isPresent()) {
-            final Section section = preStation.get();
-            sectionsResult.add(section);
-
-            preStation = sections.stream()
-                    .filter(st -> st.getPreStation() != null)
-                    .filter(st -> st.getPreStation().equals(section.getStation()))
-                    .findFirst();
+        try {
+            sectionQuest(sectionsResult);
+        }catch (EntityNotFoundException e) {
+            return sectionsResult;
         }
 
         return sectionsResult;
+    }
+
+    private void sectionQuest(final List<Section> sectionsResult) {
+        Section sectionStart = getSectionStart();
+
+        while (true) {
+            sectionsResult.add(sectionStart);
+            sectionStart = getSectionEnd(sectionStart);
+        }
     }
 
     public void addSection(Section section) {
@@ -46,16 +47,9 @@ public class Sections {
     public void createSection(Section newSection) {
         createSectionValid(newSection);
 
-        final Section sectionStart = this.sections.stream()
-                .filter(st -> st.getPreStation() == null)
-                .findFirst()
-                .get();
+        final Section sectionStart = getSectionStart();
 
-        final Section sectionEnd = this.sections.stream()
-                .filter(st -> st.getPreStation() != null)
-                .filter(st -> st.getPreStation().equals(sectionStart.getStation()))
-                .findFirst()
-                .get();
+        final Section sectionEnd = getSectionEnd(sectionStart);
 
         if (addBetweenStation(newSection, sectionStart, sectionEnd)) return;
 
@@ -104,5 +98,20 @@ public class Sections {
         if (sectionStationCount == 0) {
             throw new StandardStationNotFoundException();
         }
+    }
+
+    private Section getSectionStart() {
+        return this.sections.stream()
+                .filter(st -> st.getPreStation() == null)
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("상행 종점역이 존재하지 않습니다."));
+    }
+
+    private Section getSectionEnd(Section sectionStart) {
+        return this.sections.stream()
+                .filter(st -> st.getPreStation() != null)
+                .filter(st -> st.getPreStation().equals(sectionStart.getStation()))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("하행 종점역이 존재하지 않습니다."));
     }
 }
