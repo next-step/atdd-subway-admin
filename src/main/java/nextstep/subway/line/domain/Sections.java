@@ -99,7 +99,7 @@ public class Sections {
     }
 
     private void insertion(Section newSection) {
-        findSectionByUpStationOrDownStation(newSection)
+        findOverlapSection(newSection)
                 .ifPresent(section -> section.shift(newSection));
 
         if (hasAnyMatchedStation(newSection)) {
@@ -118,7 +118,7 @@ public class Sections {
                 .anyMatch(mySection -> mySection.anyMatched(section));
     }
 
-    private Optional<Section> findSectionByUpStationOrDownStation(Section section) {
+    private Optional<Section> findOverlapSection(Section section) {
         Optional<Section> upStation = findByUpStation(section.getUpStation());
         if (upStation.isPresent()) {
             return upStation;
