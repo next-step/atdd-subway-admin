@@ -100,6 +100,9 @@ public class Section extends BaseEntity {
     }
 
 
+    public boolean matchAnyStation(final Station station) {
+        return this.upStation.equals(station) || this.downStation.equals(station);
+    }
     public boolean matchDistance(int distance) {
         return this.distance.match(distance);
     }
@@ -112,6 +115,4 @@ public class Section extends BaseEntity {
                 ", downStation=" + downStation +
                 "}\n";
     }
-
-
 }

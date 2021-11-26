@@ -73,9 +73,9 @@ public class Sections {
                 .ifPresent(it -> it.updateDownStation(section.getUpStation(), section.getDistance()));
     }
 
-    private boolean isStationExist(Station station) {
-        return getStations().stream()
-                .anyMatch(it -> it.equals(station));
+    private boolean isStationExist(final Station station) {
+        return this.sections.stream()
+                .anyMatch(it -> it.matchAnyStation(station));
     }
 
     private void validateStationExist(boolean isDownStationExisted, boolean isUpStationExisted) {
