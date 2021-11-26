@@ -233,6 +233,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.body().jsonPath().getString("name")).isEqualTo("신분당선");
         assertThat(response.body().jsonPath().getString("color")).isEqualTo("bg-red-600");
+        assertThat(response.body().jsonPath().getList("stations")).isNotNull();
+        assertThat(response.body().jsonPath().getList("stations")).hasSize(2);
     }
 
     private String 지하철_노선_등록되어_있음(LineRequest request) {
