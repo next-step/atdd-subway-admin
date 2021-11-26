@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.exception.LineNameAlreadyExistsException;
+import nextstep.subway.exception.RestControllerExceptionAdvice.ErrorResponse;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineResponses;
@@ -79,7 +81,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> createResponse) {
-        응답코드_검증(createResponse, HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        assertAll(
+            () -> 응답코드_검증(createResponse, HttpStatus.SC_BAD_REQUEST),
+            () -> assertThat(createResponse.as(ErrorResponse.class).getError().getMessage())
+                .isEqualTo(LineNameAlreadyExistsException.MESSAGE)
+        );
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")

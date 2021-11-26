@@ -42,6 +42,7 @@ public class Section extends BaseEntity {
 
     public Section withLine(final Line line) {
         this.line = line;
+        this.line.addSection(this);
         return this;
     }
 

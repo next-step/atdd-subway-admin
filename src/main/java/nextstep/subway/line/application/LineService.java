@@ -1,12 +1,12 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.exception.LineNameAlreadyExistsException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineResponses;
 import nextstep.subway.section.application.SectionService;
 import nextstep.subway.section.domain.Line;
 import nextstep.subway.section.domain.LineRepository;
-import nextstep.subway.section.domain.Section;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,12 +22,22 @@ public class LineService {
     }
 
     public LineResponse saveLine(final LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+        verifySaveLine(request);
 
-        final Section section = sectionService.saveSection(request.toSectionRequest(), persistLine);
-        persistLine.withSection(section);
+        final Line persistLine = lineRepository.save(request.toLine());
+        sectionService.saveSection(request.toSectionRequest(), persistLine);
 
         return LineResponse.of(persistLine);
+    }
+
+    private void verifySaveLine(LineRequest request) {
+        if (isExistsLineName(request)) {
+            throw new LineNameAlreadyExistsException();
+        }
+    }
+
+    private boolean isExistsLineName(LineRequest request) {
+        return lineRepository.existsByName(request.getName());
     }
 
     @Transactional(readOnly = true)
