@@ -9,11 +9,7 @@ public class StationNotFoundException extends RuntimeException {
         super(message);
     }
 
-    public StationNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public StationNotFoundException(Throwable cause) {
-        super(cause);
+    public static StationNotFoundException error(String message) {
+        return new StationNotFoundException(message);
     }
 }

@@ -18,7 +18,7 @@ class LineRepositoryTest {
     private LineRepository lineRepository;
 
     @Test
-    @DisplayName("종점역(상행, 하행)이 없는 경우 실패한다.")
+    @DisplayName("지하철 역이 없는 경우 예외 발생")
     void validateStation() {
         // given
         Line line = Line.of("신분당선", "bg-red-600", null, null, 10);
@@ -29,7 +29,7 @@ class LineRepositoryTest {
     }
 
     @Test
-    @DisplayName("종점역(상행, 하행)이 같은 경우 실패한다.")
+    @DisplayName("종점역(상행, 하행)이 같은 경우 예외 발생")
     void validateSameStation() {
         // given
         Station station = Station.from("강남");

@@ -5,39 +5,36 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineCreateResponse;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.application.StationNotFoundException;
+import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static nextstep.subway.line.ui.exception.LineNotFoundException.error;
+
 @Service
 @Transactional(readOnly = true)
 public class LineService {
 
+    public static final String NOT_FOUND_LINE = "지하철 노선을 찾을 수 없습니다.";
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
+    private final StationService stationService;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
     @Transactional
     public LineCreateResponse saveLine(LineRequest request) {
-        Station upStation = findStationById(request.getUpStationId());
-        Station downStation = findStationById(request.getDownStationId());
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
         Line line = request.toLine(upStation, downStation);
 
         Line persistLine = lineRepository.save(line);
         return LineCreateResponse.of(persistLine);
-    }
-
-    private Station findStationById(Long stationId) {
-        return stationRepository.findById(stationId)
-                .orElseThrow(() -> new StationNotFoundException("지하철 역을 찾을 수 없습니다."));
     }
 
     public List<LineResponse> findAllLines() {
@@ -58,7 +55,7 @@ public class LineService {
 
     private Line findLine(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new LineNotFoundException("지하철 노선을 찾을 수 없습니다."));
+                .orElseThrow(() -> error(NOT_FOUND_LINE));
     }
 
     @Transactional

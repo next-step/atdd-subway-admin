@@ -13,7 +13,8 @@ import java.util.Map;
 import static nextstep.subway.line.LineScenarioMethod.*;
 import static nextstep.subway.station.StationScenarioMethod.등록되지_않은_지하철_종점역;
 import static nextstep.subway.station.StationScenarioMethod.지하철_종점역_정보;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @DisplayName("지하철 노선 인수 테스트")
 class LineAcceptanceTest extends AcceptanceTest {
