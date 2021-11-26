@@ -52,3 +52,42 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+---
+## 요구사항
+* [x] 기능 구현 전 인수 테스트 작성
+  * [x] 생성
+  * [x] 목록 조회
+  * [x] 조회
+  * [x] 수정
+  * [x] 삭제
+* [x] 기능 구현 후 인수 테스트 리팩터링
+  * [x] 생성
+  * [x] 목록 조회
+  * [x] 조회
+  * [x] 수정
+  * [x] 삭제
+
+## 1단계 지하철 노선 관리 인수 조건 정의
+```
+Feature: 지하철 노선 생성 / 목록 조회 / 조회 / 수정 / 삭제
+  Scenario: 지하철 노선 생성
+      When 사용자는 지하철 노선 생성을 요청한다.
+      Then 사용자는 등록 결과를 응답받는다.
+  Scenario: 지하철 노선 목록 조회
+     Given 노선들이 등록되어 있다.
+      When 사용자는 지하철 노선 목록 조회를 요청한다.
+      Then 사용자는 목록 조회 결과를 응답받는다.
+  Scenario: 지하철 노선 조회
+     Given 노선이 등록되어 있다.
+      When 사용자는 지하철 노선 조회를 요청한다.
+      Then 사용자는 조회 결과를 응답받는다.
+  Scenario: 지하철 노선 수정
+     Given 노선이 등록되어 있다.
+      When 사용자는 지하철 노선 수정을 요청한다.
+      Then 사용자는 수정 결과를 응답받는다.
+  Scenario: 지하철 노선 삭제
+     Given 노선이 등록되어 있다.
+      When 사용자는 지하철 노선 삭제를 요청한다.
+      Then 사용자는 삭제 결과를 응답받는다.
+```
