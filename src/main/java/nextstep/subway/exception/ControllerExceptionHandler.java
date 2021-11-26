@@ -25,4 +25,9 @@ public class ControllerExceptionHandler {
     public ResponseEntity sectionDistanceExceptionHandler(SectionDistanceException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
+
+    @ExceptionHandler(SectionNotDeleteException.class)
+    public ResponseEntity sectionNotDeleteExceptionHandler(SectionNotDeleteException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }

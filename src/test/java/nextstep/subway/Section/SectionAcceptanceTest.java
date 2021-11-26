@@ -152,8 +152,36 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선_구간_삭제됨(response);
     }
 
+    @DisplayName("노선에 등록되어있지 않은 역을 제거한다.")
+    @Test
+    void deleteSection3() {
+        //given
+        사이_구간 = 지하철_노선_사이_역_등록(지하철_역_ID(청계산입구));
+        지하철_노선_구간_생성_요청(사이_구간, 신분당선_ID);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_제거_요청(신분당선_ID, 양재시민의숲_ID);
+
+        // then
+        지하철_노선_구간_삭제_실패됨(response);
+    }
+
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거한다.")
+    @Test
+    void deleteSection4() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_제거_요청(신분당선_ID, 판교역_ID);
+
+        // then
+        지하철_노선_구간_삭제_실패됨(response);
+    }
+
     private void 지하철_노선_구간_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private AbstractIntegerAssert<?> 지하철_노선_구간_삭제_실패됨(ExtractableResponse<Response> response) {
+        return assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> 지하철_노선_구간_제거_요청(Long lineId, Long stationId) {
