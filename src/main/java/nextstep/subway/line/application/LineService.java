@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import nextstep.subway.common.exception.DuplicateException;
 import nextstep.subway.common.exception.NotFoundException;
+import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.LineStation;
@@ -38,7 +39,7 @@ public class LineService {
         validateDuplicateLine(line);
 
         LineStation lineStation = LineStation.of(request.getUpStationId(),
-            request.getDownStationId(), request.getDistance());
+            request.getDownStationId(), Distance.of(request.getDistance()));
         line.addLineStation(lineStation);
 
         Line persistLine = lineRepository.save(line);
@@ -97,7 +98,8 @@ public class LineService {
         });
     }
 
-    private List<LineStationResponse> extractLineStationResponses(Line line,
+    @Transactional(readOnly = true)
+    protected List<LineStationResponse> extractLineStationResponses(Line line,
         Map<Long, Station> stations) {
         return line.getStations().stream()
             .map(it -> LineStationResponse.of(it,

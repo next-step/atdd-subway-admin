@@ -4,6 +4,7 @@ package nextstep.subway.line.domain;
 import java.security.InvalidParameterException;
 import java.util.Objects;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,7 +24,8 @@ public class LineStation {
 
     private Long nextStationId;
 
-    private Integer distance;
+    @Embedded
+    private Distance distance;
 
     @Column(name = "deleted")
     private boolean deleted = Boolean.FALSE;
@@ -31,26 +33,20 @@ public class LineStation {
     protected LineStation() {
     }
 
-    public LineStation(Long stationId, Long nextStationId, Integer distance) {
+    public LineStation(Long stationId, Long nextStationId, Distance distance) {
+        validateNotNull(stationId);
+
         this.stationId = stationId;
         this.nextStationId = nextStationId;
         this.distance = distance;
     }
 
     public static LineStation lastOf(LineStation lineStation) {
-        return new LineStation(lineStation.getNextStationId(), null, lineStation.getDistance());
+        return new LineStation(lineStation.getNextStationId(), null, new Distance(0));
     }
 
-    public static LineStation of(Long stationId, Long nextStationId, int distance) {
+    public static LineStation of(Long stationId, Long nextStationId, Distance distance) {
         return new LineStation(stationId, nextStationId, distance);
-    }
-
-    public void delete() {
-        this.deleted = true;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
     }
 
     public void stationIdUpdate(LineStation lineStation) {
@@ -60,9 +56,8 @@ public class LineStation {
     }
 
     public void nextStationIdUpdate(LineStation lineStation) {
-        if (this.distance <= lineStation.distance) {
-            throw new InvalidParameterException("추가역은 기존 구간길이 보다 미만이어야 합니다.");
-        }
+        distance.minus(lineStation.getDistance());
+
         this.nextStationId = lineStation.stationId;
     }
 
@@ -81,12 +76,17 @@ public class LineStation {
     }
 
     public boolean isDuplicate(LineStation lineStation) {
-        boolean isStationE = this.stationId.equals(lineStation.stationId);
-        boolean isNextStationE = this.nextStationId.equals(
-            lineStation.nextStationId);
-        return (isStationE && isNextStationE);
+        return stationId.equals(lineStation.stationId)
+            && nextStationId.equals(lineStation.nextStationId);
     }
 
+    public void delete() {
+        this.deleted = true;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
 
     public Long getStationId() {
         return stationId;
@@ -96,8 +96,18 @@ public class LineStation {
         return nextStationId;
     }
 
-    public Integer getDistance() {
+    public Distance getDistance() {
         return distance;
+    }
+
+    public int getDistanceValue() {
+        return distance.getDistance();
+    }
+
+    private void validateNotNull(Long stationId) {
+        if (Objects.isNull(stationId)) {
+            throw new InvalidParameterException("상행 지하철역은 필수 정보 입니다.");
+        }
     }
 
     @Override

@@ -24,24 +24,18 @@ public class LineStations {
     public void add(LineStation addLineStation) {
         validate(addLineStation);
 
-        lineStations.stream()
-            .filter(addLineStation::isNext)
-            .findFirst()
-            .ifPresent(next -> next.nextStationIdUpdate(addLineStation));
+        nextLineStationUpdate(addLineStation);
 
-        lineStations.stream()
-            .filter(LineStation::isLast)
-            .findFirst()
-            .ifPresent(it -> it.stationIdUpdate(addLineStation));
+        lastLineStationUpdate(addLineStation);
 
         lineStations.add(addLineStation);
         addLastLineStation(addLineStation);
     }
 
     public void addLastLineStation(LineStation addLineStation) {
-        Optional<LineStation> optionalLastSection = getLastLineStation();
+        Optional<LineStation> optionalLastStation = getLastLineStation();
 
-        if (!optionalLastSection.isPresent()) {
+        if (!optionalLastStation.isPresent()) {
             lineStations.add(LineStation.lastOf(addLineStation));
         }
     }
@@ -67,6 +61,20 @@ public class LineStations {
         for (LineStation lineStation : lineStations) {
             lineStation.delete();
         }
+    }
+
+    private void nextLineStationUpdate(LineStation addLineStation) {
+        lineStations.stream()
+            .filter(addLineStation::isNext)
+            .findFirst()
+            .ifPresent(next -> next.nextStationIdUpdate(addLineStation));
+    }
+
+    private void lastLineStationUpdate(LineStation addLineStation) {
+        lineStations.stream()
+            .filter(LineStation::isLast)
+            .findFirst()
+            .ifPresent(it -> it.stationIdUpdate(addLineStation));
     }
 
     private void validate(LineStation addLineStation) {

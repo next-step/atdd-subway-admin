@@ -6,7 +6,6 @@ import java.util.Objects;
 import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
-import nextstep.subway.station.domain.Station;
 import org.hibernate.annotations.Where;
 
 @Entity
@@ -27,9 +26,6 @@ public class Line extends BaseEntity {
     private boolean deleted = Boolean.FALSE;
 
     @Embedded
-    private Sections sections = new Sections();
-
-    @Embedded
     private LineStations lineStations = new LineStations();
 
     protected Line() {
@@ -42,10 +38,13 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public void addLineStation(LineStation lineStation) {
+        lineStations.add(lineStation);
     }
 
     public void delete() {
@@ -57,21 +56,8 @@ public class Line extends BaseEntity {
         return deleted;
     }
 
-    @Deprecated
-    public void addSection(Section section) {
-        sections.add(section);
-    }
-
-    public void addLineStation(LineStation lineStation) {
-        lineStations.add(lineStation);
-    }
-
     public List<LineStation> getStations() {
         return lineStations.getStations();
-    }
-
-    public List<Section> getSections() {
-        return sections.getSections();
     }
 
     public Long getId() {

@@ -6,23 +6,29 @@ import nextstep.subway.station.dto.StationResponse;
 
 public class LineStationResponse {
 
-    private StationResponse station;
+    private Long id;
+    private String name;
     private Integer distance;
 
     public LineStationResponse() {
     }
 
     public LineStationResponse(StationResponse station, Integer distance) {
-        this.station = station;
+        this.id = station.getId();
+        this.name = station.getName();
         this.distance = distance;
     }
 
     public static LineStationResponse of(LineStation it, StationResponse station) {
-        return new LineStationResponse(station, it.getDistance());
+        return new LineStationResponse(station, it.getDistanceValue());
     }
 
-    public StationResponse getStation() {
-        return station;
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Integer getDistance() {

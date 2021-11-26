@@ -2,6 +2,7 @@ package nextstep.subway.line.dto;
 
 public class LineStationRequest {
 
+    private Long lineId;
     private Long upStationId;
     private Long downStationId;
     private int distance;

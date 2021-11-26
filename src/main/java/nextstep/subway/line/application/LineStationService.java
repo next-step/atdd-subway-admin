@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 
+import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.dto.LineStationRequest;
@@ -26,7 +27,7 @@ public class LineStationService {
         Line line = lineService.findLine(lineId);
 
         LineStation lineStation = LineStation.of(lineStationRequest.getUpStationId(),
-            lineStationRequest.getDownStationId(), lineStationRequest.getDistance());
+            lineStationRequest.getDownStationId(), Distance.of(lineStationRequest.getDistance()));
         line.addLineStation(lineStation);
     }
 }
