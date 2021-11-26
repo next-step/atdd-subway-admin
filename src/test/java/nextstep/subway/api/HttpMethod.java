@@ -95,4 +95,22 @@ public class HttpMethod {
         }};
         return 지하철_구간_등록(String.valueOf(lineId), param);
     }
+
+    public static ExtractableResponse<Response> 상행역_기반_구간_제거(ExtractableResponse<Response> response, Long stationId) {
+        Long lineId = response.as(LineResponse.class).getId();
+        return 지하철_구간_제거(lineId, stationId);
+    }
+
+    public static ExtractableResponse<Response> 지하철_구간_제거(Long lineId, Long stationId) {
+        return 구간제거요청(lineId, stationId);
+    }
+
+    public static ExtractableResponse<Response> 구간제거요청(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+            .param("stationId", stationId)
+            .when()
+            .delete("/lines/{id}/sections", lineId)
+            .then().log().all()
+            .extract();
+    }
 }
