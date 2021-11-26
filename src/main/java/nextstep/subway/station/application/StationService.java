@@ -69,7 +69,7 @@ public class StationService {
     public void validateAllExist(List<Long> stationIds) {
         long existCount = stationRepository.countAllById(stationIds);
         if (existCount != stationIds.size()) {
-            throw new InvalidParameterException("존재 하지 않는 역이 있습니다.");
+            throw new NotFoundException("존재 하지 않는 역이 있습니다.");
         }
     }
 
