@@ -5,6 +5,7 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -86,18 +87,30 @@ public class Line extends BaseEntity {
             .collect(Collectors.toList());
     }
 
-    public Optional<Section> findByUpStationId(Long upStationId) {
+    public Optional<Section> findSectionByUpStationId(Long upStationId) {
         return sections.sections()
             .stream()
             .filter(e -> e.getUpStation().getId() == upStationId)
             .findFirst();
     }
 
-    public Optional<Section> findByDownStationId(Long downStationId) {
+    public Optional<Section> findSectionByDownStationId(Long downStationId) {
         return sections.sections()
             .stream()
             .filter(e -> e.getDownStation().getId() == downStationId)
             .findFirst();
+    }
+
+    public Long getEndUpStationId() {
+        List<Long> list = getUpStationIds();
+        list.removeAll(getDownStationIds());
+        return list.get(0);
+    }
+
+    public Long getEndDownStationId() {
+        List<Long> list = getDownStationIds();
+        list.removeAll(getUpStationIds());
+        return list.get(0);
     }
 
     public List<Section> getSections() {
