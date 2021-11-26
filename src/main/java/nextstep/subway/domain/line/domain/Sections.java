@@ -16,7 +16,7 @@ import java.util.Optional;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public List<Section> getStationInOrder() {
