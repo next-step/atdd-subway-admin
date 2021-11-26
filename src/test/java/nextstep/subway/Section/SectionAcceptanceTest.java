@@ -124,11 +124,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선_구간_생성_실패됨(response);
     }
 
-    @DisplayName("노선의 구간을 제거한다.")
+    @DisplayName("노선의 중간 구간을 제거한다.")
     @Test
     void deleteSection() {
-        // when
-
+        //given
         사이_구간 = 지하철_노선_사이_역_등록(양재시민의숲_ID);
         지하철_노선_구간_생성_요청(사이_구간, 신분당선_ID);
 
@@ -137,7 +136,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_구간_삭제됨(response);
+    }
 
+    @DisplayName("노선의 종점 구간을 제거한다.")
+    @Test
+    void deleteSection2() {
+        //given
+        사이_구간 = 지하철_노선_사이_역_등록(양재시민의숲_ID);
+        지하철_노선_구간_생성_요청(사이_구간, 신분당선_ID);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_제거_요청(신분당선_ID, 판교역_ID);
+
+        // then
+        지하철_노선_구간_삭제됨(response);
     }
 
     private void 지하철_노선_구간_삭제됨(ExtractableResponse<Response> response) {

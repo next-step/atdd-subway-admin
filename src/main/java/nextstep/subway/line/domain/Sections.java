@@ -71,7 +71,38 @@ public class Sections {
                 .allMatch(it -> it.isDuplicate(section));
     }
 
+    private boolean isMatchUpStation(Station station) {
+        return sections.stream()
+                .filter(it -> it.getUpStation() == station)
+                .findFirst()
+                .isPresent();
+    }
+
+    private boolean isMatchDownStation(Station station) {
+        return sections.stream()
+                .filter(it -> it.getDownStation() == station)
+                .findFirst()
+                .isPresent();
+    }
+
     public void delete(Station station) {
+        if (isBetween(station)) {
+            merge(station);
+            return;
+        }
+
+        sections.stream()
+                .filter(it -> it.getUpStation() == station)
+                .findFirst()
+                .ifPresent(it -> sections.remove(it));
+
+        sections.stream()
+                .filter(it -> it.getDownStation() == station)
+                .findFirst()
+                .ifPresent(it -> sections.remove(it));
+    }
+
+    private void merge(Station station) {
         Section section = sections.stream()
                 .filter(it -> it.getUpStation() == station)
                 .findFirst()
@@ -83,5 +114,9 @@ public class Sections {
                 .ifPresent(it -> it.mergeStation(section));
 
         sections.remove(section);
+    }
+
+    private boolean isBetween(Station station) {
+        return isMatchDownStation(station) && isMatchUpStation(station);
     }
 }
