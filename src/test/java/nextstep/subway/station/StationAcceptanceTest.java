@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,20 +21,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     private static final String API_URL = "/stations";
 
-    private Map<String, String> params;
-
-    @BeforeEach
-    public void setUp() {
-        super.setUp();
-        params = new HashMap<>();
-        params.put("name", "강남역");
-    }
-
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
     void createStationWithDuplicateName() {
         // given
-        강남역_저장한다();
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "강남역");
+        저장한다(params, API_URL);
 
         // when
         ExtractableResponse<Response> response = 저장한다(params, API_URL);
@@ -57,10 +51,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getOne() {
         // given
-        ExtractableResponse<Response> saved = 강남역_저장한다();
+        ExtractableResponse<Response> 저장된강남역 = 강남역_저장한다();
 
         //when
-        ExtractableResponse<Response> response = 조회한다(saved.header("Location"));
+        ExtractableResponse<Response> response = 조회한다(저장된강남역.header("Location"));
 
         //then
         assertAll(() -> {
@@ -73,16 +67,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getList() {
         // given
+        ExtractableResponse<Response> 저장된강남역 = 강남역_저장한다();
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "역삼역");
-        List<ExtractableResponse<Response>> givenList = 목록을_저장한다(new Object[]{params, params2},
-            API_URL);
+        ExtractableResponse<Response> 저장된역삼역 = 저장한다(params2, API_URL);
 
         // when
         ExtractableResponse<Response> response = 조회한다(API_URL);
 
         // then
-        List<Long> expectedLineIds = getIdsByResponse(givenList, Long.class);
+        List<Long> expectedLineIds = getIdsByResponse(Arrays.asList(저장된강남역, 저장된역삼역), Long.class);
         List<Long> resultLineIds = response.jsonPath().getList("id", Long.class);
 
         assertAll(() -> {
@@ -95,10 +89,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void update() {
         // given
-        ExtractableResponse<Response> givenData = 강남역_저장한다();
+        ExtractableResponse<Response> 저장된강남역 = 강남역_저장한다();
 
         //when
-        String uri = givenData.header("Location");
+        String uri = 저장된강남역.header("Location");
         ExtractableResponse<Response> response = 수정한다(new StationRequest("강남구청역"), uri);
 
         //then
@@ -109,10 +103,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void delete() {
         // given
-        ExtractableResponse<Response> givenData = 강남역_저장한다();
+        ExtractableResponse<Response> 저장된강남역 = 강남역_저장한다();
 
         // when
-        String uri = givenData.header("Location");
+        String uri = 저장된강남역.header("Location");
         ExtractableResponse<Response> response = 삭제한다(uri);
 
         // then
@@ -120,6 +114,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 강남역_저장한다() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "강남역");
         return 저장한다(params, API_URL);
     }
 }

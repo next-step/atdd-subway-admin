@@ -20,7 +20,8 @@ import org.springframework.test.context.jdbc.Sql;
 @Sql(scripts = "classpath:scripts/sectionTestData.sql")
 public class LineStationTest {
 
-    private static final Integer TEST_DISTANCE = 10;
+    // 기준 길이 값
+    private static final Integer TEST_REFERENCE_DISTANCE = 10;
 
     @Autowired
     LineRepository lineRepository;
@@ -42,7 +43,7 @@ public class LineStationTest {
 
         lineStationRepository.save(
             LineStation
-                .ofUpLineStation(seoulStation, line, Distance.valueOf(TEST_DISTANCE), yongsanStation));
+                .ofUpLineStation(seoulStation, line, Distance.valueOf(TEST_REFERENCE_DISTANCE), yongsanStation));
         lineStationRepository.save(LineStation.fromDownLineStation(yongsanStation, line));
     }
 
@@ -61,7 +62,7 @@ public class LineStationTest {
 
         lineStationRepository.save(
             LineStation
-                .ofUpLineStation(seoulStation, line, Distance.valueOf(TEST_DISTANCE), yongsanStation));
+                .ofUpLineStation(seoulStation, line, Distance.valueOf(TEST_REFERENCE_DISTANCE), yongsanStation));
         lineStationRepository.save(LineStation.fromDownLineStation(yongsanStation, line));
 
         //쿼리 확인
@@ -79,7 +80,7 @@ public class LineStationTest {
         Station seoulStation = stationRepository.findById(1L).get();
         Station addStation = stationRepository.findById(3L).get();
 
-        line.addLineStation(Distance.valueOf(TEST_DISTANCE), addStation, seoulStation);
+        line.addLineStation(Distance.valueOf(TEST_REFERENCE_DISTANCE), addStation, seoulStation);
 
         assertAddSection(0, addStation);
     }
@@ -91,7 +92,7 @@ public class LineStationTest {
         Station yongsanStation = stationRepository.findById(2L).get();
         Station addStation = stationRepository.findById(3L).get();
 
-        line.addLineStation(Distance.valueOf(TEST_DISTANCE), yongsanStation, addStation);
+        line.addLineStation(Distance.valueOf(TEST_REFERENCE_DISTANCE), yongsanStation, addStation);
 
         assertAddSection(2, addStation);
     }
@@ -102,7 +103,7 @@ public class LineStationTest {
         Station seoulStation = stationRepository.findById(1L).get();
         Station addStation = stationRepository.findById(3L).get();
 
-        line.addLineStation(Distance.valueOf(TEST_DISTANCE - 5), seoulStation, addStation);
+        line.addLineStation(Distance.valueOf(TEST_REFERENCE_DISTANCE - 5), seoulStation, addStation);
 
         assertAddSection(1, addStation);
     }
@@ -113,7 +114,7 @@ public class LineStationTest {
         Station yongsanStation = stationRepository.findById(2L).get();
         Station addStation = stationRepository.findById(3L).get();
 
-        line.addLineStation(Distance.valueOf(TEST_DISTANCE - 7), addStation, yongsanStation);
+        line.addLineStation(Distance.valueOf(TEST_REFERENCE_DISTANCE - 7), addStation, yongsanStation);
 
         assertAddSection(1, addStation);
     }
@@ -137,7 +138,7 @@ public class LineStationTest {
         Station yeoksamStation = stationRepository.findById(5L).get();
 
         assertThatThrownBy(
-            () -> line.addLineStation(Distance.valueOf(TEST_DISTANCE), gangnamStation, yeoksamStation))
+            () -> line.addLineStation(Distance.valueOf(TEST_REFERENCE_DISTANCE), gangnamStation, yeoksamStation))
             .isInstanceOf(BusinessException.class)
             .hasMessage(Messages.NOT_INCLUDE_SECTION.getValues());
     }
@@ -149,7 +150,7 @@ public class LineStationTest {
         Station addStation = stationRepository.findById(3L).get();
 
         assertThatThrownBy(
-            () -> line.addLineStation(Distance.valueOf(TEST_DISTANCE), seoulStation, addStation))
+            () -> line.addLineStation(Distance.valueOf(TEST_REFERENCE_DISTANCE), seoulStation, addStation))
             .isInstanceOf(BusinessException.class)
             .hasMessage(Messages.LONG_OR_SAME_DISTANCE.getValues());
     }

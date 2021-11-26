@@ -78,7 +78,7 @@ public class LineService {
         Station downStation = findStationById(lineRequest.getDownStationId());
         Line line = findById(lineId);
 
-        line = line.addLineStation(Distance.valueOf(lineRequest.getDistance()), upStation, downStation);
+        line.addLineStation(Distance.valueOf(lineRequest.getDistance()), upStation, downStation);
 
         return LineResponse.of(line);
     }

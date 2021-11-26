@@ -75,7 +75,7 @@ public class Line extends BaseEntity {
         return this.lineStations.contains(lineStation);
     }
 
-    public Line addLineStation(Distance distance, Station upStation, Station downStation) {
+    public void addLineStation(Distance distance, Station upStation, Station downStation) {
         LineStation upLineStation = lineStations.findByStation(upStation);
         LineStation downLineStation = lineStations.findByStation(downStation);
 
@@ -83,14 +83,14 @@ public class Line extends BaseEntity {
 
         if (upLineStation != null) {
             addDownLineStation(distance, upLineStation, downStation);
-            return this;
+            return;
         }
 
         if (downLineStation != null) {
             addUpLineStation(distance, downLineStation, upStation);
-            return this;
+            return;
         }
-        return this;
+        return;
     }
 
     private void addDownLineStation(Distance distance, LineStation upLineStation, Station downStation) {

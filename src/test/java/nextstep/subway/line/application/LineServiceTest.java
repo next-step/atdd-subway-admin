@@ -38,7 +38,7 @@ public class LineServiceTest {
     }
 
     @Test
-    @DisplayName("라인 한건 조회")
+    @DisplayName("라인 한건 조회 성공")
     void findById() {
         Mockito.when(lineRepository.findById(ArgumentMatchers.anyLong()))
             .thenReturn(Optional.of(line));
@@ -62,7 +62,7 @@ public class LineServiceTest {
     }
 
     @Test
-    @DisplayName("라인 목록 조회")
+    @DisplayName("라인 목록 조회 성공")
     void findAll() {
         Mockito.when(lineRepository.findAll())
             .thenReturn(Arrays.asList(line));
