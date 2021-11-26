@@ -6,13 +6,11 @@ import org.hibernate.annotations.BatchSize;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static java.util.Comparator.*;
 import static java.util.stream.Collectors.toList;
 
 @Embeddable
@@ -22,7 +20,6 @@ public class Sections {
     private static final String SECTION_NOT_CORRECT_MESSAGE = "동일한 구간을 추가할 수 없습니다.";
     private static final String DISTANCE_GREATER_OR_CORRECT_MESSAGE = "거리가 작아야합니다.";
     private static final String SECTION_NOT_EXIST_MESSAGE = "구간이 1개일 때 삭제할 수 없습니다.";
-    private static final String SECTION_NOT_FOUND_MESSAGE = "찾는 구간이 존재하지 않습니다.";
     private static final int MIN_SECTION_COUNT = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
@@ -58,15 +55,8 @@ public class Sections {
             throw new IllegalArgumentException(SECTION_NOT_EXIST_MESSAGE);
         }
 
-        Section upSection = removeUpSection(station);
-        Section downSection = removeDownSection(station);
-
-        if(Objects.nonNull(upSection) && Objects.nonNull(downSection)) {
-            Section section = upSection.sumBySection(downSection);
-            this.sections.add(section);
-        }
-
-        return true;
+        addSectionIfSum(station);
+        return removeSection(station);
     }
 
     private boolean addUpSection(Section section) {
@@ -78,37 +68,31 @@ public class Sections {
     }
 
     private boolean addSection(Station station, Integer distance, Predicate<Section> express) {
-        if(sectionStream().anyMatch(express)) {
+
             List<Section> divideBySections = this.sections.stream()
                     .filter(express)
                     .flatMap(s -> s.divideByStation(station, distance).stream())
                     .collect(toList());
 
             return this.sections.addAll(divideBySections);
+    }
+
+    private void addSectionIfSum(Station station) {
+        List<Section> sections = findSections(s -> s.matchDownStation(station) || s.matchUpStation(station));
+        if(sections.size() >= 2) {
+            sections.stream()
+                    .reduce((a, b) -> a.sumBySection(b))
+                    .ifPresent(s -> this.sections.add(s));
         }
-        return false;
+    }
+    private List<Section> findSections(Predicate<Section> express) {
+        return this.sections.stream()
+                .filter(express)
+                .collect(toList());
     }
 
-    private Section removeUpSection(Station station) {
-        return removeSection(s -> s.matchDownStation(station));
-    }
-
-    private Section removeDownSection(Station station) {
-        return removeSection(s -> s.matchUpStation(station));
-    }
-
-    private Section removeSection(Predicate<Section> express) {
-        if(sectionStream().anyMatch(express)) {
-
-            Section section = this.sections.stream()
-                    .filter(express)
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalStateException(SECTION_NOT_FOUND_MESSAGE));
-
-            this.sections.remove(section);
-            return section;
-        }
-        return null;
+    private boolean removeSection(Station station) {
+        return this.sections.removeIf(s -> s.matchDownStation(station) || s.matchUpStation(station));
     }
 
     private Optional<Section> matchStation(Section section) {
@@ -145,10 +129,6 @@ public class Sections {
 
     private boolean validateIfRemoveNotExist() {
         return this.sections.size() == MIN_SECTION_COUNT;
-    }
-
-    private Stream<Section> sectionStream() {
-        return this.sections.stream();
     }
 
     public List<Section> getSections() {

@@ -34,21 +34,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionTest() {
 
-        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
-        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
-        ExtractableResponse<Response> addStationResponse = 지하철역_등록("신대방");
+        ExtractableResponse<Response> 강남역 = 지하철역_등록("강남");
+        ExtractableResponse<Response> 광교역 = 지하철역_등록("광교");
+        ExtractableResponse<Response> 신대방역 = 지하철역_등록("신대방");
 
-        long upStationId = extractId(upStationResponse);
-        long downStationId = extractId(downStationResponse);
-        long addDownStationId = extractId(addStationResponse);
+        long 강남역Id = extractId(강남역);
+        long 광교역Id = extractId(광교역);
+        long 신대방역Id = extractId(신대방역);
 
-        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 7);
-        long lineId = extractId(lineResponse);
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록("신분당선", "bg-red-600", 강남역Id, 광교역Id, 7);
+        long lineId = extractId(신분당선);
 
         int distance = 4;
         Map<String, Object> params = new HashMap<>();
-        params.put("upStationId", upStationId);
-        params.put("downStationId", addDownStationId);
+        params.put("upStationId", 강남역Id);
+        params.put("downStationId", 신대방역Id);
         params.put("distance", distance);
 
         ExtractableResponse<Response> response = ApiUtils.post(String.format("/lines/%s/sections", lineId), params);
@@ -60,26 +60,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addUpSectionTest() {
 
-        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
-        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
-        ExtractableResponse<Response> addStationResponse = 지하철역_등록("신대방");
+        ExtractableResponse<Response> 강남역 = 지하철역_등록("강남");
+        ExtractableResponse<Response> 광교역 = 지하철역_등록("광교");
+        ExtractableResponse<Response> 신대방역 = 지하철역_등록("신대방");
 
-        long upStationId = extractId(upStationResponse);
-        long downStationId = extractId(downStationResponse);
+        long 강남역Id = extractId(강남역);
+        long 광교역Id = extractId(광교역);
 
-        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 7);
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록("신분당선", "bg-red-600", 강남역Id, 광교역Id, 7);
 
-        long lineId = extractId(lineResponse);
-        long addStationId = extractId(addStationResponse);
+        long 신분당선Id = extractId(신분당선);
+        long 신대방역Id = extractId(신대방역);
 
         int distance = 4;
 
         Map<String, Object> params = new HashMap<>();
-        params.put("downStationId", upStationId);
-        params.put("upStationId", addStationId);
+        params.put("downStationId", 강남역Id);
+        params.put("upStationId", 신대방역Id);
         params.put("distance", distance);
 
-        ExtractableResponse<Response> response = ApiUtils.post(String.format("/lines/%s/sections", lineId), params);
+        ExtractableResponse<Response> response = ApiUtils.post(String.format("/lines/%s/sections", 신분당선Id), params);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.body().jsonPath().getInt("distance")).isEqualTo(distance);
     }
@@ -88,25 +88,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addDownSectionTest() {
 
-        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
-        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
-        ExtractableResponse<Response> addStationResponse = 지하철역_등록("신대방");
+        ExtractableResponse<Response> 강남역 = 지하철역_등록("강남");
+        ExtractableResponse<Response> 광교역 = 지하철역_등록("광교");
+        ExtractableResponse<Response> 신대방역 = 지하철역_등록("신대방");
 
-        long upStationId = extractId(upStationResponse);
-        long downStationId = extractId(downStationResponse);
+        long 강남역Id = extractId(강남역);
+        long 광교역Id = extractId(광교역);
 
-        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 10);
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록("신분당선", "bg-red-600", 강남역Id, 광교역Id, 10);
 
-        long lineId = extractId(lineResponse);
-        long addStationId = extractId(addStationResponse);
+        long 신분당선Id = extractId(신분당선);
+        long 신대방역Id = extractId(신대방역);
 
         int distance = 3;
         Map<String, Object> params = new HashMap<>();
-        params.put("downStationId", addStationId);
-        params.put("upStationId", downStationId);
+        params.put("downStationId", 신대방역Id);
+        params.put("upStationId", 광교역Id);
         params.put("distance", distance);
 
-        ExtractableResponse<Response> response = ApiUtils.post(String.format("/lines/%s/sections", lineId), params);
+        ExtractableResponse<Response> response = ApiUtils.post(String.format("/lines/%s/sections", 신분당선Id), params);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.body().jsonPath().getInt("distance")).isEqualTo(distance);
     }
@@ -115,24 +115,24 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_DistanceGraterEqualExceptionTest() {
 
-        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
-        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
+        ExtractableResponse<Response> 강남역 = 지하철역_등록("강남");
+        ExtractableResponse<Response> 광교역 = 지하철역_등록("광교");
 
-        long upStationId = extractId(upStationResponse);
-        long downStationId = extractId(downStationResponse);
+        long 강남역Id = extractId(강남역);
+        long 광교역Id = extractId(광교역);
 
-        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 7);
-        ExtractableResponse<Response> addUpStationResponse = 지하철역_등록("신대방");
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록("신분당선", "bg-red-600", 강남역Id, 광교역Id, 7);
+        ExtractableResponse<Response> 신대방역 = 지하철역_등록("신대방");
 
-        long lineId = lineResponse.body().jsonPath().getLong("id");
-        long addUpStationId = extractId(addUpStationResponse);
+        long 신분당선Id = extractId(신분당선);
+        long 신대방역Id = extractId(신대방역);
 
         Map<String, Object> params = new HashMap<>();
-        params.put("upStationId", addUpStationId);
-        params.put("downStationId", downStationId);
+        params.put("upStationId", 신대방역Id);
+        params.put("downStationId", 광교역Id);
         params.put("distance", 7);
 
-        ExtractableResponse<Response> response = ApiUtils.post(String.format("/lines/%s/sections", lineId), params);
+        ExtractableResponse<Response> response = ApiUtils.post(String.format("/lines/%s/sections", 신분당선Id), params);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
@@ -140,21 +140,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_EqualSectionExceptionTest() {
 
-        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
-        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
+        ExtractableResponse<Response> 강남역 = 지하철역_등록("강남");
+        ExtractableResponse<Response> 광교역 = 지하철역_등록("광교");
 
-        long upStationId = extractId(upStationResponse);
-        long downStationId = extractId(downStationResponse);
+        long 강남역Id = extractId(강남역);
+        long 광교역Id = extractId(광교역);
 
-        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 7);
-        long lineId = extractId(lineResponse);
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록("신분당선", "bg-red-600", 강남역Id, 광교역Id, 7);
+        long 신분당선Id = extractId(신분당선);
 
         Map<String, Object> params = new HashMap<>();
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
+        params.put("upStationId", 강남역Id);
+        params.put("downStationId", 광교역Id);
         params.put("distance", 7);
 
-        ExtractableResponse<Response> response = ApiUtils.post(String.format("/lines/%s/sections", lineId), params);
+        ExtractableResponse<Response> response = ApiUtils.post(String.format("/lines/%s/sections", 신분당선Id), params);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
@@ -162,27 +162,27 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_UpStationOrDownStation_NotContainsExceptionTest() {
 
-        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
-        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
+        ExtractableResponse<Response> 강남역 = 지하철역_등록("강남");
+        ExtractableResponse<Response> 광교역 = 지하철역_등록("광교");
 
-        long upStationId = extractId(upStationResponse);
-        long downStationId = extractId(downStationResponse);
+        long 강남역Id = extractId(강남역);
+        long 광교역Id = extractId(광교역);
 
-        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 7);
-        long lineId = extractId(lineResponse);
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록("신분당선", "bg-red-600", 강남역Id, 광교역Id, 7);
+        long 신분당선Id = extractId(신분당선);
 
-        ExtractableResponse<Response> addUpStationResponse = 지하철역_등록("신대방");
-        ExtractableResponse<Response> addDownStationResponse = 지하철역_등록("신림");
+        ExtractableResponse<Response> 신대방역 = 지하철역_등록("신대방");
+        ExtractableResponse<Response> 신림역 = 지하철역_등록("신림");
 
-        long addUpStationId = extractId(addUpStationResponse);
-        long addDownStationId = extractId(addDownStationResponse);
+        long 신대방역Id = extractId(신대방역);
+        long 신림역Id = extractId(신림역);
 
         Map<String, Object> params = new HashMap<>();
-        params.put("upStationId", addUpStationId);
-        params.put("downStationId", addDownStationId);
+        params.put("upStationId", 신대방역Id);
+        params.put("downStationId", 신림역Id);
         params.put("distance", 4);
 
-        ExtractableResponse<Response> response = ApiUtils.post(String.format("/lines/%s/sections", lineId), params);
+        ExtractableResponse<Response> response = ApiUtils.post(String.format("/lines/%s/sections", 신분당선Id), params);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
@@ -190,26 +190,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeSectionTest() {
 
-        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
-        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
-        ExtractableResponse<Response> addStationResponse = 지하철역_등록("신대방");
+        ExtractableResponse<Response> 강남역 = 지하철역_등록("강남");
+        ExtractableResponse<Response> 광교역 = 지하철역_등록("광교");
+        ExtractableResponse<Response> 신대방역 = 지하철역_등록("신대방");
 
-        long upStationId = extractId(upStationResponse);
-        long downStationId = extractId(downStationResponse);
-        long addDownStationId = extractId(addStationResponse);
+        long 강남역Id = extractId(강남역);
+        long 광교역Id = extractId(광교역);
+        long 신대방역Id = extractId(신대방역);
 
-        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 7);
-        long lineId = extractId(lineResponse);
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록("신분당선", "bg-red-600", 강남역Id, 광교역Id, 7);
+        long 신분당선Id = extractId(신분당선);
 
         int distance = 4;
         Map<String, Object> params = new HashMap<>();
-        params.put("upStationId", upStationId);
-        params.put("downStationId", addDownStationId);
+        params.put("upStationId", 강남역Id);
+        params.put("downStationId", 신대방역Id);
         params.put("distance", distance);
 
-        ApiUtils.post(String.format("/lines/%s/sections", lineId), params);
+        ApiUtils.post(String.format("/lines/%s/sections", 신분당선Id), params);
 
-        ExtractableResponse<Response> response = ApiUtils.delete(String.format("/lines/%d/sections?stationId=%d", lineId, upStationId));
+        ExtractableResponse<Response> response = ApiUtils.delete(String.format("/lines/%d/sections?stationId=%d", 신분당선Id, 강남역Id));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
@@ -217,26 +217,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeSection() {
 
-        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
-        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
-        ExtractableResponse<Response> addStationResponse = 지하철역_등록("신대방");
+        ExtractableResponse<Response> 강남역 = 지하철역_등록("강남");
+        ExtractableResponse<Response> 광교역 = 지하철역_등록("광교");
+        ExtractableResponse<Response> 신대방역 = 지하철역_등록("신대방");
 
-        long upStationId = extractId(upStationResponse);
-        long downStationId = extractId(downStationResponse);
-        long addDownStationId = extractId(addStationResponse);
+        long 강남역Id = extractId(강남역);
+        long 광교역Id = extractId(광교역);
+        long 신대방역Id = extractId(신대방역);
 
-        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 7);
+        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", 강남역Id, 광교역Id, 7);
         long lineId = extractId(lineResponse);
 
         int distance = 4;
         Map<String, Object> params = new HashMap<>();
-        params.put("upStationId", upStationId);
-        params.put("downStationId", addDownStationId);
+        params.put("upStationId", 강남역Id);
+        params.put("downStationId", 신대방역Id);
         params.put("distance", distance);
 
         ApiUtils.post(String.format("/lines/%s/sections", lineId), params);
 
-        ExtractableResponse<Response> response = ApiUtils.delete(String.format("/lines/%d/sections?stationId=%d", lineId, addDownStationId));
+        ExtractableResponse<Response> response = ApiUtils.delete(String.format("/lines/%d/sections?stationId=%d", lineId, 신대방역Id));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
@@ -244,18 +244,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeSection_NotCorrectStationExceptionTest() {
 
-        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
-        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
-        ExtractableResponse<Response> removeStationResponse = 지하철역_등록("신대방");
+        ExtractableResponse<Response> 강남역 = 지하철역_등록("강남");
+        ExtractableResponse<Response> 광교역 = 지하철역_등록("광교");
+        ExtractableResponse<Response> 신대방역 = 지하철역_등록("신대방");
 
-        long upStationId = extractId(upStationResponse);
-        long downStationId = extractId(downStationResponse);
-        long removeStationId = extractId(removeStationResponse);
+        long 강남역Id = extractId(강남역);
+        long 광교역Id = extractId(광교역);
+        long 신대방역Id = extractId(신대방역);
 
-        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 7);
-        long lineId = extractId(lineResponse);
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록("신분당선", "bg-red-600", 강남역Id, 광교역Id, 7);
+        long lineId = extractId(신분당선);
 
-        ExtractableResponse<Response> response = ApiUtils.delete(String.format("/lines/%d/sections?stationId=%d", lineId, removeStationId));
+        ExtractableResponse<Response> response = ApiUtils.delete(String.format("/lines/%d/sections?stationId=%d", lineId, 신대방역Id));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
@@ -263,16 +263,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeSection_NotExistExceptionTest() {
 
-        ExtractableResponse<Response> upStationResponse = 지하철역_등록("강남");
-        ExtractableResponse<Response> downStationResponse = 지하철역_등록("광교");
+        ExtractableResponse<Response> 강남역 = 지하철역_등록("강남");
+        ExtractableResponse<Response> 광교역 = 지하철역_등록("광교");
 
-        long upStationId = extractId(upStationResponse);
-        long downStationId = extractId(downStationResponse);
+        long 강남역Id = extractId(강남역);
+        long 광교역Id = extractId(광교역);
 
-        ExtractableResponse<Response> lineResponse = 지하철_노선_등록("신분당선", "bg-red-600", upStationId, downStationId, 7);
-        long lineId = extractId(lineResponse);
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록("신분당선", "bg-red-600", 강남역Id, 광교역Id, 7);
+        long 신분당선Id = extractId(신분당선);
 
-        ExtractableResponse<Response> response = ApiUtils.delete(String.format("/lines/%d/sections?stationId=%d", lineId, upStationId));
+        ExtractableResponse<Response> response = ApiUtils.delete(String.format("/lines/%d/sections?stationId=%d", 신분당선Id, 강남역Id));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
@@ -281,15 +281,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void removeSection_UpOrDownStationTest() {
 
         Line line = new Line("신분당선", "bg-red-600");
-        Station upStation = stationRepository.save(new Station("광교"));
-        Station downStation = stationRepository.save(new Station("강남"));
-        Station removeStation = stationRepository.save(new Station("대림"));
+        Station 광교역 = stationRepository.save(new Station("광교"));
+        Station 강남역 = stationRepository.save(new Station("강남"));
+        Station 대림역 = stationRepository.save(new Station("대림"));
         Integer distance = 10;
-        line.addSection(upStation, downStation, distance);
-        line.addSection(downStation, removeStation, 10);
+        line.addSection(광교역, 강남역, distance);
+        line.addSection(강남역, 대림역, 10);
         lineRepository.save(line);
 
-        boolean isRemove = line.removeSection(removeStation);
+        boolean isRemove = line.removeSection(대림역);
         lineRepository.flush();
 
         assertThat(isRemove).isTrue();
@@ -301,15 +301,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void removeSection_MiddleStationTest() {
 
         Line line = new Line("신분당선", "bg-red-600");
-        Station upStation = stationRepository.save(new Station("광교"));
-        Station downStation = stationRepository.save(new Station("강남"));
-        Station removeStation = stationRepository.save(new Station("대림"));
+        Station 광교역 = stationRepository.save(new Station("광교"));
+        Station 강남역 = stationRepository.save(new Station("강남"));
+        Station 대림역 = stationRepository.save(new Station("대림"));
         Integer distance = 10;
-        line.addSection(upStation, downStation, distance);
-        line.addSection(downStation, removeStation, 7);
+        line.addSection(광교역, 강남역, distance);
+        line.addSection(강남역, 대림역, 7);
         lineRepository.save(line);
 
-        boolean isRemove = line.removeSection(downStation);
+        boolean isRemove = line.removeSection(강남역);
         lineRepository.flush();
 
         assertThat(isRemove).isTrue();
@@ -321,14 +321,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void removeSection_NotCorrectStationTest() {
 
         Line line = new Line("신분당선", "bg-red-600");
-        Station upStation = stationRepository.save(new Station("광교"));
-        Station downStation = stationRepository.save(new Station("강남"));
-        Station removeStation = stationRepository.save(new Station("대림"));
+        Station 광교역 = stationRepository.save(new Station("광교"));
+        Station 강남역 = stationRepository.save(new Station("강남"));
+        Station 대림역 = stationRepository.save(new Station("대림"));
         Integer distance = 10;
-        line.addSection(upStation, downStation, distance);
+        line.addSection(광교역, 강남역, distance);
         lineRepository.save(line);
 
-        assertThatThrownBy(() -> line.removeSection(removeStation)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> line.removeSection(대림역)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("구간 삭제 시 구간이 존재하지 않을경우 예외처리")
@@ -336,13 +336,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void removeSectionIfRemoveNotExistTest() {
 
         Line line = new Line("신분당선", "bg-red-600");
-        Station upStation = stationRepository.save(new Station("광교"));
-        Station downStation = stationRepository.save(new Station("강남"));
+        Station 광교역 = stationRepository.save(new Station("광교"));
+        Station 강남역 = stationRepository.save(new Station("강남"));
         Integer distance = 10;
-        line.addSection(upStation, downStation, distance);
+        line.addSection(광교역, 강남역, distance);
         lineRepository.save(line);
 
-        assertThatThrownBy(() -> line.removeSection(upStation)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> line.removeSection(광교역)).isInstanceOf(IllegalArgumentException.class);
     }
 
 }
