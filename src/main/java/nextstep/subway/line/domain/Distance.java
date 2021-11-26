@@ -1,6 +1,7 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
 import java.util.Objects;
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import nextstep.subway.common.Messages;
 import nextstep.subway.exception.BusinessException;
@@ -9,12 +10,14 @@ import nextstep.subway.exception.BusinessException;
 public class Distance {
     public static final Integer ZERO = 0;
 
+    @Column(nullable = false)
     private Integer distance;
 
     protected Distance() {
     }
 
     private Distance(Integer distance) {
+        validatePositive(distance);
         this.distance = distance;
     }
 
@@ -26,19 +29,21 @@ public class Distance {
         return new Distance(distance);
     }
 
-    public Integer minus(Distance target) {
+    public Distance minus(Distance target) {
         Integer calcDistance = this.distance - target.distance;
-        validatePositive(calcDistance);
-        return calcDistance;
+        validateZero(calcDistance);
+        return Distance.valueOf(calcDistance);
     }
 
     private void validatePositive(Integer number) {
-        if (number == ZERO) {
-            throw new BusinessException(Messages.SAME_DISTANCE.getValues());
-        }
-
         if (number < ZERO) {
-            throw new BusinessException(Messages.LONG_DISTANCE.getValues());
+            throw new BusinessException(Messages.NOT_POSITIVE_NUMBER.getValues());
+        }
+    }
+
+    private void validateZero(Integer number) {
+        if (number <= ZERO) {
+            throw new BusinessException();
         }
     }
 

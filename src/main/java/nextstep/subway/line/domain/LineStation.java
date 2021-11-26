@@ -1,4 +1,4 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
 import java.util.Objects;
 import javax.persistence.Embedded;
@@ -13,11 +13,10 @@ import javax.persistence.ManyToOne;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.common.Messages;
 import nextstep.subway.exception.BusinessException;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 @Entity
-public class Section extends BaseEntity implements Comparable<Section> {
+public class LineStation extends BaseEntity implements Comparable<LineStation> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,44 +26,39 @@ public class Section extends BaseEntity implements Comparable<Section> {
     private Distance distance;
 
     @Enumerated(EnumType.STRING)
-    private SectionType sectionType;
+    private LineStationType lineStationType;
 
     @ManyToOne
     @JoinColumn(name = "station_id", nullable = false)
     private Station station;
 
     @ManyToOne
-    @JoinColumn(name = "link_station_id")
-    private Station linkStation;
+    @JoinColumn(name = "next_station_id")
+    private Station nextStation;
 
     @ManyToOne
     @JoinColumn(name = "line_id")
     private Line line;
 
-    protected Section() {
+    protected LineStation() {
     }
 
-    private Section(Distance distance, SectionType sectionType, Station station,
-        Station linkStation, Line line) {
+    private LineStation(Distance distance, LineStationType lineStationType, Station station) {
         this.distance = distance;
-        this.sectionType = sectionType;
+        this.lineStationType = lineStationType;
         setStation(station);
-        setLinkStation(linkStation);
-        setLine(line);
     }
 
-    public static Section fromDownSection(Station station, Line line) {
-        return new Section(Distance.createDownDistance(), SectionType.DOWN, station, null, line);
+    public static LineStation fromDownSection(Station station, Line line) {
+        return new LineStation(Distance.createDownDistance(), LineStationType.DOWN, station).toLine(line);
     }
 
-    public static Section ofUpSection(Distance distance, Station station, Station linkStation,
-        Line line) {
-        return new Section(distance, SectionType.UP, station, linkStation, line);
+    public static LineStation ofUpSection(Station station, Line line, Distance distance, Station nextStation) {
+        return new LineStation(distance, LineStationType.UP, station).toLine(line).withNextStation(nextStation);
     }
 
-    public static Section ofMiddleSection(Distance distance, Station station, Station linkStation,
-        Line line) {
-        return new Section(distance, SectionType.MIDDLE, station, linkStation, line);
+    public static LineStation ofMiddleSection(Station station, Line line, Distance distance, Station nextStation) {
+        return new LineStation(distance, LineStationType.MIDDLE, station).toLine(line).withNextStation(nextStation);
     }
 
     /**
@@ -72,7 +66,7 @@ public class Section extends BaseEntity implements Comparable<Section> {
      *
      * @param line
      */
-    public void setLine(Line line) {
+    public LineStation toLine(Line line) {
         if (this.line != null) {
             this.line.removeSection(this);
         }
@@ -81,6 +75,7 @@ public class Section extends BaseEntity implements Comparable<Section> {
         if (!line.containsSection(this)) {
             line.addSection(this);
         }
+        return this;
     }
 
     public Station getStation() {
@@ -94,38 +89,43 @@ public class Section extends BaseEntity implements Comparable<Section> {
         this.station = station;
     }
 
-    public Station getLinkStation() {
-        return linkStation;
+    public Station getNextStation() {
+        return nextStation;
     }
 
-    public void setLinkStation(Station station) {
+    public LineStation withNextStation(Station station) {
         if (station == null) {
-            return;
+            return this;
         }
-        this.linkStation = station;
+        this.nextStation = station;
+
+        return this;
     }
 
     public boolean isDownStation() {
-        if (this.sectionType.equals(SectionType.DOWN)) {
+        if (this.lineStationType.equals(LineStationType.DOWN)) {
             return true;
         }
         return false;
     }
 
     public boolean isUpStation() {
-        if (this.sectionType.equals(SectionType.UP)) {
+        if (this.lineStationType.equals(LineStationType.UP)) {
             return true;
         }
         return false;
     }
 
     public Distance calculateDistance(Distance distance) {
-        Integer calcDistance = this.distance.minus(distance);
-        return Distance.valueOf(calcDistance);
+        try {
+            return this.distance.minus(distance);
+        }catch (BusinessException e) {
+            throw new BusinessException(Messages.LONG_OR_SAME_DISTANCE.getValues());
+        }
     }
 
-    public boolean hasLinkStation(Station linkStation) {
-        if (this.linkStation.equals(linkStation)) {
+    public boolean hasNextStation(Station nextStation) {
+        if (this.nextStation.equals(nextStation)) {
             return true;
         }
         return false;
@@ -139,41 +139,41 @@ public class Section extends BaseEntity implements Comparable<Section> {
         return this.station.equals(station);
     }
 
-    public Section update(SectionType sectionType) {
-        return update(this.distance, sectionType, this.linkStation);
+    public LineStation update(LineStationType lineStationType) {
+        return update(this.distance, lineStationType, this.nextStation);
     }
 
-    public Section update(Distance distance, Station linkStation) {
-        return update(distance, this.sectionType, linkStation);
+    public LineStation update(Distance distance, Station linkStation) {
+        return update(distance, this.lineStationType, linkStation);
     }
 
-    public Section update(Distance distance, SectionType sectionType, Station linkStation) {
+    public LineStation update(Distance distance, LineStationType lineStationType, Station linkStation) {
         this.distance = distance;
-        this.sectionType = sectionType;
-        this.linkStation = linkStation;
+        this.lineStationType = lineStationType;
+        this.nextStation = linkStation;
         return this;
     }
 
     @Override
-    public int compareTo(Section o) {
+    public int compareTo(LineStation o) {
 
-        if (sectionType.equals(SectionType.UP)) {
+        if (lineStationType.equals(LineStationType.UP)) {
             return -1;
         }
 
-        if (linkStation == null) {
+        if (nextStation == null) {
             return 1;
         }
 
-        if (o.linkStation == null) {
+        if (o.nextStation == null) {
             return -1;
         }
 
-        if (linkStation.equals(o.station)) {
+        if (nextStation.equals(o.station)) {
             return -1;
         }
 
-        if (station.equals(o.linkStation)) {
+        if (station.equals(o.nextStation)) {
             return 1;
         }
 
@@ -188,8 +188,8 @@ public class Section extends BaseEntity implements Comparable<Section> {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Section section = (Section) o;
-        return Objects.equals(id, section.id);
+        LineStation lineStation = (LineStation) o;
+        return Objects.equals(id, lineStation.id);
     }
 
     @Override
@@ -202,9 +202,9 @@ public class Section extends BaseEntity implements Comparable<Section> {
         return "Section{" +
             "id=" + id +
             ", distance=" + distance +
-            ", sectionType=" + sectionType +
+            ", sectionType=" + lineStationType +
             ", station=" + station +
-            ", linkStation=" + linkStation +
+            ", linkStation=" + nextStation +
             ", line=" + line.getName() +
             '}';
     }

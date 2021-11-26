@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.station.dto.StationResponse;
 
 public class LineResponse {
@@ -35,8 +35,8 @@ public class LineResponse {
             line.getCreatedDate(), line.getModifiedDate());
     }
 
-    private static List<StationResponse> convertStationResponses(List<Section> sections) {
-        return sections
+    private static List<StationResponse> convertStationResponses(List<LineStation> lineStations) {
+        return lineStations
             .stream()
             .map(section -> StationResponse.of(section.getStation()))
             .collect(Collectors.toList());

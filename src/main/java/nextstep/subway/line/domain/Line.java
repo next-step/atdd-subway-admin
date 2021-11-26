@@ -11,9 +11,6 @@ import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.common.Messages;
 import nextstep.subway.exception.BusinessException;
-import nextstep.subway.section.domain.Distance;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionType;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -27,7 +24,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private SectionList sections = new SectionList();
+    private LineStations lineStations = new LineStations();
 
     protected Line() {
     }
@@ -40,17 +37,17 @@ public class Line extends BaseEntity {
     /**
      * 연관관계 편의 메서드
      *
-     * @param section
+     * @param lineStation
      */
-    public void addSection(Section section) {
-        this.sections.add(section);
-        if (!section.equalsLine(this)) {
-            section.setLine(this);
+    public void addSection(LineStation lineStation) {
+        this.lineStations.add(lineStation);
+        if (!lineStation.equalsLine(this)) {
+            lineStation.toLine(this);
         }
     }
 
-    public void removeSection(Section section) {
-        this.sections.remove(section);
+    public void removeSection(LineStation lineStation) {
+        this.lineStations.remove(lineStation);
     }
 
     public void update(Line line) {
@@ -70,69 +67,70 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSortedSections() {
-        return sections.getSortedList();
+    public List<LineStation> getSortedSections() {
+        return lineStations.getSortedList();
     }
 
-    public boolean containsSection(Section section) {
-        return this.sections.contains(section);
+    public boolean containsSection(LineStation lineStation) {
+        return this.lineStations.contains(lineStation);
     }
 
     public Line addSection(Distance distance, Station upStation, Station downStation) {
-        Section upSection = sections.findByStation(upStation);
-        Section downSection = sections.findByStation(downStation);
+        LineStation upLineStation = lineStations.findByStation(upStation);
+        LineStation downLineStation = lineStations.findByStation(downStation);
 
-        validate(upSection, downSection);
+        validate(upLineStation, downLineStation);
 
-        if (upSection != null) {
-            addDownSection(distance, upSection, downStation);
+        if (upLineStation != null) {
+            addDownSection(distance, upLineStation, downStation);
             return this;
         }
 
-        if (downSection != null) {
-            addUpSection(distance, downSection, upStation);
+        if (downLineStation != null) {
+            addUpSection(distance, downLineStation, upStation);
             return this;
         }
         return this;
     }
 
-    private void addDownSection(Distance distance, Section upSection, Station downStation) {
-        if (upSection.isDownStation()) {
-            upSection.update(distance, SectionType.MIDDLE, downStation);
-            Section downSection = Section.fromDownSection(downStation, this);
-            sections.add(downSection);
+    private void addDownSection(Distance distance, LineStation upLineStation, Station downStation) {
+        if (upLineStation.isDownStation()) {
+            upLineStation.update(distance, LineStationType.MIDDLE, downStation);
+            LineStation downLineStation = LineStation.fromDownSection(downStation, this);
+            lineStations.add(downLineStation);
             return;
         }
 
-        addMiddleSection(upSection, downStation, distance, upSection.getLinkStation());
+        addMiddleSection(upLineStation, downStation, distance, upLineStation.getNextStation());
     }
 
-    private void addUpSection(Distance distance, Section downSection, Station upStation) {
-        if (downSection.isUpStation()) {
-            downSection.update(SectionType.MIDDLE);
-            Section upSection =
-                Section.ofUpSection(distance, upStation, downSection.getStation(), this);
-            sections.add(upSection);
+    private void addUpSection(Distance distance, LineStation downLineStation, Station upStation) {
+        if (downLineStation.isUpStation()) {
+            downLineStation.update(LineStationType.MIDDLE);
+            LineStation upLineStation =
+                LineStation.ofUpSection(upStation, this, distance, downLineStation.getStation());
+            lineStations.add(upLineStation);
             return;
         }
 
-        Section upSection = sections.findByLinkStation(downSection.getStation());
-        addMiddleSection(upSection, upStation, distance, downSection.getStation());
+        LineStation upLineStation = lineStations.findByNextStation(downLineStation.getStation());
+        addMiddleSection(upLineStation, upStation, distance, downLineStation.getStation());
     }
 
-    private void addMiddleSection(Section updateSection, Station addStation, Distance distance,
+    private void addMiddleSection(LineStation updateLineStation, Station addStation, Distance distance,
         Station linkStation) {
-        updateSection.update(updateSection.calculateDistance(distance), addStation);
-        Section middleSection = Section.ofMiddleSection(distance, addStation, linkStation, this);
-        sections.add(middleSection);
+        updateLineStation.update(updateLineStation.calculateDistance(distance), addStation);
+        LineStation middleLineStation = LineStation
+            .ofMiddleSection(addStation, this, distance, linkStation);
+        lineStations.add(middleLineStation);
     }
 
-    private void validate(Section upSection, Section downSection) {
-        if (upSection == null && downSection == null) {
+    private void validate(LineStation upLineStation, LineStation downLineStation) {
+        if (upLineStation == null && downLineStation == null) {
             throw new BusinessException(Messages.NOT_INCLUDE_SECTION.getValues());
         }
 
-        if (upSection != null && downSection != null) {
+        if (upLineStation != null && downLineStation != null) {
             throw new BusinessException(Messages.ALREADY_EXISTS_SECTION.getValues());
         }
     }

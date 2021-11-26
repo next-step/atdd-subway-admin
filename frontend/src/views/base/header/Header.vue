@@ -41,7 +41,7 @@ export default {
         },
         {
           _id: 3,
-          link: '/sections',
+          link: '/lineStations',
           text: '구간 관리'
         }
       ]
