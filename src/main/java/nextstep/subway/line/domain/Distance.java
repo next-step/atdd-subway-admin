@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import javax.persistence.Embeddable;
+import nextstep.subway.common.exception.IllegalDistanceException;
 
 @Embeddable
 public class Distance {
