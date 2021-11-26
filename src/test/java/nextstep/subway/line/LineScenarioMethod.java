@@ -1,6 +1,5 @@
 package nextstep.subway.line;
 
-import com.jayway.jsonpath.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.assured.RestAssuredApi;
@@ -8,6 +7,7 @@ import nextstep.subway.line.dto.LineEditRequest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,8 +18,8 @@ import static org.springframework.http.HttpStatus.*;
 
 class LineScenarioMethod {
 
-    public static LineRequest 지하철_노선_정보(String name, String color, Map<String, Long> terminus, int distance) {
-        return new LineRequest(name, color, terminus.get("upStationId"), terminus.get("downStationId"), distance);
+    public static LineRequest 지하철_노선_정보(String name, String color, Long upStationId, Long downStationId, int distance) {
+        return new LineRequest(name, color, upStationId, downStationId, distance);
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest request) {
@@ -65,10 +65,10 @@ class LineScenarioMethod {
                 .containsExactly(request.getName(), request.getColor());
     }
 
-    public static void 지하철_노선_구간_정렬됨(ExtractableResponse<Response> response, Map<String, Long> terminus) {
-        List<Integer> stationIds = JsonPath.parse(response.jsonPath().getList("stations")).read("$[*].id");
-        assertThat(stationIds)
-                .containsExactly(terminus.get("upStationId").intValue(), terminus.get("downStationId").intValue());
+    public static void 지하철_노선_구간_정렬됨(ExtractableResponse<Response> response, Map<String, Long> stations) {
+        List<Long> stationIds = response.jsonPath().getList("stations.id", Long.class);
+        Long[] exceptedIds = new ArrayList<>(stations.values()).toArray(new Long[0]);
+        assertThat(stationIds).containsExactly(exceptedIds);
     }
 
     public static ExtractableResponse<Response> 지하철_노선_수정_요청(String uri, LineEditRequest request) {

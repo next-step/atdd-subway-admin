@@ -2,9 +2,11 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineCreateResponse;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
@@ -53,13 +55,24 @@ public class LineService {
         LineResponse.of(line);
     }
 
-    private Line findLine(Long id) {
-        return lineRepository.findById(id)
-                .orElseThrow(() -> error(NOT_FOUND_LINE));
-    }
-
     @Transactional
     public void deleteLind(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    @Transactional
+    public LineCreateResponse addSection(Long id, SectionRequest request) {
+        Line line = findLine(id);
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+
+        Section section = request.toSection(upStation, downStation);
+        line.addSection(section);
+        return LineCreateResponse.of(line);
+    }
+
+    private Line findLine(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> error(NOT_FOUND_LINE));
     }
 }

@@ -9,6 +9,7 @@ import nextstep.subway.station.dto.StationResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -57,22 +58,31 @@ public class StationScenarioMethod {
         assertThat(response.statusCode()).isEqualTo(NO_CONTENT.value());
     }
 
-    public static Long 지하철_종점역_생성됨(StationRequest request) {
+    public static Long 생성된_지하철_역_ID(StationRequest request) {
         ExtractableResponse<Response> response = 지하철_역_생성_요청(request);
         return response.as(StationResponse.class).getId();
     }
 
-    public static Map<String, Long> 지하철_종점역_정보(String upStationName, String downStationName) {
+    public static Map<String, Long> 지하철_역_정보(String upStationName, String downStationName) {
         HashMap<String, Long> terminus = new HashMap<>();
-        terminus.put("upStationId", 지하철_종점역_생성됨(new StationRequest(upStationName)));
-        terminus.put("downStationId", 지하철_종점역_생성됨(new StationRequest(downStationName)));
+        terminus.put(upStationName, 생성된_지하철_역_ID(new StationRequest(upStationName)));
+        terminus.put(downStationName, 생성된_지하철_역_ID(new StationRequest(downStationName)));
         return terminus;
     }
 
-    public static Map<String, Long> 등록되지_않은_지하철_종점역() {
+    public static Map<String, Long> 등록되지_않은_지하철_역() {
         HashMap<String, Long> terminus = new HashMap<>();
-        terminus.put("upStationId", 1L);
-        terminus.put("downStationId", 2L);
+        terminus.put("상행", 1L);
+        terminus.put("하행", 2L);
         return terminus;
+    }
+
+    public static TreeMap<String, Long> 지하철_역_여러개_등록되어_있음(StationRequest... request) {
+        TreeMap<String, Long> stationIds = new TreeMap<>();
+        for (StationRequest req : request) {
+            Long stationId = 생성된_지하철_역_ID(req);
+            stationIds.put(req.getName(), stationId);
+        }
+        return stationIds;
     }
 }

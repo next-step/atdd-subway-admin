@@ -34,15 +34,14 @@ public class Section {
     protected Section() {
     }
 
-    private Section(Station upStation, Station downStation, int distance, Line line) {
+    private Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = new Distance(distance);
-        this.line = line;
     }
 
-    public static Section of(Station upStation, Station downStation, int distance, Line line) {
-        return new Section(upStation, downStation, distance, line);
+    public static Section of(Station upStation, Station downStation, int distance) {
+        return new Section(upStation, downStation, distance);
     }
 
     public boolean isConnectable(Section section) {
@@ -81,6 +80,10 @@ public class Section {
 
     public boolean isBetweenStations(Section section) {
         return upStation.equals(section.upStation) || downStation.equals(section.downStation);
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
     }
 
     public Long getId() {

@@ -81,7 +81,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
         - [ ] 지하철 역이 등록되지 않은 경우 지하철 역 제거에 실패한다.
 
 - 지하철 구간 (Section)
-    - [ ] 지하철 노선의 구간을 생성한다.
+    - [x] 지하철 노선의 구간을 생성한다.
         - [x] 종점역을 연장한 새로운 구간을 생성한다.
         - [x] 구간 사이에 새로운 구간을 생성한다.
         - [x] 구간에 등록할 지하철 역이 없는 경우 지하철 구간 생성에 실패한다.
@@ -89,8 +89,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
         - [x] 연결 가능한 구간이 없는 경우 지하철 구간 생성에 실패한다.
         - [x] 구간의 거리가 최소 거리 이하인 경우 지하철 구간 생성에 실패한다.
         - [X] 기존 역 사이의 거리보다 크거나 같은 경우 지하철 구간 생성에 실패한다.
-    - [ ] 지하철 구간 목록을 조회한다.
-        - [x] 지하철 구간을 상행역 부터 하행역 순으로 정렬한다.
 
 - 지하철 노선 (Line)
     - [x] 지하철 노선을 생성한다.
@@ -99,6 +97,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
         - [x] 지하철 노선이 이미 등록되어 있는 경우 지하철 노선 생성에 실패한다.
     - [x] 지하철 노선 목록을 조회한다.
     - [x] 지하철 노선 1건을 조회한다.
+        - [x] 지하철 구간을 상행역 부터 하행역 순으로 정렬한다.
         - [x] 지하철 노선이 등록되지 않은 경우 지하철 노선 조회가 실패한다.
     - [x] 지하철 노선을 수정한다.
         - [x] 지하철 노선이 등록되지 않은 경우 지하철 노선 수정에 실패한다.
@@ -173,11 +172,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
             Given 기존 역 사이의 거리보다 크거나 같다.
             When 지하철 구간을 생성 요청한다.
             Then 지하철 구간 생성이 실패한다.
-  
-        Scenario: 지하철 구간을 상행역 부터 하행역 순으로 정렬하여 목록을 조회한다.
-            Given 각 구간을 상행역 부터 하행역 순으로 정렬한다.
-            When 지하철 구간 목록을 조회 요청한다.
-            Then 지하철 구간 목록이 조회된다.
     ```
 
 - 지하철 노선

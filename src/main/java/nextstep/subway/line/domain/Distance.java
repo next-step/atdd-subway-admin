@@ -7,7 +7,7 @@ import static nextstep.subway.line.ui.exception.InvalidDistanceException.error;
 @Embeddable
 public class Distance {
 
-    protected static final int MIN_DISTANCE = 0;
+    public static final int MIN_DISTANCE = 0;
     public static final String SHORT_MIN_DISTANCE = "지하철 구간 사이의 거리는 " + MIN_DISTANCE + "보다 커야 합니다.";
     public static final String LONG_DISTANCE_BETWEEN_SECTION = "구간 거리가 기존 역 사이의 거리보다 작야아 합니다.";
 

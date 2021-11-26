@@ -36,9 +36,9 @@ class SectionTest {
     @Test
     void connectTerminusExtend() {
         // given
-        line.addSections(generateSections(stations, 5, line));
-        Section upStationExtend = getSection(Station.of("상행연장", "강남"), 2, line);
-        Section downStationExtend = getSection(Station.of("판교", "하행연장"), 3, line);
+        line.addSections(generateSections(stations, 5));
+        Section upStationExtend = getSection(Station.of("상행연장", "강남"), 2);
+        Section downStationExtend = getSection(Station.of("판교", "하행연장"), 3);
 
 
         // when
@@ -56,9 +56,9 @@ class SectionTest {
     @Test
     void connectBetweenStations() {
         // given
-        Section section = getSection(Station.of("강남", "청계산입구"), 9, line);
-        Section newUpSection = getSection(Station.of("강남", "양재"), 3, line);
-        Section newDownSection = getSection(Station.of("양재시민의숲", "청계산입구"), 4, line);
+        Section section = getSection(Station.of("강남", "청계산입구"), 9);
+        Section newUpSection = getSection(Station.of("강남", "양재"), 3);
+        Section newDownSection = getSection(Station.of("양재시민의숲", "청계산입구"), 4);
         line.addSection(section);
 
         // when
@@ -76,8 +76,8 @@ class SectionTest {
     @DisplayName("상행역 또는 하행역이 없는 경우 예외 발생")
     void validateNotConnectable() {
         // given
-        Section section1 = getSection(Station.of("강남", "양재"), 5, line);
-        Section section2 = getSection(Station.of("판교", "광교"), 5, line);
+        Section section1 = getSection(Station.of("강남", "양재"), 5);
+        Section section2 = getSection(Station.of("판교", "광교"), 5);
         line.addSection(section1);
 
         // when // then
@@ -91,7 +91,7 @@ class SectionTest {
     void validateSectionDuplication() {
         // given
         List<Station> stations = Station.of("강남", "양재", "강남", "양재");
-        List<Section> sections = generateSections(stations, 3, line);
+        List<Section> sections = generateSections(stations, 3);
 
         // when // then
         assertThatThrownBy(() -> line.addSections(sections))
@@ -106,7 +106,7 @@ class SectionTest {
         List<Station> stations = Station.of("강남", "양재");
 
         // when // then
-        assertThatThrownBy(() -> getSection(stations, MIN_DISTANCE, line))
+        assertThatThrownBy(() -> getSection(stations, MIN_DISTANCE))
                 .withFailMessage(SHORT_MIN_DISTANCE)
                 .isInstanceOf(InvalidDistanceException.class);
     }
@@ -116,8 +116,8 @@ class SectionTest {
     @ValueSource(ints = {5, 6})
     void validateLongDistanceBetweenSection(int invalidDistance) {
         // given
-        Section section1 = getSection(Station.of("강남", "양재시민의숲"), 5, line);
-        Section section2 = getSection(Station.of("양재", "양재시민의숲"), invalidDistance, line);
+        Section section1 = getSection(Station.of("강남", "양재시민의숲"), 5);
+        Section section2 = getSection(Station.of("양재", "양재시민의숲"), invalidDistance);
         line.addSection(section1);
 
 
@@ -131,7 +131,7 @@ class SectionTest {
     @DisplayName("구간 목록을 상행역 부터 하행역 순으로 정렬")
     void sortedSections() {
         // given
-        List<Section> sections = generateSections(stations, 4, line);
+        List<Section> sections = generateSections(stations, 4);
 
         // when
         line.addSections(sections);
@@ -142,13 +142,13 @@ class SectionTest {
                 .containsExactly("강남", "양재", "양재시민의숲", "청계산입구", "판교");
     }
 
-    private Section getSection(List<Station> stations, int distance, Line line) {
-        return Section.of(stations.get(0), stations.get(1), distance, line);
+    private Section getSection(List<Station> stations, int distance) {
+        return Section.of(stations.get(0), stations.get(1), distance);
     }
 
-    private List<Section> generateSections(List<Station> stations, int distance, Line line) {
+    private List<Section> generateSections(List<Station> stations, int distance) {
         return IntStream.range(0, stations.size() - 1)
-                .mapToObj(i -> Section.of(stations.get(i), stations.get(i + 1), distance, line))
+                .mapToObj(i -> Section.of(stations.get(i), stations.get(i + 1), distance))
                 .collect(Collectors.toList());
     }
 }
