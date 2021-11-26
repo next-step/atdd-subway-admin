@@ -14,8 +14,8 @@ import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
+import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,25 +26,28 @@ public class LineService {
 
     private final LineRepository lineRepository;
 
-    private final StationRepository stationRepository;
+    private final StationService stationService;
 
-    public LineService(LineRepository lineRepository,
-        StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
     public LineResponse saveLine(LineRequest request) {
         Line line = request.toLine();
         validateDuplicateLine(line);
 
-        LineStation lineStation = LineStation.of(request.getUpStationId(),
-            request.getDownStationId(), Distance.of(request.getDistance()));
+        Station station = stationService.findStation(request.getUpStationId());
+        Station nextStation = stationService.findStation(request.getDownStationId());
+
+        LineStation lineStation = LineStation.of(station.getId(), nextStation.getId(),
+            Distance.of(request.getDistance()));
         line.addLineStation(lineStation);
 
         Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
     }
+
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
         Line persistLine = findLine(id);
@@ -67,9 +70,7 @@ public class LineService {
             .map(LineStation::getStationId)
             .collect(Collectors.toList());
 
-        Map<Long, Station> stations = stationRepository.findAllById(stationIds).stream()
-            .collect(Collectors.toMap(Station::getId, Function.identity()));
-
+        Map<Long, Station> stations = stationService.findAllById(stationIds);
         List<LineStationResponse> lineStationResponses = extractLineStationResponses(line,
             stations);
 
