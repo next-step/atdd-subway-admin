@@ -38,4 +38,20 @@ public class Section extends BaseEntity {
         this.downStation = downStation;
         this.distance = distance;
     }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
 }
