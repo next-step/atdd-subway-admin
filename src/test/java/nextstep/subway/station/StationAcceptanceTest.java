@@ -7,10 +7,6 @@ import nextstep.subway.AcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import static nextstep.subway.utils.StationAcceptanceTestUtil.*;
 
@@ -22,13 +18,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStation() {
         // given
         // when
-        ExtractableResponse<Response> 지하철역_등록_응답 = 지하철됨_역_생성_됨("강남역");
+        ExtractableResponse<Response> 지하철역등록응답 = 지하철됨_역_생성_됨("강남역");
 
         // then
-        assertAll(
-            () -> assertThat(지하철역_등록_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-            () -> assertThat(지하철역_등록_응답.header("Location")).isNotBlank()
-        );
+        지하철역_응답_검증(지하철역등록응답, HttpStatus.CREATED);
+        지하철_등록_성공(지하철역등록응답);
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
@@ -39,10 +33,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철됨_역_생성_됨(stationName);
 
         // when
-        ExtractableResponse<Response> 지하철역_등록_응답 = 지하철됨_역_생성_됨(stationName);
+        ExtractableResponse<Response> 지하철역등록응답 = 지하철됨_역_생성_됨(stationName);
 
         // then
-        assertThat(지하철역_등록_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철역_응답_검증(지하철역등록응답, HttpStatus.BAD_REQUEST);
     }
 
 
@@ -50,32 +44,28 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         // given
-        ExtractableResponse<Response> 지하철역_등록_응답1 = 지하철됨_역_생성_됨("강남역");
-        ExtractableResponse<Response> 지하철역_등록_응답2 = 지하철됨_역_생성_됨("역삼역");
+        Long 강남역ID = 지하철됨_역_생성_됨_toId("강남역");
+        Long 역삼역ID = 지하철됨_역_생성_됨_toId("역삼역");
 
         // when
-        ExtractableResponse<Response> 지하철역_목록_응답 = 지하철_역_목록_조회();
+        ExtractableResponse<Response> 지하철역목록응답 = 지하철_역_목록_조회();
 
         // then
-        List<Long> 생성된_지하철역_예상_ID_목록 = ids_추출_By_Location(Arrays.asList(지하철역_등록_응답1, 지하철역_등록_응답2));
-        List<Long> 지하철역_목록_조회_지하철역_ID_목록 = ids_추출_By_StationResponse(지하철역_목록_응답);
-        assertAll(
-            () -> assertThat(지하철역_목록_응답.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(지하철역_목록_조회_지하철역_ID_목록).containsAll(생성된_지하철역_예상_ID_목록)
-        );
+        지하철역_응답_검증(지하철역목록응답, HttpStatus.OK);
+        지하철_역_목록_조회에_역ID_포함됨(Arrays.asList(강남역ID, 역삼역ID), 지하철역목록응답);
     }
 
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> 지하철역_등록_응답 = 지하철됨_역_생성_됨("강남역");
+        ExtractableResponse<Response> 지하철역등록응답 = 지하철됨_역_생성_됨("강남역");
 
         // when
-        ExtractableResponse<Response> 지하철역_제거_응답 = 지하철_역_제거_함(지하철역_등록_응답);
+        ExtractableResponse<Response> 지하철역제거응답 = 지하철_역_제거_함(지하철역등록응답);
 
         // then
-        assertThat(지하철역_제거_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        지하철역_응답_검증(지하철역제거응답, HttpStatus.NO_CONTENT);
     }
 
 }

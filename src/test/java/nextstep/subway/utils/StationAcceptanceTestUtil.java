@@ -1,5 +1,7 @@
 package nextstep.subway.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -8,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import nextstep.subway.station.dto.StationResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 public class StationAcceptanceTestUtil {
@@ -24,7 +27,6 @@ public class StationAcceptanceTestUtil {
             .then().log().all()
             .extract();
     }
-
 
     public static ExtractableResponse<Response> 지하철됨_역_생성_됨(String stationName) {
         Map<String, String> params = 지하철_역_생성_파라미터_맵핑(stationName);
@@ -69,10 +71,17 @@ public class StationAcceptanceTestUtil {
             .collect(Collectors.toList());
     }
 
-    public static List<Long> ids_추출_By_Location(
-        List<ExtractableResponse<Response>> createResponses) {
-        return createResponses.stream()
-            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-            .collect(Collectors.toList());
+    public static void 지하철역_응답_검증(ExtractableResponse<Response> createResponse,
+        HttpStatus created) {
+        assertThat(createResponse.statusCode()).isEqualTo(created.value());
+    }
+
+    public static void 지하철_등록_성공(ExtractableResponse<Response> createResponse) {
+        assertThat(createResponse.header("Location")).isNotBlank();
+    }
+
+    public static void 지하철_역_목록_조회에_역ID_포함됨(List<Long> createdStationIds,
+        ExtractableResponse<Response> stationsListResponse) {
+        assertThat(ids_추출_By_StationResponse(stationsListResponse)).containsAll(createdStationIds);
     }
 }

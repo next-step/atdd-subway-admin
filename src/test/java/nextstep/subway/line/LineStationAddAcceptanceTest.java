@@ -43,17 +43,29 @@ public class LineStationAddAcceptanceTest extends AcceptanceTest {
     void 기존_구간_사이에_역추가() {
         // given
         // when
-        ExtractableResponse<Response> 노선_구간_추가_응답 = 지하철_노선구간_사이에_역_추가_되어_있음(노선ID, 강동구청역ID,
+        ExtractableResponse<Response> 노선구간추가응답 = 지하철_노선구간_사이에_역_추가_되어_있음(노선ID, 강동구청역ID,
             SAFE_DISTANCE);
 
         // then
-        지하철_구간_요청_응답_검증(노선_구간_추가_응답, HttpStatus.CREATED);
+        지하철_구간_요청_응답_검증(노선구간추가응답, HttpStatus.CREATED);
     }
 
+    @DisplayName("새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정")
+    @Test
+    void 기존_구간_사이에_역추가_후_역_사이_길이_검증() {
+        // given
+        지하철_노선구간_사이에_역_추가_되어_있음(노선ID, 강동구청역ID, SAFE_DISTANCE);
+
+        // when
+        ExtractableResponse<Response> 노선_조회_응답 = 지하철_노선_조회_요청(노선ID);
+
+        // then
+        노선_사이_역_추가_거리_마이너스_검증(노선_조회_응답, SAFE_DISTANCE, SAFE_DISTANCE, 0);
+    }
 
     @DisplayName("지하철 노선에 여러개의 역을 순서대로 등록한다.")
     @Test
-    void 지하철노선_노회_역_정렬_등록() {
+    void 지하철노선_지하철역_정렬_검증() {
         // given
         지하철_노선구간_사이에_역_추가_되어_있음(노선ID, 강동구청역ID, SAFE_DISTANCE);
 
@@ -98,11 +110,11 @@ public class LineStationAddAcceptanceTest extends AcceptanceTest {
     void 추가_역길이_기존_역사이_길이와_같으면_실패() {
         // given
         // when
-        ExtractableResponse<Response> 노선_구간_추가_응답 = 지하철_노선구간_사이에_역_추가_되어_있음(노선ID, 강동구청역ID,
+        ExtractableResponse<Response> 노선구간추가응답 = 지하철_노선구간_사이에_역_추가_되어_있음(노선ID, 강동구청역ID,
             BASE_DISTANCE);
 
         // then
-        지하철_구간_요청_응답_검증(노선_구간_추가_응답, HttpStatus.BAD_REQUEST);
+        지하철_구간_요청_응답_검증(노선구간추가응답, HttpStatus.BAD_REQUEST);
     }
 
 
@@ -111,11 +123,11 @@ public class LineStationAddAcceptanceTest extends AcceptanceTest {
     void 추가_역길이_기존_역사이_길이_이상이면_실패() {
         // given
         // when
-        ExtractableResponse<Response> 노선_구간_추가_응답 = 지하철_노선구간_사이에_역_추가_되어_있음(노선ID, 강동구청역ID,
+        ExtractableResponse<Response> 노선구간추가응답 = 지하철_노선구간_사이에_역_추가_되어_있음(노선ID, 강동구청역ID,
             OVER_DISTANCE);
 
         // then
-        지하철_구간_요청_응답_검증(노선_구간_추가_응답, HttpStatus.BAD_REQUEST);
+        지하철_구간_요청_응답_검증(노선구간추가응답, HttpStatus.BAD_REQUEST);
     }
 
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
@@ -123,11 +135,11 @@ public class LineStationAddAcceptanceTest extends AcceptanceTest {
     void 상행_하행_이미_모두_등록시_실패() {
         // given
         // when
-        ExtractableResponse<Response> 노선_구간_추가_응답 = 지하철_노선구간_사이에_역_추가_되어_있음(노선ID, 잠실역ID,
+        ExtractableResponse<Response> 노선구간추가응답 = 지하철_노선구간_사이에_역_추가_되어_있음(노선ID, 잠실역ID,
             SAFE_DISTANCE);
 
         // then
-        지하철_구간_요청_응답_검증(노선_구간_추가_응답, HttpStatus.BAD_REQUEST);
+        지하철_구간_요청_응답_검증(노선구간추가응답, HttpStatus.BAD_REQUEST);
     }
 
 
@@ -139,11 +151,11 @@ public class LineStationAddAcceptanceTest extends AcceptanceTest {
         long 없는역ID2 = 지하철됨_역_생성_됨_toId("없는역2");
 
         // when
-        ExtractableResponse<Response> 노선_구간_추가_응답 = 지하철_노선구간_추가_되어_있음(노선ID, 없는역ID1, 없는역ID2,
+        ExtractableResponse<Response> 노선구간추가응답 = 지하철_노선구간_추가_되어_있음(노선ID, 없는역ID1, 없는역ID2,
             SAFE_DISTANCE);
 
         // then
-        지하철_구간_요청_응답_검증(노선_구간_추가_응답, HttpStatus.BAD_REQUEST);
+        지하철_구간_요청_응답_검증(노선구간추가응답, HttpStatus.BAD_REQUEST);
     }
 
 

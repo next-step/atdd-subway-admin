@@ -41,16 +41,6 @@ public class LineAcceptanceTestUtil {
             .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_조회_요청(
-        ExtractableResponse<Response> createResponse) {
-        long lineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
-        return RestAssured.given().log().all()
-            .when()
-            .get("/lines/" + lineId)
-            .then().log().all()
-            .extract();
-    }
-
     public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long lineId) {
         return RestAssured.given().log().all()
             .when()
@@ -90,23 +80,6 @@ public class LineAcceptanceTestUtil {
             .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선구간_추가_요청(Long lineId,
-        Map<String, String> params) {
-        return RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines/" + lineId + "/sections")
-            .then().log().all()
-            .extract();
-    }
-
-
-    public static ExtractableResponse<Response> 지하철_노선구간_추가_되어_있음(Long lineId, Long stationId,
-        Long nextStationId, int distance) {
-        Map<String, String> params = 지하철_노선_구간_추가_파라미터_맵핑(stationId, nextStationId, distance);
-        return 지하철_노선구간_추가_요청(lineId, params);
-    }
 
     public static Map<String, String> 지하철_노선_생성_파라미터_맵핑(String lineName, String color) {
         Map<String, String> params = new HashMap<>();
@@ -126,26 +99,10 @@ public class LineAcceptanceTestUtil {
         return params;
     }
 
-    public static Map<String, String> 지하철_노선_구간_추가_파라미터_맵핑(Long stationId, Long nextStationId,
-        int distance) {
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", String.valueOf(stationId));
-        params.put("downStationId", String.valueOf(nextStationId));
-        params.put("distance", String.valueOf(distance));
-        return params;
-    }
-
     public static List<Long> ids_추출_ByLineResponse(ExtractableResponse<Response> response) {
         return response.jsonPath().getList(".", LineResponse.class).stream()
             .map(it -> it.getId())
             .collect(Collectors.toList());
-    }
-
-    public static void 노선_등록_성공(ExtractableResponse<Response> lineCreateResponse) {
-        assertAll(
-            () -> assertThat(lineCreateResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-            () -> assertThat(lineCreateResponse.header("Location")).isNotBlank()
-        );
     }
 
     public static void 노선_등록_실패(ExtractableResponse<Response> lineCreateResponse,
@@ -155,20 +112,20 @@ public class LineAcceptanceTestUtil {
 
     public static void 노선_조회_노선ID_포함됨(ExtractableResponse<Response> response,
         List<Long> expectedLineIds) {
-        List<Long> 결과_등록_노선_ID_목록 = ids_추출_ByLineResponse(response);
+        List<Long> 결과등록노선ID목록 = ids_추출_ByLineResponse(response);
 
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(결과_등록_노선_ID_목록).containsAll(expectedLineIds)
+            () -> assertThat(결과등록노선ID목록).containsAll(expectedLineIds)
         );
     }
 
     public static void 노선_수정_성공(Map<String, String> updateParams,
         ExtractableResponse<Response> updateResponse) {
-        String 수정된_노선_이름 = updateResponse.jsonPath().get("name");
+        String 수정된노선이름 = updateResponse.jsonPath().get("name");
         assertAll(
             () -> assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(수정된_노선_이름).isEqualTo(updateParams.get("name"))
+            () -> assertThat(수정된노선이름).isEqualTo(updateParams.get("name"))
         );
     }
 }
