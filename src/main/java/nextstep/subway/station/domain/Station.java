@@ -14,11 +14,20 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    public Station() {
+    protected Station() {
     }
 
-    public Station(String name) {
+    private Station(String name) {
+        validate(name);
         this.name = name;
+    }
+
+    private void validate(String name) {
+        if (name.isEmpty()) throw new IllegalArgumentException();
+    }
+
+    public static Station of(String name) {
+        return new Station(name);
     }
 
     public Long getId() {

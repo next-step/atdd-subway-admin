@@ -173,8 +173,6 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_등록한_구간_포함됨(getResponse, Arrays.asList(최초_상행종점역_ID, 최초_하행종점역_ID));
     }
 
-
-
     @DisplayName("상행역을 제거한다.")
     @Test
     void deleteUpStation() {
@@ -230,10 +228,16 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteWhenOnlyOneSection() {
         // when
-        ExtractableResponse<Response> response = 구간_삭제_요청함(구간_테스트_노선_ID, 변경_하행종점역_ID);
+        ExtractableResponse<Response> response = 구간_삭제_요청함(구간_테스트_노선_ID, 최초_상행종점역_ID);
 
         // then
         구간_삭제_실패됨_마지막_구간_예외(response);
+
+        //when
+        ExtractableResponse<Response> response2 = 구간_삭제_요청함(구간_테스트_노선_ID, 최초_하행종점역_ID);
+
+        // then
+        구간_삭제_실패됨_마지막_구간_예외(response2);
     }
 
     private ExtractableResponse<Response> 구간_생성_요청함(Long lineId, SectionRequest request) {

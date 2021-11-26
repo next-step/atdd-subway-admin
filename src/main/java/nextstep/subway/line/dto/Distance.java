@@ -35,7 +35,11 @@ public class Distance {
     }
 
     public int intValue() {
-        return this.distance;
+        return distance;
+    }
+
+    public boolean isBiggerThan(Distance distance) {
+        return this.distance > distance.intValue();
     }
 
     @Override
@@ -49,17 +53,5 @@ public class Distance {
     @Override
     public int hashCode() {
         return Objects.hash(distance);
-    }
-
-    public boolean isBiggerThan(Distance distance) {
-        return this.distance > distance.intValue();
-    }
-
-    public void minus(Distance distance) {
-        this.distance -= distance.intValue();
-    }
-
-    public void plus(Distance distance) {
-        this.distance += distance.intValue();
     }
 }

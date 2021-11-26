@@ -40,10 +40,18 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    public Section(Station station, Station nextStation, Distance distance) {
+    private Section(Station station, Station nextStation, Distance distance) {
+        if (Objects.isNull(station) || Objects.isNull(nextStation) || Objects.isNull(distance)) {
+            throw new NullPointerException();
+        }
+
         this.station = station;
         this.nextStation = nextStation;
         this.distance = distance;
+    }
+
+    public static Section of(Station station, Station nextStation, Distance distance) {
+        return new Section(station, nextStation, distance);
     }
 
     public boolean isSameStation(Section section) {
@@ -69,12 +77,12 @@ public class Section extends BaseEntity {
         if (addSection.isSameNextStation(nextStation)) {
             this.nextStation = addSection.station;
         }
-        this.distance.minus(addSection.distance);
+        this.distance = Distance.of(distance.intValue() - addSection.distance.intValue());
     }
 
     public void removeSection(Section deleteSection) {
         this.nextStation = deleteSection.nextStation;
-        this.distance.plus(deleteSection.distance);
+        this.distance = Distance.of(distance.intValue() + deleteSection.distance.intValue());
     }
 
     public void addLine(Line line) {
@@ -91,6 +99,11 @@ public class Section extends BaseEntity {
 
     public boolean hasStation(Station station) {
         return this.station.equals(station) || this.nextStation.equals(station);
+    }
+
+    public Section useId(Long id) {
+        this.id = id;
+        return this;
     }
 
     public Long getId() {
@@ -121,5 +134,4 @@ public class Section extends BaseEntity {
     public int hashCode() {
         return Objects.hash(getId());
     }
-
 }

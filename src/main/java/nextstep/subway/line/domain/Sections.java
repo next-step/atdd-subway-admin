@@ -29,36 +29,6 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public void add(Section addSection) {
-        addValidate(addSection);
-        insertSection(addSection);
-        sections.add(addSection);
-    }
-
-    public void delete(Station station) {
-        deleteValidate(station);
-        getSection(station).ifPresent(
-                section -> {
-                    if (section.isSameStation(station)) {
-                        findPrevSection(station).ifPresent(
-                                prevSection -> prevSection.removeSection(section)
-                        );
-                    }
-                    sections.remove(section);
-                }
-        );
-    }
-
-    public List<Station> getStations() {
-        return getOrderedStations(findFirstStation());
-    }
-
-    private void insertSection(Section addSection) {
-        getSection(addSection).ifPresent(
-                section -> section.addSection(addSection)
-        );
-    }
-
     private void addValidate(Section section) {
         if (!sections.isEmpty()) {
             validateDistance(section);
@@ -67,19 +37,10 @@ public class Sections {
         }
     }
 
-    private void deleteValidate(Station station) {
-        validateSectionSize();
-        validateExistStation(station);
-    }
-
     private void validateSectionSize() {
         if (sections.size() <= MIN_SECTIONS_SIZE) {
             throw new SectionNotDeleteException("구간을 더 이상 제거할 수 없습니다.");
         }
-    }
-
-    private void validateExistStation(Station station) {
-        getSection(station).orElseThrow(() -> new SectionNotDeleteException("구간에 역이 존재하지 않습니다."));
     }
 
     private void validateExist(Section section) {
@@ -100,6 +61,35 @@ public class Sections {
                 throw new SectionNotCreateException("유효한 길이가 아닙니다.");
             }
         });
+    }
+
+    public void add(Section addSection) {
+        addValidate(addSection);
+        insertSection(addSection);
+        sections.add(addSection);
+    }
+
+    private void insertSection(Section addSection) {
+        getSection(addSection).ifPresent(
+                section -> section.addSection(addSection)
+        );
+    }
+
+
+    public void delete(Station station) {
+        validateSectionSize();
+
+        Section section = getSection(station);
+        if (section.isSameStation(station)) {
+            findPrevSection(station).ifPresent(
+                    prev -> prev.removeSection(section)
+            );
+        }
+        sections.remove(section);
+    }
+
+    public List<Station> getStations() {
+        return getOrderedStations(findFirstStation());
     }
 
     private List<Station> getOrderedStations(Station station) {
@@ -123,22 +113,6 @@ public class Sections {
                 .getNextStation();
     }
 
-    private List<Station> getDownStations() {
-        return sections.stream().map(Section::getNextStation).collect(Collectors.toList());
-    }
-
-    private Optional<Section> getSection(Section target) {
-        return sections.stream()
-                .filter(section -> section.isSameStation(target) || section.isSameNextStation(target))
-                .findFirst();
-    }
-
-    private Optional<Section> getSection(Station station) {
-        return sections.stream()
-                .filter(section -> section.hasStation(station))
-                .findFirst();
-    }
-
     private Station findFirstStation() {
         return sections.stream()
                 .filter(section -> !getDownStations().contains(section.getStation()))
@@ -149,7 +123,26 @@ public class Sections {
 
     private Optional<Section> findPrevSection(Station station) {
         return sections.stream()
-                .filter(it -> it.isSameNextStation(station))
+                .filter(section -> section.isSameNextStation(station))
                 .findFirst();
     }
+
+    private List<Station> getDownStations() {
+        return sections.stream().map(Section::getNextStation).collect(Collectors.toList());
+    }
+
+    private Optional<Section> getSection(Section target) {
+        return sections.stream()
+                .filter(section -> section.isSameStation(target) || section.isSameNextStation(target))
+                .findFirst();
+    }
+
+    private Section getSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.hasStation(station))
+                .findFirst()
+                .orElseThrow(() -> new SectionNotDeleteException("구간에 역이 존재하지 않습니다."));
+    }
+
+
 }

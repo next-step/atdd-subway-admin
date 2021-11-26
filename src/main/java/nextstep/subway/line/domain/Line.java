@@ -22,12 +22,21 @@ public class Line extends BaseEntity {
     @Embedded
     private final Sections sections = new Sections();
 
-    public Line() {
+    protected Line() {
     }
 
-    public Line(String name, String color) {
+    private Line(String name, String color) {
+        validate(name, color);
         this.name = name;
         this.color = color;
+    }
+
+    public static Line of(String name, String color) {
+        return new Line(name, color);
+    }
+
+    private void validate(String name, String color) {
+        if (name.isEmpty() || color.isEmpty()) throw new IllegalArgumentException();
     }
 
     public void update(Line line) {
@@ -35,9 +44,10 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-    public void addSection(Section section) {
+    public Line addSection(Section section) {
         sections.add(section);
         section.addLine(this);
+        return this;
     }
 
     public void deleteSection(Station station) {
