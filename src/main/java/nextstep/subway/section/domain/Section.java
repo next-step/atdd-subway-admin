@@ -40,10 +40,8 @@ public class Section extends BaseEntity {
         }
     }
 
-    public Section withLine(final Line line) {
+    public void withLine(final Line line) {
         this.line = line;
-        this.line.addSection(this);
-        return this;
     }
 
     public Station getUpStation() {

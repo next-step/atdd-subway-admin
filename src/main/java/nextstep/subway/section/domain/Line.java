@@ -21,8 +21,10 @@ public class Line extends BaseEntity {
         this.sections = new Sections();
     }
 
-    public void addSection(final Section section) {
+    public Line withSection(final Section section) {
+        section.withLine(this);
         this.sections.add(section);
+        return this;
     }
 
     public void update(final Line line) {

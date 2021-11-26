@@ -4,9 +4,12 @@ import nextstep.subway.exception.LineNameAlreadyExistsException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineResponses;
-import nextstep.subway.section.application.SectionService;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Line;
 import nextstep.subway.section.domain.LineRepository;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,18 +17,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
-    private final SectionService sectionService;
+    private final StationService stationService;
 
-    public LineService(final LineRepository lineRepository, final SectionService sectionService) {
+    public LineService(final LineRepository lineRepository, final StationService stationService) {
         this.lineRepository = lineRepository;
-        this.sectionService = sectionService;
+        this.stationService = stationService;
     }
 
     public LineResponse saveLine(final LineRequest request) {
         verifySaveLine(request);
 
-        final Line persistLine = lineRepository.save(request.toLine());
-        sectionService.saveSection(request.toSectionRequest(), persistLine);
+        final Station upStation = stationService.findStationById(request.getUpStationId());
+        final Station downStation = stationService.findStationById(request.getDownStationId());
+
+        final Section section = new Section(upStation, downStation, new Distance(request.getDistance()));
+        final Line persistLine = lineRepository.save(request.toLine()).withSection(section);
 
         return LineResponse.of(persistLine);
     }
