@@ -18,87 +18,81 @@ import nextstep.subway.line.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    @DisplayName("지하철 노선을 생성한다.")
     @Test
-    void createLine() {
+    void 지하철_노선을_생성한다() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "red");
 
         // when
-        ExtractableResponse<Response> response = requestToCreateLine(params);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
         // then
-        createLineSuccess(response);
+        지하철_노선_생성됨(response);
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
-    void createLine2() {
+    void 기존에_존재하는_지하철_노선_이름으로_지하철_노선을_생성한다() {
         // given
-        lineCreated("신분당선", "red");
+        지하철_노선_등록되어_있음("신분당선", "red");
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "red");
 
         // when
-        ExtractableResponse<Response> response = requestToCreateLine(params);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
         // then
-        createLineFail(response);
+        지하철_노선_생성_실패됨(response);
     }
 
-    @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
-    void getLines() {
+    void 지하철_노선_목록을_조회한다() {
         // given
-        long id1 = lineCreated("신분당선", "red");
-        long id2 = lineCreated("2호선", "green");
+        long id1 = 지하철_노선_등록되어_있음("신분당선", "red");
+        long id2 = 지하철_노선_등록되어_있음("2호선", "green");
         LocalDateTime now = LocalDateTime.now();
         List<LineResponse> expected = Arrays.asList(new LineResponse(id1, "신분당선", "red", now, now),
             new LineResponse(id2, "2호선", "green", now, now));
 
         // when
-        ExtractableResponse<Response> response = requestToCreateLineList();
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
-        createLineListSuccess(response);
-        lineListContainsExpected(response, expected);
+        지하철_노선_목록_응답됨(response);
+        지하철_노선_목록_포함됨(response, expected);
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
     @Test
-    void getLine() {
+    void 지하철_노선을_조회한다() {
         // given
-        long id = lineCreated("신분당선", "red");
+        long id = 지하철_노선_등록되어_있음("신분당선", "red");
         LocalDateTime now = LocalDateTime.now();
         LineResponse expected = new LineResponse(id, "신분당선", "red", now, now);
 
         // when
-        ExtractableResponse<Response> response = reqeustToGetLine(id);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(id);
 
         // then
-        getLineSuccess(response, expected);
+        지하철_노선_응답됨(response, expected);
     }
 
-    @DisplayName("존재하지 않는 지하철 노선을 조회하여 실패한다.")
     @Test
-    void getLine_throwsExceptionWHenNoExist() {
+    void 존재하지_않는_지하철_노선을_조회하여_실패한다() {
         // given
 
         // when
-        ExtractableResponse<Response> response = reqeustToGetLine(1L);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(1L);
 
         // then
-        getLineNotFound(response);
+        지하철_노선_미존재_응답됨(response);
     }
 
-    @DisplayName("지하철 노선을 수정한다.")
     @Test
-    void updateLine() {
+    void 지하철_노선을_수정한다() {
         // given
-        long id = lineCreated("신분당선", "red");
+        long id = 지하철_노선_등록되어_있음("신분당선", "red");
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "green");
@@ -106,37 +100,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineResponse expected = new LineResponse(id, "2호선", "green", now, now);
 
         // when
-        ExtractableResponse<Response> response = requestToUpdateLine(id, params);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(id, params);
 
         // then
-        updateLineSuccess(response, expected);
+        지하철_노선_수정됨(response, expected);
     }
 
-    @DisplayName("존재하지 않는 지하철 노선을 수정하여 실패한다.")
     @Test
-    void updateLine_throwsExceptionWHenNoExist() {
+    void 존재하지_않는_지하철_노선을_수정하여_실패한다() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "green");
 
         // when
-        ExtractableResponse<Response> response = requestToUpdateLine(1L, params);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(1L, params);
 
         // then
-        getLineNotFound(response);
+        지하철_노선_미존재_응답됨(response);
     }
 
-    @DisplayName("지하철 노선을 제거한다.")
     @Test
-    void deleteLine() {
+    void 지하철_노선을_제거한다() {
         // given
-        long id = lineCreated("신분당선", "red");
+        long id = 지하철_노선_등록되어_있음("신분당선", "red");
 
         // when
-        ExtractableResponse<Response> response = requestToDeleteLine(id);
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(id);
 
         // then
-        lineDeleteSuccess(response);
+        지하철_노선_삭제됨(response);
     }
 }
