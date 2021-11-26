@@ -12,6 +12,7 @@ public class Section extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
     private Line line;
@@ -29,11 +30,11 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    public Section(final Line line, final Station upStation, final Station downStation, final int distance) {
         this(null, line, upStation, downStation, distance);
     }
 
-    public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
+    private Section(final Long id, final Line line, final Station upStation, final Station downStation, final int distance) {
         this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;

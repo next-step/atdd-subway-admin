@@ -10,16 +10,18 @@ public class Station extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_station_to_line"))
     private Line line;
 
-    public Station() {
+    protected Station() {
     }
 
-    public Station(String name) {
+    public Station(final String name) {
         this.name = name;
     }
 
@@ -31,7 +33,7 @@ public class Station extends BaseEntity {
         return name;
     }
 
-    public void setLine(final Line line) {
+    public void addLine(final Line line) {
         this.line = line;
     }
 }
