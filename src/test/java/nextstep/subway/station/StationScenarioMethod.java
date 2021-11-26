@@ -58,6 +58,10 @@ public class StationScenarioMethod {
         assertThat(response.statusCode()).isEqualTo(NO_CONTENT.value());
     }
 
+    public static void 지하철_역_삭제_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(NOT_FOUND.value());
+    }
+
     public static Long 생성된_지하철_역_ID(StationRequest request) {
         ExtractableResponse<Response> response = 지하철_역_생성_요청(request);
         return response.as(StationResponse.class).getId();

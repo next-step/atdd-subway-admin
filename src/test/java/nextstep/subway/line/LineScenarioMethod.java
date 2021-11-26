@@ -79,6 +79,10 @@ class LineScenarioMethod {
         assertThat(response.statusCode()).isEqualTo(OK.value());
     }
 
+    public static void 지하철_노선_수정_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(NOT_FOUND.value());
+    }
+
     public static void 지하철_노선_수정_결과_일치됨(String uri, LineEditRequest request) {
         ExtractableResponse<Response> updatedResponse = 지하철_노선_조회_요청(uri);
         assertThat(updatedResponse.jsonPath().getObject(".", LineResponse.class))

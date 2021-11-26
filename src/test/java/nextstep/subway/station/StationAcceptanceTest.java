@@ -72,9 +72,12 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStationValidateEmptyResult() {
         // given
+        String notFoundUri = "lines/1";
 
         // when
+        ExtractableResponse<Response> response = 지하철_역_제거_요청(notFoundUri);
 
         // then
+        지하철_역_삭제_실패됨(response);
     }
 }

@@ -62,22 +62,11 @@ class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성_실패됨(response, NOT_FOUND.value());
     }
 
-    @DisplayName("지하철 구간이 등록되어 있지 않은 경우 지하철 노선 생성에 실패한다.")
-    @Test
-    void createLineWithoutSection() {
-        // given
-
-        // when
-
-        // then
-    }
-
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void findLines() {
         // given
         Map<String, Long> stations = 지하철_역_정보("강남", "광교");
-
         LineRequest 신분당선 = 지하철_노선_정보("신분당선", "bg-red-600", stations.get("강남"), stations.get("광교"), 13);
         LineRequest 수인선 = 지하철_노선_정보("수인선", "bg-yellow-600", stations.get("강남"), stations.get("광교"), 14);
 
@@ -145,10 +134,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLineValidateNotFound() {
         // given
+        String notFoundUri = "lines/1";
+        LineEditRequest 구분당선 = new LineEditRequest("구분당선", "bg-blue-600");
 
         // when
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(notFoundUri, 구분당선);
 
         // then
+        지하철_노선_수정_실패됨(response);
     }
 
     @DisplayName("지하철 노선을 제거한다.")

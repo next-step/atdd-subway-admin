@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import nextstep.subway.assured.RestAssuredApi;
 import nextstep.subway.line.dto.SectionRequest;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -29,9 +30,10 @@ class SectionScenarioMethod {
         assertThat(response.statusCode()).isEqualTo(statusCode);
     }
 
-    public static String 지하철_구간_등록되어_있음(Long upStationId, Long downStationId, int distance, String uri) {
-        SectionRequest request = new SectionRequest(upStationId, downStationId, distance);
-        ExtractableResponse<Response> createResponse = 지하철_구간_생성_요청(uri, request);
-        return createResponse.header("Location");
+    public static Map<String, Long> 등록되지_않은_구간() {
+        HashMap<String, Long> terminus = new HashMap<>();
+        terminus.put("상행", 1L);
+        terminus.put("하행", 2L);
+        return terminus;
     }
 }
