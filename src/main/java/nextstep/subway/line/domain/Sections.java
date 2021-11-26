@@ -147,9 +147,17 @@ public class Sections {
             throw new ServiceException("남은 구간은 삭제할 수 없습니다.");
         }
 
-        Optional<Section> upStation = findByUpStation(station);
-        (upStation.isPresent() ? upStation : findByDownStation(station))
+        findAnyMatchedSectionBy(station)
                 .orElseThrow(() -> {throw new StationNotFoundException(station.getId());});
+    }
+
+    private Optional<Section> findAnyMatchedSectionBy(Station station) {
+        Optional<Section> upStation = findByUpStation(station);
+        if (upStation.isPresent()) {
+            return upStation;
+        }
+
+        return findByDownStation(station);
     }
 
     private void mergeIntoNextSection(Section section, Section nextSection) {
