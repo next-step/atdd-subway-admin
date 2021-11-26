@@ -13,7 +13,6 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
 @Service
-@Transactional
 public class LineService {
     private LineRepository lineRepository;
 
@@ -21,17 +20,20 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
+    @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> getLines() {
         return lineRepository.findAll().stream()
             .map(LineResponse::of)
             .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse getLine(long id) {
         Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
         return LineResponse.of(line);
@@ -46,6 +48,7 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    @Transactional
     public void deleteLine(long id) {
         lineRepository.deleteById(id);
     }
