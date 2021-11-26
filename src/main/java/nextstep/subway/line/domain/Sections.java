@@ -1,14 +1,17 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.exception.SectionNotCreateException;
+import nextstep.subway.common.exception.SectionNotDeleteException;
 import nextstep.subway.common.exception.StationNotFoundException;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.*;
+import javax.persistence.Transient;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -20,42 +23,24 @@ import java.util.stream.Collectors;
  */
 @Embeddable
 public class Sections {
+    @Transient
+    private static final int MIN_SECTIONS_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public void add(Section section) {
+    private void addValidate(Section section) {
         if (!sections.isEmpty()) {
-            validate(section);
-            updateSection(section);
-        }
-        sections.add(section);
-    }
-
-    private void updateSection(Section section) {
-        if(getUpStations().contains(section.getStation())) {
-            sections.stream()
-                    .filter(it -> it.isSameStation(section))
-                    .findFirst()
-                    .ifPresent(it -> it.updateStation(section));
-            return;
-        }
-        if(getDownStations().contains(section.getNextStation())) {
-            sections.stream()
-                    .filter(it -> it.isSameNextStation(section))
-                    .findFirst()
-                    .ifPresent(it -> it.updateNextStation(section));
+            validateDistance(section);
+            validateDuplicate(section);
+            validateExist(section);
         }
     }
 
-    public List<Station> getStations() {
-        return getOrderedStations(findFirstStation());
-    }
-
-    private void validate(Section section) {
-        validateDistance(section);
-        validateDuplicate(section);
-        validateExist(section);
+    private void validateSectionSize() {
+        if (sections.size() <= MIN_SECTIONS_SIZE) {
+            throw new SectionNotDeleteException("구간을 더 이상 제거할 수 없습니다.");
+        }
     }
 
     private void validateExist(Section section) {
@@ -65,17 +50,46 @@ public class Sections {
     }
 
     private void validateDuplicate(Section section) {
-        if (sections.stream().allMatch(it -> it.isDuplicate(section))) {
+        if (sections.stream().allMatch(it -> it.isSameSection(section))) {
             throw new SectionNotCreateException("이미 등록된 구간입니다.");
         }
     }
 
-    private void validateDistance(Section section) {
-        findSection(section).ifPresent(it -> {
-            if (!it.isPermitDistance(section.getDistance())) {
+    private void validateDistance(Section target) {
+        getSection(target).ifPresent(section -> {
+            if (!section.isPermitDistance(target)) {
                 throw new SectionNotCreateException("유효한 길이가 아닙니다.");
             }
         });
+    }
+
+    public void add(Section addSection) {
+        addValidate(addSection);
+        insertSection(addSection);
+        sections.add(addSection);
+    }
+
+    private void insertSection(Section addSection) {
+        getSection(addSection).ifPresent(
+                section -> section.addSection(addSection)
+        );
+    }
+
+
+    public void delete(Station station) {
+        validateSectionSize();
+
+        Section section = getSection(station);
+        if (section.isSameStation(station)) {
+            findPrevSection(station).ifPresent(
+                    prev -> prev.removeSection(section)
+            );
+        }
+        sections.remove(section);
+    }
+
+    public List<Station> getStations() {
+        return getOrderedStations(findFirstStation());
     }
 
     private List<Station> getOrderedStations(Station station) {
@@ -88,7 +102,8 @@ public class Sections {
     }
 
     private boolean notExistStation(Section section) {
-        return !getStations().contains(section.getStation()) && !getStations().contains(section.getNextStation());
+        return getStations().stream()
+                .noneMatch(station -> station.equals(section.getStation()) || station.equals(section.getNextStation()));
     }
 
     private Station findNextStation(Station station) {
@@ -98,25 +113,36 @@ public class Sections {
                 .getNextStation();
     }
 
-    private List<Station> getUpStations() {
-        return sections.stream().map(Section::getStation).collect(Collectors.toList());
+    private Station findFirstStation() {
+        return sections.stream()
+                .filter(section -> !getDownStations().contains(section.getStation()))
+                .findFirst()
+                .orElseThrow(StationNotFoundException::new)
+                .getStation();
+    }
+
+    private Optional<Section> findPrevSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.isSameNextStation(station))
+                .findFirst();
     }
 
     private List<Station> getDownStations() {
         return sections.stream().map(Section::getNextStation).collect(Collectors.toList());
     }
 
-    private Optional<Section> findSection(Section section) {
+    private Optional<Section> getSection(Section target) {
         return sections.stream()
-                .filter(it -> it.getStation().equals(section.getStation()))
+                .filter(section -> section.isSameStation(target) || section.isSameNextStation(target))
                 .findFirst();
     }
 
-    private Station findFirstStation() {
+    private Section getSection(Station station) {
         return sections.stream()
-                .filter(it -> !getDownStations().contains(it.getStation()))
+                .filter(section -> section.hasStation(station))
                 .findFirst()
-                .orElseThrow(StationNotFoundException::new)
-                .getStation();
+                .orElseThrow(() -> new SectionNotDeleteException("구간에 역이 존재하지 않습니다."));
     }
+
+
 }

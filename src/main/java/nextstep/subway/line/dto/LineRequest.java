@@ -30,17 +30,13 @@ public class LineRequest implements BaseRequest {
         return new LineRequest(name, color, upStationId, downStationId, distance);
     }
 
+    public Line toLine() {
+        return Line.of(name, color);
+    }
+
     @Override
     public boolean hasDuplicateStations() {
         return Objects.equals(upStationId, downStationId);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
     }
 
     @Override
@@ -58,7 +54,13 @@ public class LineRequest implements BaseRequest {
         return distance;
     }
 
-    public Line toLine() {
-        return new Line(name, color);
+    public String getName() {
+        return name;
     }
+
+    public String getColor() {
+        return color;
+    }
+
+
 }

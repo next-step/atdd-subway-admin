@@ -1,12 +1,10 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.entity.BaseEntity;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.Distance;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-
 import java.util.Objects;
 
 import static javax.persistence.FetchType.LAZY;
@@ -24,7 +22,8 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "STATION_ID")
@@ -41,48 +40,74 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    public Section(Station station, Station nextStation, Distance distance) {
+    private Section(Station station, Station nextStation, Distance distance) {
+        if (Objects.isNull(station) || Objects.isNull(nextStation) || Objects.isNull(distance)) {
+            throw new NullPointerException();
+        }
+
         this.station = station;
         this.nextStation = nextStation;
-        this.distance = distance.intValue();
+        this.distance = distance;
+    }
+
+    public static Section of(Station station, Station nextStation, Distance distance) {
+        return new Section(station, nextStation, distance);
     }
 
     public boolean isSameStation(Section section) {
         return station.equals(section.station);
     }
 
+    public boolean isSameStation(Station target) {
+        return station.equals(target);
+    }
+
     public boolean isSameNextStation(Section section) {
         return nextStation.equals(section.nextStation);
     }
 
-    public void updateStation(Section section) {
-        this.station = section.station;
-        this.distance -= section.distance;
+    public boolean isSameNextStation(Station target) {
+        return nextStation.equals(target);
     }
 
-    public void updateNextStation(Section section) {
-        this.nextStation = section.station;
-        this.distance -= section.distance;
+    public void addSection(Section addSection) {
+        if (addSection.isSameStation(station)) {
+            this.station = addSection.nextStation;
+        }
+        if (addSection.isSameNextStation(nextStation)) {
+            this.nextStation = addSection.station;
+        }
+        this.distance = Distance.of(distance.intValue() - addSection.distance.intValue());
+    }
+
+    public void removeSection(Section deleteSection) {
+        this.nextStation = deleteSection.nextStation;
+        this.distance = Distance.of(distance.intValue() + deleteSection.distance.intValue());
     }
 
     public void addLine(Line line) {
         this.line = line;
     }
 
-    public boolean isPermitDistance(int distance) {
-        return this.distance > distance;
+    public boolean isPermitDistance(Section target) {
+        return distance.isBiggerThan(target.distance);
     }
 
-    public boolean isDuplicate(Section section) {
+    public boolean isSameSection(Section section) {
         return station.equals(section.getStation()) && nextStation.equals(section.getNextStation());
+    }
+
+    public boolean hasStation(Station station) {
+        return this.station.equals(station) || this.nextStation.equals(station);
+    }
+
+    public Section useId(Long id) {
+        this.id = id;
+        return this;
     }
 
     public Long getId() {
         return id;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 
     public Station getStation() {

@@ -1,5 +1,7 @@
 package nextstep.subway.line.dto;
 
+import javax.persistence.Embeddable;
+import javax.persistence.Transient;
 import java.util.Objects;
 
 /**
@@ -9,14 +11,19 @@ import java.util.Objects;
  * date : 2021/11/21
  * description :
  */
+@Embeddable
 public class Distance {
+    @Transient
     public static final int MIN_DISTANCE = 1;
 
-    private final int distance;
+    private int distance;
 
     private Distance(int distance) {
         validate(distance);
         this.distance = distance;
+    }
+
+    protected Distance() {
     }
 
     public static Distance of(int distance) {
@@ -28,7 +35,11 @@ public class Distance {
     }
 
     public int intValue() {
-        return this.distance;
+        return distance;
+    }
+
+    public boolean isBiggerThan(Distance distance) {
+        return this.distance > distance.intValue();
     }
 
     @Override

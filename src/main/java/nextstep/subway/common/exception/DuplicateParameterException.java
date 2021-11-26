@@ -2,7 +2,7 @@ package nextstep.subway.common.exception;
 
 /**
  * packageName : nextstep.subway.common.exception
- * fileName : NotFoundException
+ * fileName : DuplicateParameterException
  * author : haedoang
  * date : 2021/11/18
  * description : 중복 데이터 관련 예외처리

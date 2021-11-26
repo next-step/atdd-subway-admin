@@ -6,7 +6,6 @@ public class StationRequest {
     private String name;
 
     private StationRequest() {
-
     }
 
     private StationRequest(String name) {
@@ -22,6 +21,6 @@ public class StationRequest {
     }
 
     public Station toStation() {
-        return new Station(name);
+        return Station.of(name);
     }
 }
