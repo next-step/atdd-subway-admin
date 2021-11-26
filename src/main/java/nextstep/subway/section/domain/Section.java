@@ -5,24 +5,28 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
+import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
 
 @Entity
-public class Section {
+public class Section extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long from;
-    private Long to;
+
+    @ManyToOne
+    private Station down;
+
+    @ManyToOne
+    private Station up;
+
+    private int distance;
 
     @ManyToOne
     private Line line;
-
-    public Section(Long from, Long to) {
-        this.from = from;
-        this.to = to;
-    }
 
     protected Section() {
     }
