@@ -32,7 +32,7 @@ public class Sections {
             return;
         }
         validateDuplicateBothStation(section);
-        insertion(section);
+        insert(section);
     }
 
     private void validateDuplicateBothStation(Section section) {
@@ -98,7 +98,7 @@ public class Sections {
                 .orElse(null);
     }
 
-    private void insertion(Section newSection) {
+    private void insert(Section newSection) {
         findOverlapSection(newSection)
                 .ifPresent(section -> section.shift(newSection));
 
