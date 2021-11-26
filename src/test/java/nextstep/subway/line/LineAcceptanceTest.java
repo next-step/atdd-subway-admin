@@ -117,8 +117,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 지하철_노선을_수정한다() {
 
         // given
-        StationResponse station1 = 지하철역_등록되어_있음(서울역);
-        StationResponse station2 = 지하철역_등록되어_있음(용산역);
+        StationResponse station1 = 지하철역_등록되어_있음(강남역);
+        StationResponse station2 = 지하철역_등록되어_있음(신촌역);
         LineResponse lineResponse = 지하철_노선_등록되어_있음(
             new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, station1.getId(), station2.getId(), 10));
 
@@ -138,8 +138,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 지하철_노선을_제거한다() {
 
         // given
-        StationResponse station1 = 지하철역_등록되어_있음(서울역);
-        StationResponse station2 = 지하철역_등록되어_있음(용산역);
+        StationResponse station1 = 지하철역_등록되어_있음(강남역);
+        StationResponse station2 = 지하철역_등록되어_있음(신촌역);
         LineResponse lineResponse = 지하철_노선_등록되어_있음(
             new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, station1.getId(), station2.getId(), 10));
 
