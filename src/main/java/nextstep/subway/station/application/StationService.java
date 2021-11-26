@@ -21,7 +21,7 @@ public class StationService {
 
     public StationResponse saveStation(StationRequest stationRequest) {
         Station persistStation = stationRepository.save(stationRequest.toStation());
-        return StationResponse.of(persistStation);
+        return StationResponse.from(persistStation);
     }
 
     @Transactional(readOnly = true)
@@ -29,7 +29,7 @@ public class StationService {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-                .map(station -> StationResponse.of(station))
+                .map(station -> StationResponse.from(station))
                 .collect(Collectors.toList());
     }
 

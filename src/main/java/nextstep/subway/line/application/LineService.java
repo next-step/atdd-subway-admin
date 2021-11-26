@@ -23,20 +23,20 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+        return LineResponse.from(persistLine);
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> getLines() {
         return lineRepository.findAll().stream()
-            .map(LineResponse::of)
+            .map(LineResponse::from)
             .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse getLine(long id) {
         Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
-        return LineResponse.of(line);
+        return LineResponse.from(line);
     }
 
     @Transactional
@@ -45,7 +45,7 @@ public class LineService {
         line.update(lineRequest.toLine());
         lineRepository.save(line);
 
-        return LineResponse.of(line);
+        return LineResponse.from(line);
     }
 
     @Transactional
