@@ -46,6 +46,8 @@ public class Sections {
         Section upBoundSection = upBoundSection(station).orElse(null);
         Section downBoundSection = downBoundSection(station).orElse(null);
 
+        validateForRemove(station);
+
         if (isStationInMiddleOfSection(upBoundSection, downBoundSection)) {
             removeStationInMiddleOfSection(upBoundSection, downBoundSection);
             return;
@@ -71,6 +73,11 @@ public class Sections {
         validateAlreadyExistedStations(section, stations);
         validateDistanceWhenConnect(upBoundSection, downBoundSection, section);
         validateExistUpStationOrDownStation(section, stations);
+    }
+
+    private void validateForRemove(Station station) {
+        validateExistStation(station);
+        validateLastSection();
     }
 
     private void updateWhenConnectInMiddleOfSection(Section upBoundSection,
@@ -225,6 +232,18 @@ public class Sections {
     private void validateExistUpStationOrDownStation(Section section, Set<Station> stations) {
         if (isNotExistUpStationOrDownStation(section, stations)) {
             throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어 있지 않습니다.");
+        }
+    }
+
+    private void validateExistStation(Station station) {
+        if (!getAllStations().contains(station)) {
+            throw new IllegalArgumentException("노선에 존재하지 않는 역입니다.");
+        }
+    }
+
+    private void validateLastSection() {
+        if (sections.size() <= 1) {
+            throw new IllegalArgumentException("마지막 구간은 삭제할 수 없습니다.");
         }
     }
 

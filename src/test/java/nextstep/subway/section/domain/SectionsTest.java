@@ -260,4 +260,30 @@ class SectionsTest {
         assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(Station.of(2L));
         assertThat(sections.getSections().get(0).getDistance()).isEqualTo(Distance.from(10));
     }
+
+    @Test
+    @DisplayName("노선에 없는 역 삭제시 예외 발생")
+    void 구간_삭제_예외1() {
+        // given
+        Sections sections = line.getSections();
+
+        // when, then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> sections.remove(Station.of(3L))
+            )
+            .withMessage("노선에 존재하지 않는 역입니다.");
+    }
+
+    @Test
+    @DisplayName("마지막 구역만 있을 때, 삭제시 예외 발생")
+    void 구간_삭제_예외2() {
+        // given
+        Sections sections = line.getSections();
+
+        // when, then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> sections.remove(Station.of(1L))
+            )
+            .withMessage("마지막 구간은 삭제할 수 없습니다.");
+    }
 }
