@@ -47,38 +47,41 @@ public class Sections {
     public void createSection(Section newSection) {
         createSectionValid(newSection);
 
-        final Section sectionStart = getSectionStart();
+        final Section startSection = getSectionStart();
 
-        final Section sectionEnd = getSectionEnd(sectionStart);
+        final Section endSection = getSectionEnd(startSection);
 
-        if (addBetweenStation(newSection, sectionStart, sectionEnd)) return;
+        if (isStationBetween(newSection, startSection)) {
+            addStationBetween(newSection, endSection);
+            return;
+        }
 
-        if (addDownStation(newSection, sectionEnd)) return;
+        if (isStationDown(newSection, endSection)) {
+            addSection(newSection);
+            return;
+        }
 
-        addUpStation(newSection, sectionStart);
+        addStationUp(newSection, startSection);
     }
 
-    private boolean addBetweenStation(final Section newSection, final Section sectionStart, final Section sectionEnd) {
-        if (newSection.getPreStation().equals(sectionStart.getStation())) {
+    private boolean isStationBetween(final Section newSection, final Section startSection) {
+        return newSection.getPreStation().equals(startSection.getStation());
+
+    }
+
+    private boolean isStationDown(final Section newSection, final Section endSection) {
+        return newSection.getPreStation().equals(endSection.getStation());
+    }
+
+    private void addStationBetween(final Section newSection, final Section sectionEnd) {
             final Distance distance = sectionEnd.oldSectionDistance(newSection);
             sectionEnd.changePreStation(newSection.getStation());
             sectionEnd.changeDistinct(distance);
             addSection(sectionEnd);
             addSection(newSection);
-            return true;
-        }
-        return false;
     }
 
-    private boolean addDownStation(final Section newSection, final Section sectionEnd) {
-        if (newSection.getPreStation().equals(sectionEnd.getStation())) {
-            addSection(newSection);
-            return true;
-        }
-        return false;
-    }
-
-    private void addUpStation(final Section newSection, final Section sectionStart) {
+    private void addStationUp(final Section newSection, final Section sectionStart) {
         sectionStart.changePreStation(newSection.getPreStation());
         newSection.changeStation(newSection.getPreStation());
         newSection.changePreStation(null);
