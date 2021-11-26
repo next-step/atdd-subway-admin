@@ -34,8 +34,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
-        params.put("upStationId", responseExtractableResponse1.response().jsonPath().get("id"));
-        params.put("downStationId", responseExtractableResponse2.response().jsonPath().get("id"));
+        params.put("upStationId", responseExtractableResponse1.response().jsonPath().get("id").toString());
+        params.put("downStationId", responseExtractableResponse2.response().jsonPath().get("id").toString());
 
         // when
         // 지하철_노선_생성_요청
