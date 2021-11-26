@@ -20,23 +20,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "1호선");
-        params.put("color", "blue");
-
-        // when
-        // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = LineTestFixture.지하철_노선_등록("1호선", "blue");
 
         // then
         // 지하철_노선_생성됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(createResponse.header("Location")).isNotBlank();
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -44,21 +33,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = LineTestFixture.지하철_노선_등록되어_있음("1호선", "blue");
+        ExtractableResponse<Response> createResponse = LineTestFixture.지하철_노선_등록("1호선", "blue");
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
         // 지하철_노선_생성_요청
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "1호선");
-        params.put("color", "blue");
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = LineTestFixture.지하철_노선_등록("1호선", "blue");
 
         // then
         // 지하철_노선_생성_실패됨
@@ -71,10 +51,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createBlueResponse = LineTestFixture.지하철_노선_등록되어_있음("1호선", "blue");
+        ExtractableResponse<Response> createBlueResponse = LineTestFixture.지하철_노선_등록("1호선", "blue");
         assertThat(createBlueResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        ExtractableResponse<Response> createGreenResponse = LineTestFixture.지하철_노선_등록되어_있음("2호선", "green");
+        ExtractableResponse<Response> createGreenResponse = LineTestFixture.지하철_노선_등록("2호선", "green");
         assertThat(createGreenResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
@@ -98,10 +78,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLineSuccess() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createBlueResponse = LineTestFixture.지하철_노선_등록되어_있음("1호선", "blue");
+        ExtractableResponse<Response> createBlueResponse = LineTestFixture.지하철_노선_등록("1호선", "blue");
         assertThat(createBlueResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        ExtractableResponse<Response> createGreenResponse = LineTestFixture.지하철_노선_등록되어_있음("2호선", "green");
+        ExtractableResponse<Response> createGreenResponse = LineTestFixture.지하철_노선_등록("2호선", "green");
         assertThat(createGreenResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
@@ -131,7 +111,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createBlueResponse = LineTestFixture.지하철_노선_등록되어_있음("1호선", "blue");
+        ExtractableResponse<Response> createBlueResponse = LineTestFixture.지하철_노선_등록("1호선", "blue");
         assertThat(createBlueResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
@@ -163,7 +143,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createBlueResponse = LineTestFixture.지하철_노선_등록되어_있음("1호선", "blue");
+        ExtractableResponse<Response> createBlueResponse = LineTestFixture.지하철_노선_등록("1호선", "blue");
         assertThat(createBlueResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when

@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LineTestFixture {
-    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color){
+    public static ExtractableResponse<Response> 지하철_노선_등록(String name, String color){
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
