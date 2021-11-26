@@ -99,8 +99,7 @@ public class Sections {
     }
 
     private void insert(Section newSection) {
-        findOverlapSection(newSection)
-                .ifPresent(section -> section.shift(newSection));
+        findOverlapSection(newSection).ifPresent(section -> section.shift(newSection));
 
         if (hasAnyMatchedStation(newSection)) {
             sections.add(newSection);
@@ -132,14 +131,12 @@ public class Sections {
 
     public void deleteSectionByStation(Station station) {
         validateDeleteSection(station);
-        findByDownStation(station)
-                .ifPresent(section -> {
-                    Section nextSection = getNextSection(section);
-                    mergeIntoNextSection(section, nextSection);
-                    sections.remove(section);
-                });
-        findByUpStation(station)
-                .ifPresent(section -> sections.remove(section));
+        findByDownStation(station).ifPresent(section -> {
+            Section nextSection = getNextSection(section);
+            mergeIntoNextSection(section, nextSection);
+            sections.remove(section);
+        });
+        findByUpStation(station).ifPresent(section -> sections.remove(section));
     }
 
     private void validateDeleteSection(Station station) {
