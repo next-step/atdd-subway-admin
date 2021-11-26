@@ -1,6 +1,5 @@
 package nextstep.subway.line.domain;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,6 +14,7 @@ import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Section {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,13 +46,14 @@ public class Section {
         this.distance = Distance.of(distance);
     }
 
-    private void validateStationNotNull(Station station){
+    private void validateStationNotNull(Station station) {
         if (station == null) {
             throw new IllegalStationException();
         }
     }
 
-    public static Section of(final Station upStation, final Station downStation, final int distance) {
+    public static Section of(final Station upStation, final Station downStation,
+        final int distance) {
         return new Section(upStation, downStation, distance);
     }
 
