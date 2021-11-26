@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -23,7 +24,7 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public Line() {

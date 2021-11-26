@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
@@ -16,12 +17,12 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "upstation_id", foreignKey = @ForeignKey(name = "fk_section_to_upstation"))
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_to_upstation"))
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "downstation_id", foreignKey = @ForeignKey(name = "fk_section_to_downstation"))
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_to_downstation"))
     private Station downStation;
 
     private int distance;
