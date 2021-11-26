@@ -1,6 +1,9 @@
 package nextstep.subway.line.domain;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -58,6 +61,16 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return sections.getStations();
+        List<Station> stations = new ArrayList<>();
+
+        for (Section section : sections.getSections()) {
+            stations.add(section.getUpStation());
+            stations.add(section.getDownStation());
+        }
+
+        return stations.stream()
+            .distinct()
+            .sorted(Comparator.comparing(Station::getId))
+            .collect(Collectors.toList());
     }
 }

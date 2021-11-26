@@ -12,6 +12,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationRequest;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,8 +27,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private LineRequest request1;
     private LineRequest request2;
-    StationRequest stationRequest1;
-    StationRequest stationRequest2;
+    private StationRequest stationRequest1;
+    private StationRequest stationRequest2;
     private Long upStationId;
     private Long downStationId;
 
@@ -41,8 +42,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         upStationId = StationAcceptanceTest.지하철_역_등록되어_있음(stationRequest1);
         downStationId = StationAcceptanceTest.지하철_역_등록되어_있음(stationRequest2);
 
-        request1 = new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, DEFAULT_DISTANCE);
-        request2 = new LineRequest("2호선", "bg-green-600", upStationId, downStationId, DEFAULT_DISTANCE);
+        request1 = new LineRequest("신분당선", "bg-red-600", upStationId, downStationId,
+            DEFAULT_DISTANCE);
+        request2 = new LineRequest("2호선", "bg-green-600", upStationId, downStationId,
+            DEFAULT_DISTANCE);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -203,7 +206,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(String location) {
-        LineRequest modifyRequest = new LineRequest("구분당선", "bg-red-600", upStationId, downStationId, DEFAULT_DISTANCE);
+        LineRequest modifyRequest = new LineRequest("구분당선", "bg-red-600", upStationId,
+            downStationId, DEFAULT_DISTANCE);
         return 지하철_노선_수정(modifyRequest, location);
     }
 
@@ -235,6 +239,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().getString("color")).isEqualTo("bg-red-600");
         assertThat(response.body().jsonPath().getList("stations")).isNotNull();
         assertThat(response.body().jsonPath().getList("stations")).hasSize(2);
+        assertThat(response.body().jsonPath().getList("stations.id")).isEqualTo(Lists.list(1, 2));
     }
 
     private String 지하철_노선_등록되어_있음(LineRequest request) {
