@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SectionRepository extends JpaRepository<Section, Long> {
 
-	public Optional<Section> findByLineId(Long lineId);
+	Optional<Section> findByLineId(Long lineId);
 }

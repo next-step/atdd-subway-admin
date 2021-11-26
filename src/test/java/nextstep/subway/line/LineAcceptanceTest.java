@@ -11,31 +11,26 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.dto.StationRequest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-	@Autowired
-	private StationRepository stationRepository;
 
 	private static LineRequest params = new LineRequest("신분당선", "pink", 1L, 2L, 10);
 	private static LineRequest otherParams = new LineRequest("1호선", "blue", 3L, 4L, 8);
 
 	@BeforeEach
 	public void createStation() {
-		stationRepository.save(new Station("양재역"));
-		stationRepository.save(new Station("판교역"));
-		stationRepository.save(new Station("두정역"));
-		stationRepository.save(new Station("천안역"));
-
+		requestCreateStation(new StationRequest("양재역"));
+		requestCreateStation(new StationRequest("판교역"));
+		requestCreateStation(new StationRequest("두정역"));
+		requestCreateStation(new StationRequest("천안역"));
 	}
 
 	@DisplayName("지하철 노선을 생성한다.")
@@ -287,6 +282,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return RestAssured.given().log().all()
 			.when()
 			.delete(url)
+			.then().log().all()
+			.extract().response();
+	}
+
+	private Response requestCreateStation(StationRequest stationRequest) {
+		return RestAssured.given().log().all()
+			.body(stationRequest)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post("/stations")
 			.then().log().all()
 			.extract().response();
 	}
