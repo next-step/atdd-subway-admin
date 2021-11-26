@@ -1,7 +1,7 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.section.domain;
 
-import static nextstep.subway.line.domain.DistanceTest.*;
-import static nextstep.subway.line.domain.SectionTest.*;
+import static nextstep.subway.section.domain.DistanceTest.*;
+import static nextstep.subway.section.domain.SectionTest.*;
 import static nextstep.subway.station.domain.StationTest.*;
 import static org.assertj.core.api.Assertions.*;
 import java.util.HashSet;

@@ -1,4 +1,4 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.section.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
@@ -51,5 +51,9 @@ public class Section extends BaseEntity {
 
     public Station getDownStation() {
         return this.downStation;
+    }
+
+    public Distance getDistance() {
+        return distance;
     }
 }

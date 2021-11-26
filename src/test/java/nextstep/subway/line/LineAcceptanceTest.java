@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import io.restassured.response.ExtractableResponse;
@@ -11,16 +12,24 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineResponses;
-import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.utils.RestAssuredUtils;
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
     public static final LineRequest CREATE_LINE = new LineRequest("2호선", "red lighten-2", 1L, 2L, 7);
+
+    @BeforeEach
+    void before() {
+        // given
+        // 지하철역 등록되어 있음.
+        지하철역_생성_및_검증("강남역");
+        지하철역_생성_및_검증("역삼역");
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -78,8 +87,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철역_등록되어_있음
-        final Station upStation = StationAcceptanceTest.지하철역_생성("강남").as(Station.class);
-        final Station downStation = StationAcceptanceTest.지하철역_생성("삼성").as(Station.class);
+        final Station upStation = 지하철역_생성("강남").as(Station.class);
+        final Station downStation = 지하철역_생성("삼성").as(Station.class);
 
         // 지하철_노선_등록되어_있음
         final ExtractableResponse<Response> createResponse = 지하철_노선_생성_및_검증(CREATE_LINE);
@@ -144,13 +153,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     public static void 지하철_노선_응답됨(final String uri, final ExtractableResponse<Response> response) {
-        응답코드_검증(response, HttpStatus.SC_OK);
-
         final LineResponse lineResponse = response.as(LineResponse.class);
         final long expectedLineId = 아이디_추출하기(uri);
-        final long resultLineId = lineResponse.getId();
 
-        assertThat(resultLineId).isEqualTo(expectedLineId);
+        lineResponse.getStations().forEach(System.out::println);
+
+        assertAll(
+            () -> 응답코드_검증(response, HttpStatus.SC_OK),
+            () -> assertThat(lineResponse.getId()).isEqualTo(expectedLineId),
+            () -> assertThat(lineResponse.getStations()).isNotEmpty()
+        );
     }
 
     @DisplayName("지하철 노선을 수정한다.")
