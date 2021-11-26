@@ -1,9 +1,10 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.application.dto.LineUpdateRequest;
+import nextstep.subway.section.domain.Section;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -13,18 +14,16 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
+    private Sections sections = new Sections();
+
 
     public Line() {
     }
 
-    public Line(String name, String color) {
+    public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-    }
-
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
+        addSection(section);
     }
 
     public Long getId() {
@@ -39,8 +38,21 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public void update(LineUpdateRequest lineUpdateRequest) {
-        this.name = lineUpdateRequest.getName();
-        this.color = lineUpdateRequest.getColor();
+    public List<Section> getSections() {
+        return sections.getSections();
+    }
+
+    public void update(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+        section.setLine(this);
+    }
+
+    public void removeSection(Section section) {
+        sections.removeSection(section);
     }
 }
