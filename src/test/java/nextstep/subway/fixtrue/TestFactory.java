@@ -2,6 +2,9 @@ package nextstep.subway.fixtrue;
 
 import static io.restassured.RestAssured.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.MediaType;
 
 import io.restassured.response.ExtractableResponse;
@@ -22,6 +25,14 @@ public class TestFactory {
 
     public static ExtractableResponse<Response> get(String url) {
         return givenLog()
+            .get(url)
+            .then().log().all()
+            .extract();
+    }
+
+    public static ExtractableResponse<Response> get(String url, Param param) {
+        return givenLog()
+            .queryParams(param.result())
             .get(url)
             .then().log().all()
             .extract();
