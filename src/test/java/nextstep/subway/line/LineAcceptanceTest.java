@@ -31,7 +31,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         StationResponse 역삼역 = 지하철역_등록되어_있음("역삼역");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("bg-red-600", "신분당선", 강남역, 역삼역, "10");
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("bg-red-600", "신분당선", 강남역, 역삼역, 10);
 
         // then
         지하철_노선_생성됨(response);
@@ -43,10 +43,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         StationResponse 강남역 = 지하철역_등록되어_있음("강남역");
         StationResponse 역삼역 = 지하철역_등록되어_있음("역삼역");
-        지하철_노선_등록되어_있음("bg-red-600", "신분당선", 강남역, 역삼역, "10");
+        지하철_노선_등록되어_있음("bg-red-600", "신분당선", 강남역, 역삼역, 10);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("bg-red-600", "신분당선", 강남역, 역삼역, "10");
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("bg-red-600", "신분당선", 강남역, 역삼역, 10);
 
         // then
         지하철_노선_생성_실패됨(response);
@@ -63,8 +63,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         String name1 = "신분당선";
         String name2 = "2호선";
-        지하철_노선_등록되어_있음("bg-red-600", name1, 강남역, 역삼역, "10");
-        지하철_노선_등록되어_있음("bg-green-600", name2, 서초역, 교대역, "20");
+        지하철_노선_등록되어_있음("bg-red-600", name1, 강남역, 역삼역, 10);
+        지하철_노선_등록되어_있음("bg-green-600", name2, 서초역, 교대역, 20);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -82,7 +82,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String name2 = "역삼역";
         StationResponse 강남역 = 지하철역_등록되어_있음(name1);
         StationResponse 역삼역 = 지하철역_등록되어_있음(name2);
-        지하철_노선_등록되어_있음("bg-red-600", "신분당선", 강남역, 역삼역, "10");
+        지하철_노선_등록되어_있음("bg-red-600", "신분당선", 강남역, 역삼역, 10);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(강남역.getId());
@@ -111,7 +111,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         StationResponse 강남역 = 지하철역_등록되어_있음("강남역");
         StationResponse 역삼역 = 지하철역_등록되어_있음("역삼역");
-        LineResponse 신분당선 = 지하철_노선_등록되어_있음("bg-red-600", "신분당선", 강남역, 역삼역, "10");
+        LineResponse 신분당선 = 지하철_노선_등록되어_있음("bg-red-600", "신분당선", 강남역, 역삼역, 10);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_수정_요청("bg-blue-600", "구분당선", 신분당선.getId());
@@ -141,8 +141,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         StationResponse 역삼역 = 지하철역_등록되어_있음("역삼역");
         StationResponse 서초역 = 지하철역_등록되어_있음("서초역");
         StationResponse 교대역 = 지하철역_등록되어_있음("교대역");
-        LineResponse 신분당선 = 지하철_노선_등록되어_있음("bg-red-600", "신분당선", 강남역, 역삼역, "10");
-        지하철_노선_등록되어_있음("bg-green-600", "2호선", 서초역, 교대역, "20");
+        LineResponse 신분당선 = 지하철_노선_등록되어_있음("bg-red-600", "신분당선", 강남역, 역삼역, 10);
+        지하철_노선_등록되어_있음("bg-green-600", "2호선", 서초역, 교대역, 20);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_수정_요청("bg-blue-600", "2호선", 신분당선.getId());
@@ -157,7 +157,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         StationResponse 강남역 = 지하철역_등록되어_있음("강남역");
         StationResponse 역삼역 = 지하철역_등록되어_있음("역삼역");
-        LineResponse 신분당선 = 지하철_노선_등록되어_있음("bg-red-600", "신분당선", 강남역, 역삼역, "10");
+        LineResponse 신분당선 = 지하철_노선_등록되어_있음("bg-red-600", "신분당선", 강남역, 역삼역, 10);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(신분당선.getId());
@@ -179,13 +179,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제_실패됨(response);
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String color, String name, StationResponse upStationResponse, StationResponse downStationResponse, String distance) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String color, String name, StationResponse upStationResponse, StationResponse downStationResponse, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("color", color);
         params.put("name", name);
         params.put("upStationId", String.valueOf(upStationResponse.getId()));
         params.put("downStationId", String.valueOf(downStationResponse.getId()));
-        params.put("distance", distance);
+        params.put("distance", String.valueOf(distance));
 
         return RestAssured
                 .given().log().all()
@@ -199,7 +199,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-    public static LineResponse 지하철_노선_등록되어_있음(String color, String name, StationResponse upStationResponse, StationResponse downStationResponse, String distance) {
+    public static LineResponse 지하철_노선_등록되어_있음(String color, String name, StationResponse upStationResponse, StationResponse downStationResponse, int distance) {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(color, name, upStationResponse, downStationResponse, distance);
         지하철_노선_생성됨(response);
         return response.jsonPath().getObject(".", LineResponse.class);

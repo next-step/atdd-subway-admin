@@ -10,10 +10,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SectionsTest {
 
     private Sections sections;
+    private Section section;
     private Station station1;
     private Station station2;
     private int distance;
@@ -25,7 +27,7 @@ class SectionsTest {
         station1 = new Station("강남역");
         station2 = new Station("판교역");
         distance = 10;
-        Section section = new Section(station1, station2, distance, null);
+        section = new Section(station1, station2, distance, null);
 
         sections.add(section);
     }
@@ -112,6 +114,25 @@ class SectionsTest {
     }
 
     @Test
+    @DisplayName("이미 등록되어 있는 노선일 경우 실패한다.")
+    void add_duplicate() {
+        // when, then
+        assertThatThrownBy(() -> sections.add(section))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("이미 등록되어 있는 노선입니다.");
+    }
+
+    @Test
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어 있지 않는 경우 실패한다.")
+    void add_not_contains() {
+        // when, then
+        Section section = new Section(new Station("금정역"), new Station("사당역"), distance, null);
+        assertThatThrownBy(() -> sections.add(section))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("상행역과 하행역 둘 중 하나도 포함되어있지 않습니다.");
+    }
+
+    @Test
     @DisplayName("지하철 역들을 상행 -> 하행 순으로 정렬하여 리턴한다.")
     void orderedStations() {
         // given
@@ -144,9 +165,9 @@ class SectionsTest {
                              Station upStation2, Station downStation2, int distance2) {
         assertThat(sectionList.get(0).getUpStation()).isEqualTo(upStation1);
         assertThat(sectionList.get(0).getDownStation()).isEqualTo(downStation1);
-        assertThat(sectionList.get(0).getDistance()).isEqualTo(distance1);
+        assertThat(sectionList.get(0).getDistance().getDistance()).isEqualTo(distance1);
         assertThat(sectionList.get(1).getUpStation()).isEqualTo(upStation2);
         assertThat(sectionList.get(1).getDownStation()).isEqualTo(downStation2);
-        assertThat(sectionList.get(1).getDistance()).isEqualTo(distance2);
+        assertThat(sectionList.get(1).getDistance().getDistance()).isEqualTo(distance2);
     }
 }

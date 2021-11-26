@@ -152,4 +152,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         return response.jsonPath().getObject(".", StationResponse.class);
     }
+
+    public static StationResponse 상행역과_하행역_모두_포함되어_있지_않은_지하철역이_등록되어_있음(String name) {
+        return 지하철역_등록되어_있음(name);
+    }
 }

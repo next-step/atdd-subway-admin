@@ -26,6 +26,9 @@ public class Sections {
     }
 
     public void add(Section section) {
+        validateDuplicatedStation(section);
+        validateNotFoundStation(section);
+
         this.sections
                 .stream()
                 .filter(s -> s.getUpStation() == section.getUpStation())
@@ -81,6 +84,33 @@ public class Sections {
                 .stream()
                 .filter(s -> s.getUpStation() == firstStation)
                 .findFirst().get();
+    }
+
+    private void validateDuplicatedStation(Section section) {
+        Optional<Section> optionalSection = this.sections
+                .stream()
+                .filter(s -> s.getUpStation() == section.getUpStation())
+                .findFirst()
+                .filter(s -> s.getDownStation() == section.getDownStation());
+
+        if (optionalSection.isPresent()) {
+            throw new IllegalArgumentException("이미 등록되어 있는 노선입니다.");
+        }
+    }
+
+    private void validateNotFoundStation(Section section) {
+        if (this.sections.isEmpty()) {
+            return;
+        }
+
+        this.sections
+                .stream()
+                .filter(s -> s.getUpStation() == section.getUpStation()
+                        || s.getDownStation() == section.getUpStation()
+                        || s.getUpStation() == section.getDownStation()
+                        || s.getDownStation() == section.getDownStation())
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않습니다."));
     }
 
     public List<Section> getSections() {

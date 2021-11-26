@@ -26,6 +26,6 @@ public class SectionTest {
 
         // then
         assertThat(section.getUpStation()).isEqualTo(station3);
-        assertThat(section.getDistance()).isEqualTo(distance - newDistance);
+        assertThat(section.getDistance().getDistance()).isEqualTo(distance - newDistance);
     }
 }

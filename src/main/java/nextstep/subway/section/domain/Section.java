@@ -19,7 +19,8 @@ public class Section {
     @ManyToOne(fetch = FetchType.LAZY)
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Line line;
@@ -30,7 +31,7 @@ public class Section {
     public Section(Station upStation, Station downStation, int distance, Line line) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
         this.line = line;
     }
 
@@ -40,12 +41,12 @@ public class Section {
 
     public void updateUpSection(Section section) {
         this.upStation = section.downStation;
-        this.distance -= section.distance;
+        this.distance.minus(section.distance);
     }
 
     public void updateDownSection(Section section) {
         this.downStation = section.upStation;
-        this.distance -= section.distance;
+        this.distance.minus(section.distance);
     }
 
     public Long getId() {
@@ -60,7 +61,7 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
