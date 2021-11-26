@@ -50,16 +50,16 @@ public class SectionTest {
     void 같은_역으로_지하철_구간을_생성할_수_없다() {
         final Station upStation = 지하철역_생성_및_검증("강남");
         final Station downStation = 지하철역_생성_및_검증("삼성");
+        final Distance distance = 지하철_노선_구간거리_생성_및_검증(7);
 
-        중복된_역으로_지하철_구간_생성할_수_없음(upStation, downStation);
+        중복된_역으로_지하철_구간_생성할_수_없음(upStation, downStation, distance);
     }
 
-    public static void 중복된_역으로_지하철_구간_생성할_수_없음(final Station upStation, final Station downStation) {
+    public static void 중복된_역으로_지하철_구간_생성할_수_없음(final Station upStation, final Station downStation,
+        final Distance distance) {
         assertAll(
-            () -> assertThatIllegalArgumentException().isThrownBy(() -> 지하철_구간_생성(upStation, upStation,
-                new Distance(20))),
-            () -> assertThatIllegalArgumentException().isThrownBy(() -> 지하철_구간_생성(downStation, downStation,
-                new Distance(20)))
+            () -> assertThatIllegalArgumentException().isThrownBy(() -> 지하철_구간_생성(upStation, upStation, distance)),
+            () -> assertThatIllegalArgumentException().isThrownBy(() -> 지하철_구간_생성(downStation, downStation, distance))
         );
     }
 }
