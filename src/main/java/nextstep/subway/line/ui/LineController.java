@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/lines")
@@ -20,19 +21,19 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @GetMapping
-    public ResponseEntity getLines() {
+    public ResponseEntity<List<LineResponse>> getLines() {
         LinesResponse lines = lineService.getLines();
         return ResponseEntity.ok(lines.getLines());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getLine(@PathVariable("id") Long id) {
+    public ResponseEntity<LineResponse> getLine(@PathVariable("id") Long id) {
         try {
             LineResponse line = lineService.getLine(id);
             return ResponseEntity.ok(line);
@@ -42,7 +43,7 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateLine(@PathVariable("id") Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> updateLine(@PathVariable("id") Long id, @RequestBody LineRequest lineRequest) {
         try {
             LineResponse line = lineService.updateLine(id, lineRequest);
             return ResponseEntity.ok(line);
@@ -52,7 +53,7 @@ public class LineController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteLine(@PathVariable("id") Long id) {
+    public ResponseEntity<Object> deleteLine(@PathVariable("id") Long id) {
         lineService.deleteLine(id);
         return ResponseEntity.ok().build();
     }
