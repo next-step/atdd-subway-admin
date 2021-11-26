@@ -93,7 +93,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - 지하철 노선 (Line)
     - [x] 지하철 노선을 생성한다.
         - [x] 지하철 역이 등록되지 않은 경우 노선 생성에 실패한다.
-        - [x] 지하철 구간이 등록되지 않은 경우 노선 생성에 실패한다.
         - [x] 지하철 노선이 이미 등록되어 있는 경우 지하철 노선 생성에 실패한다.
     - [x] 지하철 노선 목록을 조회한다.
     - [x] 지하철 노선 1건을 조회한다.
@@ -180,7 +179,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
         
         Scenario: 지하철 노선을 생성한다.
             Given 지하철 역이 등록되어 있.
-            And 지하철 구간이 등록되어 있다.
             When 지하철 노선을 생성 요청한다.
             Then 지하철 노선이 생성된다.
       
@@ -191,7 +189,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
  
         Scenario: 지하철 노선 생성이 실패한다.
             Given 지하철 역이 등록되어 있다.
-            And 지하철 구간이 등록되어 있지 않다.
             When 지하철 노선을 생성 요청한다.
             Then 지하철 노선 생성이 실패한다.
    
