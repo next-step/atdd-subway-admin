@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.enums.ErrorCode;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.RestAssuredUtils;
@@ -66,7 +67,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     private void 존재하는_이름으로_지하철역을_생성할수_없음(ExtractableResponse<Response> response) {
-        응답코드_검증(response, HttpStatus.SC_BAD_REQUEST);
+        assertAll(
+            () -> 응답코드_검증(response, HttpStatus.SC_BAD_REQUEST),
+            () -> 예외발생_검증(response, ErrorCode.LINE_NAME_ALREADY_EXISTS)
+        );
     }
 
     @DisplayName("지하철역을 조회한다.")

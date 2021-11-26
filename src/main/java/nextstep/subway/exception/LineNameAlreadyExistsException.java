@@ -1,13 +1,13 @@
 package nextstep.subway.exception;
 
-public class LineNameAlreadyExistsException extends SubwayRuntimeException {
-    public static final String MESSAGE = "이미 같은 이름의 지하철역이 있습니다.";
+import nextstep.subway.enums.ErrorCode;
 
+public class LineNameAlreadyExistsException extends SubwayRuntimeException {
     public LineNameAlreadyExistsException() {
-        super(MESSAGE);
+        super(ErrorCode.LINE_NAME_ALREADY_EXISTS);
     }
 
     public LineNameAlreadyExistsException(final Throwable cause) {
-        super(MESSAGE, cause);
+        super(ErrorCode.LINE_NAME_ALREADY_EXISTS, cause);
     }
 }

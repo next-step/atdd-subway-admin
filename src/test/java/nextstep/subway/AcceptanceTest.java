@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.*;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.configuration.RestControllerExceptionAdvice.ErrorResponse;
+import nextstep.subway.enums.ErrorCode;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,5 +44,9 @@ public class AcceptanceTest {
 
     protected static void 응답코드_검증(final ExtractableResponse<Response> response, final int statusCode) {
         assertThat(response.statusCode()).isEqualTo(statusCode);
+    }
+
+    protected static void 예외발생_검증(final ExtractableResponse<Response> response, final ErrorCode errorCode) {
+        assertThat(response.as(ErrorResponse.class).getError().getMessage()).isEqualTo(errorCode.getMessage());
     }
 }

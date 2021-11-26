@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.exception.LineNameAlreadyExistsException;
-import nextstep.subway.exception.RestControllerExceptionAdvice.ErrorResponse;
+import nextstep.subway.enums.ErrorCode;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineResponses;
@@ -83,8 +82,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> createResponse) {
         assertAll(
             () -> 응답코드_검증(createResponse, HttpStatus.SC_BAD_REQUEST),
-            () -> assertThat(createResponse.as(ErrorResponse.class).getError().getMessage())
-                .isEqualTo(LineNameAlreadyExistsException.MESSAGE)
+            () -> 예외발생_검증(createResponse, ErrorCode.LINE_NAME_ALREADY_EXISTS)
         );
     }
 
