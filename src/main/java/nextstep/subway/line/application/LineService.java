@@ -28,17 +28,21 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
+        Line line = request.toLine();
+        line.addSection(makeSection(request));
+
+        lineRepository.save(line);
+        return LineResponse.from(line);
+    }
+
+    private Section makeSection(LineRequest request) {
         Station downStation = stationRepository.findById(request.getDownStationId())
             .orElseThrow(NoSuchElementException::new);
 
         Station upStation = stationRepository.findById(request.getUpStationId())
             .orElseThrow(NoSuchElementException::new);
 
-        Line line = request.toLine();
-        Section section = new Section(upStation, downStation, new Distance(request.getDistance()));
-        line.addSection(section);
-        Line persistLine = lineRepository.save(line);
-        return LineResponse.from(persistLine);
+        return new Section(upStation, downStation, new Distance(request.getDistance()));
     }
 
     @Transactional(readOnly = true)
