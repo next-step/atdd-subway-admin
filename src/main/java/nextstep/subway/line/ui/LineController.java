@@ -39,20 +39,20 @@ public class LineController {
         return ResponseEntity.ok(lines);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<LineResponse> getLine(@PathVariable("id") Long id) {
+    @GetMapping("/{lineId}")
+    public ResponseEntity<LineResponse> getLine(@PathVariable("lineId") Long id) {
         LineResponse line = lineService.getLine(id);
         return ResponseEntity.ok(line);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<LineResponse> updateLine(@PathVariable("id") Long id, @RequestBody LineRequest lineRequest) {
+    @PutMapping("/{lineId}")
+    public ResponseEntity<LineResponse> updateLine(@PathVariable("lineId") Long id, @RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok(line);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> deleteLine(@PathVariable("id") Long id) {
+    @DeleteMapping("/{lineId}")
+    public ResponseEntity<Boolean> deleteLine(@PathVariable("lineId") Long id) {
         Boolean result = lineService.deleteLine(id);
         return ResponseEntity.ok(result);
     }

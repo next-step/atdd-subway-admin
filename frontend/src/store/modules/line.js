@@ -37,7 +37,7 @@ const actions = {
   },
   async [FETCH_LINES]({ commit }) {
     return LineService.getAll().then(({ data }) => {
-      commit(SET_LINES, data)
+      commit(SET_LINES, data.lines)
     })
   },
   async [EDIT_LINE]({ commit }, editingLine) {
