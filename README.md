@@ -95,5 +95,5 @@ Feature: 지하철 노선 생성 / 목록 조회 / 조회 / 수정 / 삭제
 ## 1단계 피드백 사항
 * [x] ErrorResponse 항목에 대한 고민 필요
 * [x] CustomException에 대한 고민 필요
-* [ ] Controller return 값 Generic Type 명시
-* [ ] Test 결과 확인에 대한 고민 필요
+* [x] Controller return 값 Generic Type 명시
+* [x] Test 결과 확인에 대한 고민 필요
