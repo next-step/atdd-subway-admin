@@ -18,4 +18,13 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ErrorCode.valueOf(e.getMessage());
         return new ResponseEntity<>(ErrorResponse.of(errorCode), HttpStatus.NOT_FOUND);
     }
+
+    /**
+     * 406 에러
+     */
+    @ExceptionHandler(NotAcceptableApiException.class)
+    public ResponseEntity<ErrorResponse> notAcceptableApiExceptionHandler(NotAcceptableApiException e) {
+        ErrorCode errorCode = ErrorCode.valueOf(e.getMessage());
+        return new ResponseEntity<>(ErrorResponse.of(errorCode), HttpStatus.NOT_ACCEPTABLE);
+    }
 }

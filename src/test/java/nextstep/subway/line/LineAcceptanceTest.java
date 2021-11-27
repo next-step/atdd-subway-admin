@@ -178,7 +178,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(long lineId) {
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(long lineId) {
         return RestAssured.given().log().all()
                 .pathParam("lineId", lineId)
                 .when()

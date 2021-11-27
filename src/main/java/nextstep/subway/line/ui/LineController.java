@@ -59,8 +59,7 @@ public class LineController {
 
     @PostMapping("/{lineId}/sections")
     public ResponseEntity<LineResponse> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        LineResponse lineResponse = new LineResponse();
+        LineResponse lineResponse = lineService.addSection(lineId, sectionRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
-
 }
