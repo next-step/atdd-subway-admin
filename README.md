@@ -98,7 +98,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ## 2단계 - 인수 테스트 리팩터링
 ### 요구사항 API 변경 대응하기
 * 인수테스트 추가 및 수정
-  * [ ] 노선 생성 시 종점역 (상행, 하행) 정보를 요청 파라미터에 함께 추가하기
+  * [x] 노선 생성 시 종점역 (상행, 하행) 정보를 요청 파라미터에 함께 추가하기
     * 두 종점역은 구간의 형태로 관리되어야 함
   * [ ] 노선 조회 시 응답 결과에 역 목록 추가하기
     * 상행역 부터 하행역 순으로 정렬되어야 함
@@ -106,7 +106,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   * [x] 노선엔티티에 구역 정보를 매핑
   * [x] 구역 생성
   * [x] 구역 일급 콜렉션
-    * [ ] 노선 생성시 구역정보 추가
+    * [x] 노선 생성시 구역정보 추가
   * [ ] 노선 목록 조회
   
 ### 공부 정리

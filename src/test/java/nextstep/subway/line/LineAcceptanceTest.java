@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("지하철 노선을 생성한다.")
+    @DisplayName("지하철 노선을 생성한다. 종점역(상행, 하행) 정보를 생성한다.")
     @Test
     void createLine() {
         //given
