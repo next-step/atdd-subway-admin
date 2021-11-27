@@ -126,9 +126,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         checkResponseStatus(getResponse, HttpStatus.BAD_REQUEST);
     }
 
-    private ExtractableResponse<Response> requestCreateLineWithStation(String upStationName, String downStationName, int distance, String lineName, String colorName) {
+    public static ExtractableResponse<Response> requestCreateLineWithStation(String upStationName, String downStationName, int distance, String lineName, String colorName) {
         StationResponse upStation = StationFixture.ofStationResponse(StationFixture.requestCreateStations(upStationName));
         StationResponse downStation = StationFixture.ofStationResponse(StationFixture.requestCreateStations(downStationName));
+        Map<String, String> params = LineFixture.createParams(lineName, colorName, upStation.getId(), downStation.getId(), distance);
+        return LineFixture.requestCreateLine(params);
+    }
+
+    public static ExtractableResponse<Response> requestCreateLineWithStation(StationResponse upStation, StationResponse downStation, int distance, String lineName, String colorName) {
         Map<String, String> params = LineFixture.createParams(lineName, colorName, upStation.getId(), downStation.getId(), distance);
         return LineFixture.requestCreateLine(params);
     }
