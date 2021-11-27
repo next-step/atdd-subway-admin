@@ -119,12 +119,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         final LineResponse deleteSection = 지하철_노선_상세_조회(this.lineResponse.getId()).as(LineResponse.class);
 
         //when
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .pathParam("lineNo", this.lineResponse.getId())
-                .queryParam("stationId", deleteSection.getStations().get(0).getId())
-                .delete("/lines/{lineNo}/sections")
-                .then().log().all().extract();
+        final ExtractableResponse<Response> response = 지하철_구간_제거(lineResponse.getId(), deleteSection.getStations().get(0).getId());
 
         //then
         //상행_구간_제거_성공
@@ -163,12 +158,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         final LineResponse deleteSection = 지하철_노선_상세_조회(this.lineResponse.getId()).as(LineResponse.class);
 
         //when
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .pathParam("lineNo", lineResponse.getId())
-                .queryParam("stationId", deleteSection.getStations().get(1).getId())
-                .delete("/lines/{lineNo}/sections")
-                .then().log().all().extract();
+        final ExtractableResponse<Response> response = 지하철_구간_제거(lineResponse.getId(), deleteSection.getStations().get(1).getId());
 
         //then
         //중간_구간_제거_성공
@@ -181,15 +171,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeNotRegisterStation() {
         //when
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .pathParam("lineNo", lineResponse.getId())
-                .queryParam("stationId", 1000000000L)
-                .delete("/lines/{lineNo}/sections")
-                .then().log().all().extract();
+        final ExtractableResponse<Response> response = 지하철_구간_제거(lineResponse.getId(), 100000000L);
 
         //then
-        //중간_구간_제거_성공
+        //등록되지_않은_구간_제거_실패
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -200,15 +185,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
         final LineResponse deleteSection = 지하철_노선_상세_조회(this.lineResponse.getId()).as(LineResponse.class);
 
         //when
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .pathParam("lineNo", lineResponse.getId())
-                .queryParam("stationId", deleteSection.getStations().get(0).getId())
-                .delete("/lines/{lineNo}/sections")
-                .then().log().all().extract();
+        final ExtractableResponse<Response> response = 지하철_구간_제거(lineResponse.getId(), deleteSection.getStations().get(0).getId());
 
         //then
-        //중간_구간_제거_성공
+        //구간이_하나인_노선에서_구간_제거_실패
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -226,6 +206,16 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 .when()
                 .pathParam("lineNo", lineId)
                 .get("/lines/{lineNo}")
+                .then().log().all().extract();
+    }
+
+
+    private ExtractableResponse<Response> 지하철_구간_제거(Long lineId, Long sectionId) {
+        return RestAssured.given().log().all()
+                .when()
+                .pathParam("lineNo", lineId)
+                .queryParam("stationId", sectionId)
+                .delete("/lines/{lineNo}/sections")
                 .then().log().all().extract();
     }
 }
