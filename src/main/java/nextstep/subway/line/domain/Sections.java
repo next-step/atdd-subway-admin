@@ -14,7 +14,7 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<Section>();
 
     
@@ -77,7 +77,7 @@ public class Sections {
                     newSections.clear();
                     newSections.add(section);
                     newSections.addAll(sections);
-                    this.sections = newSections;
+                    new Sections(newSections);
                     return;
                 }
                 section.checkShorter(s.getDistance());
@@ -98,7 +98,7 @@ public class Sections {
             }
             
             if (i == sections.size()-1) {
-                this.sections = newSections;
+                new Sections(newSections);
                 return;
             }
             
