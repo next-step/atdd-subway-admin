@@ -42,7 +42,6 @@ public class Sections {
     }
 
     public void addSection(final Section section) {
-
         final Station upStation = section.getUpStation();
         final Station downStation = section.getDownStation();
 
@@ -63,23 +62,34 @@ public class Sections {
     }
 
     public void removeStation(Station station) {
-        if (this.sections.size() <= DELETE_SECTION_MIN_SIZE) {
-            throw new LastLineSectionDeleteException();
-        }
+        validateRemoveMinSectionSize();
 
         final Optional<Section> upSection = findDownSectionByStation(station);
         final Optional<Section> downSection = findUpSectionByStation(station);
 
-        if (!upSection.isPresent() && !downSection.isPresent()) {
-            throw new NotFoundStationByIdException(NOT_CONTAINS_STATION_ERROR_MESSAGE);
-        }
+        final boolean isUpSectionExist = upSection.isPresent();
+        final boolean isDownSectionExist = downSection.isPresent();
 
-        if (upSection.isPresent() && downSection.isPresent()) {
+        validateSectionExist(isUpSectionExist, isDownSectionExist);
+
+        if (isUpSectionExist && isDownSectionExist) {
             this.sections.add(Section.of(upSection.get(), downSection.get()));
         }
 
         upSection.ifPresent(this.sections::remove);
         downSection.ifPresent(this.sections::remove);
+    }
+
+    private void validateSectionExist(boolean isUpSectionExist, boolean isDownSectionExist) {
+        if (!isUpSectionExist && !isDownSectionExist) {
+            throw new NotFoundStationByIdException(NOT_CONTAINS_STATION_ERROR_MESSAGE);
+        }
+    }
+
+    private void validateRemoveMinSectionSize() {
+        if (this.sections.size() <= DELETE_SECTION_MIN_SIZE) {
+            throw new LastLineSectionDeleteException();
+        }
     }
 
     private Optional<Section> findUpSectionByStation(Station station) {
