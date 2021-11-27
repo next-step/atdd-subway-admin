@@ -34,13 +34,9 @@ public class LineResponse {
     }
 
     public static LineResponse from(Line line) {
-        List<Section> sections = line.getSections();
-        List<Station> stations = sections.stream()
-            .flatMap(section -> Stream.of(section.getUp(), section.getDown()))
-            .collect(Collectors.toList());
 
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(),
-            line.getModifiedDate(), stations);
+            line.getModifiedDate(), line.getSections().getStations());
     }
 
     public Long getId() {
