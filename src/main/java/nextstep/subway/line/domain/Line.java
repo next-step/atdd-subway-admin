@@ -28,7 +28,7 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = new LineName(name);
         this.color = new LineColor(color);
-        sections.addInitialSection(this, upStation, downStation, distance);
+        sections.addToSections(this, upStation, downStation, distance);
     }
 
     public static Line of(String name, String color, Station upStation, Station downStation, int distance) {

@@ -5,7 +5,6 @@ import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -31,15 +30,7 @@ public class LineResponse {
     }
 
     private List<StationResponse> generateStations(List<Section> sections) {
-        List<StationResponse> stationResponses = new ArrayList<>();
-        if (sections.isEmpty()) {
-            return stationResponses;
-        }
-
-        stationResponses.add(StationResponse.of(sections.get(0).getUpStation()));
-        sections.forEach(section -> stationResponses.add(StationResponse.of(section.getDownStation())));
-
-        return stationResponses;
+        return StationResponse.listFromSectionsOf(sections);
     }
 
     public static LineResponse of(Line line) {

@@ -6,6 +6,8 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class Distance {
+    public static final int MINIMUM_DISTANCE = 1;
+
     private int distance;
 
     protected Distance() {
@@ -17,7 +19,7 @@ public class Distance {
     }
 
     private void validateDistance(int distance) {
-        if (distance < 0) {
+        if (distance < MINIMUM_DISTANCE) {
             throw new NegativeNumberDistanceException(distance);
         }
     }

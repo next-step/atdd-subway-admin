@@ -3,10 +3,10 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,5 +58,10 @@ public class StationFixture {
 
     public static StationResponse ofStationResponse(ExtractableResponse<Response> response) {
         return response.as(StationResponse.class);
+    }
+
+    public static List<StationResponse> ofStationResponses(StationResponse... stations) {
+        return Arrays.stream(stations)
+                .collect(Collectors.toList());
     }
 }

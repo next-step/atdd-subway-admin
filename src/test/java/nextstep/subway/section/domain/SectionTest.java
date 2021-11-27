@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.common.exception.NegativeNumberDistanceException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("구간 도메인 관련 기능")
@@ -34,5 +36,28 @@ class SectionTest {
                 () -> assertThat(section.getDownStation()).isEqualTo(downStation),
                 () -> assertThat(section.getDistance()).isEqualTo(9)
         );
+    }
+
+    @DisplayName("상행역을 변경한다.")
+    @Test
+    void changeUpStation() {
+        section.changeUpStation(new Station("신분당역"));
+        assertThat(section.getUpStation()).isEqualTo(new Station("신분당역"));
+    }
+
+    @DisplayName("하행역을 변경한다.")
+    @Test
+    void changeDownStation() {
+        section.changeDownStation(new Station("잠실역"));
+        assertThat(section.getDownStation()).isEqualTo(new Station("잠실역"));
+    }
+
+    @DisplayName("변경되는 거리가 기존의 거리보다 큰 경우 예외가 발생한다.")
+    @Test
+    void subtractDistanceException() {
+        assertThatThrownBy(() -> {
+           section.subtractDistance(9);
+        }).isInstanceOf(NegativeNumberDistanceException.class)
+        .hasMessageContaining("현재 계산된 거리 값이 음수입니다.");
     }
 }

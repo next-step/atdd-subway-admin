@@ -1,11 +1,16 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.common.exception.DuplicateEntityException;
+import nextstep.subway.common.exception.InvalidDuplicatedSection;
 import nextstep.subway.common.exception.InvalidEntityRequiredException;
+import nextstep.subway.common.exception.NegativeNumberDistanceException;
+import nextstep.subway.common.exception.NotContainsStationException;
 import nextstep.subway.common.exception.NotFoundEntityException;
+import nextstep.subway.common.exception.NotFoundStationException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +57,26 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity<LineResponse> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        return ResponseEntity.ok().body(lineService.addSection(lineId, sectionRequest));
+    }
+
+    @ExceptionHandler(NegativeNumberDistanceException.class)
+    public ResponseEntity<LineResponse> handleNegativeDistanceException(NegativeNumberDistanceException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(InvalidDuplicatedSection.class)
+    public ResponseEntity<LineResponse> handleInvalidDuplicatedSectionException(InvalidDuplicatedSection e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(NotContainsStationException.class)
+    public ResponseEntity<LineResponse> handleNotContainsStationException(NotContainsStationException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
     @ExceptionHandler(DuplicateEntityException.class)
     public ResponseEntity<LineResponse> handleDuplicateEntityException(DuplicateEntityException e) {
         return ResponseEntity.badRequest().build();
@@ -64,6 +89,11 @@ public class LineController {
 
     @ExceptionHandler(NotFoundEntityException.class)
     public ResponseEntity<LineResponse> handleNotFoundEntityException(NotFoundEntityException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(NotFoundStationException.class)
+    public ResponseEntity<LineResponse> handleNotFoundStationException(NotFoundStationException e) {
         return ResponseEntity.badRequest().build();
     }
 }

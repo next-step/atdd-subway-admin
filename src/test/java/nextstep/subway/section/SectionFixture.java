@@ -26,7 +26,7 @@ public class SectionFixture {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
-                .when().post("/" + lineId.toString() + "/sections")
+                .when().post("/lines/" + lineId.toString() + "/sections")
                 .then().log().all().extract();
     }
 }

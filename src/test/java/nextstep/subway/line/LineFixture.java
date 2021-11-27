@@ -78,15 +78,19 @@ public class LineFixture {
     }
 
     public static LineResponse ofLineResponse(ExtractableResponse<Response> createdResponse) {
-        return createdResponse.jsonPath().getObject(".", LineResponse.class);
+        return createdResponse.jsonPath()
+                .getObject(".", LineResponse.class);
     }
 
     public static List<LineResponse> ofLineResponses(ExtractableResponse<Response> response) {
-        return response.jsonPath().getList(".", LineResponse.class);
+        return response.jsonPath()
+                .getList(".", LineResponse.class);
     }
 
     @SafeVarargs
     public static List<LineResponse> ofLineResponses(ExtractableResponse<Response>... createdResponses) {
-        return Arrays.stream(createdResponses).map(LineFixture::ofLineResponse).collect(Collectors.toList());
+        return Arrays.stream(createdResponses)
+                .map(LineFixture::ofLineResponse)
+                .collect(Collectors.toList());
     }
 }

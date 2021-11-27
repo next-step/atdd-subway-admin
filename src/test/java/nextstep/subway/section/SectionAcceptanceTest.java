@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,6 +53,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선에_지하철역_등록됨
         checkResponseStatus(response, HttpStatus.OK);
+        // 지하철_노선_순서_확인
+        checkSameStations(StationFixture.ofStationResponses(upStation, this.upStation, downStation),
+                LineFixture.ofLineResponse(response));
     }
 
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
@@ -70,11 +74,39 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선에_지하철역_등록됨
         checkResponseStatus(response, HttpStatus.OK);
+        // 지하철_노선_순서_확인
+        checkSameStations(StationFixture.ofStationResponses(this.upStation, upStation, downStation),
+                LineFixture.ofLineResponse(response));
     }
 
-    @DisplayName("역 사이에 새로운 역을 등록한다.")
+    @DisplayName("역 사이에 새로운 역을 등록한다. (위쪽 부터)")
     @Test
     void addSectionAsNewStation() {
+        // given
+        // 지하철 역_생성
+        StationResponse upStation = this.upStation;
+        StationResponse downStation = StationFixture.ofStationResponse(StationFixture.requestCreateStations("강남역삼사이역"));
+        Map<String, String> params = SectionFixture.createParams(upStation, downStation, 4);
+
+        // when
+        // 지하철_노선에_지하철역_등록_요청
+        ExtractableResponse<Response> response = SectionFixture.requestAddSection(lineResponse.getId(), params);
+
+        // then
+        // 지하철_노선에_지하철역_등록됨
+        checkResponseStatus(response, HttpStatus.OK);
+
+        // when
+        // 지하철_노선_조회
+        LineFixture.requestGetLineById(lineResponse.getId());
+        // 지하철_노선_순서_확인
+        checkSameStations(StationFixture.ofStationResponses(this.upStation, downStation, upStation),
+                LineFixture.ofLineResponse(response));
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록한다. (아래쪽 부터)")
+    @Test
+    void addSectionAsNewStation2() {
         // given
         // 지하철 역_생성
         StationResponse upStation = StationFixture.ofStationResponse(StationFixture.requestCreateStations("강남역삼사이역"));
@@ -88,6 +120,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선에_지하철역_등록됨
         checkResponseStatus(response, HttpStatus.OK);
+        // 지하철_노선_순서_확인
+        checkSameStations(StationFixture.ofStationResponses(this.upStation, upStation, downStation),
+                LineFixture.ofLineResponse(response));
     }
 
     @DisplayName("역 사이 요청 역의 길이가 기존 역 길이보다 긴 경우 등록할 수 없다.")
@@ -144,5 +179,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private void checkResponseStatus(ExtractableResponse<Response> response, HttpStatus status) {
         assertThat(response.statusCode()).isEqualTo(status.value());
+    }
+
+    private void checkSameStations(List<StationResponse> expectedStations, LineResponse lineResponses) {
+        assertThat(lineResponses.getStations()).containsAll(expectedStations);
     }
 }
