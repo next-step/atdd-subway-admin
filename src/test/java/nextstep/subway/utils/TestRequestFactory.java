@@ -13,13 +13,13 @@ public class TestRequestFactory {
                 .given().log().all()
                 .when();
 
-        if (httpMethod.equals(HttpMethod.GET)) {
+        if (HttpMethod.GET.equals(httpMethod)) {
             return requestSpecification
                     .get(path)
                     .then().log().all().extract();
         }
 
-        if (httpMethod.equals(HttpMethod.PUT)) {
+        if (HttpMethod.PUT.equals(httpMethod)) {
             return requestSpecification
                     .body(requestBody)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -28,7 +28,7 @@ public class TestRequestFactory {
                     .then().log().all().extract();
         }
 
-        if (httpMethod.equals(HttpMethod.DELETE)) {
+        if (HttpMethod.DELETE.equals(httpMethod)) {
             return requestSpecification
                     .delete(path)
                     .then().log().all().extract();
