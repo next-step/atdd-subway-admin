@@ -5,16 +5,15 @@ import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class LineTest {
+public class SectionsTest {
 
     @Test
-    @DisplayName("지하철 목록을 조회한다.")
-    void searchStationsTest() {
+    @DisplayName("구간 정렬이 되었는지 확인 충정로역- 당산역- 홍대입구역")
+    public void sortTest() {
         StationRequest dangSanStationRequest = new StationRequest("당산역");
         StationRequest hongDaeStationRequest = new StationRequest("홍대입구역");
 
@@ -24,14 +23,13 @@ public class LineTest {
         Station chungJeoungRoStation = chungJeoungRoStationRequest.toStation();
         Line line = new Line("2호선", "green", savedDangSanStation, savedHongDaeStation, new Distance(10));
 
-        Section newSection = new Section(line, savedHongDaeStation, chungJeoungRoStation, new Distance(5));
+        Section newSection = new Section(line, chungJeoungRoStation, savedDangSanStation, new Distance(5));
 
         line.addSection(newSection);
-        assertThat(line.getStations().size()).isEqualTo(3);
-        assertThat(line.getStations().stream()
-                .map(it -> it.getName())
-                .distinct())
 
-                .contains("당산역", "홍대입구역", "충정로역");
+        Assertions.assertThat(line.getStations()
+                .stream()
+                .map(it -> it.getName())).contains("충정로역", "당산역", "홍대입구역");
+
     }
 }

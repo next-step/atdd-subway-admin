@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain.dto;
 
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
@@ -8,7 +9,7 @@ import java.time.LocalDateTime;
 public class SectionResponse {
     private Long id;
     private String name;
-    private int distance;
+    private Distance distance;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
@@ -16,7 +17,7 @@ public class SectionResponse {
 
     }
 
-    public SectionResponse(Long id, String name, int distance, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public SectionResponse(Long id, String name, Distance distance, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.distance = distance;
@@ -38,7 +39,7 @@ public class SectionResponse {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.getDistance();
     }
 
     public LocalDateTime getCreatedDate() {

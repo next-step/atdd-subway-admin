@@ -41,7 +41,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         LineAcceptanceTestRequest.createLine("1호선", "blue", 1L, 2L, 10);
-
         // when
         // 지하철_노선_생성_요청
         ExtractableResponse<Response> response = LineAcceptanceTestRequest.createLine("1호선", "blue", 1L, 2L, 10);
@@ -113,7 +112,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         isNoContent(response);
     }
 
+
     private void validLine(ExtractableResponse<Response> createResponse, ExtractableResponse<Response> selectResponse) {
+
         LineResponse createLineResponse = createResponse.jsonPath()
                 .getObject(".", LineResponse.class);
         LineResponse selectLineResponse = selectResponse.jsonPath()
