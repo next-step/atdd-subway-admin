@@ -26,4 +26,10 @@ public class ControllerExceptionHandler {
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(exception.getMessage()));
     }
+
+    @ExceptionHandler(CannotDeleteSectionException.class)
+    public ResponseEntity<ErrorResponse> handleCannotAddSectionException(CannotDeleteSectionException exception) {
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(exception.getMessage()));
+    }
 }
