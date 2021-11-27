@@ -18,6 +18,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -96,8 +97,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long id2 = 지하철_노선_등록되어_있음("2호선", "green", station3, station4, 10);
         LocalDateTime now = LocalDateTime.now();
         List<LineResponse> expected = Arrays.asList(
-            new LineResponse(id1, "신분당선", "red", now, now, Arrays.asList(station1, station2)),
-            new LineResponse(id2, "2호선", "green", now, now, Arrays.asList(station3, station4)));
+            new LineResponse(id1, "신분당선", "red", now, now,
+                Arrays.asList(StationResponse.from(station1), StationResponse.from(station2))),
+            new LineResponse(id2, "2호선", "green", now, now,
+                Arrays.asList(StationResponse.from(station3), StationResponse.from(station4))));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -112,7 +115,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         long id = 지하철_노선_등록되어_있음("신분당선", "red", station1, station2, 10);
         LocalDateTime now = LocalDateTime.now();
-        LineResponse expected = new LineResponse(id, "신분당선", "red", now, now, Arrays.asList(station1, station2));
+        LineResponse expected = new LineResponse(id, "신분당선", "red", now, now,
+            Arrays.asList(StationResponse.from(station1), StationResponse.from(station2)));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(id);
@@ -141,7 +145,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("color", "green");
 
         LocalDateTime now = LocalDateTime.now();
-        LineResponse expected = new LineResponse(id, "2호선", "green", now, now, Arrays.asList(station1, station2));
+        LineResponse expected = new LineResponse(id, "2호선", "green", now, now,
+            Arrays.asList(StationResponse.from(station1), StationResponse.from(station2)));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(id, params);
