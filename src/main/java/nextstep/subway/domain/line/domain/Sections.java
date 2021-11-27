@@ -3,6 +3,7 @@ package nextstep.subway.domain.line.domain;
 import nextstep.subway.domain.section.domain.Distance;
 import nextstep.subway.domain.section.domain.Section;
 import nextstep.subway.domain.section.exception.AlreadyRegisterSectionException;
+import nextstep.subway.domain.section.exception.SectionDeleteImpossibleException;
 import nextstep.subway.domain.section.exception.StandardStationNotFoundException;
 import nextstep.subway.domain.station.domain.Station;
 import nextstep.subway.global.error.exception.EntityNotFoundException;
@@ -121,6 +122,10 @@ public class Sections {
     }
 
     public void remove(final Station station) {
+        if (this.sections.size() <= 2){
+            throw new SectionDeleteImpossibleException();
+        }
+
         final Section sectionStart = getSectionStart();
         if (sectionStart.getStation().equals(station)) {
             final Section section = this.sections.stream()
