@@ -43,14 +43,14 @@ public class Distance {
         return distance;
     }
 
-    public Distance plus(final Distance distance) {
-        distanceValidation(distance.getDistance());
+    public Distance plus(final Distance oldSectionDistance) {
+        distanceValidation(oldSectionDistance.getDistance());
 
-        final int oldSectionDistance = this.distance + distance.getDistance();
+        final int newSectionDistinct = this.distance + oldSectionDistance.getDistance();
 
-        if (oldSectionDistance <= 0) {
+        if (newSectionDistinct <= 0) {
             throw new DistanceExcessException();
         }
-        return new Distance(oldSectionDistance);
+        return new Distance(newSectionDistinct);
     }
 }
