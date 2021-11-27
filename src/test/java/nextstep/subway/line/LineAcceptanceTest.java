@@ -147,7 +147,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return post("/lines", lineRequest);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_목록_조회() {
+    public static ExtractableResponse<Response> 지하철_노선_목록_조회() {
         return get("/lines");
     }
 

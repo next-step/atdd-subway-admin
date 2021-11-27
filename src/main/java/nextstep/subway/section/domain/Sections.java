@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,13 +33,37 @@ public class Sections {
     }
 
     public void connect(Section section) {
-        Section upBoundSection = upBoundSection(section).orElse(null);
-        Section downBoundSection = downBoundSection(section).orElse(null);
+        Section upBoundSection = upBoundSection(section);
+        Section downBoundSection = downBoundSection(section);
 
         validateForConnect(upBoundSection, downBoundSection, section);
         updateWhenConnectInMiddleOfSection(upBoundSection, downBoundSection, section);
 
         this.sections.add(section);
+    }
+
+    public void remove(Station station) {
+        Section upBoundSection = upBoundSection(station);
+        Section downBoundSection = downBoundSection(station);
+
+        validateForRemove(station);
+
+        if (isStationInMiddleOfSection(upBoundSection, downBoundSection)) {
+            removeStationInMiddleOfSection(upBoundSection, downBoundSection);
+            return;
+        }
+
+        removeLastSection(upBoundSection, downBoundSection);
+    }
+
+    private void removeLastSection(Section upBoundSection, Section downBoundSection) {
+        if (isDownBoundSection(upBoundSection, downBoundSection)) {
+            remove(upBoundSection); // 하행 종점을 삭제하는 경우
+        }
+
+        if (isUpBoundSection(upBoundSection, downBoundSection)) {
+            remove(downBoundSection); // 상행 종점을 삭제하는 경우
+        }
     }
 
     private void validateForConnect(Section upBoundSection, Section downBoundSection,
@@ -48,6 +73,11 @@ public class Sections {
         validateAlreadyExistedStations(section, stations);
         validateDistanceWhenConnect(upBoundSection, downBoundSection, section);
         validateExistUpStationOrDownStation(section, stations);
+    }
+
+    private void validateForRemove(Station station) {
+        validateExistStation(station);
+        validateLastSection();
     }
 
     private void updateWhenConnectInMiddleOfSection(Section upBoundSection,
@@ -65,11 +95,16 @@ public class Sections {
     }
 
     private boolean connectableByUpStation(Section upBoundSection, boolean contains) {
-        return upBoundSection != null && contains;
+        return !upBoundSection.isDummy() && contains;
     }
 
     private boolean connectableByDownStation(Section downBoundSection, boolean contains) {
-        return downBoundSection != null && contains;
+        return !downBoundSection.isDummy() && contains;
+    }
+
+    private void removeStationInMiddleOfSection(Section upBoundSection, Section downBoundSection) {
+        upBoundSection.updateForDelete(downBoundSection);
+        remove(downBoundSection);
     }
 
     public static Sections empty() {
@@ -98,21 +133,37 @@ public class Sections {
     private Section upBoundLastSection() {
         final Station upBoundLastStation = upBoundLastStation();
         return this.sections.stream()
-            .filter(section -> section.getUpStation().equals(upBoundLastStation))
+            .filter(section -> section.isEqualToUpStation(upBoundLastStation))
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("상행역이 속하는 구간은 한 개가 있어야 합니다."));
     }
 
-    private Optional<Section> upBoundSection(Section standardSection) {
+    private Section upBoundSection(Section standardSection) {
         return this.sections.stream()
-            .filter(section -> section.getUpStation().equals(standardSection.getUpStation()))
-            .findFirst();
+            .filter(section -> section.isEqualToUpStation(standardSection.getUpStation()))
+            .findFirst()
+            .orElse(Section.DUMMY_SECTION);
     }
 
-    private Optional<Section> downBoundSection(Section standardSection) {
+    private Section downBoundSection(Section standardSection) {
         return this.sections.stream()
-            .filter(section -> section.getDownStation().equals(standardSection.getDownStation()))
-            .findFirst();
+            .filter(section -> section.isEqualToDownStation(standardSection.getDownStation()))
+            .findFirst()
+            .orElse(Section.DUMMY_SECTION);
+    }
+
+    private Section upBoundSection(Station station) {
+        return this.sections.stream()
+            .filter(section -> section.isEqualToDownStation(station))
+            .findFirst()
+            .orElse(Section.DUMMY_SECTION);
+    }
+
+    private Section downBoundSection(Station station) {
+        return this.sections.stream()
+            .filter(section -> section.isEqualToUpStation(station))
+            .findFirst()
+            .orElse(Section.DUMMY_SECTION);
     }
 
     private Station upBoundLastStation() {
@@ -159,12 +210,12 @@ public class Sections {
     private void validateDistanceWhenConnect(Section upBoundSection, Section downBoundSection,
         Section section) {
 
-        if (upBoundSection != null) {
+        if (!upBoundSection.isDummy()) {
             validateDistanceWhenConnect(upBoundSection, section);
             return;
         }
 
-        if (downBoundSection != null) {
+        if (!downBoundSection.isDummy()) {
             validateDistanceWhenConnect(downBoundSection, section);
         }
     }
@@ -188,6 +239,18 @@ public class Sections {
         }
     }
 
+    private void validateExistStation(Station station) {
+        if (!isInStations(station)) {
+            throw new IllegalArgumentException("노선에 존재하지 않는 역입니다.");
+        }
+    }
+
+    private void validateLastSection() {
+        if (sections.size() <= 1) {
+            throw new IllegalArgumentException("마지막 구간은 삭제할 수 없습니다.");
+        }
+    }
+
     private boolean isNotExistUpStationOrDownStation(Section section, Set<Station> stations) {
         return !(stations.contains(section.getUpStation())
             || stations.contains(section.getDownStation()));
@@ -198,7 +261,27 @@ public class Sections {
             && stations.contains(section.getDownStation());
     }
 
+    private void remove(Section section) {
+        this.sections.remove(section);
+    }
+
+    private boolean isStationInMiddleOfSection(Section upBoundSection, Section downBoundSection) {
+        return !upBoundSection.isDummy() && !downBoundSection.isDummy();
+    }
+
+    private boolean isDownBoundSection(Section upBoundSection, Section downBoundSection) {
+        return !upBoundSection.isDummy() && downBoundSection.isDummy();
+    }
+
+    private boolean isUpBoundSection(Section upBoundSection, Section downBoundSection) {
+        return !downBoundSection.isDummy() && upBoundSection.isDummy();
+    }
+
+    private boolean isInStations(Station station) {
+        return getAllStations().contains(station);
+    }
+
     List<Section> getSections() {
-        return sections;
+        return Collections.unmodifiableList(sections);
     }
 }

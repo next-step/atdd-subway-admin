@@ -1,13 +1,16 @@
 package nextstep.subway.section;
 
+import static nextstep.subway.line.LineAcceptanceTest.지하철_노선_목록_조회;
 import static nextstep.subway.line.LineAcceptanceTest.지하철_노선_생성;
 import static nextstep.subway.station.StationAcceptanceTest.지하철_역_생성;
+import static nextstep.subway.utils.AcceptanceTestUtil.delete;
 import static nextstep.subway.utils.AcceptanceTestUtil.post;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -117,6 +120,48 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_등록_실패(response);
     }
 
+    @DisplayName("역을 삭제한 경우 노선 목록 조회시 삭제한 역은 조회되지 않는다.")
+    @Test
+    void 구간_삭제() {
+        // given
+        StationResponse 청계산입구역 = 지하철_역_생성(new StationRequest("청계산입구역")).as(StationResponse.class);
+        지하철_노선에_구간_추가(청계산입구역);
+
+        // when
+        ExtractableResponse<Response> response = 청계산입구역_구간_삭제(청계산입구역);
+
+        // then
+        구간_삭제됨(response);
+
+        // when
+        List<LineResponse> lines = 지하철_노선_목록_조회()
+            .jsonPath().getList(".", LineResponse.class);
+
+        // then
+        삭제후에는_노선_목록에서_조회되지_않음(lines.get(0), 청계산입구역);
+
+    }
+
+    @DisplayName("없는 역을 삭제하는 경우, 삭제 실패")
+    @Test
+    void 구간_삭제_예외_처리1() {
+        // when
+        ExtractableResponse<Response> response = 미등록_역_삭제();
+
+        // then
+        삭제_실패(response);
+    }
+
+    @DisplayName("마지막 구간을 삭제하는 경우")
+    @Test
+    void 구간_삭제_예외_처리2() {
+        // when
+        ExtractableResponse<Response> response = 마지막_구간_삭제(강남역);
+
+        // then
+        삭제_실패(response);
+    }
+
     private ExtractableResponse<Response> 지하철_노선에_구간_추가(StationResponse 청계산입구역) {
         return post("/lines/" + 신분당선.getId() + "/sections",
             new SectionRequest(강남역.getId(), 청계산입구역.getId(), 8));
@@ -148,6 +193,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             new SectionRequest(양재역.getId(), 양재시민의숲역.getId(), 8));
     }
 
+    private ExtractableResponse<Response> 청계산입구역_구간_삭제(StationResponse 청계산입구역) {
+        return delete("/lines/" + 신분당선.getId() + "/sections?stationId=" + 청계산입구역.getId());
+    }
+
+    private ExtractableResponse<Response> 미등록_역_삭제() {
+        return delete("/lines/" + 신분당선.getId() + "/sections?stationId=" + 3L);
+    }
+
+    private ExtractableResponse<Response> 마지막_구간_삭제(StationResponse 강남역) {
+        return delete("/lines/" + 신분당선.getId() + "/sections?stationId=" + 강남역.getId());
+    }
+
     private void 구간_등록됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -164,5 +221,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .contains(tuple(강남역.getId(), 강남역.getName()),
                 tuple(광교역.getId(), 광교역.getName()),
                 tuple(청계산입구역.getId(), 청계산입구역.getName()));
+    }
+
+    private void 구간_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 삭제_실패(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 삭제후에는_노선_목록에서_조회되지_않음(LineResponse line, StationResponse 청계산입구역) {
+        assertThat(line.getStations()).hasSize(2);
+        assertThat(line.getStations())
+            .extracting("id", "name")
+            .containsOnly(tuple(강남역.getId(), 강남역.getName()),
+                tuple(광교역.getId(), 광교역.getName()));
     }
 }

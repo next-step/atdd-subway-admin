@@ -160,7 +160,7 @@ class SectionsTest {
 
     @Test
     @DisplayName("역 사이에 새로운 역을 상행역 기준으로 등록할 경우 기존 역 사이 길이보다 크거나 같으면 예외 발생")
-    void 예외_케이스1() {
+    void 구간_추가_예외_케이스1() {
         // given
         Sections sections = line.getSections();
 
@@ -173,7 +173,7 @@ class SectionsTest {
 
     @Test
     @DisplayName("역 사이에 새로운 역을 하행역 기준으로 등록할 경우 기존 역 사이 길이보다 크거나 같으면 예외 발생")
-    void 예외_케이스1_2() {
+    void 구간_추가_예외_케이스1_2() {
         // given
         Sections sections = line.getSections();
 
@@ -186,7 +186,7 @@ class SectionsTest {
 
     @Test
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록된 경우 예외 발생")
-    void 예외_케이스2() {
+    void 구간_추가_예외_케이스2() {
         // given
         Sections sections = line.getSections();
 
@@ -199,7 +199,7 @@ class SectionsTest {
 
     @Test
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되지 않은 경우 예외 발생")
-    void 예외_케이스3() {
+    void 구간_추가_예외_케이스3() {
         // given
         Sections sections = line.getSections();
 
@@ -208,5 +208,82 @@ class SectionsTest {
                 () -> sections.connect(Section.of(line, 3L, 4L, 5))
             )
             .withMessage("상행역과 하행역 둘 중 하나도 포함되어 있지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("1->3->2 두 개의 구간이 있을 때, 3번역 삭제 테스트")
+    void 구간_삭제() {
+        // given
+        Sections sections = line.getSections();
+        sections.connect(Section.of(line, 1L, 3L, 3));
+
+        // when
+        sections.remove(Station.of(3L));
+
+        // then
+        assertThat(sections.getSections()).hasSize(1);
+        assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(Station.of(1L));
+        assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(Station.of(2L));
+        assertThat(sections.getSections().get(0).getDistance()).isEqualTo(Distance.from(10));
+    }
+
+    @Test
+    @DisplayName("1->2->3 두 개의 구간이 있을 때, 1번역 삭제 테스트")
+    void 상행_종점_구간_삭제() {
+        // given
+        Sections sections = line.getSections();
+        sections.connect(Section.of(line, 2L, 3L, 3));
+
+        // when
+        sections.remove(Station.of(1L));
+
+        // then
+        assertThat(sections.getSections()).hasSize(1);
+        assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(Station.of(2L));
+        assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(Station.of(3L));
+        assertThat(sections.getSections().get(0).getDistance()).isEqualTo(Distance.from(3));
+    }
+
+    @Test
+    @DisplayName("1->2->3 두 개의 구간이 있을 때, 3번역 삭제 테스트")
+    void 하행_종점_구간_삭제() {
+        // given
+        Sections sections = line.getSections();
+        sections.connect(Section.of(line, 2L, 3L, 3));
+
+        // when
+        sections.remove(Station.of(3L));
+
+        // then
+        assertThat(sections.getSections()).hasSize(1);
+        assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(Station.of(1L));
+        assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(Station.of(2L));
+        assertThat(sections.getSections().get(0).getDistance()).isEqualTo(Distance.from(10));
+    }
+
+    @Test
+    @DisplayName("노선에 없는 역 삭제시 예외 발생")
+    void 구간_삭제_예외1() {
+        // given
+        Sections sections = line.getSections();
+
+        // when, then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> sections.remove(Station.of(3L))
+            )
+            .withMessage("노선에 존재하지 않는 역입니다.");
+    }
+
+    @Test
+    @DisplayName("마지막 구역만 있을 때, 삭제시 예외 발생")
+    void 구간_삭제_예외2() {
+        // given
+        Sections sections = line.getSections();
+
+        // when, then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> sections.remove(Station.of(1L))
+            )
+            .withMessage("마지막 구간은 삭제할 수 없습니다.");
     }
 }

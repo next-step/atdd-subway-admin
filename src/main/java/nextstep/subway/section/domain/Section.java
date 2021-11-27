@@ -14,6 +14,8 @@ import nextstep.subway.station.domain.Station;
 @Entity
 public class Section {
 
+    public static final Section DUMMY_SECTION = new Section();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -57,8 +59,21 @@ public class Section {
         this.distance = this.distance.subtract(section.distance);
     }
 
+    public void updateForDelete(Section section) {
+        this.downStation = section.downStation;
+        this.distance = this.distance.add(section.getDistance());
+    }
+
     public boolean isLessThanOrEqualDistance(Section other) {
         return this.distance.lessThanOrEqual(other.distance);
+    }
+
+    public boolean isEqualToDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public boolean isEqualToUpStation(Station station) {
+        return this.upStation.equals(station);
     }
 
     public Station getUpStation() {
@@ -75,5 +90,9 @@ public class Section {
 
     Distance getDistance() {
         return distance;
+    }
+
+    public boolean isDummy() {
+        return this == DUMMY_SECTION;
     }
 }

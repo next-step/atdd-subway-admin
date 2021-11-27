@@ -68,6 +68,10 @@ public class Line extends BaseEntity {
         sections.connect(section);
     }
 
+    public void removeSection(Long stationId) {
+        sections.remove(Station.of(stationId));
+    }
+
     public Long getId() {
         return id;
     }
