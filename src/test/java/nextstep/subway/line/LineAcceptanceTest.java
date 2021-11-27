@@ -95,8 +95,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(status.value());
     }
 
-    private void 지하철_노선_목록_포함됨(List<ExtractableResponse<Response>> givenList, ExtractableResponse<Response> actual) {
-        List<Long> expectedLineIds = givenList.stream()
+    private void 지하철_노선_목록_포함됨(List<ExtractableResponse<Response>> expectedList, ExtractableResponse<Response> actual) {
+        List<Long> expectedLineIds = expectedList.stream()
             .map(createResponse ->
                 Long.parseLong(createResponse
                     .header("Location")
@@ -110,14 +110,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(actualLineIds).containsAll(expectedLineIds);
     }
 
+    private void 지하철_노선_조회됨(Map<String, String> expected, ExtractableResponse<Response> response) {
+        지하철_노선_일치함(expected, response);
+    }
+
     private void 지하철_노선_수정됨(Map<String, String> expected, ExtractableResponse<Response> response) {
+        지하철_노선_일치함(expected, response);
+    }
+
+    private void 지하철_노선_일치함(Map<String, String> expected, ExtractableResponse<Response> response) {
         LineResponse actual = response.jsonPath().getObject(".", LineResponse.class);
         assertThat(actual.getId()).isNotNull();
         assertThat(actual.getName()).isEqualTo(expected.get("name"));
         assertThat(actual.getColor()).isEqualTo(expected.get("color"));
     }
 
-    private
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -168,7 +175,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         응답_코드_검증(response, HttpStatus.OK);
-        지하철_노선_목록_포함됨(Collections.singletonList(createResponse), response);
+        지하철_노선_조회됨(LINE1, response);
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 조회한다.")
@@ -210,7 +217,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(uri);
 
         // then
-        응답_코드_검증(response, HttpStatus.OK);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
