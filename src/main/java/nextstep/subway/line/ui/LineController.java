@@ -68,7 +68,7 @@ public class LineController {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public void handleDefaultException(Exception e) {
     }
 }
