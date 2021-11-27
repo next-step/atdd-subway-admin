@@ -240,7 +240,7 @@ public class Sections {
     }
 
     private void validateExistStation(Station station) {
-        if (!getAllStations().contains(station)) {
+        if (!isInStations(station)) {
             throw new IllegalArgumentException("노선에 존재하지 않는 역입니다.");
         }
     }
@@ -275,6 +275,10 @@ public class Sections {
 
     private boolean isUpBoundSection(Section upBoundSection, Section downBoundSection) {
         return !downBoundSection.isDummy() && upBoundSection.isDummy();
+    }
+
+    private boolean isInStations(Station station) {
+        return getAllStations().contains(station);
     }
 
     List<Section> getSections() {
