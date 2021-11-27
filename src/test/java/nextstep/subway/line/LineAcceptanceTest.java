@@ -264,7 +264,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         final ExtractableResponse<Response> addSectionResponse = 지하철_구간_추가_요청(신분당선.getId(), sectionAddParams);
         // then
-        지하철_노선_추가가_실패됨(addSectionResponse, "기존 역 사이 길이보다 큰 거리 입니다.");
+        지하철_구간_추가가_실패됨(addSectionResponse, "기존 역 사이 길이보다 큰 거리 입니다.");
     }
 
 
@@ -277,7 +277,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         final ExtractableResponse<Response> addSectionResponse = 지하철_구간_추가_요청(신분당선.getId(), sectionAddParams);
         // then
-        지하철_노선_추가가_실패됨(addSectionResponse, "상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
+        지하철_구간_추가가_실패됨(addSectionResponse, "상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
     }
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 추가할 수 없다.")
@@ -292,7 +292,53 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         final ExtractableResponse<Response> addSectionResponse = 지하철_구간_추가_요청(신분당선.getId(), sectionAddParams);
         // then
-        지하철_노선_추가가_실패됨(addSectionResponse, "상행역과 하행역 둘 중 하나도 포함되어 있지 않습니다.");
+        지하철_구간_추가가_실패됨(addSectionResponse, "상행역과 하행역 둘 중 하나도 포함되어 있지 않습니다.");
+    }
+
+
+    @ParameterizedTest(name = "노선의 역을 삭제 할 수 있다.")
+    @ValueSource(longs = {1, 2, 3})
+    void removeStation(Long stationId) {
+        // given
+        LineResponse 신분당선 = 지하철_노선_등록되어_있음("신분당선", "신분당색상", 강남역_아이디, 역삼역_아이디, 10).as(LineResponse.class);
+        지하철_구간_추가_되어있음(신분당선.getId(), 역삼역_아이디, "화곡역", 3);
+        // when
+        final ExtractableResponse<Response> response = 지하철_구간_역_삭제_요청(신분당선.getId(), stationId);
+        // then 
+        지하철_구간_역_삭제_됨(response);
+    }
+
+    @DisplayName("노선에 등록되어있지 않은 역을 제거하려는 경우 에러 메시지가 발생한다.")
+    @Test
+    void removeWithNotFoundStationId() {
+        // given
+        LineResponse 신분당선 = 지하철_노선_등록되어_있음("신분당선", "신분당색상", 강남역_아이디, 역삼역_아이디, 10).as(LineResponse.class);
+        지하철_구간_추가_되어있음(신분당선.getId(), 역삼역_아이디, "논현역", 2);
+        Long 화곡역_아이디 = 지하철_역_등록되어_있음("화곡역").as(StationResponse.class).getId();
+        // when
+        final ExtractableResponse<Response> response = 지하철_구간_역_삭제_요청(신분당선.getId(), 화곡역_아이디);
+        // then
+        지하철_구간_역_삭제_실패됨(response, "해당 구간의 등록되어 있지 않은 지하철 역 입니다.");
+    }
+
+    @ParameterizedTest(name = "구간이 하나인 노선에서 마지막 구간을 제거할경우 에러 메시지가 발생한다.")
+    @ValueSource(longs = {1, 2})
+    void removeWithStationOfLastSection() {
+        // given
+        LineResponse 신분당선 = 지하철_노선_등록되어_있음("신분당선", "신분당색상", 강남역_아이디, 역삼역_아이디, 10).as(LineResponse.class);
+        // when
+        final ExtractableResponse<Response> response = 지하철_구간_역_삭제_요청(신분당선.getId(), 강남역_아이디);
+        // then
+        지하철_구간_역_삭제_실패됨(response, "마지막 구간의 역은 삭제 할 수 없습니다.");
+    }
+
+
+    private void 지하철_구간_역_삭제_됨(ExtractableResponse<Response> response) {
+        assertHttpStatusOk(response);
+    }
+
+    private void 지하철_구간_역_삭제_실패됨(ExtractableResponse<Response> response, String errorMessage) {
+        assertBadRequestAndMessage(response, errorMessage);
     }
 
     private void 지하철_노선_추가가_성공됨(ExtractableResponse<Response> response) {
@@ -335,7 +381,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertBadRequestAndMessage(response, errorMessage);
     }
 
-    private void 지하철_노선_추가가_실패됨(ExtractableResponse<Response> response, String errorMessage) {
+    private void 지하철_구간_추가가_실패됨(ExtractableResponse<Response> response, String errorMessage) {
         assertBadRequestAndMessage(response, errorMessage);
     }
 }
