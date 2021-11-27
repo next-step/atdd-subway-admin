@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
@@ -94,7 +95,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_목록_응답됨(response);
 
         // 지하철_노선_목록_포함됨
-        지하철_노선_목록_포함됨(response);
+        지하철_노선_목록_포함됨(response, Arrays.asList("신분당선", "2호선"));
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -211,14 +212,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return 지하철_노선_수정(modifyRequest, location);
     }
 
-    private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response) {
+    private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, List<String> expectedLineNames) {
         List<LineResponse> lines = response.body().jsonPath().getList(".", LineResponse.class);
 
         List<String> lineNames = lines.stream()
             .map(LineResponse::getName)
             .collect(Collectors.toList());
 
-        assertThat(lineNames).containsExactly(request1.getName(), request2.getName());
+        assertThat(lineNames).containsAll(expectedLineNames);
     }
 
     private void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
