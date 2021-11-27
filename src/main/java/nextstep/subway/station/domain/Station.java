@@ -55,8 +55,4 @@ public class Station extends BaseEntity {
         return Objects.hash(name);
     }
 
-    @Override
-    public String toString() {
-        return "Station [id=" + id + ", name=" + name + "]";
-    }
 }

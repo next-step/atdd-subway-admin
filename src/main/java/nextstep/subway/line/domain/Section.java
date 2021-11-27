@@ -77,11 +77,6 @@ public class Section extends BaseEntity {
         return Objects.hash(line, upStation, downStation);
     }
 
-    @Override
-    public String toString() {
-        return "Section [upStation=" + upStation + ", downStation=" + downStation + ", distance=" + distance + "]";
-    }
-    
     public void checkShorter(int distance) {
         if (this.distance >= distance) {
             throw new IllegalArgumentException(String.format("길이가 맞지 않는 노선입니다.(%d)", this.distance));

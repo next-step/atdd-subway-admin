@@ -116,9 +116,5 @@ public class Sections {
     private boolean isNotExistStations(Station...stations) {
         return Stream.of(stations).allMatch(station -> !getStations().contains(station));
     }
-    
-    void print() {
-        sections.forEach(s -> System.out.println(s.toString()));
-    }
-    
+
 }
