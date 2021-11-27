@@ -30,11 +30,20 @@ public class RestAssuredApiTest {
     }
 
     public static ExtractableResponse<Response> delete(String url, Long id) {
-        System.out.println("url :: " + url);
-        System.out.println("id :: " + id);
         return RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete(url, id)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> delete(String url, Long id, Map<String, String> params) {
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .param(params.get("key"), params.get("value"))
                 .when()
                 .delete(url, id)
                 .then().log().all()

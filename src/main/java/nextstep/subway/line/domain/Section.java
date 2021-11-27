@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.exception.TooLongDistanceException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.Embeddable;
@@ -65,6 +64,11 @@ public class Section extends BaseEntity {
         if (Objects.isNull(downStation)) {
             throw new IllegalArgumentException(DOWN_STATION_NOT_NULL_ERROR_MESSAGE);
         }
+    }
+
+    public static Section of(Section upSection, Section downSection) {
+        final int newDistance = upSection.getDistance() + downSection.getDistance();
+        return of(newDistance, upSection.getUpStation(), downSection.getDownStation());
     }
 
     public static Section of(int distance, Station upStation, Station downStation) {
