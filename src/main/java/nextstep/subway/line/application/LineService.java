@@ -1,17 +1,22 @@
 package nextstep.subway.line.application;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import nextstep.subway.common.exception.DuplicateException;
 import nextstep.subway.common.exception.NotFoundException;
+import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,14 +36,18 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Line line = request.toLine();
         validateDuplicateLine(line);
-        Station upStation = stationService.findStation(request.getUpStationId());
-        Station downStation = stationService.findStation(request.getDownStationId());
-        Section section = new Section(line, upStation, downStation, 100);
-        line.addSection(section);
+
+        Station station = stationService.findStation(request.getUpStationId());
+        Station nextStation = stationService.findStation(request.getDownStationId());
+
+        LineStation lineStation = LineStation.of(station.getId(), nextStation.getId(),
+            Distance.of(request.getDistance()));
+        line.addLineStation(lineStation);
 
         Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
     }
+
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
         Line persistLine = findLine(id);
@@ -50,15 +59,22 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         return lineRepository.findAll().stream()
-            .map(LineResponse::withOutStationsOf)
+            .map(LineResponse::of)
             .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse findByLineId(Long id) {
-        return lineRepository.findById(id)
-            .map(LineResponse::of)
-            .orElse(null);
+        Line line = findLine(id);
+        List<Long> stationIds = line.getStations().stream()
+            .map(LineStation::getStationId)
+            .collect(Collectors.toList());
+
+        Map<Long, Station> stations = stationService.findAllById(stationIds);
+        List<LineStationResponse> lineStationResponses = extractLineStationResponses(
+            line.getStations(), stations);
+
+        return LineResponse.of(line, lineStationResponses);
     }
 
     public void deleteLineById(Long id) {
@@ -81,5 +97,17 @@ public class LineService {
         optionalLine.ifPresent(findLine -> {
             throw new DuplicateException("이미 등록된 노선 이름을 사용할 수 없습니다.");
         });
+    }
+
+    @Transactional(readOnly = true)
+    protected List<LineStationResponse> extractLineStationResponses(List<LineStation> lineStations,
+        Map<Long, Station> stations) {
+        List<LineStationResponse> result = new ArrayList<>();
+        for (LineStation lineStation : lineStations) {
+            Station station = stations.get(lineStation.getStationId());
+            result.add(LineStationResponse.of(StationResponse.of(station), lineStation));
+        }
+
+        return result;
     }
 }

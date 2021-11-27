@@ -1,6 +1,9 @@
 package nextstep.subway.station.application;
 
+import java.security.InvalidParameterException;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import nextstep.subway.common.exception.DuplicateException;
 import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
@@ -60,5 +63,12 @@ public class StationService {
         optionalStation.ifPresent(findLine -> {
             throw new DuplicateException("이미 등록된 역 이름을 사용할 수 없습니다.");
         });
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, Station> findAllById(List<Long> stationIds) {
+        return stationRepository.findAllById(stationIds)
+            .stream()
+            .collect(Collectors.toMap(Station::getId, Function.identity()));
     }
 }
