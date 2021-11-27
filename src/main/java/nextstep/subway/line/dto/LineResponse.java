@@ -4,11 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 public class LineResponse {

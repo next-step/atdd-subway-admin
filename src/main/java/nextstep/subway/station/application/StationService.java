@@ -30,7 +30,7 @@ public class StationService {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-            .map(station -> StationResponse.from(station))
+            .map(StationResponse::from)
             .collect(Collectors.toList());
     }
 
