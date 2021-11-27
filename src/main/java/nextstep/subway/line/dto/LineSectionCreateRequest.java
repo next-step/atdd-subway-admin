@@ -7,8 +7,6 @@ public class LineSectionCreateRequest {
 
     private LineSectionCreateRequest() {
     }
-
-
     public LineSectionCreateRequest(Long upStationId, Long downStationId,  int distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;

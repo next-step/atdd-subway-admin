@@ -11,14 +11,13 @@ import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
-
-    private static Station FIRST_STATION = null;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
+
     private String color;
 
     @Embedded
@@ -35,11 +34,11 @@ public class Line extends BaseEntity {
 
     public Line(String name, String color, Station upStation, Station downStation, Distance distance) {
         this(name, color);
-        addSection(new Section(this, upStation, downStation, distance));
+        this.sections.addSection(new Section(this, upStation, downStation, distance));
     }
 
-    public void addSection(Section section) {
-        this.sections.addSection(section);
+    public void updateSection(Section section) {
+        this.sections.updateSection(section);
         section.addLine(this);
     }
 
@@ -60,16 +59,16 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Sections getSections() {
-        return sections;
-    }
-
     public List<Station> getStations(){
         return sections.getStations();
     }
 
-    public List<Section> getOrderedSections() {
-        return sections.getSectionInOrder();
+    public List<Section> getSections() {
+        return sections.getSections();
+    }
+
+    public List<Station> getOrderedSections() {
+        return sections.getStations();
     }
 
 }

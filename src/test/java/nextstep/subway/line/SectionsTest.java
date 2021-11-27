@@ -5,31 +5,78 @@ import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class SectionsTest {
 
-    @Test
-    @DisplayName("구간 정렬이 되었는지 확인 충정로역- 당산역- 홍대입구역")
-    public void sortTest() {
+    private Line line;
+    private Station savedDangSanStation;
+    private Station savedHongDaeStation;
+    private Station chungJeoungRoStation;
+
+    @BeforeEach
+    void setUp() {
         StationRequest dangSanStationRequest = new StationRequest("당산역");
         StationRequest hongDaeStationRequest = new StationRequest("홍대입구역");
 
         StationRequest chungJeoungRoStationRequest = new StationRequest("충정로역");
-        Station savedDangSanStation = dangSanStationRequest.toStation();
-        Station savedHongDaeStation = hongDaeStationRequest.toStation();
-        Station chungJeoungRoStation = chungJeoungRoStationRequest.toStation();
-        Line line = new Line("2호선", "green", savedDangSanStation, savedHongDaeStation, new Distance(10));
+        savedDangSanStation = dangSanStationRequest.toStation();
+        savedHongDaeStation = hongDaeStationRequest.toStation();
+        chungJeoungRoStation = chungJeoungRoStationRequest.toStation();
+        line = new Line("2호선", "green", savedDangSanStation, savedHongDaeStation, new Distance(10));
+    }
 
-        Section newSection = new Section(line, chungJeoungRoStation, savedDangSanStation, new Distance(5));
+    @Test
+    @DisplayName("상행종점 추가 충정로역- 당산역- 홍대입구역")
+    public void sortTest() {
+        Section newSection = new Section(line, chungJeoungRoStation, savedDangSanStation, new Distance(3));
+        line.updateSection(newSection);
+        checkStationNames("충정로역", "당산역", "홍대입구역");
+        checkDistance("충정로역", 3);
+    }
 
-        line.addSection(newSection);
+    @Test
+    @DisplayName("구간 중간 추가 당산역- 충정로역- 홍대입구역")
+    public void addMiddleTest() {
+        Section newSection = new Section(line, savedDangSanStation, chungJeoungRoStation, new Distance(2));
+        line.updateSection(newSection);
+        checkStationNames("당산역", "충정로역", "홍대입구역");
+        checkDistance("홍대입구역", 8);
+    }
 
-        Assertions.assertThat(line.getStations()
+    @Test
+    @DisplayName("하행종점 중간 추가 당산역- 홍대입구역- 충정로역")
+    public void addEndTest() {
+        Section newSection = new Section(line, savedHongDaeStation, chungJeoungRoStation, new Distance(1));
+        line.updateSection(newSection);
+        checkStationNames("당산역", "홍대입구역", "충정로역");
+        checkDistance("충정로역", 1);
+    }
+
+    @Test
+    @DisplayName("구간 중간 추가 기존 구간보다 같을 경우 에러처리")
+    public void addSameDistanceTest() {
+        Section newSection = new Section(line, savedDangSanStation, chungJeoungRoStation, new Distance(10));
+        line.updateSection(newSection);
+        checkStationNames("당산역", "충정로역", "홍대입구역");
+        checkDistance("홍대입구역", 0);
+    }
+
+    private void checkDistance(String sectionStationName, int exepectedDistance){
+        int addedSectionDistance = line.getSections().stream()
+                .filter(it-> it.getDownStation().getName().equals(sectionStationName) || it.getUpStation().getName().equals(sectionStationName))
+                .map(it-> it.getDistance().getDistance())
+                .findFirst().get();
+        assertThat(addedSectionDistance).isEqualTo(exepectedDistance);
+    }
+
+    private void checkStationNames(String name1, String name2, String name3) {
+        assertThat(line.getStations()
                 .stream()
-                .map(it -> it.getName())).contains("충정로역", "당산역", "홍대입구역");
-
+                .map(it -> it.getName())).containsExactly(name1, name2, name3);
     }
 }

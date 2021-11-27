@@ -1,6 +1,8 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.exception.InputDataErrorCode;
+import nextstep.subway.exception.InputDataErrorException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
@@ -66,44 +68,35 @@ public class Section extends BaseEntity implements Comparable<Section> {
         this.line = line;
     }
 
-    public Distance minusDistance(Distance distance) {
-        return this.getDistance().minus(distance);
+    public void minusDistance(Distance distance) {
+        this.distance.minus(distance);
     }
 
     public Line getLine() {
         return line;
     }
 
-    public boolean isSameUpStation(Section section) {
-        return upStation != null && upStation.equals(section.getUpStation());
-    }
-
-    public boolean isSameDownStation(Section section) {
-        return isDownStation(section.getDownStation());
-    }
-
-    public boolean isDownStation(Station station) {
-        return downStation.equals(station);
-    }
-
-    public void updateUpStation(Section section) {
-        this.upStation = section.getUpStation();
-        this.distance = this.distance.minus(section.distance);
-    }
-
     public void addInnerSection(Section newSection) {
         if(this.getUpStation() == newSection.getUpStation()){
             this.upStation = newSection.getDownStation();
+            this.minusDistance(newSection.getDistance());
         }
 
         if(this.getDownStation() == newSection.getDownStation()){
             this.downStation = newSection.getUpStation();
+            this.minusDistance(newSection.getDistance());
         }
     }
 
-    public void updateDownStation(Section section) {
-        this.downStation = section.getUpStation();
-        this.distance =  section.minusDistance(this.distance);
+    private void checkValidateDistance(Section newSection){
+        Distance newDistance = newSection.getDistance();
+        if (this.distance.isSameDistance(newDistance)) {
+            throw new InputDataErrorException(InputDataErrorCode.DISTANCE_OF_OLD_SECTION_AND_NEW_SECTIONIS_IS_SAME);
+        }
+
+        if (this.distance.isOverDistance(newDistance)) {
+            throw new InputDataErrorException(InputDataErrorCode.DISTANCE_OF_THE_NEW_SECTION_IS_OVER_THAN_OLD_SECTION_DISTANCE);
+        }
     }
 
     @Override
@@ -124,7 +117,6 @@ public class Section extends BaseEntity implements Comparable<Section> {
         if (this.getUpStation() == o.getDownStation()) {
             return 1;
         }
-
         if (this.getDownStation() == o.getUpStation()) {
             return -1;
         }

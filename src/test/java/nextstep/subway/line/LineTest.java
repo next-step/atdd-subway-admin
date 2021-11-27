@@ -26,12 +26,11 @@ public class LineTest {
 
         Section newSection = new Section(line, savedHongDaeStation, chungJeoungRoStation, new Distance(5));
 
-        line.addSection(newSection);
+        line.updateSection(newSection);
         assertThat(line.getStations().size()).isEqualTo(3);
         assertThat(line.getStations().stream()
                 .map(it -> it.getName())
                 .distinct())
-
                 .contains("당산역", "홍대입구역", "충정로역");
     }
 }

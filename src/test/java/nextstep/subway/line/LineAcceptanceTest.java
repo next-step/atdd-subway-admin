@@ -6,7 +6,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineAcceptanceTestRequest;
 import nextstep.subway.line.dto.LineAcceptanceTestResponse;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.dto.SectionResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -141,16 +141,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         for (int i = 0; i < createLineResponses.size(); i++) {
             assertThat(createLineResponses.get(i).getId()).isEqualTo(selectLineResponses.get(i).getId());
 
-            List<SectionResponse> createStations = createLineResponses.get(i).getSections();
-            List<SectionResponse> selectStations = selectLineResponses.get(i).getSections();
+            List<StationResponse> createStations = createLineResponses.get(i).getStations();
+            List<StationResponse> selectStations = selectLineResponses.get(i).getStations();
             compareStation(createStations, selectStations);
         }
     }
 
-    private void compareStation(List<SectionResponse> createStations, List<SectionResponse> selectStations) {
+    private void compareStation(List<StationResponse> createStations, List<StationResponse> selectStations) {
         for (int i = 0; i < createStations.size(); i++) {
-            SectionResponse createStation = createStations.get(i);
-            SectionResponse selectStation = selectStations.get(i);
+            StationResponse createStation = createStations.get(i);
+            StationResponse selectStation = selectStations.get(i);
             assertThat(createStation.getId()).isEqualTo(selectStation.getId());
         }
     }

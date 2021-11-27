@@ -70,11 +70,10 @@ public class LineService {
 
     public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
         sectionRequest.checkValidRequestValue();
-
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_LINE));
         Section newSection = createSection(line, sectionRequest);
-        line.addSection(newSection);
+        line.updateSection(newSection);
         return LineResponse.of(lineRepository.save(line));
     }
 

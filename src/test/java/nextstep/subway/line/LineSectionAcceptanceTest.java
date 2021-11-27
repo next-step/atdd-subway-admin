@@ -4,7 +4,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.*;
-import nextstep.subway.section.domain.dto.SectionResponse;
 import nextstep.subway.station.StationAcceptanceTestRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,7 +88,6 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
                 lineSectionCreateRequest.getDownStationId(), lineSectionCreateRequest.getDistance());
 
         LineSectionAcceptanceTestResponse.isStatusOk(response);
-
         checkValid(response);
     }
 
@@ -102,16 +100,16 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         LineResponse addedResponses = addedResponse.jsonPath()
                 .getObject(".", LineResponse.class);
 
-        List<SectionResponse> addedSectionResponse = addedResponses.getSections();
-        List<SectionResponse> searchResponse = searchedLineResponse.getSections();
+        List<StationResponse> addedSectionResponse = addedResponses.getStations();
+        List<StationResponse> searchResponse = searchedLineResponse.getStations();
 
         compareStation(addedSectionResponse, searchResponse);
     }
 
-    private void compareStation(List<SectionResponse> addSectionResponse, List<SectionResponse> searchResponse) {
+    private void compareStation(List<StationResponse> addSectionResponse, List<StationResponse> searchResponse) {
         for (int i = 0; i < addSectionResponse.size(); i++) {
-            SectionResponse createStation = addSectionResponse.get(i);
-            SectionResponse selectStation = searchResponse.get(i);
+            StationResponse createStation = addSectionResponse.get(i);
+            StationResponse selectStation = searchResponse.get(i);
             assertThat(createStation.getId()).isEqualTo(selectStation.getId());
         }
     }

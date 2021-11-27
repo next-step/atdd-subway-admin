@@ -18,10 +18,6 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public int size() {
-        return this.sections.size();
-    }
-
     public List<Station> getStations() {
         return this.sections.stream()
                 .sorted()
@@ -31,75 +27,42 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public void addSection(Section newSection) {
+    public void updateSection(Section newSection) {
         checkValidSection(newSection);
+        addSection(newSection);
+    }
+
+    public void addSection(Section newSection){
         for (Section section : sections) {
-            // 이 메서드에서 section 과 otherSection 의 상행역, 하행역을 검사해서 section 의 상행, 하행역을 업데이트 하면 될거 같아요!
             section.addInnerSection(newSection);
         }
         sections.add(newSection);
-    }
-
-    public void addUpdatedSection(Section section) {
-        List<Station> stations = getStations();
-        updateSection(stations, section);
-        this.sections.add(section);
-    }
-
-    private void updateSection(List<Station> stations, Section newSection) {
-        if (stations.contains(newSection.getUpStation())) {
-            updateUpStation(newSection);
-            return;
-        }
-
-        if (stations.contains(newSection.getDownStation())) {
-            updateDownStation(newSection);
-        }
-    }
-
-    private void updateDownStation(Section section) {
-        sections.stream()
-                .filter(it -> it.isSameDownStation(section))
-                .findFirst()
-                .ifPresent(it -> it.updateDownStation(section));
-    }
-
-    private void updateUpStation(Section section) {
-        sections.stream()
-                .filter(it -> it.isSameUpStation(section))
-                .findFirst()
-                .ifPresent(it -> it.updateUpStation(section));
-    }
-
-    private Section findMatchedDownStationInNewSection(Section newSection) {
-        return sections.stream()
-                .filter(it -> it.getDownStation() == newSection.getDownStation())
-                .findFirst()
-                .orElse(null);
-    }
-
-    private Section findMatchedUpStationInNewSection(Section newSection) {
-        return sections.stream()
-                .filter(it -> it.getUpStation() == newSection.getUpStation())
-                .findFirst()
-                .orElse(null);
     }
 
     private void checkValidSection(Section section) {
         if (isExist(section)) {
             throw new InputDataErrorException(InputDataErrorCode.THE_SECTION_ALREADY_EXISTS);
         }
-
-//        if (!registerBothStationInLine(section)) {
-//            throw new InputDataErrorException(InputDataErrorCode.THEY_ARE_NOT_SEARCHED_STATIONS);
-//        }
+        if (registerBothStationInLine(section)) {
+            throw new InputDataErrorException(InputDataErrorCode.THE_STATIONS_ALREADY_EXISTS);
+        }
+        if (notSearchBothStationInLine(section)) {
+            throw new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_STATION);
+        }
     }
 
     private boolean registerBothStationInLine(Section section) {
-        List<Station> stationsInSection = section.getStations();
+        List<Station> stations = this.getStations();
+        return stations.stream()
+                .filter(it -> it.equals(section.getUpStation()) || it.equals(section.getDownStation()))
+                .collect(Collectors.toList()).size() == 2;
+    }
 
-        return getStations().stream()
-                .anyMatch(it -> stationsInSection.contains(it));
+    private boolean notSearchBothStationInLine(Section section) {
+        List<Station> stations = this.getStations();
+        return stations.stream()
+                .filter(it -> it.equals(section.getUpStation()) || it.equals(section.getDownStation()))
+                .collect(Collectors.toList()).size() == 0;
     }
 
     private boolean isExist(Section section) {
@@ -110,14 +73,6 @@ public class Sections {
     private boolean isSameSection(Section section, Section it) {
         return it.equals(section);
     }
-
-    public List<Section> getSectionInOrder() {
-        // 출발지점 찾기
-
-        return getSections();
-    }
-
-
 
     public List<Section> getSections() {
         return sections;

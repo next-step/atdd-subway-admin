@@ -5,6 +5,7 @@ import nextstep.subway.exception.InputDataErrorException;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.util.Objects;
 
 @Embeddable
 public class Distance {
@@ -26,16 +27,32 @@ public class Distance {
         }
     }
 
-    public Distance minus(Distance distance) {
-        return new Distance(this.distance - distance.distance);
-    }
-
-    public Distance sum(Distance distance) {
-        return new Distance(this.distance + distance.distance);
+    public void minus(Distance distance) {
+        this.distance -= distance.distance;
     }
 
     public int getDistance() {
         return this.distance;
     }
 
+    public boolean isSameDistance(Distance distance){
+        return this.equals(distance);
+    }
+
+    public boolean isOverDistance(Distance distance) {
+        return this.distance > distance.getDistance();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Distance)) return false;
+        Distance distance1 = (Distance) o;
+        return getDistance() == distance1.getDistance();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getDistance());
+    }
 }
