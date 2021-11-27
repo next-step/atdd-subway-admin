@@ -62,6 +62,11 @@ public class Line extends BaseEntity {
         return sections;
     }
 
+    public void addSection(final Section section) {
+        section.addLine(this);
+        this.sections.addSection(section);
+    }
+
     public List<Station> getStations() {
         return this.sections.getSections().stream()
             .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))

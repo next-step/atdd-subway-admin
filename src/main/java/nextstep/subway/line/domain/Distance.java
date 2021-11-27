@@ -19,6 +19,10 @@ public class Distance {
         this.distance = distance;
     }
 
+    public int getDistance() {
+        return distance;
+    }
+
     public static Distance of(final int distance) {
         return new Distance(distance);
     }

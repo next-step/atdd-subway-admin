@@ -1,10 +1,10 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 public class LineRequest {
+
     private String name;
     private String color;
     private Long upStationId;
@@ -14,7 +14,8 @@ public class LineRequest {
     public LineRequest() {
     }
 
-    public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public LineRequest(String name, String color, Long upStationId, Long downStationId,
+        int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
