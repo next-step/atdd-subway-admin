@@ -64,4 +64,11 @@ public class LineStationAcceptanceTestUtil {
         assertThat(distances).containsExactly(expectedDistances);
     }
 
+    public static ExtractableResponse<Response> 지하철_노선구간_제거_됨(Long lineId, Long removeStationId) {
+        return RestAssured.given().log().all()
+            .when()
+            .delete("/lines/" + lineId + "/sections?stationId=" + removeStationId)
+            .then().log().all()
+            .extract();
+    }
 }

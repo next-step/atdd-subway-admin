@@ -158,6 +158,59 @@ public class LineStationAddAcceptanceTest extends AcceptanceTest {
         지하철_구간_요청_응답_검증(노선구간추가응답, HttpStatus.BAD_REQUEST);
     }
 
+    @DisplayName("상행종점,하행종점이 아닌 중간 역 제거")
+    @Test
+    void 중간_구간_제거() {
+        // given
+        지하철_노선구간_사이에_역_추가_되어_있음(노선ID, 강동구청역ID, SAFE_DISTANCE);
+
+        // when
+        ExtractableResponse<Response> 구간제거응답 = 지하철_노선구간_제거_됨(노선ID, 강동구청역ID);
+
+        // then
+        지하철_구간_요청_응답_검증(구간제거응답, HttpStatus.NO_CONTENT);
+    }
+
+
+    @DisplayName("하행종점 역 제거")
+    @Test
+    void 하행종점_제거() {
+        // given
+        // 3개의 역을 생성됨
+        지하철_노선구간_하행_종점_역_추가_되어_있음(노선ID, 강동구청역ID, SAFE_DISTANCE);
+
+        // when
+        ExtractableResponse<Response> 구간제거응답 = 지하철_노선구간_제거_됨(노선ID, 강동구청역ID);
+
+        // then
+        지하철_구간_요청_응답_검증(구간제거응답, HttpStatus.NO_CONTENT);
+    }
+
+
+    @DisplayName("상행종점 역 제거")
+    @Test
+    void 상행종점_제거() {
+        // given
+        지하철_노선구간_상행_종점_역_추가_되어_있음(노선ID, 강동구청역ID, SAFE_DISTANCE);
+
+        // when
+        ExtractableResponse<Response> 구간제거응답 = 지하철_노선구간_제거_됨(노선ID, 강동구청역ID);
+
+        // then
+        지하철_구간_요청_응답_검증(구간제거응답, HttpStatus.NO_CONTENT);
+    }
+
+
+    @DisplayName("구간 하나일때 제거 실패")
+    @Test
+    void 구간_하나_일때_실패() {
+        // given
+        // when
+        ExtractableResponse<Response> 구간제거응답 = 지하철_노선구간_제거_됨(노선ID, 잠실역ID);
+
+        // then
+        지하철_구간_요청_응답_검증(구간제거응답, HttpStatus.BAD_REQUEST);
+    }
 
     private ExtractableResponse<Response> 지하철_노선구간_사이에_역_추가_되어_있음(Long lineId, Long stationId,
         int distance) {
