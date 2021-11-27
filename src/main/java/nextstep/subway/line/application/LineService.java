@@ -11,6 +11,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -34,7 +35,7 @@ public class LineService {
             .orElseThrow(NoSuchElementException::new);
 
         Line line = request.toLine();
-        Section section = new Section(upStation, downStation, request.getDistance());
+        Section section = new Section(upStation, downStation, new Distance(request.getDistance()));
         line.addSection(section);
         Line persistLine = lineRepository.save(line);
         return LineResponse.from(persistLine);

@@ -20,8 +20,8 @@ public class ExceptionController {
             .build();
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Void> handleIllegalArgsException(DataIntegrityViolationException e) {
+    @ExceptionHandler({DataIntegrityViolationException.class, IllegalArgumentException.class})
+    public ResponseEntity<Void> handleIllegalArgsException(Exception e) {
         log.error("잘못된 요청입니다.", e);
 
         return ResponseEntity.badRequest()

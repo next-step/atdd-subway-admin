@@ -2,10 +2,12 @@ package nextstep.subway.section.domain;
 
 import java.util.Objects;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import nextstep.subway.common.BaseEntity;
@@ -18,24 +20,20 @@ public class Section extends BaseEntity {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(nullable = false)
     private Station up;
 
     @ManyToOne
+    @JoinColumn(nullable = false)
     private Station down;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
 
-    public Section(Station up, Station down, int distance) {
-        this.up = up;
-        this.down = down;
-        this.distance = distance;
-    }
-
-    public Section(Long id, Station up, Station down, int distance) {
-        this.id = id;
+    public Section(Station up, Station down, Distance distance) {
         this.up = up;
         this.down = down;
         this.distance = distance;
@@ -53,7 +51,7 @@ public class Section extends BaseEntity {
         return up;
     }
 
-    public int getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
