@@ -33,7 +33,7 @@ public class LineRepositiryTest {
         Station upStation = stationRepository.save(new Station("건대역"));
         Station downStation = stationRepository.save(new Station("용마산역"));
         Line line = lineRepository.save(new Line("bg-red-600", "7호선"));
-        Section section = sectionRepository.save(new Section(line, upStation, downStation, 10));
+        Section section = sectionRepository.save(Section.of(line, upStation, downStation, 10));
         line.addSection(section);
         Line then = lineRepository.findById(line.getId()).get();
 

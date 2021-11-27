@@ -19,4 +19,16 @@ public class LineMap {
 
         return params;
     }
+
+    public static Map of(String color, String name, String upStationId, String dowmStationId, String distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("color", color);
+        params.put("name", name);
+        params.put("name", name);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", dowmStationId);
+        params.put("distance", distance);
+
+        return params;
+    }
 }

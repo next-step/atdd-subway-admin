@@ -32,7 +32,8 @@ public class LineService {
         Line persistLine = lineRepository.save(request.toLine());
         Station upStation = stationRepository.findById(request.getUpStationId()).get();
         Station downStation = stationRepository.findById(request.getDownStationId()).get();
-        Section section = sectionRepository.save(new Section(persistLine,upStation,downStation,request.getDistance()));
+        Section section = sectionRepository.save(Section.of(persistLine, upStation, downStation, request.getDistance()));
+        persistLine.addSection(section);
         return LineResponse.of(persistLine);
     }
 
@@ -45,18 +46,18 @@ public class LineService {
     }
 
     public LineResponse findLine(Long id) {
-        Line line = findByid(id);
+        Line line = findById(id);
         return LineResponse.of(line);
     }
 
     @Transactional
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        Line line = findByid(id);
+        Line line = findById(id);
         line.update(lineRequest.toLine());
         return LineResponse.of(line);
     }
 
-    private Line findByid(Long id) {
+    private Line findById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() ->
                 new NullPointerException("라인이 없습니다.")

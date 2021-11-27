@@ -34,7 +34,7 @@ public class SectionRepositoryTest{
         Station downStation = stationRepository.save(new Station("용마산역"));
         Line line = lineRepository.save(new Line("bg-red-600", "7호선"));
 
-        Section section = sectionRepository.save(new Section(line, upStation, downStation, 10));
+        Section section = sectionRepository.save(Section.of(line, upStation, downStation, 10));
 
         assertAll(
                 () -> assertThat(section).isNotNull(),

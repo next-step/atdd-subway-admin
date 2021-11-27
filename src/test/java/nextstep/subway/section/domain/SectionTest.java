@@ -16,7 +16,7 @@ public class SectionTest {
         Station downStation = new Station("용마산역");
         Line line = new Line("bg-red-600", "7호선");
 
-        Section section = new Section(line, upStation, downStation, 10);
+        Section section = Section.of(line, upStation, downStation, 10);
         assertThat(section).isNotNull();
     }
 }
