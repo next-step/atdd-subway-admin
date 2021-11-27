@@ -17,7 +17,7 @@ import org.springframework.http.MediaType;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관련 기능")
-public class SectionAcceptanceTest extends AcceptanceTest {
+class SectionAcceptanceTest extends AcceptanceTest {
 
     private final int SECTION_DISTANCE = 100;
     private StationResponse upStation;
@@ -47,9 +47,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //then
         //역_사이에_새로운_역_추가됨
-        final LineResponse lineResponse = response.as(LineResponse.class);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(lineResponse.getStations()).extracting("name").containsExactly("소요산", "의정부", "인천");
+        final LineResponse lineDetailResponse = 지하철_노선_상세_조회(this.lineResponse.getId()).as(LineResponse.class);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineDetailResponse.getStations()).extracting("name").containsExactly("소요산", "의정부", "인천");
     }
 
     @DisplayName("새로운 역을 상행 종점으로 추가한다.")
@@ -60,9 +60,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //then
         //새로운_역_상행_종점_으로_추가됨
-        final LineResponse lineResponse = response.as(LineResponse.class);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(lineResponse.getStations()).extracting("name").containsExactly("의정부", "소요산", "인천");
+        final LineResponse lineDetailResponse = 지하철_노선_상세_조회(lineResponse.getId()).as(LineResponse.class);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineDetailResponse.getStations()).extracting("name").containsExactly("의정부", "소요산", "인천");
     }
 
     @DisplayName("새로운 역을 하행 종점으로 추가한다.")
@@ -73,9 +73,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //then
         //새로운_역_하행_종점_으로_추가됨
-        final LineResponse lineResponse = response.as(LineResponse.class);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(lineResponse.getStations()).extracting("name").containsExactly("소요산", "인천", "의정부");
+        final LineResponse lineDetailResponse = 지하철_노선_상세_조회(lineResponse.getId()).as(LineResponse.class);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineDetailResponse.getStations()).extracting("name").containsExactly("소요산", "인천", "의정부");
     }
 
     @DisplayName("역 사이에 새로운 역을 추가시 기존 역 사이보다 크거나 같으면 추가할 수 없다.")
@@ -117,6 +117,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .body(new SectionRequest(upStationId, downStationId, distance))
                 .pathParam("lineId", lineId)
                 .when().post("/lines/{lineId}/sections")
+                .then().log().all().extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_상세_조회(Long lineId) {
+        return RestAssured.given().log().all()
+                .when()
+                .pathParam("lineNo", lineId)
+                .get("/lines/{lineNo}")
                 .then().log().all().extract();
     }
 }
