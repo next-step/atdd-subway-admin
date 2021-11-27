@@ -116,4 +116,11 @@ public class LineService {
         final Section section = getSectionOrElseThrow(sectionRequest);
         line.addSection(section);
     }
+
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        final Line line = getLineByIdOrElseThrow(lineId);
+        final Station station = stationService.getStation(stationId);
+        line.removeStation(station);
+    }
 }

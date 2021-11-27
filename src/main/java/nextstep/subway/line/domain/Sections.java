@@ -1,8 +1,10 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.exception.LastLineSectionDeleteException;
 import nextstep.subway.line.exception.LineAlreadyBothRegisteredException;
 import nextstep.subway.line.exception.NotExistEitherStationException;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.NotFoundStationByIdException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -11,14 +13,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
     private static final String NOT_NULL_ERROR_MESSAGE = "종점역은 빈값이 될 수 없습니다.";
+    private static final String NOT_CONTAINS_STATION_ERROR_MESSAGE = "해당 구간의 등록되어 있지 않은 지하철 역 입니다.";
+    private static final int DELETE_SECTION_MIN_SIZE = 1;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "lineId", foreignKey = @ForeignKey(name = "fk_section_to_line"))
@@ -57,6 +60,38 @@ public class Sections {
         }
 
         this.sections.add(section);
+    }
+
+    public void removeStation(Station station) {
+        if (this.sections.size() <= DELETE_SECTION_MIN_SIZE) {
+            throw new LastLineSectionDeleteException();
+        }
+
+        final Optional<Section> upSection = findDownSectionByStation(station);
+        final Optional<Section> downSection = findUpSectionByStation(station);
+
+        if (!upSection.isPresent() && !downSection.isPresent()) {
+            throw new NotFoundStationByIdException(NOT_CONTAINS_STATION_ERROR_MESSAGE);
+        }
+
+        if (upSection.isPresent() && downSection.isPresent()) {
+            this.sections.add(Section.of(upSection.get(), downSection.get()));
+        }
+
+        upSection.ifPresent(this.sections::remove);
+        downSection.ifPresent(this.sections::remove);
+    }
+
+    private Optional<Section> findUpSectionByStation(Station station) {
+        return this.sections.stream()
+                .filter(it -> it.getDownStation().equals(station))
+                .findAny();
+    }
+
+    private Optional<Section> findDownSectionByStation(Station station) {
+        return this.sections.stream()
+                .filter(it -> it.getUpStation().equals(station))
+                .findAny();
     }
 
     private void updateUpStation(Section section) {
@@ -104,15 +139,6 @@ public class Sections {
         return LineStationUpToDownSortUtils.sort(this.sections);
     }
 
-    private Set<Station> getStations() {
-        final Set<Station> stations = new HashSet<>();
-        this.sections.forEach(section -> {
-            stations.add(section.getUpStation());
-            stations.add(section.getDownStation());
-        });
-        return stations;
-    }
-
     public List<Section> getSections() {
         return Collections.unmodifiableList(sections);
     }
@@ -121,5 +147,4 @@ public class Sections {
     public String toString() {
         return sections.toString();
     }
-
 }
