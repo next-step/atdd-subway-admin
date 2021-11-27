@@ -15,13 +15,13 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
 
 public class LineAcceptanceTestUtils {
     private LineAcceptanceTestUtils() {
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
-        // when
         return RestAssured
             .given().log().all()
             .body(params)
@@ -39,17 +39,17 @@ public class LineAcceptanceTestUtils {
             .isNotBlank();
     }
 
-    public static long 지하철_노선_등록되어_있음(String name, String color, long upStationId, long downStationId, int distance) {
+    public static long 지하철_노선_등록되어_있음(String name, String color, Station upStation, Station downStation, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
-        params.put("upStationId", String.valueOf(upStationId));
-        params.put("downStationId", String.valueOf(downStationId));
+        params.put("upStationId", String.valueOf(upStation.getId()));
+        params.put("downStationId", String.valueOf(downStation.getId()));
         params.put("distance", String.valueOf(distance));
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
         return Long.parseLong(
             response.header("Location")
-            .split("/")[2]);
+                .split("/")[2]);
     }
 
     public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {

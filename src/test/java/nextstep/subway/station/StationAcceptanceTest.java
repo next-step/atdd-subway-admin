@@ -1,24 +1,19 @@
 package nextstep.subway.station;
 
 import static nextstep.subway.station.StationAcceptanceTestUtils.*;
-import static org.assertj.core.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.domain.Station;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
@@ -40,7 +35,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        long id = 지하철_역_등록되어_있음("강남역");
+        지하철_역_등록되어_있음("강남역");
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
 
@@ -55,9 +50,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        long id1 = 지하철_역_등록되어_있음("강남역");
-        long id2 = 지하철_역_등록되어_있음("역삼역");
-        List<Long> expectedStationIds = Arrays.asList(id1, id2);
+        Station station1 = 지하철_역_등록되어_있음("강남역");
+        Station station2 = 지하철_역_등록되어_있음("역삼역");
+        List<Long> expectedStationIds = Arrays.asList(station1.getId(), station2.getId());
 
         // when
         ExtractableResponse<Response> response = 지하철_역_목록_조회_요청();
@@ -71,10 +66,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        long id = 지하철_역_등록되어_있음("강남역");
+        Station station1 = 지하철_역_등록되어_있음("강남역");
 
         // when
-        ExtractableResponse<Response> response = 지하철_역_제거_요청(id);
+        ExtractableResponse<Response> response = 지하철_역_제거_요청(station1.getId());
 
         // then
         지하철_역_삭제됨(response);

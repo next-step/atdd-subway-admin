@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 public class StationAcceptanceTestUtils {
@@ -37,14 +38,12 @@ public class StationAcceptanceTestUtils {
             .isNotBlank();
     }
 
-    public static long 지하철_역_등록되어_있음(String name) {
+    public static Station 지하철_역_등록되어_있음(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         ExtractableResponse<Response> response = 지하철_역_생성_요청(params);
 
-        return Long.parseLong(
-            response.header("Location")
-                .split("/")[2]);
+        return response.as(Station.class);
     }
 
     public static void 지하철_역_생성_실패됨(ExtractableResponse<Response> response) {

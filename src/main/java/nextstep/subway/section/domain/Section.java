@@ -1,14 +1,14 @@
 package nextstep.subway.section.domain;
 
+import java.util.Objects;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -18,16 +18,71 @@ public class Section extends BaseEntity {
     private Long id;
 
     @ManyToOne
-    private Station down;
+    private Station up;
 
     @ManyToOne
-    private Station up;
+    private Station down;
 
     private int distance;
 
-    @ManyToOne
-    private Line line;
-
     protected Section() {
+    }
+
+    public Section(Station up, Station down, int distance) {
+        this.up = up;
+        this.down = down;
+        this.distance = distance;
+    }
+
+    public Section(Long id, Station up, Station down, int distance) {
+        this.id = id;
+        this.up = up;
+        this.down = down;
+        this.distance = distance;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Station getDown() {
+        return down;
+    }
+
+    public Station getUp() {
+        return up;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof Section))
+            return false;
+        Section section = (Section)o;
+        return distance == section.distance &&
+            Objects.equals(id, section.id) &&
+            Objects.equals(up, section.up) &&
+            Objects.equals(down, section.down);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, up, down, distance);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Section{");
+        sb.append("id=").append(id);
+        sb.append(", down=").append(down);
+        sb.append(", up=").append(up);
+        sb.append(", distance=").append(distance);
+        sb.append('}');
+        return sb.toString();
     }
 }

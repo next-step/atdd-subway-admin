@@ -11,18 +11,32 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 
 @Service
 public class LineService {
     private LineRepository lineRepository;
+    private StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+        Station downStation = stationRepository.findById(request.getDownStationId())
+            .orElseThrow(NoSuchElementException::new);
+
+        Station upStation = stationRepository.findById(request.getUpStationId())
+            .orElseThrow(NoSuchElementException::new);
+
+        Line line = request.toLine();
+        Section section = new Section(upStation, downStation, request.getDistance());
+        line.addSection(section);
+        Line persistLine = lineRepository.save(line);
         return LineResponse.from(persistLine);
     }
 
