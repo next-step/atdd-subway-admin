@@ -4,6 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationTestHelper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -19,10 +20,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         //given
+        StationTestHelper.지하철_역_생성_요청("건대역");
+        StationTestHelper.지하철_역_생성_요청("용마산역");
         Map<String, String> params = LineMap.of("bg-red-600", "신분당선");
 
         // when 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = LineAcceptanceHelper.지하철_노선_생성_요청(params);
+        ExtractableResponse<Response> response = LineTestHelper.지하철_노선_생성_요청(params);
 
         // then 지하철_노선_생성됨
         assertAll(
@@ -36,10 +39,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineWithDuplicateName() {
         // given
         Map<String, String> params = LineMap.of("bg-red-600", "신분당선");
-        LineAcceptanceHelper.지하철_노선_등록되어_있음(params);
+        LineTestHelper.지하철_노선_등록되어_있음(params);
 
         // when 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = LineAcceptanceHelper.지하철_노선_생성_요청(params);
+        ExtractableResponse<Response> response = LineTestHelper.지하철_노선_생성_요청(params);
 
         // then 지하철_노선_생성_실패됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -51,17 +54,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         Map<String, String> params1 = LineMap.of("bg-red-600", "신분당선");
-        ExtractableResponse<Response> createResponse1 = LineAcceptanceHelper.지하철_노선_생성_요청(params1);
+        ExtractableResponse<Response> createResponse1 = LineTestHelper.지하철_노선_생성_요청(params1);
 
         // 지하철_노선_등록되어_있음
         Map<String, String> params2 = LineMap.of("green darken-2", "7호선");
-        ExtractableResponse<Response> createResponse2 = LineAcceptanceHelper.지하철_노선_생성_요청(params2);
+        ExtractableResponse<Response> createResponse2 = LineTestHelper.지하철_노선_생성_요청(params2);
 
         // when 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = LineAcceptanceHelper.지하철_노선_목록_조회_요청();
+        ExtractableResponse<Response> response = LineTestHelper.지하철_노선_목록_조회_요청();
 
         // then
-        LineAcceptanceHelper.지하철_노선_목록_조회_됨(createResponse1, createResponse2, response);
+        LineTestHelper.지하철_노선_목록_조회_됨(createResponse1, createResponse2, response);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -69,11 +72,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given 지하철_노선_등록되어_있음
         Map<String, String> params = LineMap.of("bg-red-600", "신분당선");
-        LineAcceptanceHelper.지하철_노선_등록되어_있음(params);
+        LineTestHelper.지하철_노선_등록되어_있음(params);
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = LineAcceptanceHelper.지하철_노선_조회_요청();
+        ExtractableResponse<Response> response = LineTestHelper.지하철_노선_조회_요청();
 
         // then 지하철_노선_응답됨
         assertAll(
@@ -87,11 +90,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given 지하철_노선_등록되어_있음
         Map<String, String> params = LineMap.of("bg-red-600", "신분당선");
-        LineAcceptanceHelper.지하철_노선_등록되어_있음(params);
+        LineTestHelper.지하철_노선_등록되어_있음(params);
 
         // when 지하철_노선_수정_요청
         Map<String, String> updateParams = LineMap.of("bg-blue-600", "구분당선");
-        ExtractableResponse<Response> response = LineAcceptanceHelper.지하철_노선_수정_요청(updateParams);
+        ExtractableResponse<Response> response = LineTestHelper.지하철_노선_수정_요청(updateParams);
 
         // then 지하철_노선_수정됨
         LineResponse finalResponse = response.jsonPath().getObject(".", LineResponse.class);
@@ -106,10 +109,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given 지하철_노선_등록되어_있음
         Map<String, String> params = LineMap.of("bg-red-600", "신분당선");
-        LineAcceptanceHelper.지하철_노선_등록되어_있음(params);
+        LineTestHelper.지하철_노선_등록되어_있음(params);
 
         // when
-        ExtractableResponse<Response> response = LineAcceptanceHelper.지하철_노선_제거_요청();
+        ExtractableResponse<Response> response = LineTestHelper.지하철_노선_제거_요청();
 
         // then // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());

@@ -27,19 +27,6 @@ public class LineRepositiryTest {
     @Autowired
     private SectionRepository sectionRepository;
 
-    /*@DisplayName("qustion 연관관계 검증")
-    @Test
-    void findByQuestionIdAndDeletedFalse() {
-        answers.save(answer);
-        Answer answer1 = new Answer(user, question, "Answers Contents2");
-        answers.save(answer1);
-        Question then = questions.findById(question.getId()).get();
-
-        List<Answer> result = then.getAnswers();
-
-        assertThat(then.isDeleted()).isFalse();
-        assertThat(result.size()).isEqualTo(2);
-    }*/
     @DisplayName("section 연관관계 검증")
     @Test
     void findByLineId(){
