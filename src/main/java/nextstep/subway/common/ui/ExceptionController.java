@@ -16,13 +16,15 @@ public class ExceptionController {
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<Void> noSuchElementExceptionHandler(NoSuchElementException e) {
         log.error("요청받은 데이터가 존재하지 않습니다.", e);
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.notFound()
+            .build();
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Void> handleIllegalArgsException(DataIntegrityViolationException e) {
+    @ExceptionHandler({DataIntegrityViolationException.class, IllegalArgumentException.class})
+    public ResponseEntity<Void> handleIllegalArgsException(Exception e) {
         log.error("잘못된 요청입니다.", e);
 
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest()
+            .build();
     }
 }
