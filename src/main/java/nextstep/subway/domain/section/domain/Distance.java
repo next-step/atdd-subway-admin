@@ -42,4 +42,15 @@ public class Distance {
     public int getDistance() {
         return distance;
     }
+
+    public Distance plus(final Distance distance) {
+        distanceValidation(distance.getDistance());
+
+        final int oldSectionDistance = this.distance + distance.getDistance();
+
+        if (oldSectionDistance <= 0) {
+            throw new DistanceExcessException();
+        }
+        return new Distance(oldSectionDistance);
+    }
 }

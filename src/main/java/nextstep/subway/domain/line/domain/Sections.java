@@ -13,6 +13,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
@@ -133,9 +134,34 @@ public class Sections {
             return;
         }
 
-        this.sections.stream()
+        final Optional<Section> middleSection = this.sections.stream()
+                .filter(st -> st.getPreStation() != null)
+                .filter(st -> st.getPreStation().equals(sectionStart.getStation()))
                 .filter(st -> st.getStation().equals(station))
-                .findFirst()
-                .ifPresent(st -> this.sections.remove(st));
+                .findFirst();
+
+
+        if (middleSection.isPresent()) {
+            final Section middleSection1 = middleSection.get();
+            final Optional<Section> sectionEnd = this.sections.stream()
+                    .filter(st -> st.getPreStation() != null)
+                    .filter(st -> st.getPreStation().equals(middleSection1.getStation()))
+                    .findFirst();
+            final Section sectionEnd1 = sectionEnd.get();
+            this.sections.remove(middleSection1);
+            sectionEnd1.changePreStation(middleSection1.getPreStation());
+            sectionEnd1.changeDistinct(middleSection1.getDistance().plus(middleSection1.getDistance()));
+            this.sections.add(sectionEnd1);
+            return;
+        }
+
+        final Optional<Section> sectionEnd = this.sections.stream()
+                .filter(st -> st.getStation().equals(station))
+                .findFirst();
+
+        if (sectionEnd.isPresent()) {
+            this.sections.remove(sectionEnd.get());
+        }
+
     }
 }

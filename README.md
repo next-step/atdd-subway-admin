@@ -87,7 +87,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
         - When: 하행 구간을 제거한다.
         - Then: 하행 구간이 제거된다.
   
-    - [ ] Feature: 중간 구간 제거 기능
+    - [X] Feature: 중간 구간 제거 기능
       - Scenario: 중간 구간 제거한다.
         - Given: 두 개의 구간이 등록되어 있다.
         - When: 중간 구간을 제거한다.
