@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Param {
-    private static Map<String, String> paramMap = new HashMap<>();
+    private Map<String, Object> paramMap = new HashMap<>();
 
     public static Param createParam() {
         return new Param();
@@ -16,7 +16,12 @@ public class Param {
         return this;
     }
 
-    public Map<String,String> result() {
+    public Param addParam(String key, Long value) {
+        paramMap.put(key, value);
+        return this;
+    }
+
+    public Map<String,Object> result() {
         return Collections.unmodifiableMap(paramMap);
     }
 

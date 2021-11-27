@@ -47,6 +47,16 @@ public class TestFactory {
             .extract();
     }
 
+    public static ExtractableResponse<Response> post(String url, Param param, Object obj) {
+        return givenLog()
+            .pathParams(param.result())
+            .when()
+            .body(obj)
+            .post(url)
+            .then().log().all()
+            .extract();
+    }
+
     public static ExtractableResponse<Response> update(String url, Long id, Object obj) {
         return givenLog()
             .pathParam(ID, id)
