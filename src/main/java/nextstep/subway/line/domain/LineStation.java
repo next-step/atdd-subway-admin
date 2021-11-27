@@ -55,13 +55,24 @@ public class LineStation {
         }
     }
 
-    public void nextStationIdUpdate(LineStation lineStation) {
+    public void pushNextStationId(LineStation lineStation) {
         distance.minus(lineStation.getDistance());
 
         this.nextStationId = lineStation.stationId;
     }
 
-    public boolean isNext(LineStation lineStation) {
+    public void relocationNextStationId(LineStation lineStation) {
+        this.nextStationId = lineStation.nextStationId;
+
+        if (lineStation.isLast()) {
+            distance.zero();
+            return;
+        }
+
+        distance.plus(lineStation.getDistance());
+    }
+
+    public boolean isSameNextStationId(LineStation lineStation) {
         return this.getNextStationId().equals(lineStation.nextStationId);
     }
 
@@ -86,6 +97,17 @@ public class LineStation {
 
     public boolean isDeleted() {
         return deleted;
+    }
+
+    public boolean isSameStationId(Long stationId) {
+        return this.stationId.equals(stationId);
+    }
+
+    public boolean isPre(LineStation lineStation) {
+        if (Objects.isNull(this.nextStationId)) {
+            return false;
+        }
+        return this.nextStationId.equals(lineStation.getStationId());
     }
 
     public Long getStationId() {

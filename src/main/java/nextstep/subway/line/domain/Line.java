@@ -49,11 +49,15 @@ public class Line extends BaseEntity {
 
     public void delete() {
         this.deleted = true;
-        this.lineStations.delete();
+        this.lineStations.deleteAll();
     }
 
     public boolean isDeleted() {
         return deleted;
+    }
+
+    public void removeLineStation(Long stationId) {
+        this.lineStations.remove(stationId);
     }
 
     public List<LineStation> getStations() {
@@ -103,4 +107,5 @@ public class Line extends BaseEntity {
     public int hashCode() {
         return getClass().hashCode();
     }
+
 }
