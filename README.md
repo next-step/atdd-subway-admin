@@ -91,3 +91,9 @@ Feature: 지하철 노선 생성 / 목록 조회 / 조회 / 수정 / 삭제
       When 사용자는 지하철 노선 삭제를 요청한다.
       Then 사용자는 삭제 결과를 응답받는다.
 ```
+
+## 1단계 피드백 사항
+* [ ] ErrorResponse 항목에 대한 고민 필요
+* [ ] CustomException에 대한 고민 필요
+* [ ] Controller return 값 Generic Type 명시
+* [ ] Test 결과 확인에 대한 고민 필요
