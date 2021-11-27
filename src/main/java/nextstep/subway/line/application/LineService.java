@@ -41,4 +41,10 @@ public class LineService {
 
         return LineResponse.of(persisLine);
     }
+
+    public Boolean deleteLine(Long id) {
+        Line persistLine = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        lineRepository.delete(persistLine);
+        return Boolean.TRUE;
+    }
 }
