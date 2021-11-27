@@ -48,6 +48,10 @@ public class Section extends BaseEntity {
         return new Section(line, upStation, downStation, distance);
     }
 
+    public Line getLine() {
+        return line;
+    }
+
     public Station getUpStation() {
         return upStation;
     }
@@ -71,5 +75,10 @@ public class Section extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(line, upStation, downStation);
+    }
+
+    @Override
+    public String toString() {
+        return "Section [upStation=" + upStation + ", downStation=" + downStation + ", distance=" + distance + "]";
     }
 }

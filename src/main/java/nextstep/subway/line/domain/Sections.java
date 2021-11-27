@@ -37,14 +37,70 @@ public class Sections {
                 .distinct()
                 .collect(Collectors.toList());
     }
+    
+    List<Section> getSections() {
+        return sections;
+    }
 
     void add(Section section) {
-        sections.add(section);
+        List<Section> newSections = new ArrayList<Section>();
+        for (int i = 0; i < sections.size(); i++) {
+            Section s = sections.get(i);
+            newSections.add(s);
+            // 중간에 넣어야함 재조립
+            if (s.getUpStation().equals(section.getUpStation())) {
+                newSections.set(i, section);
+                Section newSection = Section.of(s.getLine(), section.getDownStation(), s.getDownStation(), s.getDistance()-section.getDistance());
+                newSections.add(newSection);
+            }
+            // 중간에 넣어야함 재조립
+            if (s.getDownStation().equals(section.getDownStation())) {
+                Section newSection = Section.of(s.getLine(), s.getUpStation(), section.getUpStation(), s.getDistance()-section.getDistance());
+                newSections.set(i, newSection);
+                newSections.add(section);
+            }
+            // 앞에 넣어야함
+            if (s.getUpStation().equals(section.getDownStation())) {
+                if (i == 0) {
+                    newSections.clear();
+                    newSections.add(section);
+                    newSections.addAll(sections);
+                    this.sections = newSections;
+                    return;
+                }
+                newSections.set(i, section);
+                Section newSection = Section.of(s.getLine(), section.getDownStation(), s.getDownStation(), s.getDistance()-section.getDistance());
+                newSections.add(newSection);
+            }
+            // 뒤에 넣어야함
+            if (s.getDownStation().equals(section.getUpStation())) {
+                if (i == sections.size()-1) {
+                    sections.add(section);
+                    return;
+                }
+                Section newSection = Section.of(s.getLine(), s.getUpStation(), section.getUpStation(), s.getDistance()-section.getDistance());
+                newSections.set(i, newSection);
+                newSections.add(section);
+            }
+            
+            if (i == sections.size()-1) {
+                this.sections = newSections;
+                return;
+            }
+            
+        }
     }
     
     int count() {
         return sections.size();
     }
     
+    private boolean isExistStation(Station station) {
+        return getStations().contains(station);
+    }
+    
+    void print() {
+        sections.forEach(s -> System.out.println(s.toString()));
+    }
 
 }
