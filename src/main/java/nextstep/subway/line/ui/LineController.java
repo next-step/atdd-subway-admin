@@ -52,7 +52,7 @@ public class LineController {
     }
 
     @ExceptionHandler(ExistDuplicatedNameException.class)
-    public ResponseEntity<String> handleSqlException(ExistDuplicatedNameException e) {
+    public ResponseEntity<String> handleExistDuplicatedNameException(ExistDuplicatedNameException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }
