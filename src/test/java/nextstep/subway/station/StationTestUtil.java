@@ -48,6 +48,12 @@ public class StationTestUtil {
             .extract();
     }
 
+    public static Long 지하철역_생성_및_아이디_반환(String name) {
+        Station station = 지하철역_정보(name);
+        ExtractableResponse<Response> response = 지하철역_생성_요청(station);
+        return response.jsonPath().getLong("id");
+    }
+
     public static void 지하철역_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -70,4 +76,5 @@ public class StationTestUtil {
             .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
+
 }

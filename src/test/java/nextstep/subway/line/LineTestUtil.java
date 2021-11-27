@@ -19,8 +19,8 @@ public class LineTestUtil {
 
     public static final String LINES_PATH = "/lines/";
 
-    public static LineRequest 지하철_노선_정보(String name, String color) {
-        return new LineRequest(name, color);
+    public static LineRequest 지하철_노선_정보(String name, String color, Long upStationId, Long downStationId, int distance) {
+        return LineRequest.of(name, color, upStationId, downStationId, distance);
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {

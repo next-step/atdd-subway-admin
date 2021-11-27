@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import static nextstep.subway.line.LineTestUtil.*;
+import static nextstep.subway.station.StationTestUtil.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         //given
-        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "red");
+        Long 상행역_아이디 = 지하철역_생성_및_아이디_반환("상행역");
+        Long 하행역_아이디 = 지하철역_생성_및_아이디_반환("하행역");
+        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "red", 상행역_아이디, 하행역_아이디, 10);
 
         // when
         ExtractableResponse<Response> 신분당선_생성_응답 = 지하철_노선_생성_요청(신분당선);
@@ -28,12 +31,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성됨(신분당선_생성_응답);
     }
 
+
+
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void duplicateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "red");
+        Long 상행역_아이디 = 지하철역_생성_및_아이디_반환("상행역");
+        Long 하행역_아이디 = 지하철역_생성_및_아이디_반환("하행역");
+        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "red", 상행역_아이디, 하행역_아이디, 10);
         ExtractableResponse<Response> 신분당선_생성_응답 = 지하철_노선_생성_요청(신분당선);
 
         // when
@@ -48,10 +55,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "red");
+        Long 상행역_아이디 = 지하철역_생성_및_아이디_반환("상행역");
+        Long 하행역_아이디 = 지하철역_생성_및_아이디_반환("하행역");
+        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "red", 상행역_아이디, 하행역_아이디, 10);
         ExtractableResponse<Response> 신분당선_생성_응답 = 지하철_노선_생성_요청(신분당선);
-        // 지하철_노선_등록되어_있음
-        LineRequest 공항철도 = 지하철_노선_정보("공항철도", "blue");
+        LineRequest 공항철도 = 지하철_노선_정보("공항철도", "blue", 상행역_아이디, 하행역_아이디, 10);
         ExtractableResponse<Response> 공항철도_생성_응답 = 지하철_노선_생성_요청(공항철도);
 
         // when
@@ -67,7 +75,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "red");
+        Long 상행역_아이디 = 지하철역_생성_및_아이디_반환("상행역");
+        Long 하행역_아이디 = 지하철역_생성_및_아이디_반환("하행역");
+        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "red", 상행역_아이디, 하행역_아이디, 10);
         ExtractableResponse<Response> 신분당선_생성_응답 = 지하철_노선_생성_요청(신분당선);
         Long 신분당선_생성_아이디 = 신분당선_생성_응답.jsonPath().getLong("id");
 
@@ -97,10 +107,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "red");
+        Long 상행역_아이디 = 지하철역_생성_및_아이디_반환("상행역");
+        Long 하행역_아이디 = 지하철역_생성_및_아이디_반환("하행역");
+        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "red", 상행역_아이디, 하행역_아이디, 10);
         ExtractableResponse<Response> 신분당선_생성_응답 = 지하철_노선_생성_요청(신분당선);
         Long 신분당선_생성_아이디 = 신분당선_생성_응답.jsonPath().getLong("id");
-        LineRequest 공항철도 = 지하철_노선_정보("공항철도", "blue");
+
+        LineRequest 공항철도 = 지하철_노선_정보("공항철도", "blue", 상행역_아이디, 하행역_아이디, 10);
 
         // when
         ExtractableResponse<Response> 신분당선_수정_응답 = 지하철_노선_수정_요청(신분당선_생성_아이디, 공항철도);
@@ -114,8 +127,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void notFoundLineUpdate() {
         // given
         // 지하철_노선_존재하지_않음
+        Long 상행역_아이디 = 지하철역_생성_및_아이디_반환("상행역");
+        Long 하행역_아이디 = 지하철역_생성_및_아이디_반환("하행역");
+        LineRequest 경의중앙선 = 지하철_노선_정보("경의중앙선", "green", 상행역_아이디, 하행역_아이디, 10);
         Long 존재하지_않는_노선_아이디 = -1L;
-        LineRequest 경의중앙선 = 지하철_노선_정보("경의중앙선", "green");
 
         // when
         ExtractableResponse<Response> 신분당선_수정_응답 = 지하철_노선_수정_요청(존재하지_않는_노선_아이디, 경의중앙선);
@@ -129,7 +144,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "red");
+        Long 상행역_아이디 = 지하철역_생성_및_아이디_반환("상행역");
+        Long 하행역_아이디 = 지하철역_생성_및_아이디_반환("하행역");
+        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "red", 상행역_아이디, 하행역_아이디, 10);
         ExtractableResponse<Response> 신분당선_생성_응답 = 지하철_노선_생성_요청(신분당선);
 
         // when
