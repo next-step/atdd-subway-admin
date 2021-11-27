@@ -17,9 +17,8 @@ import nextstep.subway.station.domain.Station;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
-    @DisplayName("지하철역을 생성한다.")
     @Test
-    void createStation() {
+    void 지하철역을_생성한다() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
@@ -31,9 +30,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철_역_생성됨(response);
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
-    void createStationWithDuplicateName() {
+    void 기존에_존재하는_지하철역_이름으로_지하철역을_생성한다() {
         // given
         지하철_역_등록되어_있음("강남역");
         Map<String, String> params = new HashMap<>();
@@ -46,9 +44,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철_역_생성_실패됨(response);
     }
 
-    @DisplayName("지하철역을 조회한다.")
     @Test
-    void getStations() {
+    void 지하철역을_조회한다() {
         /// given
         Station station1 = 지하철_역_등록되어_있음("강남역");
         Station station2 = 지하철_역_등록되어_있음("역삼역");
@@ -62,9 +59,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철_역_목록_포함됨(response, expectedStationIds);
     }
 
-    @DisplayName("지하철역을 제거한다.")
     @Test
-    void deleteStation() {
+    void 지하철역을_제거한다() {
         // given
         Station station1 = 지하철_역_등록되어_있음("강남역");
 
