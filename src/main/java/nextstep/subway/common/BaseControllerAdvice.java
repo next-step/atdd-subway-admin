@@ -10,7 +10,7 @@ public class BaseControllerAdvice {
 
     @ExceptionHandler
     public ResponseEntity handleIllegalArgsException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
     @ExceptionHandler
