@@ -1,4 +1,4 @@
-package nextstep.subway.common;
+package nextstep.subway.common.domain;
 
 import org.springframework.http.HttpStatus;
 
