@@ -33,8 +33,8 @@ public class Sections {
     }
 
     public void connect(Section section) {
-        Section upBoundSection = upBoundSection(section).orElse(Section.DUMMY_SECTION);
-        Section downBoundSection = downBoundSection(section).orElse(Section.DUMMY_SECTION);
+        Section upBoundSection = upBoundSection(section);
+        Section downBoundSection = downBoundSection(section);
 
         validateForConnect(upBoundSection, downBoundSection, section);
         updateWhenConnectInMiddleOfSection(upBoundSection, downBoundSection, section);
@@ -43,8 +43,8 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        Section upBoundSection = upBoundSection(station).orElse(Section.DUMMY_SECTION);
-        Section downBoundSection = downBoundSection(station).orElse(Section.DUMMY_SECTION);
+        Section upBoundSection = upBoundSection(station);
+        Section downBoundSection = downBoundSection(station);
 
         validateForRemove(station);
 
@@ -138,28 +138,32 @@ public class Sections {
             .orElseThrow(() -> new IllegalStateException("상행역이 속하는 구간은 한 개가 있어야 합니다."));
     }
 
-    private Optional<Section> upBoundSection(Section standardSection) {
+    private Section upBoundSection(Section standardSection) {
         return this.sections.stream()
             .filter(section -> section.isEqualToUpStation(standardSection.getUpStation()))
-            .findFirst();
+            .findFirst()
+            .orElse(Section.DUMMY_SECTION);
     }
 
-    private Optional<Section> downBoundSection(Section standardSection) {
+    private Section downBoundSection(Section standardSection) {
         return this.sections.stream()
             .filter(section -> section.isEqualToDownStation(standardSection.getDownStation()))
-            .findFirst();
+            .findFirst()
+            .orElse(Section.DUMMY_SECTION);
     }
 
-    private Optional<Section> upBoundSection(Station station) {
+    private Section upBoundSection(Station station) {
         return this.sections.stream()
             .filter(section -> section.isEqualToDownStation(station))
-            .findFirst();
+            .findFirst()
+            .orElse(Section.DUMMY_SECTION);
     }
 
-    private Optional<Section> downBoundSection(Station station) {
+    private Section downBoundSection(Station station) {
         return this.sections.stream()
             .filter(section -> section.isEqualToUpStation(station))
-            .findFirst();
+            .findFirst()
+            .orElse(Section.DUMMY_SECTION);
     }
 
     private Station upBoundLastStation() {
