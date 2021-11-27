@@ -4,6 +4,7 @@ import nextstep.subway.domain.section.domain.Distance;
 import nextstep.subway.domain.section.domain.Section;
 import nextstep.subway.domain.section.exception.AlreadyRegisterSectionException;
 import nextstep.subway.domain.section.exception.StandardStationNotFoundException;
+import nextstep.subway.domain.station.domain.Station;
 import nextstep.subway.global.error.exception.EntityNotFoundException;
 
 import javax.persistence.CascadeType;
@@ -116,5 +117,17 @@ public class Sections {
                 .filter(st -> st.getPreStation().equals(sectionStart.getStation()))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException("하행 종점역이 존재하지 않습니다."));
+    }
+
+    public void remove(final Station station) {
+        final Section sectionStart = getSectionStart();
+        final Section section = this.sections.stream()
+                .filter(st -> st.getPreStation() != null)
+                .filter(st -> st.getPreStation().equals(sectionStart.getStation()))
+                .findFirst()
+                .get();
+        section.changePreStation(null);
+        this.sections.remove(sectionStart);
+        this.sections.add(section);
     }
 }

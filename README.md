@@ -75,7 +75,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ## 4단계 - 구간 제거 기능
 - 인수 테스트 목록
   - 정상 동작 인수테스트
-    - [ ] Feature: 상행 구간 제거 기능
+    - [X] Feature: 상행 구간 제거 기능
       - Scenario: 상행 구간을 제거한다.
         - Given: 두 개의 구간이 등록되어 있다.
         - When: 상행 구간을 제거한다.
