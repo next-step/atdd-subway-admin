@@ -40,6 +40,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
+        StationTestHelper.지하철_역_생성_요청("건대역");
+        StationTestHelper.지하철_역_생성_요청("용마산역");
         Map<String, String> params = LineMap.of("bg-red-600", "신분당선");
         LineTestHelper.지하철_노선_등록되어_있음(params);
 
@@ -97,8 +99,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given 지하철_노선_등록되어_있음
+        StationTestHelper.지하철_역_생성_요청("분당역");
+        StationTestHelper.지하철_역_생성_요청("강남역");
         Map<String, String> params = LineMap.of("bg-red-600", "신분당선");
-        LineTestHelper.지하철_노선_등록되어_있음(params);
+        LineTestHelper.지하철_노선_생성_요청(params);
 
         // when 지하철_노선_수정_요청
         Map<String, String> updateParams = LineMap.of("bg-blue-600", "구분당선");
@@ -116,8 +120,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given 지하철_노선_등록되어_있음
+        StationTestHelper.지하철_역_생성_요청("분당역");
+        StationTestHelper.지하철_역_생성_요청("강남역");
         Map<String, String> params = LineMap.of("bg-red-600", "신분당선");
-        LineTestHelper.지하철_노선_등록되어_있음(params);
+        LineTestHelper.지하철_노선_생성_요청(params);
 
         // when
         ExtractableResponse<Response> response = LineTestHelper.지하철_노선_제거_요청();
