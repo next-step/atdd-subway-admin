@@ -72,4 +72,9 @@ public class LineTestFixture {
                 .setBody(sectionAddRequest)
                 .build();
     }
+
+    public static ExtractableResponse<Response> 노선에_구간_제거_요청(LineResponse lineResponse, StationResponse stationResponse) {
+        return new RestAssuredBuilder(Method.DELETE, BASE_LINE_URL + "/" + lineResponse.getId() + "/sections?stationId=" + stationResponse.getId())
+                .build();
+    }
 }
