@@ -72,6 +72,16 @@ public class LineResponse {
         private LocalDateTime createdDate;
         private LocalDateTime modifiedDate;
 
+        public LineStation() {
+        }
+
+        public LineStation(final Long id, final String name, final LocalDateTime createdDate, final LocalDateTime modifiedDate) {
+            this.id = id;
+            this.name = name;
+            this.createdDate = createdDate;
+            this.modifiedDate = modifiedDate;
+        }
+
         public Long getId() {
             return id;
         }
@@ -86,16 +96,6 @@ public class LineResponse {
 
         public LocalDateTime getModifiedDate() {
             return modifiedDate;
-        }
-
-        public LineStation() {
-        }
-
-        public LineStation(final Long id, final String name, final LocalDateTime createdDate, final LocalDateTime modifiedDate) {
-            this.id = id;
-            this.name = name;
-            this.createdDate = createdDate;
-            this.modifiedDate = modifiedDate;
         }
     }
 }

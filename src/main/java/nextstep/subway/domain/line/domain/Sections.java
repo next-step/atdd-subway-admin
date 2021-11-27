@@ -26,7 +26,7 @@ public class Sections {
 
         try {
             sectionQuest(sectionsResult);
-        }catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             return sectionsResult;
         }
 
@@ -76,11 +76,11 @@ public class Sections {
     }
 
     private void addStationBetween(final Section newSection, final Section sectionEnd) {
-            final Distance distance = sectionEnd.oldSectionDistance(newSection);
-            sectionEnd.changePreStation(newSection.getStation());
-            sectionEnd.changeDistinct(distance);
-            addSection(sectionEnd);
-            addSection(newSection);
+        final Distance distance = sectionEnd.oldSectionDistance(newSection);
+        sectionEnd.changePreStation(newSection.getStation());
+        sectionEnd.changeDistinct(distance);
+        addSection(sectionEnd);
+        addSection(newSection);
     }
 
     private void addStationUp(final Section newSection, final Section sectionStart) {
@@ -123,7 +123,7 @@ public class Sections {
     public void remove(final Section section) {
         final Station deleteStationInSection = section.getStation();
 
-        if (sectionCountLessTwo()){
+        if (sectionCountLessTwo()) {
             throw new SectionDeleteImpossibleException();
         }
 

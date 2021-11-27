@@ -1,7 +1,7 @@
 package nextstep.subway.domain.section.domain;
 
-import nextstep.subway.domain.line.domain.Line;
 import nextstep.subway.domain.common.BaseEntity;
+import nextstep.subway.domain.line.domain.Line;
 import nextstep.subway.domain.station.domain.Station;
 
 import javax.persistence.*;

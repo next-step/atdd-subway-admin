@@ -42,7 +42,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         String dupliecatLineName = "2호선";
-        지하철_노선_생성(dupliecatLineName,"green");
+        지하철_노선_생성(dupliecatLineName, "green");
 
         // when
         final ExtractableResponse<Response> response = 지하철_노선_생성(dupliecatLineName, "red");
@@ -163,7 +163,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 노선에_속한_역_정보_상행_하행_정렬_되어_응답
         final LineResponse lineResponses = lineNo.as(LineResponse.class);
         assertThat(lineNo.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(lineResponses.getStations()).extracting("name").containsExactly("강남","광교");
+        assertThat(lineResponses.getStations()).extracting("name").containsExactly("강남", "광교");
 
     }
 

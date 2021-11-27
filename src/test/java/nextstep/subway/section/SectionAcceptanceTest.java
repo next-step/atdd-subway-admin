@@ -56,7 +56,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addNewStationAscendingLastStopStation() {
         //when
-        final ExtractableResponse<Response> response = 새로운_역_추가(lineResponse.getId(), firstAddStation.getId(), upStation.getId(),10);
+        final ExtractableResponse<Response> response = 새로운_역_추가(lineResponse.getId(), firstAddStation.getId(), upStation.getId(), 10);
 
         //then
         //새로운_역_상행_종점_으로_추가됨
@@ -130,7 +130,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         //상행_구간_제거_성공
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         final LineResponse lineResponse = 지하철_노선_상세_조회(this.lineResponse.getId()).as(LineResponse.class);
-        assertThat(lineResponse.getStations()).extracting("name").containsExactly("의정부","인천");
+        assertThat(lineResponse.getStations()).extracting("name").containsExactly("의정부", "인천");
     }
 
     @DisplayName("하행 구간을 제거한다.")
@@ -152,7 +152,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         //하행_구간_제거_성공
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         final LineResponse lineResponse = 지하철_노선_상세_조회(this.lineResponse.getId()).as(LineResponse.class);
-        assertThat(lineResponse.getStations()).extracting("name").containsExactly("소요산","의정부");
+        assertThat(lineResponse.getStations()).extracting("name").containsExactly("소요산", "의정부");
     }
 
     @DisplayName("중간 구간을 제거한다.")
@@ -174,7 +174,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         //중간_구간_제거_성공
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         final LineResponse lineResponse = 지하철_노선_상세_조회(this.lineResponse.getId()).as(LineResponse.class);
-        assertThat(lineResponse.getStations()).extracting("name").containsExactly("소요산","인천");
+        assertThat(lineResponse.getStations()).extracting("name").containsExactly("소요산", "인천");
     }
 
     @DisplayName("등록되지 구간 제거")
