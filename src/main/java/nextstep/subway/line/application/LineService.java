@@ -1,25 +1,49 @@
 package nextstep.subway.line.application;
 
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.exception.LineNameAlreadyExistsException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineResponses;
+import nextstep.subway.section.domain.Distance;
+import nextstep.subway.section.domain.Line;
+import nextstep.subway.section.domain.LineRepository;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
+    private final StationService stationService;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(final LineRepository lineRepository, final StationService stationService) {
         this.lineRepository = lineRepository;
+        this.stationService = stationService;
     }
 
     public LineResponse saveLine(final LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+        verifySaveLine(request);
+
+        final Station upStation = stationService.findStationById(request.getUpStationId());
+        final Station downStation = stationService.findStationById(request.getDownStationId());
+
+        final Section section = new Section(upStation, downStation, new Distance(request.getDistance()));
+        final Line persistLine = lineRepository.save(request.toLine()).withSection(section);
+
         return LineResponse.of(persistLine);
+    }
+
+    private void verifySaveLine(LineRequest request) {
+        if (isExistsLineName(request)) {
+            throw new LineNameAlreadyExistsException();
+        }
+    }
+
+    private boolean isExistsLineName(LineRequest request) {
+        return lineRepository.existsByName(request.getName());
     }
 
     @Transactional(readOnly = true)

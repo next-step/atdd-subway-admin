@@ -1,14 +1,14 @@
 package nextstep.subway.station.application;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import nextstep.subway.exception.StationNameAlreadyExistsException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -20,20 +20,37 @@ public class StationService {
     }
 
     public StationResponse saveStation(StationRequest stationRequest) {
-        Station persistStation = stationRepository.save(stationRequest.toStation());
+        verifySaveStation(stationRequest);
+
+        final Station persistStation = stationRepository.save(stationRequest.toStation());
         return StationResponse.of(persistStation);
+    }
+
+    private void verifySaveStation(StationRequest stationRequest) {
+        if (isExistsStationName(stationRequest)) {
+            throw new StationNameAlreadyExistsException();
+        }
+    }
+
+    private boolean isExistsStationName(StationRequest stationRequest) {
+        return stationRepository.existsByName(stationRequest.getName());
     }
 
     @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
-        List<Station> stations = stationRepository.findAll();
+        final List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-                .map(station -> StationResponse.of(station))
-                .collect(Collectors.toList());
+            .map(station -> StationResponse.of(station))
+            .collect(Collectors.toList());
     }
 
-    public void deleteStationById(Long id) {
+    @Transactional(readOnly = true)
+    public Station findStationById(final Long id) {
+        return stationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("삭제되었거나 없는 역입니다."));
+    }
+
+    public void deleteStationById(final Long id) {
         stationRepository.deleteById(id);
     }
 }
