@@ -24,7 +24,7 @@ class SectionsTest {
     void setUp() {
         강남역 = new Station("강남역");
         잠실역 = new Station("잠실역");
-        Section section = new Section(강남역, 잠실역, 10);
+        Section section = new Section(강남역, 잠실역, new Distance(10));
         sections = new Sections(section);
     }
 
@@ -32,7 +32,7 @@ class SectionsTest {
     @Test
     void addSectionEqualUpStation() {
         Station 삼성역 = new Station("삼성역");
-        Section section = new Section(강남역, 삼성역, 4);
+        Section section = new Section(강남역, 삼성역, new Distance(4));
 
         sections.addSection(section);
 
@@ -47,7 +47,7 @@ class SectionsTest {
     @Test
     void addSectionEqualDownStation() {
         Station 삼성역 = new Station("삼성역");
-        Section section = new Section(삼성역, 잠실역, 4);
+        Section section = new Section(삼성역, 잠실역, new Distance(4));
 
         sections.addSection(section);
 
@@ -63,7 +63,7 @@ class SectionsTest {
     void notExistsStationInLine() {
         Station 삼성역 = new Station("삼성역");
         Station 홍대입구역 = new Station("홍대입구역");
-        Section section = new Section(삼성역, 홍대입구역, 20);
+        Section section = new Section(삼성역, 홍대입구역, new Distance(20));
 
         ThrowableAssert.ThrowingCallable throwingCallable =
                 () -> sections.addSection(section);

@@ -6,6 +6,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.line.exception.NotFoundLineException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,8 +51,8 @@ public class LineController {
 
     @PostMapping("/{id}/sections")
     public ResponseEntity createSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
-        SectionResponse sectionResponse = lineService.saveSection(id, sectionRequest);
-        return ResponseEntity.created(URI.create("/lines/" + id + "/sections/" + sectionResponse.getId())).body(sectionResponse);
+        lineService.saveSection(id, sectionRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 }

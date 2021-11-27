@@ -30,25 +30,26 @@ public class Section {
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = new Distance(distance);
-    }
-
     public Section(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+
     }
 
-    public static Section of(Station upStation, Station downStation, Distance distance) {
-        return new Section(upStation, downStation, distance);
-    }
-
-    public Section addLine(Line line) {
+    public Section(Station upStation, Station downStation, Distance distance, Line line) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
         this.line = line;
-        return this;
+    }
+
+    public static Section of(Station upStation, Station downStation, Distance distance, Line line) {
+        return new Section(upStation, downStation, distance, line);
+    }
+
+    public void addLine(Line line) {
+        this.line = line;
     }
 
     public List<Station> getStations() {
@@ -85,14 +86,17 @@ public class Section {
         Distance inputDistance = inputSection.distance;
 
         if (this.upStation.equals(inputUpStation)) {
-            Section frontSection = Section.of(this.upStation, inputDownStation, inputDistance);
-            Section backSection = Section.of(inputDownStation, this.downStation, distance.minus(inputDistance));
+            Section frontSection = Section.of(this.upStation, inputDownStation, inputDistance,inputSection.getLine());
+            Section backSection = Section.of(inputDownStation, this.downStation, distance.minus(inputDistance),inputSection.getLine());
             return Arrays.asList(frontSection,backSection);
         }
 
-        Section frontSection = Section.of(this.upStation, inputUpStation, distance.minus(inputDistance));
-        Section backSection = Section.of(inputDownStation, this.downStation, inputDistance);
+        Section frontSection = Section.of(this.upStation, inputUpStation, distance.minus(inputDistance),inputSection.getLine());
+        Section backSection = Section.of(inputDownStation, this.downStation, inputDistance,inputSection.getLine());
         return Arrays.asList(frontSection,backSection);
     }
 
+    public Line getLine() {
+        return line;
+    }
 }

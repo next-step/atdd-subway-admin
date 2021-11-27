@@ -56,19 +56,15 @@ public class LineService {
     }
 
     @Transactional
-    public SectionResponse saveSection(Long id, SectionRequest request) {
+    public void saveSection(Long id, SectionRequest request) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundLineException(id));
 
         Station upStation = findStationById(request.getUpStationId());
         Station downStation = findStationById(request.getDownStationId());
 
-        Section section = Section.of(upStation, downStation, new Distance(request.getDistance()));
-
-
-
-
-        return null;
+        Section section = Section.of(upStation, downStation, new Distance(request.getDistance()), line);
+        line.addSection(section);
     }
 
     public void delete(Long id) {
