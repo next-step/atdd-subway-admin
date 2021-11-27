@@ -55,6 +55,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    void 잘못된_구간길이로_지하철_노선을_생성하여_실패한다() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "red");
+        params.put("upStationId", String.valueOf(station1.getId()));
+        params.put("downStationId", String.valueOf(station2.getId()));
+        params.put("distance", "0");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
+
+        // then
+        지하철_노선_생성_실패됨(response);
+    }
+
+    @Test
     void 기존에_존재하는_지하철_노선_이름으로_지하철_노선을_생성한다() {
         // given
         지하철_노선_등록되어_있음("신분당선", "red", station1, station2, 10);

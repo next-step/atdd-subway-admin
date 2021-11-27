@@ -15,7 +15,8 @@ class SectionsTest {
     @DisplayName("구간에서 역 목록을 가져온다.")
     @Test
     void getStations() {
-        Sections sections = new Sections(Arrays.asList(new Section(new Station("강남역"), new Station("양재역"), 10)));
+        Sections sections = new Sections(
+            Arrays.asList(new Section(new Station("강남역"), new Station("양재역"), new Distance(10))));
         List<Station> stations = sections.getStations();
 
         assertThat(stations).isEqualTo(Arrays.asList(new Station("강남역"), new Station("양재역")));
