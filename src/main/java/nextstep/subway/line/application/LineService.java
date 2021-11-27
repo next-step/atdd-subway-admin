@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.exception.ExistDuplicatedNameException;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -30,11 +31,18 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
+        validateSaveLine(request.getName());
         Station upStation = findStation(request.getUpStationId());
         Station downStation = findStation(request.getDownStationId());
 
         Line persistLine = lineRepository.save(requestToLIne(request, upStation, downStation));
         return lineToResponse(persistLine);
+    }
+
+    private void validateSaveLine(String name) {
+        if (lineRepository.existsByName(name)) {
+            throw new ExistDuplicatedNameException(String.format("노선 이름이 이미 존재합니다.[%s]", name));
+        }
     }
 
     public List<LineResponse> findLines() {

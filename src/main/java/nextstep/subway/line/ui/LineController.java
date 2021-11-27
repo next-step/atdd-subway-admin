@@ -4,6 +4,8 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.application.dto.LineUpdateRequest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.exception.ExistDuplicatedNameException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,5 +49,10 @@ public class LineController {
     public ResponseEntity deleteLine(@PathVariable Long lineId) {
         lineService.delete(lineId);
         return ResponseEntity.ok().build();
+    }
+
+    @ExceptionHandler(ExistDuplicatedNameException.class)
+    public ResponseEntity<String> handleSqlException(ExistDuplicatedNameException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }

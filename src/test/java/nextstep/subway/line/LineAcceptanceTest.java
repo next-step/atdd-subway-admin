@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
     String DEFAULT_PATH = "/lines";
-    LineRequest lineRequest = new LineRequest("2호선", "green");
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
@@ -32,7 +31,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_종점역_추가하여_생성_요청("강남역", "역삼역", "2호선", "green");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(new LineRequest("2호선", "green", 1L, 2L, 10));
 
         // then
         지하철_노선_생성_실패됨(response);
@@ -142,7 +141,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().asString()).isEqualTo("노선 이름이 이미 존재합니다.[2호선]")
+        );
     }
 
     private void 지하철_노선_목록_응답됨(List<String> lineRequestNames, ExtractableResponse<Response> response) {
