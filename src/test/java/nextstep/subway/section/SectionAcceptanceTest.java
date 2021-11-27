@@ -12,6 +12,8 @@ import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -99,6 +101,48 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_구간_추가됨(response);
     }
 
+    @DisplayName("노선에 구간 추가 실패 - 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.")
+    @ParameterizedTest(name = "{displayName}{index} -> distance: {0}")
+    @ValueSource(ints = {10, 11})
+    void addSection_failure_distance(int distance) {
+        // given
+        ExtractableResponse<Response> 양재역_생성_응답 = 지하철_역_생성_요청("양재역");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_추가_요청(lineId, upStationId, 역_ID(양재역_생성_응답), distance);
+
+        // then
+        지하철_구간_추가_실패됨(response);
+    }
+
+    @DisplayName("노선에 구간 추가 실패 - 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
+    @Test
+    void addSection_failure_duplicate() {
+        // given
+        ExtractableResponse<Response> 강남역_생성_응답 = 지하철_역_생성_요청("강남역");
+        ExtractableResponse<Response> 광교역_생성_응답 = 지하철_역_생성_요청("광교역");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_추가_요청(lineId, 역_ID(강남역_생성_응답), 역_ID(광교역_생성_응답), 5);
+
+        // then
+        지하철_구간_추가_실패됨(response);
+    }
+
+    @DisplayName("노선에 구간 추가 실패 - 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.")
+    @Test
+    void addSection_failure_notInclude() {
+        // given
+        ExtractableResponse<Response> 양재역_생성_응답 = 지하철_역_생성_요청("양재역");
+        ExtractableResponse<Response> 판교역_생성_응답 = 지하철_역_생성_요청("판교역");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_추가_요청(lineId, 역_ID(양재역_생성_응답), 역_ID(판교역_생성_응답), 5);
+
+        // then
+        지하철_구간_추가_실패됨(response);
+    }
+
     private void 지하철_구간_생성됨(long upStationId, long downStationId) {
         Optional<Section> optionalSection = 지하철_구간_조회(upStationId, downStationId);
         assertThat(optionalSection.get()).isNotNull();
@@ -126,5 +170,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_구간_추가됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private void 지하철_구간_추가_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
 }
