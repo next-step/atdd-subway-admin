@@ -216,8 +216,8 @@ public class Sections {
         sections.add(newSection);
     }
 
-    private void removeEdgeSection(Section section2) {
-        sections.remove(section2);
+    private void removeEdgeSection(Section removedSection) {
+        sections.remove(removedSection);
     }
 
     private void validateAbleToDeleteSectionsSize() {
