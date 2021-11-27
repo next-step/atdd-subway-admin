@@ -43,6 +43,13 @@ public class Sections {
     }
 
     void add(Section section) {
+        if (sections.size() == 0) {
+            sections.add(section);
+            return;
+        }
+        if(isExistStations(section.getUpStation(), section.getDownStation())) {
+            throw new IllegalArgumentException(String.format("이미 등록된 노선입니다.[%d - %d]", section.getUpStation().getName(), section.getDownStation().getName()));
+        }
         List<Section> newSections = new ArrayList<Section>();
         for (int i = 0; i < sections.size(); i++) {
             Section s = sections.get(i);
@@ -95,12 +102,12 @@ public class Sections {
         return sections.size();
     }
     
-    private boolean isExistStation(Station station) {
-        return getStations().contains(station);
+    private boolean isExistStations(Station...stations) {
+        return Stream.of(stations).allMatch(station -> getStations().contains(station));
     }
     
     void print() {
         sections.forEach(s -> System.out.println(s.toString()));
     }
-
+    
 }
