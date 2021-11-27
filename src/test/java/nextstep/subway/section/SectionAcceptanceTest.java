@@ -301,6 +301,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void removeSection_MiddleStationTest() {
 
         Line line = new Line("신분당선", "bg-red-600");
+
         Station 광교역 = stationRepository.save(new Station("광교"));
         Station 강남역 = stationRepository.save(new Station("강남"));
         Station 대림역 = stationRepository.save(new Station("대림"));
@@ -310,6 +311,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         lineRepository.save(line);
 
         boolean isRemove = line.removeSection(강남역);
+
         lineRepository.flush();
 
         assertThat(isRemove).isTrue();

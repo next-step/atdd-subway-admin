@@ -6,11 +6,12 @@ import org.hibernate.annotations.BatchSize;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static java.util.Comparator.*;
 import static java.util.stream.Collectors.toList;
 
 @Embeddable
@@ -68,7 +69,6 @@ public class Sections {
     }
 
     private boolean addSection(Station station, Integer distance, Predicate<Section> express) {
-
             List<Section> divideBySections = this.sections.stream()
                     .filter(express)
                     .flatMap(s -> s.divideByStation(station, distance).stream())
@@ -129,6 +129,10 @@ public class Sections {
 
     private boolean validateIfRemoveNotExist() {
         return this.sections.size() == MIN_SECTION_COUNT;
+    }
+
+    private Stream<Section> sectionStream() {
+        return this.sections.stream();
     }
 
     public List<Section> getSections() {
