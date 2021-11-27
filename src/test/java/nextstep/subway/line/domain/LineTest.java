@@ -96,6 +96,30 @@ class LineTest {
         });
     }
 
+    @DisplayName("노선에 있는 역을 삭제할 경우 구간과 지하철의 크기가 줄어든다.")
+    @Test
+    void remove() {
+        // given
+        final Station firstStation = stationRepository.save(Station.of("1번"));
+        final Station secondStation = stationRepository.save(Station.of("2번"));
+        final Station thirdStation = stationRepository.save(Station.of("3번"));
+        final Line line = lineRepository.save(Line.of("노선이름", "색상", Arrays.asList(
+                Section.of(10, firstStation, secondStation),
+                Section.of(10, secondStation, thirdStation)
+        )));
+        final int removeBeforeSectionSize = line.getSections().size();
+        final int removeBeforeStationSize = line.getStationsOrderByUptoDown().size();
+        final int expectedSectionSize = removeBeforeSectionSize - 1;
+        final int expectedStationSize = removeBeforeStationSize - 1;
+        // when
+        line.removeStation(firstStation);
+        // then
+        assertAll(() -> {
+            assertEquals(line.getSections().size(), expectedSectionSize);
+            assertEquals(line.getStationsOrderByUptoDown().size(), expectedStationSize);
+        });
+    }
+
     @DisplayName("종점이 제거될 경우 다음으로 오던 역이 종점이 됨")
     @Test
     void removeWithOuter() {
