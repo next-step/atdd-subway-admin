@@ -2,7 +2,6 @@ package nextstep.subway.line.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
@@ -17,6 +16,9 @@ public class LineResponse {
     private List<StationResponse> stationResponses;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
+
+    protected LineResponse() {
+    }
 
     public LineResponse(final Long id, final String name, final String color, final List<StationResponse> stationResponses
             , final LocalDateTime createdDate, LocalDateTime modifiedDate) {
@@ -34,15 +36,9 @@ public class LineResponse {
                 .collect(Collectors.toList());
     }
 
-    public static LineResponse from(final Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), null, line.getCreatedDate(), line.getModifiedDate());
-    }
-
-    public static LineResponse of(final Line line, final List<Station> station) {
-        List<StationResponse> stationResponses = station.stream()
-                .map(StationResponse::from)
-                .collect(Collectors.toList());
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses, line.getCreatedDate(), line.getModifiedDate());
+    public static LineResponse from(Line line) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStationResponses()
+                , line.getCreatedDate(), line.getModifiedDate());
     }
 
     public Long getId() {
