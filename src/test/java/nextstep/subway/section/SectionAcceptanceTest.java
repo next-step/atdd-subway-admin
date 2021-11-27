@@ -132,6 +132,27 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse.getStations()).extracting("name").containsExactly("의정부","인천");
     }
 
+    @DisplayName("하행 구간을 제거한다.")
+    @Test
+    void removeDownStationInSection() {
+        //given
+        새로운_역_추가(lineResponse.getId(), upStation.getId(), firstAddStation.getId(), 10);
+
+        //when
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .pathParam("lineNo", lineResponse.getId())
+                .queryParam("stationId", downStation.getId())
+                .delete("/lines/{lineNo}/sections")
+                .then().log().all().extract();
+
+        //then
+        //하행_구간_제거_성공
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        final LineResponse lineResponse = 지하철_노선_상세_조회(this.lineResponse.getId()).as(LineResponse.class);
+        assertThat(lineResponse.getStations()).extracting("name").containsExactly("소요산","의정부");
+    }
+
     private ExtractableResponse<Response> 새로운_역_추가(Long lineId, Long upStationId, Long downStationId, int distance) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

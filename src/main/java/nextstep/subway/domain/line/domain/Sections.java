@@ -121,13 +121,21 @@ public class Sections {
 
     public void remove(final Station station) {
         final Section sectionStart = getSectionStart();
-        final Section section = this.sections.stream()
-                .filter(st -> st.getPreStation() != null)
-                .filter(st -> st.getPreStation().equals(sectionStart.getStation()))
+        if (sectionStart.getStation().equals(station)) {
+            final Section section = this.sections.stream()
+                    .filter(st -> st.getPreStation() != null)
+                    .filter(st -> st.getPreStation().equals(sectionStart.getStation()))
+                    .findFirst()
+                    .get();
+            section.changePreStation(null);
+            this.sections.remove(sectionStart);
+            this.sections.add(section);
+            return;
+        }
+
+        this.sections.stream()
+                .filter(st -> st.getStation().equals(station))
                 .findFirst()
-                .get();
-        section.changePreStation(null);
-        this.sections.remove(sectionStart);
-        this.sections.add(section);
+                .ifPresent(st -> this.sections.remove(st));
     }
 }
