@@ -28,16 +28,15 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = new LineName(name);
         this.color = new LineColor(color);
-        addSection(null, upStation, 0);
-        addSection(upStation, downStation, distance);
+        sections.addInitialSection(this, upStation, downStation, distance);
     }
 
     public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
         return new Line(name, color, upStation, downStation, distance);
     }
 
-    private void addSection(Station upStation, Station downStation, int distance) {
-        new Section(this, upStation, downStation, distance);
+    public void addSection(Station upStation, Station downStation, int distance) {
+        sections.addSection(this, upStation, downStation, distance);
     }
 
     public void update(Line line) {

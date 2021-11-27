@@ -35,17 +35,4 @@ class SectionTest {
                 () -> assertThat(section.getDistance()).isEqualTo(9)
         );
     }
-
-    @DisplayName("구간 노선을 변경한다.")
-    @Test
-    void updateSectionWithLine() {
-        // when
-        final Line newLine = new Line("3호선", "orange", upStation, downStation, 9);
-        section.changeLine(newLine);
-
-        // then
-        assertAll(
-                () -> assertThat(section.getLine()).isEqualTo(newLine)
-        );
-    }
 }

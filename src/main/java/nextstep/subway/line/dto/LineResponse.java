@@ -31,9 +31,15 @@ public class LineResponse {
     }
 
     private List<StationResponse> generateStations(List<Section> sections) {
-        return sections.stream()
-                .map(section -> StationResponse.of(section.getDownStation()))
-                .collect(Collectors.toList());
+        List<StationResponse> stationResponses = new ArrayList<>();
+        if (sections.isEmpty()) {
+            return stationResponses;
+        }
+
+        stationResponses.add(StationResponse.of(sections.get(0).getUpStation()));
+        sections.forEach(section -> stationResponses.add(StationResponse.of(section.getDownStation())));
+
+        return stationResponses;
     }
 
     public static LineResponse of(Line line) {

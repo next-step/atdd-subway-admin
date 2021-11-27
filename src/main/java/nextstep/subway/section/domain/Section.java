@@ -11,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import java.util.Objects;
 
 @Entity
 public class Section {
@@ -38,7 +37,7 @@ public class Section {
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
-        changeLine(line);
+        this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = new Distance(distance);
@@ -46,18 +45,6 @@ public class Section {
 
     public static Section of(Line line, Station upStation, Station downStation, int distance) {
         return new Section(line, upStation, downStation, distance);
-    }
-
-    public void changeLine(Line line) {
-        if (!Objects.isNull(this.line)) {
-            this.line.getSections().remove(this);
-        }
-
-        if (!Objects.isNull(line)) {
-            line.getSections().add(this);
-        }
-
-        this.line = line;
     }
 
     public Long getId() {
@@ -78,5 +65,32 @@ public class Section {
 
     public int getDistance() {
         return distance.getDistance();
+    }
+
+    public void changeUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void changeDownStation(Station station) {
+        this.downStation = station;
+    }
+
+    public void subtractDistance(int distance) {
+        this.distance.subtractDistance(distance);
+    }
+
+    public boolean containsStation(Station upStation, Station downStation) {
+        return isSameUpStation(upStation) ||
+                isSameUpStation(downStation) ||
+                isSameDownStation(upStation) ||
+                isSameDownStation(downStation);
+    }
+
+    public boolean isSameUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return this.downStation.equals(station);
     }
 }
