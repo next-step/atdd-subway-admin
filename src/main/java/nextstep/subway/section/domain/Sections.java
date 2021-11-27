@@ -21,4 +21,8 @@ public class Sections {
     public void add(Section section) {
         sectionGroup.add(section);
     }
+
+    public int size() {
+        return sectionGroup.size();
+    }
 }
