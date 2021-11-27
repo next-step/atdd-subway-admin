@@ -15,6 +15,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -123,12 +124,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "red");
+
+        ExtractableResponse<Response> createdResponse = 지하철_노선_생성_요청(params);
 
         // when
         // 지하철_노선_수정_요청
+        ExtractableResponse<Response> findResponse = 지하철_노선_조회_요청(createdResponse.header("Location"));
+        findResponse.response();
+
+        Map<String, String> updateParams  = new HashMap<>();
+        updateParams.put("name", "3호선");
+        updateParams.put("color", "orange");
+
+        ValidatableResponse updatedResponse = RestAssured.given().log().all().
+                body(updateParams).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                put(createdResponse.header("Location")).
+                then().
+                log().all();
 
         // then
         // 지하철_노선_수정됨
+        assertThat(updatedResponse.extract().statusCode()).isEqualTo(HttpStatus.OK.value());
+        updatedResponse.body("id", is(1));
+        updatedResponse.body("name", is("3호선"));
+        updatedResponse.body("color", is("orange"));
+
     }
 
     @DisplayName("지하철 노선을 제거한다.")

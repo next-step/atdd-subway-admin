@@ -30,9 +30,15 @@ public class LineService {
     }
 
     public LineResponse getLine(Long id) {
-        Line persistLine = lineRepository.getOne(id);
+        Line persistLine = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
         return LineResponse.of(persistLine);
     }
 
 
+    public LineResponse updateLine(Long id, LineRequest lineRequest) {
+        Line persisLine = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        persisLine.update(lineRequest.toLine());
+
+        return LineResponse.of(persisLine);
+    }
 }
