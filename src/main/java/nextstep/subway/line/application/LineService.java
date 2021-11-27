@@ -62,7 +62,7 @@ public class LineService {
     
     private void checkDuplicatedName(String name) {
         if (lineRepository.existsByName(name)) {
-            throw new IllegalArgumentException(String.format("라인 이름(%d)이 중복되었습니다.", name));
+            throw new IllegalArgumentException(String.format("라인 이름(%s)이 중복되었습니다.", name));
         }
     }
 

@@ -14,7 +14,7 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<Section>();
 
     
@@ -48,10 +48,10 @@ public class Sections {
             return;
         }
         if(isExistStations(section.getUpStation(), section.getDownStation())) {
-            throw new IllegalArgumentException(String.format("이미 등록된 노선입니다.[%d - %d]", section.getUpStation().getName(), section.getDownStation().getName()));
+            throw new IllegalArgumentException(String.format("이미 등록된 노선입니다.(%s-%s)", section.getUpStation().getName(), section.getDownStation().getName()));
         }
         if(isNotExistStations(section.getUpStation(), section.getDownStation())) {
-            throw new IllegalArgumentException(String.format("연결할 수 없는 노선입니다.[%d - %d]", section.getUpStation().getName(), section.getDownStation().getName()));
+            throw new IllegalArgumentException(String.format("연결할 수 없는 노선입니다.(%s-%s)", section.getUpStation().getName(), section.getDownStation().getName()));
         }
         List<Section> newSections = new ArrayList<Section>();
         for (int i = 0; i < sections.size(); i++) {
@@ -59,12 +59,14 @@ public class Sections {
             newSections.add(s);
             // 중간에 넣어야함 재조립
             if (s.getUpStation().equals(section.getUpStation())) {
+                section.checkShorter(s.getDistance());
                 newSections.set(i, section);
                 Section newSection = Section.of(s.getLine(), section.getDownStation(), s.getDownStation(), s.getDistance()-section.getDistance());
                 newSections.add(newSection);
             }
             // 중간에 넣어야함 재조립
             if (s.getDownStation().equals(section.getDownStation())) {
+                section.checkShorter(s.getDistance());
                 Section newSection = Section.of(s.getLine(), s.getUpStation(), section.getUpStation(), s.getDistance()-section.getDistance());
                 newSections.set(i, newSection);
                 newSections.add(section);
@@ -78,6 +80,7 @@ public class Sections {
                     this.sections = newSections;
                     return;
                 }
+                section.checkShorter(s.getDistance());
                 newSections.set(i, section);
                 Section newSection = Section.of(s.getLine(), section.getDownStation(), s.getDownStation(), s.getDistance()-section.getDistance());
                 newSections.add(newSection);
@@ -88,6 +91,7 @@ public class Sections {
                     sections.add(section);
                     return;
                 }
+                section.checkShorter(s.getDistance());
                 Section newSection = Section.of(s.getLine(), s.getUpStation(), section.getUpStation(), s.getDistance()-section.getDistance());
                 newSections.set(i, newSection);
                 newSections.add(section);

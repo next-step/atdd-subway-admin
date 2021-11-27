@@ -32,6 +32,10 @@ public class SectionRequest {
     public Long getDownStationId() {
         return downStationId;
     }
+    
+    public int getDistance() {
+        return distance;
+    }
 
     public Section toSection(Line line, Station upStation, Station downStation) {
         return Section.of(line, upStation, downStation, distance);
