@@ -5,7 +5,6 @@ import nextstep.subway.common.exception.LineNotFoundException;
 import nextstep.subway.common.exception.StationNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
@@ -27,8 +26,9 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Section section = createSection(request);
-        Line persistLine = lineRepository.save(request.toLine(section));
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
+        Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
 
@@ -46,8 +46,9 @@ public class LineService {
 
     public LineResponse updateLine(Long id, LineRequest request) {
         Line line = findById(id);
-        line.update(request.toLine(createSection(request)));
-
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
+        line.update(request.toLine(upStation, downStation));
         return LineResponse.of(line);
     }
 
@@ -63,11 +64,5 @@ public class LineService {
     private Station findStationById(Long id) {
         return stationRepository.findById(id)
             .orElseThrow(StationNotFoundException::new);
-    }
-
-    private Section createSection(LineRequest request) {
-        Station upStation = findStationById(request.getUpStationId());
-        Station downStation = findStationById(request.getDownStationId());
-        return Section.of(upStation, downStation, request.getDistance());
     }
 }
