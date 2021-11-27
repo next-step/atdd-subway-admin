@@ -7,6 +7,7 @@ import nextstep.subway.domain.line.dto.LineResponse;
 import nextstep.subway.domain.line.dto.SectionRequest;
 import nextstep.subway.domain.line.mapper.LineMapper;
 import nextstep.subway.domain.section.domain.Section;
+import nextstep.subway.domain.section.domain.SectionRepository;
 import nextstep.subway.domain.station.application.StationService;
 import nextstep.subway.domain.station.domain.Station;
 import nextstep.subway.global.error.exception.EntityNotFoundException;
@@ -21,10 +22,12 @@ import java.util.List;
 public class LineService {
 
     private LineRepository lineRepository;
+    private SectionRepository sectionRepository;
     private StationService stationService;
 
-    public LineService(final LineRepository lineRepository, final StationService stationService) {
+    public LineService(final LineRepository lineRepository, final SectionRepository sectionRepository, final StationService stationService) {
         this.lineRepository = lineRepository;
+        this.sectionRepository = sectionRepository;
         this.stationService = stationService;
     }
 
@@ -82,10 +85,11 @@ public class LineService {
         line.createSection(new Section(upStation, downStation, sectionRequest.getDistance(), line));
     }
 
-    public void removeSection(final Long lineNo, final Long stationId) {
+    public void removeSection(final Long lineNo, final Long sectionId) {
         final Line line = this.findLine(lineNo);
-        final Station station = stationService.findStation(stationId);
+        final Section section = sectionRepository.findById(sectionId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 구간은 존재하지 않습니다."));
 
-        line.removeSection(station);
+        line.removeSection(section);
     }
 }

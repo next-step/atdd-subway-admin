@@ -116,12 +116,13 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void removeUpStationInSection() {
         //given
         새로운_역_추가(lineResponse.getId(), upStation.getId(), firstAddStation.getId(), 10);
+        final LineResponse deleteSection = 지하철_노선_상세_조회(this.lineResponse.getId()).as(LineResponse.class);
 
         //when
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .pathParam("lineNo", lineResponse.getId())
-                .queryParam("stationId", upStation.getId())
+                .pathParam("lineNo", this.lineResponse.getId())
+                .queryParam("stationId", deleteSection.getStations().get(0).getId())
                 .delete("/lines/{lineNo}/sections")
                 .then().log().all().extract();
 
@@ -137,12 +138,13 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void removeDownStationInSection() {
         //given
         새로운_역_추가(lineResponse.getId(), upStation.getId(), firstAddStation.getId(), 10);
+        final LineResponse deleteSection = 지하철_노선_상세_조회(this.lineResponse.getId()).as(LineResponse.class);
 
         //when
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .pathParam("lineNo", lineResponse.getId())
-                .queryParam("stationId", downStation.getId())
+                .queryParam("stationId", deleteSection.getStations().get(2).getId())
                 .delete("/lines/{lineNo}/sections")
                 .then().log().all().extract();
 
@@ -158,12 +160,13 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void removeMiddleStationInSection() {
         //given
         새로운_역_추가(lineResponse.getId(), upStation.getId(), firstAddStation.getId(), 10);
+        final LineResponse deleteSection = 지하철_노선_상세_조회(this.lineResponse.getId()).as(LineResponse.class);
 
         //when
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .pathParam("lineNo", lineResponse.getId())
-                .queryParam("stationId", firstAddStation.getId())
+                .queryParam("stationId", deleteSection.getStations().get(1).getId())
                 .delete("/lines/{lineNo}/sections")
                 .then().log().all().extract();
 
@@ -193,11 +196,14 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간이 하나인 노선에서 구간 제거")
     @Test
     void removeStationInOneSection() {
+        //given
+        final LineResponse deleteSection = 지하철_노선_상세_조회(this.lineResponse.getId()).as(LineResponse.class);
+
         //when
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .pathParam("lineNo", lineResponse.getId())
-                .queryParam("stationId", upStation.getId())
+                .queryParam("stationId", deleteSection.getStations().get(0).getId())
                 .delete("/lines/{lineNo}/sections")
                 .then().log().all().extract();
 

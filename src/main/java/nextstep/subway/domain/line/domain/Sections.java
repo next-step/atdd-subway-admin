@@ -14,7 +14,6 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Embeddable
 public class Sections {
@@ -121,52 +120,78 @@ public class Sections {
                 .orElseThrow(() -> new EntityNotFoundException("하행 종점역이 존재하지 않습니다."));
     }
 
-    public void remove(final Station station) {
-        if (this.sections.size() <= 2){
+    public void remove(final Section section) {
+        final Station deleteStationInSection = section.getStation();
+
+        if (sectionCountLessTwo()){
             throw new SectionDeleteImpossibleException();
         }
 
         final Section sectionStart = getSectionStart();
-        if (sectionStart.getStation().equals(station)) {
-            final Section section = this.sections.stream()
-                    .filter(st -> st.getPreStation() != null)
-                    .filter(st -> st.getPreStation().equals(sectionStart.getStation()))
-                    .findFirst()
-                    .get();
-            section.changePreStation(null);
-            this.sections.remove(sectionStart);
-            this.sections.add(section);
+
+        if (isUpStationDelete(deleteStationInSection, sectionStart)) {
+            upStationDelete(sectionStart);
             return;
         }
 
-        final Optional<Section> middleSection = this.sections.stream()
+        if (isMiddleStationDelete(deleteStationInSection, sectionStart)) {
+            middleStationDelete(deleteStationInSection, sectionStart);
+            return;
+        }
+
+        endStationDelete(deleteStationInSection);
+
+    }
+
+    private void endStationDelete(final Station station) {
+        this.sections.stream()
+                .filter(st -> st.getStation().equals(station))
+                .findFirst()
+                .ifPresent(st -> this.sections.remove(st));
+    }
+
+    private void middleStationDelete(final Station station, final Section sectionStart) {
+        final Section sectionMiddle = getSectionMiddle(station, sectionStart);
+        final Section sectionEnd = getSectionEnd(sectionMiddle);
+        this.sections.remove(sectionMiddle);
+        sectionEnd.changePreStation(sectionMiddle.getPreStation());
+        sectionEnd.changeDistinct(sectionMiddle.getDistance().plus(sectionMiddle.getDistance()));
+        this.sections.add(sectionEnd);
+    }
+
+    private void upStationDelete(final Section sectionStart) {
+        final Section nextStation = this.sections.stream()
+                .filter(st -> st.getPreStation() != null)
+                .filter(st -> st.getPreStation().equals(sectionStart.getStation()))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("상행 종점 다음역이 존재하지 않습니다."));
+
+        nextStation.changePreStation(null);
+        this.sections.remove(sectionStart);
+        this.sections.add(nextStation);
+    }
+
+    private boolean isMiddleStationDelete(final Station station, final Section sectionStart) {
+        return this.sections.stream()
+                .filter(st -> st.getPreStation() != null)
+                .filter(st -> st.getPreStation().equals(sectionStart.getStation()))
+                .anyMatch(st -> st.getStation().equals(station));
+    }
+
+    private Section getSectionMiddle(final Station station, final Section sectionStart) {
+        return this.sections.stream()
                 .filter(st -> st.getPreStation() != null)
                 .filter(st -> st.getPreStation().equals(sectionStart.getStation()))
                 .filter(st -> st.getStation().equals(station))
-                .findFirst();
+                .findFirst()
+                .get();
+    }
 
+    private boolean isUpStationDelete(final Station station, final Section sectionStart) {
+        return sectionStart.getStation().equals(station);
+    }
 
-        if (middleSection.isPresent()) {
-            final Section middleSection1 = middleSection.get();
-            final Optional<Section> sectionEnd = this.sections.stream()
-                    .filter(st -> st.getPreStation() != null)
-                    .filter(st -> st.getPreStation().equals(middleSection1.getStation()))
-                    .findFirst();
-            final Section sectionEnd1 = sectionEnd.get();
-            this.sections.remove(middleSection1);
-            sectionEnd1.changePreStation(middleSection1.getPreStation());
-            sectionEnd1.changeDistinct(middleSection1.getDistance().plus(middleSection1.getDistance()));
-            this.sections.add(sectionEnd1);
-            return;
-        }
-
-        final Optional<Section> sectionEnd = this.sections.stream()
-                .filter(st -> st.getStation().equals(station))
-                .findFirst();
-
-        if (sectionEnd.isPresent()) {
-            this.sections.remove(sectionEnd.get());
-        }
-
+    private boolean sectionCountLessTwo() {
+        return this.sections.size() <= 2;
     }
 }
