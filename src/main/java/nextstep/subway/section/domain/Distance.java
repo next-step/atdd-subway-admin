@@ -1,6 +1,6 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.common.exception.NegativeNumberException;
+import nextstep.subway.common.exception.NegativeNumberDistanceException;
 
 import javax.persistence.Embeddable;
 
@@ -18,11 +18,20 @@ public class Distance {
 
     private void validateDistance(int distance) {
         if (distance < 0) {
-            throw new NegativeNumberException(distance);
+            throw new NegativeNumberDistanceException(distance);
         }
     }
 
     public int getDistance() {
         return distance;
+    }
+
+    public void changeDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public void subtractDistance(int distance) {
+        validateDistance(this.distance - distance);
+        this.distance -= distance;
     }
 }

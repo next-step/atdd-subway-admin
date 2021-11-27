@@ -1,12 +1,11 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.common.exception.NegativeNumberException;
+import nextstep.subway.common.exception.NegativeNumberDistanceException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("구간 거리 도메인 관련")
 class DistanceTest {
@@ -27,7 +26,7 @@ class DistanceTest {
         // then
         assertThatThrownBy(() -> {
             final Distance distance = new Distance(-1);
-        }).isInstanceOf(NegativeNumberException.class)
+        }).isInstanceOf(NegativeNumberDistanceException.class)
         .hasMessageContaining("현재 숫자가 음수입니다. : -1");
     }
 
