@@ -8,6 +8,8 @@ import nextstep.subway.line.dto.LinesResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class LineService {
@@ -22,8 +24,15 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    public LinesResponse getLines() {
+        List<Line> persistLines = lineRepository.findAll();
+        return LinesResponse.of(persistLines);
+    }
+
     public LineResponse getLine(Long id) {
         Line persistLine = lineRepository.getOne(id);
         return LineResponse.of(persistLine);
     }
+
+
 }

@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 import nextstep.subway.AcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasItems;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -64,25 +66,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "red");
+        ExtractableResponse<Response> response1 = 지하철_노선_생성_요청(params);
 
-        ExtractableResponse<Response> createdResponse = 지하철_노선_생성_요청(params);
+        params = new HashMap<>();
+        params.put("name", "3호선");
+        params.put("color", "orange");
+        ExtractableResponse<Response> response2 = 지하철_노선_생성_요청(params);
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all().
+        ValidatableResponse response = RestAssured.given().log().all().
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                get(createdResponse.header("Location")).
+                get("lines").
                 then().
-                log().all().
-                extract();
+                log().
+                all();
 
 
         // then
         // 지하철_노선_목록_응답됨
         // 지하철_노선_목록_포함됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.OK.value());
+        response.body("lines.name", hasItems("신분당선", "3호선"));
+
+        ExtractableResponse<Response> findLine1 = 지하철_노선_조회_요청(response1.header("Location"));
+        assertThat(findLine1.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> findLine2 = 지하철_노선_조회_요청(response2.header("Location"));
+        assertThat(findLine2.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -98,14 +111,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                get(createdResponse.header("Location")).
-                then().
-                log().all().
-                extract();
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdResponse.header("Location"));
 
         // then
         // 지하철_노선_응답됨
@@ -144,6 +150,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
                 post("/lines").
+                then().
+                log().all().
+                extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(String location) {
+        return RestAssured.given().log().all().
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                get(location).
                 then().
                 log().all().
                 extract();
