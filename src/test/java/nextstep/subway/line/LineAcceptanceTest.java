@@ -27,24 +27,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private LineRequest request1;
     private LineRequest request2;
-    private StationRequest stationRequest1;
-    private StationRequest stationRequest2;
-    private Long upStationId;
-    private Long downStationId;
+
+    private Long 강남역_Id;
+    private Long 판교역_Id;
+    private Long 정자역_Id;
+    private Long 광교역_Id;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
 
-        stationRequest1 = new StationRequest("판교역");
-        stationRequest2 = new StationRequest("정자역");
+        강남역_Id = StationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
+        판교역_Id = StationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("판교역"));
+        정자역_Id = StationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("정자역"));
+        광교역_Id = StationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("광교역"));
 
-        upStationId = StationAcceptanceTest.지하철_역_등록되어_있음(stationRequest1);
-        downStationId = StationAcceptanceTest.지하철_역_등록되어_있음(stationRequest2);
-
-        request1 = new LineRequest("신분당선", "bg-red-600", upStationId, downStationId,
+        request1 = new LineRequest("신분당선", "bg-red-600", 강남역_Id, 정자역_Id,
             DEFAULT_DISTANCE);
-        request2 = new LineRequest("2호선", "bg-green-600", upStationId, downStationId,
+        request2 = new LineRequest("2호선", "bg-green-600", 강남역_Id, 정자역_Id,
             DEFAULT_DISTANCE);
     }
 
@@ -204,7 +204,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         String sectionRegisterPath = lineLocation + "/sections";
-        SectionRequest request = new SectionRequest(upStationId, downStationId, DEFAULT_DISTANCE);
+        SectionRequest request = new SectionRequest(판교역_Id, 정자역_Id, DEFAULT_DISTANCE);
         ExtractableResponse<Response> response = 지하철_구간_등록_요청(request, sectionRegisterPath);
 
         // then
@@ -213,8 +213,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_구간_등록됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getLong("upStationId")).isEqualTo(upStationId);
-        assertThat(response.body().jsonPath().getLong("downStationId")).isEqualTo(downStationId);
+        assertThat(response.body().jsonPath().getLong("upStationId")).isEqualTo(판교역_Id);
+        assertThat(response.body().jsonPath().getLong("downStationId")).isEqualTo(정자역_Id);
         assertThat(response.body().jsonPath().getLong("distance")).isEqualTo(DEFAULT_DISTANCE);
     }
 
@@ -232,8 +232,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(String location) {
-        LineRequest modifyRequest = new LineRequest("구분당선", "bg-red-600", upStationId,
-            downStationId, DEFAULT_DISTANCE);
+        LineRequest modifyRequest = new LineRequest("구분당선", "bg-red-600", 판교역_Id,
+            정자역_Id, DEFAULT_DISTANCE);
         return 지하철_노선_수정(modifyRequest, location);
     }
 
@@ -266,7 +266,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().getString("color")).isEqualTo("bg-red-600");
         assertThat(response.body().jsonPath().getList("stations")).isNotNull();
         assertThat(response.body().jsonPath().getList("stations")).hasSize(2);
-        assertThat(response.body().jsonPath().getList("stations.id")).isEqualTo(Lists.list(1, 2));
+        assertThat(response.body().jsonPath().getList("stations.id")).isEqualTo(Lists.list(1, 3));
     }
 
     private String 지하철_노선_등록되어_있음(LineRequest request) {
