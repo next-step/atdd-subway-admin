@@ -56,9 +56,4 @@ public class LineController {
         Boolean result = lineService.deleteLine(id);
         return ResponseEntity.ok(result);
     }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<?> handleIllegalArgsException(IllegalArgumentException e) {
-        return ResponseEntity.noContent().build();
-    }
 }
