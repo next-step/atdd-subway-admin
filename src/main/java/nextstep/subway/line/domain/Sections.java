@@ -1,4 +1,4 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
 import nextstep.subway.station.domain.Station;
 
@@ -21,7 +21,7 @@ public class Sections {
         this.sections = sections;
     }
 
-    public static Sections of() {
+    public static Sections empty() {
         return new Sections();
     }
 
@@ -31,13 +31,13 @@ public class Sections {
 
         this.sections
                 .stream()
-                .filter(s -> s.getUpStation() == section.getUpStation())
+                .filter(s -> s.hasEqualUpStation(section))
                 .findFirst()
                 .ifPresent(s -> s.updateUpSection(section));
 
         this.sections
                 .stream()
-                .filter(s -> s.getDownStation() == section.getDownStation())
+                .filter(s -> s.hasEqualDownStation(section))
                 .findFirst()
                 .ifPresent(s -> s.updateDownSection(section));
 
@@ -83,7 +83,7 @@ public class Sections {
         return this.sections
                 .stream()
                 .filter(s -> s.getUpStation() == firstStation)
-                .findFirst().get();
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("노선의 첫번째 구간이 존재하지 않습니다."));
     }
 
     private void validateDuplicatedStation(Section section) {

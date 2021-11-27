@@ -1,5 +1,6 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
+import nextstep.subway.line.domain.Distance;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +18,7 @@ class DistanceTest {
         int minusDistanceValue = 3;
 
         // when
-        distance.minus(new Distance(minusDistanceValue));
+        distance = distance.minus(new Distance(minusDistanceValue));
 
         // then
         assertThat(distance.getDistance()).isEqualTo(distanceValue - minusDistanceValue);
@@ -34,7 +35,6 @@ class DistanceTest {
         // when, then
         assertThatThrownBy(() -> distance.minus(new Distance(minusDistanceValue)))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("등록할 구간의 길이가 기존 역 사이 길이보다 크거나 같습니다. (입력값: " + minusDistanceValue + ")");
+                .hasMessageContaining("구간의 길이는 0보다 커야합니다. (입력값: " + (distanceValue - minusDistanceValue) + ")");
     }
-
 }

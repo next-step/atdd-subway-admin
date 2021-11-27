@@ -1,10 +1,8 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 public class Section {
@@ -41,12 +39,24 @@ public class Section {
 
     public void updateUpSection(Section section) {
         this.upStation = section.downStation;
-        this.distance.minus(section.distance);
+        this.distance = this.distance.minus(section.distance);
     }
 
     public void updateDownSection(Section section) {
         this.downStation = section.upStation;
-        this.distance.minus(section.distance);
+        this.distance = this.distance.minus(section.distance);
+    }
+
+    public boolean isEqualLine(Line line) {
+        return this.line.equals(line);
+    }
+
+    public boolean hasEqualUpStation(Section section) {
+        return this.getUpStation() == section.getUpStation();
+    }
+
+    public boolean hasEqualDownStation(Section section) {
+        return this.getDownStation() == section.getDownStation();
     }
 
     public Long getId() {

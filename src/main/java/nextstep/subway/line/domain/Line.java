@@ -1,13 +1,9 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -23,7 +19,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private Sections sections = Sections.of();
+    private Sections sections = Sections.empty();
 
     protected Line() {
     }
@@ -50,6 +46,9 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
+        if (!section.isEqualLine(this)) {
+            throw new IllegalArgumentException("추가할 노선과 현재 노선이 다릅니다.");
+        }
         this.sections.add(section);
     }
 

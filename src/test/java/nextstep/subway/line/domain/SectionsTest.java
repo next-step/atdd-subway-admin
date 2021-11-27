@@ -1,7 +1,6 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
 import nextstep.subway.station.domain.Station;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,24 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SectionsTest {
-
-    private Sections sections;
-    private Section section;
-    private Station station1;
-    private Station station2;
-    private int distance;
-
-    @BeforeEach
-    void setUp() {
-        sections = new Sections();
-
-        station1 = new Station("강남역");
-        station2 = new Station("판교역");
-        distance = 10;
-        section = new Section(station1, station2, distance, null);
-
-        sections.add(section);
-    }
 
     @Test
     @DisplayName("첫 지하철 구간을 추가한다.")
@@ -50,6 +31,11 @@ class SectionsTest {
     @DisplayName("역 사이에 노선을 등록한다.(같은 상행역)")
     void add_same_up_station() {
         // given
+        Station station1 = new Station("강남역");
+        Station station2 = new Station("판교역");
+        int distance = 10;
+        Sections sections = createSections(station1, station2, distance);
+
         Station newStation = new Station("양재역");
         int newDistance = 3;
         Section newSection = new Section(station1, newStation, newDistance, null);
@@ -66,6 +52,11 @@ class SectionsTest {
     @DisplayName("역 사이에 노선을 등록한다.(같은 하행역)")
     void add_same_down_station() {
         // given
+        Station station1 = new Station("강남역");
+        Station station2 = new Station("판교역");
+        int distance = 10;
+        Sections sections = createSections(station1, station2, distance);
+
         Station newStation = new Station("양재역");
         int newDistance = 3;
 
@@ -83,6 +74,11 @@ class SectionsTest {
     @DisplayName("새로운 역을 상행 종점으로 등록한다.")
     void add_up_station() {
         // given
+        Station station1 = new Station("강남역");
+        Station station2 = new Station("판교역");
+        int distance = 10;
+        Sections sections = createSections(station1, station2, distance);
+
         Station newStation = new Station("양재역");
         int newDistance = 3;
 
@@ -100,6 +96,11 @@ class SectionsTest {
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
     void add_down_station() {
         // given
+        Station station1 = new Station("강남역");
+        Station station2 = new Station("판교역");
+        int distance = 10;
+        Sections sections = createSections(station1, station2, distance);
+
         Station newStation = new Station("양재역");
         int newDistance = 3;
 
@@ -116,6 +117,14 @@ class SectionsTest {
     @Test
     @DisplayName("이미 등록되어 있는 노선일 경우 실패한다.")
     void add_duplicate() {
+        // given
+        Station station1 = new Station("강남역");
+        Station station2 = new Station("판교역");
+        int distance = 10;
+        Sections sections = createSections(station1, station2, distance);
+
+        Section section = new Section(station1, station2, distance, null);
+
         // when, then
         assertThatThrownBy(() -> sections.add(section))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -125,6 +134,12 @@ class SectionsTest {
     @Test
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어 있지 않는 경우 실패한다.")
     void add_not_contains() {
+        // given
+        Station station1 = new Station("강남역");
+        Station station2 = new Station("판교역");
+        int distance = 10;
+        Sections sections = createSections(station1, station2, distance);
+
         // when, then
         Section section = new Section(new Station("금정역"), new Station("사당역"), distance, null);
         assertThatThrownBy(() -> sections.add(section))
@@ -169,5 +184,14 @@ class SectionsTest {
         assertThat(sectionList.get(1).getUpStation()).isEqualTo(upStation2);
         assertThat(sectionList.get(1).getDownStation()).isEqualTo(downStation2);
         assertThat(sectionList.get(1).getDistance().getDistance()).isEqualTo(distance2);
+    }
+
+    private Sections createSections(Station station1, Station station2, int distance) {
+        Sections sections = new Sections();
+
+        Section section = new Section(station1, station2, distance, null);
+
+        sections.add(section);
+        return sections;
     }
 }

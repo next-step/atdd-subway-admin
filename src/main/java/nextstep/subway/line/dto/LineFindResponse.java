@@ -1,8 +1,6 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
