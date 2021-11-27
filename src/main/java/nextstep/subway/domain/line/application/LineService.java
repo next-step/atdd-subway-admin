@@ -74,13 +74,11 @@ public class LineService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 지하철 노선은 존재하지 않습니다."));
     }
 
-    public LineResponse saveSection(final Long lineNo, final SectionRequest sectionRequest) {
+    public void saveSection(final Long lineNo, final SectionRequest sectionRequest) {
         final Line line = this.findLine(lineNo);
         final Station upStation = stationService.findStation(sectionRequest.getUpStationId());
         final Station downStation = stationService.findStation(sectionRequest.getDownStationId());
 
-        line.createSection(new Section(upStation, downStation, sectionRequest.getDistance()));
-
-        return findDetailLine(line.getId());
+        line.createSection(new Section(upStation, downStation, sectionRequest.getDistance(), line));
     }
 }
