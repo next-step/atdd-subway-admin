@@ -74,7 +74,10 @@ public class LineService {
     }
 
     public void addSection(Long id, SectionRequest sectionRequest) {
-        // TODO Auto-generated method stub
+        Line line = findById(id);
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
         
+        line.addSection(sectionRequest.toSection(line, upStation, downStation));
     }
 }
