@@ -16,9 +16,6 @@ public class StationResponse {
             station.getModifiedDate());
     }
 
-    public StationResponse() {
-    }
-
     public StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
@@ -60,5 +57,16 @@ public class StationResponse {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, createdDate, modifiedDate);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("StationResponse{");
+        sb.append("id=").append(id);
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", createdDate=").append(createdDate);
+        sb.append(", modifiedDate=").append(modifiedDate);
+        sb.append('}');
+        return sb.toString();
     }
 }
