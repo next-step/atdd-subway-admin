@@ -2,7 +2,6 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
@@ -19,7 +18,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -221,13 +219,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_구간_등록_요청(SectionRequest request, String path) {
-        return RestAssured.given().log().all()
-            .body(request)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post(path)
-            .then().log().all()
-            .extract();
+        return RestTestApi.post(request, path);
     }
 
     private void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
@@ -294,40 +286,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성(LineRequest params, String path) {
-        return RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post(path)
-            .then().log().all()
-            .extract();
+        return RestTestApi.post(params, path);
     }
 
     private ExtractableResponse<Response> 지하철_노선_조회(String path) {
-        return RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .get(path)
-            .then().log().all()
-            .extract();
+        return RestTestApi.get(path);
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정(LineRequest params, String path) {
-        return RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .put(path)
-            .then().log().all()
-            .extract();
+        return RestTestApi.put(params, path);
     }
 
     private ExtractableResponse<Response> 지하철_노선_제거(String path) {
-        return RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .delete(path)
-            .then().log().all()
-            .extract();
+        return RestTestApi.delete(path);
     }
 }
