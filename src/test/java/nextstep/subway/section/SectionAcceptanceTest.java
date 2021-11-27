@@ -174,6 +174,22 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse.getStations()).extracting("name").containsExactly("소요산","인천");
     }
 
+    @DisplayName("등록되지 구간 제거")
+    @Test
+    void removeNotRegisterStation() {
+        //when
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .pathParam("lineNo", lineResponse.getId())
+                .queryParam("stationId", 1000000000L)
+                .delete("/lines/{lineNo}/sections")
+                .then().log().all().extract();
+
+        //then
+        //중간_구간_제거_성공
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> 새로운_역_추가(Long lineId, Long upStationId, Long downStationId, int distance) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

@@ -94,14 +94,14 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
         - Then: 중간 구간이 제거된다.
 
   - 예외 케이스 인수 테스트
-    - [ ] Feature: 등록되지 않은 구간 제거
+    - [X] Feature: 등록되지 않은 구간 제거
       - Scenario: 등록되지 않은 구간을 제거한다.
         - Given: 한 개의 구간이 등록되어 있다.
         - When: 존재하지 않는 구간을 제거한다.
         - Then: 구간 제거가 실패된다.
 
     - [ ] Feature: 구간이 하나인 노선에서 구간 제거
-      - Scenario: 구간이 하나인 노선에서 구간 제거을 제거한다.
+      - Scenario: 구간이 하나인 노선에서 구간 제거한다.
         - Given: 한 개의 구간이 등록되어 있다.
         - When: 존재하는 구간을 제거한다.
         - Then: 구간 제거가 실패된다.
