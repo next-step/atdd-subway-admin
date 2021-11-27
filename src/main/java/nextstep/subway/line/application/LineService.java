@@ -43,11 +43,9 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse findLineById(Long id) {
-        Line line = lineRepository.findById(id)
+    public Line findLineById(Long id) {
+        return lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundEntityException(id));
-
-        return LineResponse.of(line);
     }
 
     public void deleteLineById(Long id) {
