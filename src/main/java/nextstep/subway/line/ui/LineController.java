@@ -1,11 +1,11 @@
 package nextstep.subway.line.ui;
 
+import java.net.URI;
 import java.util.List;
 import java.util.NoSuchElementException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.dto.StationResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +19,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
-
 @RestController
 @RequestMapping("/lines")
 public class LineController {
+
     private final LineService lineService;
 
     public LineController(final LineService lineService) {
@@ -47,7 +46,8 @@ public class LineController {
     }
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest request) {
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id,
+        @RequestBody LineRequest request) {
         return ResponseEntity.ok().body(lineService.updateLine(id, request));
     }
 
