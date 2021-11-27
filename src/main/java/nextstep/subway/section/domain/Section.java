@@ -68,6 +68,14 @@ public class Section {
         return this.distance.lessThanOrEqual(other.distance);
     }
 
+    public boolean isEqualToDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public boolean isEqualToUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
     public Station getUpStation() {
         return upStation;
     }

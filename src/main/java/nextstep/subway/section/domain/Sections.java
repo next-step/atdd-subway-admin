@@ -133,32 +133,32 @@ public class Sections {
     private Section upBoundLastSection() {
         final Station upBoundLastStation = upBoundLastStation();
         return this.sections.stream()
-            .filter(section -> section.getUpStation().equals(upBoundLastStation))
+            .filter(section -> section.isEqualToUpStation(upBoundLastStation))
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("상행역이 속하는 구간은 한 개가 있어야 합니다."));
     }
 
     private Optional<Section> upBoundSection(Section standardSection) {
         return this.sections.stream()
-            .filter(section -> section.getUpStation().equals(standardSection.getUpStation()))
+            .filter(section -> section.isEqualToUpStation(standardSection.getUpStation()))
             .findFirst();
     }
 
     private Optional<Section> downBoundSection(Section standardSection) {
         return this.sections.stream()
-            .filter(section -> section.getDownStation().equals(standardSection.getDownStation()))
+            .filter(section -> section.isEqualToDownStation(standardSection.getDownStation()))
             .findFirst();
     }
 
     private Optional<Section> upBoundSection(Station station) {
         return this.sections.stream()
-            .filter(section -> section.getDownStation().equals(station))
+            .filter(section -> section.isEqualToDownStation(station))
             .findFirst();
     }
 
     private Optional<Section> downBoundSection(Station station) {
         return this.sections.stream()
-            .filter(section -> section.getUpStation().equals(station))
+            .filter(section -> section.isEqualToUpStation(station))
             .findFirst();
     }
 
