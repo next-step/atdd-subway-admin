@@ -37,9 +37,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         station4 = 지하철_역_등록되어_있음("사당역");
     }
 
-    @Test
-    void 지하철_노선을_생성한다() {
-        // given
+    private Map<String, String> 지하철_신분당선() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "red");
@@ -47,6 +45,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("downStationId", String.valueOf(station2.getId()));
         params.put("distance", "10");
 
+        return params;
+    }
+
+    @Test
+    void 지하철_노선을_생성한다() {
+        // given
+        Map<String, String> params = 지하철_신분당선();
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
@@ -75,13 +80,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 기존에_존재하는_지하철_노선_이름으로_지하철_노선을_생성한다() {
         // given
         지하철_노선_등록되어_있음("신분당선", "red", station1, station2, 10);
-
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "red");
-        params.put("upStationId", String.valueOf(station1.getId()));
-        params.put("downStationId", String.valueOf(station2.getId()));
-        params.put("distance", "10");
+        Map<String, String> params = 지하철_신분당선();
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
@@ -159,7 +158,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("color", "green");
         params.put("upStationId", String.valueOf(station3.getId()));
         params.put("downStationId", String.valueOf(station4.getId()));
-        params.put("distance", "10");
+        params.put("distance", "5");
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(1L, params);
