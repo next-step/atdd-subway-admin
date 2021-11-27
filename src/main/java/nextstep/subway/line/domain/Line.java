@@ -26,7 +26,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "line_id") // (2)
+    @JoinColumn(name = "line_id")
     private List<Section> sections = new ArrayList<>();
 
     public Line() {

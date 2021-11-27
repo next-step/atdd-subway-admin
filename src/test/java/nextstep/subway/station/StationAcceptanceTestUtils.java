@@ -34,6 +34,7 @@ public class StationAcceptanceTestUtils {
     public static void 지하철_역_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode())
             .isEqualTo(HttpStatus.CREATED.value());
+
         assertThat(response.header("Location"))
             .isNotBlank();
     }
@@ -47,7 +48,8 @@ public class StationAcceptanceTestUtils {
     }
 
     public static void 지하철_역_생성_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode())
+            .isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     public static ExtractableResponse<Response> 지하철_역_목록_조회_요청() {
@@ -60,7 +62,8 @@ public class StationAcceptanceTestUtils {
     }
 
     public static void 지하철_역_목록_생성됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode())
+            .isEqualTo(HttpStatus.OK.value());
     }
 
     public static void 지하철_역_목록_포함됨(ExtractableResponse<Response> response, List<Long> expectedStaionIds) {
@@ -75,7 +78,8 @@ public class StationAcceptanceTestUtils {
     }
 
     public static ExtractableResponse<Response> 지하철_역_제거_요청(long id) {
-        return RestAssured.given().log().all()
+        return RestAssured
+            .given().log().all()
             .when()
             .delete("/stations/" + id)
             .then().log().all()
@@ -83,6 +87,7 @@ public class StationAcceptanceTestUtils {
     }
 
     public static void 지하철_역_삭제됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode())
+            .isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
