@@ -50,6 +50,9 @@ public class Sections {
         if(isExistStations(section.getUpStation(), section.getDownStation())) {
             throw new IllegalArgumentException(String.format("이미 등록된 노선입니다.[%d - %d]", section.getUpStation().getName(), section.getDownStation().getName()));
         }
+        if(isNotExistStations(section.getUpStation(), section.getDownStation())) {
+            throw new IllegalArgumentException(String.format("연결할 수 없는 노선입니다.[%d - %d]", section.getUpStation().getName(), section.getDownStation().getName()));
+        }
         List<Section> newSections = new ArrayList<Section>();
         for (int i = 0; i < sections.size(); i++) {
             Section s = sections.get(i);
@@ -104,6 +107,10 @@ public class Sections {
     
     private boolean isExistStations(Station...stations) {
         return Stream.of(stations).allMatch(station -> getStations().contains(station));
+    }
+    
+    private boolean isNotExistStations(Station...stations) {
+        return Stream.of(stations).allMatch(station -> !getStations().contains(station));
     }
     
     void print() {
