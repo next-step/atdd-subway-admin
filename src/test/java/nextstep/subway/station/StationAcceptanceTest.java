@@ -39,6 +39,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
     public static final Map<String, String> 광교역 = new HashMap() {{
         put("name", "광교역");
     }};
+    public static final Map<String, String> 양재시민의숲 = new HashMap() {{
+        put("name", "양재시민의숲");
+    }};
 
     @DisplayName("지하철역을 생성한다.")
     @Test

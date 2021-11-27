@@ -88,4 +88,8 @@ public class Line extends BaseEntity {
     private static boolean isBlank(String text) {
         return text == null || text.isEmpty();
     }
+
+    public void deleteSection(Station station) {
+        this.sections.delete(station);
+    }
 }

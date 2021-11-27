@@ -115,4 +115,9 @@ public class Section extends BaseEntity {
     public boolean isDuplicate(Section section) {
         return upStation.equals(section.getUpStation()) && downStation.equals(section.getDownStation());
     }
+
+    public void mergeStation(Section section) {
+        downStation = section.getDownStation();
+        distance += section.getDistance();
+    }
 }
