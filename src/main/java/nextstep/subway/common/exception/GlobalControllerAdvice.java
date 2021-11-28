@@ -1,10 +1,10 @@
 package nextstep.subway.common.exception;
 
-import nextstep.subway.line.ui.exception.InvalidDistanceException;
-import nextstep.subway.line.ui.exception.InvalidSectionException;
-import nextstep.subway.line.ui.exception.LineNotFoundException;
-import nextstep.subway.line.ui.exception.SectionNotFoundException;
-import nextstep.subway.station.application.StationNotFoundException;
+import nextstep.subway.line.application.exception.InvalidDistanceException;
+import nextstep.subway.line.application.exception.InvalidSectionException;
+import nextstep.subway.line.application.exception.LineNotFoundException;
+import nextstep.subway.line.application.exception.SectionNotFoundException;
+import nextstep.subway.station.application.exception.StationNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;

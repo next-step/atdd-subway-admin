@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static nextstep.subway.line.ui.exception.LineNotFoundException.error;
+import static nextstep.subway.line.application.exception.LineNotFoundException.error;
 
 @Service
 @Transactional(readOnly = true)

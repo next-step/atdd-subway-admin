@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
-import static nextstep.subway.line.ui.exception.InvalidSectionException.error;
+import static nextstep.subway.line.application.exception.InvalidSectionException.error;
 
 @Entity
 public class Section {

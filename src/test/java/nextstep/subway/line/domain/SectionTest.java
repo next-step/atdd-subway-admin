@@ -1,8 +1,8 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.ui.exception.InvalidDistanceException;
-import nextstep.subway.line.ui.exception.InvalidSectionException;
-import nextstep.subway.line.ui.exception.SectionNotFoundException;
+import nextstep.subway.line.application.exception.InvalidDistanceException;
+import nextstep.subway.line.application.exception.InvalidSectionException;
+import nextstep.subway.line.application.exception.SectionNotFoundException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

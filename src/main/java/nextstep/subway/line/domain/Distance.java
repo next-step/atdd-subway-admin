@@ -2,7 +2,7 @@ package nextstep.subway.line.domain;
 
 import javax.persistence.Embeddable;
 
-import static nextstep.subway.line.ui.exception.InvalidDistanceException.error;
+import static nextstep.subway.line.application.exception.InvalidDistanceException.error;
 
 @Embeddable
 public class Distance {

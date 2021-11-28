@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static nextstep.subway.station.application.StationNotFoundException.error;
+import static nextstep.subway.station.application.exception.StationNotFoundException.error;
 
 @Service
 @Transactional(readOnly = true)

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.CascadeType.REMOVE;
-import static nextstep.subway.line.ui.exception.SectionNotFoundException.error;
+import static nextstep.subway.line.application.exception.SectionNotFoundException.error;
 
 @Embeddable
 public class Sections {
