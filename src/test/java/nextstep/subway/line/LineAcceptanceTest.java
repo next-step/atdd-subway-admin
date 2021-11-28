@@ -23,8 +23,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 구간을_포함한_지하철_노선을_생성한다() {
         // given
         // 지하철 역 생성
-        ExtractableResponse<Response> responseExtractableResponse1 = 지하철_역을_생성한다("강남역");
-        ExtractableResponse<Response> responseExtractableResponse2 = 지하철_역을_생성한다("역삼역");
+        ExtractableResponse<Response> responseExtractableResponse1 = makeStation("강남역");
+        ExtractableResponse<Response> responseExtractableResponse2 = makeStation("역삼역");
 
         // 노선 생성
         Map<String, String> params = new HashMap<>();
@@ -53,8 +53,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 지하철_노선을_생성한다() {
         // given
         // 지하철 역 생성
-        ExtractableResponse<Response> responseExtractableResponse1 = 지하철_역을_생성한다("강남역");
-        ExtractableResponse<Response> responseExtractableResponse2 = 지하철_역을_생성한다("역삼역");
+        ExtractableResponse<Response> responseExtractableResponse1 = makeStation("강남역");
+        ExtractableResponse<Response> responseExtractableResponse2 = makeStation("역삼역");
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
@@ -77,8 +77,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철 역 생성
-        ExtractableResponse<Response> responseExtractableResponse1 = 지하철_역을_생성한다("강남역");
-        ExtractableResponse<Response> responseExtractableResponse2 = 지하철_역을_생성한다("역삼역");
+        ExtractableResponse<Response> responseExtractableResponse1 = makeStation("강남역");
+        ExtractableResponse<Response> responseExtractableResponse2 = makeStation("역삼역");
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
@@ -97,8 +97,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_목록을_조회한다() {
         // 지하철 역 생성
-        ExtractableResponse<Response> responseExtractableResponse1 = 지하철_역을_생성한다("강남역");
-        ExtractableResponse<Response> responseExtractableResponse2 = 지하철_역을_생성한다("역삼역");
+        ExtractableResponse<Response> responseExtractableResponse1 = makeStation("강남역");
+        ExtractableResponse<Response> responseExtractableResponse2 = makeStation("역삼역");
         /// given
         // 지하철_노선_등록되어_있음
         Map<String, String> params1 = new HashMap<>();
@@ -132,8 +132,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선을_조회한다() {
         // 지하철 역 생성
-        ExtractableResponse<Response> responseExtractableResponse1 = 지하철_역을_생성한다("강남역");
-        ExtractableResponse<Response> responseExtractableResponse2 = 지하철_역을_생성한다("역삼역");
+        ExtractableResponse<Response> responseExtractableResponse1 = makeStation("강남역");
+        ExtractableResponse<Response> responseExtractableResponse2 = makeStation("역삼역");
         /// given
         // 지하철_노선_등록되어_있음
         Map<String, String> params = new HashMap<>();
@@ -170,8 +170,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철 역 생성
-        ExtractableResponse<Response> responseExtractableResponse1 = 지하철_역을_생성한다("강남역");
-        ExtractableResponse<Response> responseExtractableResponse2 = 지하철_역을_생성한다("역삼역");
+        ExtractableResponse<Response> responseExtractableResponse1 = makeStation("강남역");
+        ExtractableResponse<Response> responseExtractableResponse2 = makeStation("역삼역");
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "9호선");
         params1.put("upStationId", responseExtractableResponse1.response().jsonPath().get("id").toString());
@@ -201,8 +201,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         /// given
         // 지하철_노선_등록되어_있음
         // 지하철 역 생성
-        ExtractableResponse<Response> responseExtractableResponse1 = 지하철_역을_생성한다("강남역");
-        ExtractableResponse<Response> responseExtractableResponse2 = 지하철_역을_생성한다("역삼역");
+        ExtractableResponse<Response> responseExtractableResponse1 = makeStation("강남역");
+        ExtractableResponse<Response> responseExtractableResponse2 = makeStation("역삼역");
         Map<String, String> params = new HashMap<>();
         params.put("name", "9호선");
         params.put("upStationId", responseExtractableResponse1.response().jsonPath().get("id").toString());
@@ -267,7 +267,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_역을_생성한다(String 강남역) {
+    private ExtractableResponse<Response> makeStation(String 강남역) {
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", 강남역);
         return makeStation(params1);
