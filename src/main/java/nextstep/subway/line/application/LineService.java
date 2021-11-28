@@ -1,19 +1,16 @@
 package nextstep.subway.line.application;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.common.Messages;
 import nextstep.subway.exception.NotFoundException;
-import nextstep.subway.line.common.Constants;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.Distance;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
-import nextstep.subway.section.domain.SectionType;
+import nextstep.subway.line.domain.Distance;
+import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -40,10 +37,8 @@ public class LineService {
         Station upStation = findStationById(request.getUpStationId());
         Station downStation = findStationById(request.getDownStationId());
 
-        List<Section> sections = saveUpDownSection(request, upStation, downStation);
-
-        Line persistLine = lineRepository.save(request.toLine());
-        persistLine.addSections(sections);
+        Line persistLine = lineRepository
+            .save(saveSection(request, upStation, downStation, request.toLine()));
 
         return LineResponse.of(persistLine);
     }
@@ -77,6 +72,17 @@ public class LineService {
         lineRepository.delete(line);
     }
 
+    public LineResponse addSections(Long lineId, LineRequest lineRequest) {
+
+        Station upStation = findStationById(lineRequest.getUpStationId());
+        Station downStation = findStationById(lineRequest.getDownStationId());
+        Line line = findById(lineId);
+
+        line.addLineStation(Distance.valueOf(lineRequest.getDistance()), upStation, downStation);
+
+        return LineResponse.of(line);
+    }
+
     private Line findById(Long lineId) {
         return lineRepository.findById(lineId)
             .orElseThrow(() -> new NotFoundException(Messages.NO_LINE.getValues()));
@@ -87,13 +93,8 @@ public class LineService {
             .orElseThrow(() -> new NotFoundException(Messages.NO_STATION.getValues()));
     }
 
-    private Section saveSection(Section entity) {
-        return sectionRepository.save(entity);
-    }
-
-    private List<Section> saveUpDownSection(LineRequest request, Station upStation, Station downStation) {
-        Section up = saveSection(Section.of(new Distance(request.getDistance()), SectionType.UP, upStation, downStation));
-        Section down = saveSection(Section.fromDownStation(downStation));
-        return Arrays.asList(up, down);
+    private Line saveSection(LineRequest request, Station upStation, Station downStation, Line line) {
+        sectionRepository.save(Section.create(Distance.valueOf(request.getDistance()), upStation, downStation, line));
+        return line;
     }
 }

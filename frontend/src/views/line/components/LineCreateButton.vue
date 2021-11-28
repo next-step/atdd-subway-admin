@@ -46,7 +46,7 @@
         <div class="d-flex">
           <v-text-field
               v-model="lineForm.distance"
-              :rules="rules.section.distance"
+              :rules="rules.lineStation.distance"
               color="grey darken-1"
               label="거리"
               placeholder="거리"

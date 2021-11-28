@@ -56,10 +56,10 @@
 </template>
 
 <script>
-import SectionCreateButton from '@/views/section/components/SectionCreateButton'
+import SectionCreateButton from '@/views/lineStation/components/SectionCreateButton'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { FETCH_LINE, FETCH_LINES } from '@/store/shared/actionTypes'
-import SectionDeleteButton from '@/views/section/components/SectionDeleteButton'
+import SectionDeleteButton from '@/views/lineStation/components/SectionDeleteButton'
 import { SNACKBAR_MESSAGES } from '@/utils/constants'
 import { SHOW_SNACKBAR } from '@/store/shared/mutationTypes'
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <section class="lists-container mt-10 mr-12">
+    <lineStation class="lists-container mt-10 mr-12">
       <v-card v-for="(line, index) in map" max-width="300" :key="index" class="mx-5 list">
         <v-toolbar :color="line.color" dense flat>
           <v-toolbar-title>{{ line.name }}</v-toolbar-title>
@@ -15,7 +15,7 @@
           </v-list>
         </v-card-text>
       </v-card>
-    </section>
+    </lineStation>
   </div>
 </template>
 
