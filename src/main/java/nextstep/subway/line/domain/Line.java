@@ -1,40 +1,68 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.sections.domain.Distance;
+import nextstep.subway.sections.domain.Section;
+import nextstep.subway.sections.domain.Sections;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.Stations;
 
 import javax.persistence.*;
 
 @Entity
 public class Line extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(unique = true)
-    private String name;
-    private String color;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    public Line() {
-    }
+  @Column(unique = true)
+  private String name;
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
+  private String color;
 
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
-    }
+  @Embedded
+  private final Sections sections = new Sections();
 
-    public Long getId() {
-        return id;
-    }
+  public Line() {
+  }
 
-    public String getName() {
-        return name;
-    }
+  public Line(String name, String color) {
+    this.name = name;
+    this.color = color;
+  }
 
-    public String getColor() {
-        return color;
-    }
+  public static Line of(String name, String color, Station upStation, Station downStation, Distance distance) {
+    Line line = new Line(name, color);
+    line.addSection(Section.of(line, upStation, downStation, distance));
+    return line;
+  }
+
+  public void addSection(Section section) {
+    sections.add(section);
+  }
+
+  public void update(Line line) {
+    this.name = line.getName();
+    this.color = line.getColor();
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public String getColor() {
+    return color;
+  }
+
+  public Sections getSections() {
+    return sections;
+  }
+
+  public Stations getStations() {
+    return sections.getUpToDownStations();
+  }
 }
