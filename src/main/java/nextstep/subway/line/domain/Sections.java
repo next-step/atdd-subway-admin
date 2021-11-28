@@ -48,36 +48,67 @@ public class Sections {
             return;
         }
         checkValidStations(section);
-        
+        sortedAdd(section);
+    }
+    
+    private void sortedAdd(Section section) {
         for (int i = 0; i < sections.size(); i++) {
-            Section nowSection = sections.get(i);
-            // 중간에 넣어야함 재조립
-            if (nowSection.getUpStation().equals(section.getUpStation())) {
-                section.checkShorter(nowSection.getDistance());
-                nowSection.moveUpStationTo(section.getDownStation(), section.getDistance());
-                sections.add(i, section);
+            Section oldSection = sections.get(i);
+            // 새 구간이 기존 구간보다 먼저 (상행역이 같을때)
+            if (sameUpStations(oldSection, section, i)) {
                 return;
             }
-            // 중간에 넣어야함 재조립
-            if (nowSection.getDownStation().equals(section.getDownStation())) {
-                section.checkShorter(nowSection.getDistance());
-                nowSection.moveDownStationTo(section.getUpStation(), section.getDistance());
-                sections.add(i+1, section);
+            // 기존 구간 다음에 새 구간 (하행역이 같을때)
+            if (sameDownStations(oldSection, section, i)) {
                 return;
             }
-            // 앞에 넣어야함
-            if (nowSection.getUpStation().equals(section.getDownStation()) && i == 0) {
-                sections.add(i, section);
+            // 맨 앞에 새 구간 (새 구간 하행역 == 기존 구간 상행역)
+            if (firstSection(oldSection, section, i)) {
                 return;
             }
-            // 뒤에 넣어야함
-            if (nowSection.getDownStation().equals(section.getUpStation()) && i == sections.size()-1) {
-                sections.add(section);
+            // 맨 뒤에 새 구간 (기존 구간 하행역 == 새 구간 상행역)
+            if (lastSection(oldSection, section, i)) {
                 return;
             }
         }
     }
     
+    private boolean sameUpStations(Section oldSection, Section newSection, int index) {
+        if (newSection.isSameUpStation(oldSection.getUpStation())) {
+            newSection.checkShorter(oldSection.getDistance());
+            oldSection.moveUpStationTo(newSection.getDownStation(), newSection.getDistance());
+            sections.add(index, newSection);
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean sameDownStations(Section oldSection, Section newSection, int index) {
+        if (newSection.isSameDownStation(oldSection.getDownStation())) {
+            newSection.checkShorter(oldSection.getDistance());
+            oldSection.moveDownStationTo(newSection.getUpStation(), newSection.getDistance());
+            sections.add(index+1, newSection);
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean firstSection(Section oldSection, Section newSection, int index) {
+        if (newSection.isSameDownStation(oldSection.getUpStation()) && index == 0) {
+            sections.add(index, newSection);
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean lastSection(Section oldSection, Section newSection, int index) {
+        if (newSection.isSameUpStation(oldSection.getDownStation())&& index == sections.size()-1) {
+            sections.add(newSection);
+            return true;
+        }
+        return false;
+    }
+
     private void checkValidStations(Section section) {
         if(isExistStations(section.getUpStation(), section.getDownStation())) {
             throw new IllegalArgumentException(String.format("이미 등록된 노선입니다.(%s-%s)", section.getUpStation().getName(), section.getDownStation().getName()));

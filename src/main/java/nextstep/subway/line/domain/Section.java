@@ -87,6 +87,14 @@ public class Section extends BaseEntity {
     public String toString() {
         return "Section [upStation=" + upStation + ", downStation=" + downStation + ", distance=" + distance + "]";
     }
+    
+    public boolean isSameUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+    
+    public boolean isSameDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
 
     public void moveUpStationTo(Station station, int distance) {
         this.upStation = station;
