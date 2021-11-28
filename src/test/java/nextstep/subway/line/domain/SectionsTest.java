@@ -241,6 +241,49 @@ class SectionsTest {
         assertThat(sections.getSections().get(0).getDistance()).isEqualTo(new Distance(distance1 + distance2));
     }
 
+    @Test
+    @DisplayName("구간이 하나일 경우 제거에 실패한다.")
+    void remove_구간_1개() {
+        // given
+        Station station1 = new Station("강남역");
+        Station station2 = new Station("양재역");
+        List<Section> sectionList = new ArrayList<>();
+        int distance2 = 3;
+        Section section2 = new Section(station1, station2, distance2, null);
+        sectionList.add(section2);
+
+        Sections sections = new Sections(sectionList);
+
+        // when, then
+        assertThatThrownBy(() -> sections.remove(station1))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("현재 구간이 1개라 제거할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("구간에 존재하지 않는 역일 경우 제거에 실패한다.")
+    void remove_구간에_존재하지_않는_역() {
+        // given
+        Station station1 = new Station("강남역");
+        Station station2 = new Station("양재역");
+        Station station3 = new Station("판교역");
+        List<Section> sectionList = new ArrayList<>();
+        int distance1 = 7;
+        Section section1 = new Section(station2, station3, distance1, null);
+        sectionList.add(section1);
+        int distance2 = 3;
+        Section section2 = new Section(station1, station2, distance2, null);
+        sectionList.add(section2);
+
+        Sections sections = new Sections(sectionList);
+
+        // when, then
+        String newStation = "금정역";
+        assertThatThrownBy(() -> sections.remove(new Station(newStation)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("현재 노선에 존재하지 않는 지하철 역입니다. (입력값: " + newStation + ")");
+    }
+
     private List<String> createStationNames(List<Station> stations) {
         List<String> names = stations.stream()
                 .map(s -> s.getName())

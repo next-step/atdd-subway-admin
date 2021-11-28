@@ -228,6 +228,47 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         노선_구간_제거_성공(response);
     }
 
+    @Test
+    @DisplayName("구간이 하나만 존재할 경우 제거에 실패한다.")
+    void removeLineStation_구간_하나() {
+        // given
+        StationResponse 강남역 = 지하철역_등록되어_있음("강남역");
+        StationResponse 판교역 = 지하철역_등록되어_있음("판교역");
+
+        int 역_사이_거리 = 10;
+        LineResponse 신분당선 = 지하철_노선_등록되어_있음("bg-red-600", "신분당선", 강남역, 판교역, 역_사이_거리);
+
+        // when
+        ExtractableResponse<Response> response = 노선_구간_제거_요청(강남역, 신분당선);
+
+        // then
+        노선_구간_제거_실패(response);
+    }
+
+    @Test
+    @DisplayName("현재 구간에 존재하지 않는 역을 삭제할 경우 실패한다.")
+    void removeLineStation_구간에_존재하지_않는_역() {
+        // given
+        StationResponse 강남역 = 지하철역_등록되어_있음("강남역");
+        StationResponse 판교역 = 지하철역_등록되어_있음("판교역");
+        StationResponse 양재역 = 지하철역_등록되어_있음("양재역");
+        StationResponse 금정역 = 지하철역_등록되어_있음("금정역");
+
+        int 역_사이_거리 = 10;
+        LineResponse 신분당선 = 지하철_노선_등록되어_있음("bg-red-600", "신분당선", 강남역, 판교역, 역_사이_거리);
+        지하철_노선에_지하철역_추가_등록되어_있음(신분당선, 강남역, 양재역, 역_사이_거리 - 1);
+
+        // when
+        ExtractableResponse<Response> response = 노선_구간_제거_요청(금정역, 신분당선);
+
+        // then
+        노선_구간_제거_실패(response);
+    }
+
+    private void 노선_구간_제거_실패(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response, StationResponse station1, StationResponse station2, StationResponse station3) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         LineFindResponse lineFindResponse = response.jsonPath().getObject(".", LineFindResponse.class);

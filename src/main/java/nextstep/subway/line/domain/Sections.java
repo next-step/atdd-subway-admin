@@ -50,6 +50,8 @@ public class Sections {
     }
 
     public void remove(Station station) {
+        validateOnlyOneSection();
+
         Section firstSection = findFirstSection();
         if (firstSection.isSameUpStation(station)) {
             this.sections.remove(firstSection);
@@ -62,6 +64,16 @@ public class Sections {
             return;
         }
 
+        removeMiddleSection(station);
+    }
+
+    private void validateOnlyOneSection() {
+        if (this.sections.size() == 1) {
+            throw new IllegalArgumentException("현재 구간이 1개라 제거할 수 없습니다.");
+        }
+    }
+
+    private void removeMiddleSection(Station station) {
         Section upSection = findSectionIsDownStation(station);
         Section downSection = findSectionIsUpStation(station);
         remove(upSection, downSection);
@@ -73,21 +85,19 @@ public class Sections {
     }
 
     private Section findSectionIsUpStation(Station station) {
-        Section downSection = this.sections
+        return this.sections
                 .stream()
                 .filter(s -> s.hasEqualUpStation(station))
                 .findFirst()
-                .get();
-        return downSection;
+                .orElseThrow(() -> new IllegalArgumentException("현재 노선에 존재하지 않는 지하철 역입니다. (입력값: " + station.getName() + ")"));
     }
 
     private Section findSectionIsDownStation(Station station) {
-        Section upSection = this.sections
+        return this.sections
                 .stream()
                 .filter(s -> s.hasEqualDownStation(station))
                 .findFirst()
-                .get();
-        return upSection;
+                .orElseThrow(() -> new IllegalArgumentException("현재 노선에 존재하지 않는 지하철 역입니다. (입력값: " + station.getName() + ")"));
     }
 
     private Section findLastSection() {
