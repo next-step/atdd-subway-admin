@@ -20,19 +20,17 @@ public class Section extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "lineId")
 	private Line line;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "upStationId")
 	private Station upStation;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "downStationId")
 	private Station downStation;
-
-	private int distance;
 
 	private int sequence;
 
@@ -51,19 +49,16 @@ public class Section extends BaseEntity {
 	protected Section() {
 	}
 
-	public static Section create(Line line, Station upStation, Station downStation, int distance) {
+	public static Section create(Station upStation, Station downStation) {
 		Section section = new Section();
-		section.setLine(line);
 		section.upStation = upStation;
 		section.downStation = downStation;
-		section.distance = distance;
 		return section;
 	}
 
-	private void setLine(Line line) {
+	public void setLine(Line line) {
 		this.line = line;
-		this.sequence = line.sectionsSize() + 1;
-		line.addSection(this);
+		this.sequence = line.sectionsSize();
 	}
 
 	public Long getId() {

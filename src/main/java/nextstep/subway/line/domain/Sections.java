@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
@@ -14,7 +15,7 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
 
-	@OneToMany(mappedBy = "line", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "line", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private final List<Section> sections = new ArrayList<>();
 
 	public void add(Section section) {
@@ -32,7 +33,7 @@ public class Sections {
 			.collect(Collectors.toList());
 		stations.add(0, sections.stream()
 			.findFirst()
-			.get()
+			.orElseThrow()
 			.getUpStation());
 		return stations;
 	}

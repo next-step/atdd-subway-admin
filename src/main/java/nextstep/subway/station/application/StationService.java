@@ -27,7 +27,6 @@ public class StationService {
     @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
-
         return stations.stream()
                 .map(station -> StationResponse.of(station))
                 .collect(Collectors.toList());
@@ -35,5 +34,10 @@ public class StationService {
 
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
+    }
+
+    public Station findStationById(Long stationId){
+        return stationRepository.findById(stationId)
+            .orElseThrow(() -> new IllegalArgumentException());
     }
 }

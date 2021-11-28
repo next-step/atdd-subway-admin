@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -241,59 +242,69 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	}
 
 	private Response requestCreateLines(LineRequest params) {
-		Response response = RestAssured.given().log().all()
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.body(params)
+		return createThenPart(createGivenPart(params)
 			.when()
-			.post("/lines")
-			.then().log().all()
-			.extract()
-			.response();
-		return response;
+			.post("/lines"));
 	}
 
 	private Response requestFindAllLines() {
-		return RestAssured.given().log().all()
+		return createThenPart(createGivenPart()
 			.when()
-			.get("/lines")
-			.then().log().all()
-			.extract().response();
+			.get("/lines"));
 	}
 
 	private Response requestFindLine(String url) {
-		return RestAssured.given().log().all()
+		return createThenPart(createGivenPart()
 			.when()
-			.get(url)
-			.then().log().all()
-			.extract().response();
+			.get(url));
 	}
 
 	private Response requestUpdateLine(String url, LineRequest updateParams) {
-		return RestAssured.given().log().all()
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.body(updateParams)
+		return createThenPart(createGivenPart(updateParams)
 			.when()
-			.patch(url)
-			.then().log().all()
-			.extract().response();
+			.patch(url));
 	}
 
 	private Response requestDeleteLine(String url) {
-		return RestAssured.given().log().all()
+		return createThenPart(createGivenPart()
 			.when()
-			.delete(url)
-			.then().log().all()
-			.extract().response();
+			.delete(url));
 	}
 
 	private Response requestCreateStation(StationRequest stationRequest) {
-		return RestAssured.given().log().all()
-			.body(stationRequest)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
+		return createThenPart(createGivenPart(stationRequest)
 			.when()
-			.post("/stations")
-			.then().log().all()
-			.extract().response();
+			.post("/stations"));
+	}
+
+	private RequestSpecification createGivenPart(LineRequest params) {
+		return RestAssured.given()
+			.log()
+			.all()
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.body(params);
+	}
+
+	private RequestSpecification createGivenPart(StationRequest params) {
+		return RestAssured.given()
+			.log()
+			.all()
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.body(params);
+	}
+
+	private RequestSpecification createGivenPart() {
+		return RestAssured.given()
+			.log()
+			.all();
+	}
+
+	private Response createThenPart(Response response) {
+		return response.then()
+			.log()
+			.all()
+			.extract()
+			.response();
 	}
 
 }

@@ -10,8 +10,8 @@ import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,27 +20,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class LineService {
 	private final LineRepository lineRepository;
-	private final StationRepository stationRepository;
-	private final SectionRepository sectionRepository;
+	private final StationService stationService;
 
-	public LineService(LineRepository lineRepository, StationRepository stationRepository,
-		SectionRepository sectionRepository) {
+	public LineService(LineRepository lineRepository, StationService stationService) {
 		this.lineRepository = lineRepository;
-		this.stationRepository = stationRepository;
-		this.sectionRepository = sectionRepository;
+		this.stationService = stationService;
 	}
 
 	public LineResponse saveLine(LineRequest request) {
-		Station upStation = findStationById(request.getUpStationId());
-		Station downStation = findStationById(request.getDownStationId());
-		Line savedLine = lineRepository.save(request.toLine());
-		sectionRepository.save(Section.create(savedLine, upStation, downStation, request.getDistance()));
+		Station upStation = stationService.findStationById(request.getUpStationId());
+		Station downStation = stationService.findStationById(request.getDownStationId());
+		Section section = Section.create(upStation, downStation);
+		Line line = request.toLine();
+		line.addSection(section);
+		Line savedLine = lineRepository.save(line);
 		return LineResponse.of(savedLine);
-	}
-
-	private Station findStationById(Long stationId){
-		return stationRepository.findById(stationId)
-			.orElseThrow(() -> new IllegalArgumentException());
 	}
 
 	@Transactional(readOnly = true)
@@ -64,9 +58,6 @@ public class LineService {
 	}
 
 	public void deleteById(Long id) {
-		Section section = sectionRepository.findByLineId(id)
-			.orElseThrow(() -> new IllegalArgumentException("조회 할 대상이 없습니다."));
-		sectionRepository.deleteById(section.getId());
 		lineRepository.deleteById(id);
 	}
 }
