@@ -83,6 +83,7 @@ public class LineService {
             .orElseThrow(NoSuchElementException::new);
     }
 
+    @Transactional
     public void deleteStationById(final Long id) {
         lineRepository.deleteById(id);
     }

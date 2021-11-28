@@ -11,7 +11,7 @@ import javax.persistence.OneToMany;
 @Embeddable
 public class Sections {
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     @JoinColumn(
         name = "line_id",
         nullable = false,

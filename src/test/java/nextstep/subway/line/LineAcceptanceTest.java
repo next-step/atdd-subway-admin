@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -9,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -102,50 +104,64 @@ public class LineAcceptanceTest extends AcceptanceTest {
 //        // then
 //        assertGetLineNotFound(response);
 //    }
-//
-//    @DisplayName("지하철 노선을 수정한다.")
-//    @Test
-//    void updateLine() {
-//        // given
-//        final String uri = registerLine("신분당선", "bg-red-600");
-//
-//        // when
-//        final String newLineName = "구분당선";
-//        final String newLineColor = "bg-blue-600";
-//        final ExtractableResponse<Response> response = requestUpdateLine(newLineName, newLineColor,
-//            uri);
-//
-//        // then
-//        assertGetLineSuccess(response);
-//        assertUpdateLineSuccess(uri, newLineName, newLineColor);
-//    }
-//
-//    @DisplayName("존재하지 않는 지하철 노선을 수정한다.")
-//    @Test
-//    void updateLine_notFound() {
-//        // when
-//        final ExtractableResponse<Response> response = requestUpdateLine(
-//            "신분당선",
-//            "bg-red-600",
-//            BASE_URI + "/1"
-//        );
-//
-//        // then
-//        assertGetLineNotFound(response);
-//    }
-//
-//    @DisplayName("지하철 노선을 제거한다.")
-//    @Test
-//    void deleteLine() {
-//        // given
-//        final String uri = registerLine("신분당선", "bg-red-600");
-//
-//        // when
-//        final ExtractableResponse<Response> response = requestDeleteLine(uri);
-//
-//        // then
-//        assertDeleteLineSuccess(response);
-//    }
+
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        final Long upStationId = createStation("강남역");
+        final Long downStationId = createStation("양재역");
+        final int distance = 10;
+        final String uri = createLine("신분당선", "bg-red-600", upStationId, downStationId, distance);
+
+        // when
+        final String newLineName = "구분당선";
+        final String newLineColor = "bg-blue-600";
+        final ExtractableResponse<Response> response = requestUpdateLine(
+            newLineName,
+            newLineColor,
+            upStationId,
+            downStationId,
+            distance,
+            uri
+        );
+
+        // then
+        assertGetLineSuccess(response);
+        assertUpdateLineSuccess(uri, newLineName, newLineColor);
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선을 수정한다.")
+    @Test
+    void updateLine_notFound() {
+        // when
+        final ExtractableResponse<Response> response = requestUpdateLine(
+            "신분당선",
+            "bg-red-600",
+            1L,
+            2L,
+            10,
+            BASE_URI + "/1"
+        );
+
+        // then
+        assertGetLineNotFound(response);
+    }
+
+    @DisplayName("지하철 노선을 제거한다.")
+    @Test
+    void deleteLine() {
+        // given
+        final Long upStationId = createStation("강남역");
+        final Long downStationId = createStation("양재역");
+        final String uri = createLine("신분당선", "bg-red-600", upStationId, downStationId, 10);
+
+        // when
+        final ExtractableResponse<Response> response = requestDeleteLine(uri);
+
+        // then
+        assertDeleteLineSuccess(response);
+    }
 
     private String createLine(
         final String name,
@@ -200,29 +216,38 @@ public class LineAcceptanceTest extends AcceptanceTest {
 //            .then().log().all()
 //            .extract();
 //    }
-//
-//    private ExtractableResponse<Response> requestUpdateLine(
-//        final String name,
-//        final String color,
-//        final String uri
-//    ) {
-//        final LineRequest updateRequest = new LineRequest(name, color);
-//        return RestAssured.given().log().all()
-//            .body(updateRequest)
-//            .contentType(MediaType.APPLICATION_JSON_VALUE)
-//            .when()
-//            .put(uri)
-//            .then().log().all()
-//            .extract();
-//    }
-//
-//    private ExtractableResponse<Response> requestDeleteLine(final String uri) {
-//        return RestAssured.given().log().all()
-//            .when()
-//            .delete(uri)
-//            .then().log().all()
-//            .extract();
-//    }
+
+    private ExtractableResponse<Response> requestUpdateLine(
+        final String name,
+        final String color,
+        final Long upStationId,
+        final Long downStationId,
+        final int distance,
+        final String uri
+    ) {
+        final LineRequest updateRequest = new LineRequest(
+            name,
+            color,
+            upStationId,
+            downStationId,
+            distance
+        );
+        return RestAssured.given().log().all()
+            .body(updateRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put(uri)
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> requestDeleteLine(final String uri) {
+        return RestAssured.given().log().all()
+            .when()
+            .delete(uri)
+            .then().log().all()
+            .extract();
+    }
 
     private void assertCreateLineSuccess(final ExtractableResponse<Response> response) {
         assertResponseStatusEquals(response, HttpStatus.CREATED);
@@ -248,11 +273,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 //            .getList("id", Long.class);
 //        assertThat(actualLineIds).containsAll(expectedLineIds);
 //    }
-//
-//    private void assertGetLineSuccess(final ExtractableResponse<Response> response) {
-//        assertResponseStatusEquals(response, HttpStatus.OK);
-//    }
-//
+
+    private void assertGetLineSuccess(final ExtractableResponse<Response> response) {
+        assertResponseStatusEquals(response, HttpStatus.OK);
+    }
+
 //    private void assertGetLineFetched(
 //        final ExtractableResponse<Response> response,
 //        final String expectedUri
@@ -263,30 +288,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
 //        final Long expectedLineId = Long.parseLong(expectedUri.split("/")[2]);
 //        assertThat(actualLineId).isEqualTo(expectedLineId);
 //    }
-//
-//    private void assertGetLineNotFound(final ExtractableResponse<Response> response) {
-//        assertResponseStatusEquals(response, HttpStatus.NOT_FOUND);
-//    }
-//
-//    private void assertUpdateLineSuccess(final String uri, final String newLineName,
-//        final String newLineColor) {
-//        final LineResponse actualLine = RestAssured.given().log().all()
-//            .when()
-//            .get(uri)
-//            .then().log().all()
-//            .extract()
-//            .jsonPath()
-//            .getObject(".", LineResponse.class);
-//        assertAll(
-//            () -> assertThat(actualLine.getId()).isEqualTo(Long.parseLong(uri.split("/")[2])),
-//            () -> assertThat(actualLine.getName()).isEqualTo(newLineName),
-//            () -> assertThat(actualLine.getColor()).isEqualTo(newLineColor)
-//        );
-//    }
-//
-//    private void assertDeleteLineSuccess(final ExtractableResponse<Response> response) {
-//        assertResponseStatusEquals(response, HttpStatus.NO_CONTENT);
-//    }
+
+    private void assertGetLineNotFound(final ExtractableResponse<Response> response) {
+        assertResponseStatusEquals(response, HttpStatus.NOT_FOUND);
+    }
+
+    private void assertUpdateLineSuccess(final String uri, final String newLineName,
+        final String newLineColor) {
+        final LineResponse actualLine = RestAssured.given().log().all()
+            .when()
+            .get(uri)
+            .then().log().all()
+            .extract()
+            .jsonPath()
+            .getObject(".", LineResponse.class);
+        assertAll(
+            () -> assertThat(actualLine.getId()).isEqualTo(Long.parseLong(uri.split("/")[2])),
+            () -> assertThat(actualLine.getName()).isEqualTo(newLineName),
+            () -> assertThat(actualLine.getColor()).isEqualTo(newLineColor)
+        );
+    }
+
+    private void assertDeleteLineSuccess(final ExtractableResponse<Response> response) {
+        assertResponseStatusEquals(response, HttpStatus.NO_CONTENT);
+    }
 
     private void assertResponseStatusEquals(
         final ExtractableResponse<Response> response,
