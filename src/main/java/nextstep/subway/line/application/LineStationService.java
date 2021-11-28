@@ -33,7 +33,7 @@ public class LineStationService {
         line.addLineStation(lineStation);
     }
 
-    public void removeSectionByStationId(Long lineId, Long deleteStationId) {
+    public void removeLineStationByStationId(Long lineId, Long deleteStationId) {
         Line line = lineService.findLine(lineId);
         Station deleteStation = stationService.findStation(deleteStationId);
 
