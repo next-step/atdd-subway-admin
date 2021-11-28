@@ -29,20 +29,11 @@ public class LineService {
     public LineResponse saveLine(final LineRequest request) {
         lineNameShouldBeUnique(request.getName());
         final Line persistLine = lineRepository.save(request.toLine());
-        // stationsShouldExist(request.getUpStationId(), request.getDownStationId());
-        // final Section section = new Section(
-        //     request.getUpStationId(),
-        //     request.getDownStationId(),
-        //     request.getDistance()
-        // );
-        //
         final Station upStation = stationRepository.findById(request.getUpStationId())
             .orElseThrow(NoSuchElementException::new);
         final Station downStation = stationRepository.findById(request.getDownStationId())
             .orElseThrow(NoSuchElementException::new);
-        //
         final Section section = new Section(upStation, downStation, request.getDistance());
-        //
         persistLine.addSection(section);
         return LineResponse.of(persistLine);
     }
@@ -51,18 +42,6 @@ public class LineService {
         if (lineRepository.existsByName(requestedName)) {
             throw new IllegalArgumentException("이미 존재하는 지하철 노선 이름으로 지하철 노선을 생성할 수 없습니다.");
         }
-    }
-
-    private void stationsShouldExist(final Long upStationId, final Long downStationId) {
-        stationShouldExist(upStationId);
-        stationShouldExist(downStationId);
-    }
-
-    private void stationShouldExist(final Long stationId) {
-        stationRepository.findById(stationId)
-            .orElseThrow(() ->
-                new NoSuchElementException("Station ID " + stationId + " does not exists.")
-            );
     }
 
     public List<LineResponse> findLines() {
