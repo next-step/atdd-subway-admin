@@ -54,7 +54,8 @@ npm run dev
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
 
 ---
-## 요구사항
+## 1단계 - 지하철 노선 관리
+### 지하철 노선 관리 기능을 구현하기
 * [x] 기능 구현 전 인수 테스트 작성
   * [x] 생성
   * [x] 목록 조회
@@ -68,9 +69,22 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   * [x] 수정
   * [x] 삭제
 
-## 1단계 지하철 노선 관리 인수 조건 정의
+### 1단계 피드백 사항
+* [x] ErrorResponse 항목에 대한 고민 필요
+* [x] CustomException에 대한 고민 필요
+* [x] Controller return 값 Generic Type 명시
+* [x] Test 결과 확인에 대한 고민 필요
+
+## 2단계 - 인수 테스트 리팩터링
+### API 변경 대응하기
+* [ ] 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기
+  * 두 종점역은 구간의 형태로 관리되어야 함
+* [ ] 노선 조회 시 응답 결과에 역 목록 추가하기
+  * 상행역 부터 하행역 순으로 정렬되어야 함
+
+## 지하철 노선 관리 인수 조건 정의
 ```
-Feature: 지하철 노선 생성 / 목록 조회 / 조회 / 수정 / 삭제
+Feature: 지하철 노선(Line) 생성 / 목록 조회 / 조회 / 수정 / 삭제
   Scenario: 지하철 노선 생성
       When 사용자는 지하철 노선 생성을 요청한다.
       Then 사용자는 등록 결과를 응답받는다.
@@ -91,9 +105,3 @@ Feature: 지하철 노선 생성 / 목록 조회 / 조회 / 수정 / 삭제
       When 사용자는 지하철 노선 삭제를 요청한다.
       Then 사용자는 삭제 결과를 응답받는다.
 ```
-
-## 1단계 피드백 사항
-* [x] ErrorResponse 항목에 대한 고민 필요
-* [x] CustomException에 대한 고민 필요
-* [x] Controller return 값 Generic Type 명시
-* [x] Test 결과 확인에 대한 고민 필요
