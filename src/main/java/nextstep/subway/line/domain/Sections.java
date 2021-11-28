@@ -45,6 +45,12 @@ public class Sections {
             sections.add(newSection);
         }
 
+        if (matchStation(isUpStation(newSection))) {
+            Section parentStation = findNextStation(newSection);
+            parentStation.changeDownSection(newSection);
+            sections.add(newSection);
+        }
+
     }
 
     private Section findParentStation(Section newSection) {
@@ -55,6 +61,14 @@ public class Sections {
         return parentStation;
     }
 
+    private Section findNextStation(Section newSection) {
+        Section nextStation = sections.stream()
+                                      .filter(section -> section.equalsChildStation(newSection.getUpStation()))
+                                      .findFirst()
+                                      .orElseThrow(SectionNotFoundException::new);
+        return nextStation;
+    }
+
     private boolean matchStation(Predicate<Section> isStation) {
         return sections.stream()
                        .anyMatch(isStation);
@@ -63,6 +77,7 @@ public class Sections {
     private Predicate<Section> isUpStation(Section newSection) {
         return section -> section.findDownStation(newSection);
     }
+
     private Predicate<Section> isDownStation(Section newSection) {
         return section -> section.findUpStation(newSection);
     }

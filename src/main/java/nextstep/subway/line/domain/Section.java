@@ -91,10 +91,20 @@ public class Section extends BaseEntity {
             this.changeFirstSectionType(newSection);
             return;
         }
-        addMiddleSection(newSection);
+        addMiddleUpSection(newSection);
     }
 
-    private void addMiddleSection(Section newSection) {
+    public void changeDownSection(Section newSection) {
+        alreadyRegisteredSection(newSection);
+        this.upStation = newSection.getDownStation();
+    }
+
+    private void addMiddleUpSection(Section newSection) {
+        this.downStation = newSection.getUpStation();
+        this.distance = this.distance.subtract(newSection.getDistance());
+    }
+
+    private void addMiddleDownSection(Section newSection) {
         this.downStation = newSection.getUpStation();
         this.distance = this.distance.subtract(newSection.getDistance());
     }
@@ -113,6 +123,11 @@ public class Section extends BaseEntity {
     private void changeFirstSectionType(Section newSection) {
         this.sectionType = SectionType.MIDDLE;
         newSection.sectionType = SectionType.FIRST;
+    }
+
+    private void changeLastSectionType(Section newSection) {
+        this.sectionType = SectionType.MIDDLE;
+        newSection.sectionType = SectionType.LAST;
     }
 
     public Station getUpStation() {
@@ -138,6 +153,8 @@ public class Section extends BaseEntity {
     /*
      *  비교문
      */
+
+    // 상행
     public boolean findUpStation(Section newSection) {
         return upStation.equals(newSection.getDownStation());
     }
@@ -146,13 +163,20 @@ public class Section extends BaseEntity {
         return downStation.equals(downStation);
     }
 
+    // 하행
+
     public boolean findDownStation(Section newSection) {
         return downStation.equals(newSection.getUpStation());
+    }
+
+    public boolean equalsChildStation(Station station) {
+        return upStation.equals(station);
     }
 
     public boolean equalsNextSection(Station downStation) {
         return upStation.equals(downStation);
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -184,4 +208,5 @@ public class Section extends BaseEntity {
             ", distance=" + distance +
             '}';
     }
+
 }

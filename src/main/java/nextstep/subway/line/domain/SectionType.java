@@ -10,4 +10,8 @@ public enum SectionType {
     public static boolean equalsFirst(SectionType sectionType) {
         return sectionType.equals(FIRST);
     }
+
+    public static boolean equalsLast(SectionType sectionType) {
+        return sectionType.equals(LAST);
+    }
 }
