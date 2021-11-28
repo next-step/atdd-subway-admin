@@ -47,8 +47,12 @@ public class Sections {
     }
 
     private Station getFistStation(List<Section> sections) {
-        List<Station> upStations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
-        List<Station> downStations = sections.stream().map(Section::getDownStation).collect(Collectors.toList());
+        List<Station> upStations = sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+        List<Station> downStations = sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
 
         upStations.removeAll(downStations);
 
