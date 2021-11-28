@@ -1,44 +1,51 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.application.SectionNotFoundException;
 import nextstep.subway.station.domain.Station;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.CascadeType.REMOVE;
+import static nextstep.subway.line.application.exception.SectionNotFoundException.error;
+
 @Embeddable
 public class Sections {
 
-    @Transient
-    private boolean isChanged;
+    public static final String NOT_CONNECTABLE = "구간을 연결할 상행역 또는 하행역이 존재해야 합니다.";
+    public static final String NOT_FOUND_UP_TERMINUS = "상행 종점 구간을 찾을 수 없습니다.";
+    public static final String BREAK_SECTION = "구간이 끊어져 있습니다.";
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "line", cascade = {PERSIST, REMOVE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public Sections() {
+    protected Sections() {
     }
 
-    public void add(Section section) {
-        validateDuplication(section);
-        this.sections.add(section);
-        this.isChanged = true;
-    }
-
-    private void validateDuplication(Section section) {
-        List<Station> downStations = getDownStations();
-        if (downStations.contains(section.getDownStation())) {
-            throw new IllegalArgumentException("중복되는 노선이 있습니다.");
+    public void add(Section newSection) {
+        if (sections.isEmpty()) {
+            sections.add(newSection);
+            return;
         }
+        connectableAdd(newSection);
     }
 
-    private void sortSections() {
+    private void connectableAdd(Section newSection) {
+        Section section = sections.stream()
+                .filter(s -> s.isConnectable(newSection))
+                .findFirst()
+                .map(s -> s.connect(newSection))
+                .orElseThrow(() -> error(NOT_CONNECTABLE));
+
+        sections.add(section);
+    }
+
+    private List<Section> sortSections() {
         List<Section> orderedSections = new LinkedList<>();
         Section orderedSection = findFirstSection();
         orderedSections.add(orderedSection);
@@ -49,6 +56,7 @@ public class Sections {
             orderedSections.add(orderedSection);
             i++;
         }
+        return orderedSections;
     }
 
     public Section findFirstSection() {
@@ -57,14 +65,14 @@ public class Sections {
         return sections.stream()
                 .filter(section -> !downStations.contains(section.getUpStation()))
                 .findFirst()
-                .orElseThrow(() -> new SectionNotFoundException("상행 종점 구간을 찾을 수 없습니다."));
+                .orElseThrow(() -> error(NOT_FOUND_UP_TERMINUS));
     }
 
     private Section findNextStation(Station orderedDownStation) {
         return sections.stream()
                 .filter(section -> orderedDownStation.equals(section.getUpStation()))
                 .findFirst()
-                .orElseThrow(() -> new SectionNotFoundException("구간이 끊어져 있습니다."));
+                .orElseThrow(() -> error(BREAK_SECTION));
     }
 
     public List<Station> getDownStations() {
@@ -74,11 +82,6 @@ public class Sections {
     }
 
     public List<Section> getSections() {
-        if (isChanged) {
-            sortSections();
-            this.isChanged = false;
-        }
-
-        return sections;
+        return sortSections();
     }
 }
