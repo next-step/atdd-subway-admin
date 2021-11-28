@@ -33,7 +33,7 @@ public class Sections {
     public List<Station> getStations() {
         return Collections.unmodifiableList(
             sections.stream()
-                .flatMap(section -> Stream.of(section.getUp(), section.getDown()))
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
                 .collect(Collectors.toList())
         );
     }
