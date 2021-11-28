@@ -1,6 +1,6 @@
 package nextstep.subway.station;
 
-import static nextstep.subway.station.StationAcceptanceTestUtils.*;
+import static nextstep.subway.station.StationAcceptanceTestHelper.*;
 
 import java.util.Arrays;
 import java.util.HashMap;

@@ -1,7 +1,7 @@
 package nextstep.subway.line;
 
-import static nextstep.subway.line.LineAcceptanceTestUtils.*;
-import static nextstep.subway.station.StationAcceptanceTestUtils.*;
+import static nextstep.subway.line.LineAcceptanceTestHelper.*;
+import static nextstep.subway.station.StationAcceptanceTestHelper.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
