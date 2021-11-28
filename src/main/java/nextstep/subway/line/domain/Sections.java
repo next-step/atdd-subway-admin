@@ -43,70 +43,52 @@ public class Sections {
     }
 
     void add(Section section) {
-        if (sections.size() == 0) {
+        if (sections.isEmpty()) {
             sections.add(section);
             return;
         }
+        checkValidStations(section);
+        
+        for (int i = 0; i < sections.size(); i++) {
+            Section nowSection = sections.get(i);
+            // 중간에 넣어야함 재조립
+            if (nowSection.getUpStation().equals(section.getUpStation())) {
+                section.checkShorter(nowSection.getDistance());
+                nowSection.moveUpStationTo(section.getDownStation(), section.getDistance());
+                sections.add(i, section);
+                return;
+            }
+            // 중간에 넣어야함 재조립
+            if (nowSection.getDownStation().equals(section.getDownStation())) {
+                section.checkShorter(nowSection.getDistance());
+                nowSection.moveDownStationTo(section.getUpStation(), section.getDistance());
+                sections.add(i+1, section);
+                return;
+            }
+            // 앞에 넣어야함
+            if (nowSection.getUpStation().equals(section.getDownStation()) && i == 0) {
+                sections.add(i, section);
+                return;
+            }
+            // 뒤에 넣어야함
+            if (nowSection.getDownStation().equals(section.getUpStation()) && i == sections.size()-1) {
+                sections.add(section);
+                return;
+            }
+        }
+    }
+    
+    int count() {
+        return sections.size();
+    }
+    
+    private void checkValidStations(Section section) {
         if(isExistStations(section.getUpStation(), section.getDownStation())) {
             throw new IllegalArgumentException(String.format("이미 등록된 노선입니다.(%s-%s)", section.getUpStation().getName(), section.getDownStation().getName()));
         }
         if(isNotExistStations(section.getUpStation(), section.getDownStation())) {
             throw new IllegalArgumentException(String.format("연결할 수 없는 노선입니다.(%s-%s)", section.getUpStation().getName(), section.getDownStation().getName()));
         }
-        List<Section> newSections = new ArrayList<Section>();
-        for (int i = 0; i < sections.size(); i++) {
-            Section s = sections.get(i);
-            newSections.add(s);
-            // 중간에 넣어야함 재조립
-            if (s.getUpStation().equals(section.getUpStation())) {
-                section.checkShorter(s.getDistance());
-                newSections.set(i, section);
-                Section newSection = Section.of(s.getLine(), section.getDownStation(), s.getDownStation(), s.getDistance()-section.getDistance());
-                newSections.add(newSection);
-            }
-            // 중간에 넣어야함 재조립
-            if (s.getDownStation().equals(section.getDownStation())) {
-                section.checkShorter(s.getDistance());
-                Section newSection = Section.of(s.getLine(), s.getUpStation(), section.getUpStation(), s.getDistance()-section.getDistance());
-                newSections.set(i, newSection);
-                newSections.add(section);
-            }
-            // 앞에 넣어야함
-            if (s.getUpStation().equals(section.getDownStation())) {
-                if (i == 0) {
-                    newSections.clear();
-                    newSections.add(section);
-                    newSections.addAll(sections);
-                    new Sections(newSections);
-                    return;
-                }
-                section.checkShorter(s.getDistance());
-                newSections.set(i, section);
-                Section newSection = Section.of(s.getLine(), section.getDownStation(), s.getDownStation(), s.getDistance()-section.getDistance());
-                newSections.add(newSection);
-            }
-            // 뒤에 넣어야함
-            if (s.getDownStation().equals(section.getUpStation())) {
-                if (i == sections.size()-1) {
-                    sections.add(section);
-                    return;
-                }
-                section.checkShorter(s.getDistance());
-                Section newSection = Section.of(s.getLine(), s.getUpStation(), section.getUpStation(), s.getDistance()-section.getDistance());
-                newSections.set(i, newSection);
-                newSections.add(section);
-            }
-            
-            if (i == sections.size()-1) {
-                new Sections(newSections);
-                return;
-            }
-            
-        }
-    }
-    
-    int count() {
-        return sections.size();
     }
     
     private boolean isExistStations(Station...stations) {
@@ -115,6 +97,10 @@ public class Sections {
     
     private boolean isNotExistStations(Station...stations) {
         return Stream.of(stations).allMatch(station -> !getStations().contains(station));
+    }
+    
+    void print() {
+        sections.stream().forEach(s -> System.out.println(s.toString()));
     }
 
 }

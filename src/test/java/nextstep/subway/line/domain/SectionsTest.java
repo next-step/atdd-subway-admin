@@ -40,13 +40,12 @@ public class SectionsTest {
         Station downStation = Station.from("교대역");
         Line line = Line.of("2호선", "초록색", upStation, downStation, 15);
         
-        Sections sections = Sections.from(Section.of(line, upStation, downStation, 15));
+        Sections sections = line.getSections();
         
         // when
         Station newUpStation = Station.from("서울대입구역");
         Station newDownStation = Station.from("강남역");
-        Line newLine = Line.of("2호선", "초록색", newUpStation, newDownStation, 50);
-        sections.add(Section.of(newLine, newUpStation, newDownStation, 50));
+        sections.add(Section.of(line, newUpStation, newDownStation, 50));
         
         // then
         assertThat(sections.count()).isEqualTo(2);
@@ -60,7 +59,7 @@ public class SectionsTest {
         Station downStation = Station.from("낙성대역");
         Line line = Line.of("2호선", "초록색", upStation, downStation, 15);
         
-        Sections sections = Sections.from(Section.of(line, upStation, downStation, 15));
+        Sections sections = line.getSections();
         
         // when
         Station firstUpStation = Station.from("봉천역");
@@ -80,7 +79,7 @@ public class SectionsTest {
         Station downStation = Station.from("서울대입구역");
         Line line = Line.of("2호선", "초록색", upStation, downStation, 15);
         
-        Sections sections = Sections.from(Section.of(line, upStation, downStation, 15));
+        Sections sections = line.getSections();
         
         // when
         Station lastUpStation = Station.from("서울대입구역");
@@ -100,7 +99,7 @@ public class SectionsTest {
         Station downStation = Station.from("낙성대역");
         Line line = Line.of("2호선", "초록색", upStation, downStation, 50);
         
-        Sections sections = Sections.from(Section.of(line, upStation, downStation, 50));
+        Sections sections = line.getSections();
         
         // when
         Station middleUpStation = Station.from("서울대입구역");

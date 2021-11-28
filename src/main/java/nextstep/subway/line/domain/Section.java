@@ -82,4 +82,19 @@ public class Section extends BaseEntity {
             throw new IllegalArgumentException(String.format("길이가 맞지 않는 노선입니다.(%d)", this.distance));
         }
     }
+
+    @Override
+    public String toString() {
+        return "Section [upStation=" + upStation + ", downStation=" + downStation + ", distance=" + distance + "]";
+    }
+
+    public void moveUpStationTo(Station station, int distance) {
+        this.upStation = station;
+        this.distance -= distance;
+    }
+
+    public void moveDownStationTo(Station station, int distance) {
+        this.downStation = station;
+        this.distance -= distance;
+    }
 }
