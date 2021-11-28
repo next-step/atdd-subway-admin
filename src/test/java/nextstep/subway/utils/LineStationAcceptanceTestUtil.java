@@ -15,6 +15,10 @@ import org.springframework.http.MediaType;
 
 public class LineStationAcceptanceTestUtil {
 
+    public static final int BASE_DISTANCE = 100;
+    public static int SAFE_DISTANCE = 50;
+    public static int OVER_DISTANCE = 200;
+
     private LineStationAcceptanceTestUtil() {
     }
 
