@@ -5,6 +5,9 @@ import nextstep.subway.line.domain.Line;
 public class LineRequest {
     private String name;
     private String color;
+    private Long upStationId;
+    private Long downStationId;
+    private int distance;
 
     public LineRequest() {
     }
@@ -23,6 +26,19 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(name, color);
+        Line line = new Line(name, color);
+        return line;
+    }
+
+    public Long getUpStationId() {
+        return upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }
