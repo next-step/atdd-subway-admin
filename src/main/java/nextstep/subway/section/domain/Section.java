@@ -31,13 +31,13 @@ public class Section extends BaseEntity {
     @Embedded
     private Distance distance;
 
-    protected Section() {
-    }
-
     public Section(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    protected Section() {
     }
 
     public Long getId() {

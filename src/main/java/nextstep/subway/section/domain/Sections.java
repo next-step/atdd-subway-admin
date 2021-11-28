@@ -19,11 +19,19 @@ public class Sections {
     @JoinColumn(name = "line_id")
     private List<Section> sections = new ArrayList<>();
 
-    public Sections() {
+    protected Sections() {
     }
 
-    public Sections(List<Section> sections) {
+    private Sections(List<Section> sections) {
         this.sections = sections;
+    }
+
+    public static Sections from(List<Section> sections) {
+        return new Sections(sections);
+    }
+
+    public static Sections empty() {
+        return new Sections();
     }
 
     public boolean addSection(Section section) {

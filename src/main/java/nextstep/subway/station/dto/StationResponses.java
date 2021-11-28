@@ -14,9 +14,6 @@ public class StationResponses {
         this.responses = responses;
     }
 
-    private StationResponses() {
-    }
-
     public static StationResponses from(List<Station> stations) {
         List<StationResponse> responses = stations
             .stream()

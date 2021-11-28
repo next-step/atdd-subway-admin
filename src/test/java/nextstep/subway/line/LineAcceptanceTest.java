@@ -41,8 +41,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         잠실역 = 지하철_역_등록되어_있음("잠실역");
         사당역 = 지하철_역_등록되어_있음("사당역");
 
-        강남_양재_구간 = new Sections(Arrays.asList(new Section(강남역, 양재역, new Distance(10))));
-        잠실_사당_구간 = new Sections(Arrays.asList(new Section(잠실역, 사당역, new Distance(5))));
+        강남_양재_구간 = Sections.from(Arrays.asList(new Section(강남역, 양재역, new Distance(10))));
+        잠실_사당_구간 = Sections.from(Arrays.asList(new Section(잠실역, 사당역, new Distance(5))));
     }
 
     private Map<String, String> 지하철_신분당선() {
