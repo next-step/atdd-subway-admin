@@ -63,17 +63,7 @@ public class Sections {
         validateSectionsContainDeleteStationEmpty(sectionsContainDeletedStation);
         validateAbleToDeleteSectionsSize();
 
-        if (sectionsContainDeletedStation.size() == MATCH_ONLY_ONE_SECTION) {
-            removeEdgeSection(sectionsContainDeletedStation.get(0));
-            return;
-        }
-
-        if (sectionsContainDeletedStation.size() == MATCH_DOUBLE_SECTION) {
-            removeInnerSection(deletedStation, sectionsContainDeletedStation);
-            return;
-        }
-
-        throw new IllegalArgumentException();
+        removeSection(deletedStation, sectionsContainDeletedStation);
     }
 
     public List<Station> getStations() {
@@ -196,24 +186,47 @@ public class Sections {
         throw new IllegalArgumentException();
     }
 
+    private void removeSection(Station deletedStation, List<Section> sectionsContainDeletedStation) {
+        if (sectionsContainDeletedStation.size() == MATCH_ONLY_ONE_SECTION) {
+            removeEdgeSection(sectionsContainDeletedStation.get(0));
+            return;
+        }
+
+        if (sectionsContainDeletedStation.size() == MATCH_DOUBLE_SECTION) {
+            removeInnerSection(deletedStation, sectionsContainDeletedStation);
+            return;
+        }
+
+        throw new IllegalArgumentException();
+    }
+
     private void removeInnerSection(Station deletedStation, List<Section> sectionsContainDeletedStation) {
-        Section upSection = sectionsContainDeletedStation.stream()
-                .filter(section -> section.isEqualDownStation(deletedStation))
-                .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
-
-        Section downSection = sectionsContainDeletedStation.stream()
-                .filter(section -> section.isEqualUpStation(deletedStation))
-                .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
-
-        Section newSection = Section.of(upSection.getUpStation()
-                , downSection.getDownStation()
-                , upSection.getDistance() + downSection.getDistance());
+        Section upSection = findUpSectionByStation(deletedStation, sectionsContainDeletedStation);
+        Section downSection = findDownSectionByStation(deletedStation, sectionsContainDeletedStation);
 
         sections.remove(upSection);
         sections.remove(downSection);
-        sections.add(newSection);
+        sections.add(createNewSectionFromRemoveSection(upSection, downSection));
+    }
+
+    private Section findUpSectionByStation(Station deletedStation, List<Section> sectionsContainDeletedStation) {
+        return sectionsContainDeletedStation.stream()
+                .filter(section -> section.isEqualDownStation(deletedStation))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Section findDownSectionByStation(Station deletedStation, List<Section> sectionsContainDeletedStation) {
+        return sectionsContainDeletedStation.stream()
+                .filter(section -> section.isEqualUpStation(deletedStation))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Section createNewSectionFromRemoveSection(Section upSection, Section downSection) {
+        return Section.of(upSection.getUpStation()
+                , downSection.getDownStation()
+                , upSection.getDistance() + downSection.getDistance());
     }
 
     private void removeEdgeSection(Section removedSection) {
