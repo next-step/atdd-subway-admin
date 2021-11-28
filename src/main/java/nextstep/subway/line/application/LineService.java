@@ -30,11 +30,15 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
-        Station upStation = stationRepository.findById(request.getUpStationId()).get();
-        Station downStation = stationRepository.findById(request.getDownStationId()).get();
-        Section section = sectionRepository.save(Section.of(persistLine, upStation, downStation, request.getDistance()));
-        persistLine.addSection(section);
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
+        sectionRepository.save(Section.of(persistLine, upStation, downStation, request.getDistance()));
         return LineResponse.of(persistLine);
+    }
+
+    private Station findStationById(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당되는 지하철이 없습니다."));
     }
 
     public List<LineResponse> findAllLines() {

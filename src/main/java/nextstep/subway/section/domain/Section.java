@@ -39,7 +39,9 @@ public class Section extends BaseEntity {
     }
 
     public static Section of(Line line, Station upStation, Station downStation, int distance) {
-        return new Section(line, upStation, downStation, distance);
+        Section section = new Section(line, upStation, downStation, distance);
+        line.addSection(section);
+        return section;
     }
 
     public Line getLine() {

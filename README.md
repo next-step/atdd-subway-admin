@@ -108,3 +108,10 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   * [x] 구역 일급 콜렉션
     * [x] 노선 생성시 구역정보 추가
   * [x 노선 목록 조회
+
+### 피드백 공부 내용 정리
+* Java Optional 바르게 쓰기
+  * 참고자료 : https://homoefficio.github.io/2019/10/03/Java-Optional-%EB%B0%94%EB%A5%B4%EA%B2%8C-%EC%93%B0%EA%B8%B0/
+  * 메서드가 반환할 결과값이 ‘없음’을 명백하게 표현할 필요가 있고, null을 반환하면 에러를 유발할 가능성이 높은 상황에서 메서드의 반환 타입으로 Optional을 사용하자는 것이 Optional을 만든 주된 목적이다.
+* 엔티티 기본 생성자의 노출 범위
+  * 참고자료 : https://wbluke.tistory.com/6
