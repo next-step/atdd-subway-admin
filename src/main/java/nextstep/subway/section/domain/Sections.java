@@ -3,8 +3,9 @@ package nextstep.subway.section.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -39,10 +40,41 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        return Collections.unmodifiableList(
-            sections.stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                .collect(Collectors.toList())
-        );
+        Map<Station, Station> stationPath = makeStationPath();
+
+        Optional<Station> upperMost = findUpperMost(stationPath);
+
+        if (!upperMost.isPresent()) {
+            return Collections.emptyList();
+        }
+
+        List<Station> stations = makeStations(stationPath, upperMost.get());
+
+        return Collections.unmodifiableList(stations);
+    }
+
+    private Map<Station, Station> makeStationPath() {
+        return sections.stream()
+            .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
+    }
+
+    private Optional<Station> findUpperMost(Map<Station, Station> stationPath) {
+        return stationPath.keySet()
+            .stream()
+            .filter(upStation -> !stationPath.containsValue(upStation))
+            .findFirst();
+
+    }
+
+    private List<Station> makeStations(Map<Station, Station> stationPath, Station upperMost) {
+        List<Station> stations = new ArrayList<>();
+
+        Station station = upperMost;
+        while (station != null) {
+            stations.add(station);
+            station = stationPath.get(station);
+        }
+
+        return stations;
     }
 }

@@ -13,9 +13,12 @@ class SectionsTest {
     @Test
     void 구간에서_역_목록을_가져온다() {
         Sections sections = Sections.from(
-            Arrays.asList(new Section(new Station("강남역"), new Station("양재역"), new Distance(10))));
+            Arrays.asList(new Section(new Station("강남역"), new Station("양재역"), new Distance(10)),
+                new Section(new Station("양재역"), new Station("판교역"), new Distance(10))));
+
         List<Station> stations = sections.getStations();
 
-        assertThat(stations).isEqualTo(Arrays.asList(new Station("강남역"), new Station("양재역")));
+        assertThat(stations)
+            .isEqualTo(Arrays.asList(new Station("강남역"), new Station("양재역"), new Station("판교역")));
     }
 }
