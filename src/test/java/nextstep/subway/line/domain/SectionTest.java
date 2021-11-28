@@ -2,7 +2,6 @@ package nextstep.subway.line.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import nextstep.subway.common.Messages;
@@ -18,7 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 @DataJpaTest
 @Sql(scripts = "classpath:scripts/sectionTestData.sql")
-public class LineStationTest {
+public class SectionTest {
 
     // 기준 길이 값
     private static final Integer TEST_REFERENCE_DISTANCE = 10;
@@ -27,103 +26,83 @@ public class LineStationTest {
     LineRepository lineRepository;
 
     @Autowired
-    LineStationRepository lineStationRepository;
+    SectionRepository sectionRepository;
 
     @Autowired
     StationRepository stationRepository;
 
     private Line line;
 
+    private Station seoulStation;
+    private Station yongsanStation;
+
     @BeforeEach
     public void setUp() {
-        Station seoulStation = stationRepository.findById(1L).get();
-        Station yongsanStation = stationRepository.findById(2L).get();
+        seoulStation = stationRepository.findById(1L).get();
+        yongsanStation = stationRepository.findById(2L).get();
 
         line = lineRepository.save(new Line("1호선", "blue"));
-
-        lineStationRepository.save(
-            LineStation
-                .ofUpLineStation(seoulStation, line, Distance.valueOf(TEST_REFERENCE_DISTANCE), yongsanStation));
-        lineStationRepository.save(LineStation.fromDownLineStation(yongsanStation, line));
+        sectionRepository.save(Section.create(Distance.valueOf(TEST_REFERENCE_DISTANCE), seoulStation, yongsanStation, line));
     }
 
     @Test
     @DisplayName("라인 생성시 구간 추가 성공")
     void createLineWithSection() {
-        Station seoulStation = stationRepository.findById(1L).get();
-        Station yongsanStation = stationRepository.findById(2L).get();
-
-        assertAll(() -> {
-            assertThat(seoulStation.getName()).isEqualTo("서울역");
-            assertThat(yongsanStation.getName()).isEqualTo("용산역");
-        });
 
         Line line = lineRepository.save(new Line("1호선-천안", "blue"));
-
-        lineStationRepository.save(
-            LineStation
-                .ofUpLineStation(seoulStation, line, Distance.valueOf(TEST_REFERENCE_DISTANCE), yongsanStation));
-        lineStationRepository.save(LineStation.fromDownLineStation(yongsanStation, line));
+        sectionRepository.save(Section.create(Distance.valueOf(TEST_REFERENCE_DISTANCE), seoulStation, yongsanStation, line));
 
         //쿼리 확인
         lineRepository.flush();
 
         Line findLine = lineRepository.findById(line.getId()).get();
-        assertThat(findLine.getSortedLineStations().size()).isEqualTo(2);
-
+        assertThat(findLine.getSortedStations().size()).isEqualTo(2);
+        assertThat(findLine.getSortedStations().stream().map(Station::getName)).containsExactly("서울역", "용산역");
     }
 
     @Test
     @DisplayName("이미 저장된 1호선(서울역-용산역)에 상행 구간(추가역, 10) 추가 성공")
     void addUpSection() {
-
-        Station seoulStation = stationRepository.findById(1L).get();
         Station addStation = stationRepository.findById(3L).get();
 
         line.addLineStation(Distance.valueOf(TEST_REFERENCE_DISTANCE), addStation, seoulStation);
 
-        assertAddSection(0, addStation);
+        assertAddSection(addStation, seoulStation, yongsanStation);
     }
 
     @Test
     @DisplayName("이미 저장된 1호선(서울역-용산역)에 하행 구간(추가역, 10) 추가 성공")
     void addDownSection() {
-
-        Station yongsanStation = stationRepository.findById(2L).get();
         Station addStation = stationRepository.findById(3L).get();
 
         line.addLineStation(Distance.valueOf(TEST_REFERENCE_DISTANCE), yongsanStation, addStation);
 
-        assertAddSection(2, addStation);
+        assertAddSection(seoulStation, yongsanStation, addStation);
     }
 
     @Test
     @DisplayName("이미 저장된 1호선(서울역-용산역)에 중간 구간(서울역-추가역, 5) 추가 성공")
     void addUpMiddleSection() {
-        Station seoulStation = stationRepository.findById(1L).get();
         Station addStation = stationRepository.findById(3L).get();
 
-        line.addLineStation(Distance.valueOf(TEST_REFERENCE_DISTANCE - 5), seoulStation, addStation);
+        line.addLineStation(Distance.valueOf(5), seoulStation, addStation);
 
-        assertAddSection(1, addStation);
+        assertAddSection(seoulStation, addStation, yongsanStation);
     }
 
     @Test
     @DisplayName("이미 저장된 1호선(서울역-용산역)에 중간 구간(추가역-용산역, 3) 추가 성공")
     void addDownMiddleSection() {
-        Station yongsanStation = stationRepository.findById(2L).get();
         Station addStation = stationRepository.findById(3L).get();
 
-        line.addLineStation(Distance.valueOf(TEST_REFERENCE_DISTANCE - 7), addStation, yongsanStation);
+        line.addLineStation(Distance.valueOf(3), addStation, yongsanStation);
 
-        assertAddSection(1, addStation);
+        assertAddSection(seoulStation, addStation, yongsanStation);
     }
 
     @Test
     @DisplayName("이미 저장된 1호선(서울역-용산역)에 (길이가 다른) 같은 구간(서울역-용산역(길이 5)) 추가시 이미 존재한다는 BusinessException 발생")
     void addSectionAlreadyExistsFail() {
-        Station seoulStation = stationRepository.findById(1L).get();
-        Station yongsanStation = stationRepository.findById(2L).get();
 
         assertThatThrownBy(
             () -> line.addLineStation(Distance.valueOf(5), yongsanStation, seoulStation))
@@ -146,7 +125,6 @@ public class LineStationTest {
     @Test
     @DisplayName("이미 저장된 1호선(서울역-용산역)에 기존 구간과 길이가 같은 중간 구간(서울역-추가역(길이 10)) 추가 시 BusinessException")
     void addSectionSameDistanceFail() {
-        Station seoulStation = stationRepository.findById(1L).get();
         Station addStation = stationRepository.findById(3L).get();
 
         assertThatThrownBy(
@@ -158,7 +136,6 @@ public class LineStationTest {
     @Test
     @DisplayName("이미 저장된 1호선(서울역-용산역)에 기존 구간보다 길이가 긴 구간(추가역-용산역(길이 12)) 추가 시 BusinessException")
     void addSectionLongDistanceFail() {
-        Station yongsanStation = stationRepository.findById(2L).get();
         Station addStation = stationRepository.findById(3L).get();
 
         assertThatThrownBy(
@@ -167,12 +144,12 @@ public class LineStationTest {
             .hasMessage(Messages.LONG_OR_SAME_DISTANCE.getValues());
     }
 
-    private void assertAddSection(int assertIndex, Station assertStation) {
+    private void assertAddSection(Station... assertStation) {
         //쿼리 확인
         lineRepository.flush();
 
-        List<LineStation> sortedLineStations = line.getSortedLineStations();
-        assertThat(sortedLineStations.get(assertIndex).getStation().equals(assertStation)).isTrue();
+        List<Station> sortedSections = line.getSortedStations();
+        assertThat(sortedSections).containsExactly(assertStation);
     }
 
 }

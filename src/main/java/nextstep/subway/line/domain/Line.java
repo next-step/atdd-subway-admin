@@ -24,7 +24,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private LineStations lineStations = new LineStations();
+    private Sections sections = new Sections();
 
     protected Line() {
     }
@@ -37,17 +37,17 @@ public class Line extends BaseEntity {
     /**
      * 연관관계 편의 메서드
      *
-     * @param lineStation
+     * @param section
      */
-    public void addLineStation(LineStation lineStation) {
-        this.lineStations.add(lineStation);
-        if (!lineStation.equalsLine(this)) {
-            lineStation.toLine(this);
+    public void addLineStation(Section section) {
+        this.sections.add(section);
+        if (!section.equalsLine(this)) {
+            section.toLine(this);
         }
     }
 
-    public void removeLineStation(LineStation lineStation) {
-        this.lineStations.remove(lineStation);
+    public void removeLineStation(Section section) {
+        this.sections.remove(section);
     }
 
     public void update(Line line) {
@@ -67,69 +67,29 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<LineStation> getSortedLineStations() {
-        return lineStations.getSortedList();
+    public List<Station> getSortedStations() {
+        return sections.getSortedList();
     }
 
-    public boolean containsLineStation(LineStation lineStation) {
-        return this.lineStations.contains(lineStation);
+    public boolean containsLineStation(Section section) {
+        return this.sections.contains(section);
     }
 
     public void addLineStation(Distance distance, Station upStation, Station downStation) {
-        LineStation upLineStation = lineStations.findByStation(upStation);
-        LineStation downLineStation = lineStations.findByStation(downStation);
+        validate(sections.containsStation(upStation), sections.containsStation(downStation));
 
-        validate(upLineStation, downLineStation);
-
-        if (upLineStation != null) {
-            addDownLineStation(distance, upLineStation, downStation);
-            return;
-        }
-
-        if (downLineStation != null) {
-            addUpLineStation(distance, downLineStation, upStation);
-            return;
-        }
-        return;
+        sections.updateByFromStation(upStation, distance, downStation);
+        sections.updateByToStation(downStation, distance, upStation);
+        sections.add(Section.create(distance, upStation, downStation, this));
     }
 
-    private void addDownLineStation(Distance distance, LineStation upLineStation, Station downStation) {
-        if (upLineStation.isDownStation()) {
-            upLineStation.update(distance, LineStationType.MIDDLE, downStation);
-            LineStation downLineStation = LineStation.fromDownLineStation(downStation, this);
-            lineStations.add(downLineStation);
-            return;
-        }
-
-        addMiddleLineStation(distance, upLineStation, downStation, upLineStation.getNextStation());
-    }
-
-    private void addUpLineStation(Distance distance, LineStation downLineStation, Station upStation) {
-        if (downLineStation.isUpStation()) {
-            downLineStation.update(LineStationType.MIDDLE);
-            LineStation upLineStation =
-                LineStation.ofUpLineStation(upStation, this, distance, downLineStation.getStation());
-            lineStations.add(upLineStation);
-            return;
-        }
-
-        LineStation upLineStation = lineStations.findByNextStation(downLineStation.getStation());
-        addMiddleLineStation(distance, upLineStation, upStation, downLineStation.getStation());
-    }
-
-    private void addMiddleLineStation(Distance distance, LineStation updateLineStation, Station addStation, Station nextStation){
-        updateLineStation.update(updateLineStation.calculateDistance(distance), addStation);
-        LineStation middleLineStation = LineStation.ofMiddleLineStation(addStation, this, distance, nextStation);
-        lineStations.add(middleLineStation);
-    }
-
-    private void validate(LineStation upLineStation, LineStation downLineStation) {
-        if (upLineStation == null && downLineStation == null) {
-            throw new BusinessException(Messages.NOT_INCLUDE_SECTION.getValues());
-        }
-
-        if (upLineStation != null && downLineStation != null) {
+    private void validate(boolean containUpStation, boolean containDownStation) {
+        if (containUpStation && containDownStation) {
             throw new BusinessException(Messages.ALREADY_EXISTS_SECTION.getValues());
+        }
+
+        if (!containUpStation && !containDownStation) {
+            throw new BusinessException(Messages.NOT_INCLUDE_SECTION.getValues());
         }
     }
 
@@ -141,8 +101,8 @@ public class Line extends BaseEntity {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Line line = (Line) o;
-        return Objects.equals(id, line.id);
+        Line other = (Line) o;
+        return Objects.equals(id, other.id);
     }
 
     @Override

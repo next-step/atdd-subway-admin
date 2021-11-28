@@ -21,10 +21,6 @@ public class Distance {
         this.distance = distance;
     }
 
-    public static Distance createDownDistance() {
-        return new Distance(ZERO);
-    }
-
     public static Distance valueOf(Integer distance) {
         return new Distance(distance);
     }
@@ -55,8 +51,8 @@ public class Distance {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Distance distance1 = (Distance) o;
-        return Objects.equals(distance, distance1.distance);
+        Distance other = (Distance) o;
+        return Objects.equals(distance, other.distance);
     }
 
     @Override
@@ -64,4 +60,10 @@ public class Distance {
         return Objects.hash(distance);
     }
 
+    @Override
+    public String toString() {
+        return "Distance{" +
+            "distance=" + distance +
+            '}';
+    }
 }

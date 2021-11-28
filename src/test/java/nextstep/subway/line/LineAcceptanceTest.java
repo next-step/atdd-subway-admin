@@ -85,8 +85,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         상행역_하행역_추가역_AND_1호선_저장되어있다();
 
-        Long 강남역_ID = getLongIdByResponse(저장한다(new Station("강남역"), STATION_API_URL));
         Long 역삼역_ID = getLongIdByResponse(저장한다(new Station("역삼역"), STATION_API_URL));
+        Long 강남역_ID = getLongIdByResponse(저장한다(new Station("강남역"), STATION_API_URL));
         ExtractableResponse<Response> line2 =
             저장한다(new LineRequest("2호선", "green", 강남역_ID, 역삼역_ID, TEST_REFERENCE_DISTANCE), API_URL);
 

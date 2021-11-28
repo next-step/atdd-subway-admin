@@ -6,11 +6,11 @@ import nextstep.subway.common.Messages;
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.domain.Distance;
-import nextstep.subway.line.domain.LineStation;
-import nextstep.subway.line.domain.LineStationRepository;
+import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -24,13 +24,13 @@ public class LineService {
 
     private final StationRepository stationRepository;
 
-    private final LineStationRepository lineStationRepository;
+    private final SectionRepository sectionRepository;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository,
-        LineStationRepository lineStationRepository) {
+        SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.lineStationRepository = lineStationRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
@@ -38,7 +38,7 @@ public class LineService {
         Station downStation = findStationById(request.getDownStationId());
 
         Line persistLine = lineRepository
-            .save(saveUpDownSection(request, upStation, downStation, request.toLine()));
+            .save(saveSection(request, upStation, downStation, request.toLine()));
 
         return LineResponse.of(persistLine);
     }
@@ -93,14 +93,8 @@ public class LineService {
             .orElseThrow(() -> new NotFoundException(Messages.NO_STATION.getValues()));
     }
 
-    private LineStation saveSection(LineStation entity) {
-        return lineStationRepository.save(entity);
-    }
-
-    private Line saveUpDownSection(LineRequest request, Station upStation, Station downStation, Line line) {
-        saveSection(LineStation
-            .ofUpLineStation(upStation, line, Distance.valueOf(request.getDistance()), downStation));
-        saveSection(LineStation.fromDownLineStation(downStation, line));
+    private Line saveSection(LineRequest request, Station upStation, Station downStation, Line line) {
+        sectionRepository.save(Section.create(Distance.valueOf(request.getDistance()), upStation, downStation, line));
         return line;
     }
 }
