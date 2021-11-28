@@ -35,16 +35,6 @@ public class LineService {
         return LineResponse.from(line);
     }
 
-    private Section makeSection(LineRequest request) {
-        Station downStation = stationRepository.findById(request.getDownStationId())
-            .orElseThrow(NoSuchElementException::new);
-
-        Station upStation = stationRepository.findById(request.getUpStationId())
-            .orElseThrow(NoSuchElementException::new);
-
-        return new Section(upStation, downStation, new Distance(request.getDistance()));
-    }
-
     @Transactional(readOnly = true)
     public List<LineResponse> getLines() {
         return lineRepository.findAll()
@@ -55,15 +45,13 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse getLine(long id) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(NoSuchElementException::new);
+        Line line = findLineById(id);
         return LineResponse.from(line);
     }
 
     @Transactional
     public LineResponse updateLine(long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(NoSuchElementException::new);
+        Line line = findLineById(id);
         line.update(lineRequest.toLine());
         lineRepository.save(line);
 
@@ -73,5 +61,22 @@ public class LineService {
     @Transactional
     public void deleteLine(long id) {
         lineRepository.deleteById(id);
+    }
+
+    private Section makeSection(LineRequest request) {
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
+
+        return new Section(upStation, downStation, new Distance(request.getDistance()));
+    }
+
+    private Station findStationById(long id) {
+        return stationRepository.findById(id)
+            .orElseThrow(NoSuchElementException::new);
+    }
+
+    private Line findLineById(long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(NoSuchElementException::new);
     }
 }
