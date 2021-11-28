@@ -196,26 +196,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_조회_실패됨(response);
     }
 
-    @DisplayName("노선에 구간을 등록 한다.")
+    @DisplayName("노선의 구간 사이에 새로운 구간을 등록 한다.")
     @Test
-    void addSection() {
+    void addStationBetweenSection() {
         // given
         String lineLocation = 지하철_노선_등록되어_있음(request1);
 
         // when
         String sectionRegisterPath = lineLocation + "/sections";
-        SectionRequest request = new SectionRequest(판교역_Id, 정자역_Id, DEFAULT_DISTANCE);
+        SectionRequest request = new SectionRequest(강남역_Id, 판교역_Id, 5);
         ExtractableResponse<Response> response = 지하철_구간_등록_요청(request, sectionRegisterPath);
 
         // then
-        지하철_구간_등록됨(response);
+        구간_사이에_등록됨(response);
     }
 
-    private void 지하철_구간_등록됨(ExtractableResponse<Response> response) {
+    private void 구간_사이에_등록됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getLong("upStationId")).isEqualTo(판교역_Id);
+        assertThat(response.body().jsonPath().getLong("upStationId")).isEqualTo(강남역_Id);
         assertThat(response.body().jsonPath().getLong("downStationId")).isEqualTo(정자역_Id);
-        assertThat(response.body().jsonPath().getLong("distance")).isEqualTo(DEFAULT_DISTANCE);
+        assertThat(response.body().jsonPath().getLong("distance")).isEqualTo(5);
     }
 
     private ExtractableResponse<Response> 지하철_구간_등록_요청(SectionRequest request, String path) {
