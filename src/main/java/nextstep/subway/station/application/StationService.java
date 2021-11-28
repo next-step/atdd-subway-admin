@@ -36,4 +36,8 @@ public class StationService {
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
     }
+
+    public Station findStationById(Long id) {
+        return stationRepository.findById(id).orElseThrow(() -> new RuntimeException("요청 지하철역이 존재하지 않음"));
+    }
 }

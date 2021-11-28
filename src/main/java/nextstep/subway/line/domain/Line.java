@@ -2,8 +2,11 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -14,12 +17,21 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
+    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<Section> sections = new ArrayList<>();
+
     public Line() {
     }
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this.name = name;
+        this.color = color;
+        sections.add(new Section(this, upStation, downStation, distance));
     }
 
     public void update(Line line) {
@@ -44,5 +56,14 @@ public class Line extends BaseEntity {
 
     public boolean isSameLineName(LineRequest lineRequest) {
         return name.equals(lineRequest.getName());
+    }
+
+    public List<Station> getUpStationAndDownStation() {
+        List<Station> upStationAndDownStation = new ArrayList<>();
+        for(Section section : sections) {
+            upStationAndDownStation.add(section.getUpStation());
+            upStationAndDownStation.add(section.getDownStation());
+        }
+        return upStationAndDownStation;
     }
 }
