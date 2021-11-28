@@ -21,4 +21,26 @@ public class Section extends BaseEntity {
 
     protected Section() {
     }
+
+    public Section(Station upStation, Station downStation, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
+    public void ofLine(Line line) {
+        if (this.line != null) {
+            this.line.getSections().remove(this);
+        }
+        this.line = line;
+        line.getSections().add(this);
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
 }

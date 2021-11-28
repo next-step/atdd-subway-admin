@@ -22,8 +22,4 @@ public class LinesResponse {
     public List<LineResponse> getLines() {
         return lines;
     }
-
-    public void setLines(List<LineResponse> lines) {
-        this.lines = lines;
-    }
 }
