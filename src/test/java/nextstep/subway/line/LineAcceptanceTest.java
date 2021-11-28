@@ -8,10 +8,13 @@ import java.util.stream.Collectors;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationRequest;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -19,12 +22,21 @@ import org.springframework.http.MediaType;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-	private static LineRequest params = new LineRequest("천안역", "blue");
-	private static LineRequest otherParams = new LineRequest("서울역", "blue");
+
+	private static LineRequest params = new LineRequest("신분당선", "pink", 1L, 2L, 10);
+	private static LineRequest otherParams = new LineRequest("1호선", "blue", 3L, 4L, 8);
+
+	@BeforeEach
+	public void createStation() {
+		requestCreateStation(new StationRequest("양재역"));
+		requestCreateStation(new StationRequest("판교역"));
+		requestCreateStation(new StationRequest("두정역"));
+		requestCreateStation(new StationRequest("천안역"));
+	}
 
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
-	void createLine() {
+	void createLineSuccess() {
 		// given
 		// when
 		// 지하철_노선_생성_요청
@@ -36,9 +48,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.header("Location")).isNotBlank();
 	}
 
-	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
+	@DisplayName("중복된 노선 이름으로 생성 요청시 실패 테스트")
 	@Test
-	void createLine2() {
+	void createDuplicateLineFail() {
 		// given
 		// 지하철_노선_등록되어_있음
 		requestCreateLines(params);
@@ -52,7 +64,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
-	@DisplayName("지하철 노선 목록을 조회한다.")
+	@DisplayName("존재하지 않는 역으로 구간정보 전달시 노선 생성 요청시 실패 테스트")
+	@Test
+	void createLineNonStationFail() {
+		// given
+		// 존재하지 않는 역 id값 가지는 파라미터 생성
+		LineRequest params = new LineRequest("신분당선", "pink", 3L, 5L, 24);
+
+		// when
+		// 노선 생성 요청
+		Response response = requestCreateLines(params);
+
+		// then
+		// 노선 생성 실패
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	@DisplayName("지하철 노선 목록을 전체 조회.")
 	@Test
 	void getLines() {
 		// given
@@ -97,6 +125,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(extractLineResponse(findResponse).getId()).isEqualTo(extractIdByURL(url));
 	}
 
+	@DisplayName("지하철 노선 내 구간 조회 성공")
+	@Test
+	void getLineAndSectionSuccess() {
+		// given
+		// 지하철_노선_등록
+		Response createResponse = requestCreateLines(params);
+		String url = extractUrlByResponse(createResponse);
+
+		// when
+		// 지하철_노선_조회_요청
+		Response findResponse = requestFindLine(url);
+
+		// then
+		// 노선 내 지하철 역 확인
+		LineResponse findLineResponse = extractLineResponse(findResponse);
+		assertThat(findLineResponse.getStations().get(0).getName()).isEqualTo("양재역");
+	}
+
 	@DisplayName("지하철 노선 조회 실패")
 	@Test
 	void getLineFail() {
@@ -113,7 +159,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
-	@DisplayName("지하철 노선을 수정 성공")
+	@DisplayName("지하철 노선 수정 성공")
 	@Test
 	void updateLineSuccess() {
 		// given
@@ -128,11 +174,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// then
 		// 지하철_노선_수정됨
 		LineResponse lineResponse = extractLineResponse(updateResponse);
-		assertThat(lineResponse.getName()).isEqualTo("서울역");
+		assertThat(lineResponse.getName()).isEqualTo("1호선");
 		assertThat(lineResponse.getId()).isEqualTo(extractIdByURL(url));
 	}
 
-	@DisplayName("지하철 노선을 수정 실패")
+	@DisplayName("지하철 노선 수정 실패")
 	@Test
 	void updateLineFail() {
 		// given
@@ -196,49 +242,69 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	}
 
 	private Response requestCreateLines(LineRequest params) {
-		Response response = RestAssured.given().log().all()
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.body(params)
+		return createThenPart(createGivenPart(params)
 			.when()
-			.post("/lines")
-			.then().log().all()
-			.extract()
-			.response();
-		return response;
+			.post("/lines"));
 	}
 
 	private Response requestFindAllLines() {
-		return RestAssured.given().log().all()
+		return createThenPart(createGivenPart()
 			.when()
-			.get("/lines")
-			.then().log().all()
-			.extract().response();
+			.get("/lines"));
 	}
 
 	private Response requestFindLine(String url) {
-		return RestAssured.given().log().all()
+		return createThenPart(createGivenPart()
 			.when()
-			.get(url)
-			.then().log().all()
-			.extract().response();
+			.get(url));
 	}
 
 	private Response requestUpdateLine(String url, LineRequest updateParams) {
-		return RestAssured.given().log().all()
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.body(updateParams)
+		return createThenPart(createGivenPart(updateParams)
 			.when()
-			.patch(url)
-			.then().log().all()
-			.extract().response();
+			.patch(url));
 	}
 
 	private Response requestDeleteLine(String url) {
-		return RestAssured.given().log().all()
+		return createThenPart(createGivenPart()
 			.when()
-			.delete(url)
-			.then().log().all()
-			.extract().response();
+			.delete(url));
+	}
+
+	private Response requestCreateStation(StationRequest stationRequest) {
+		return createThenPart(createGivenPart(stationRequest)
+			.when()
+			.post("/stations"));
+	}
+
+	private RequestSpecification createGivenPart(LineRequest params) {
+		return RestAssured.given()
+			.log()
+			.all()
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.body(params);
+	}
+
+	private RequestSpecification createGivenPart(StationRequest params) {
+		return RestAssured.given()
+			.log()
+			.all()
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.body(params);
+	}
+
+	private RequestSpecification createGivenPart() {
+		return RestAssured.given()
+			.log()
+			.all();
+	}
+
+	private Response createThenPart(Response response) {
+		return response.then()
+			.log()
+			.all()
+			.extract()
+			.response();
 	}
 
 }
