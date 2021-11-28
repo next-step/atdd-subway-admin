@@ -229,14 +229,14 @@ public class Sections {
 ## 4단계 - 구간 제거 기능
 
 - 구간 제거 기능 구현
-    - [ ] `/lines/{lineID}/sections?stationId={stationID}` API 추가
-    - [ ] 서비스에 구간 제거 메소드 추가
+    - [X] `/lines/{lineID}/sections?stationId={stationID}` API 추가
+    - [X] 서비스에 구간 제거 메소드 추가
         - 구간 제거시 구간사이 거리 합산 재계산
         - 상행종점, 중간 역 제거시 `station_id` 일치하는 `LineStation` 제거
         - 하행종점 역 제거시 `stationId` 일치하는 `LineStation` 제거한뒤, 제거 할려는 역이 `nextStationId` 일치하는 구간을
           찾아 `nextStationId`를 null 로 변경하고 `distance` 0으로 초기화 한다.
-    - [ ] 구간 제거 실패 케이스
-        - [ ] 구간이 하나뿐일 경우 제거 할 수 없음
-    - [ ] 테스트코드 리팩토링
+    - [X] 구간 제거 실패 케이스
+        - [X] 구간이 하나뿐일 경우 제거 할 수 없음
+    - [X] 테스트코드 리팩토링
         - 인수테스트와 단위테스트의 포인트를 찾아 리팩토링 해보기
         - 테스트 코드의 단순화 리팩토링 찾아보기
