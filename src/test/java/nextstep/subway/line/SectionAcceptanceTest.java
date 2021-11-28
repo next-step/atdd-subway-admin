@@ -110,7 +110,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         // 노선에 구간 등록됨.
-        지하철_노선_구간_실패함(response, "노선의 길이가 기존 노선의 길이보다 작아야 합니다.");
+        지하철_노선_구간_실패함(response, "새 노선의 길이가 기존 노선의 길이보다 작아야 합니다.");
     }
 
     @DisplayName("이미 노선에 등록된 구간을 등록한다.")

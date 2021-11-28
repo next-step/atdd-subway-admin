@@ -27,4 +27,7 @@ public class Distance {
     }
 
 
+    public boolean isLong(Distance distance) {
+        return this.distance >= distance.distance;
+    }
 }

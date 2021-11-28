@@ -107,4 +107,11 @@ public class Section {
         return line;
     }
 
+    public boolean equalsUpAndDownStations(Section inputSection) {
+        return equalsUpStation(inputSection) && equalsDownStation(inputSection);
+    }
+
+    public boolean isLongDistance(Section section) {
+        return this.distance.isLong(section.distance);
+    }
 }

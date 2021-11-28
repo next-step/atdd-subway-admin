@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.exception.AlreadyRegisteredSectionException;
+import nextstep.subway.line.exception.LongDistanceException;
 import nextstep.subway.line.exception.NotFoundUpAndDownStation;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -38,6 +40,10 @@ public class Sections {
             throw new NotFoundUpAndDownStation();
         }
 
+        if (isRegisteredSection(inputSection)) {
+            throw new AlreadyRegisteredSectionException();
+        }
+
         createInnerSection(inputSection);
         createOuterSection(inputSection);
     }
@@ -47,6 +53,9 @@ public class Sections {
                 .filter(section -> isCreateInnerSection(section, inputSection))
                 .findAny()
                 .ifPresent(savedSection -> {
+                    if (inputSection.isLongDistance(savedSection)) {
+                        throw new LongDistanceException();
+                    }
                     List<Section> sections = savedSection.createInnerSection(inputSection);
                     int index = this.sections.indexOf(savedSection);
                     this.sections.remove(savedSection);
@@ -81,6 +90,11 @@ public class Sections {
     private boolean isNotExistsUpAndDownStation(Section section) {
         return sections.stream()
                 .allMatch(savedSection -> savedSection.isNotContainUnAndDownStation(section));
+    }
+
+    private boolean isRegisteredSection(Section inputSection) {
+        return sections.stream()
+                .anyMatch(savedSection -> savedSection.equalsUpAndDownStations(inputSection));
     }
 
 }
