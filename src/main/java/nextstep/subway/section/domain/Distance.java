@@ -12,30 +12,30 @@ public class Distance {
     @Column
     private int distance;
 
-    public Distance() {
+    protected Distance() {
         distance = 0;
     }
 
     public Distance(int distance) {
-        checkValud(distance);
+        checkValidation(distance);
         this.distance = distance;
     }
 
-    private void checkValud(int distance) {
+    private void checkValidation(int distance) {
         if (distance <= 0) {
             throw new InputDataErrorException(InputDataErrorCode.DISTANCE_IS_NOT_LESS_THEN_ZERO);
         }
     }
 
-    public void minus(Distance distance) {
-        this.distance -= distance.distance;
+    public Distance minus(Distance distance) {
+        return new Distance(this.distance -= distance.distance);
     }
 
     public int getDistance() {
         return this.distance;
     }
 
-    public boolean isSameDistance(Distance distance){
+    public boolean isSameDistance(Distance distance) {
         return this.equals(distance);
     }
 

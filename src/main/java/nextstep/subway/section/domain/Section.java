@@ -1,8 +1,6 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.exception.InputDataErrorCode;
-import nextstep.subway.exception.InputDataErrorException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
@@ -31,6 +29,7 @@ public class Section extends BaseEntity implements Comparable<Section> {
     @JoinColumn(name = "line_id")
     private Line line;
 
+    @Embedded
     private Distance distance;
 
     protected Section() {
@@ -69,7 +68,7 @@ public class Section extends BaseEntity implements Comparable<Section> {
     }
 
     public void minusDistance(Distance distance) {
-        this.distance.minus(distance);
+        this.distance = this.distance.minus(distance);
     }
 
     public Line getLine() {
@@ -85,17 +84,6 @@ public class Section extends BaseEntity implements Comparable<Section> {
         if(this.getDownStation() == newSection.getDownStation()){
             this.downStation = newSection.getUpStation();
             this.minusDistance(newSection.getDistance());
-        }
-    }
-
-    private void checkValidateDistance(Section newSection){
-        Distance newDistance = newSection.getDistance();
-        if (this.distance.isSameDistance(newDistance)) {
-            throw new InputDataErrorException(InputDataErrorCode.DISTANCE_OF_OLD_SECTION_AND_NEW_SECTIONIS_IS_SAME);
-        }
-
-        if (this.distance.isOverDistance(newDistance)) {
-            throw new InputDataErrorException(InputDataErrorCode.DISTANCE_OF_THE_NEW_SECTION_IS_OVER_THAN_OLD_SECTION_DISTANCE);
         }
     }
 

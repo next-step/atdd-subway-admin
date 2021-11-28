@@ -26,7 +26,7 @@ public class LineTest {
 
         Section newSection = new Section(line, savedHongDaeStation, chungJeoungRoStation, new Distance(5));
 
-        line.updateSection(newSection);
+        line.addSection(newSection);
         assertThat(line.getStations().size()).isEqualTo(3);
         assertThat(line.getStations().stream()
                 .map(it -> it.getName())

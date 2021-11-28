@@ -73,7 +73,7 @@ public class LineService {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_LINE));
         Section newSection = createSection(line, sectionRequest);
-        line.updateSection(newSection);
+        line.addSection(newSection);
         return LineResponse.of(lineRepository.save(line));
     }
 

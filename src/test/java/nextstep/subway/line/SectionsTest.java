@@ -34,7 +34,7 @@ public class SectionsTest {
     @DisplayName("상행종점 추가 충정로역- 당산역- 홍대입구역")
     public void sortTest() {
         Section newSection = new Section(line, chungJeoungRoStation, savedDangSanStation, new Distance(3));
-        line.updateSection(newSection);
+        line.addSection(newSection);
         checkStationNames("충정로역", "당산역", "홍대입구역");
         checkDistance("충정로역", 3);
     }
@@ -43,7 +43,7 @@ public class SectionsTest {
     @DisplayName("구간 중간 추가 당산역- 충정로역- 홍대입구역")
     public void addMiddleTest() {
         Section newSection = new Section(line, savedDangSanStation, chungJeoungRoStation, new Distance(2));
-        line.updateSection(newSection);
+        line.addSection(newSection);
         checkStationNames("당산역", "충정로역", "홍대입구역");
         checkDistance("홍대입구역", 8);
     }
@@ -52,7 +52,7 @@ public class SectionsTest {
     @DisplayName("하행종점 중간 추가 당산역- 홍대입구역- 충정로역")
     public void addEndTest() {
         Section newSection = new Section(line, savedHongDaeStation, chungJeoungRoStation, new Distance(1));
-        line.updateSection(newSection);
+        line.addSection(newSection);
         checkStationNames("당산역", "홍대입구역", "충정로역");
         checkDistance("충정로역", 1);
     }
@@ -61,17 +61,21 @@ public class SectionsTest {
     @DisplayName("구간 중간 추가 기존 구간보다 같을 경우 에러처리")
     public void addSameDistanceTest() {
         Section newSection = new Section(line, savedDangSanStation, chungJeoungRoStation, new Distance(10));
-        line.updateSection(newSection);
+        line.addSection(newSection);
         checkStationNames("당산역", "충정로역", "홍대입구역");
         checkDistance("홍대입구역", 0);
     }
 
     private void checkDistance(String sectionStationName, int exepectedDistance){
         int addedSectionDistance = line.getSections().stream()
-                .filter(it-> it.getDownStation().getName().equals(sectionStationName) || it.getUpStation().getName().equals(sectionStationName))
+                .filter(it-> isSameStationName(sectionStationName, it))
                 .map(it-> it.getDistance().getDistance())
                 .findFirst().get();
         assertThat(addedSectionDistance).isEqualTo(exepectedDistance);
+    }
+
+    private boolean isSameStationName(String sectionStationName, Section it) {
+        return it.getDownStation().getName().equals(sectionStationName) || it.getUpStation().getName().equals(sectionStationName);
     }
 
     private void checkStationNames(String name1, String name2, String name3) {

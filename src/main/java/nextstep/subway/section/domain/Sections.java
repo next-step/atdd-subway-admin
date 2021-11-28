@@ -62,7 +62,7 @@ public class Sections {
         List<Station> stations = this.getStations();
         return stations.stream()
                 .filter(it -> it.equals(section.getUpStation()) || it.equals(section.getDownStation()))
-                .collect(Collectors.toList()).size() == 0;
+                .collect(Collectors.toList()).isEmpty();
     }
 
     private boolean isExist(Section section) {
