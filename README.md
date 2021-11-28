@@ -103,15 +103,16 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [X] 구간 도메인 조건 추가
 
 #### 코드 리뷰사항
-- [ ] 빈 주입되는 객체 `final` 사용
-- [ ] `throw`가 있는 메서드를 감싸서 중복되는 `throw` 제거
-- [ ] `@Transactional(readOnly = true)`를 클래스 레벨에 선언해주고 `@Transactional`을 실제 데이터 쓰기 작업이 있는 메서드에 선언
-- [ ] 기본 생성자의 노출 범위 확인
-- [ ] `Collections.unmodifiableList`를 활용
-- [ ] `from`(정적 팩토리 메서드)를 통해 객체 생성을 유도하는 곳에서 실제 생성자는 감추기
-- [ ] 변수명 너무 축약하지 말고 명확하게 사용
-- [ ] 테스트코드 변수명 한글 사용
-- [ ] utils 클래스명 변경
+- [X] 빈 주입되는 객체 `final` 사용
+- [X] `throw`가 있는 메서드를 감싸서 중복되는 `throw` 제거
+- [X] `@Transactional(readOnly = true)`를 클래스 레벨에 선언해주고 `@Transactional`을 실제 데이터 쓰기 작업이 있는 메서드에 선언
+- [X] 기본 생성자의 노출 범위 확인
+- [X] `Collections.unmodifiableList`를 활용
+- [X] `from`(정적 팩토리 메서드)를 통해 객체 생성을 유도하는 곳에서 실제 생성자는 감추기
+- [X] 변수명 너무 축약하지 말고 명확하게 사용
+- [X] 테스트코드 변수명 한글 사용
+- [X] utils 클래스명 변경
+- [ ] `@DisplayName` 추가
 
      
 ## 참고 링크
