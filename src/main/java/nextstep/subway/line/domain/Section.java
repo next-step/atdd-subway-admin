@@ -91,7 +91,12 @@ public class Section extends BaseEntity {
             this.changeFirstSectionType(newSection);
             return;
         }
+        addMiddleSection(newSection);
+    }
+
+    private void addMiddleSection(Section newSection) {
         this.downStation = newSection.getUpStation();
+        this.distance = this.distance.subtract(newSection.getDistance());
     }
 
     void alreadyRegisteredSection(Section section) {
