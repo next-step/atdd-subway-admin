@@ -123,7 +123,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [ ] 새로운 역을 하행 종점으로 등록할 경우
 - [ ] 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
 - [ ] 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
-- [ ] happy path 구간추가 기능 추가
+- [X] 구간추가 기능 추가
+- [ ] 구간에서 역 정보 상행->하행순으로 1개만 나오도록 수정
 
      
 ## 참고 링크
