@@ -6,6 +6,9 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -77,15 +80,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_등록되어_있음(new LineRequest(LINE_TWO, LINE_TWO_COLOR_GREEN, station3.getId(), station4.getId(), 10));
 
         // when
-        ExtractableResponse<Response> findResponse = 지하철_노선_조회_요청();
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청();
 
         // then
-        assertThat(findResponse.statusCode()).isEqualTo(OK.value());
-        지하철_응답_내용_확인(findResponse);
+        assertThat(response.statusCode()).isEqualTo(OK.value());
+        지하철_응답_내용_확인(response);
     }
 
-    private void 지하철_응답_내용_확인(ExtractableResponse<Response> findResponse) {
-        JsonPath jsonPath = findResponse.jsonPath();
+    private void 지하철_응답_내용_확인(ExtractableResponse<Response> response) {
+        JsonPath jsonPath = response.jsonPath();
         String lineName1 = jsonPath.getString("[0].name");
         String subwayName1 = jsonPath.getString("[0].stations[0].name");
         String lineName2 = jsonPath.getString("[1].name");
@@ -111,7 +114,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(OK.value());
+        지하철_노선_데이터_확인(response);
     }
+
+    private void 지하철_노선_데이터_확인(ExtractableResponse<Response> response) {
+        JsonPath jsonPath = response.jsonPath();
+        String lineName = jsonPath.getString("name");
+        List stations = jsonPath.getObject("stations.name", List.class);
+        assertThat(lineName).isEqualTo(LINE_ONE);
+        assertThat(stations).containsExactly(신촌역, 강남역);
+    }
+
 
     @Test
     void 지하철_노선을_수정한다() {

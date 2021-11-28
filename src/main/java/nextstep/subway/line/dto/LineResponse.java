@@ -21,7 +21,7 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(),
-                                line.getModifiedDate(), StationResponse.ofList(line.getSections())
+                                line.getModifiedDate(), StationResponse.ofList(line.getStations())
         );
     }
 

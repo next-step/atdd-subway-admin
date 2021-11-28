@@ -48,4 +48,7 @@ public class LineRequest {
         return new Line(name, color);
     }
 
+    public SectionRequest toSection() {
+        return new SectionRequest(upStationId, downStationId, distance);
+    }
 }
