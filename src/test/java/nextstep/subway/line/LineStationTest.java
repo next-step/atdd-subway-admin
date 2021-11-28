@@ -7,15 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.security.InvalidParameterException;
 import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.LineStation;
-import nextstep.subway.line.domain.LineStations;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class LineStationTest {
-
-    private static Long FIRST_ID = 1L;
-    private static Long SECOND_ID = 2L;
-    private static Long LAST_ID = 3L;
 
     @Test
     @DisplayName("stationId는 필수 값")
@@ -28,18 +23,22 @@ public class LineStationTest {
     }
 
     @Test
-    @DisplayName("soft delete 테스트, delete() 호출 후 isDelete true(삭제됨) 반환 검증")
-    void 삭제_검증() {
+    @DisplayName("구간에 추가 가능여부 체크 검증")
+    void isAddableMatch() {
         // given
-        LineStation station = new LineStation(1L, null, Distance.of(100));
+        LineStation 기존구간 = new LineStation(1L, 2L, Distance.of(100));
+        LineStation 상행종점추가구간 = new LineStation(3L, 1L, Distance.of(50));
+        LineStation 중간추가구간 = new LineStation(3L, 2L, Distance.of(50));
+        LineStation 하행종점추가구간 = new LineStation(2L, 3L, Distance.of(50));
 
         // when
-        station.delete();
-
         // then
-        assertThat(station.isDeleted()).isTrue();
+        assertAll(
+            () -> assertThat(기존구간.isAddableMatch(상행종점추가구간)).isTrue(),
+            () -> assertThat(기존구간.isAddableMatch(중간추가구간)).isTrue(),
+            () -> assertThat(기존구간.isAddableMatch(하행종점추가구간)).isTrue()
+        );
     }
-
 
     @Test
     @DisplayName("하행 종점 추가시 추가 시점 하행 종점 stationId 는 추가할려는 구간의 nextStationId 가 된다. lastLineStationUpdate 는 그때 사용되는 메서드임")
@@ -74,34 +73,44 @@ public class LineStationTest {
         );
     }
 
+
     @Test
-    @DisplayName("마지막역 제거시, 마지막 구간 이전 구간의 nextStationId 가 새로운 마지막 구간 stationId 가 된다.")
-    void 마지막역_제거() {
+    @DisplayName("이전 구간 찾기, nextStationId 가 stationId 와 같으면 이전 구간임")
+    void isPre() {
         // given
-        LineStations lineStations = new LineStations();
-        lineStations.add(new LineStation(FIRST_ID, SECOND_ID, Distance.of(100)));
-        lineStations.add(new LineStation(SECOND_ID, LAST_ID, Distance.of(100)));
+        LineStation preLineStation = new LineStation(1L, 2L, Distance.of(100));
+        LineStation lineStation = new LineStation(2L, 3L, Distance.of(100));
 
         // when
-        lineStations.remove(LAST_ID);
-        LineStation actual = lineStations.findLineStationByStationId(SECOND_ID).get();
+        boolean actual = preLineStation.isPre(lineStation);
 
         // then
-        assertAll(
-            () -> assertThat(actual.getStationId()).isEqualTo(SECOND_ID),
-            () -> assertThat(actual.getNextStationId()).isNull()
-        );
+        assertThat(actual).isTrue();
     }
 
     @Test
-    @DisplayName("구간 하나일때 제거 실패")
-    void 구간_하나일때_제거_실패() {
+    @DisplayName("중복체크 검증")
+    void isDuplicate() {
         // given
-        LineStations lineStations = new LineStations();
-        lineStations.add(new LineStation(FIRST_ID, LAST_ID, Distance.of(100)));
+        LineStation lineStation = new LineStation(1L, 2L, Distance.of(100));
 
         // when
+        boolean actual = lineStation.isDuplicate(lineStation);
+
         // then
-        assertThrows(InvalidParameterException.class, () -> lineStations.remove(LAST_ID));
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    @DisplayName("soft delete 테스트, delete() 호출 후 isDelete true(삭제됨) 반환 검증")
+    void 삭제_검증() {
+        // given
+        LineStation station = new LineStation(1L, null, Distance.of(100));
+
+        // when
+        station.delete();
+
+        // then
+        assertThat(station.isDeleted()).isTrue();
     }
 }

@@ -60,22 +60,11 @@ public class LineStations {
         return result;
     }
 
-    public void deleteAll() {
-        for (LineStation lineStation : lineStations) {
-            lineStation.delete();
-        }
-    }
 
     public void remove(Long deleteStationId) {
         validateDeleteSize();
 
-        Optional<LineStation> lineStation = findLineStationByStationId(deleteStationId);
-
-        if (!lineStation.isPresent()) {
-            throw new NotFoundException("제거 하려는 구간이 없습니다.");
-        }
-
-        LineStation deleteLineStation = lineStation.get();
+        LineStation deleteLineStation = findDeleteStation(deleteStationId);
         deleteLineStation.delete();
 
         lineStations.stream()
@@ -84,10 +73,25 @@ public class LineStations {
             .ifPresent(it -> it.relocationNextStationId(deleteLineStation));
     }
 
+    public void deleteAll() {
+        for (LineStation lineStation : lineStations) {
+            lineStation.delete();
+        }
+    }
+
     public Optional<LineStation> findLineStationByStationId(Long stationId) {
         return lineStations.stream()
             .filter(it -> it.isSameStationId(stationId))
             .findFirst();
+    }
+
+    private LineStation findDeleteStation(Long deleteStationId) {
+        Optional<LineStation> lineStation = findLineStationByStationId(deleteStationId);
+
+        if (!lineStation.isPresent()) {
+            throw new NotFoundException("제거 하려는 구간이 없습니다.");
+        }
+        return lineStation.get();
     }
 
     private void nextLineStationUpdate(LineStation addLineStation) {

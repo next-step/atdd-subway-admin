@@ -8,11 +8,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-
 import static nextstep.subway.utils.LineAcceptanceTestUtil.지하철_노선_등록되어_있음_toId;
 import static nextstep.subway.utils.LineStationAcceptanceTestUtil.*;
 import static nextstep.subway.utils.StationAcceptanceTestUtil.지하철됨_역_생성_됨_toId;
-
 
 @DisplayName("지하철 노선에 역 제거 관련 기능")
 public class LineStationRemoveAcceptanceTest extends AcceptanceTest {

@@ -9,10 +9,15 @@ import java.util.Objects;
 import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineStation;
+import nextstep.subway.line.domain.LineStations;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class LineTest {
+
+    private static Long FIRST_ID = 1L;
+    private static Long SECOND_ID = 2L;
+    private static Long LAST_ID = 3L;
 
     public static final String LINE_NAME1 = "2호선";
     public static final String LINE_NAME2 = "5호선";
@@ -152,4 +157,50 @@ public class LineTest {
                 () -> line.addLineStation(overDistance))
         );
     }
+
+
+    @Test
+    @DisplayName("마지막역 제거시, 마지막 구간 이전 구간의 nextStationId 가 새로운 마지막 구간 stationId 가 된다.")
+    void 마지막역_제거() {
+        // given
+        LineStations lineStations = new LineStations();
+        lineStations.add(new LineStation(FIRST_ID, SECOND_ID, Distance.of(100)));
+        lineStations.add(new LineStation(SECOND_ID, LAST_ID, Distance.of(100)));
+
+        // when
+        lineStations.remove(LAST_ID);
+        LineStation actual = lineStations.findLineStationByStationId(SECOND_ID).get();
+
+        // then
+        assertAll(
+            () -> assertThat(actual.getStationId()).isEqualTo(SECOND_ID),
+            () -> assertThat(actual.getNextStationId()).isNull()
+        );
+    }
+
+    @Test
+    @DisplayName("구간 하나일때 제거 실패")
+    void 구간_하나일때_제거_실패() {
+        // given
+        LineStations lineStations = new LineStations();
+        lineStations.add(new LineStation(FIRST_ID, LAST_ID, Distance.of(100)));
+
+        // when
+        // then
+        assertThrows(InvalidParameterException.class, () -> lineStations.remove(LAST_ID));
+    }
+
+
+    @Test
+    @DisplayName("삭제역 없을때 실패")
+    void 삭제_역이_없음() {
+        // given
+        LineStations lineStations = new LineStations();
+        lineStations.add(new LineStation(FIRST_ID, LAST_ID, Distance.of(100)));
+
+        // when
+        // then
+        assertThrows(InvalidParameterException.class, () -> lineStations.remove(100L));
+    }
+
 }

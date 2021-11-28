@@ -83,7 +83,8 @@ public class LineStation {
     public boolean isAddableMatch(LineStation lineStation) {
         return this.stationId.equals(lineStation.nextStationId)
             || this.stationId.equals(lineStation.stationId)
-            || this.nextStationId.equals(lineStation.stationId);
+            || this.nextStationId.equals(lineStation.stationId)
+            || this.nextStationId.equals(lineStation.nextStationId);
     }
 
     public boolean isDuplicate(LineStation lineStation) {
