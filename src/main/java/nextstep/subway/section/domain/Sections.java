@@ -20,7 +20,6 @@ public class Sections {
 
     public List<Station> getStations() {
         return this.sections.stream()
-                .sorted()
                 .map(Section::getStations)
                 .flatMap(Collection::stream)
                 .distinct()
@@ -43,26 +42,28 @@ public class Sections {
         if (isExist(section)) {
             throw new InputDataErrorException(InputDataErrorCode.THE_SECTION_ALREADY_EXISTS);
         }
-        if (registerBothStationInLine(section)) {
+        if (hasBothStationInLine(section)) {
             throw new InputDataErrorException(InputDataErrorCode.THE_STATIONS_ALREADY_EXISTS);
         }
-        if (notSearchBothStationInLine(section)) {
+        if (isFindNoOneStationInLine(section)) {
             throw new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_STATION);
         }
     }
 
-    private boolean registerBothStationInLine(Section section) {
+    private boolean hasBothStationInLine(Section section) {
         List<Station> stations = this.getStations();
         return stations.stream()
-                .filter(it -> it.equals(section.getUpStation()) || it.equals(section.getDownStation()))
-                .collect(Collectors.toList()).size() == 2;
+                .allMatch(it -> isSameSection(section, it));
     }
 
-    private boolean notSearchBothStationInLine(Section section) {
+    private boolean isFindNoOneStationInLine(Section section) {
         List<Station> stations = this.getStations();
         return stations.stream()
-                .filter(it -> it.equals(section.getUpStation()) || it.equals(section.getDownStation()))
-                .collect(Collectors.toList()).isEmpty();
+                .noneMatch(it -> isSameSection(section, it));
+    }
+
+    private boolean isSameSection(Section section, Station it) {
+        return it.equals(section.getUpStation()) || it.equals(section.getDownStation());
     }
 
     private boolean isExist(Section section) {

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-public class Section extends BaseEntity implements Comparable<Section> {
+public class Section extends BaseEntity  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -100,14 +100,14 @@ public class Section extends BaseEntity implements Comparable<Section> {
         return Objects.hash(getId(), getUpStation(), getDownStation(), getLine(), getDistance());
     }
 
-    @Override
-    public int compareTo(Section o) {
-        if (this.getUpStation() == o.getDownStation()) {
-            return 1;
-        }
-        if (this.getDownStation() == o.getUpStation()) {
-            return -1;
-        }
-        return 0;
-    }
+//    @Override
+//    public int compareTo(Section o) {
+//        if (this.getUpStation() == o.getDownStation()) {
+//            return 1;
+//        }
+//        if (this.getDownStation() == o.getUpStation()) {
+//            return -1;
+//        }
+//        return 0;
+//    }
 }
