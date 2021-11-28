@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 
@@ -12,11 +13,9 @@ public class Section extends BaseEntity {
     private Long id;
     private int distance;
     @ManyToOne
-    @JoinColumn(name="STATION_ID")
-    private Long upStationId;
+    private Station upStation;
     @ManyToOne
-    @JoinColumn(name="STATION_ID")
-    private Long downStationId;
+    private Station downStation;
     @ManyToOne
     private Line line;
 
