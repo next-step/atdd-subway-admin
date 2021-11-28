@@ -41,6 +41,23 @@ public class Sections {
     List<Section> getSections() {
         return sections;
     }
+    
+    int count() {
+        return sections.size();
+    }
+    
+    int getDistanceAt(int index) {
+        return getSections().get(index).getDistance(); 
+    }
+    
+    Section getSectionAt(int index) {
+        return getSections().get(index); 
+    }
+    
+    
+    Station getStationAt(int index) {
+        return getStations().get(index); 
+    }
 
     void add(Section section) {
         if (sections.isEmpty()) {
@@ -124,28 +141,6 @@ public class Sections {
     
     private boolean isNotExistStations(Station...stations) {
         return Stream.of(stations).allMatch(station -> !getStations().contains(station));
-    }
-    
-    void print() {
-        sections.stream().forEach(s -> System.out.println(s.toString()));
-    }
-    
-    
-    int count() {
-        return sections.size();
-    }
-    
-    int getDistanceAt(int index) {
-        return getSections().get(index).getDistance(); 
-    }
-    
-    Section getSectionAt(int index) {
-        return getSections().get(index); 
-    }
-    
-    
-    Station getStationAt(int index) {
-        return getStations().get(index); 
     }
 
 }

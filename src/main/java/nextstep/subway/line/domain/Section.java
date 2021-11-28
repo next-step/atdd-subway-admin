@@ -63,31 +63,13 @@ public class Section extends BaseEntity {
     public int getDistance() {
         return distance;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Section section = (Section) o;
-        return Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(line, upStation, downStation);
-    }
-
+    
     public void checkShorter(int distance) {
         if (this.distance >= distance) {
             throw new IllegalArgumentException(String.format("길이가 맞지 않는 노선입니다.(%d)", this.distance));
         }
     }
 
-    @Override
-    public String toString() {
-        return "Section [upStation=" + upStation + ", downStation=" + downStation + ", distance=" + distance + "]";
-    }
-    
     public boolean isSameUpStation(Station station) {
         return this.upStation.equals(station);
     }
@@ -104,5 +86,19 @@ public class Section extends BaseEntity {
     public void moveDownStationTo(Station station, int distance) {
         this.downStation = station;
         this.distance -= distance;
+    }
+    
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(line, upStation, downStation);
     }
 }
