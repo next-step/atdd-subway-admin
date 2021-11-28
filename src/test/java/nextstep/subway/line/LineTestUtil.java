@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,13 +15,14 @@ import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.exception.LineDuplicateException;
 import nextstep.subway.line.exception.NotFoundLineException;
+import nextstep.subway.station.domain.Station;
 
 public class LineTestUtil {
 
     public static final String LINES_PATH = "/lines/";
 
     public static LineRequest 지하철_노선_정보(String name, String color, Long upStationId, Long downStationId, int distance) {
-        return LineRequest.of(name, color, upStationId, downStationId, distance);
+        return new LineRequest(name, color, upStationId, downStationId, distance);
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
@@ -71,6 +73,16 @@ public class LineTestUtil {
         );
         List<Long> resultLineIds = resultResponse.jsonPath().getList("id", Long.class);
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    public static void 노선정보에_지하철역정보_포함됨(ExtractableResponse<Response> resultResponse,
+        Long upStationId, Long downStationId) {
+        List<Long> expectedStationIds = Arrays.asList(upStationId, downStationId);
+        List<Long> resultStationIds = resultResponse.jsonPath().getList("stations", Station.class)
+            .stream()
+            .map(Station::getId)
+            .collect(Collectors.toList());
+        assertThat(resultStationIds).containsAll(expectedStationIds);
     }
 
     public static void 지하철_노선_생성됨(ExtractableResponse<Response> response) {

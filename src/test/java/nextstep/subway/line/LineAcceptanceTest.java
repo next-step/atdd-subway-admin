@@ -14,8 +14,6 @@ import nextstep.subway.line.dto.LineRequest;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    public static final String LINES_PATH = "/lines";
-
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -86,6 +84,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_응답됨(신분당선_조회_응답);
+    }
+
+    @DisplayName("역정보가 포함된 노선을 조회한다.")
+    @Test
+    void getLineIncludingStation() {
+        // given
+        // 지하철_노선_등록되어_있음
+        Long 상행역_아이디 = 지하철역_생성_및_아이디_반환("상행역");
+        Long 하행역_아이디 = 지하철역_생성_및_아이디_반환("하행역");
+        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "red", 상행역_아이디, 하행역_아이디, 10);
+        ExtractableResponse<Response> 신분당선_생성_응답 = 지하철_노선_생성_요청(신분당선);
+        Long 신분당선_생성_아이디 = 신분당선_생성_응답.jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> 신분당선_조회_응답 = 지하철_노선_조회_요청(신분당선_생성_아이디);
+
+        // then
+        지하철_노선_응답됨(신분당선_조회_응답);
+        노선정보에_지하철역정보_포함됨(신분당선_조회_응답, 상행역_아이디, 하행역_아이디);
     }
 
     @DisplayName("존재하지 않는 지하철 노선 조회")
