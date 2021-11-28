@@ -3,9 +3,7 @@ package nextstep.subway.line.domain;
 import nextstep.subway.line.exception.NotFoundUpAndDownStation;
 import nextstep.subway.station.dto.StationResponse;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,7 +12,11 @@ import java.util.stream.Collectors;
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderColumn(name = "position")
     private List<Section> sections = new ArrayList<>();
+
+    // section 순서 필요?
+
 
     protected Sections() {
     }
@@ -36,18 +38,44 @@ public class Sections {
             throw new NotFoundUpAndDownStation();
         }
 
-        // 내부 구간 추가
-        Section savedSection = this.sections.stream()
-                .filter(section -> section.equalsUpStation(inputSection) || section.equalsDownStation(inputSection))
+        createInnerSection(inputSection);
+        createOuterSection(inputSection);
+    }
+
+    private void createInnerSection(Section inputSection) {
+        this.sections.stream()
+                .filter(section -> isCreateInnerSection(section, inputSection))
                 .findAny()
-                .get();
-        List<Section> sections = savedSection.updateSection(inputSection);
-        int index = this.sections.indexOf(savedSection);
-        this.sections.remove(savedSection);
-        this.sections.addAll(index, sections);
+                .ifPresent(savedSection -> {
+                    List<Section> sections = savedSection.createInnerSection(inputSection);
+                    int index = this.sections.indexOf(savedSection);
+                    this.sections.remove(savedSection);
+                    this.sections.addAll(index, sections);
+                });
 
-        // 외부 구간 추가
+    }
 
+    private void createOuterSection(Section inputSection) {
+        this.sections.stream()
+                .filter(section -> isCreateOuterSection(section, inputSection))
+                .findAny()
+                .ifPresent(savedSection -> {
+                    Section newSection = savedSection.createOuterSection(inputSection);
+                    int index = this.sections.indexOf(savedSection);
+                    if (savedSection.isCreateUpSection(inputSection)) {
+                        this.sections.add(index, newSection);
+                        return;
+                    }
+                    this.sections.add(index + 1, newSection);
+                });
+    }
+
+    private boolean isCreateInnerSection(Section savedSection, Section inputSection) {
+        return savedSection.equalsUpStation(inputSection) || savedSection.equalsDownStation(inputSection);
+    }
+
+    private boolean isCreateOuterSection(Section savedSection, Section inputSection) {
+        return savedSection.isCreateUpSection(inputSection) || savedSection.isCreateDownSection(inputSection);
     }
 
     private boolean isNotExistsUpAndDownStation(Section section) {

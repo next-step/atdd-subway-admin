@@ -34,7 +34,6 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-
     }
 
     public Section(Station upStation, Station downStation, Distance distance, Line line) {
@@ -48,20 +47,8 @@ public class Section {
         return new Section(upStation, downStation, distance, line);
     }
 
-    public void addLine(Line line) {
-        this.line = line;
-    }
-
     public List<Station> getStations() {
         return Arrays.asList(upStation, downStation);
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
     }
 
     public boolean isNotContainUnAndDownStation(Section section) {
@@ -80,12 +67,20 @@ public class Section {
         return this.downStation.equals(section.downStation);
     }
 
-    public List<Section> updateSection(Section inputSection) {
+    public boolean isCreateUpSection(Section inputSection) {
+        return this.upStation.equals(inputSection.downStation);
+    }
+
+    public boolean isCreateDownSection(Section inputSection) {
+        return this.downStation.equals(inputSection.upStation);
+    }
+
+    public List<Section> createInnerSection(Section inputSection) {
         Station inputUpStation = inputSection.upStation;
         Station inputDownStation = inputSection.downStation;
         Distance inputDistance = inputSection.distance;
 
-        if (this.upStation.equals(inputUpStation)) {
+        if (equalsUpStation(inputSection)) {
             Section frontSection = Section.of(this.upStation, inputDownStation, inputDistance,inputSection.getLine());
             Section backSection = Section.of(inputDownStation, this.downStation, distance.minus(inputDistance),inputSection.getLine());
             return Arrays.asList(frontSection,backSection);
@@ -96,7 +91,20 @@ public class Section {
         return Arrays.asList(frontSection,backSection);
     }
 
+    public Section createOuterSection(Section inputSection) {
+        Station inputUpStation = inputSection.upStation;
+        Station inputDownStation = inputSection.downStation;
+        Distance inputDistance = inputSection.distance;
+
+        if (isCreateUpSection(inputSection)) {
+            return Section.of(inputUpStation, this.upStation, inputDistance, inputSection.getLine());
+        }
+
+        return Section.of(this.downStation, inputDownStation, inputDistance, inputSection.getLine());
+    }
+
     public Line getLine() {
         return line;
     }
+
 }

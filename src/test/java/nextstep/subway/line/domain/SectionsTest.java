@@ -28,7 +28,7 @@ class SectionsTest {
         sections = new Sections(section);
     }
 
-    @DisplayName("상행역이 동일한 새 구간을 등록한다.")
+    @DisplayName("상행역이 동일한 내부 구간을 등록한다.")
     @Test
     void addSectionEqualUpStation() {
         Station 삼성역 = new Station("삼성역");
@@ -43,7 +43,7 @@ class SectionsTest {
         assertThat(savedNames).containsExactly("강남역", "삼성역", "잠실역");
     }
 
-    @DisplayName("하행역이 동일한 새 구간을 등록한다.")
+    @DisplayName("하행역이 동일한 내부 구간을 등록한다.")
     @Test
     void addSectionEqualDownStation() {
         Station 삼성역 = new Station("삼성역");
@@ -58,6 +58,36 @@ class SectionsTest {
         assertThat(savedNames).containsExactly("강남역", "삼성역", "잠실역");
     }
 
+    @DisplayName("새로운 상행 구간을 등록한다.")
+    @Test
+    void addUpSection() {
+        Station 사당역 = new Station("사당역");
+        Section section = new Section(사당역, 강남역, new Distance(4));
+
+        sections.addSection(section);
+
+        List<String> savedNames = sections.getStations()
+                .stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        assertThat(savedNames).containsExactly("사당역", "강남역", "잠실역");
+    }
+
+    @DisplayName("새로운 하행 구간을 등록한다.")
+    @Test
+    void addDownSection() {
+        Station 강변역 = new Station("강변역");
+        Section section = new Section(잠실역, 강변역, new Distance(4));
+
+        sections.addSection(section);
+
+        List<String> savedNames = sections.getStations()
+                .stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        assertThat(savedNames).containsExactly("강남역", "잠실역", "강변역");
+    }
+
     @DisplayName("상행역과 하행역 둘 중 하나도 노선에 등록되어있지 않은 구간을 등록한다.")
     @Test
     void notExistsStationInLine() {
@@ -70,6 +100,14 @@ class SectionsTest {
 
         assertThatThrownBy(throwingCallable)
                 .isInstanceOf(NotFoundUpAndDownStation.class);
+    }
+
+    @DisplayName("구간에 속한 지하철역 조회(상행 -> 하행 순서)")
+    @Test
+    void getStations() {
+        강남역 = new Station("강남역");
+        잠실역 = new Station("잠실역");
+        Section section = new Section(강남역, 잠실역, new Distance(10));
     }
 
 }

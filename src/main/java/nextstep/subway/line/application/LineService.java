@@ -9,6 +9,7 @@ import nextstep.subway.line.exception.DuplicateLineException;
 import nextstep.subway.line.exception.NotFoundLineException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.exception.NotFoundStationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
