@@ -21,7 +21,7 @@ public class Station extends BaseEntity {
     @Column(name = "deleted")
     private boolean deleted = Boolean.FALSE;
 
-    public Station() {
+    protected Station() {
     }
 
     public Station(String name) {

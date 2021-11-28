@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
@@ -62,6 +63,12 @@ public class Line extends BaseEntity {
 
     public List<LineStation> getStations() {
         return lineStations.getStations();
+    }
+
+    public List<Long> getStationIds() {
+        return lineStations.getStations().stream()
+            .map(LineStation::getStationId)
+            .collect(Collectors.toList());
     }
 
     public Long getId() {

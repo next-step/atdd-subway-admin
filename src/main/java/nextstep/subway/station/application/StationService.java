@@ -8,6 +8,7 @@ import nextstep.subway.common.exception.DuplicateException;
 import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.domain.StationSection;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
@@ -66,9 +67,12 @@ public class StationService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, Station> findAllById(List<Long> stationIds) {
-        return stationRepository.findAllById(stationIds)
-            .stream()
-            .collect(Collectors.toMap(Station::getId, Function.identity()));
+    public List<Station> findAllById(List<Long> stationIds) {
+        return stationRepository.findAllById(stationIds);
+    }
+
+    @Transactional(readOnly = true)
+    public StationSection findStationSection(Long upStationId, Long downStationId) {
+        return StationSection.of(findStation(upStationId), findStation(downStationId));
     }
 }
