@@ -17,6 +17,7 @@ import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 
 @Service
+@Transactional(readOnly = true)
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
@@ -35,7 +36,6 @@ public class LineService {
         return LineResponse.from(line);
     }
 
-    @Transactional(readOnly = true)
     public List<LineResponse> getLines() {
         return lineRepository.findAll()
             .stream()
@@ -43,7 +43,6 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
     public LineResponse getLine(long id) {
         Line line = findLineById(id);
         return LineResponse.from(line);
