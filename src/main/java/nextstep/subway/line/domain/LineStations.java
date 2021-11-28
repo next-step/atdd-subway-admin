@@ -17,7 +17,7 @@ public class LineStations {
 
     private static Integer MIN_LINE_STATION_SIZE = 2;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = false)
     @JoinColumn(name = "line_id", nullable = false)
     private List<LineStation> lineStations = new ArrayList<>();
 
