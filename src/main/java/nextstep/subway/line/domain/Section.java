@@ -112,6 +112,23 @@ public class Section {
     }
 
     public boolean isSame(final Section section) {
-        return isSameDownStation(section) && isSameDownStation(section);
+        return isSameUpStation(section) && isSameDownStation(section);
+    }
+
+    public void link(Section section) {
+        if (isIncludeAbleSection(section)) {
+            changeLink(section);
+            distance = Distance.of(distance.getDistance() - section.distance.getDistance());
+        }
+    }
+
+    private void changeLink(Section section) {
+        if (isSameUpStation(section)) {
+            downStation = section.upStation;
+        }
+
+        if (isSameDownStation(section)) {
+            downStation = section.upStation;
+        }
     }
 }
