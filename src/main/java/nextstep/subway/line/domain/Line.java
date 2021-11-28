@@ -33,13 +33,16 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    @Deprecated
-    public void addSection(List<Section> section) {
+    public void createSection(List<Section> section) {
+        if (sections.contains(section)) {
+            return;
+        }
         sections.add(section, this);
     }
 
     public void addSection(Section section) {
-        sections.add(section, this);
+        section.setLine(this);
+        sections.addSection(section);
     }
 
     protected Line() {
@@ -62,7 +65,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getSections() {
+    public List<Station> getStations() {
         return sections.getStations();
     }
 }

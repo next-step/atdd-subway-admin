@@ -16,6 +16,7 @@ import nextstep.subway.fixtrue.Param;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
 
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -29,9 +30,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, stationGangnam.getId(), stationSinchon.getId(), 10));
 
         StationResponse stationYoungSan = 지하철역_등록되어_있음(용산역);
+        StationResponse stationSeoul = 지하철역_등록되어_있음(서울역);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선에_새로운_구간_등록_요청(lineResponse, stationYoungSan, stationGangnam,5);
+        지하철_노선에_새로운_구간_등록_요청(lineResponse, stationSeoul, stationSinchon,5);
 
         ExtractableResponse<Response> 지하철_노선_조회_요청 = 지하철_노선_조회_요청(lineResponse.getId());
 
