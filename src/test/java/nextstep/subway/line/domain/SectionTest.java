@@ -2,10 +2,13 @@ package nextstep.subway.line.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import nextstep.subway.common.Messages;
 import nextstep.subway.exception.BusinessException;
+import nextstep.subway.exception.CannotAddException;
+import nextstep.subway.exception.NotValidateException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,8 +59,11 @@ public class SectionTest {
         lineRepository.flush();
 
         Line findLine = lineRepository.findById(line.getId()).get();
-        assertThat(findLine.getSortedStations().size()).isEqualTo(2);
-        assertThat(findLine.getSortedStations().stream().map(Station::getName)).containsExactly("서울역", "용산역");
+
+        assertAll(() -> {
+            assertThat(findLine.getSortedStations().size()).isEqualTo(2);
+            assertThat(findLine.getSortedStations().stream().map(Station::getName)).containsExactly("서울역", "용산역");
+        });
     }
 
     @Test
@@ -106,7 +112,7 @@ public class SectionTest {
 
         assertThatThrownBy(
             () -> line.addLineStation(Distance.valueOf(5), yongsanStation, seoulStation))
-            .isInstanceOf(BusinessException.class)
+            .isInstanceOf(CannotAddException.class)
             .hasMessage(Messages.ALREADY_EXISTS_SECTION.getValues());
     }
 
@@ -118,7 +124,7 @@ public class SectionTest {
 
         assertThatThrownBy(
             () -> line.addLineStation(Distance.valueOf(TEST_REFERENCE_DISTANCE), gangnamStation, yeoksamStation))
-            .isInstanceOf(BusinessException.class)
+            .isInstanceOf(CannotAddException.class)
             .hasMessage(Messages.NOT_INCLUDE_SECTION.getValues());
     }
 
@@ -129,7 +135,7 @@ public class SectionTest {
 
         assertThatThrownBy(
             () -> line.addLineStation(Distance.valueOf(TEST_REFERENCE_DISTANCE), seoulStation, addStation))
-            .isInstanceOf(BusinessException.class)
+            .isInstanceOf(CannotAddException.class)
             .hasMessage(Messages.LONG_OR_SAME_DISTANCE.getValues());
     }
 
@@ -140,7 +146,7 @@ public class SectionTest {
 
         assertThatThrownBy(
             () -> line.addLineStation(Distance.valueOf(12), addStation, yongsanStation))
-            .isInstanceOf(BusinessException.class)
+            .isInstanceOf(CannotAddException.class)
             .hasMessage(Messages.LONG_OR_SAME_DISTANCE.getValues());
     }
 

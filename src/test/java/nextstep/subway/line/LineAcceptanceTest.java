@@ -214,7 +214,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("기존 1호선(상행역-하행역, 10)에 구간(상행역-하행역, 4) 추가 시 상행, 하행이 이미 모두 등록된 경우 구간 등록할 수 없음")
-    void addSectionExistBusinessException() {
+    void addSectionAlreadyExistFail() {
         //given
         //상행역,하행역을 구간으로 가진 1호선 등록되어 있음
         상행역_하행역_추가역_AND_1호선_저장되어있다();
@@ -234,7 +234,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("기존 1호선(상행역-하행역, 10)에 구간(강남역-역삼역, 4) 추가 시 상행, 하행이 모두 포함되어 있지 않은 경우 구간 등록할 수 없음")
-    void addSectionNotIncludeBusinessException() {
+    void addSectionNotIncludeFail() {
         //given
         //상행역,하행역을 구간으로 가진 1호선 등록되어 있음
         상행역_하행역_추가역_AND_1호선_저장되어있다();
@@ -258,7 +258,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("기존 1호선(상행역-하행역, 10)에 구간(상행역-추가역, 15) 추가 시 새로등록되는 역이 기존 역사보다 길이가 긴 경우 구간 등록할 수 없음")
-    void addSectionLongDistanceBusinessException() {
+    void addSectionLongDistanceFail() {
         //given
         //상행역,하행역을 10길이 구간으로 가진 1호선, 추가역 등록되어 있음
         상행역_하행역_추가역_AND_1호선_저장되어있다();
@@ -278,7 +278,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("기존 1호선(상행역-하행역, 10)에 구간(상행역-추가역, 10) 추가 시 새로등록되는 역이 기존 역사와 길이가 같은 경우 구간 등록할 수 없음")
-    void addSectionSameDistanceBusinessException() {
+    void addSectionSameDistanceFail() {
         //given
         //상행역,하행역을 10길이 구간으로 가진 1호선, 추가역 등록되어 있음
         상행역_하행역_추가역_AND_1호선_저장되어있다();

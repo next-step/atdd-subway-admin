@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.common.Messages;
 import nextstep.subway.exception.BusinessException;
+import nextstep.subway.exception.CannotAddException;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -75,7 +76,7 @@ public class Section extends BaseEntity implements Comparable<Section>{
         try {
             return this.distance.minus(distance);
         }catch (BusinessException e) {
-            throw new BusinessException(Messages.LONG_OR_SAME_DISTANCE.getValues());
+            throw new CannotAddException(Messages.LONG_OR_SAME_DISTANCE.getValues());
         }
     }
 

@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.common.Messages;
 import nextstep.subway.exception.BusinessException;
+import nextstep.subway.exception.CannotAddException;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -85,11 +86,11 @@ public class Line extends BaseEntity {
 
     private void validate(boolean containUpStation, boolean containDownStation) {
         if (containUpStation && containDownStation) {
-            throw new BusinessException(Messages.ALREADY_EXISTS_SECTION.getValues());
+            throw new CannotAddException(Messages.ALREADY_EXISTS_SECTION.getValues());
         }
 
         if (!containUpStation && !containDownStation) {
-            throw new BusinessException(Messages.NOT_INCLUDE_SECTION.getValues());
+            throw new CannotAddException(Messages.NOT_INCLUDE_SECTION.getValues());
         }
     }
 

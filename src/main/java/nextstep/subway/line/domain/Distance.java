@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import nextstep.subway.common.Messages;
 import nextstep.subway.exception.BusinessException;
+import nextstep.subway.exception.NotValidateException;
 
 @Embeddable
 public class Distance {
@@ -33,7 +34,7 @@ public class Distance {
 
     private void validatePositive(Integer number) {
         if (number < ZERO) {
-            throw new BusinessException(Messages.NOT_POSITIVE_NUMBER.getValues());
+            throw new NotValidateException(Messages.NOT_POSITIVE_NUMBER.getValues());
         }
     }
 
