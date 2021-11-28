@@ -87,7 +87,7 @@ public class Section {
         }
 
         Section frontSection = Section.of(this.upStation, inputUpStation, distance.minus(inputDistance), inputSection.getLine());
-        Section backSection = Section.of(inputDownStation, this.downStation, inputDistance, inputSection.getLine());
+        Section backSection = Section.of(inputUpStation, this.downStation, inputDistance, inputSection.getLine());
         return Arrays.asList(frontSection, backSection);
     }
 
@@ -113,5 +113,13 @@ public class Section {
 
     public boolean isLongDistance(Section section) {
         return this.distance.isLong(section.distance);
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 }

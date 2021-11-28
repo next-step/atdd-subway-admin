@@ -3,21 +3,20 @@ package nextstep.subway.line.domain;
 import nextstep.subway.line.exception.AlreadyRegisteredSectionException;
 import nextstep.subway.line.exception.LongDistanceException;
 import nextstep.subway.line.exception.NotFoundUpAndDownStation;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderColumn;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderColumn(name = "position")
     private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
@@ -28,11 +27,41 @@ public class Sections {
     }
 
     public List<StationResponse> getStations() {
+        Section firstSection = findFirstSection();
+        List<StationResponse> stationResponses = new ArrayList<>();
+        stationResponses.add(StationResponse.of(firstSection.getUpStation()));
+        stationResponses.add(StationResponse.of(firstSection.getDownStation()));
+
+        Optional<Section> nextSectionOptional = findNextSection(firstSection);
+        while (nextSectionOptional.isPresent()) {
+            Section nextSection = nextSectionOptional.get();
+            stationResponses.add(StationResponse.of(nextSection.getDownStation()));
+            nextSectionOptional = findNextSection(nextSection);
+        }
+        return stationResponses;
+    }
+
+    private Section findFirstSection() {
+        List<Station> upStations = new ArrayList<>();
+        List<Station> downStations = new ArrayList<>();
+        for (Section section : sections) {
+            upStations.add(section.getUpStation());
+            downStations.add(section.getDownStation());
+        }
+        upStations.removeAll(downStations);
+        Station firstStation = upStations.get(0);
+
         return sections.stream()
-                .flatMap(section -> section.getStations().stream())
-                .map(station -> StationResponse.of(station))
-                .distinct()
-                .collect(Collectors.toList());
+                .filter(section -> section.getUpStation().equals(firstStation))
+                .findAny()
+                .get();
+    }
+
+    private Optional<Section> findNextSection(Section section) {
+        return this.sections
+                .stream()
+                .filter(it -> it.getUpStation().equals(section.getDownStation()))
+                .findFirst();
     }
 
     public void addSection(Section inputSection) {
@@ -40,7 +69,9 @@ public class Sections {
         checkExistsSameSection(inputSection);
 
         createInnerSection(inputSection);
-        createOuterSection(inputSection);
+        if (!isRegisteredSection(inputSection)) {
+            createOuterSection(inputSection);
+        }
     }
 
     private void createInnerSection(Section inputSection) {

@@ -33,14 +33,6 @@ public class StationResponse {
         return name;
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
