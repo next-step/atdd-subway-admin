@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import nextstep.subway.exception.InputDataErrorException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class SectionsTest {
 
@@ -61,9 +63,12 @@ public class SectionsTest {
     @DisplayName("구간 중간 추가 기존 구간보다 같을 경우 에러처리")
     public void addSameDistanceTest() {
         Section newSection = new Section(line, savedDangSanStation, chungJeoungRoStation, new Distance(10));
-        line.addSection(newSection);
-        checkStationNames("당산역", "충정로역", "홍대입구역");
-        checkDistance("홍대입구역", 0);
+
+        assertThatThrownBy(() -> {
+            line.addSection(newSection);
+        }).isInstanceOf(InputDataErrorException.class)
+                .hasMessageContaining("[ERROR]거리는 0 이하가 될수 없습니다.");
+
     }
 
     private void checkDistance(String sectionStationName, int exepectedDistance){
