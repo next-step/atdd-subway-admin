@@ -21,7 +21,7 @@ public class LineStations {
     @JoinColumn(name = "line_id", nullable = false)
     private List<LineStation> lineStations = new ArrayList<>();
 
-    protected LineStations() {
+    public LineStations() {
     }
 
     public void add(LineStation addLineStation) {
@@ -84,6 +84,12 @@ public class LineStations {
             .ifPresent(it -> it.relocationNextStationId(deleteLineStation));
     }
 
+    public Optional<LineStation> findLineStationByStationId(Long stationId) {
+        return lineStations.stream()
+            .filter(it -> it.isSameStationId(stationId))
+            .findFirst();
+    }
+
     private void nextLineStationUpdate(LineStation addLineStation) {
         lineStations.stream()
             .filter(addLineStation::isSameNextStationId)
@@ -95,13 +101,7 @@ public class LineStations {
         lineStations.stream()
             .filter(LineStation::isLast)
             .findFirst()
-            .ifPresent(it -> it.stationIdUpdate(addLineStation));
-    }
-
-    private Optional<LineStation> findLineStationByStationId(Long stationId) {
-        return lineStations.stream()
-            .filter(it -> it.isSameStationId(stationId))
-            .findFirst();
+            .ifPresent(it -> it.lastLineStationUpdate(addLineStation));
     }
 
     private void validate(LineStation addLineStation) {

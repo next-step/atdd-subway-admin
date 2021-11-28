@@ -49,7 +49,7 @@ public class LineStation {
         return new LineStation(stationId, nextStationId, distance);
     }
 
-    public void stationIdUpdate(LineStation lineStation) {
+    public void lastLineStationUpdate(LineStation lineStation) {
         if (Objects.equals(this.stationId, lineStation.stationId)) {
             this.stationId = lineStation.nextStationId;
         }
