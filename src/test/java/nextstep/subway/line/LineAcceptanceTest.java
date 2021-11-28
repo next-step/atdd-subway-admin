@@ -196,19 +196,110 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_조회_실패됨(response);
     }
 
-    @DisplayName("노선의 구간 사이에 새로운 구간을 등록 한다.")
+    @DisplayName("노선의 구간 사이에 새로운 역을 등록 한다.")
     @Test
     void addStationBetweenSection() {
         // given
         String lineLocation = 지하철_노선_등록되어_있음(request1);
 
         // when
-        String sectionRegisterPath = lineLocation + "/sections";
         SectionRequest request = new SectionRequest(강남역_Id, 판교역_Id, 5);
-        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request, sectionRegisterPath);
+        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request, lineLocation);
 
         // then
         구간_사이에_등록됨(response);
+    }
+
+    @DisplayName("새로운 역을 상행 종점으로 구간을 등록한다.")
+    @Test
+    void addSectionNewUpstation() {
+        // given
+        String lineLocation = 지하철_노선_등록되어_있음(new LineRequest("신분당선", "bg-red-600", 판교역_Id, 정자역_Id, 5));
+
+        // when
+        SectionRequest request = new SectionRequest(강남역_Id, 판교역_Id, 5);
+        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request, lineLocation);
+
+        // then
+        새로운_상행_종점역_등록됨(response);
+    }
+
+    @DisplayName("새로운 역을 하행 종점으로 구간을 등록한다.")
+    @Test
+    void addSectionNewDownStation() {
+        // given
+        String lineLocation = 지하철_노선_등록되어_있음(new LineRequest("신분당선", "bg-red-600", 판교역_Id, 정자역_Id, 5));
+
+        // when
+        SectionRequest request = new SectionRequest(정자역_Id, 광교역_Id, 5);
+        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request, lineLocation);
+
+        // then
+        새로운_하행_종점역_등록됨(response);
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 때 기존 역 사이 길이보다 크거나 같으면 등록할 수 없다.")
+    @Test
+    void addSectionDistanceGreaterThanOrEquals() {
+        // given
+        String lineLocation = 지하철_노선_등록되어_있음(new LineRequest("신분당선", "bg-red-600", 강남역_Id, 정자역_Id, 5));
+
+        // when
+        SectionRequest request1 = new SectionRequest(강남역_Id, 판교역_Id, 5);
+        ExtractableResponse<Response> response1 = 지하철_구간_등록_요청(request1, lineLocation);
+
+        SectionRequest request2 = new SectionRequest(강남역_Id, 판교역_Id, 6);
+        ExtractableResponse<Response> response2 = 지하철_구간_등록_요청(request2, lineLocation);
+
+        // then
+        새로운_구간_등록_실패됨(response1);
+        새로운_구간_등록_실패됨(response2);
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
+    @Test
+    void addSectionAlreadyRegisteredAllStations() {
+        // given
+        String lineLocation = 지하철_노선_등록되어_있음(new LineRequest("신분당선", "bg-red-600", 강남역_Id, 정자역_Id, 5));
+
+        // when
+        SectionRequest request = new SectionRequest(강남역_Id, 정자역_Id, 6);
+        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request, lineLocation);
+
+        // then
+        새로운_구간_등록_실패됨(response);
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 추가할 수 없다.")
+    @Test
+    void addSectionNotRegisteredAllStations() {
+        // given
+        String lineLocation = 지하철_노선_등록되어_있음(new LineRequest("신분당선", "bg-red-600", 강남역_Id, 판교역_Id, 5));
+
+        // when
+        SectionRequest request = new SectionRequest(정자역_Id, 광교역_Id, 6);
+        ExtractableResponse<Response> response = 지하철_구간_등록_요청(request, lineLocation);
+
+        // then
+        새로운_구간_등록_실패됨(response);
+    }
+
+    private void 새로운_구간_등록_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 새로운_하행_종점역_등록됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().jsonPath().getLong("upStationId")).isEqualTo(강남역_Id);
+        assertThat(response.body().jsonPath().getLong("downStationId")).isEqualTo(판교역_Id);
+        assertThat(response.body().jsonPath().getLong("distance")).isEqualTo(5);
+    }
+
+    private void 새로운_상행_종점역_등록됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().jsonPath().getLong("upStationId")).isEqualTo(강남역_Id);
+        assertThat(response.body().jsonPath().getLong("downStationId")).isEqualTo(판교역_Id);
+        assertThat(response.body().jsonPath().getLong("distance")).isEqualTo(5);
     }
 
     private void 구간_사이에_등록됨(ExtractableResponse<Response> response) {
@@ -218,8 +309,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().getLong("distance")).isEqualTo(5);
     }
 
-    private ExtractableResponse<Response> 지하철_구간_등록_요청(SectionRequest request, String path) {
-        return RestTestApi.post(request, path);
+    private ExtractableResponse<Response> 지하철_구간_등록_요청(SectionRequest request, String linePath) {
+        String sectionRegisterPath = linePath + "/sections";
+        return RestTestApi.post(request, sectionRegisterPath);
     }
 
     private void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
