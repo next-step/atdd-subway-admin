@@ -41,14 +41,20 @@ class SectionTest {
     @DisplayName("상행역을 변경한다.")
     @Test
     void changeUpStation() {
+        // when
         section.changeUpStation(new Station("신분당역"));
+
+        // then
         assertThat(section.getUpStation()).isEqualTo(new Station("신분당역"));
     }
 
     @DisplayName("하행역을 변경한다.")
     @Test
     void changeDownStation() {
+        // when
         section.changeDownStation(new Station("잠실역"));
+
+        // then
         assertThat(section.getDownStation()).isEqualTo(new Station("잠실역"));
     }
 
