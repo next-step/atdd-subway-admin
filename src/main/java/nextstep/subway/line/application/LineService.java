@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.line.application.dto.AddSectionRequest;
 import nextstep.subway.line.application.dto.LineUpdateRequest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -32,8 +33,8 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         validateSaveLine(request.getName());
-        Station upStation = findStation(request.getUpStationId());
-        Station downStation = findStation(request.getDownStationId());
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
 
         Line persistLine = lineRepository.save(requestToLIne(request, upStation, downStation));
         return lineToResponse(persistLine);
@@ -53,18 +54,14 @@ public class LineService {
     }
 
     public LineResponse findLine(Long lineId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() ->
-                        new EntityNotFoundException("노선이 존재하지 않습니다."));
+        Line line = findLineById(lineId);
 
         return lineToResponse(line);
     }
 
     @Transactional
     public LineResponse update(LineUpdateRequest lineUpdateRequest) {
-        Line line = lineRepository.findById(lineUpdateRequest.getId())
-                .orElseThrow(() ->
-                        new EntityNotFoundException("노선이 존재하지 않습니다."));
+        Line line = findLineById(lineUpdateRequest.getId());
         line.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
 
         return lineToResponse(line);
@@ -75,9 +72,19 @@ public class LineService {
         lineRepository.deleteById(lineId);
     }
 
-    private Station findStation(Long id) {
+    @Transactional
+    public void addSection(AddSectionRequest addSectionRequest) {
+        Line line = findLineById(addSectionRequest.getLineId());
+    }
+
+    private Line findLineById(Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new EntityNotFoundException("노선이 존재하지 않습니다."));
+    }
+
+    private Station findStationById(Long id) {
         return stationRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException());
+                .orElseThrow(() -> new EntityNotFoundException("역이 존재하지 않습니다."));
     }
 
     private Line requestToLIne(LineRequest request, Station upStation, Station downStation) {
