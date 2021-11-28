@@ -73,7 +73,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_목록_응답됨
         assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.OK.value());
-        response.body("lines.name", hasItems("신분당선", "3호선"));
+        response.body("name", hasItems("신분당선", "3호선"));
 
         // 지하철_노선_목록_포함됨
         지하철_노선_목록_포함됨_검증(redLineResponse.header("Location"));
