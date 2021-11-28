@@ -1,13 +1,16 @@
 package nextstep.subway.line.dto;
 
-import nextstep.subway.line.domain.Line;
-
 import java.time.LocalDateTime;
+import java.util.List;
+
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
 
 public class LineResponse {
     private Long id;
     private String name;
     private String color;
+    private List<Station> stations;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
