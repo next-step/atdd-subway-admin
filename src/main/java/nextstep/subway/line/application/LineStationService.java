@@ -7,7 +7,6 @@ import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.dto.LineStationRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationSection;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,10 +25,10 @@ public class LineStationService {
     public void createLineStation(Long lineId, LineStationRequest lineStationRequest) {
         Line line = lineService.findLine(lineId);
 
-        StationSection stationSection = stationService.findStationSection(
-            lineStationRequest.getUpStationId(), lineStationRequest.getDownStationId());
+        Station station = stationService.findStation(lineStationRequest.getUpStationId());
+        Station nextStation = stationService.findStation(lineStationRequest.getDownStationId());
 
-        LineStation lineStation = LineStation.of(stationSection,
+        LineStation lineStation = LineStation.of(station.getId(), nextStation.getId(),
             Distance.of(lineStationRequest.getDistance()));
         line.addLineStation(lineStation);
     }

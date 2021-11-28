@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import nextstep.subway.station.domain.StationSection;
 import org.hibernate.annotations.Where;
 
 @Entity
@@ -46,9 +45,8 @@ public class LineStation {
         return new LineStation(lineStation.getNextStationId(), null, new Distance(0));
     }
 
-    public static LineStation of(StationSection stationSection, Distance distance) {
-        return new LineStation(stationSection.getStationId(), stationSection.getNextStationId(),
-            distance);
+    public static LineStation of(Long stationId, Long nextStationId, Distance distance) {
+        return new LineStation(stationId, nextStationId, distance);
     }
 
     public void stationIdUpdate(LineStation lineStation) {

@@ -1,8 +1,6 @@
 package nextstep.subway.line.application;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import nextstep.subway.common.exception.DuplicateException;
@@ -16,7 +14,6 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationSection;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,10 +34,10 @@ public class LineService {
         Line line = request.toLine();
         validateDuplicateLine(line);
 
-        StationSection stationSection = stationService.findStationSection(request.getUpStationId(),
-            request.getDownStationId());
+        Station station = stationService.findStation(request.getUpStationId());
+        Station nextStation = stationService.findStation(request.getDownStationId());
 
-        LineStation lineStation = LineStation.of(stationSection,
+        LineStation lineStation = LineStation.of(station.getId(), nextStation.getId(),
             Distance.of(request.getDistance()));
         line.addLineStation(lineStation);
 
