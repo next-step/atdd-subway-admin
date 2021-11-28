@@ -1,15 +1,16 @@
 package nextstep.subway.line.application;
 
-import nextstep.subway.line.domain.*;
+import nextstep.subway.line.domain.Distance;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
-import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.line.exception.DuplicateLineException;
 import nextstep.subway.line.exception.NotFoundLineException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
-import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.exception.NotFoundStationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -81,14 +81,14 @@ public class Section {
         Distance inputDistance = inputSection.distance;
 
         if (equalsUpStation(inputSection)) {
-            Section frontSection = Section.of(this.upStation, inputDownStation, inputDistance,inputSection.getLine());
-            Section backSection = Section.of(inputDownStation, this.downStation, distance.minus(inputDistance),inputSection.getLine());
-            return Arrays.asList(frontSection,backSection);
+            Section frontSection = Section.of(this.upStation, inputDownStation, inputDistance, inputSection.getLine());
+            Section backSection = Section.of(inputDownStation, this.downStation, distance.minus(inputDistance), inputSection.getLine());
+            return Arrays.asList(frontSection, backSection);
         }
 
-        Section frontSection = Section.of(this.upStation, inputUpStation, distance.minus(inputDistance),inputSection.getLine());
-        Section backSection = Section.of(inputDownStation, this.downStation, inputDistance,inputSection.getLine());
-        return Arrays.asList(frontSection,backSection);
+        Section frontSection = Section.of(this.upStation, inputUpStation, distance.minus(inputDistance), inputSection.getLine());
+        Section backSection = Section.of(inputDownStation, this.downStation, inputDistance, inputSection.getLine());
+        return Arrays.asList(frontSection, backSection);
     }
 
     public Section createOuterSection(Section inputSection) {

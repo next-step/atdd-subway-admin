@@ -24,13 +24,7 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
-        this.sections = new Sections();
-    }
-
-    public Line(String name, String color, Station upStation, Station downStation, int distance ) {
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
 
@@ -61,10 +55,6 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section) {
         sections.addSection(section);
-    }
-
-    public Sections getSections() {
-        return sections;
     }
 
 }
