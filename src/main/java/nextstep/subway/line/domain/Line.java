@@ -1,12 +1,9 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -22,19 +19,41 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private Sections sections = new Sections();
+    private Sections sections = Sections.empty();
 
     protected Line() {
     }
 
-    public Line(String name, String color) {
+    private Line(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
+        Line line = new Line(name, color);
+        Section section = Section.of(line, upStation, downStation, distance);
+        line.addSection(section);
+        return line;
+    }
+
+    public static Line of(String name, String color) {
+        return new Line(name, color);
     }
 
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public void addSection(Section section) {
+        if (!section.isEqualLine(this)) {
+            throw new IllegalArgumentException("추가할 노선과 현재 노선이 다릅니다.");
+        }
+        this.sections.add(section);
+    }
+
+    public List<Station> orderedStations() {
+        return this.sections.orderedStations();
     }
 
     public Long getId() {
@@ -51,9 +70,5 @@ public class Line extends BaseEntity {
 
     public Sections getSections() {
         return sections;
-    }
-
-    public void addSection(Section section) {
-        this.sections.add(section);
     }
 }
