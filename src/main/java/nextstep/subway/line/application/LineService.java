@@ -12,6 +12,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.LineDuplicateException;
 import nextstep.subway.line.exception.NotFoundLineException;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.exception.NotFoundStationException;
 
@@ -28,22 +29,21 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) {
         checkValidateLine(request);
-        Line line = lineRepository.save(request.toLine());
+
+        Station upStation = stationRepository.findById(request.getUpStationId())
+            .orElseThrow(NotFoundStationException::new);
+        Station downStation = stationRepository.findById(request.getDownStationId())
+            .orElseThrow(NotFoundStationException::new);
+
+        Line saveLine = new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance());
+        Line line = lineRepository.save(saveLine);
         return LineResponse.of(line);
     }
 
     private void checkValidateLine(LineRequest request) {
-        checkExistsStation(request.getUpStationId());
-        checkExistsStation(request.getDownStationId());
-
         if (isDuplicate(request.getName())) {
             throw new LineDuplicateException();
         }
-    }
-
-    private void checkExistsStation(Long stationId) {
-        stationRepository.findById(stationId)
-            .orElseThrow(NotFoundStationException::new);
     }
 
     private boolean isDuplicate(String name) {
