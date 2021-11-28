@@ -29,7 +29,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성됨(신분당선_생성_응답);
     }
 
+    @DisplayName("존재하지 않는 지하철역으로 지하철 노선을 생성한다.")
+    @Test
+    void notFoundStation() {
+        // given
+        // 지하철_노선_등록되어_있음
+        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "red", -1L, -1L, 10);
 
+        // when
+        ExtractableResponse<Response> 신분당선_생성_응답 = 지하철_노선_생성_요청(신분당선);
+
+        // then
+        지하철역_존재하지_않음(신분당선_생성_응답);
+    }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
@@ -45,7 +57,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 중복_결과_응답 = 지하철_노선_생성_요청(신분당선);
 
         // then
-        지하철_노선_생성_실패됨(중복_결과_응답);
+        지하철_노선_중복됨(중복_결과_응답);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")

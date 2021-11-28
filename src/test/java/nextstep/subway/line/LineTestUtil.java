@@ -16,6 +16,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.exception.LineDuplicateException;
 import nextstep.subway.line.exception.NotFoundLineException;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.NotFoundStationException;
 
 public class LineTestUtil {
 
@@ -90,10 +91,16 @@ public class LineTestUtil {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
+    public static void 지하철_노선_중복됨(ExtractableResponse<Response> response) {
         assertThat(response.jsonPath().getString("message")).isEqualTo(
             LineDuplicateException.LINE_DUPLICATE);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    public static void 지하철역_존재하지_않음(ExtractableResponse<Response> response) {
+        assertThat(response.jsonPath().getString("message")).isEqualTo(
+            NotFoundStationException.NOT_FOUND_STATION);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     public static void 지하철_노선_응답됨(ExtractableResponse<Response> response) {
