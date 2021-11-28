@@ -49,6 +49,63 @@ public class Sections {
         return createStations(firstSection);
     }
 
+    public void remove(Station station) {
+        Section firstSection = findFirstSection();
+        if (firstSection.isSameUpStation(station)) {
+            this.sections.remove(firstSection);
+            return;
+        }
+
+        Section lastSection = findLastSection();
+        if (lastSection.isSameDownStation(station)) {
+            this.sections.remove(lastSection);
+            return;
+        }
+
+        Section upSection = findSectionIsDownStation(station);
+        Section downSection = findSectionIsUpStation(station);
+        remove(upSection, downSection);
+    }
+
+    private void remove(Section upSection, Section downSection) {
+        upSection.updateForRemove(downSection);
+        this.sections.remove(downSection);
+    }
+
+    private Section findSectionIsUpStation(Station station) {
+        Section downSection = this.sections
+                .stream()
+                .filter(s -> s.hasEqualUpStation(station))
+                .findFirst()
+                .get();
+        return downSection;
+    }
+
+    private Section findSectionIsDownStation(Station station) {
+        Section upSection = this.sections
+                .stream()
+                .filter(s -> s.hasEqualDownStation(station))
+                .findFirst()
+                .get();
+        return upSection;
+    }
+
+    private Section findLastSection() {
+        List<Station> upStations = new ArrayList<>();
+        List<Station> downStations = new ArrayList<>();
+        for (Section section : this.sections) {
+            upStations.add(section.getUpStation());
+            downStations.add(section.getDownStation());
+        }
+        downStations.removeAll(upStations);
+        Station lastStation = downStations.get(0);
+
+        return this.sections
+                .stream()
+                .filter(s -> s.getDownStation() == lastStation)
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("노선의 마지막 구간이 존재하지 않습니다."));
+    }
+
     private List<Station> createStations(Section section) {
         List<Station> stations = new ArrayList<>();
         stations.add(section.getUpStation());

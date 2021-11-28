@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -11,10 +12,10 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Station downStation;
 
     @Embedded
@@ -69,8 +70,30 @@ public class Section {
         return false;
     }
 
+    public boolean hasEqualDownStation(Station station) {
+        return this.downStation == station;
+    }
+
+    public boolean hasEqualUpStation(Station station) {
+        return this.upStation == station;
+    }
+
+    public void updateForRemove(Section section) {
+        this.downStation = section.downStation;
+        this.distance = this.distance.plus(section.distance);
+    }
+
+    public boolean isSameUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
     public Long getId() {
         return id;
+
     }
 
     public Station getUpStation() {
@@ -87,5 +110,18 @@ public class Section {
 
     public Line getLine() {
         return line;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(distance, section.distance) && Objects.equals(line, section.line);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(upStation, downStation, distance, line);
     }
 }

@@ -168,6 +168,79 @@ class SectionsTest {
         assertThat(names).containsExactly("강남역", "양재역", "판교역");
     }
 
+    @Test
+    @DisplayName("상행 종점역을 제거한다.")
+    void remove_상행_종점() {
+        // given
+        Station station1 = new Station("강남역");
+        Station station2 = new Station("양재역");
+        Station station3 = new Station("판교역");
+        List<Section> sectionList = new ArrayList<>();
+        Section section1 = new Section(station2, station3, 7, null);
+        sectionList.add(section1);
+        Section section2 = new Section(station1, station2, 3, null);
+        sectionList.add(section2);
+
+        Sections sections = new Sections(sectionList);
+
+        // when
+        sections.remove(station1);
+
+        // then
+        assertThat(sections.getSections().size()).isEqualTo(1);
+        assertThat(sections.getSections().get(0)).isEqualTo(section1);
+    }
+
+    @Test
+    @DisplayName("하행 종점역을 제거한다.")
+    void remove_하행_종점() {
+        // given
+        Station station1 = new Station("강남역");
+        Station station2 = new Station("양재역");
+        Station station3 = new Station("판교역");
+        List<Section> sectionList = new ArrayList<>();
+        Section section1 = new Section(station2, station3, 7, null);
+        sectionList.add(section1);
+        Section section2 = new Section(station1, station2, 3, null);
+        sectionList.add(section2);
+
+        Sections sections = new Sections(sectionList);
+
+        // when
+        sections.remove(station3);
+
+        // then
+        assertThat(sections.getSections().size()).isEqualTo(1);
+        assertThat(sections.getSections().get(0)).isEqualTo(section2);
+    }
+
+    @Test
+    @DisplayName("중간역을 제거한다.")
+    void remove_중간역() {
+        // given
+        Station station1 = new Station("강남역");
+        Station station2 = new Station("양재역");
+        Station station3 = new Station("판교역");
+        List<Section> sectionList = new ArrayList<>();
+        int distance1 = 7;
+        Section section1 = new Section(station2, station3, distance1, null);
+        sectionList.add(section1);
+        int distance2 = 3;
+        Section section2 = new Section(station1, station2, distance2, null);
+        sectionList.add(section2);
+
+        Sections sections = new Sections(sectionList);
+
+        // when
+        sections.remove(station2);
+
+        // then
+        assertThat(sections.getSections().size()).isEqualTo(1);
+        assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(station1);
+        assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(station3);
+        assertThat(sections.getSections().get(0).getDistance()).isEqualTo(new Distance(distance1 + distance2));
+    }
+
     private List<String> createStationNames(List<Station> stations) {
         List<String> names = stations.stream()
                 .map(s -> s.getName())
