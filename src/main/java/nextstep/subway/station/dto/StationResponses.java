@@ -1,5 +1,6 @@
 package nextstep.subway.station.dto;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -26,7 +27,7 @@ public class StationResponses {
     }
 
     public List<StationResponse> getResponses() {
-        return responses;
+        return Collections.unmodifiableList(responses);
     }
 
     @Override

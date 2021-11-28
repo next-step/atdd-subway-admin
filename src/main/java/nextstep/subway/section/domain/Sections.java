@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,8 +31,10 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        return sections.stream()
-            .flatMap(section -> Stream.of(section.getUp(), section.getDown()))
-            .collect(Collectors.toList());
+        return Collections.unmodifiableList(
+            sections.stream()
+                .flatMap(section -> Stream.of(section.getUp(), section.getDown()))
+                .collect(Collectors.toList())
+        );
     }
 }
