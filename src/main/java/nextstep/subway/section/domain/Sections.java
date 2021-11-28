@@ -7,6 +7,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -24,6 +25,7 @@ public class Sections {
         Station fistStation = getFistStation(sections);
         stations.add(fistStation);
         Station upStation = fistStation;
+
         while (stations.size() != sections.size() + DIFFERENCE_SECTIONS_STATIONS_SIZE) {
             upStation = getUpStation(stations, upStation);
         }
@@ -38,12 +40,16 @@ public class Sections {
     }
 
     private Station getDownStation(List<Station> stations, Station upStation, Section section) {
-        if (upStation.equals(section.getUpStation())) {
-            Station downStation = section.getDownStation();
-            stations.add(downStation);
-            upStation = downStation;
-        }
+        Station finalUpStation = upStation;
+        Station downStation = sections.stream()
+                .filter(section1 -> Objects.equals(section1.getUpStation(), finalUpStation))
+                .map(Section::getDownStation)
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+        stations.add(downStation);
+        upStation = downStation;
         return upStation;
+
     }
 
     private Station getFistStation(List<Section> sections) {
