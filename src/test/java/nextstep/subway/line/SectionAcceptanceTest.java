@@ -187,7 +187,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 노선_구간_제거_요청(강남역, 신분당선);
 
         // then
-        노선_구간_제거_성공(response);
+        노선_구간_제거_성공(response, 양재역, 판교역);
     }
 
     @Test
@@ -206,7 +206,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 노선_구간_제거_요청(판교역, 신분당선);
 
         // then
-        노선_구간_제거_성공(response);
+        노선_구간_제거_성공(response, 강남역, 양재역);
     }
 
     @Test
@@ -225,7 +225,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 노선_구간_제거_요청(양재역, 신분당선);
 
         // then
-        노선_구간_제거_성공(response);
+        노선_구간_제거_성공(response, 강남역, 판교역);
     }
 
     @Test
@@ -263,6 +263,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         노선_구간_제거_실패(response);
+    }
+
+    private void 노선_구간_제거_성공(ExtractableResponse<Response> response, StationResponse station1, StationResponse station2) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        LineFindResponse lineFindResponse = response.jsonPath().getObject(".", LineFindResponse.class);
+        List<StationResponse> stations = lineFindResponse.getStations();
+        List<String> stationNames = stations.stream().map(s -> s.getName()).collect(Collectors.toList());
+        assertThat(stationNames).containsExactly(station1.getName(), station2.getName());
     }
 
     private void 노선_구간_제거_실패(ExtractableResponse<Response> response) {
