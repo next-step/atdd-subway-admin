@@ -17,6 +17,7 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
+    @OneToMany(mappedBy = "line")
     private List<Section> sections;
 
     public Line() {
