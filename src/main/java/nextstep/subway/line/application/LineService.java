@@ -8,6 +8,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,12 +29,20 @@ public class LineService {
     public LineResponse saveLine(final LineRequest request) {
         lineNameShouldBeUnique(request.getName());
         final Line persistLine = lineRepository.save(request.toLine());
-        stationsShouldExist(request.getUpStationId(), request.getDownStationId());
-        final Section section = new Section(
-            request.getUpStationId(),
-            request.getDownStationId(),
-            request.getDistance()
-        );
+        // stationsShouldExist(request.getUpStationId(), request.getDownStationId());
+        // final Section section = new Section(
+        //     request.getUpStationId(),
+        //     request.getDownStationId(),
+        //     request.getDistance()
+        // );
+        //
+        final Station upStation = stationRepository.findById(request.getUpStationId())
+            .orElseThrow(NoSuchElementException::new);
+        final Station downStation = stationRepository.findById(request.getDownStationId())
+            .orElseThrow(NoSuchElementException::new);
+        //
+        final Section section = new Section(upStation, downStation, request.getDistance());
+        //
         persistLine.addSection(section);
         return LineResponse.of(persistLine);
     }

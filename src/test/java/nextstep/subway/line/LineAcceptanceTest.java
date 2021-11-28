@@ -6,8 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -66,44 +69,49 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertCreateLineFail(response);
     }
 
-//    @DisplayName("지하철 노선 목록을 조회한다.")
-//    @Test
-//    void getLines() {
-//        // given
-//        final String uri1 = registerLine("신분당선", "bg-red-600");
-//        final String uri2 = registerLine("2호선", "bg-green-600");
-//
-//        // when
-//        final ExtractableResponse<Response> response = requestGetLines();
-//
-//        // then
-//        assertGetLinesSuccess(response);
-//        assertGetLinesContained(response, Arrays.asList(uri1, uri2));
-//    }
-//
-//    @DisplayName("지하철 노선을 조회한다.")
-//    @Test
-//    void getLine() {
-//        // given
-//        final String uri = registerLine("신분당선", "bg-red-600");
-//
-//        // when
-//        final ExtractableResponse<Response> response = requestGetLine(uri);
-//
-//        // then
-//        assertGetLineSuccess(response);
-//        assertGetLineFetched(response, uri);
-//    }
-//
-//    @DisplayName("존재하지 않는 지하철 노선을 조회한다.")
-//    @Test
-//    void getLine_notFound() {
-//        // when
-//        final ExtractableResponse<Response> response = requestGetLine(BASE_URI + "/1");
-//
-//        // then
-//        assertGetLineNotFound(response);
-//    }
+    @DisplayName("지하철 노선 목록을 조회한다.")
+    @Test
+    void getLines() {
+        // given
+        final Long upStationId = createStation("강남역");
+        final Long downStationId1 = createStation("양재역");
+        final Long downStationId2 = createStation("역삼역");
+        final String uri1 = createLine("신분당선", "bg-red-600", upStationId, downStationId1, 10);
+        final String uri2 = createLine("2호선", "bg-green-600", upStationId, downStationId2, 15);
+
+        // when
+        final ExtractableResponse<Response> response = requestGetLines();
+
+        // then
+        assertGetLinesSuccess(response);
+        assertGetLinesContained(response, Arrays.asList(uri1, uri2));
+    }
+
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void getLine() {
+        // given
+        final Long upStationId = createStation("강남역");
+        final Long downStationId = createStation("양재역");
+        final String uri = createLine("신분당선", "bg-red-600", upStationId, downStationId, 10);
+
+        // when
+        final ExtractableResponse<Response> response = requestGetLine(uri);
+
+        // then
+        assertGetLineSuccess(response);
+        assertGetLineFetched(response, uri);
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선을 조회한다.")
+    @Test
+    void getLine_notFound() {
+        // when
+        final ExtractableResponse<Response> response = requestGetLine(BASE_URI + "/1");
+
+        // then
+        assertGetLineNotFound(response);
+    }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
@@ -201,21 +209,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-//    private ExtractableResponse<Response> requestGetLines() {
-//        return RestAssured.given().log().all()
-//            .when()
-//            .get(BASE_URI)
-//            .then().log().all()
-//            .extract();
-//    }
-//
-//    private ExtractableResponse<Response> requestGetLine(final String uri) {
-//        return RestAssured.given().log().all()
-//            .when()
-//            .get(uri)
-//            .then().log().all()
-//            .extract();
-//    }
+    private ExtractableResponse<Response> requestGetLines() {
+        return RestAssured.given().log().all()
+            .when()
+            .get(BASE_URI)
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> requestGetLine(final String uri) {
+        return RestAssured.given().log().all()
+            .when()
+            .get(uri)
+            .then().log().all()
+            .extract();
+    }
 
     private ExtractableResponse<Response> requestUpdateLine(
         final String name,
@@ -258,43 +266,45 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertResponseStatusEquals(response, HttpStatus.BAD_REQUEST);
     }
 
-//    private void assertGetLinesSuccess(final ExtractableResponse<Response> response) {
-//        assertResponseStatusEquals(response, HttpStatus.OK);
-//    }
-//
-//    private void assertGetLinesContained(
-//        final ExtractableResponse<Response> response,
-//        final List<String> uris
-//    ) {
-//        final List<Long> expectedLineIds = uris.stream()
-//            .map(it -> Long.parseLong(it.split("/")[2]))
-//            .collect(Collectors.toList());
-//        final List<Long> actualLineIds = response.jsonPath()
-//            .getList("id", Long.class);
-//        assertThat(actualLineIds).containsAll(expectedLineIds);
-//    }
+    private void assertGetLinesSuccess(final ExtractableResponse<Response> response) {
+        assertResponseStatusEquals(response, HttpStatus.OK);
+    }
+
+    private void assertGetLinesContained(
+        final ExtractableResponse<Response> response,
+        final List<String> uris
+    ) {
+        final List<Long> expectedLineIds = uris.stream()
+            .map(it -> Long.parseLong(it.split("/")[2]))
+            .collect(Collectors.toList());
+        final List<Long> actualLineIds = response.jsonPath()
+            .getList("id", Long.class);
+        assertThat(actualLineIds).containsAll(expectedLineIds);
+    }
 
     private void assertGetLineSuccess(final ExtractableResponse<Response> response) {
         assertResponseStatusEquals(response, HttpStatus.OK);
     }
 
-//    private void assertGetLineFetched(
-//        final ExtractableResponse<Response> response,
-//        final String expectedUri
-//    ) {
-//        final Long actualLineId = response.jsonPath()
-//            .getObject(".", LineResponse.class)
-//            .getId();
-//        final Long expectedLineId = Long.parseLong(expectedUri.split("/")[2]);
-//        assertThat(actualLineId).isEqualTo(expectedLineId);
-//    }
+    private void assertGetLineFetched(
+        final ExtractableResponse<Response> response,
+        final String expectedUri
+    ) {
+        final Long actualLineId = response.jsonPath()
+            .getLong("id");
+        final Long expectedLineId = Long.parseLong(expectedUri.split("/")[2]);
+        assertThat(actualLineId).isEqualTo(expectedLineId);
+    }
 
     private void assertGetLineNotFound(final ExtractableResponse<Response> response) {
         assertResponseStatusEquals(response, HttpStatus.NOT_FOUND);
     }
 
-    private void assertUpdateLineSuccess(final String uri, final String newLineName,
-        final String newLineColor) {
+    private void assertUpdateLineSuccess(
+        final String uri,
+        final String newLineName,
+        final String newLineColor
+    ) {
         final LineResponse actualLine = RestAssured.given().log().all()
             .when()
             .get(uri)
