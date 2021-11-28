@@ -66,13 +66,14 @@ public class LineService {
         line.changeColor(request.getColor());
     }
 
+    @Transactional
+    public void deleteStationById(final Long id) {
+        final Line line = getLineById(id);
+        lineRepository.delete(line);
+    }
+
     private Line getLineById(final Long id) {
         return lineRepository.findById(id)
             .orElseThrow(NoSuchElementException::new);
-    }
-
-    @Transactional
-    public void deleteStationById(final Long id) {
-        lineRepository.deleteById(id);
     }
 }

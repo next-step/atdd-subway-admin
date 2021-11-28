@@ -171,6 +171,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertDeleteLineSuccess(response);
     }
 
+    @DisplayName("존재하지 않는 지하철 노선을 제거한다.")
+    @Test
+    void deleteLine_notFound() {
+        // when
+        final ExtractableResponse<Response> response = requestDeleteLine(BASE_URI + "/1");
+
+        // then
+        assertDeleteLineNotFound(response);
+    }
+
     private String createLine(
         final String name,
         final String color,
@@ -321,6 +331,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void assertDeleteLineSuccess(final ExtractableResponse<Response> response) {
         assertResponseStatusEquals(response, HttpStatus.NO_CONTENT);
+    }
+
+    private void assertDeleteLineNotFound(final ExtractableResponse<Response> response) {
+        assertResponseStatusEquals(response, HttpStatus.NOT_FOUND);
     }
 
     private void assertResponseStatusEquals(
