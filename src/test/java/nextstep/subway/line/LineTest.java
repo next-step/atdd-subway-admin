@@ -23,7 +23,7 @@ public class LineTest {
 
     @Test
     @DisplayName("Line 생성 후 name,color 검증")
-    void create() {
+    void 핵심파라미터_일치_검증() {
         // given
         // when
         Line actual = new Line(LINE_NAME1, LINE_COLOR1);
@@ -37,7 +37,7 @@ public class LineTest {
 
     @Test
     @DisplayName("update 메소드 호출 후 변경된 name,color 일치 검증")
-    void update() {
+    void 파라미터_업데이트_검증() {
         // given
         Line actual = new Line(LINE_NAME2, LINE_COLOR2);
 
@@ -53,7 +53,7 @@ public class LineTest {
 
     @Test
     @DisplayName("Line 생성 시 name,color 는 빈값일 경우 에러 발생")
-    void validEmpty() {
+    void 빈값_검증() {
         assertAll(
             () -> assertThrows(InvalidParameterException.class, () -> new Line("", LINE_COLOR1)),
             () -> assertThrows(InvalidParameterException.class, () -> new Line(LINE_NAME1, ""))
@@ -62,7 +62,7 @@ public class LineTest {
 
     @Test
     @DisplayName("soft delete 테스트, delete() 호출 후 isDelete true(삭제됨) 반환 검증")
-    void deleted() {
+    void 삭제_검증() {
         // given
         Line line = LINE1;
 
@@ -74,8 +74,25 @@ public class LineTest {
     }
 
     @Test
+    @DisplayName("getStationIds 메소드는 상행부터 하행순으로 정렬되어 반환된다.")
+    void 구간_지하철역_정렬() {
+        // given
+        Line line = new Line(LineTest.LINE_NAME1, LineTest.LINE_COLOR1);
+        LineStation lineStation = LineStation.of(1L, 2L, Distance.of(100));
+        LineStation lineStation2 = LineStation.of(2L, 3L, Distance.of(100));
+
+        // when
+        line.addLineStation(lineStation);
+        line.addLineStation(lineStation2);
+
+        // then
+        assertThat(line.getStationIds()).containsExactly(1L, 2L, 3L);
+    }
+
+
+    @Test
     @DisplayName("LineStation 추가 테스트, `Sections` 에는 null 인 `nextStation`이 1개 존재해야함")
-    void addLineStation() {
+    void 마지막역_nextStationId_null() {
         // given
         Line line = new Line(LineTest.LINE_NAME1, LineTest.LINE_COLOR1);
         LineStation lineStation = LineStation.of(1L, 2L, Distance.of(100));
@@ -90,7 +107,7 @@ public class LineTest {
 
     @Test
     @DisplayName("상행,하행역 둘중 하나도 포함되어있지 않으면 추가할 수 없음")
-    void addLineStation_not_position_fail() {
+    void 상행_하행_연결_할_역이_없는_경우() {
         // given
         Line line = new Line(LineTest.LINE_NAME1, LineTest.LINE_COLOR1);
         line.addLineStation(LineStation.of(1L, 2L, Distance.of(100)));
@@ -104,7 +121,7 @@ public class LineTest {
 
     @Test
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
-    void addLineStation_duplicate_fail() {
+    void 중복으로_추가_실패() {
         // given
         Line line = new Line(LineTest.LINE_NAME1, LineTest.LINE_COLOR1);
         line.addLineStation(LineStation.of(1L, 2L, Distance.of(100)));
@@ -118,7 +135,7 @@ public class LineTest {
 
     @Test
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이와 같거나 크면 등록을 할 수 없음")
-    void addLineStation_distance_fail() {
+    void 구간사이_길이_실패() {
         // given
         Line line = new Line(LineTest.LINE_NAME1, LineTest.LINE_COLOR1);
         line.addLineStation(LineStation.of(1L, 2L, Distance.of(100)));
