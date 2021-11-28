@@ -1,7 +1,7 @@
 package nextstep.subway.domain.section.domain;
 
-import nextstep.subway.domain.line.domain.Line;
 import nextstep.subway.domain.common.BaseEntity;
+import nextstep.subway.domain.line.domain.Line;
 import nextstep.subway.domain.station.domain.Station;
 
 import javax.persistence.*;
@@ -37,6 +37,13 @@ public class Section extends BaseEntity {
 
     public Section(final Station preStation, final Station station, final int distance) {
         this.distance = new Distance(distance);
+        this.preStation = preStation;
+        this.station = station;
+    }
+
+    public Section(final Station preStation, final Station station, final int distance, final Line line) {
+        this.distance = new Distance(distance);
+        this.line = line;
         this.preStation = preStation;
         this.station = station;
     }

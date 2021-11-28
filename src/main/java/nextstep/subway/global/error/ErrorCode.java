@@ -11,7 +11,8 @@ public enum ErrorCode {
     ALREADY_REGISTER_SECTION(400, "S001", "상행역과 하행역이 이미 노선에 모두 등록되어 있습니다."),
     STANDARD_STATION_NOT_FOUND(400, "S002", "상행역과 하행역 둘 중 하나가 포함되어야 합니다."),
     DISTANCE_EXCESS(400, "S003", "새로 추가할 역의 길이가 기존 역 사이 길이보다 크거나 같습니다."),
-    DISTANCE_UNDER(400, "S004", "역 사이에 거리는 최소 1 이상 입니다.");
+    DISTANCE_UNDER(400, "S004", "역 사이에 거리는 최소 1 이상 입니다."),
+    SECTION_ONE(400, "S005", "구간은 최소 1개 이여야 합니다.");
 
     private final String code;
     private final String message;

@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
 
     /**
      * 비즈니스 규칙을 위반할 경우 발생
-     * */
+     */
     @ExceptionHandler(BusinessException.class)
     protected ResponseEntity<ErrorResponse> handleBusinessException(final BusinessException e) {
         log.error("handleBusinessException", e);
@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
 
     /**
      * 처리되지 못한 예외
-     * */
+     */
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ErrorResponse> handleException(Exception e) {
         log.error("handleException", e);
