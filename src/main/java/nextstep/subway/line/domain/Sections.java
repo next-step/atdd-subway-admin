@@ -105,10 +105,7 @@ public class Sections {
 
         this.sections
                 .stream()
-                .filter(s -> s.getUpStation() == section.getUpStation()
-                        || s.getDownStation() == section.getUpStation()
-                        || s.getUpStation() == section.getDownStation()
-                        || s.getDownStation() == section.getDownStation())
+                .filter(s -> s.isContainsStation(section))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않습니다."));
     }

@@ -52,11 +52,21 @@ public class Section {
     }
 
     public boolean hasEqualUpStation(Section section) {
-        return this.getUpStation() == section.getUpStation();
+        return this.upStation == section.upStation;
     }
 
     public boolean hasEqualDownStation(Section section) {
-        return this.getDownStation() == section.getDownStation();
+        return this.downStation == section.downStation;
+    }
+
+    public boolean isContainsStation(Section section) {
+        if (this.upStation.equals(section.upStation)
+                || this.upStation.equals(section.downStation)
+                || this.downStation.equals(section.upStation)
+                || this.downStation.equals(section.downStation)) {
+            return true;
+        }
+        return false;
     }
 
     public Long getId() {
