@@ -3,7 +3,6 @@ package nextstep.subway.line;
 import static nextstep.subway.line.LineAcceptanceTestUtils.*;
 import static nextstep.subway.station.StationAcceptanceTestUtils.*;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -16,9 +15,12 @@ import org.junit.jupiter.api.Test;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Distance;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -26,6 +28,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private Station station2;
     private Station station3;
     private Station station4;
+    private Sections sections1;
+    private Sections sections2;
 
     @Override
     @BeforeEach
@@ -36,6 +40,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         station2 = 지하철_역_등록되어_있음("양재역");
         station3 = 지하철_역_등록되어_있음("잠실역");
         station4 = 지하철_역_등록되어_있음("사당역");
+
+        sections1 = new Sections(Arrays.asList(new Section(station1, station2, new Distance(10))));
+        sections2 = new Sections(Arrays.asList(new Section(station3, station4, new Distance(5))));
     }
 
     private Map<String, String> 지하철_신분당선() {
@@ -94,13 +101,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 지하철_노선_목록을_조회한다() {
         // given
         long id1 = 지하철_노선_등록되어_있음("신분당선", "red", station1, station2, 10);
-        long id2 = 지하철_노선_등록되어_있음("2호선", "green", station3, station4, 10);
-        LocalDateTime now = LocalDateTime.now();
+        long id2 = 지하철_노선_등록되어_있음("2호선", "green", station3, station4, 5);
         List<LineResponse> expected = Arrays.asList(
-            new LineResponse(id1, "신분당선", "red", now, now,
-                Arrays.asList(StationResponse.from(station1), StationResponse.from(station2))),
-            new LineResponse(id2, "2호선", "green", now, now,
-                Arrays.asList(StationResponse.from(station3), StationResponse.from(station4))));
+            LineResponse.from(new Line(id1, "신분당선", "red", sections1)),
+            LineResponse.from(new Line(id2, "2호선", "green", sections2))
+        );
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -114,9 +119,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 지하철_노선을_조회한다() {
         // given
         long id = 지하철_노선_등록되어_있음("신분당선", "red", station1, station2, 10);
-        LocalDateTime now = LocalDateTime.now();
-        LineResponse expected = new LineResponse(id, "신분당선", "red", now, now,
-            Arrays.asList(StationResponse.from(station1), StationResponse.from(station2)));
+        LineResponse expected = LineResponse.from(new Line(id, "신분당선", "red", sections1));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(id);
@@ -144,9 +147,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("name", "2호선");
         params.put("color", "green");
 
-        LocalDateTime now = LocalDateTime.now();
-        LineResponse expected = new LineResponse(id, "2호선", "green", now, now,
-            Arrays.asList(StationResponse.from(station1), StationResponse.from(station2)));
+        LineResponse expected = LineResponse.from(new Line(id, "2호선", "green", sections1));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(id, params);

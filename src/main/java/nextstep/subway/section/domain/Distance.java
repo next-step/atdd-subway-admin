@@ -14,13 +14,13 @@ public class Distance {
         this.distance = distance;
     }
 
+    protected Distance() {
+    }
+
     private void validate(int distance) {
         if (distance < MIN_DISTANCE) {
             throw new IllegalArgumentException("1 이상의 길이만 입력 가능합니다. distance: " + distance);
         }
-    }
-
-    protected Distance() {
     }
 
     @Override

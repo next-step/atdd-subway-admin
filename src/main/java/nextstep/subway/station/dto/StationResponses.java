@@ -10,11 +10,11 @@ import nextstep.subway.station.domain.Station;
 public class StationResponses {
     private List<StationResponse> responses;
 
-    public StationResponses(List<StationResponse> responses) {
+    private StationResponses(List<StationResponse> responses) {
         this.responses = responses;
     }
 
-    protected StationResponses() {
+    private StationResponses() {
     }
 
     public static StationResponses from(List<Station> stations) {
