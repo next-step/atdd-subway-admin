@@ -27,7 +27,7 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(final LineRequest request) {
-        lineNameShouldBeUnique(request.getName());
+        checkLineNameIsUnique(request.getName());
         final Line persistLine = lineRepository.save(request.toLine());
         final Station upStation = stationRepository.findById(request.getUpStationId())
             .orElseThrow(NoSuchElementException::new);
@@ -38,7 +38,7 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    private void lineNameShouldBeUnique(final String requestedName) {
+    private void checkLineNameIsUnique(final String requestedName) {
         if (lineRepository.existsByName(requestedName)) {
             throw new IllegalArgumentException("이미 존재하는 지하철 노선 이름으로 지하철 노선을 생성할 수 없습니다.");
         }
@@ -57,13 +57,13 @@ public class LineService {
     }
 
     @Transactional
-    public void updateLine(final Long id, final LineRequest lineRequest) {
+    public void updateLine(final Long id, final LineRequest request) {
         final Line line = getLineById(id);
-        if (!lineRequest.getName().equals(line.getName())) {
-            lineNameShouldBeUnique(lineRequest.getName());
+        if (!line.nameEquals(request.getName())) {
+            checkLineNameIsUnique(request.getName());
         }
-        line.changeName(lineRequest.getName());
-        line.changeColor(lineRequest.getColor());
+        line.changeName(request.getName());
+        line.changeColor(request.getColor());
     }
 
     private Line getLineById(final Long id) {

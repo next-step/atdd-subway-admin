@@ -42,6 +42,10 @@ public class Line extends BaseEntity {
         this.name = name;
     }
 
+    public boolean nameEquals(final String name) {
+        return this.name.equals(name);
+    }
+
     public void changeColor(final String color) {
         if (Objects.isNull(color) || color.isEmpty()) {
             throw new IllegalArgumentException();
