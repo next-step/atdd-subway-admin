@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.dto.LineRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        ExtractableResponse<Response> createResponse = LineTestFixture.지하철_노선_등록("1호선", "blue");
+        ExtractableResponse<Response> createResponse = LineTestFixture.지하철_노선_등록("1호선", "blue", 1L, 2L, 1);
 
         // then
         // 지하철_노선_생성됨
@@ -33,12 +34,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = LineTestFixture.지하철_노선_등록("1호선", "blue");
+        ExtractableResponse<Response> createResponse = LineTestFixture.지하철_노선_등록("1호선", "blue", 1L, 2L, 1);
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = LineTestFixture.지하철_노선_등록("1호선", "blue");
+        ExtractableResponse<Response> response = LineTestFixture.지하철_노선_등록("1호선", "blue", 1L, 2L, 1);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -51,10 +52,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createBlueResponse = LineTestFixture.지하철_노선_등록("1호선", "blue");
+        ExtractableResponse<Response> createBlueResponse = LineTestFixture.지하철_노선_등록("1호선", "blue", 1L, 2L, 1);
         assertThat(createBlueResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        ExtractableResponse<Response> createGreenResponse = LineTestFixture.지하철_노선_등록("2호선", "green");
+        ExtractableResponse<Response> createGreenResponse = LineTestFixture.지하철_노선_등록("2호선", "green", 3L, 4L, 1);
         assertThat(createGreenResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
@@ -78,10 +79,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLineSuccess() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createBlueResponse = LineTestFixture.지하철_노선_등록("1호선", "blue");
+        ExtractableResponse<Response> createBlueResponse = LineTestFixture.지하철_노선_등록("1호선", "blue", 1L, 2L, 1);
         assertThat(createBlueResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        ExtractableResponse<Response> createGreenResponse = LineTestFixture.지하철_노선_등록("2호선", "green");
+        ExtractableResponse<Response> createGreenResponse = LineTestFixture.지하철_노선_등록("2호선", "green", 3L, 4L, 1);
         assertThat(createGreenResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
@@ -111,7 +112,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createBlueResponse = LineTestFixture.지하철_노선_등록("1호선", "blue");
+        ExtractableResponse<Response> createBlueResponse = LineTestFixture.지하철_노선_등록("1호선", "blue", 1L, 2L, 1);
         assertThat(createBlueResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
@@ -143,7 +144,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createBlueResponse = LineTestFixture.지하철_노선_등록("1호선", "blue");
+        ExtractableResponse<Response> createBlueResponse = LineTestFixture.지하철_노선_등록("1호선", "blue", 1L, 2L, 1);
         assertThat(createBlueResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
