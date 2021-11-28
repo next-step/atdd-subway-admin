@@ -68,7 +68,7 @@ public class SectionsTest {
         sections.add(firstSection);
         
         // then
-        assertThat(sections.getStations().get(0)).isEqualTo(firstUpStation);
+        assertThat(sections.getStationAt(0)).isEqualTo(firstUpStation);
     }
     
     @Test
@@ -88,7 +88,7 @@ public class SectionsTest {
         sections.add(lastSection);
         
         // then
-        assertThat(sections.getStations().get(sections.getStations().size()-1)).isEqualTo(lastDownStation);
+        assertThat(sections.getSectionAt(sections.count()-1)).isEqualTo(lastSection);
     }
     
     @Test
@@ -109,8 +109,8 @@ public class SectionsTest {
         
         // then
         assertAll(
-                () -> assertThat(sections.getStations().get(1)).isEqualTo(middleUpStation),
-                () -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(30)
+                () -> assertThat(sections.getStationAt(1)).isEqualTo(middleUpStation),
+                () -> assertThat(sections.getDistanceAt(0)).isEqualTo(30)
                 );
     }
 }

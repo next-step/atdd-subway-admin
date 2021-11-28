@@ -78,10 +78,6 @@ public class Sections {
         }
     }
     
-    int count() {
-        return sections.size();
-    }
-    
     private void checkValidStations(Section section) {
         if(isExistStations(section.getUpStation(), section.getDownStation())) {
             throw new IllegalArgumentException(String.format("이미 등록된 노선입니다.(%s-%s)", section.getUpStation().getName(), section.getDownStation().getName()));
@@ -101,6 +97,24 @@ public class Sections {
     
     void print() {
         sections.stream().forEach(s -> System.out.println(s.toString()));
+    }
+    
+    
+    int count() {
+        return sections.size();
+    }
+    
+    int getDistanceAt(int index) {
+        return getSections().get(index).getDistance(); 
+    }
+    
+    Section getSectionAt(int index) {
+        return getSections().get(index); 
+    }
+    
+    
+    Station getStationAt(int index) {
+        return getStations().get(index); 
     }
 
 }
