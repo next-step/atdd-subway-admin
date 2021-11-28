@@ -59,7 +59,6 @@ public class LineTest {
         Line comparedLine = Line.of(comparedName, "파란색", upStation, downStation, 15);
         
         // when, then
-        // then
         assertAll(
                 () -> assertThat(line.equals(comparedLine)).isEqualTo(expected),
                 () -> assertThat(line.hashCode() == comparedLine.hashCode()).isEqualTo(expected)

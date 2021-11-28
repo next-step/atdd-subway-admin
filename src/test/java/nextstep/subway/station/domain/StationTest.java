@@ -44,7 +44,6 @@ public class StationTest {
         Station comparedStation = Station.from(comparedName);
         
         // when, then
-        // then
         assertAll(
                 () -> assertThat(station.equals(comparedStation)).isEqualTo(expected),
                 () -> assertThat(station.hashCode() == comparedStation.hashCode()).isEqualTo(expected)
