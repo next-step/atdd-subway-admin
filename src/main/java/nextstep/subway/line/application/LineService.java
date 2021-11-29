@@ -21,68 +21,68 @@ public class LineService {
     private final LineRepository lineRepository;
     private final StationService stationService;
 
-    public LineService(final LineRepository lineRepository, final StationService stationService) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
     }
 
-    public LineResponse saveLine(final LineRequest lineRequest) {
+    public LineResponse saveLine(LineRequest lineRequest) {
         validateDuplicate(lineRequest);
-        final Line persistLine = lineRepository.save(lineRequest.toLine());
-        addSectionByRequest(persistLine, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        Line line = lineRepository.save(lineRequest.toLine());
+        addSectionByRequest(line, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
 
-        return LineResponse.of(persistLine);
+        return LineResponse.of(line);
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
-        final List<Line> lines = lineRepository.findAll();
+        List<Line> lines = lineRepository.findAll();
         return lines.stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public LineResponse findLine(final Long id) {
-        final Line line = findLineById(id);
+    public LineResponse findLine(Long id) {
+        Line line = findLineById(id);
         return LineResponse.of(line);
     }
 
-    public LineResponse updateLine(final LineRequest lineRequest, final Long id) {
-        final Line line = findLineById(id);
+    public LineResponse updateLine(LineRequest lineRequest, Long id) {
+        Line line = findLineById(id);
         line.update(lineRequest.toLine());
         return LineResponse.of(line);
     }
 
-    public LineResponse addSection(final Long id, final SectionRequest sectionRequest) {
-        final Line line = findLineById(id);
+    public LineResponse addSection(Long id, SectionRequest sectionRequest) {
+        Line line = findLineById(id);
         addSectionByRequest(line, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         return LineResponse.of(line);
     }
 
-    public void deleteLineById(final Long id) {
+    public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
 
-    private Line findLineById(final Long id) {
+    private Line findLineById(Long id) {
         return lineRepository.findById(id).orElseThrow(BadRequestException::new);
     }
 
-    private void validateDuplicate(final LineRequest lineRequest) {
+    private void validateDuplicate(LineRequest lineRequest) {
         if (lineRepository.existsByName(lineRequest.getName())) {
             throw new BadRequestException();
         }
     }
 
-    private void addSectionByRequest(final Line persistLine, final Long upStationId, final Long downStationId, final int distance) {
+    private void addSectionByRequest(Line line, Long upStationId, Long downStationId, int distance) {
         if (hasSectionInfo(upStationId, downStationId, distance)) {
-            final Station upStation = stationService.findStationById(upStationId);
-            final Station downStation = stationService.findStationById(downStationId);
-            persistLine.addSection(upStation, downStation, distance);
+            Station upStation = stationService.findStationById(upStationId);
+            Station downStation = stationService.findStationById(downStationId);
+            line.addSection(upStation, downStation, distance);
         }
     }
 
-    private boolean hasSectionInfo(final Long upStationId, final Long downStationId, final int distance) {
+    private boolean hasSectionInfo(Long upStationId, Long downStationId, int distance) {
         return upStationId != null || downStationId != null || distance > 0;
     }
 }

@@ -15,9 +15,10 @@ class SectionTest {
         // given
         Station upStation = Station.from("강남역");
         Station downStation = Station.from("양재역");
+        Line line = Line.of("신분당선", "red");
 
         // when
-        Section section = Section.of(upStation, downStation, 10);
+        Section section = Section.of(line, upStation, downStation, 10);
 
         // then
         Assertions.assertThat(section).isNotNull();
@@ -28,9 +29,10 @@ class SectionTest {
         // given
         Station upStation = Station.from("강남역");
         Station downStation = Station.from("강남역");
+        Line line = Line.of("신분당선", "red");
 
         // when
-        ThrowableAssert.ThrowingCallable throwingCallable = () -> Section.of(upStation, downStation, 10);
+        ThrowableAssert.ThrowingCallable throwingCallable = () -> Section.of(line, upStation, downStation, 10);
 
         // then
         Assertions.assertThatExceptionOfType(BadRequestException.class)

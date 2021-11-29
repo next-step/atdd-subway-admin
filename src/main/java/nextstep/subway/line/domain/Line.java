@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Line extends BaseEntity {
@@ -41,9 +42,8 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        Section section = Section.of(upStation, downStation, distance);
+        Section section = Section.of(this, upStation, downStation, distance);
         sections.add(section);
-        section.changeLine(this);
     }
 
     public Long getId() {
@@ -64,5 +64,18 @@ public class Line extends BaseEntity {
 
     public List<Station> getStations() {
         return sections.getOrderedStations();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Line line = (Line) o;
+        return Objects.equals(getId(), line.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }

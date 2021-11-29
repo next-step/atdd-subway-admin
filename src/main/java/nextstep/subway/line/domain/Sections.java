@@ -7,10 +7,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -27,23 +25,60 @@ public class Sections {
     }
 
     public List<Station> getOrderedStations() {
-        List<Station> orderedStations = new ArrayList<>();
-        if (sections.size() != 0) {
-            List<Station> headStations = sections.stream()
-                .map(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                .findFirst()
-                .orElseThrow(BadRequestException::new)
-                .collect(Collectors.toList());
-
-            List<Station> nodeStations = sections.stream()
-                    .map(Section::getDownStation)
-                    .filter(downStation -> downStation != headStations.get(1))
-                    .collect(Collectors.toList());
-
-            orderedStations.addAll(headStations);
-            orderedStations.addAll(nodeStations);
-            orderedStations.sort(Comparator.comparing(Station::getId));
+        if (sections.isEmpty()) {
+            return new ArrayList<>();
         }
+
+        Station firstUpStation = findFirstUpStation();
+        Station lastDownStation = findLastDownStation();
+
+        return makeOrderedStations(firstUpStation, lastDownStation);
+    }
+
+    private List<Station> makeOrderedStations(Station firstStation, Station lastDownStation) {
+        List<Station> orderedStations = new ArrayList<>();
+        orderedStations.add(firstStation);
+
+        Station nextStation = firstStation;
+        while (!lastDownStation.equals(nextStation)) {
+            nextStation = findNextStation(nextStation);
+            orderedStations.add(nextStation);
+        }
+
         return orderedStations;
+    }
+
+    private Station findNextStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isEqualsUpStation(station))
+                .map(Section::getDownStation)
+                .findFirst()
+                .orElseThrow(BadRequestException::new);
+    }
+
+    private Station findFirstUpStation() {
+        List<Station> allUpStations = getAllUpStations();
+        List<Station> allDownStations = getAllDownStations();
+        allUpStations.removeAll(allDownStations);
+        return allUpStations.get(0);
+    }
+
+    private Station findLastDownStation() {
+        List<Station> allUpStations = getAllUpStations();
+        List<Station> allDownStations = getAllDownStations();
+        allDownStations.removeAll(allUpStations);
+        return allDownStations.get(0);
+    }
+
+    private List<Station> getAllUpStations() {
+        return sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+    }
+
+    private List<Station> getAllDownStations() {
+        return sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
     }
 }

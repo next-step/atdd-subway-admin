@@ -5,11 +5,11 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -18,13 +18,13 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Station downStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Line line;
 
     @Embedded
@@ -33,15 +33,16 @@ public class Section {
     protected Section() {
     }
 
-    private Section(Station upStation, Station downStation, int distance) {
+    private Section(Line line, Station upStation, Station downStation, int distance) {
         validateDuplicate(upStation, downStation);
+        this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = Distance.from(distance);
     }
 
-    public static Section of(Station upStation, Station downStation, int distance) {
-        return new Section(upStation, downStation, distance);
+    public static Section of(Line line, Station upStation, Station downStation, int distance) {
+        return new Section(line, upStation, downStation, distance);
     }
 
     public Long getId() {
@@ -64,13 +65,26 @@ public class Section {
         return distance.value();
     }
 
-    public void changeLine(Line line) {
-        this.line = line;
+    public boolean isEqualsUpStation(Station station) {
+        return this.upStation.equals(station);
     }
 
     private static void validateDuplicate(Station upStation, Station downStation) {
         if (upStation.equals(downStation)) {
             throw new BadRequestException();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return Objects.equals(getId(), section.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }
