@@ -67,15 +67,23 @@ public class Section extends BaseEntity {
         this.line.addSection(this);
     }
 
-    private void isExistLine(Line line) {
-        if (this.line != null && !this.line.equals(line)) {
-            line.removeSection(this);
-        }
-    }
-
     public void update(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public boolean isPrevSection(Section section) {
+        return upStation.equals(section.getDownStation());
+    }
+
+    public boolean isNextSection(Section section) {
+        return downStation.equals(section.getUpStation());
+    }
+
+    private void isExistLine(Line line) {
+        if (this.line != null && !this.line.equals(line)) {
+            line.removeSection(this);
+        }
     }
 }
