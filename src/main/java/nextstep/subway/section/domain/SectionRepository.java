@@ -1,2 +1,4 @@
-package nextstep.subway.section.domain;public class SectionRepository {
+package nextstep.subway.section.domain;
+
+public interface SectionRepository {
 }
