@@ -81,6 +81,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_추가_요청(lineId, upStationId, 역_ID(양재역_생성_응답), 4);
         int lineId = response.jsonPath().getInt("id");
 
+        // then
         assertThat(지하철_노선_조회_요청(lineId).jsonPath().getList("stations.name", String.class)).containsExactly("강남역", "양재역", "광교역");
     }
 
