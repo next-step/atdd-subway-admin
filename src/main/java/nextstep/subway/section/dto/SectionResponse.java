@@ -6,6 +6,9 @@ public class SectionResponse {
     private Long downStationId;
     private int distance;
 
+    protected SectionResponse() {
+    }
+
     public SectionResponse(Long id, Long upStationId, Long downStationId, int distance) {
         this.id = id;
         this.upStationId = upStationId;
