@@ -36,6 +36,17 @@ public class Section extends BaseEntity {
 
 	private int sequence;
 
+	protected Section() {
+	}
+
+	public static Section create(Station upStation, Station downStation, int distance) {
+		Section section = new Section();
+		section.upStation = upStation;
+		section.downStation = downStation;
+		section.distance = distance;
+		return section;
+	}
+
 	public Station getUpStation() {
 		return upStation;
 	}
@@ -52,15 +63,8 @@ public class Section extends BaseEntity {
 		return distance;
 	}
 
-	protected Section() {
-	}
-
-	public static Section create(Station upStation, Station downStation, int distance) {
-		Section section = new Section();
-		section.upStation = upStation;
-		section.downStation = downStation;
-		section.distance = distance;
-		return section;
+	public Long getId() {
+		return id;
 	}
 
 	public void initSequence(Line line) {
@@ -75,8 +79,16 @@ public class Section extends BaseEntity {
 		this.sequence = sequence;
 	}
 
-	public Long getId() {
-		return id;
+	public void updateUpStation(Station station) {
+		this.upStation = station;
+	}
+
+	public void updateDistance(int distance) {
+		this.distance = distance;
+	}
+
+	public void updateDownStation(Station upStation) {
+		this.downStation = upStation;
 	}
 
 	@Override
@@ -93,6 +105,5 @@ public class Section extends BaseEntity {
 	public int hashCode() {
 		return Objects.hash(id);
 	}
-
 
 }

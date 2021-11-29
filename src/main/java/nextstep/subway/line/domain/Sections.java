@@ -14,8 +14,6 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
-	public static final int START_SECTION_INDEX = 0;
-
 	@OneToMany(mappedBy = "line", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private final List<Section> sections = new ArrayList<>();
 
@@ -40,25 +38,72 @@ public class Sections {
 	}
 
 	public void add(Section section) {
-		if (ifAddSectionsStartLocation(section)) {
-			addSectionsStartLocation(section);
+		if (ifAddStartLocation(section)) {
+			addSectionStartLocation(section);
 			return;
 		}
-		if (ifAddSectionsEndLocation(section)) {
-			addSectionsEndLocation(section);
+		if (ifAddEndLocation(section)) {
+			addSectionEndLocation(section);
 			return;
 		}
-
+		addSectionMiddleLocation(section);
 	}
 
-	private void addSectionsEndLocation(Section section) {
-		int endSectionIndex = sections.size() - 1;
-		Section endSection = sections.get(endSectionIndex);
-		section.updateSequence(endSection.getSequence()+1);
-		sections.add(endSectionIndex, section);
+	private void addSectionMiddleLocation(Section section) {
+		if (ifAddMiddleStartLocation(section)) {
+			addSectionMiddleStartLocation(section);
+			return;
+		}
+		addSectionMiddleEndLocation(section);
 	}
 
-	private boolean ifAddSectionsEndLocation(Section section) {
+	private void addSectionMiddleEndLocation(Section section) {
+		Section middleSection = sections.stream()
+			.filter(s -> s.getDownStation().equals(section.getDownStation()))
+			.filter(s -> s.getDistance() > section.getDistance())
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("신규구간의 길이는 기존의 구간보다 클 수 없습니다."));
+		updateNonMiddleLocationSectionSequence(middleSection);
+		section.updateSequence(middleSection.getSequence() + 1);
+		middleSection.updateDownStation(section.getUpStation());
+		middleSection.updateDistance(middleSection.getDistance() - section.getDistance());
+		sections.add(section.getSequence() - 1, section);
+	}
+
+	private void addSectionMiddleStartLocation(Section section) {
+		Section middleSection = sections.stream()
+			.filter(s -> s.getUpStation().equals(section.getUpStation()))
+			.filter(s -> s.getDistance() > section.getDistance())
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("신규구간의 길이는 기존의 구간보다 클 수 없습니다."));
+		updateNonMiddleLocationSectionSequence(middleSection);
+		section.updateSequence(middleSection.getSequence());
+		middleSection.updateSequence(middleSection.getSequence() + 1);
+		middleSection.updateUpStation(section.getDownStation());
+		middleSection.updateDistance(middleSection.getDistance() - section.getDistance());
+		sections.add(section.getSequence() - 1, section);
+	}
+
+	private void updateNonMiddleLocationSectionSequence(Section middleSection) {
+		sections.stream()
+			.filter(s -> s.getSequence() > middleSection.getSequence())
+			.forEach(s -> s.updateSequence(s.getSequence() + 1));
+	}
+
+	private boolean ifAddMiddleStartLocation(Section section) {
+		return sections.stream()
+			.filter(s -> s.getUpStation().equals(section.getUpStation()))
+			.findFirst()
+			.isPresent();
+	}
+
+	private void addSectionEndLocation(Section section) {
+		Section endSection = sections.get(sections.size() - 1);
+		section.updateSequence(endSection.getSequence() + 1);
+		sections.add(sections.size() - 1, section);
+	}
+
+	private boolean ifAddEndLocation(Section section) {
 		return sections.stream()
 			.filter(s -> s.getSequence() == sections.size())
 			.filter(s -> s.getDownStation().equals(section.getUpStation()))
@@ -66,7 +111,7 @@ public class Sections {
 			.isPresent();
 	}
 
-	private boolean ifAddSectionsStartLocation(Section section) {
+	private boolean ifAddStartLocation(Section section) {
 		return sections.stream()
 			.filter(s -> s.getSequence() == 1)
 			.filter(s -> s.getUpStation().equals(section.getDownStation()))
@@ -74,11 +119,11 @@ public class Sections {
 			.isPresent();
 	}
 
-	private void addSectionsStartLocation(Section section) {
-		Section startSection = sections.get(START_SECTION_INDEX);
+	private void addSectionStartLocation(Section section) {
+		Section startSection = sections.get(0);
 		section.updateSequence(startSection.getSequence());
 		startSection.updateSequence(section.getSequence() + 1);
-		sections.add(START_SECTION_INDEX, section);
+		sections.add(0, section);
 	}
 
 }
