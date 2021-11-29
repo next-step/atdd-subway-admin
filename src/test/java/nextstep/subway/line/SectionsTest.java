@@ -100,7 +100,7 @@ public class SectionsTest {
     }
 
     private void checkStationNames(Line line, String name1, String name2, String name3) {
-        assertThat(line.getStations()
+        assertThat(line.getOrderedSections()
                 .stream()
                 .map(it -> it.getName())).containsExactly(name1, name2, name3);
     }
