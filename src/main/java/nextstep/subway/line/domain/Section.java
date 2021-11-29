@@ -19,11 +19,11 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_to_upstation"))
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_to_downstation"))
     private Station downStation;
 
@@ -57,6 +57,12 @@ public class Section {
         return new Section(upStation, downStation, distance);
     }
 
+    public void update(Section section) {
+        this.upStation = section.upStation;
+        this.downStation = section.downStation;
+        this.distance = section.distance;
+    }
+
     public Station getUpStation() {
         return upStation;
     }
@@ -71,5 +77,58 @@ public class Section {
 
     public void addLine(final Line line) {
         this.line = line;
+    }
+
+    public boolean isLinkable(final Section section) {
+        if (isSame(section)) {
+            return false;
+        }
+
+        if (isIncludeAbleSection(section)) {
+            return true;
+        }
+
+        return upStation.equals(section.downStation) || downStation.equals(section.upStation);
+    }
+
+    public boolean isIncludeAbleSection(final Section section) {
+        if (isSameUpStation(section)) {
+            return !downStation.equals(section.downStation);
+        }
+
+        if (isSameDownStation(section)) {
+            return !upStation.equals(section.upStation);
+        }
+
+        return false;
+    }
+
+    public boolean isSameUpStation(final Section section) {
+        return upStation.equals(section.getUpStation());
+    }
+
+    public boolean isSameDownStation(final Section section) {
+        return downStation.equals(section.getDownStation());
+    }
+
+    public boolean isSame(final Section section) {
+        return isSameUpStation(section) && isSameDownStation(section);
+    }
+
+    public void link(Section section) {
+        if (isIncludeAbleSection(section)) {
+            changeLink(section);
+            distance = Distance.of(distance.getDistance() - section.distance.getDistance());
+        }
+    }
+
+    private void changeLink(Section section) {
+        if (isSameUpStation(section)) {
+            downStation = section.upStation;
+        }
+
+        if (isSameDownStation(section)) {
+            downStation = section.upStation;
+        }
     }
 }

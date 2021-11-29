@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -31,10 +32,11 @@ public class Line extends BaseEntity {
     public Line() {
     }
 
-    public Line(String name, String color, Section section) {
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
 
+        Section section = Section.of(upStation, downStation, distance);
         section.addLine(this);
         this.sections.addSection(section);
     }
@@ -60,15 +62,14 @@ public class Line extends BaseEntity {
         return sections;
     }
 
+    public void addSection(final Section section) {
+        section.addLine(this);
+        this.sections.addSection(section);
+    }
+
     public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
-
-        for (Section section : sections.getSections()) {
-            stations.add(section.getUpStation());
-            stations.add(section.getDownStation());
-        }
-
-        return stations.stream()
+        return this.sections.getSections().stream()
+            .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
             .distinct()
             .sorted(Comparator.comparing(Station::getId))
             .collect(Collectors.toList());

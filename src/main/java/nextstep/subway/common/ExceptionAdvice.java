@@ -4,6 +4,7 @@ import java.util.NoSuchElementException;
 import nextstep.subway.common.exception.IllegalDistanceException;
 import nextstep.subway.common.exception.IllegalStationException;
 import nextstep.subway.common.exception.LineNotFoundException;
+import nextstep.subway.common.exception.LinkableSectionNotFoundException;
 import nextstep.subway.common.exception.StationNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -27,13 +28,17 @@ public class ExceptionAdvice {
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
-    protected ResponseEntity handleEmptyResultDataAccessException(
-        EmptyResultDataAccessException e) {
+    protected ResponseEntity handleEmptyResultDataAccessException(EmptyResultDataAccessException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @ExceptionHandler(value = {IllegalDistanceException.class, IllegalStationException.class})
     protected ResponseEntity handleIllegalExceptionCases(IllegalArgumentException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @ExceptionHandler(LinkableSectionNotFoundException.class)
+    protected ResponseEntity handleIllegalExceptionCases(LinkableSectionNotFoundException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }
