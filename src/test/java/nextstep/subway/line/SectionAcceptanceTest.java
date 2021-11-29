@@ -64,6 +64,32 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 	}
 
+	@DisplayName("지하철 노선 중간에 신규 구간 추가 (시작점 일치)")
+	@Test
+	void addSectionMiddleStartLocationSuccess() {
+		// given (신규 구간 생성)
+		SectionRequest param = new SectionRequest(2L, 3L, 15);
+
+		// when (신규 구간 노선에 추가)
+		ExtractableResponse<Response> response = post("/lines/1/sections", param);
+
+		// then (신규 구간 추가 성공)
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+	}
+
+	@DisplayName("지하철 노선 중간에 신규 구간 추가 (종점 일치)")
+	@Test
+	void addSectionMiddleEndLocationSuccess() {
+		// given (신규 구간 생성)
+		SectionRequest param = new SectionRequest(3L, 4L, 15);
+
+		// when (신규 구간 노선에 추가)
+		ExtractableResponse<Response> response = post("/lines/1/sections", param);
+
+		// then (신규 구간 추가 성공)
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+	}
+
 	private long extractIdByURL(String url) {
 		return Long.parseLong(url.split("/")[2]);
 	}
