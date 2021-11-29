@@ -1,8 +1,28 @@
+## 2단계 - 인수 테스트 리팩터링
+
+### 요구사항
+
+- 두 종점역을 추가하여 노선 생성하도록 변경
+- 노선 객체에서는 두 종점은 구간정보로 관리
+- 노선 조회 시, 역 목록이 조회되어야 함
+- 노선 조회 시, 구간이 상행 종점부터 하행 종점까지 정렬되어 조회되어야 함
+- 노선과 구간 관계 설정
+- 인수테스트 변경 후 작업
+
+### 기능 목록
+
+- 노선 생성 기능: 두 종점역 정보 등록
+    - 구간 정보 등록 기능
+- 노선 조회 기능
+    - 역 목록도 함께 조회
+    - 역 목록 정렬: 상행종점부터 하행종점까지 정렬
+
 ## 1단계 - 지하철 노선 관리
 
 지하철 노션 관리 기능을 구현
 
 - 노선 생성
+
 ```text
 POST /lines HTTP/1.1
 accept: */*
@@ -29,6 +49,7 @@ Date: Fri, 13 Nov 2020 00:11:51 GMT
 ```
 
 - 노선 목록 조회
+
 ```text
 GET /lines HTTP/1.1
 accept: application/json
@@ -64,6 +85,7 @@ Date: Fri, 13 Nov 2020 00:11:51 GMT
 ```
 
 - 노선 조회
+
 ```text
 GET /lines/1 HTTP/1.1
 accept: application/json
@@ -87,6 +109,7 @@ Date: Fri, 13 Nov 2020 00:11:51 GMT
 ```
 
 - 노선 수정
+
 ```text
 PUT /lines/1 HTTP/1.1
 accept: */*
@@ -105,6 +128,7 @@ Date: Fri, 13 Nov 2020 00:11:51 GMT
 ```
 
 - 노선 삭제
+
 ```text
 DELETE /lines/1 HTTP/1.1
 accept: */*
@@ -113,7 +137,6 @@ host: localhost:49468
 HTTP/1.1 204 
 Date: Fri, 13 Nov 2020 00:11:51 GMT
 ```
-
 
 ---
 
@@ -132,6 +155,7 @@ Date: Fri, 13 Nov 2020 00:11:51 GMT
 <br>
 
 # 지하철 노선도 미션
+
 [ATDD 강의](https://edu.nextstep.camp/c/R89PYi5H) 실습을 위한 지하철 노선도 애플리케이션
 
 <br>
@@ -139,25 +163,34 @@ Date: Fri, 13 Nov 2020 00:11:51 GMT
 ## 🚀 Getting Started
 
 ### Install
+
 #### npm 설치
+
 ```
 cd frontend
 npm install
 ```
+
 > `frontend` 디렉토리에서 수행해야 합니다.
 
 ### Usage
+
 #### webpack server 구동
+
 ```
 npm run dev
 ```
+
 #### application 구동
+
 ```
 ./gradlew bootRun
 ```
+
 <br>
 
 ## ✏️ Code Review Process
+
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
 <br>
