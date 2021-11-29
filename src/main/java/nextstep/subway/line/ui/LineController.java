@@ -63,10 +63,9 @@ public class LineController {
                 sectionRequest.getUpStationId(),
                 sectionRequest.getDownStationId(),
                 sectionRequest.getDistance()));
-
         SectionResponse sectionResponse =
                 new SectionResponse(section.getId(), section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
-        return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections" + sectionResponse.getId())).body(sectionResponse);
+        return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections/" + sectionResponse.getId())).body(sectionResponse);
     }
 
     @ExceptionHandler(ExistDuplicatedNameException.class)
