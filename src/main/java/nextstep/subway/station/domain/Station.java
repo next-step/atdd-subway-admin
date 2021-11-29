@@ -68,6 +68,11 @@ public class Station extends BaseEntity {
     public int hashCode() {
         return Objects.hash(getId(), getName());
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }
 
 

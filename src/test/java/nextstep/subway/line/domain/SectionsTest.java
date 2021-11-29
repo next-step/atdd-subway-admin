@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import static java.util.Arrays.*;
 import static java.util.stream.Collectors.*;
 import static nextstep.subway.line.LineAcceptanceTest.*;
+import static nextstep.subway.line.domain.Sections.*;
 import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.*;
 
@@ -13,6 +14,7 @@ import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import nextstep.subway.common.exception.ServiceException;
 import nextstep.subway.station.domain.Station;
 
 class SectionsTest {
@@ -140,5 +142,26 @@ class SectionsTest {
         Assertions.assertThat(sections).isEqualTo(expectedSections);
     }
 
+
+    @Test
+    void 등록되지_않은_구간_추가시_예외() {
+        //given
+        Station station1 = new Station(1L, "강남역");
+        Station station2 = new Station(1L, "신촌역");
+
+        Station addStation1 = new Station(1L, "서울역");
+        Station addStation2= new Station(1L, "용산역");
+
+        // when
+        Sections sections = new Sections();
+        Section section = new Section(station1, station2, SectionType.MIDDLE, new Distance(10));
+        sections.add(section, new Line(LINE_ONE, LINE_ONE_COLOR_RED));
+
+        // then
+        Assertions.assertThatThrownBy(() -> {
+                      sections.addSection(new Section(addStation1, addStation2, SectionType.MIDDLE, new Distance(5)));
+                  }).isInstanceOf(ServiceException.class)
+                  .hasMessageStartingWith("기존 노선에 해당역이 존재하지 않습니다.");
+    }
 
 }

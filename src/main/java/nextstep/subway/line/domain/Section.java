@@ -28,6 +28,9 @@ import nextstep.subway.station.domain.Station;
 @Entity
 public class Section extends BaseEntity {
 
+    public static final String MESSAGE_ALREADY_REGISTERED_SECTION = "이미 등록되어 있는 구간입니다.";
+    public static final String MESSAGE_IS_NOT_EXISTS_STATION = "기존 노선에 해당역이 존재하지 않습니다. 상행역[%s] 하행역[%s]";
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
@@ -115,7 +118,7 @@ public class Section extends BaseEntity {
 
     void alreadyRegisteredSection(Section section) {
         if (getStationNames().containsAll(section.getStationNames())) {
-            throw new DuplicationException("이미 등록되어 있는 구간입니다.");
+            throw new DuplicationException(MESSAGE_ALREADY_REGISTERED_SECTION);
         }
     }
 
@@ -174,12 +177,12 @@ public class Section extends BaseEntity {
 
     // 하행
 
-    public boolean equalsLastStation(final Section section) {
-        return this.upStation.equals(section.getUpStation());
+    public boolean equalsLastStation(final Section newSection) {
+        return newSection.getUpStation().equals(upStation);
     }
 
     public boolean equalsDownStation(final Section newSection) {
-        return downStation.equals(newSection.getUpStation());
+        return newSection.getUpStation().equals(downStation);
     }
 
     @Override

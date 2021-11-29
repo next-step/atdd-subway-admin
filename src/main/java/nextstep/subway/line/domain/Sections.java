@@ -13,11 +13,16 @@ import java.util.function.Predicate;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.common.exception.DuplicationException;
+import nextstep.subway.common.exception.ServiceException;
 import nextstep.subway.line.exception.SectionNotFoundException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
+
+
+    public static final String MESSAGE_IS_NOT_EXISTS_STATION = "기존 노선에 해당역이 존재하지 않습니다. 상행역[%s] 하행역[%s]";
 
     @OneToMany(mappedBy = "line", fetch = LAZY, cascade = ALL)
     private List<Section> sections = new ArrayList<>();
@@ -38,6 +43,7 @@ public class Sections {
     }
 
     public void addSection(Section newSection) {
+
         if (matchStation(isDownStation(newSection))) {
             addUpSectionOrMiddle(newSection);
             return;
@@ -47,6 +53,7 @@ public class Sections {
             addDownSection(newSection);
             return;
         }
+        throw new ServiceException(String.format(MESSAGE_IS_NOT_EXISTS_STATION, newSection.getUpStation(), newSection.getDownStation()));
     }
 
     private boolean matchStation(Predicate<Section> isStation) {

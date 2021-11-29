@@ -3,11 +3,11 @@ package nextstep.subway.common;
 import org.springframework.http.HttpStatus;
 
 public class ErrorResponse {
-    private HttpStatus status;
+    private int status;
     private String message;
 
     private ErrorResponse(HttpStatus status, String message) {
-        this.status = status;
+        this.status = status.value();
         this.message = message;
     }
 
@@ -15,7 +15,7 @@ public class ErrorResponse {
         return new ErrorResponse(httpStatus, message);
     }
 
-    public HttpStatus getStatus() {
+    public int getStatus() {
         return status;
     }
 
