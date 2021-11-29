@@ -13,23 +13,21 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+    private static final int START_INDEX = 0;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
-
-    public List<Section> getSections() {
-        return sections;
-    }
 
     public void add(Section addedSection) {
         List<Station> stations = getStations();
 
         if (stations.contains(addedSection.getUpStation())) {
-            Section foundSection = findSectionByUpstation(addedSection.getUpStation());
+            Section foundSection = findSectionByUpStation(addedSection.getUpStation());
             foundSection.update(addedSection.getDownStation(), foundSection.getDownStation(), foundSection.getDistance() - addedSection.getDistance());
         }
         if (stations.contains(addedSection.getDownStation())) {
             Section foundSection = findSectionByDownStation(addedSection.getDownStation());
-            foundSection.update(foundSection.getUpStation(), foundSection.getUpStation(), foundSection.getDistance() - addedSection.getDistance());
+            foundSection.update(foundSection.getUpStation(), addedSection.getUpStation(), foundSection.getDistance() - addedSection.getDistance());
         }
 
         sections.add(addedSection);
@@ -43,13 +41,40 @@ public class Sections {
         return sections.contains(section);
     }
 
-    private List<Station> getStations() {
-        List<Station> stations = new LinkedList<>();
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
         sections.forEach(section -> {
             stations.add(section.getUpStation());
             stations.add(section.getDownStation());
         });
+
         return stations.stream().distinct().collect(Collectors.toList());
+    }
+
+    public List<Station> getSortedStations() {
+        if (sections.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Station> stations = new LinkedList<>();
+
+        Section firstSection = findFirstSection();
+        stations.add(firstSection.getUpStation());
+        stations.add(firstSection.getDownStation());
+        Section nextSection = nextSection(firstSection);
+
+        while (nextSection != null) {
+            stations.add(nextSection.getDownStation());
+            nextSection = nextSection(nextSection);
+        }
+
+        return stations;
+    }
+
+    private Section nextSection(Section firstSection) {
+        return sections.stream()
+                .filter(firstSection::isNextSection)
+                .findFirst()
+                .orElse(null);
     }
 
     private Section findSectionByDownStation(Station downStation) {
@@ -59,10 +84,25 @@ public class Sections {
                 .get();
     }
 
-    private Section findSectionByUpstation(Station upStation) {
+    private Section findSectionByUpStation(Station upStation) {
         return sections.stream()
                 .filter(section -> section.getUpStation().equals(upStation))
                 .findFirst()
                 .get();
+    }
+
+    private Section findFirstSection() {
+        Section section = sections.get(START_INDEX);
+        Section foundFirstSection = null;
+
+        while (section != null) {
+            foundFirstSection = section;
+            section = sections.stream()
+                    .filter(section::isPrevSection)
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        return foundFirstSection;
     }
 }
