@@ -135,6 +135,5 @@ public class Sections {
 		return Arrays.asList(stations).stream()
 			.filter(getAllStationsBySections()::contains)
 			.count() == 0;
-
 	}
 }

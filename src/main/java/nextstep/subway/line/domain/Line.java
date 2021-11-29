@@ -62,7 +62,7 @@ public class Line extends BaseEntity {
 	}
 
 	public void addSection(Section section) {
-		sections.add((section));
+		sections.add(section);
 		section.initLine(this);
 	}
 

@@ -128,16 +128,4 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// then (노선에 전부 있는 역들이라서 실패)
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
-
-	private long extractIdByURL(String url) {
-		return Long.parseLong(url.split("/")[2]);
-	}
-
-	private LineResponse extractLineResponse(ExtractableResponse<Response> response) {
-		return response.jsonPath().getObject(".", LineResponse.class);
-	}
-
-	private String extractUrlByResponse(ExtractableResponse<Response> response) {
-		return response.header("Location");
-	}
 }
