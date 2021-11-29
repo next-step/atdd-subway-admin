@@ -82,6 +82,15 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 * [x] 노선 조회 시 응답 결과에 역 목록 추가하기
   * 상행역 부터 하행역 순으로 정렬되어야 함
 
+### 2단계 피드백 사항
+* [ ] 오버엔지니어링을 지양하고 사용하지 않는 메소드는 작성하지 않는다.
+* [ ] 예외 메시지 신경써서 자세한 정보 제공
+* [ ] 엔티티 기본 생성자 protected
+* [ ] Stations 의 적절한 책임에 대해 고민해보기
+* [ ] Distance 의 적절한 책임에 대해 고민해보기
+* [ ] Test Fixture 클래스 생성
+* [ ] getUpToDownStations() 메소드에 대한 단위 테스트 작성
+
 ## 지하철 노선 관리 인수 조건 정의
 ```
 Feature: 지하철 노선(Line) 생성 / 목록 조회 / 조회 / 수정 / 삭제
