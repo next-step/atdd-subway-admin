@@ -55,4 +55,8 @@ public class SectionAcceptanceTestHelper {
 
         assertThat(lineResponse.getStations()).isEqualTo(expected);
     }
+
+    public static void 지하철_노선에_구간_추가_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

@@ -11,6 +11,8 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -76,5 +78,22 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_구간_등록됨(response);
         지하철_노선에_지하철역_포함됨(지하철_2호선_id, 삼성역);
         지하철_노선에_새로운_역_추가됨(지하철_2호선_id, Arrays.asList(잠실역, 삼성역, 강남역));
+    }
+
+    @DisplayName("기존 역 사이 길이보다 큰 노선을 추가하여 실패한다")
+    @ParameterizedTest
+    @ValueSource(strings = {"100", "101"})
+    void 기존_역_사이_길이보다_크거나_같은_노선을_추가하여_실패한다(String distance) {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", String.valueOf(삼성역.getId()));
+        params.put("downStationId", String.valueOf(강남역.getId()));
+        params.put("distance", distance);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(지하철_2호선_id, params);
+
+        // then
+        지하철_노선에_구간_추가_실패됨(response);
     }
 }
