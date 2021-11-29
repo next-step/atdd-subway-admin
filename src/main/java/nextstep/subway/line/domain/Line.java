@@ -38,7 +38,7 @@ public class Line extends BaseEntity {
         this.name = name;
         this.color = color;
         Section section = new Section(this, upStation, downStation, distance);
-        this.sections = sections.merge(section);
+        this.sections.add(section);
     }
 
     public void update(Line line) {

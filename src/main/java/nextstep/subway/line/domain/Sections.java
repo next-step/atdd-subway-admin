@@ -11,31 +11,28 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
-import nextstep.subway.exception.DefaultException;
 import nextstep.subway.exception.SectionSortingException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    private List<Section> sections = Collections.unmodifiableList(new ArrayList<>());
+    private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
     }
 
     private Sections(List<Section> sections) {
-        this.sections = Collections.unmodifiableList(sections);
+        this.sections = sections;
     }
 
-    public Sections merge(Section addSection) {
-        List<Section> afterSections = new ArrayList<>(this.sections);
-        afterSections.add(addSection);
-        return new Sections(afterSections);
+    public void add(Section addSection) {
+        sections.add(addSection);
     }
 
     public List<Station> getSortedStations() {
         if (isStationsEmpty()) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
         Section firstSection = findFirstSection();
         return findAllStations(firstSection);
