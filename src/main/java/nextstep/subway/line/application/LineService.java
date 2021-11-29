@@ -1,5 +1,7 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.Exception.CannotUpdateException;
+import nextstep.subway.Exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -38,17 +40,20 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new RuntimeException("요청 노선이 존재하지 않음"));
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundException("요청 노선이 존재하지 않음 : " + id));
         return LineResponse.of(line);
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new RuntimeException("요청 노선이 존재하지 않음"));
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundException("요청 노선이 존재하지 않음 : " + id));
+        if (lineRepository.findByName(lineRequest.getName()) != null) {
+            throw new CannotUpdateException("요청 지하철 노선 이름이 중복임");
+        }
         line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
     }
 
     public void deleteLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new RuntimeException("요청 노선이 존재하지 않음"));
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundException("요청 노선이 존재하지 않음 : " + id));
         lineRepository.delete(line);
     }
 }
