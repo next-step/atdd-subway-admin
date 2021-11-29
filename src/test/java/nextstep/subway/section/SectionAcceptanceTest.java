@@ -76,7 +76,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_구간_등록됨(response);
-        지하철_노선에_지하철역_포함됨(지하철_2호선_id, 삼성역);
         지하철_노선에_새로운_역_추가됨(지하철_2호선_id, Arrays.asList(잠실역, 삼성역, 강남역));
     }
 
@@ -111,7 +110,23 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_구간_등록됨(response);
-        지하철_노선에_지하철역_포함됨(지하철_신분당선_id, 삼성역);
         지하철_노선에_새로운_역_추가됨(지하철_신분당선_id, Arrays.asList(삼성역, 강남역, 양재역));
+    }
+
+    @DisplayName("새로운 역을 하행 종점으로 등록한다")
+    @Test
+    void 새로운_역을_하행_종점으로_등록한다() {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", String.valueOf(양재역.getId()));
+        params.put("downStationId", String.valueOf(판교역.getId()));
+        params.put("distance", "10");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(지하철_신분당선_id, params);
+
+        // then
+        지하철_노선에_구간_등록됨(response);
+        지하철_노선에_새로운_역_추가됨(지하철_신분당선_id, Arrays.asList(강남역, 양재역, 판교역));
     }
 }
