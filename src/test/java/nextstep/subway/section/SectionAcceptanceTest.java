@@ -83,7 +83,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
                 () -> 저장된_역_비교(savedStationIds, requestedStationIds)
         );
-
     }
 
     private void 저장된_역_비교(List<Long> savedStationIds, List<Long> requestedStationIds) {

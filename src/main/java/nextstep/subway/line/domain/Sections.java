@@ -9,6 +9,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -22,12 +23,13 @@ public class Sections {
         List<Station> stations = getStations();
 
         if (stations.contains(addedSection.getUpStation())) {
-            Section foundSection = findSectionByUpStation(addedSection.getUpStation());
-            foundSection.update(addedSection.getDownStation(), foundSection.getDownStation(), foundSection.getDistance() - addedSection.getDistance());
+            findSectionByUpStation(addedSection.getUpStation()).ifPresent(foundSection ->
+                    foundSection.update(addedSection.getDownStation(), foundSection.getDownStation(), foundSection.getDistance() - addedSection.getDistance()));
         }
+
         if (stations.contains(addedSection.getDownStation())) {
-            Section foundSection = findSectionByDownStation(addedSection.getDownStation());
-            foundSection.update(foundSection.getUpStation(), addedSection.getUpStation(), foundSection.getDistance() - addedSection.getDistance());
+            findSectionByDownStation(addedSection.getDownStation()).ifPresent(foundSection ->
+                    foundSection.update(foundSection.getUpStation(), addedSection.getUpStation(), foundSection.getDistance() - addedSection.getDistance()));
         }
 
         sections.add(addedSection);
@@ -77,18 +79,16 @@ public class Sections {
                 .orElse(null);
     }
 
-    private Section findSectionByDownStation(Station downStation) {
+    private Optional<Section> findSectionByDownStation(Station downStation) {
         return sections.stream()
                 .filter(section -> section.getDownStation().equals(downStation))
-                .findFirst()
-                .get();
+                .findFirst();
     }
 
-    private Section findSectionByUpStation(Station upStation) {
+    private Optional<Section> findSectionByUpStation(Station upStation) {
         return sections.stream()
                 .filter(section -> section.getUpStation().equals(upStation))
-                .findFirst()
-                .get();
+                .findFirst();
     }
 
     private Section findFirstSection() {
