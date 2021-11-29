@@ -18,7 +18,6 @@ class SectionTest {
         강남역 = new Station("강남역");
         양재역 = new Station("양재역");
         판교역 = new Station("판교역");
-
     }
 
     @DisplayName("전달받은 역이 하행인지 확인한다")
