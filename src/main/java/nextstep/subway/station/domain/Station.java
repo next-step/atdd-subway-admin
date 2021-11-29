@@ -14,7 +14,7 @@ public class Station extends BaseEntity {
     @Embedded
     private StationName name;
 
-    public Station() {
+    protected Station() {
     }
 
     public Station(String name) {
