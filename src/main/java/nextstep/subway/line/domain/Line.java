@@ -4,14 +4,10 @@ import nextstep.subway.common.domain.BaseEntity;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Entity
 public class Line extends BaseEntity {
@@ -25,7 +21,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private Sections sections = Sections.of(new ArrayList<>());
+    private Sections sections = Sections.empty();
 
     protected Line() {
     }
@@ -37,8 +33,7 @@ public class Line extends BaseEntity {
     }
 
     private Line(final String name, final String color) {
-        this.name = name;
-        this.color = color;
+        this(name, color, Sections.empty());
     }
 
     public static Line of(final String name, final String color, final Sections sections) {
@@ -70,6 +65,18 @@ public class Line extends BaseEntity {
         return sections.getSections();
     }
 
+    public void addSection(Section section) {
+        this.sections.add(section, this);
+    }
+
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
+    public boolean isContainingStation(Station station){
+        return this.sections.contains(station);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -81,26 +88,5 @@ public class Line extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(name);
-    }
-
-    public void addSection(Section section) {
-        this.sections.add(section, this);
-    }
-
-    public List<Station> getStations() {
-        return sections.getSections().stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
-    public List<StationResponse> getStationResponses() {
-        return getStations().stream()
-                .map(StationResponse::from)
-                .collect(Collectors.toList());
-    }
-
-    public boolean isContainingStation(Station station){
-        return getStations().contains(station);
     }
 }
