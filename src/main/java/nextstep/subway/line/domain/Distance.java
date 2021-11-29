@@ -22,5 +22,12 @@ public class Distance {
         }
     }
 
+    public Distance minus(Distance distance) {
+        return new Distance(this.distance - distance.distance);
+    }
 
+
+    public boolean isLong(Distance distance) {
+        return this.distance >= distance.distance;
+    }
 }

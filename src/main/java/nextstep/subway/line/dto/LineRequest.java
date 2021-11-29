@@ -1,9 +1,9 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.Section;
+import nextstep.subway.station.domain.Station;
 
-public class LineRequest {
+public class LineRequest implements ApiRequest {
     private String name;
     private String color;
     private Long upStationId;
@@ -34,8 +34,8 @@ public class LineRequest {
         return color;
     }
 
-    public Line toLine(Section section) {
-        return new Line(name, color, section);
+    public Line toLine(Station upStation, Station downStation) {
+        return new Line(name, color, upStation, downStation, distance);
     }
 
     public Long getUpStationId() {
