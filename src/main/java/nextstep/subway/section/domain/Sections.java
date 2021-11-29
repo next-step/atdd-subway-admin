@@ -63,9 +63,15 @@ public class Sections {
     private void validateSection(Section added) {
         List<Station> stations = getStations();
 
-        if (stations.contains(added.getDownStation()) &&
-            stations.contains(added.getUpStation())) {
+        boolean containsDownStation = stations.contains(added.getDownStation());
+        boolean containsUpStation = stations.contains(added.getUpStation());
+
+        if (containsDownStation && containsUpStation) {
             throw new IllegalArgumentException("이미 모두 구간에 포함되어 있습니다.");
+        }
+
+        if (!containsDownStation && !containsUpStation) {
+            throw new IllegalArgumentException("모두 구간에 포함되어 있지 않습니다.");
         }
     }
 

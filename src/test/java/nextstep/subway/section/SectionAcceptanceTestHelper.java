@@ -3,7 +3,6 @@ package nextstep.subway.section;
 import static nextstep.subway.line.LineAcceptanceTestHelper.*;
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,18 +58,5 @@ public class SectionAcceptanceTestHelper {
 
     public static void 지하철_노선에_구간_추가_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    public static long 지하철_노선에_구간_추가되어_있음(long lineId, Station upStation, Station downStation, String distance) {
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", String.valueOf(upStation.getId()));
-        params.put("downStationId", String.valueOf(downStation.getId()));
-        params.put("distance", distance);
-
-        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(lineId, params);
-
-        return Long.parseLong(
-            response.header("Location")
-                .split("/")[2]);
     }
 }
