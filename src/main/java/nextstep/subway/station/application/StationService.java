@@ -1,9 +1,6 @@
 package nextstep.subway.station.application;
 
-import java.security.InvalidParameterException;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import nextstep.subway.common.exception.DuplicateException;
 import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
@@ -66,9 +63,7 @@ public class StationService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, Station> findAllById(List<Long> stationIds) {
-        return stationRepository.findAllById(stationIds)
-            .stream()
-            .collect(Collectors.toMap(Station::getId, Function.identity()));
+    public List<Station> findAllById(List<Long> stationIds) {
+        return stationRepository.findAllById(stationIds);
     }
 }

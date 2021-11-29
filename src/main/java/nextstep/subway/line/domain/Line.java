@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
@@ -49,15 +50,25 @@ public class Line extends BaseEntity {
 
     public void delete() {
         this.deleted = true;
-        this.lineStations.delete();
+        this.lineStations.deleteAll();
     }
 
     public boolean isDeleted() {
         return deleted;
     }
 
+    public void removeLineStation(Long stationId) {
+        this.lineStations.remove(stationId);
+    }
+
     public List<LineStation> getStations() {
         return lineStations.getStations();
+    }
+
+    public List<Long> getStationIds() {
+        return lineStations.getStations().stream()
+            .map(LineStation::getStationId)
+            .collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -103,4 +114,5 @@ public class Line extends BaseEntity {
     public int hashCode() {
         return getClass().hashCode();
     }
+
 }

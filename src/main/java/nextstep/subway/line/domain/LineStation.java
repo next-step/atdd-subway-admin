@@ -49,19 +49,30 @@ public class LineStation {
         return new LineStation(stationId, nextStationId, distance);
     }
 
-    public void stationIdUpdate(LineStation lineStation) {
+    public void lastLineStationUpdate(LineStation lineStation) {
         if (Objects.equals(this.stationId, lineStation.stationId)) {
             this.stationId = lineStation.nextStationId;
         }
     }
 
-    public void nextStationIdUpdate(LineStation lineStation) {
+    public void pushNextStationId(LineStation lineStation) {
         distance.minus(lineStation.getDistance());
 
         this.nextStationId = lineStation.stationId;
     }
 
-    public boolean isNext(LineStation lineStation) {
+    public void relocationNextStationId(LineStation lineStation) {
+        this.nextStationId = lineStation.nextStationId;
+
+        if (lineStation.isLast()) {
+            distance.zero();
+            return;
+        }
+
+        distance.plus(lineStation.getDistance());
+    }
+
+    public boolean isSameNextStationId(LineStation lineStation) {
         return this.getNextStationId().equals(lineStation.nextStationId);
     }
 
@@ -72,7 +83,8 @@ public class LineStation {
     public boolean isAddableMatch(LineStation lineStation) {
         return this.stationId.equals(lineStation.nextStationId)
             || this.stationId.equals(lineStation.stationId)
-            || this.nextStationId.equals(lineStation.stationId);
+            || this.nextStationId.equals(lineStation.stationId)
+            || this.nextStationId.equals(lineStation.nextStationId);
     }
 
     public boolean isDuplicate(LineStation lineStation) {
@@ -86,6 +98,17 @@ public class LineStation {
 
     public boolean isDeleted() {
         return deleted;
+    }
+
+    public boolean isSameStationId(Long stationId) {
+        return this.stationId.equals(stationId);
+    }
+
+    public boolean isPre(LineStation lineStation) {
+        if (Objects.isNull(this.nextStationId)) {
+            return false;
+        }
+        return this.nextStationId.equals(lineStation.getStationId());
     }
 
     public Long getStationId() {

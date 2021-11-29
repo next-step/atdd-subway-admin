@@ -15,6 +15,10 @@ import org.springframework.http.MediaType;
 
 public class LineStationAcceptanceTestUtil {
 
+    public static final int BASE_DISTANCE = 100;
+    public static int SAFE_DISTANCE = 50;
+    public static int OVER_DISTANCE = 200;
+
     private LineStationAcceptanceTestUtil() {
     }
 
@@ -64,4 +68,11 @@ public class LineStationAcceptanceTestUtil {
         assertThat(distances).containsExactly(expectedDistances);
     }
 
+    public static ExtractableResponse<Response> 지하철_노선구간_제거_됨(Long lineId, Long removeStationId) {
+        return RestAssured.given().log().all()
+            .when()
+            .delete("/lines/" + lineId + "/sections?stationId=" + removeStationId)
+            .then().log().all()
+            .extract();
+    }
 }

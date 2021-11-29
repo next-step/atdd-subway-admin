@@ -1,22 +1,19 @@
 package nextstep.subway.line.application;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import nextstep.subway.common.exception.DuplicateException;
 import nextstep.subway.common.exception.NotFoundException;
+import nextstep.subway.line.LineStationCollection;
 import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,15 +63,9 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse findByLineId(Long id) {
         Line line = findLine(id);
-        List<Long> stationIds = line.getStations().stream()
-            .map(LineStation::getStationId)
-            .collect(Collectors.toList());
+        LineStationCollection lineStationCollection = getLineStationCollection(line);
 
-        Map<Long, Station> stations = stationService.findAllById(stationIds);
-        List<LineStationResponse> lineStationResponses = extractLineStationResponses(
-            line.getStations(), stations);
-
-        return LineResponse.of(line, lineStationResponses);
+        return LineResponse.of(line, lineStationCollection.getLineStationResponses());
     }
 
     public void deleteLineById(Long id) {
@@ -100,14 +91,8 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    protected List<LineStationResponse> extractLineStationResponses(List<LineStation> lineStations,
-        Map<Long, Station> stations) {
-        List<LineStationResponse> result = new ArrayList<>();
-        for (LineStation lineStation : lineStations) {
-            Station station = stations.get(lineStation.getStationId());
-            result.add(LineStationResponse.of(StationResponse.of(station), lineStation));
-        }
-
-        return result;
+    protected LineStationCollection getLineStationCollection(Line line) {
+        List<Station> stations = stationService.findAllById(line.getStationIds());
+        return LineStationCollection.of(line, stations);
     }
 }

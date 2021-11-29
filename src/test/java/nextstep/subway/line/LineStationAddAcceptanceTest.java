@@ -16,10 +16,6 @@ import static nextstep.subway.utils.LineAcceptanceTestUtil.*;
 @DisplayName("지하철 노선에 역 등록 관련 기능")
 public class LineStationAddAcceptanceTest extends AcceptanceTest {
 
-    private final int BASE_DISTANCE = 100;
-    private final int SAFE_DISTANCE = 50;
-    private final int OVER_DISTANCE = 200;
-
     private Long 노선ID;
     private Long 잠실역ID;
     private Long 몽촌토성역ID;

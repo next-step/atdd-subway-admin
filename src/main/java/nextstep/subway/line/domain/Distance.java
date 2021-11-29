@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import java.security.InvalidParameterException;
-import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
@@ -32,5 +31,13 @@ public class Distance {
         }
 
         this.distance -= distance.distance;
+    }
+
+    public void plus(Distance distance) {
+        this.distance += distance.distance;
+    }
+
+    public void zero() {
+        this.distance = 0;
     }
 }

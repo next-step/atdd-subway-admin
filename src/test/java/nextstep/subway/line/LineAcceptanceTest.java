@@ -55,7 +55,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         노선_등록_실패(노선등록응답, HttpStatus.BAD_REQUEST);
     }
 
-
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void 노선_전체_목록_조회() {
@@ -68,7 +67,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         노선_조회_노선ID_포함됨(response, Arrays.asList(노선ID, 새로운노선ID));
     }
-
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
@@ -94,7 +92,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         노선_수정_성공(노선수정파라미터, 노선수정요청응답);
     }
 
-
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void 노선_삭제() {
@@ -105,5 +102,4 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         노선_등록_실패(노선제거응답, HttpStatus.NO_CONTENT);
     }
-
 }

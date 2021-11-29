@@ -10,15 +10,18 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import nextstep.subway.common.exception.NotFoundException;
 
 @Embeddable
 public class LineStations {
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private static Integer MIN_LINE_STATION_SIZE = 2;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = false)
     @JoinColumn(name = "line_id", nullable = false)
     private List<LineStation> lineStations = new ArrayList<>();
 
-    protected LineStations() {
+    public LineStations() {
     }
 
     public void add(LineStation addLineStation) {
@@ -49,7 +52,7 @@ public class LineStations {
             result.add(lineStation);
 
             nextLineStation = lineStations.stream()
-                .filter(it -> lineStation.getStationId().equals(it.getNextStationId()))
+                .filter(it -> lineStation.isSameStationId(it.getNextStationId()))
                 .findFirst();
         }
 
@@ -57,42 +60,58 @@ public class LineStations {
         return result;
     }
 
-    public void delete() {
+
+    public void remove(Long deleteStationId) {
+        validateDeleteSize();
+
+        LineStation deleteLineStation = findDeleteStation(deleteStationId);
+        deleteLineStation.delete();
+
+        lineStations.stream()
+            .filter(it -> it.isPre(deleteLineStation))
+            .findFirst()
+            .ifPresent(it -> it.relocationNextStationId(deleteLineStation));
+    }
+
+    public void deleteAll() {
         for (LineStation lineStation : lineStations) {
             lineStation.delete();
         }
     }
 
+    public Optional<LineStation> findLineStationByStationId(Long stationId) {
+        return lineStations.stream()
+            .filter(it -> it.isSameStationId(stationId))
+            .findFirst();
+    }
+
+    private LineStation findDeleteStation(Long deleteStationId) {
+        Optional<LineStation> lineStation = findLineStationByStationId(deleteStationId);
+
+        if (!lineStation.isPresent()) {
+            throw new NotFoundException("제거 하려는 구간이 없습니다.");
+        }
+        return lineStation.get();
+    }
+
     private void nextLineStationUpdate(LineStation addLineStation) {
         lineStations.stream()
-            .filter(addLineStation::isNext)
+            .filter(addLineStation::isSameNextStationId)
             .findFirst()
-            .ifPresent(next -> next.nextStationIdUpdate(addLineStation));
+            .ifPresent(next -> next.pushNextStationId(addLineStation));
     }
 
     private void lastLineStationUpdate(LineStation addLineStation) {
         lineStations.stream()
             .filter(LineStation::isLast)
             .findFirst()
-            .ifPresent(it -> it.stationIdUpdate(addLineStation));
+            .ifPresent(it -> it.lastLineStationUpdate(addLineStation));
     }
 
     private void validate(LineStation addLineStation) {
         if (!lineStations.isEmpty()) {
             validateDuplicate(addLineStation);
             validateExist(addLineStation);
-        }
-    }
-
-    private void validateExist(LineStation addLineStation) {
-        if (isAddableMatch(addLineStation)) {
-            throw new InvalidParameterException("추가 할 수 있는 상행,하행 구간이 없습니다.");
-        }
-    }
-
-    private void validateDuplicate(LineStation addLineStation) {
-        if (isDuplicate(addLineStation)) {
-            throw new InvalidParameterException("이미 등록된 구간이 있습니다.");
         }
     }
 
@@ -111,4 +130,24 @@ public class LineStations {
             .filter(LineStation::isLast)
             .findFirst();
     }
+
+    private void validateExist(LineStation addLineStation) {
+        if (isAddableMatch(addLineStation)) {
+            throw new InvalidParameterException("추가 할 수 있는 상행,하행 구간이 없습니다.");
+        }
+    }
+
+    private void validateDuplicate(LineStation addLineStation) {
+        if (isDuplicate(addLineStation)) {
+            throw new InvalidParameterException("이미 등록된 구간이 있습니다.");
+        }
+    }
+
+
+    private void validateDeleteSize() {
+        if (lineStations.size() == MIN_LINE_STATION_SIZE) {
+            throw new InvalidParameterException("구간이 하나 일 경우 제거 할 수 없습니다.");
+        }
+    }
+
 }
