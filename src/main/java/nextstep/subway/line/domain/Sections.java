@@ -16,14 +16,10 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
-    }
-
-    private Sections(List<Section> sections) {
-        this.sections = sections;
     }
 
     public void add(Section addSection) {
@@ -34,17 +30,18 @@ public class Sections {
         if (isStationsEmpty()) {
             return Collections.emptyList();
         }
-        Section firstSection = findFirstSection();
-        return findAllStations(firstSection);
+        return Collections.unmodifiableList(findAllStations());
     }
 
     private boolean isStationsEmpty() {
         return sections.size() <= 0;
     }
 
-    private List<Station> findAllStations(Section firstSection) {
-        List<Station> upStations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
+    private List<Station> findAllStations() {
+        Section firstSection = findFirstSection();
         List<Station> stations = Arrays.asList(firstSection.getUpStation(), firstSection.getDownStation());
+
+        List<Station> upStations = upStationsOfSections();
         Section lastSection = firstSection;
         while (upStations.contains(lastSection.getDownStation())) {
             Station finalDownStation = lastSection.getDownStation();
@@ -58,7 +55,7 @@ public class Sections {
     }
 
     private Section findFirstSection() {
-        List<Station> downStations = sections.stream().map(Section::getDownStation).collect(Collectors.toList());
+        List<Station> downStations = downStationsOfSections();
         Section firstSection = sections.get(0);
         while (downStations.contains(firstSection.getUpStation())) {
             Station finalUpStation = firstSection.getUpStation();
@@ -68,6 +65,18 @@ public class Sections {
                 .orElseThrow(SectionSortingException::new);
         }
         return firstSection;
+    }
+
+    private List<Station> upStationsOfSections() {
+        return sections.stream()
+            .map(Section::getUpStation)
+            .collect(Collectors.toList());
+    }
+
+    private List<Station> downStationsOfSections() {
+        return sections.stream()
+            .map(Section::getDownStation)
+            .collect(Collectors.toList());
     }
 
     @Override
