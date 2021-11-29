@@ -8,7 +8,11 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -16,20 +20,28 @@ public class Sections {
     @JoinColumn(name = "line_id")
     private List<Section> sections;
 
+    protected Sections() {
+    }
+
     private Sections(List<Section> sections) {
         this.sections = sections;
     }
 
-    public static Sections of(List<Section> sectionList) {
+    public static Sections from(List<Section> sectionList) {
         return new Sections(sectionList);
     }
 
-    protected Sections() {
+    public static Sections from(Section section) {
+        return new Sections(Arrays.asList(section));
+    }
+
+    public static Sections empty() {
+        return Sections.from(new ArrayList<>());
     }
 
     public void add(Section targetSection, Line line) {
         validateStationsContains(targetSection, line);
-        targetSection.setLine(line);
+        targetSection.addLine(line);
 
         for (Section original : sections) {
             if (isUpStationEquals(targetSection, original)) return;
@@ -42,14 +54,6 @@ public class Sections {
         }
     }
 
-    private boolean isDownStationAndTargetUpStationEquals(Section targetSection, Section original) {
-        if (original.isDownStationAndTargetUpStationEquals(targetSection)) {
-            addSectionBehindOfOriginal(targetSection, original);
-            return true;
-        }
-        return false;
-    }
-
     private boolean isUpStationAndTargetDownStationEquals(Section targetSection, Section original) {
         if (original.isUpStationAndTargetDownStationEquals(targetSection)) {
             addSectionOriginalIndex(targetSection, original);
@@ -60,8 +64,16 @@ public class Sections {
 
     private boolean isDownStationEquals(Section targetSection, Section original) {
         if (original.isDownStationEquals(targetSection)) {
-            original.minusDistance(targetSection.getDistance());
-            original.changeDownStation(targetSection.getUpStation());
+            original.minusDistance(targetSection);
+            original.changeDownStation(targetSection);
+            addSectionBehindOfOriginal(targetSection, original);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isDownStationAndTargetUpStationEquals(Section targetSection, Section original) {
+        if (original.isDownStationAndTargetUpStationEquals(targetSection)) {
             addSectionBehindOfOriginal(targetSection, original);
             return true;
         }
@@ -69,10 +81,10 @@ public class Sections {
     }
 
     private boolean isUpStationEquals(Section targetSection, Section original) {
-        if (original.isUpStationEquals(targetSection)) {
+        if(original.isUpStationEquals(targetSection)) {
             addSectionOriginalIndex(targetSection, original);
-            original.minusDistance(targetSection.getDistance());
-            original.changeUpStation(targetSection.getDownStation());
+            original.minusDistance(targetSection);
+            original.changeUpStation(targetSection);
             return true;
         }
         return false;
@@ -96,18 +108,29 @@ public class Sections {
     private void checkContainingStations(Line line, Station upStation, Station downStation) {
         if (line.isContainingStation(upStation) &&
                 line.isContainingStation(downStation)) {
-            throw new IllegalArgumentException(Message.BOTH_UP_AND_DOWN.getMessage());
+            throw new IllegalArgumentException(Message.NOT_REGISTER_ALL_INCLUDE.getMessage());
         }
     }
 
     private void checkNotContainingStations(Line line, Station upStation, Station downStation) {
         if (line.isContainingStation(upStation) == false &&
                 line.isContainingStation(downStation) == false) {
-            throw new IllegalArgumentException(Message.BOTH_UP_AND_DOWN_NOT.getMessage());
+            throw new IllegalArgumentException(Message.NOT_REGISTER_NOT_ALL_INCLUDE.getMessage());
         }
     }
 
     public List<Section> getSections() {
         return this.sections;
+    }
+
+    public boolean contains(Station station) {
+        return getStations().contains(station);
+    }
+
+    public List<Station> getStations() {
+        return this.sections.stream()
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .distinct()
+                .collect(Collectors.toList());
     }
 }
