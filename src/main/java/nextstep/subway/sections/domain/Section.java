@@ -27,7 +27,7 @@ public class Section extends BaseEntity {
   @Embedded
   private Distance distance;
 
-  public Section() {}
+  protected Section() {}
 
   public Section(Long id, Line line, Station upStation, Station downStation, Distance distance) {
     this.id = id;

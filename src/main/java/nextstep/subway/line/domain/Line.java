@@ -23,7 +23,7 @@ public class Line extends BaseEntity {
   @Embedded
   private final Sections sections = new Sections();
 
-  public Line() {
+  protected Line() {
   }
 
   public Line(String name, String color) {
@@ -56,10 +56,6 @@ public class Line extends BaseEntity {
 
   public String getColor() {
     return color;
-  }
-
-  public Sections getSections() {
-    return sections;
   }
 
   public Stations getStations() {

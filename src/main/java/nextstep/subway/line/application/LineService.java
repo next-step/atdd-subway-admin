@@ -42,7 +42,7 @@ public class LineService {
 
     private void checkDuplicateLine(LineRequest request) {
         if (lineRepository.findByName(request.getName()).isPresent()) {
-            throw new LineDuplicateException();
+            throw new LineDuplicateException(request.getName());
         }
     }
 

@@ -28,7 +28,7 @@ public class Sections {
     sections.add(section);
   }
 
-  public Section upEndPoint() {
+  private Section upEndPoint() {
     return sections.stream()
       .filter(this::isUpEndPoint)
       .findAny()
