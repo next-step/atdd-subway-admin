@@ -56,7 +56,7 @@ public class Section extends BaseEntity {
 		return section;
 	}
 
-	public void setLine(Line line) {
+	public void updateLineAndSequence(Line line) {
 		this.line = line;
 		this.sequence = line.sectionsSize();
 	}

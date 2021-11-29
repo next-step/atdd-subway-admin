@@ -1,11 +1,6 @@
 package nextstep.subway.line.domain;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
@@ -54,7 +49,7 @@ public class Line extends BaseEntity {
 
 	public void addSection(Section section) {
 		sections.add(section);
-		section.setLine(this);
+		section.updateLineAndSequence(this);
 	}
 
 	public int sectionsSize() {

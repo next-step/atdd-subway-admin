@@ -33,7 +33,7 @@ public class Sections {
 			.collect(Collectors.toList());
 		stations.add(0, sections.stream()
 			.findFirst()
-			.orElseThrow()
+			.orElseThrow(() -> new IllegalArgumentException("구간이 존재하지 않습니다."))
 			.getUpStation());
 		return stations;
 	}
