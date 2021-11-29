@@ -26,26 +26,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
 	void createLine() {
-		// given
-		String lineName = "신분당선";
-
-		// when
-		// 지하철_노선_생성_요청
-		ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineName);
+		// given, when
+		ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선");
 
 		// then
-		// 지하철_노선_생성됨
-		지하철_노선_생성됨(response, lineName);
+		지하철_노선_생성됨(response);
 	}
 
 	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
 	@Test
 	void createLine2() {
 		// given
-		String line1 = 지하철_노선_등록되어_있음("신분당선");
+		String line = 지하철_노선_등록되어_있음("신분당선");
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선_생성_요청(line1);
+		ExtractableResponse<Response> response = 지하철_노선_생성_요청(line);
 
 		// then
 		지하철_노선_생성_실패됨(response);
@@ -85,7 +80,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void updateLine() {
 		// given
-		String lineName = 지하철_노선_등록되어_있음("신분당선") + "-updated";
+		String lineName = 지하철_노선_등록되어_있음("신분당선");
+		lineName = lineName + "-updated";
 
 		// when
 		ExtractableResponse<Response> response = 지하철_노선_수정_요청(lineName);
@@ -121,7 +117,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.extract();
 	}
 
-	private void 지하철_노선_생성됨(ExtractableResponse<Response> response, String lineName) {
+	private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
 		assertAll(
 			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
 			() -> assertThat(response.header("Location")).isNotBlank(),
