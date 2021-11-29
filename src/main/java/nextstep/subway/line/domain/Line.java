@@ -10,8 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.common.Messages;
-import nextstep.subway.exception.BusinessException;
 import nextstep.subway.exception.CannotAddException;
+import nextstep.subway.exception.CannotDeleteException;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -83,6 +83,25 @@ public class Line extends BaseEntity {
         sections.updateByFromStation(fromStation, distance, toStation);
         sections.updateByToStation(toStation, distance, fromStation);
         sections.add(Section.create(distance, fromStation, toStation, this));
+    }
+
+    public Section deleteSection(Station station) {
+        validateOfDelete(station);
+
+        Section section = sections.findRemoveSection(station);
+        removeSection(section);
+        return section;
+    }
+
+    private void validateOfDelete(Station station) {
+        boolean isContainStation = sections.containsStation(station);
+        if (!isContainStation) {
+            throw new CannotDeleteException(Messages.NO_CONTAIN_STATION.getValues());
+        }
+
+        if (isContainStation && sections.isMinSize()) {
+            throw new CannotDeleteException(Messages.ONLY_ONE_EXISTS.getValues());
+        }
     }
 
     private void validate(Station upStation, Station downStation) {

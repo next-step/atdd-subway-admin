@@ -7,7 +7,9 @@ public enum Messages {
     ALREADY_EXISTS_SECTION("상행역, 하행역이 이미 구간으로 등록되어 있습니다."),
     LONG_OR_SAME_DISTANCE("구간의 길이는 기존 구간보다 작아야 합니다."),
     SECTION_REQUIRED_STATION("역정보는 필수입니다."),
-    NOT_POSITIVE_NUMBER("구간의 길이는 0보다 커야 합니다.");
+    NOT_POSITIVE_NUMBER("구간의 길이는 0보다 커야 합니다."),
+    NO_CONTAIN_STATION("구간으로 등록되어 있지 않은 역입니다."),
+    ONLY_ONE_EXISTS("노선에 등록된 구간이 1개만 존재하므로 삭제할 수 없습니다.");
 
     private String values;
 

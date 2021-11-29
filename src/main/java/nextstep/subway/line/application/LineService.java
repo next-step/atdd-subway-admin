@@ -24,10 +24,13 @@ public class LineService {
 
     private final StationRepository stationRepository;
 
+    private final SectionRepository sectionRepository;
+
     public LineService(LineRepository lineRepository, StationRepository stationRepository,
         SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
@@ -80,6 +83,13 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = findById(lineId);
+        Station station = findStationById(stationId);
+        Section section = line.deleteSection(station);
+        sectionRepository.delete(section);
+    }
+
     private Line findById(Long lineId) {
         return lineRepository.findById(lineId)
             .orElseThrow(() -> new NotFoundException(Messages.NO_LINE.getValues()));
@@ -89,5 +99,4 @@ public class LineService {
         return stationRepository.findById(stationId)
             .orElseThrow(() -> new NotFoundException(Messages.NO_STATION.getValues()));
     }
-
 }

@@ -32,6 +32,10 @@ public class Distance {
         return Distance.valueOf(calcDistance);
     }
 
+    public Distance plus(Distance target) {
+        return Distance.valueOf(this.distance + target.distance);
+    }
+
     private void validatePositive(Integer number) {
         if (number < ZERO) {
             throw new NotValidateException(Messages.NOT_POSITIVE_NUMBER.getValues());
@@ -67,4 +71,5 @@ public class Distance {
             "distance=" + distance +
             '}';
     }
+
 }

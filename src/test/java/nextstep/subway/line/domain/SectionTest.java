@@ -135,6 +135,22 @@ public class SectionTest {
     }
 
     @Test
+    @DisplayName("1호선(서울역-추가역-용산역, 5-5)에서 추가역 삭제 (서울역-용산역, 10) 성공")
+    void deleteSection() {
+        //given
+        addLine1WithSeoulToYongsanLength10();
+        Station addStation = stationRepository.findById(3L).get();
+        line.addSections(Distance.valueOf(5), addStation, yongsanStation);
+
+        //when
+        line.deleteSection(addStation);
+
+        //then
+        assertThat(line.getSortedStations()).extracting(Station::getName).containsExactly("서울역", "용산역");
+
+    }
+
+    @Test
     @DisplayName("이미 저장된 1호선(서울역-용산역, 길이 10)에 기존 구간보다 길이가 긴 구간(추가역-용산역(길이 12)) 추가 시 기존 구간보다 작아야 한다는 CannotAddException")
     void addSectionLongDistanceFail() {
         addLine1WithSeoulToYongsanLength10();

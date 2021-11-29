@@ -314,7 +314,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("1호선(상행역-추가역-하행역, 10-10)에서 추가역 삭제")
+    @DisplayName("1호선(상행역-추가역-하행역, 5-5)에서 추가역 삭제 성공")
     void deleteLine1AddStation() {
         //given
         상행역_5_추가역_5_하행역을_노선으로가지는_1호선_저장되어있다();
@@ -326,6 +326,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    @DisplayName("1호선(상행역-추가역-하행역, 5-5)에서 상행역 삭제 성공")
+    void deleteLine1UpStation() {
+        //given
+        상행역_5_추가역_5_하행역을_노선으로가지는_1호선_저장되어있다();
+
+        // when
+        // 추가역_제거_요청
+        ExtractableResponse<Response> deletedResponse = 삭제한다(getSectionDeleteUrl(upStationId));
+
+        // then
+        // 지하철_노선_삭제됨
+        assertThat(deletedResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    @DisplayName("1호선(상행역-추가역-하행역, 5-5)에서 하행역 삭제 성공")
+    void deleteLine1DownStation() {
+        //given
+        상행역_5_추가역_5_하행역을_노선으로가지는_1호선_저장되어있다();
+
+        // when
+        // 추가역_제거_요청
+        ExtractableResponse<Response> deletedResponse = 삭제한다(getSectionDeleteUrl(downStationId));
+
+        // then
+        // 지하철_노선_삭제됨
+        assertThat(deletedResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     @Test
@@ -397,13 +427,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 상행역_5_추가역_5_하행역을_노선으로가지는_1호선_저장되어있다() {
         상행역_하행역_추가역_AND_1호선_저장되어있다();
-        // 서울역-추가역(distance: 4) 구간 추가
+        // 서울역-추가역(distance: 5) 구간 추가
         SectionRequest sectionRequest = new SectionRequest(upStationId, addStationId, 5);
         저장한다(sectionRequest, sectionUrl);
     }
 
     private String getSectionDeleteUrl(Long targetId) {
-        return sectionUrl+"?station="+targetId;
+        return sectionUrl+"?stationId="+targetId;
     }
 
     private void assertExceptionMessage(ExtractableResponse<Response> response, String message) {
