@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -242,7 +243,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private List<Long> getExpectedLineIds(ExtractableResponse<Response> createResponse1, ExtractableResponse<Response> createResponse2) {
-        return Arrays.asList(createResponse1, createResponse2).stream()
+        return Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
     }
