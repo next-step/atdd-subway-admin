@@ -40,9 +40,22 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 	@DisplayName("지하철 노선 시작점에 신규 구간 추가")
 	@Test
-	void addSectionFirstLocationSuccess() {
+	void addSectionStartLocationSuccess() {
 		// given (신규 구간 생성)
 		SectionRequest param = new SectionRequest(1L, 2L, 15);
+
+		// when (신규 구간 노선에 추가)
+		ExtractableResponse<Response> response = post("/lines/1/sections", param);
+
+		// then (신규 구간 추가 성공)
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+	}
+
+	@DisplayName("지하철 노선 종점에 신규 구간 추가")
+	@Test
+	void addSectionEndLocationSuccess() {
+		// given (신규 구간 생성)
+		SectionRequest param = new SectionRequest(4L, 5L, 15);
 
 		// when (신규 구간 노선에 추가)
 		ExtractableResponse<Response> response = post("/lines/1/sections", param);
