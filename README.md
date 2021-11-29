@@ -52,3 +52,8 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+
+### 2단계 요구사항
+#### 노선 등록시 구간 정보를 등록한다. (상행, 하행)
+#### 노선 조회시 구간 정보를 함께 조회한다. (데이터 정렬 : 상행 -> 하행)
