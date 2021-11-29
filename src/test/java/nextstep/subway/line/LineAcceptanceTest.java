@@ -108,6 +108,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long expectedId = createResponse.jsonPath().getLong("id");
         assertThat(response.jsonPath().getLong("id")).isEqualTo(expectedId);
         assertThat(response.jsonPath().getList("stations").size()).isEqualTo(2);
+        assertThat(response.jsonPath().getList("stations.name")).contains("강남역","역삼역");
     }
 
     @DisplayName("지하철 노선을 수정한다.")
