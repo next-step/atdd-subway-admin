@@ -30,6 +30,10 @@ public class Section {
     @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_down_section_to_station"))
     private Station downStation;
 
+    protected Section() {
+
+    }
+
     public Section(Line line, Station upStation, Station downStation) {
         this.line = line;
         this.upStation = upStation;
