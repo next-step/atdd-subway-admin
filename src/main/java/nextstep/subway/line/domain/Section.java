@@ -86,11 +86,21 @@ public class Section extends BaseEntity {
 
     public void changeUpSection(Section newSection) {
         alreadyRegisteredSection(newSection);
-        if (SectionType.equalsFirst(sectionType) && upStation.equals(newSection.getDownStation())) {
-            changeFirstSectionType(newSection);
+        if (isAddFirstSection(newSection))
             return;
-        }
         addMiddleSection(newSection);
+    }
+
+    private boolean isAddFirstSection(Section newSection) {
+        if (isTypeFirstAndEqualsDownStation(newSection)) {
+            changeFirstSectionType(newSection);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isTypeFirstAndEqualsDownStation(Section newSection) {
+        return SectionType.equalsFirst(sectionType) && upStation.equals(newSection.getDownStation());
     }
 
     public void changeDownSection(Section newSection) {
@@ -119,11 +129,6 @@ public class Section extends BaseEntity {
         newSection.sectionType = SectionType.FIRST;
     }
 
-    private void changeLastSectionType(Section newSection) {
-        this.sectionType = SectionType.MIDDLE;
-        newSection.sectionType = LAST;
-    }
-
     public Station getUpStation() {
         return upStation;
     }
@@ -149,11 +154,13 @@ public class Section extends BaseEntity {
      */
 
     // 상행
-    public boolean findUpStation(Section newSection) {
+    public boolean findUpStation(final Section newSection) {
         return upStation.equals(newSection.getDownStation());
     }
 
-    public boolean equalsPreviousUpStation(Station downStation) {
+    public boolean equalsPreviousUpStation(final Section newSection) {
+        final Station downStation = newSection.getDownStation();
+
         if (SectionType.equalsFirst(sectionType)) {
             return true;
         }
@@ -167,18 +174,13 @@ public class Section extends BaseEntity {
 
     // 하행
 
-    public boolean findDownStation(Section newSection) {
+    public boolean equalsLastStation(final Section section) {
+        return this.upStation.equals(section.getUpStation());
+    }
+
+    public boolean equalsDownStation(final Section newSection) {
         return downStation.equals(newSection.getUpStation());
     }
-
-    public boolean equalsChildStation(Station station) {
-        return upStation.equals(station);
-    }
-
-    public boolean equalsNextSection(Station downStation) {
-        return upStation.equals(downStation);
-    }
-
 
     @Override
     public boolean equals(Object o) {
@@ -199,16 +201,4 @@ public class Section extends BaseEntity {
     public int hashCode() {
         return Objects.hash(id, upStation, downStation, sectionType, distance, line);
     }
-
-    @Override
-    public String toString() {
-        return "Section{" +
-            "id=" + id +
-            ", upStation=" + upStation +
-            ", downStation=" + downStation +
-            ", sectionType=" + sectionType +
-            ", distance=" + distance +
-            '}';
-    }
-
 }

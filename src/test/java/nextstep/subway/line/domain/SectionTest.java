@@ -48,7 +48,7 @@ public class SectionTest {
         // when
         Station stationYoungSan = new Station(3L, "용산역");
         Section newSection = new Section(stationSinChon, stationYoungSan, SectionType.MIDDLE, new Distance(5));
-        boolean isStationTrue = section.findDownStation(newSection);
+        boolean isStationTrue = section.equalsDownStation(newSection);
 
         // then
         Assertions.assertThat(isStationTrue).isTrue();

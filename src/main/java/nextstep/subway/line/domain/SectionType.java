@@ -11,6 +11,9 @@ public enum SectionType {
         return sectionType.equals(FIRST);
     }
 
+    public static boolean equalsLast(Section section) {
+        return section.getSectionType().equals(LAST);
+    }
     public static boolean equalsLast(SectionType sectionType) {
         return sectionType.equals(LAST);
     }

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import javax.persistence.Embeddable;
@@ -40,16 +39,12 @@ public class Sections {
 
     public void addSection(Section newSection) {
         if (matchStation(isDownStation(newSection))) {
-            Section parentStation = findParentStation(newSection);
-            parentStation.changeUpSection(newSection);
-            sections.add(newSection);
+            addUpSectionOrMiddle(newSection);
             return;
         }
 
         if (matchStation(isUpStation(newSection))) {
-            Section parentStation = findNextStation(newSection);
-            parentStation.changeDownSection(newSection);
-            sections.add(newSection);
+            addDownSection(newSection);
             return;
         }
     }
@@ -59,28 +54,41 @@ public class Sections {
                        .anyMatch(isStation);
     }
 
-    private Predicate<Section> isUpStation(Section newSection) {
-        return section -> section.findDownStation(newSection);
-    }
-
-    private Section findParentStation(Section newSection) {
-        Section parentStation = sections.stream()
-                                        .filter(section -> section.equalsPreviousUpStation(newSection.getDownStation()))
-                                        .findFirst()
-                                        .orElseThrow(SectionNotFoundException::new);
-        return parentStation;
-    }
-
     private Predicate<Section> isDownStation(Section newSection) {
         return section -> section.findUpStation(newSection);
     }
 
-    private Section findNextStation(Section newSection) {
-        Section nextStation = sections.stream()
-                                      .filter(section -> section.equalsChildStation(newSection.getUpStation()))
+    private void addUpSectionOrMiddle(Section newSection) {
+        Section parentStation = findSections(conditionPreviousSection(newSection));
+        parentStation.changeUpSection(newSection);
+        sections.add(newSection);
+    }
+
+    private Predicate<Section> conditionPreviousSection(Section newSection) {
+        return section -> section.equalsPreviousUpStation(newSection);
+    }
+
+
+    private Predicate<Section> isUpStation(Section newSection) {
+        return section -> section.equalsDownStation(newSection);
+    }
+
+    private void addDownSection(Section newSection) {
+        Section parentStation = findSections(conditionNextSection(newSection));
+        parentStation.changeDownSection(newSection);
+        sections.add(newSection);
+    }
+
+    private Predicate<Section> conditionNextSection(Section newSection) {
+        return section -> section.equalsLastStation(newSection);
+    }
+
+    private Section findSections(Predicate<Section> condition) {
+        Section findSection = sections.stream()
+                                      .filter(condition)
                                       .findFirst()
                                       .orElseThrow(SectionNotFoundException::new);
-        return nextStation;
+        return findSection;
     }
 
     public boolean contains(List<Section> section) {
@@ -88,36 +96,22 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        Optional<Section> findSection = findFirstSection();
+        Section findSection = findFirstSection();
 
         List<Station> resultStations = new ArrayList();
 
-        while (isUntilSorted(findSection)) {
-            Section section = findSection.get();
-            resultStations.add(section.getUpStation());
-            findSection = findNextSection(section);
+        while (matchStation(isDownStation(findSection))) {
+            final Section section = findSection;
+            resultStations.add(findSection.getUpStation());
+            findSection = findSections(section::equalsDownStation);
         }
 
+        resultStations.add(findSection.getUpStation());
         return Collections.unmodifiableList(resultStations);
     }
 
-    private boolean isUntilSorted(Optional<Section> section) {
-        return section.isPresent();
-    }
-
-    public Optional<Section> findNextSection(Section findSection) {
-        Station downStation = findSection.getDownStation();
-        Optional<Section> nextSection = sections.stream()
-                                                .filter(section -> section.equalsNextSection(downStation))
-                                                .findFirst();
-        return nextSection;
-    }
-
-    public Optional<Section> findFirstSection() {
-        Optional<Section> findSection = sections.stream()
-                                                .filter(SectionType::equalsFirst)
-                                                .findFirst();
-        return findSection;
+    public Section findFirstSection() {
+        return findSections(SectionType::equalsFirst);
     }
 
     @Override
