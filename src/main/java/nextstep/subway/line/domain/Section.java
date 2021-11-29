@@ -74,16 +74,16 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
-    public void adjustUpStation(final Section section) {
-        validateNewSection(section);
-        upStation = section.getDownStation();
-        adjustDistance(section.getDistance());
+    public void adjustUpStation(final Section newSection) {
+        validateNewSection(newSection);
+        upStation = newSection.getDownStation();
+        adjustDistance(newSection.getDistance());
     }
 
-    public void adjustDownStation(final Section section) {
-        validateNewSection(section);
-        downStation = section.getUpStation();
-        adjustDistance(section.getDistance());
+    public void adjustDownStation(final Section newSection) {
+        validateNewSection(newSection);
+        downStation = newSection.getUpStation();
+        adjustDistance(newSection.getDistance());
     }
 
     private void validateNewSection(final Section section) {
@@ -97,6 +97,10 @@ public class Section extends BaseEntity {
 
     private void adjustDistance(final int distance) {
         this.distance -= distance;
+    }
+
+    public boolean hasStation(final Station station) {
+        return upStation.equals(station) || downStation.equals(station);
     }
 
     public Long getId() {
@@ -115,14 +119,6 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-    public boolean upStationEquals(final Section section) {
-        return getUpStation().equals(section.getUpStation());
-    }
-
-    public boolean downStationEquals(final Section section) {
-        return getDownStation().equals(section.getDownStation());
-    }
-
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
@@ -132,11 +128,7 @@ public class Section extends BaseEntity {
             return false;
         }
         final Section section = (Section) o;
-        return Objects.equals(id, section.id) || stationsEquals(section);
-    }
-
-    private boolean stationsEquals(final Section o) {
-        return upStationEquals(o) && downStationEquals(o);
+        return Objects.equals(id, section.id);
     }
 
     @Override

@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.Sections;
 import nextstep.subway.station.domain.Station;
@@ -20,23 +19,16 @@ public class SectionsTest {
         final Station station1 = new Station(1L, "강남역");
         final Station station2 = new Station(2L, "역삼역");
         final Station station3 = new Station(3L, "선릉역");
-        final Station station4 = new Station(4L, "삼성역");
-        final Section section1 = new Section(1L, station1, station2, 2);
-        final Section section2 = new Section(2L, station2, station3, 2);
-        final Section section3 = new Section(3L, station3, station4, 2);
+        final Section section1 = new Section(1L, station1, station2, 1);
+        final Section section2 = new Section(2L, station2, station3, 1);
 
         // when
-        final Sections sections = new Sections(Arrays.asList(section2, section3, section1));
+        final Sections sections = new Sections(Arrays.asList(section1, section2));
 
         // then
-        final List<Station> stationsInOrder = sections.getStationsInOrder();
         assertAll(
             () -> assertThat(sections).isNotNull(),
-            () -> assertThat(sections.size()).isEqualTo(3),
-            () -> assertThat(stationsInOrder.get(0)).isEqualTo(station1),
-            () -> assertThat(stationsInOrder.get(1)).isEqualTo(station2),
-            () -> assertThat(stationsInOrder.get(2)).isEqualTo(station3),
-            () -> assertThat(stationsInOrder.get(3)).isEqualTo(station4)
+            () -> assertThat(sections.size()).isEqualTo(2)
         );
     }
 
@@ -62,7 +54,7 @@ public class SectionsTest {
     }
 
     @Test
-    void add_toFront() {
+    void add_prepend() {
         // given
         final Section firstSection = new Section(
             1L,
@@ -70,13 +62,7 @@ public class SectionsTest {
             new Station(2L, "역삼역"),
             1
         );
-        final Section lastSection = new Section(
-            2L,
-            new Station(2L, "역삼역"),
-            new Station(3L, "선릉역"),
-            1
-        );
-        final Sections sections = new Sections(Arrays.asList(firstSection, lastSection));
+        final Sections sections = new Sections(Arrays.asList(firstSection));
 
         // when
         final Section newSection = new Section(
@@ -89,50 +75,35 @@ public class SectionsTest {
 
         // then
         assertAll(
-            () -> assertThat(sections)
-                .isNotNull(),
-            () -> assertThat(sections.size())
-                .isEqualTo(3),
-            () -> assertThat(sections.getStationsInOrder().get(0))
-                .isEqualTo(newSection.getUpStation())
+            () -> assertThat(sections).isNotNull(),
+            () -> assertThat(sections.size()).isEqualTo(2)
         );
     }
 
     @Test
-    void add_toLast() {
+    void add_append() {
         // given
-        final Section firstSection = new Section(
+        final Section lastSection = new Section(
             1L,
             new Station(1L, "강남역"),
             new Station(2L, "역삼역"),
             1
         );
-        final Section lastSection = new Section(
-            2L,
-            new Station(2L, "역삼역"),
-            new Station(3L, "선릉역"),
-            1
-        );
-        final Sections sections = new Sections(Arrays.asList(firstSection, lastSection));
+        final Sections sections = new Sections(Arrays.asList(lastSection));
 
         // when
         final Section newSection = new Section(
             3L,
+            new Station(2L, "역삼역"),
             new Station(3L, "선릉역"),
-            new Station(4L, "삼성역"),
             1
         );
         sections.add(newSection);
 
         // then
-        final List<Station> stationsInOrder = sections.getStationsInOrder();
         assertAll(
-            () -> assertThat(sections)
-                .isNotNull(),
-            () -> assertThat(sections.size())
-                .isEqualTo(3),
-            () -> assertThat(stationsInOrder.get(stationsInOrder.size() - 1))
-                .isEqualTo(newSection.getDownStation())
+            () -> assertThat(sections).isNotNull(),
+            () -> assertThat(sections.size()).isEqualTo(2)
         );
     }
 
@@ -150,13 +121,9 @@ public class SectionsTest {
         sections.add(newSection);
 
         // then
-        final List<Station> stationsInOrder = sections.getStationsInOrder();
         assertAll(
             () -> assertThat(sections).isNotNull(),
-            () -> assertThat(sections.size()).isEqualTo(2),
-            () -> assertThat(stationsInOrder.get(0)).isEqualTo(station1),
-            () -> assertThat(stationsInOrder.get(1)).isEqualTo(station3),
-            () -> assertThat(stationsInOrder.get(2)).isEqualTo(station2)
+            () -> assertThat(sections.size()).isEqualTo(2)
         );
     }
 
@@ -192,13 +159,9 @@ public class SectionsTest {
         sections.add(newSection);
 
         // then
-        final List<Station> stationsInOrder = sections.getStationsInOrder();
         assertAll(
             () -> assertThat(sections).isNotNull(),
-            () -> assertThat(sections.size()).isEqualTo(2),
-            () -> assertThat(stationsInOrder.get(0)).isEqualTo(station1),
-            () -> assertThat(stationsInOrder.get(1)).isEqualTo(station3),
-            () -> assertThat(stationsInOrder.get(2)).isEqualTo(station2)
+            () -> assertThat(sections.size()).isEqualTo(2)
         );
     }
 
@@ -238,7 +201,7 @@ public class SectionsTest {
     }
 
     @Test
-    void add_invalidSection() {
+    void add_noMatchingStations() {
         // given
         final Section section = new Section(
             1L,
@@ -260,17 +223,5 @@ public class SectionsTest {
         assertThatThrownBy(
             () -> sections.add(newSection)
         ).isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void getStationsInOrder_empty() {
-        // given
-        final Sections sections = new Sections(Collections.emptyList());
-
-        // when
-        final List<Station> stationsInOrder = sections.getStationsInOrder();
-
-        // then
-        assertThat(stationsInOrder).isEmpty();
     }
 }

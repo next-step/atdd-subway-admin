@@ -109,4 +109,31 @@ public class SectionTest {
             () -> section.adjustDownStation(newSection)
         ).isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void hasStation_true() {
+        // given
+        final Station station1 = new Station(1L, "강남역");
+        final Station station2 = new Station(2L, "역삼역");
+        final Section section = new Section(1L, station1, station2, 1);
+
+        // when, then
+        assertAll(
+            () -> assertThat(section.hasStation(station1)).isTrue(),
+            () -> assertThat(section.hasStation(station2)).isTrue()
+        );
+
+    }
+
+    @Test
+    void hasStation_false() {
+        // given
+        final Station station1 = new Station(1L, "강남역");
+        final Station station2 = new Station(2L, "역삼역");
+        final Section section = new Section(1L, station1, station2, 1);
+
+        // when, then
+        final Station station3 = new Station(3L, "선릉역");
+        assertThat(section.hasStation(station3)).isFalse();
+    }
 }

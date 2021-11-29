@@ -17,8 +17,6 @@ public class Sections {
 
     private static final int SECTIONS_START_AT = 0;
     private static final int SECTIONS_UNIT = 1;
-    private static final boolean SECTION_ADDED = true;
-    private static final boolean SECTION_NOT_ADDED = false;
 
     @OneToMany(
         cascade = {CascadeType.PERSIST, CascadeType.MERGE},
@@ -34,82 +32,58 @@ public class Sections {
         sections.forEach(this::add);
     }
 
-    public void add(final Section section) {
-        if (addToEmpty(section)) {
-            return;
-        }
-        if (addToFirst(section)) {
-            return;
-        }
-        if (addToLast(section)) {
-            return;
-        }
-        if (addInBetween(section)) {
-            return;
-        }
-        throw new IllegalArgumentException();
-    }
-
-    private boolean addToEmpty(final Section section) {
+    public void add(final Section newSection) {
         if (sections.isEmpty()) {
-            sections.add(section);
-            return SECTION_ADDED;
+            sections.add(newSection);
+            return;
         }
-        return SECTION_NOT_ADDED;
+        final boolean hasUpStation = hasStation(newSection.getUpStation());
+        final boolean hasDownStation = hasStation(newSection.getDownStation());
+        checkStations(hasUpStation, hasDownStation);
+        if (hasUpStation) {
+            adjustUpStation(newSection);
+        }
+        if (hasDownStation) {
+            adjustDownStation(newSection);
+        }
+        sections.add(newSection);
     }
 
-    private boolean addToFirst(final Section section) {
-        final Section firstSection = getFirstSection();
-        if (Objects.equals(section.getDownStation(), firstSection.getUpStation())) {
-            sections.add(SECTIONS_START_AT, section);
-            return SECTION_ADDED;
-        }
-        return SECTION_NOT_ADDED;
+    private boolean hasStation(final Station station) {
+        return sections.stream()
+            .anyMatch(s -> s.hasStation(station));
     }
 
-    private boolean addToLast(final Section section) {
-        final Section lastSection = getLastSection();
-        if (Objects.equals(section.getUpStation(), lastSection.getDownStation())) {
-            sections.add(sections.size(), section);
-            return SECTION_ADDED;
-        }
-        return SECTION_NOT_ADDED;
+    private void checkStations(final boolean hasUpStation, final boolean hasDownStation) {
+        checkBothStationsAdded(hasUpStation, hasDownStation);
+        checkNeitherStationAdded(hasUpStation, hasDownStation);
     }
 
-    private boolean addInBetween(final Section section) {
-        if (addInBetweenAsUpSection(section)) {
-            return SECTION_ADDED;
+    private void checkBothStationsAdded(final boolean hasUpStation, final boolean hasDownStation) {
+        if (hasUpStation && hasDownStation) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있을 경우 구간을 추가할 수 없습니다.");
         }
-        if (addInBetweenAsDownSection(section)) {
-            return SECTION_ADDED;
-        }
-        return SECTION_NOT_ADDED;
     }
 
-    private boolean addInBetweenAsUpSection(final Section section) {
-        final Section sectionWithMatchingUpStation = sections.stream()
+    private void checkNeitherStationAdded(final boolean hasUpStation,
+        final boolean hasDownStation) {
+        if (!hasUpStation && !hasDownStation) {
+            throw new IllegalArgumentException("상행역과 하행역 둘 중 하나가 포함되어야 구간에 추가할 수 있습니다.");
+        }
+    }
+
+    private void adjustUpStation(final Section section) {
+        sections.stream()
             .filter(s -> Objects.equals(s.getUpStation(), section.getUpStation()))
             .findFirst()
-            .orElse(null);
-        if (Objects.nonNull(sectionWithMatchingUpStation)) {
-            sectionWithMatchingUpStation.adjustUpStation(section);
-            sections.add(sections.indexOf(sectionWithMatchingUpStation), section);
-            return SECTION_ADDED;
-        }
-        return SECTION_NOT_ADDED;
+            .ifPresent(s -> s.adjustUpStation(section));
     }
 
-    private boolean addInBetweenAsDownSection(final Section section) {
-        final Section sectionWithMatchingDownStation = sections.stream()
+    private void adjustDownStation(final Section section) {
+        sections.stream()
             .filter(s -> Objects.equals(s.getDownStation(), section.getDownStation()))
             .findFirst()
-            .orElse(null);
-        if (Objects.nonNull(sectionWithMatchingDownStation)) {
-            sectionWithMatchingDownStation.adjustDownStation(section);
-            sections.add(sections.indexOf(sectionWithMatchingDownStation) + SECTIONS_UNIT, section);
-            return SECTION_ADDED;
-        }
-        return SECTION_NOT_ADDED;
+            .ifPresent(s -> s.adjustUpStation(section));
     }
 
     public List<Station> getStationsInOrder() {
