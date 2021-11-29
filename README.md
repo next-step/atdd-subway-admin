@@ -26,9 +26,13 @@
 * [X] 노선응답 `LineResponse`
   * 상행역~하행역 순으로 정렬된 목록 정보 포함
 * [X] 노선 `Line`
-  * 구간 정보 포함
-  * 구간 `@OneToMany` 관계 설정 
+  * 구간 컬렉션 포함
+* [X] 구간 컬렉션 `Sections`
+  * 노선 구간 `@OneToMany` 관계 설정 
     * `Cascade All` 설정
+    * `orphanRemoval = true` 고아객체 삭제 설정
+* [X] 노선 테스트
+  * 노선에 포함된 지하철 역 정렬 테스트
 * [X] 구간 `Section`
   * 노선 `@ManyToOne` 관계 설정 
   * 상행역 `@ManyToOne` 관계 설정
