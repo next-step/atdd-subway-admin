@@ -20,8 +20,7 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    @Column(nullable = false)
-    private int distance;
+    private Distance distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
@@ -33,7 +32,7 @@ public class Section extends BaseEntity {
     public Section(Station upStation, Station downStation, int distance, Line line) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
         this.line = line;
     }
 
@@ -54,7 +53,7 @@ public class Section extends BaseEntity {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.getValue();
     }
 
     public Line getLine() {
@@ -70,7 +69,7 @@ public class Section extends BaseEntity {
     public void update(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance.update(distance);
     }
 
     public boolean isPrevSection(Section section) {
