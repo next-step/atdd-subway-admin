@@ -1,6 +1,5 @@
 package nextstep.subway.line.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -12,20 +11,18 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    @JsonProperty("stations")
-    private List<StationResponse> stationResponses;
+    private List<StationResponse> stations;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
-
     protected LineResponse() {
     }
 
-    public LineResponse(final Long id, final String name, final String color, final List<StationResponse> stationResponses
+    public LineResponse(final Long id, final String name, final String color, final List<StationResponse> stations
             , final LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stationResponses = stationResponses;
+        this.stations = stations;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
     }
@@ -37,7 +34,7 @@ public class LineResponse {
     }
 
     public static LineResponse from(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStationResponses()
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), StationResponse.from(line.getStations())
                 , line.getCreatedDate(), line.getModifiedDate());
     }
 
@@ -49,7 +46,7 @@ public class LineResponse {
         return name;
     }
 
-    public List<StationResponse> getStationResponses() {
-        return stationResponses;
+    public List<StationResponse> getStations() {
+        return stations;
     }
 }
