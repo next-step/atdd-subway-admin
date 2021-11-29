@@ -1,12 +1,12 @@
 package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -16,7 +16,6 @@ import nextstep.subway.station.domain.Station;
 public class Sections {
 
     private static final int SECTIONS_START_AT = 0;
-    private static final int SECTIONS_UNIT = 1;
 
     @OneToMany(
         cascade = {CascadeType.PERSIST, CascadeType.MERGE},
@@ -83,40 +82,54 @@ public class Sections {
         sections.stream()
             .filter(s -> Objects.equals(s.getDownStation(), section.getDownStation()))
             .findFirst()
-            .ifPresent(s -> s.adjustUpStation(section));
+            .ifPresent(s -> s.adjustDownStation(section));
     }
 
     public List<Station> getStationsInOrder() {
         if (sections.isEmpty()) {
             return Collections.emptyList();
         }
-        final Stream<Station> stations = sections.stream().map(Section::getUpStation);
-        final Stream<Station> lastStation = Stream.of(getLastStation());
-        return Stream.concat(stations, lastStation).collect(Collectors.toList());
+        final Section firstSection = getFirstSection();
+        final List<Station> stationsInOrder = new ArrayList<>(
+            Arrays.asList(firstSection.getUpStation())
+        );
+        Section it = firstSection;
+        while (it != null) {
+            final Section tmp = it;
+            it = sections.stream()
+                .filter(s -> Objects.equals(s.getUpStation(), tmp.getDownStation()))
+                .findFirst()
+                .orElse(null);
+            if (it != null) {
+                stationsInOrder.add(it.getUpStation());
+            }
+            if (it == null) {
+                stationsInOrder.add(tmp.getDownStation());
+            }
+        }
+        return stationsInOrder;
+    }
+
+    private Section getFirstSection() {
+        final Station firstStation = getFirstStation();
+        return sections.stream()
+            .filter(s -> Objects.equals(s.getUpStation(), firstStation))
+            .findFirst()
+            .orElseThrow(IllegalStateException::new);
+    }
+
+    private Station getFirstStation() {
+        final Set<Station> upStations = sections.stream()
+            .map(Section::getUpStation)
+            .collect(Collectors.toSet());
+        final Set<Station> downStations = sections.stream()
+            .map(Section::getDownStation)
+            .collect(Collectors.toSet());
+        upStations.removeAll(downStations);
+        return new ArrayList<>(upStations).get(SECTIONS_START_AT);
     }
 
     public int size() {
         return sections.size();
-    }
-
-    private Section getFirstSection() {
-        return sections.get(SECTIONS_START_AT);
-    }
-
-    private Section getLastSection() {
-        Section theSection = getFirstSection();
-        Optional<Section> maybeSection = Optional.ofNullable(theSection);
-        while (maybeSection.isPresent()) {
-            final Section tmpSection = maybeSection.get();
-            maybeSection = sections.stream()
-                .filter(s -> Objects.equals(tmpSection.getDownStation(), s.getUpStation()))
-                .findFirst();
-            theSection = tmpSection;
-        }
-        return theSection;
-    }
-
-    private Station getLastStation() {
-        return sections.get(size() - SECTIONS_UNIT).getDownStation();
     }
 }
