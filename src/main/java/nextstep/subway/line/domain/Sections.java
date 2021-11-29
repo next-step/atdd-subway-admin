@@ -14,33 +14,13 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
+	public static final int START_SECTION_INDEX = 0;
 
 	@OneToMany(mappedBy = "line", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private final List<Section> sections = new ArrayList<>();
 
-	public void add(Section section) {
-		if (IsSectionsEmpty()) {
-			sections.add(section);
-			return;
-		}
-
-		addSectionsFirstLocation(section);
-
-	}
-
-	private void addSectionsFirstLocation(Section section) {
-		Section firstSection = sections.stream()
-			.filter(s -> s.getSequence() == 1)
-			.filter(s -> s.getUpStation().equals(section.getDownStation()))
-			.findFirst()
-			.orElseThrow(() -> new IllegalArgumentException("역이 존재하지 않습니다."));
-		section.updateSequence(firstSection.getSequence());
-		firstSection.updateSequence(section.getSequence() + 1);
-		sections.add(section.getSequence() - 1, section);
-	}
-
-	private boolean IsSectionsEmpty() {
-		return sections.size() == 0;
+	public void init(Section section) {
+		sections.add(section);
 	}
 
 	public int size() {
@@ -58,4 +38,47 @@ public class Sections {
 			.getUpStation());
 		return stations;
 	}
+
+	public void add(Section section) {
+		if (ifAddSectionsStartLocation(section)) {
+			addSectionsStartLocation(section);
+			return;
+		}
+		if (ifAddSectionsEndLocation(section)) {
+			addSectionsEndLocation(section);
+			return;
+		}
+
+	}
+
+	private void addSectionsEndLocation(Section section) {
+		int endSectionIndex = sections.size() - 1;
+		Section endSection = sections.get(endSectionIndex);
+		section.updateSequence(endSection.getSequence()+1);
+		sections.add(endSectionIndex, section);
+	}
+
+	private boolean ifAddSectionsEndLocation(Section section) {
+		return sections.stream()
+			.filter(s -> s.getSequence() == sections.size())
+			.filter(s -> s.getDownStation().equals(section.getUpStation()))
+			.findFirst()
+			.isPresent();
+	}
+
+	private boolean ifAddSectionsStartLocation(Section section) {
+		return sections.stream()
+			.filter(s -> s.getSequence() == 1)
+			.filter(s -> s.getUpStation().equals(section.getDownStation()))
+			.findFirst()
+			.isPresent();
+	}
+
+	private void addSectionsStartLocation(Section section) {
+		Section startSection = sections.get(START_SECTION_INDEX);
+		section.updateSequence(startSection.getSequence());
+		startSection.updateSequence(section.getSequence() + 1);
+		sections.add(START_SECTION_INDEX, section);
+	}
+
 }
