@@ -7,7 +7,7 @@ public class LineDuplicateException extends ServiceException {
 
   private static final String MESSAGE = "이미 등록된 노선이 존재합니다.";
 
-  public LineDuplicateException() {
-    super(HttpStatus.BAD_REQUEST, MESSAGE);
+  public LineDuplicateException(String duplicateLineName) {
+    super(HttpStatus.BAD_REQUEST, MESSAGE + ": " + duplicateLineName);
   }
 }

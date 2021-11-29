@@ -84,7 +84,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ### 2단계 피드백 사항
 * [ ] 오버엔지니어링을 지양하고 사용하지 않는 메소드는 작성하지 않는다.
-* [ ] 예외 메시지 신경써서 자세한 정보 제공
+* [x] 예외 메시지 신경써서 자세한 정보 제공
 * [ ] 엔티티 기본 생성자 protected
 * [ ] Stations 의 적절한 책임에 대해 고민해보기
 * [ ] Distance 의 적절한 책임에 대해 고민해보기
