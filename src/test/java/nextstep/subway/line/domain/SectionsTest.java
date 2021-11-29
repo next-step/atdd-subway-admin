@@ -18,7 +18,7 @@ class SectionsTest {
 	public void SectionsAddTest() {
 		//given
 		Sections sections = new Sections();
-		Section section = Section.create(new Station("강남역"), new Station("양재역"));
+		Section section = Section.create(new Station("강남역"), new Station("양재역"), 10);
 		//when
 		sections.add(section);
 		//then
@@ -30,7 +30,7 @@ class SectionsTest {
 	public void SectionsGetStationsTest() {
 		//given
 		Sections sections = new Sections();
-		Section section = Section.create(new Station("강남역"), new Station("양재역"));
+		Section section = Section.create(new Station("강남역"), new Station("양재역"), 15);
 		sections.add(section);
 		//when
 		List<Station> stations = sections.getAllStationsBySections();

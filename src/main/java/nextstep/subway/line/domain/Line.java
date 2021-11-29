@@ -47,9 +47,10 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
-	public void addSection(Section section) {
+	public void initSection(Section section) {
 		sections.add(section);
-		section.updateLineAndSequence(this);
+		section.initLine(this);
+		section.initSequence(this);
 	}
 
 	public int sectionsSize() {
@@ -58,5 +59,10 @@ public class Line extends BaseEntity {
 
 	public List<Station> getStations() {
 		return sections.getAllStationsBySections();
+	}
+
+	public void addSection(Section section) {
+		sections.add((section));
+		section.initLine(this);
 	}
 }

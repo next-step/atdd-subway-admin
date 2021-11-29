@@ -19,7 +19,28 @@ public class Sections {
 	private final List<Section> sections = new ArrayList<>();
 
 	public void add(Section section) {
-		sections.add(section);
+		if (IsSectionsEmpty()) {
+			sections.add(section);
+			return;
+		}
+
+		addSectionsFirstLocation(section);
+
+	}
+
+	private void addSectionsFirstLocation(Section section) {
+		Section firstSection = sections.stream()
+			.filter(s -> s.getSequence() == 1)
+			.filter(s -> s.getUpStation().equals(section.getDownStation()))
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("역이 존재하지 않습니다."));
+		section.updateSequence(firstSection.getSequence());
+		firstSection.updateSequence(section.getSequence() + 1);
+		sections.add(section.getSequence() - 1, section);
+	}
+
+	private boolean IsSectionsEmpty() {
+		return sections.size() == 0;
 	}
 
 	public int size() {

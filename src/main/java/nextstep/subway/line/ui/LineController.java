@@ -3,6 +3,7 @@ package nextstep.subway.line.ui;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -42,15 +43,23 @@ public class LineController {
 		return ResponseEntity.ok(lineService.findById(id));
 	}
 
-	@PatchMapping(value = "/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LineResponse> updateLine(@PathVariable("lineId") Long id, @RequestBody LineRequest lineRequest) {
-		return ResponseEntity.ok(lineService.updateById(id, lineRequest));
-	}
-
 	@PostMapping
 	public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
 		LineResponse line = lineService.saveLine(lineRequest);
 		return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+	}
+
+	@PostMapping("/{lineId}/sections")
+	public ResponseEntity<LineResponse> addSection(@PathVariable("lineId") Long lineId,
+		@RequestBody SectionRequest sectionRequest) {
+		LineResponse line = lineService.addSection(lineId, sectionRequest);
+		return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+	}
+
+	@PatchMapping(value = "/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LineResponse> updateLine(@PathVariable("lineId") Long id,
+		@RequestBody LineRequest lineRequest) {
+		return ResponseEntity.ok(lineService.updateById(id, lineRequest));
 	}
 
 	@DeleteMapping(value = "/{lineId}")
@@ -58,7 +67,5 @@ public class LineController {
 		lineService.deleteById(id);
 		return ResponseEntity.noContent().build();
 	}
-
-
 
 }

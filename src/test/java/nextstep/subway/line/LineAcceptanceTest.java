@@ -21,15 +21,16 @@ import org.springframework.http.HttpStatus;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 	private static final String LINE_ROOT_PATH = "/lines";
+	private static final String STATION_ROOT_PATH = "/stations";
 	private static LineRequest params = new LineRequest("신분당선", "pink", 1L, 2L, 10);
 	private static LineRequest otherParams = new LineRequest("1호선", "blue", 3L, 4L, 8);
 
 	@BeforeEach
 	public void createStation() {
-		post("/stations", new StationRequest("양재역"));
-		post("/stations", new StationRequest("판교역"));
-		post("/stations", new StationRequest("두정역"));
-		post("/stations", new StationRequest("천안역"));
+		post(STATION_ROOT_PATH, new StationRequest("양재역"));
+		post(STATION_ROOT_PATH, new StationRequest("판교역"));
+		post(STATION_ROOT_PATH, new StationRequest("두정역"));
+		post(STATION_ROOT_PATH, new StationRequest("천안역"));
 	}
 
 	@DisplayName("지하철 노선을 생성한다.")
