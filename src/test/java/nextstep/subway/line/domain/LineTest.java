@@ -21,7 +21,7 @@ class LineTest {
 
         List<String> stationNames = line.getStations()
                 .stream()
-                .map(StationResponse::getName)
+                .map(Station::getName)
                 .collect(Collectors.toList());
 
         assertThat(stationNames).containsExactly(upStationSadang.getName(), downStationAnsan.getName());

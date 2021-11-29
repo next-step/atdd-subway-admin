@@ -10,6 +10,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,19 +27,20 @@ public class Sections {
         sections.add(section);
     }
 
-    public List<StationResponse> getStations() {
-        Section firstSection = findFirstSection();
-        List<StationResponse> stationResponses = new ArrayList<>();
-        stationResponses.add(StationResponse.of(firstSection.getUpStation()));
-        stationResponses.add(StationResponse.of(firstSection.getDownStation()));
+    public List<Station> getStations() {
+        Section section = findFirstSection();
+        List<Station> stations = new LinkedList<>();
+        stations.add(section.getUpStation());
+        stations.add(section.getDownStation());
 
-        Optional<Section> nextSectionOptional = findNextSection(firstSection);
-        while (nextSectionOptional.isPresent()) {
-            Section nextSection = nextSectionOptional.get();
-            stationResponses.add(StationResponse.of(nextSection.getDownStation()));
-            nextSectionOptional = findNextSection(nextSection);
+        Optional<Section> nextSectionOptional = Optional.of(section);
+        while (find(nextSectionOptional)) {
+            nextSectionOptional = findNextSection(section);
+            nextSectionOptional.ifPresent( sec -> {
+                stations.add(sec.getDownStation());
+            });
         }
-        return stationResponses;
+        return stations;
     }
 
     private Section findFirstSection() {
@@ -55,6 +57,15 @@ public class Sections {
                 .filter(section -> section.getUpStation().equals(firstStation))
                 .findAny()
                 .get();
+    }
+
+    private boolean find(Optional<Section> section) {
+        return section
+                .filter(value ->
+                        this.sections
+                                .stream()
+                                .anyMatch(it -> it.getUpStation().equals(value.getDownStation()))
+                ).isPresent();
     }
 
     private Optional<Section> findNextSection(Section section) {
@@ -80,10 +91,8 @@ public class Sections {
                 .findAny()
                 .ifPresent(savedSection -> {
                     checkSectionDistance(inputSection, savedSection);
-                    List<Section> sections = savedSection.createInnerSection(inputSection);
-                    int index = this.sections.indexOf(savedSection);
-                    this.sections.remove(savedSection);
-                    this.sections.addAll(index, sections);
+                    Section section = savedSection.createInnerSection(inputSection);
+                    sections.add(section);
                 });
 
     }

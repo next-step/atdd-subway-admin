@@ -38,7 +38,7 @@ class SectionsTest {
 
         List<String> savedNames = sections.getStations()
                 .stream()
-                .map(StationResponse::getName)
+                .map(Station::getName)
                 .collect(Collectors.toList());
         assertThat(savedNames).containsExactly("강남역", "삼성역", "잠실역");
     }
@@ -53,7 +53,7 @@ class SectionsTest {
 
         List<String> savedNames = sections.getStations()
                 .stream()
-                .map(StationResponse::getName)
+                .map(Station::getName)
                 .collect(Collectors.toList());
         assertThat(savedNames).containsExactly("강남역", "삼성역", "잠실역");
     }
@@ -68,7 +68,7 @@ class SectionsTest {
 
         List<String> savedNames = sections.getStations()
                 .stream()
-                .map(StationResponse::getName)
+                .map(Station::getName)
                 .collect(Collectors.toList());
         assertThat(savedNames).containsExactly("사당역", "강남역", "잠실역");
     }
@@ -83,7 +83,7 @@ class SectionsTest {
 
         List<String> savedNames = sections.getStations()
                 .stream()
-                .map(StationResponse::getName)
+                .map(Station::getName)
                 .collect(Collectors.toList());
         assertThat(savedNames).containsExactly("강남역", "잠실역", "강변역");
     }

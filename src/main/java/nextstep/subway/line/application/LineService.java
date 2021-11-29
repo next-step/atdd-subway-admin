@@ -65,7 +65,7 @@ public class LineService {
         Station upStation = findStationById(request.getUpStationId());
         Station downStation = findStationById(request.getDownStationId());
 
-        Section section = Section.of(upStation, downStation, new Distance(request.getDistance()), line);
+        Section section = Section.of(upStation, downStation, new Distance(request.getDistance()));
         line.addSection(section);
     }
 
