@@ -8,6 +8,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.ExistDuplicatedNameException;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
@@ -73,8 +74,13 @@ public class LineService {
     }
 
     @Transactional
-    public void addSection(AddSectionRequest addSectionRequest) {
+    public Section addSection(AddSectionRequest addSectionRequest) {
         Line line = findLineById(addSectionRequest.getLineId());
+        Station upStation = findStationById(addSectionRequest.getUpStationId());
+        Station downStation = findStationById(addSectionRequest.getDownStationId());
+        Section section = new Section(upStation, downStation, addSectionRequest.getDistance(), line);
+        line.addSection(section);
+        return section;
     }
 
     private Line findLineById(Long lineId) {
