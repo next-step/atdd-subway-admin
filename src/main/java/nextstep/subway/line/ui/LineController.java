@@ -6,10 +6,11 @@ import nextstep.subway.line.application.dto.LineUpdateRequest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.ExistDuplicatedNameException;
+import nextstep.subway.line.exception.NotValidStationException;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
-import nextstep.subway.section.exception.UnValidDistanceException;
+import nextstep.subway.section.exception.NotValidDistanceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -84,8 +85,13 @@ public class LineController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
-    @ExceptionHandler(UnValidDistanceException.class)
-    public ResponseEntity<String> handleUnValidDistanceException(UnValidDistanceException e) {
+    @ExceptionHandler(NotValidDistanceException.class)
+    public ResponseEntity<String> handleNotValidDistanceException(NotValidDistanceException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(NotValidStationException.class)
+    public ResponseEntity<String> handleNotValidStationException(NotValidStationException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
