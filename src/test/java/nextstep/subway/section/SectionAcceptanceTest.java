@@ -65,6 +65,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_구간_생성됨(response, Arrays.asList(newStationId, DEFAULT_UP_STATION_ID, DEFAULT_DOWN_STATION_ID));
     }
 
+    @DisplayName("새로운 역을 행 종점으로 등록할 경우")
+    @Test
+    void addNewDownStationSection() {
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_추가_요청(DEFAULT_DOWN_STATION_ID, newStationId, DISTANCE);
+
+        // then
+        지하철_구간_생성됨(response, Arrays.asList(DEFAULT_UP_STATION_ID, DEFAULT_DOWN_STATION_ID, newStationId));
+    }
+
+    
+
     private ExtractableResponse<Response> 지하철_구간_추가_요청(Long upStationId, Long downStationId, int distance) {
         SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
         String path = "lines/" + DEFAULT_LINE_ID + "/sections";
