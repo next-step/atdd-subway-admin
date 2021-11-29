@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
+    int FIRST_SECTION_DISTANCE = 10;
     Long DEFAULT_UP_STATION_ID = 1L;
     Long DEFAULT_DOWN_STATION_ID = 2L;
     Long DEFAULT_LINE_ID = 1L;
@@ -31,7 +32,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void setup() {
-        노선_생성("강남역", "삼성역", "2호선", "green", 10);
+        노선_생성("강남역", "삼성역", "2호선", "green", FIRST_SECTION_DISTANCE);
         newStationId = TestStationFactory.역_생성("역삼역").getId();
     }
 
@@ -75,7 +76,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_구간_생성됨(response, Arrays.asList(DEFAULT_UP_STATION_ID, DEFAULT_DOWN_STATION_ID, newStationId));
     }
 
-    
+    @DisplayName("역 사이에 새로운 역 등록할 때 구간 크거나 같을 경우")
+    @Test
+    void biggerThanSectionDistance() {
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_추가_요청(DEFAULT_UP_STATION_ID, newStationId, FIRST_SECTION_DISTANCE);
+
+        //then
+        구간_초과_에러_발생함(response);
+    }
 
     private ExtractableResponse<Response> 지하철_구간_추가_요청(Long upStationId, Long downStationId, int distance) {
         SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
@@ -101,5 +110,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         for (int i = 0; i < savedStationIds.size(); i++) {
             assertThat(savedStationIds.get(i)).isEqualTo(requestedStationIds.get(i));
         }
+    }
+
+    private void 구간_초과_에러_발생함(ExtractableResponse<Response> response) {
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().asString()).isEqualTo("구간 입력이 잘못되었습니다.")
+        );
     }
 }
