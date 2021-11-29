@@ -6,19 +6,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    @JoinColumn(
-        name = "line_id",
-        nullable = false,
-        foreignKey = @ForeignKey(name = "fk_section_to_line")
+    @OneToMany(
+        cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+        mappedBy = "line",
+        orphanRemoval = true
     )
     private List<Section> sections = new ArrayList<>();
 

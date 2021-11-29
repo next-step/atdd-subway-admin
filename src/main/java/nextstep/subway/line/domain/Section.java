@@ -38,6 +38,14 @@ public class Section extends BaseEntity {
     @Column(name = "distance")
     private int distance;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(
+        name = "line_id",
+        nullable = false,
+        foreignKey = @ForeignKey(name = "fk_section_to_line")
+    )
+    private Line line;
+
     protected Section() {
     }
 
@@ -49,6 +57,10 @@ public class Section extends BaseEntity {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public void attachToLine(final Line line) {
+        this.line = line;
     }
 
     public Long getId() {
