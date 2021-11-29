@@ -19,6 +19,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+@DisplayName("지하철 구간 등록 관련 인수 테스트")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
     @Override
@@ -44,9 +45,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when 지하철_노선에_지하철역_등록_요청
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .pathParam("lineId", "1")
+                .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/{lineId}/selections")
+                .post("/lines/{lineId}/sections")
                 .then().log().all()
                 .extract();
 
