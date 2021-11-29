@@ -29,13 +29,21 @@ public class Sections {
 
 	public List<Station> getStationsUpToDown() {
 		List<Station> result = new ArrayList<>();
-		if (sections.size() == 0) {
+		if (sections.isEmpty()) {
 			return result;
 		}
-		result.add(sections.get(0).getUpStation());
-		result.addAll(sections.stream().map(Section::getDownStation).collect(Collectors.toList()));
+		result.add(getTopStation());
+		result.addAll(getDownStationList());
 
 		return result;
+	}
+
+	private List<Station> getDownStationList() {
+		return sections.stream().map(Section::getDownStation).collect(Collectors.toList());
+	}
+
+	private Station getTopStation() {
+		return sections.get(0).getUpStation();
 	}
 
 	@Override
