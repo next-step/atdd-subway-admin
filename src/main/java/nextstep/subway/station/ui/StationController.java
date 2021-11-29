@@ -1,5 +1,7 @@
 package nextstep.subway.station.ui;
 
+import nextstep.subway.exception.SubwayError;
+import nextstep.subway.exception.dto.SubwayErrorResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
@@ -31,13 +33,14 @@ public class StationController {
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
+    public ResponseEntity<StationResponse> deleteStation(@PathVariable Long id) {
         stationService.deleteStationById(id);
         return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<SubwayErrorResponse> handleDbException(DataIntegrityViolationException e) {
+        SubwayError error = SubwayError.INVALID_ARGUMENT;
+        return ResponseEntity.status(error.getStatusCode()).body(error.toErrorResponse());
     }
 }

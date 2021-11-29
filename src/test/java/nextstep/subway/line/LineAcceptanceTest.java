@@ -40,7 +40,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
-    void createLine2() {
+    void createLineFail() {
         // given
         // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> responseUpStation = StationRequestTestUtil.지하철역_생성("강남역");

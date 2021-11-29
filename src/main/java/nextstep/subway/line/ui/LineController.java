@@ -1,5 +1,8 @@
 package nextstep.subway.line.ui;
 
+import nextstep.subway.exception.SubwayError;
+import nextstep.subway.exception.dto.SubwayErrorResponse;
+import nextstep.subway.exception.SubwayException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
@@ -61,12 +64,13 @@ public class LineController {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<LineResponse> handleDbException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<SubwayErrorResponse> handleDbException(DataIntegrityViolationException e) {
+        SubwayError error = SubwayError.INVALID_ARGUMENT;
+        return ResponseEntity.status(error.getStatusCode()).body(error.toErrorResponse());
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<LineResponse> handleIllegalArgsException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().build();
+    @ExceptionHandler(SubwayException.class)
+    public ResponseEntity<SubwayErrorResponse> handleSubwayException(SubwayException e) {
+        return ResponseEntity.status(e.getStatusCode()).body(e.getErrorResponse());
     }
 }

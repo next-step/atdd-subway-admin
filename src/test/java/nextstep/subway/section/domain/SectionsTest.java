@@ -26,4 +26,11 @@ public class SectionsTest {
 
 		assertThat(result).containsExactly(station1, station2, station3);
 	}
+
+
+	@Test
+	@DisplayName("구간의 순서를 섞어서 넣어도 구간 사이의 역이 상행역부터 하행역순으로 정렬되어 반환된다")
+	void getStationsUpToDown2() {
+		//TODO 구간의 순서를 섞어서 넣어도 정상출력 되는지에 대한 테스트. 스탭3에서 작성할 예정
+	}
 }

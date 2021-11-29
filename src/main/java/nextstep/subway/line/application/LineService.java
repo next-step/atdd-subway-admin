@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import nextstep.subway.exception.SubwayError;
+import nextstep.subway.exception.SubwayException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -27,8 +29,10 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(IllegalArgumentException::new);
-        Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(IllegalArgumentException::new);
+        Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(() -> new SubwayException(
+            SubwayError.NOT_FOUND_DATA));
+        Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(() -> new SubwayException(
+            SubwayError.NOT_FOUND_DATA));
         Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
@@ -48,7 +52,8 @@ public class LineService {
     }
 
     public void updateLine(Line newLine) {
-        Line line = lineRepository.findById(newLine.getId()).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(newLine.getId()).orElseThrow(() -> new SubwayException(
+            SubwayError.NOT_FOUND_DATA));
         line.update(newLine);
     }
 
