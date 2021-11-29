@@ -65,4 +65,12 @@ public class Line extends BaseEntity {
 		sections.add((section));
 		section.initLine(this);
 	}
+
+	public boolean allContain(Station ...stations) {
+		return sections.allContain(stations);
+	}
+
+	public boolean notContain(Station[] stations) {
+		return sections.notContain(stations);
+	}
 }

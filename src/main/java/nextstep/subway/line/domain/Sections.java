@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -126,4 +127,14 @@ public class Sections {
 		sections.add(0, section);
 	}
 
+	public boolean allContain(Station... stations) {
+		return getAllStationsBySections().containsAll(Arrays.asList(stations));
+	}
+
+	public boolean notContain(Station[] stations) {
+		return Arrays.asList(stations).stream()
+			.filter(getAllStationsBySections()::contains)
+			.count() == 0;
+
+	}
 }
