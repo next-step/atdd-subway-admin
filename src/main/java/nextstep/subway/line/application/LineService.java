@@ -57,4 +57,8 @@ public class LineService {
         Line persistLine = lineRepository.save(sourceLine);
         return LineResponse.of(persistLine);
     }
+
+    public Line findByIdOrElseThrow(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("해당 ID의 노선이 존재하지 않습니다"));
+    }
 }

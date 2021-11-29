@@ -10,7 +10,7 @@ import javax.persistence.*;
 public class Section extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
 
     @OneToOne
     private Station upStation;
@@ -43,5 +43,13 @@ public class Section extends BaseEntity {
 
     public void setLine(Line line) {
         this.line = line;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }

@@ -69,7 +69,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines" + id.toString() + "/sections")
+                .post("/lines/" + id.toString() + "/sections")
                 .then().log().all()
                 .extract();
     }
