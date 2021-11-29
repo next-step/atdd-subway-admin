@@ -55,7 +55,7 @@ public class Line extends BaseEntity {
 
     public void addSection(final Section section) {
         section.attachToLine(this);
-        sections = sections.add(section);
+        sections.add(section);
     }
 
     public Long getId() {
@@ -71,6 +71,6 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return sections.getStations();
+        return sections.getStationsInOrder();
     }
 }

@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -50,17 +51,52 @@ public class Section extends BaseEntity {
     }
 
     public Section(
+        final Long id,
         final Station upStation,
         final Station downStation,
         final int distance
     ) {
+        this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
+    public Section(
+        final Station upStation,
+        final Station downStation,
+        final int distance
+    ) {
+        this(null, upStation, downStation, distance);
+    }
+
     public void attachToLine(final Line line) {
         this.line = line;
+    }
+
+    public void adjustUpStation(final Section section) {
+        validateNewSection(section);
+        upStation = section.getDownStation();
+        adjustDistance(section.getDistance());
+    }
+
+    public void adjustDownStation(final Section section) {
+        validateNewSection(section);
+        downStation = section.getUpStation();
+        adjustDistance(section.getDistance());
+    }
+
+    private void validateNewSection(final Section section) {
+        if (equals(section)) {
+            throw new IllegalArgumentException("이미 노선에 등록된 구간을 추가할 수 없습니다.");
+        }
+        if (distance <= section.getDistance()) {
+            throw new IllegalArgumentException("새 구간의 역 사이 길이가 기존 역 사이 길이보다 크거나 같으면 등록 할 수 없습니다.");
+        }
+    }
+
+    private void adjustDistance(final int distance) {
+        this.distance -= distance;
     }
 
     public Long getId() {
@@ -77,5 +113,34 @@ public class Section extends BaseEntity {
 
     public int getDistance() {
         return distance;
+    }
+
+    public boolean upStationEquals(final Section section) {
+        return getUpStation().equals(section.getUpStation());
+    }
+
+    public boolean downStationEquals(final Section section) {
+        return getDownStation().equals(section.getDownStation());
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Section section = (Section) o;
+        return Objects.equals(id, section.id) || stationsEquals(section);
+    }
+
+    private boolean stationsEquals(final Section o) {
+        return upStationEquals(o) && downStationEquals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
