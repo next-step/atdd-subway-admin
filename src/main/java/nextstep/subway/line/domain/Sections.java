@@ -43,30 +43,15 @@ public class Sections {
             Section parentStation = findParentStation(newSection);
             parentStation.changeUpSection(newSection);
             sections.add(newSection);
+            return;
         }
 
         if (matchStation(isUpStation(newSection))) {
             Section parentStation = findNextStation(newSection);
             parentStation.changeDownSection(newSection);
             sections.add(newSection);
+            return;
         }
-
-    }
-
-    private Section findParentStation(Section newSection) {
-        Section parentStation = sections.stream()
-                                        .filter(section -> section.equalsParentStation(newSection.getDownStation()))
-                                        .findFirst()
-                                        .orElseThrow(SectionNotFoundException::new);
-        return parentStation;
-    }
-
-    private Section findNextStation(Section newSection) {
-        Section nextStation = sections.stream()
-                                      .filter(section -> section.equalsChildStation(newSection.getUpStation()))
-                                      .findFirst()
-                                      .orElseThrow(SectionNotFoundException::new);
-        return nextStation;
     }
 
     private boolean matchStation(Predicate<Section> isStation) {
@@ -78,8 +63,24 @@ public class Sections {
         return section -> section.findDownStation(newSection);
     }
 
+    private Section findParentStation(Section newSection) {
+        Section parentStation = sections.stream()
+                                        .filter(section -> section.equalsPreviousUpStation(newSection.getDownStation()))
+                                        .findFirst()
+                                        .orElseThrow(SectionNotFoundException::new);
+        return parentStation;
+    }
+
     private Predicate<Section> isDownStation(Section newSection) {
         return section -> section.findUpStation(newSection);
+    }
+
+    private Section findNextStation(Section newSection) {
+        Section nextStation = sections.stream()
+                                      .filter(section -> section.equalsChildStation(newSection.getUpStation()))
+                                      .findFirst()
+                                      .orElseThrow(SectionNotFoundException::new);
+        return nextStation;
     }
 
     public boolean contains(List<Section> section) {

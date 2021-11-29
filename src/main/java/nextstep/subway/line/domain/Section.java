@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.*;
+import static nextstep.subway.line.domain.SectionType.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -76,8 +77,6 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-
-
     /*
      * 기능정의
      */
@@ -87,11 +86,11 @@ public class Section extends BaseEntity {
 
     public void changeUpSection(Section newSection) {
         alreadyRegisteredSection(newSection);
-        if (SectionType.equalsFirst(sectionType)) {
-            this.changeFirstSectionType(newSection);
+        if (SectionType.equalsFirst(sectionType) && upStation.equals(newSection.getDownStation())) {
+            changeFirstSectionType(newSection);
             return;
         }
-        addMiddleUpSection(newSection);
+        addMiddleSection(newSection);
     }
 
     public void changeDownSection(Section newSection) {
@@ -99,14 +98,9 @@ public class Section extends BaseEntity {
         this.upStation = newSection.getDownStation();
     }
 
-    private void addMiddleUpSection(Section newSection) {
-        this.downStation = newSection.getUpStation();
-        this.distance = this.distance.subtract(newSection.getDistance());
-    }
-
-    private void addMiddleDownSection(Section newSection) {
-        this.downStation = newSection.getUpStation();
-        this.distance = this.distance.subtract(newSection.getDistance());
+    private void addMiddleSection(Section newSection) {
+        downStation = newSection.getUpStation();
+        distance = distance.subtract(newSection.getDistance());
     }
 
     void alreadyRegisteredSection(Section section) {
@@ -127,7 +121,7 @@ public class Section extends BaseEntity {
 
     private void changeLastSectionType(Section newSection) {
         this.sectionType = SectionType.MIDDLE;
-        newSection.sectionType = SectionType.LAST;
+        newSection.sectionType = LAST;
     }
 
     public Station getUpStation() {
@@ -159,8 +153,16 @@ public class Section extends BaseEntity {
         return upStation.equals(newSection.getDownStation());
     }
 
-    public boolean equalsParentStation(Station downStation) {
-        return downStation.equals(downStation);
+    public boolean equalsPreviousUpStation(Station downStation) {
+        if (SectionType.equalsFirst(sectionType)) {
+            return true;
+        }
+
+        if (SectionType.equalsLast(sectionType)) {
+            return this.upStation.equals(downStation);
+        }
+
+        return this.downStation.equals(downStation);
     }
 
     // 하행

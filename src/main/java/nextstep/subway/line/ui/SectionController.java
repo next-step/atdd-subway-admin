@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.line.application.SectionService;
 import nextstep.subway.line.dto.SectionRequest;
-import nextstep.subway.line.dto.SectionResponse;
 
 @RestController
 public class SectionController {
@@ -24,8 +23,7 @@ public class SectionController {
     }
 
     @PostMapping(value = "/{lineId}/sections")
-    public ResponseEntity<SectionResponse> addSection(@PathVariable("lineId") Long lindId,
-        @RequestBody SectionRequest sectionRequest) {
+    public ResponseEntity addSection(@PathVariable("lineId") Long lindId, @RequestBody SectionRequest sectionRequest) {
         sectionService.addSection(lindId, sectionRequest);
         return ResponseEntity.created(URI.create(format("/%s/sections", lindId))).build();
     }
