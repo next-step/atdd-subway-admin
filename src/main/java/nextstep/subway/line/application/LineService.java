@@ -24,21 +24,18 @@ public class LineService {
 
     private final StationRepository stationRepository;
 
-    private final SectionRepository sectionRepository;
-
     public LineService(LineRepository lineRepository, StationRepository stationRepository,
         SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
         Station upStation = findStationById(request.getUpStationId());
         Station downStation = findStationById(request.getDownStationId());
 
-        Line persistLine = lineRepository
-            .save(saveSection(request, upStation, downStation, request.toLine()));
+        Line persistLine = lineRepository.save(request.toLine());
+        Section.create(Distance.valueOf(request.getDistance()), upStation, downStation, persistLine);
 
         return LineResponse.of(persistLine);
     }
@@ -78,7 +75,7 @@ public class LineService {
         Station downStation = findStationById(lineRequest.getDownStationId());
         Line line = findById(lineId);
 
-        line.addLineStation(Distance.valueOf(lineRequest.getDistance()), upStation, downStation);
+        line.addSections(Distance.valueOf(lineRequest.getDistance()), upStation, downStation);
 
         return LineResponse.of(line);
     }
@@ -93,8 +90,4 @@ public class LineService {
             .orElseThrow(() -> new NotFoundException(Messages.NO_STATION.getValues()));
     }
 
-    private Line saveSection(LineRequest request, Station upStation, Station downStation, Line line) {
-        sectionRepository.save(Section.create(Distance.valueOf(request.getDistance()), upStation, downStation, line));
-        return line;
-    }
 }

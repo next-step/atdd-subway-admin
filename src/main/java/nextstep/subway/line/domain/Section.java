@@ -62,22 +62,18 @@ public class Section extends BaseEntity implements Comparable<Section>{
      */
     public Section toLine(Line line) {
         if (this.line != null) {
-            this.line.removeLineStation(this);
+            this.line.removeSection(this);
         }
 
         this.line = line;
         if (!line.containsLineStation(this)) {
-            line.addLineStation(this);
+            line.addSection(this);
         }
         return this;
     }
 
-    private Distance calculateDistance(Distance distance) {
-        try {
-            return this.distance.minus(distance);
-        }catch (BusinessException e) {
-            throw new CannotAddException(Messages.LONG_OR_SAME_DISTANCE.getValues());
-        }
+    public void removeLine() {
+        this.line = null;
     }
 
     boolean equalsLine(Line line) {
@@ -108,6 +104,14 @@ public class Section extends BaseEntity implements Comparable<Section>{
         this.fromStation = fromStation;
         this.toStation = toStation;
         return this;
+    }
+
+    private Distance calculateDistance(Distance distance) {
+        try {
+            return this.distance.minus(distance);
+        }catch (BusinessException e) {
+            throw new CannotAddException(Messages.LONG_OR_SAME_DISTANCE.getValues());
+        }
     }
 
     @Override

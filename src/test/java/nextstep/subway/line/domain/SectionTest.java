@@ -6,12 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import nextstep.subway.common.Messages;
-import nextstep.subway.exception.BusinessException;
 import nextstep.subway.exception.CannotAddException;
-import nextstep.subway.exception.NotValidateException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +18,6 @@ import org.springframework.test.context.jdbc.Sql;
 @DataJpaTest
 @Sql(scripts = "classpath:scripts/sectionTestData.sql")
 public class SectionTest {
-
-    // 기준 길이 값
-    private static final Integer TEST_REFERENCE_DISTANCE = 10;
 
     @Autowired
     LineRepository lineRepository;
@@ -39,113 +33,115 @@ public class SectionTest {
     private Station seoulStation;
     private Station yongsanStation;
 
-    @BeforeEach
-    public void setUp() {
-        seoulStation = stationRepository.findById(1L).get();
-        yongsanStation = stationRepository.findById(2L).get();
-
-        line = lineRepository.save(new Line("1호선", "blue"));
-        sectionRepository.save(Section.create(Distance.valueOf(TEST_REFERENCE_DISTANCE), seoulStation, yongsanStation, line));
-    }
-
     @Test
     @DisplayName("라인 생성시 구간 추가 성공")
     void createLineWithSection() {
+        seoulStation = stationRepository.findById(1L).get();
+        yongsanStation = stationRepository.findById(2L).get();
 
         Line line = lineRepository.save(new Line("1호선-천안", "blue"));
-        sectionRepository.save(Section.create(Distance.valueOf(TEST_REFERENCE_DISTANCE), seoulStation, yongsanStation, line));
+        Section.create(Distance.valueOf(10), seoulStation, yongsanStation, line);
 
         //쿼리 확인
         lineRepository.flush();
 
-        Line findLine = lineRepository.findById(line.getId()).get();
+        List<Station> stations = lineRepository.findById(line.getId()).get()
+            .getSortedStations();
 
         assertAll(() -> {
-            assertThat(findLine.getSortedStations().size()).isEqualTo(2);
-            assertThat(findLine.getSortedStations().stream().map(Station::getName)).containsExactly("서울역", "용산역");
+            assertThat(stations.size()).isEqualTo(2);
+            assertThat(stations).extracting(Station::getName).containsExactly("서울역", "용산역");
         });
     }
 
     @Test
     @DisplayName("이미 저장된 1호선(서울역-용산역)에 상행 구간(추가역, 10) 추가 성공")
     void addUpSection() {
+        addLine1WithSeoulToYongsanLength10();
         Station addStation = stationRepository.findById(3L).get();
 
-        line.addLineStation(Distance.valueOf(TEST_REFERENCE_DISTANCE), addStation, seoulStation);
+        line.addSections(Distance.valueOf(10), addStation, seoulStation);
 
         assertAddSection(addStation, seoulStation, yongsanStation);
     }
 
     @Test
-    @DisplayName("이미 저장된 1호선(서울역-용산역)에 하행 구간(추가역, 10) 추가 성공")
+    @DisplayName("이미 저장된 1호선(서울역-용산역, 길이 10)에 하행 구간(추가역, 10) 추가 성공")
     void addDownSection() {
+        addLine1WithSeoulToYongsanLength10();
         Station addStation = stationRepository.findById(3L).get();
 
-        line.addLineStation(Distance.valueOf(TEST_REFERENCE_DISTANCE), yongsanStation, addStation);
+        line.addSections(Distance.valueOf(10), yongsanStation, addStation);
 
         assertAddSection(seoulStation, yongsanStation, addStation);
     }
 
     @Test
-    @DisplayName("이미 저장된 1호선(서울역-용산역)에 중간 구간(서울역-추가역, 5) 추가 성공")
+    @DisplayName("이미 저장된 1호선(서울역-용산역, 길이 10)에 중간 구간(서울역-추가역, 5) 추가 성공")
     void addUpMiddleSection() {
+        addLine1WithSeoulToYongsanLength10();
         Station addStation = stationRepository.findById(3L).get();
 
-        line.addLineStation(Distance.valueOf(5), seoulStation, addStation);
+        line.addSections(Distance.valueOf(5), seoulStation, addStation);
 
         assertAddSection(seoulStation, addStation, yongsanStation);
     }
 
     @Test
-    @DisplayName("이미 저장된 1호선(서울역-용산역)에 중간 구간(추가역-용산역, 3) 추가 성공")
+    @DisplayName("이미 저장된 1호선(서울역-용산역, 길이 10)에 중간 구간(추가역-용산역, 길이 3) 추가 성공")
     void addDownMiddleSection() {
+        addLine1WithSeoulToYongsanLength10();
         Station addStation = stationRepository.findById(3L).get();
 
-        line.addLineStation(Distance.valueOf(3), addStation, yongsanStation);
+        line.addSections(Distance.valueOf(3), addStation, yongsanStation);
 
         assertAddSection(seoulStation, addStation, yongsanStation);
     }
 
     @Test
-    @DisplayName("이미 저장된 1호선(서울역-용산역)에 (길이가 다른) 같은 구간(서울역-용산역(길이 5)) 추가시 이미 존재한다는 BusinessException 발생")
+    @DisplayName("이미 저장된 1호선(서울역-용산역, 길이 10)에 (길이가 다른) 같은 구간(서울역-용산역(길이 5)) 추가시 이미 존재한다는 CannotAddException 발생")
     void addSectionAlreadyExistsFail() {
+        addLine1WithSeoulToYongsanLength10();
 
         assertThatThrownBy(
-            () -> line.addLineStation(Distance.valueOf(5), yongsanStation, seoulStation))
+            () -> line.addSections(Distance.valueOf(5), yongsanStation, seoulStation))
             .isInstanceOf(CannotAddException.class)
             .hasMessage(Messages.ALREADY_EXISTS_SECTION.getValues());
     }
 
     @Test
-    @DisplayName("이미 저장된 1호선(서울역-용산역)에 기존 노선에 포함되지 않은 역만 있는 구간(강남역-역삼역(길이 10)) 추가시 BusinessException 발생")
+    @DisplayName("이미 저장된 1호선(서울역-용산역)에 기존 노선에 포함되지 않은 역만 있는 구간(강남역-역삼역) 추가시 포함된 구간이 없다는 CannotAddException 발생")
     void addSectionNotIncludeFail() {
+        addLine1WithSeoulToYongsanLength10();
         Station gangnamStation = stationRepository.findById(4L).get();
         Station yeoksamStation = stationRepository.findById(5L).get();
 
         assertThatThrownBy(
-            () -> line.addLineStation(Distance.valueOf(TEST_REFERENCE_DISTANCE), gangnamStation, yeoksamStation))
+            () -> line.addSections(Distance.valueOf(10), gangnamStation, yeoksamStation))
             .isInstanceOf(CannotAddException.class)
             .hasMessage(Messages.NOT_INCLUDE_SECTION.getValues());
     }
 
     @Test
-    @DisplayName("이미 저장된 1호선(서울역-용산역)에 기존 구간과 길이가 같은 중간 구간(서울역-추가역(길이 10)) 추가 시 BusinessException")
+    @DisplayName("이미 저장된 1호선(서울역-용산역, 길이 10)에 기존 구간과 길이가 같은 중간 구간(서울역-추가역(길이 10)) 추가 시 구간의 길이는 기존 구간보다 작아야 한다는  CannotAddException")
     void addSectionSameDistanceFail() {
+        addLine1WithSeoulToYongsanLength10();
         Station addStation = stationRepository.findById(3L).get();
 
         assertThatThrownBy(
-            () -> line.addLineStation(Distance.valueOf(TEST_REFERENCE_DISTANCE), seoulStation, addStation))
+            () -> line.addSections(Distance.valueOf(10), seoulStation, addStation))
             .isInstanceOf(CannotAddException.class)
             .hasMessage(Messages.LONG_OR_SAME_DISTANCE.getValues());
     }
 
     @Test
-    @DisplayName("이미 저장된 1호선(서울역-용산역)에 기존 구간보다 길이가 긴 구간(추가역-용산역(길이 12)) 추가 시 BusinessException")
+    @DisplayName("이미 저장된 1호선(서울역-용산역, 길이 10)에 기존 구간보다 길이가 긴 구간(추가역-용산역(길이 12)) 추가 시 기존 구간보다 작아야 한다는 CannotAddException")
     void addSectionLongDistanceFail() {
+        addLine1WithSeoulToYongsanLength10();
         Station addStation = stationRepository.findById(3L).get();
 
         assertThatThrownBy(
-            () -> line.addLineStation(Distance.valueOf(12), addStation, yongsanStation))
+            () -> line.addSections(Distance.valueOf(12), addStation, yongsanStation))
             .isInstanceOf(CannotAddException.class)
             .hasMessage(Messages.LONG_OR_SAME_DISTANCE.getValues());
     }
@@ -156,6 +152,14 @@ public class SectionTest {
 
         List<Station> sortedSections = line.getSortedStations();
         assertThat(sortedSections).containsExactly(assertStation);
+    }
+
+    private void addLine1WithSeoulToYongsanLength10() {
+        seoulStation = stationRepository.findById(1L).get();
+        yongsanStation = stationRepository.findById(2L).get();
+
+        line = lineRepository.save(new Line("1호선", "blue"));
+        sectionRepository.save(Section.create(Distance.valueOf(10), seoulStation, yongsanStation, line));
     }
 
 }

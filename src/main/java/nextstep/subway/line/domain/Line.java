@@ -40,14 +40,15 @@ public class Line extends BaseEntity {
      *
      * @param section
      */
-    public void addLineStation(Section section) {
+    public void addSection(Section section) {
         this.sections.add(section);
         if (!section.equalsLine(this)) {
             section.toLine(this);
         }
     }
 
-    public void removeLineStation(Section section) {
+    public void removeSection(Section section) {
+        section.removeLine();
         this.sections.remove(section);
     }
 
@@ -76,15 +77,17 @@ public class Line extends BaseEntity {
         return this.sections.contains(section);
     }
 
-    public void addLineStation(Distance distance, Station upStation, Station downStation) {
-        validate(sections.containsStation(upStation), sections.containsStation(downStation));
+    public void addSections(Distance distance, Station fromStation, Station toStation) {
+        validate(fromStation, toStation);
 
-        sections.updateByFromStation(upStation, distance, downStation);
-        sections.updateByToStation(downStation, distance, upStation);
-        sections.add(Section.create(distance, upStation, downStation, this));
+        sections.updateByFromStation(fromStation, distance, toStation);
+        sections.updateByToStation(toStation, distance, fromStation);
+        sections.add(Section.create(distance, fromStation, toStation, this));
     }
 
-    private void validate(boolean containUpStation, boolean containDownStation) {
+    private void validate(Station upStation, Station downStation) {
+        boolean containUpStation = sections.containsStation(upStation);
+        boolean containDownStation = sections.containsStation(downStation);
         if (containUpStation && containDownStation) {
             throw new CannotAddException(Messages.ALREADY_EXISTS_SECTION.getValues());
         }

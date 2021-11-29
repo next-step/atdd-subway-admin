@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -46,31 +47,27 @@ public class Sections {
         return getSortedList().contains(station);
     }
 
-    void updateByFromStation(Station findStation, Distance distance, Station updateStation) {
-        Section byFromStation = findByFromStation(findStation);
-        if (byFromStation != null) {
-            byFromStation.updateFromStation(distance, updateStation);
-        }
+    void updateByFromStation(Station stationToFind, Distance distance, Station fromStation) {
+        Optional<Section> optionalSection = findByFromStation(stationToFind);
+        optionalSection.ifPresent(section ->
+            section.updateFromStation(distance, fromStation));
     }
 
-    void updateByToStation(Station findStation, Distance distance, Station updateStation) {
-        Section byToStation = findByToStation(findStation);
-        if (byToStation != null) {
-            byToStation.updateToStation(distance, updateStation);
-        }
+    void updateByToStation(Station stationToFind, Distance distance, Station toStation) {
+        Optional<Section> optionalSection = findByToStation(stationToFind);
+        optionalSection.ifPresent(section ->
+            section.updateToStation(distance, toStation));
     }
 
-    private Section findByFromStation(Station station) {
+    private Optional<Section> findByFromStation(Station station) {
         return sections.stream()
             .filter(section -> section.isFromStation(station))
-            .findFirst()
-            .orElse(null);
+            .findFirst();
     }
 
-    private Section findByToStation(Station station) {
+    private Optional<Section> findByToStation(Station station) {
         return sections.stream()
             .filter(section -> section.isToStation(station))
-            .findFirst()
-            .orElse(null);
+            .findFirst();
     }
 }
