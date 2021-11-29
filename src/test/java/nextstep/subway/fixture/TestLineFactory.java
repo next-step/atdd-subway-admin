@@ -69,7 +69,7 @@ public class TestLineFactory {
         final Long id = 지하철_노선_ID_추출(createResponse);
         return RestAssured.given().log().all()
                 .when()
-                .get("/lines/")
+                .get("/lines/"+id)
                 .then().log().all()
                 .extract();
     }
