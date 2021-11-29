@@ -102,12 +102,9 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        List<StationResponse> stationResponses = new LinkedList<>();
-        line.getSections()
-                .forEach(section -> {
-                    stationResponses.add(StationResponse.of(section.getUpStation()));
-                    stationResponses.add(StationResponse.of(section.getDownStation()));
-                });
-        return stationResponses;
+        return line.getSections().getSortedStations()
+                .stream()
+                .map(station -> StationResponse.of(station))
+                .collect(Collectors.toList());
     }
 }
