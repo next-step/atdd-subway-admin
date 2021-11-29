@@ -6,6 +6,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -31,22 +33,20 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    private Section(final Station upStation, final Station downStation, final int distance) {
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
-    }
-
-    public static Section of(final Station upStation, final Station downStation, final int distance){
-        return new Section(upStation, downStation, distance);
-    }
-
     public Section(final Long id, final Line line, final Station upStation, final Station downStation, final int distance){
         this.id = id;
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private Section(final Station upStation, final Station downStation, final int distance) {
+        this(null, null, upStation, downStation, distance);
+    }
+
+    public static Section of(final Station upStation, final Station downStation, final int distance){
+        return new Section(upStation, downStation, distance);
     }
 
     public Long getId() {
@@ -73,39 +73,43 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-    public void changeUpStation(Station upStation) {
-        this.upStation = upStation;
+    public void changeUpStation(Section section) {
+        this.upStation = section.upStation;
     }
 
-    public void changeDownStation(Station downStation) {
-        this.downStation = downStation;
+    public void changeDownStation(Section section) {
+        this.downStation = section.downStation;
     }
 
-    public void minusDistance(int distance){
-        if (this.getDistance() <= distance){
-            throw new IllegalArgumentException(Message.SECTION_DISTANCE_REGISTER.getMessage());
+    public void minusDistance(Section section){
+        if (this.distance <= section.distance){
+            throw new IllegalArgumentException(Message.NOT_REGISTER_SECTION_DISTANCE.getMessage());
         }
-        this.distance = this.distance - distance;
+        this.distance -= section.distance;
     }
 
     public boolean isUpStationEquals(Section section){
-        return this.getUpStation().equals(section.getUpStation());
+        return this.upStation.equals(section.upStation);
     }
 
     public boolean isDownStationEquals(Section section){
-        return this.getDownStation().equals(section.getDownStation());
+        return this.downStation.equals(section.downStation);
     }
 
     public boolean isUpStationAndTargetDownStationEquals(Section section){
-        return this.getUpStation().equals(section.getDownStation());
+        return this.upStation.equals(section.downStation);
     }
 
     public boolean isDownStationAndTargetUpStationEquals(Section section){
-        return this.getDownStation().equals(section.getUpStation());
+        return this.downStation.equals(section.upStation);
     }
 
-    public void setLine(Line line) {
+    public void addLine(Line line) {
         this.line = line;
+    }
+
+    public List<Station> getStations() {
+        return Arrays.asList(downStation, upStation);
     }
 
     @Override
