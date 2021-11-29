@@ -34,7 +34,7 @@ public class TestSectionFactory {
     public static void 지하철_노선에_지하철역_구간_목록_포함됨(ExtractableResponse<Response> response) {
         LineResponse lineResponse = response.as(LineResponse.class);
         assertAll(
-                () -> assertThat(lineResponse.getStationResponses()).hasSize(2)
+                () -> assertThat(lineResponse.getStations()).hasSize(2)
         );
     }
 
