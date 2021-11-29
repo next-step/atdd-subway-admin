@@ -23,6 +23,10 @@ public class Distance {
         }
     }
 
+    public Distance subtract(Distance distance) {
+        return new Distance(this.distance - distance.distance);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

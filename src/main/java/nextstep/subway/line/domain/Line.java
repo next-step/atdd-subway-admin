@@ -60,15 +60,15 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Sections getSections() {
-        return sections;
-    }
-
     public List<Station> getStations() {
         return sections.getStations();
     }
 
     public boolean addSection(Section section) {
         return this.sections.addSection(section);
+    }
+
+    public void updateSections(Section added) {
+        sections.update(added);
     }
 }

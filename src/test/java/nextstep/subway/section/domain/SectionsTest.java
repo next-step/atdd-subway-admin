@@ -5,20 +5,63 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import nextstep.subway.station.domain.Station;
 
 class SectionsTest {
+    private Station 강남역;
+    private Station 양재역;
+    private Station 판교역;
+
+    private Section 강남_판교_구간;
+    private Section 강남_양재_구간;
+    private Section 양재_판교_구간;
+
+    @BeforeEach
+    void setUp() {
+        강남역 = new Station("강남역");
+        양재역 = new Station("양재역");
+        판교역 = new Station("판교역");
+
+        강남_판교_구간 = new Section(강남역, 판교역, new Distance(10));
+        강남_양재_구간 = new Section(강남역, 양재역, new Distance(8));
+        양재_판교_구간 = new Section(양재역, 판교역, new Distance(2));
+    }
+
+    @DisplayName("구간에서 역 목록을 가져온다")
     @Test
-    void 구간에서_역_목록을_가져온다() {
+    void getStations() {
         Sections sections = Sections.from(
-            Arrays.asList(new Section(new Station("강남역"), new Station("양재역"), new Distance(10)),
-                new Section(new Station("양재역"), new Station("판교역"), new Distance(10))));
+            Arrays.asList(강남_양재_구간, 양재_판교_구간));
 
         List<Station> stations = sections.getStations();
 
         assertThat(stations)
-            .isEqualTo(Arrays.asList(new Station("강남역"), new Station("양재역"), new Station("판교역")));
+            .isEqualTo(Arrays.asList(강남역, 양재역, 판교역));
+    }
+
+    @DisplayName("하행역을 포함하는 구간을 추가했을 때 업데이트 성공")
+    @Test
+    void update1() {
+        Sections sections = Sections.from(
+            Arrays.asList(강남_판교_구간));
+
+        sections.update(양재_판교_구간);
+
+        assertThat(sections.getStations()).isEqualTo(Arrays.asList(강남역, 양재역, 판교역));
+    }
+
+    @DisplayName("상행역을 포함하는 구간을 추가했을 때 업데이트 성공")
+    @Test
+    void update2() {
+        Sections sections = Sections.from(
+            Arrays.asList(강남_판교_구간));
+
+        sections.update(강남_양재_구간);
+
+        assertThat(sections.getStations()).isEqualTo(Arrays.asList(강남역, 양재역, 판교역));
     }
 }

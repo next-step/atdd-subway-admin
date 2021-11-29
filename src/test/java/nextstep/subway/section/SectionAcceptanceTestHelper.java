@@ -3,7 +3,9 @@ package nextstep.subway.section;
 import static nextstep.subway.line.LineAcceptanceTestHelper.*;
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -41,5 +43,16 @@ public class SectionAcceptanceTestHelper {
         LineResponse lineResponse = response.as(LineResponse.class);
 
         assertThat(lineResponse.getStations()).contains(StationResponse.from(station));
+    }
+
+    public static void 지하철_노선에_새로운_역_추가됨(long lineId, List<Station> stations) {
+        List<StationResponse> expected = stations.stream()
+            .map(StationResponse::from)
+            .collect(Collectors.toList());
+
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineId);
+        LineResponse lineResponse = response.as(LineResponse.class);
+
+        assertThat(lineResponse.getStations()).isEqualTo(expected);
     }
 }

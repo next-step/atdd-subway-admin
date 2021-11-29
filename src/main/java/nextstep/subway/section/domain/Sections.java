@@ -24,7 +24,7 @@ public class Sections {
     }
 
     private Sections(List<Section> sections) {
-        this.sections = sections;
+        this.sections = new ArrayList<>(sections);
     }
 
     public static Sections from(List<Section> sections) {
@@ -51,6 +51,44 @@ public class Sections {
         List<Station> stations = makeStations(stationPath, upperMost.get());
 
         return Collections.unmodifiableList(stations);
+    }
+
+    public void update(Section added) {
+        updateIfDownStationEquals(added);
+        updateIfUpStationEquals(added);
+        addSection(added);
+    }
+
+    private void updateIfDownStationEquals(Section added) {
+        Optional<Section> optionalDownSection = this.findSectionByDownStation(added.getDownStation());
+
+        if (optionalDownSection.isPresent()) {
+            Section origin = optionalDownSection.get();
+            origin.updateDown(added);
+        }
+    }
+
+    private Optional<Section> findSectionByDownStation(Station downStation) {
+        return this.sections
+            .stream()
+            .filter(section -> section.hasDownStation(downStation))
+            .findFirst();
+    }
+
+    private void updateIfUpStationEquals(Section added) {
+        Optional<Section> optionalUpSection = this.findSectionByUpStation(added.getUpStation());
+
+        if (optionalUpSection.isPresent()) {
+            Section origin = optionalUpSection.get();
+            origin.updateUp(added);
+        }
+    }
+
+    private Optional<Section> findSectionByUpStation(Station upStation) {
+        return this.sections
+            .stream()
+            .filter(section -> section.hasUpStation(upStation))
+            .findFirst();
     }
 
     private Map<Station, Station> makeStationPath() {

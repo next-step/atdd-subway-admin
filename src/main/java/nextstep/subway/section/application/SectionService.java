@@ -31,12 +31,13 @@ public class SectionService {
     @Transactional
     public long saveSection(long lineId, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
-        Section section = makeSection(sectionRequest);
-        line.addSection(section);
+        Section added = makeSection(sectionRequest);
 
-        sectionRepository.save(section);
+        sectionRepository.save(added);
 
-        return section.getId();
+        line.updateSections(added);
+
+        return added.getId();
     }
 
     private Section makeSection(SectionRequest request) {

@@ -40,6 +40,24 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
+    public boolean hasDownStation(Station downStation) {
+        return this.downStation.equals(downStation);
+    }
+
+    public boolean hasUpStation(Station upStation) {
+        return this.upStation.equals(upStation);
+    }
+
+    public void updateDown(Section added) {
+        this.downStation = added.getUpStation();
+        this.distance = this.distance.subtract(added.getDistance());
+    }
+
+    public void updateUp(Section added) {
+        this.upStation = added.getDownStation();
+        this.distance = this.distance.subtract(added.getDistance());
+    }
+
     public Long getId() {
         return id;
     }
@@ -65,10 +83,10 @@ public class Section extends BaseEntity {
             return false;
         }
         Section section = (Section)o;
-        return distance == section.distance &&
-            Objects.equals(id, section.id) &&
+        return Objects.equals(id, section.id) &&
             Objects.equals(upStation, section.upStation) &&
-            Objects.equals(downStation, section.downStation);
+            Objects.equals(downStation, section.downStation) &&
+            Objects.equals(distance, section.distance);
     }
 
     @Override
