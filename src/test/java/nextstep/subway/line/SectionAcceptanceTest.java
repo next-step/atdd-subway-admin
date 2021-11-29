@@ -27,7 +27,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      * 용산역 -> 역삼역 -> 강남역 -> 서울역 -> 신촌역
      */
     @Test
-    void 노선에_새로운_상행_및_하행_구간을_등록한다() {
+    void 노선에_새로운_상행_및_중간_구간을_등록한다() {
         // given
         StationResponse stationGangnam = 지하철역_등록되어_있음(강남역);
         StationResponse stationSinchon = 지하철역_등록되어_있음(신촌역);
@@ -71,9 +71,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationResponse stationYounSan = 지하철역_등록되어_있음(용산역);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선에_새로운_구간_등록_요청(lineResponse, stationSinchon,
-                                                                                  stationYounSan, 5
-        );
+        ExtractableResponse<Response> response = 지하철_노선에_새로운_구간_등록_요청(lineResponse, stationSinchon, stationYounSan, 5);
 
         // then
         ExtractableResponse<Response> dataResponse = 지하철_노선_조회_요청(lineResponse.getId());
