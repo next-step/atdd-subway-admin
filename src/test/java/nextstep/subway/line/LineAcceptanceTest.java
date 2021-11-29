@@ -1,10 +1,12 @@
 package nextstep.subway.line;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,13 +21,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
     @DisplayName("구간을_포함한_지하철_노선을_생성한다.")
     @Test
     void 구간을_포함한_지하철_노선을_생성한다() {
         // given
         // 지하철 역 생성
-        ExtractableResponse<Response> responseExtractableResponse1 = makeStation("강남역");
-        ExtractableResponse<Response> responseExtractableResponse2 = makeStation("역삼역");
+        ExtractableResponse<Response> responseExtractableResponse1 = StationAcceptanceTest.makeStation("강남역");
+        ExtractableResponse<Response> responseExtractableResponse2 = StationAcceptanceTest.makeStation("역삼역");
 
         // 노선 생성
         Map<String, String> params = new HashMap<>();
@@ -53,8 +56,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 지하철_노선을_생성한다() {
         // given
         // 지하철 역 생성
-        ExtractableResponse<Response> responseExtractableResponse1 = makeStation("강남역");
-        ExtractableResponse<Response> responseExtractableResponse2 = makeStation("역삼역");
+        ExtractableResponse<Response> responseExtractableResponse1 = StationAcceptanceTest.makeStation("강남역");
+        ExtractableResponse<Response> responseExtractableResponse2 = StationAcceptanceTest.makeStation("역삼역");
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
@@ -76,8 +79,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철 역 생성
-        ExtractableResponse<Response> responseExtractableResponse1 = makeStation("강남역");
-        ExtractableResponse<Response> responseExtractableResponse2 = makeStation("역삼역");
+        ExtractableResponse<Response> responseExtractableResponse1 = StationAcceptanceTest.makeStation("강남역");
+        ExtractableResponse<Response> responseExtractableResponse2 = StationAcceptanceTest.makeStation("역삼역");
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
@@ -96,8 +99,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_목록을_조회한다() {
         // 지하철 역 생성
-        ExtractableResponse<Response> responseExtractableResponse1 = makeStation("강남역");
-        ExtractableResponse<Response> responseExtractableResponse2 = makeStation("역삼역");
+        ExtractableResponse<Response> responseExtractableResponse1 = StationAcceptanceTest.makeStation("강남역");
+        ExtractableResponse<Response> responseExtractableResponse2 = StationAcceptanceTest.makeStation("역삼역");
         /// given
         // 지하철_노선_등록되어_있음
         Map<String, String> params1 = new HashMap<>();
@@ -131,8 +134,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선을_조회한다() {
         // 지하철 역 생성
-        ExtractableResponse<Response> responseExtractableResponse1 = makeStation("강남역");
-        ExtractableResponse<Response> responseExtractableResponse2 = makeStation("역삼역");
+        ExtractableResponse<Response> responseExtractableResponse1 = StationAcceptanceTest.makeStation("강남역");
+        ExtractableResponse<Response> responseExtractableResponse2 = StationAcceptanceTest.makeStation("역삼역");
         /// given
         // 지하철_노선_등록되어_있음
         Map<String, String> params = new HashMap<>();
@@ -153,24 +156,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineId).isEqualTo(expectedLineId);
     }
 
-    private ExtractableResponse<Response> makeStation(Map<String, String> params) {
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void 지하철_노선을_수정한다() {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철 역 생성
-        ExtractableResponse<Response> responseExtractableResponse1 = makeStation("강남역");
-        ExtractableResponse<Response> responseExtractableResponse2 = makeStation("역삼역");
+        ExtractableResponse<Response> responseExtractableResponse1 = StationAcceptanceTest.makeStation("강남역");
+        ExtractableResponse<Response> responseExtractableResponse2 = StationAcceptanceTest.makeStation("역삼역");
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "9호선");
         params1.put("upStationId", responseExtractableResponse1.response().jsonPath().get("id").toString());
@@ -200,8 +193,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         /// given
         // 지하철_노선_등록되어_있음
         // 지하철 역 생성
-        ExtractableResponse<Response> responseExtractableResponse1 = makeStation("강남역");
-        ExtractableResponse<Response> responseExtractableResponse2 = makeStation("역삼역");
+        ExtractableResponse<Response> responseExtractableResponse1 = StationAcceptanceTest.makeStation("강남역");
+        ExtractableResponse<Response> responseExtractableResponse2 = StationAcceptanceTest.makeStation("역삼역");
         Map<String, String> params = new HashMap<>();
         params.put("name", "9호선");
         params.put("upStationId", responseExtractableResponse1.response().jsonPath().get("id").toString());
@@ -226,7 +219,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> requestLineCreation(Map<String, String> params) {
+    public static ExtractableResponse<Response> requestLineCreation(Map<String, String> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -264,12 +257,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .put(uri)
                 .then().log().all()
                 .extract();
-    }
-
-    private ExtractableResponse<Response> makeStation(String 강남역) {
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", 강남역);
-        return makeStation(params1);
     }
 
     private void assertResponseStatusAndLocation(ExtractableResponse<Response> response) {
