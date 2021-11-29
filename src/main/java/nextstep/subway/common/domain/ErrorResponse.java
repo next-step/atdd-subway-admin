@@ -16,8 +16,4 @@ public class ErrorResponse {
     public HttpStatus getStatus() {
         return this.status;
     }
-
-    public String getMessage() {
-        return this.message;
-    }
 }
