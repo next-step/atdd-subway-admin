@@ -54,9 +54,19 @@ public class Sections {
     }
 
     public void update(Section added) {
+        validateSection(added);
         updateIfDownStationEquals(added);
         updateIfUpStationEquals(added);
         addSection(added);
+    }
+
+    private void validateSection(Section added) {
+        List<Station> stations = getStations();
+
+        if (stations.contains(added.getDownStation()) &&
+            stations.contains(added.getUpStation())) {
+            throw new IllegalArgumentException("이미 모두 구간에 포함되어 있습니다.");
+        }
     }
 
     private void updateIfDownStationEquals(Section added) {

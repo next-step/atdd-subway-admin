@@ -129,4 +129,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_구간_등록됨(response);
         지하철_노선에_새로운_역_추가됨(지하철_신분당선_id, Arrays.asList(강남역, 양재역, 판교역));
     }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void 상행역과_하행역이_이미_노선에_모두_등록되어_있다면_추가할_수_없음() {
+        // given
+        // 지하철_노선에_구간_추가되어_있음(지하철_2호선_id, 잠실역, 삼성역, "10");
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", String.valueOf(잠실역.getId()));
+        params.put("downStationId", String.valueOf(강남역.getId()));
+        params.put("distance", "10");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(지하철_2호선_id, params);
+
+        // then
+        지하철_노선에_구간_추가_실패됨(response);
+    }
 }
