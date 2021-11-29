@@ -65,11 +65,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse1 = LineRequestTestUtil.종점역을_생성한_후_지하철_노선_생성_요청("신분당선", "bg-red-600",
+        ExtractableResponse<Response> createResponseShinbundang = LineRequestTestUtil.종점역을_생성한_후_지하철_노선_생성_요청("신분당선", "bg-red-600",
             "강남역", "역삼역", "10");
 
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse2 = LineRequestTestUtil.종점역을_생성한_후_지하철_노선_생성_요청("2호선", "bg-green-600",
+        ExtractableResponse<Response> createResponseLine2 = LineRequestTestUtil.종점역을_생성한_후_지하철_노선_생성_요청("2호선", "bg-green-600",
             "잠실역", "건대역", "10");
 
         // when
@@ -80,7 +80,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_목록_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_목록_포함됨
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+        List<Long> expectedLineIds = Arrays.asList(createResponseShinbundang, createResponseLine2).stream()
             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
             .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
