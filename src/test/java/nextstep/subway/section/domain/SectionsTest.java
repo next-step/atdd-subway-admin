@@ -27,7 +27,7 @@ class SectionsTest {
         등록구간 = new Section(1L, 노선, 잠실역, 강변역, 10);
 
         구간목록.add(등록구간);
-        노선 = Line.of("2호선", "green", Sections.of(구간목록));
+        노선 = Line.of("2호선", "green", Sections.from(구간목록));
     }
 
     @DisplayName("상행역을 추가한다.")
@@ -36,7 +36,7 @@ class SectionsTest {
         final Station 잠실새내역 = new Station(4L, "잠실새내역", 노선);
         final Section 추가구간 = new Section(2L, 노선, 잠실새내역, 잠실역, 10);
 
-        final Sections sections = Sections.of(노선.getSections());
+        final Sections sections = Sections.from(노선.getSections());
 
         sections.add(추가구간, 노선);
 
@@ -52,7 +52,7 @@ class SectionsTest {
         final Station 잠실나루역 = new Station(4L, "잠실나루역", 노선);
         final Section 추가구간 = new Section(2L, 노선, 강변역, 잠실나루역, 10);
 
-        final Sections sections = Sections.of(노선.getSections());
+        final Sections sections = Sections.from(노선.getSections());
 
         sections.add(추가구간, 노선);
 
@@ -68,7 +68,7 @@ class SectionsTest {
         final Station 잠실나루역 = new Station(4L, "잠실나루역", 노선);
         final Section 추가구간 = new Section(2L, 노선, 잠실역, 잠실나루역, 5);
 
-        final Sections sections = Sections.of(노선.getSections());
+        final Sections sections = Sections.from(노선.getSections());
 
         sections.add(추가구간, 노선);
 
@@ -84,11 +84,11 @@ class SectionsTest {
     void add_예외1() {
         final Section 추가구간 = new Section(2L, 노선, 잠실역, 강변역, 5);
 
-        final Sections sections = Sections.of(노선.getSections());
+        final Sections sections = Sections.from(노선.getSections());
 
         assertThatThrownBy(() -> sections.add(추가구간, 노선))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("상행, 하행 역 모두가 포함되어있습니다.");
+                .hasMessage("상행, 하행 역 모두가 포함되어 있어 등록할 수 없습니다.");
     }
 
     @DisplayName("등록된 구간의 상행역과 추가할 하행역이 동일하다.")
@@ -98,11 +98,11 @@ class SectionsTest {
         final Station 잠실새내역 = new Station(5L, "잠실새내역", 노선);
         final Section 추가구간 = new Section(2L, 노선, 잠실나루역, 잠실새내역, 5);
 
-        final Sections sections = Sections.of(노선.getSections());
+        final Sections sections = Sections.from(노선.getSections());
 
         assertThatThrownBy(() -> sections.add(추가구간, 노선))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("상행, 하행 역 모두가 포함되지 않았습니다.");
+                .hasMessage("상행, 하행 역 모두가 포함되지 않아서 등록할 수 없습니다.");
     }
 
     @DisplayName("등록된 구간의 길와 추가할 구간의 길이가 같거나 크면 실패한다.")
@@ -111,7 +111,7 @@ class SectionsTest {
         final Station 잠실나루역 = new Station(4L, "잠실나루역", 노선);
         final Section 추가구간 = new Section(2L, 노선, 잠실역, 잠실나루역, 10);
 
-        final Sections sections = Sections.of(노선.getSections());
+        final Sections sections = Sections.from(노선.getSections());
 
         assertThatThrownBy(() -> sections.add(추가구간, 노선))
                 .isInstanceOf(IllegalArgumentException.class)

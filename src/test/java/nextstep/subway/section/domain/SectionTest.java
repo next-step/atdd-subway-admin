@@ -62,7 +62,9 @@ public class SectionTest {
     void minusDistance() {
         final Section 등록구간 = Section.of(잠실역, 잠실나루, 10);
 
-        등록구간.minusDistance(5);
+        final Section 추가구간 = Section.of(잠실역, 강변역, 5);
+
+        등록구간.minusDistance(추가구간);
 
         assertThat(등록구간.getDistance()).isEqualTo(5);
     }
@@ -72,7 +74,9 @@ public class SectionTest {
     void minusDistance_예외() {
         final Section 등록구간 = Section.of(잠실역, 잠실나루, 10);
 
-        assertThatThrownBy(() -> 등록구간.minusDistance(10))
+        final Section 추가구간 = Section.of(잠실역, 강변역, 10);
+
+        assertThatThrownBy(() -> 등록구간.minusDistance(추가구간))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("등록할 수 없는 구간입니다.");
     }
@@ -82,7 +86,9 @@ public class SectionTest {
     void changeUpStation() {
         final Section 등록구간 = Section.of(잠실역, 잠실나루, 10);
 
-        등록구간.changeUpStation(강변역);
+        final Section 추가구간 = Section.of(강변역, 잠실역, 10);
+
+        등록구간.changeUpStation(추가구간);
 
         assertThat(등록구간.getUpStation()).isEqualTo(강변역);
     }
@@ -92,7 +98,9 @@ public class SectionTest {
     void changeDownStation() {
         final Section 등록구간 = Section.of(잠실역, 잠실나루, 10);
 
-        등록구간.changeDownStation(강변역);
+        final Section 추가구간 = Section.of(잠실나루, 강변역, 10);
+
+        등록구간.changeDownStation(추가구간);
 
         assertThat(등록구간.getDownStation()).isEqualTo(강변역);
     }
