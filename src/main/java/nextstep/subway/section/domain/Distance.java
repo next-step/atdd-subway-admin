@@ -1,6 +1,6 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.section.exception.UnValidDistanceException;
+import nextstep.subway.section.exception.NotValidDistanceException;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -30,7 +30,7 @@ public class Distance {
 
     private void validateDistance(int distance) {
         if (distance < MINIMUM_DISTANCE) {
-            throw new UnValidDistanceException("구간 입력이 잘못되었습니다.");
+            throw new NotValidDistanceException("구간 입력이 잘못되었습니다.");
         }
     }
 }
