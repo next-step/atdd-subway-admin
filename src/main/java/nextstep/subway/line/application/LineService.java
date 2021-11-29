@@ -29,7 +29,7 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(IllegalArgumentException::new);
         Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(IllegalArgumentException::new);
-        Line persistLine = lineRepository.save(request.toLine(upStation, downStation, request.getDistance()));
+        Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
 

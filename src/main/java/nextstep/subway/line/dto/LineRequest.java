@@ -45,11 +45,11 @@ public class LineRequest {
         return new Line(name, color);
     }
 
-    public Line toLine(Station upStation, Station downStation, int distance) {
+    public Line toLine(Station upStation, Station downStation) {
         return new Line(name, color, upStation, downStation, distance);
     }
 
     public Line toLineWithId(Long id) {
-        return new Line(id, name, color);
+        return new Line(id, name, color, null);
     }
 }

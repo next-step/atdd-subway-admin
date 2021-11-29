@@ -52,4 +52,11 @@ public class Sections {
 	public int hashCode() {
 		return Objects.hash(sections);
 	}
+
+	@Override
+	public String toString() {
+		return "Sections{" +
+			"sections=" + sections +
+			'}';
+	}
 }

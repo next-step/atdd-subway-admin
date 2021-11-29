@@ -31,26 +31,23 @@ public class Line extends BaseEntity {
     }
 
     public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
+        this(null, name, color, new Sections());
     }
 
     public Line(String name, String color, Sections sections) {
-        this.name = name;
-        this.color = color;
-        this.sections = sections;
+        this(null, name, color, sections);
     }
 
     public Line(String name, String color, Station upStation, Station downStation, Integer distance) {
-        this.name = name;
-        this.color = color;
-        this.sections.add(new Section(this, upStation, downStation, distance));
+        this(null, name, color, new Sections());
+        sections.add(new Section(this, upStation, downStation, distance));
     }
 
-    public Line(Long id, String name, String color) {
+    public Line(Long id, String name, String color, Sections sections) {
         this.id = id;
         this.name = name;
         this.color = color;
+        this.sections = sections;
     }
 
     public void update(Line line) {
@@ -87,5 +84,15 @@ public class Line extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", color='" + color + '\'' +
+            ", sections=" + sections +
+            '}';
     }
 }
