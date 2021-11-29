@@ -86,6 +86,29 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_초과_에러_발생함(response);
     }
 
+    @DisplayName("상행역, 하행역 모두 등록된 경우")
+    @Test
+    void existSection() {
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_추가_요청(DEFAULT_UP_STATION_ID, DEFAULT_DOWN_STATION_ID, DISTANCE);
+
+        //then
+        구간_역_관련_에러_발생함(response);
+    }
+
+    @DisplayName("상행역, 하행역 모두 등록 안된 경우")
+    @Test
+    void notExistSection() {
+        //given
+        Long anotherStationId = TestStationFactory.역_생성("잠실역").getId();
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_추가_요청(newStationId, anotherStationId, DISTANCE);
+
+        //then
+        구간_역_관련_에러_발생함(response);
+    }
+
     private ExtractableResponse<Response> 지하철_구간_추가_요청(Long upStationId, Long downStationId, int distance) {
         SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
         String path = "lines/" + DEFAULT_LINE_ID + "/sections";
@@ -116,6 +139,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
                 () -> assertThat(response.body().asString()).isEqualTo("구간 입력이 잘못되었습니다.")
+        );
+    }
+
+    private void 구간_역_관련_에러_발생함(ExtractableResponse<Response> response) {
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().asString()).isEqualTo("구간 추가할 역이 잘못 입력됐습니다.")
         );
     }
 }
