@@ -17,12 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.exception.DefaultException;
-import nextstep.subway.exception.LineDuplicateException;
-import nextstep.subway.exception.NotFoundLineException;
-import nextstep.subway.exception.domain.ErrorMessage;
+import nextstep.subway.line.exception.LineDuplicateException;
+import nextstep.subway.line.exception.NotFoundLineException;
+import nextstep.subway.exception.dto.ErrorMessage;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.exception.NotFoundStationException;
 
 @RestController
 @RequestMapping("/lines")
@@ -61,17 +62,22 @@ public class LineController {
     }
 
     @ExceptionHandler(LineDuplicateException.class)
-    public ResponseEntity handleLineDuplicateException(LineDuplicateException e) {
+    public ResponseEntity<ErrorMessage> handleLineDuplicateException(LineDuplicateException e) {
         return ResponseEntity.badRequest().body(ErrorMessage.of(e.getMessage()));
     }
 
     @ExceptionHandler(NotFoundLineException.class)
-    public ResponseEntity handleNotFoundLineException(NotFoundLineException e) {
+    public ResponseEntity<ErrorMessage> handleNotFoundLineException(NotFoundLineException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorMessage.of(e.getMessage()));
+    }
+
+    @ExceptionHandler(NotFoundStationException.class)
+    public ResponseEntity<ErrorMessage> handleNotFoundStationException(NotFoundStationException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorMessage.of(e.getMessage()));
     }
 
     @ExceptionHandler
-    public ResponseEntity defaultException(Exception e) {
+    public ResponseEntity<ErrorMessage> handleDefaultException(Exception e) {
         return ResponseEntity.badRequest().body(ErrorMessage.of(DefaultException.UNEXPECTED_ERROR));
     }
 

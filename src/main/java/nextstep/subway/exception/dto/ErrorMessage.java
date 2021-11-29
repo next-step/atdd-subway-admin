@@ -1,4 +1,4 @@
-package nextstep.subway.exception.domain;
+package nextstep.subway.exception.dto;
 
 public class ErrorMessage {
     private final String message;
