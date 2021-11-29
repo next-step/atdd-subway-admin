@@ -33,13 +33,9 @@ class SectionsTest {
 
         Line 신분당선 = lineRepository.save(Line.of("신분당선", "red"));
 
-        Section 강남역_양재역 = Section.of(강남역, 양재역, 10);
-        Section 양재역_양재시민의숲 = Section.of(양재역, 양재시민의숲, 8);
-        Section 양재시민의숲_청계산입구 = Section.of(양재시민의숲, 청계산입구, 8);
-
-        신분당선.addSection(강남역_양재역);
-        신분당선.addSection(양재역_양재시민의숲);
-        신분당선.addSection(양재시민의숲_청계산입구);
+        신분당선.addSection(강남역, 양재역, 10);
+        신분당선.addSection(양재역, 양재시민의숲, 8);
+        신분당선.addSection(양재시민의숲, 청계산입구, 8);
 
         // when
         Sections actual = 신분당선.getSections();
@@ -58,13 +54,9 @@ class SectionsTest {
 
         Line 신분당선 = lineRepository.save(Line.of("신분당선", "red"));
 
-        Section 강남역_양재역 = Section.of(강남역, 양재역, 10);
-        Section 양재역_양재시민의숲 = Section.of(양재역, 양재시민의숲, 8);
-        Section 양재시민의숲_청계산입구 = Section.of(양재시민의숲, 청계산입구, 8);
-
-        신분당선.addSection(강남역_양재역);
-        신분당선.addSection(양재역_양재시민의숲);
-        신분당선.addSection(양재시민의숲_청계산입구);
+        신분당선.addSection(강남역, 양재역, 10);
+        신분당선.addSection(양재역, 양재시민의숲, 8);
+        신분당선.addSection(양재시민의숲, 청계산입구, 8);
         Sections sections = 신분당선.getSections();
 
         // when

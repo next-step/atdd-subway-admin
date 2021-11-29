@@ -40,7 +40,8 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-    public void addSection(Section section) {
+    public void addSection(Station upStation, Station downStation, int distance) {
+        Section section = Section.of(upStation, downStation, distance);
         sections.add(section);
         section.changeLine(this);
     }

@@ -3,12 +3,11 @@ package nextstep.subway.line.application;
 import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,76 +19,70 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
+    private final StationService stationService;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(final LineRepository lineRepository, final StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
-    public LineResponse saveLine(LineRequest request) {
-        validateDuplicate(request);
-
-        Line persistLine = lineRepository.save(request.toLine());
-
-        if (request.hasStationInfo()) {
-            persistLine.addSection(
-                    Section.of(
-                            findStationById(request.getUpStationId()),
-                            findStationById(request.getDownStationId()),
-                            request.getDistance())
-            );
-        }
+    public LineResponse saveLine(final LineRequest lineRequest) {
+        validateDuplicate(lineRequest);
+        final Line persistLine = lineRepository.save(lineRequest.toLine());
+        addSectionByRequest(persistLine, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
 
         return LineResponse.of(persistLine);
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
-        List<Line> lines = lineRepository.findAll();
+        final List<Line> lines = lineRepository.findAll();
         return lines.stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public LineResponse findLine(Long id) {
-        Line line = findLineById(id);
+    public LineResponse findLine(final Long id) {
+        final Line line = findLineById(id);
         return LineResponse.of(line);
     }
 
-    public LineResponse updateLine(LineRequest lineRequest, Long id) {
-        Line line = findLineById(id);
+    public LineResponse updateLine(final LineRequest lineRequest, final Long id) {
+        final Line line = findLineById(id);
         line.update(lineRequest.toLine());
         return LineResponse.of(line);
     }
 
-    public LineResponse addSection(Long id, SectionRequest sectionRequest) {
-        Line line = findLineById(id);
-        line.addSection(
-                Section.of(
-                        findStationById(sectionRequest.getUpStationId()),
-                        findStationById(sectionRequest.getDownStationId()),
-                        sectionRequest.getDistance())
-        );
+    public LineResponse addSection(final Long id, final SectionRequest sectionRequest) {
+        final Line line = findLineById(id);
+        addSectionByRequest(line, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         return LineResponse.of(line);
     }
 
-    public void deleteLineById(Long id) {
+    public void deleteLineById(final Long id) {
         lineRepository.deleteById(id);
     }
 
-    private Line findLineById(Long id) {
+    private Line findLineById(final Long id) {
         return lineRepository.findById(id).orElseThrow(BadRequestException::new);
     }
 
-    private Station findStationById(Long stationId) {
-        return stationRepository.findById(stationId).orElseThrow(BadRequestException::new);
-    }
-
-    private void validateDuplicate(LineRequest request) {
-        if (lineRepository.existsByName(request.getName())) {
+    private void validateDuplicate(final LineRequest lineRequest) {
+        if (lineRepository.existsByName(lineRequest.getName())) {
             throw new BadRequestException();
         }
+    }
+
+    private void addSectionByRequest(final Line persistLine, final Long upStationId, final Long downStationId, final int distance) {
+        if (hasSectionInfo(upStationId, downStationId, distance)) {
+            final Station upStation = stationService.findStationById(upStationId);
+            final Station downStation = stationService.findStationById(downStationId);
+            persistLine.addSection(upStation, downStation, distance);
+        }
+    }
+
+    private boolean hasSectionInfo(final Long upStationId, final Long downStationId, final int distance) {
+        return upStationId != null || downStationId != null || distance > 0;
     }
 }

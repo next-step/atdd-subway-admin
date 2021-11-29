@@ -34,6 +34,10 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+    public Station findStationById(Long stationId) {
+        return stationRepository.findById(stationId).orElseThrow(BadRequestException::new);
+    }
+
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
     }

@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.station.domain.Station;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -26,19 +27,20 @@ public class Section {
     @ManyToOne(fetch = FetchType.LAZY)
     private Line line;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
 
     private Section(Station upStation, Station downStation, int distance) {
+        validateDuplicate(upStation, downStation);
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = Distance.from(distance);
     }
 
     public static Section of(Station upStation, Station downStation, int distance) {
-        validateDuplicate(upStation, downStation);
         return new Section(upStation, downStation, distance);
     }
 
@@ -59,7 +61,7 @@ public class Section {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.value();
     }
 
     public void changeLine(Line line) {

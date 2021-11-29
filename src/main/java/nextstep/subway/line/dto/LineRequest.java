@@ -56,8 +56,4 @@ public class LineRequest {
     public Line toLine() {
         return Line.of(name, color);
     }
-
-    public boolean hasStationInfo() {
-        return upStationId != null || downStationId != null || distance > 0;
-    }
 }
