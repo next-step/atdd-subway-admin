@@ -48,8 +48,12 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        sections.add(section);
-        section.setLine(this);
+        if (!sections.isContainsSection(section)) {
+            sections.add(section);
+        }
+        if (section.getLine() == null || !section.getLine().equals(this)) {
+            section.setLine(this);
+        }
     }
 
     public void removeSection(Section section) {
