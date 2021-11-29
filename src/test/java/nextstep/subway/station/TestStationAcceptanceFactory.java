@@ -1,12 +1,10 @@
 package nextstep.subway.station;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,34 +14,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestStationAcceptanceFactory {
 
-    public static ExtractableResponse<Response> 지하철_역_목록_조회_요청() {
-        return RestAssured.given().log().all()
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> 지하철_역_생성_요청(StationRequest stationRequest) {
-        return RestAssured
-                .given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    public static StationResponse 지하철_역_생성(String name) {
-        return 지하철_역_생성_요청(지하철_역_파라미터_생성(name)).as(StationResponse.class);
-    }
-
-    public static ExtractableResponse<Response> 지하철_역_삭제_요청(Long deleteStationId) {
-        return RestAssured
-                .given().log().all()
-                .when().delete("/stations/{id}", deleteStationId)
-                .then().log().all()
-                .extract();
+    public static StationResponse 지하철_역_생성(ExtractableResponse<Response> response) {
+        return response.as(StationResponse.class);
     }
 
     public static List<Long> 지하철_역_목록_IDs_추출(ExtractableResponse<Response> response) {

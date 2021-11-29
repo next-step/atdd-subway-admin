@@ -1,13 +1,11 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,54 +14,6 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestLineAcceptanceFactory {
-
-    public static ExtractableResponse<Response> 지하철_노선_제거_요청(Long deleteLineId) {
-        return RestAssured
-                .given().log().all()
-                .when().delete("/lines/{id}", deleteLineId)
-                .then().log().all().extract();
-    }
-
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
-        return RestAssured
-                .given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all().extract();
-    }
-
-    public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
-        return RestAssured
-                .given().log().all()
-                .when().get("/lines")
-                .then().log().all().extract();
-    }
-
-    public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
-        return RestAssured
-                .given().log().all()
-                .when().get("/lines/{id}", id)
-                .then().log().all().extract();
-    }
-
-    public static ExtractableResponse<Response> 지하철_노선_수정_요청(Long createLineId, LineRequest updateParams) {
-        return RestAssured
-                .given().log().all()
-                .body(updateParams)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().patch("/lines/{id}", createLineId)
-                .then().log().all().extract();
-    }
-
-    public static ExtractableResponse<Response> 지하철_노선에_종점역정보_추가_요청(Long lineId, SectionRequest sectionRequest) {
-        return RestAssured
-                .given().log().all()
-                .body(sectionRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines/{id}/sections", lineId)
-                .then().log().all().extract();
-    }
 
     public static List<Long> 지하철_노선_목록_IDs_추출(ExtractableResponse<Response> response) {
         return response.jsonPath().getList(".", LineResponse.class).stream()

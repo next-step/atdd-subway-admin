@@ -13,12 +13,9 @@ import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역
 import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역_IDs_추출;
 import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역_목록_IDs_추출;
 import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역_목록_응답됨;
-import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역_목록_조회_요청;
 import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역_목록_포함됨;
-import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역_삭제_요청;
 import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역_삭제됨;
 import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역_생성_실패됨;
-import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역_생성_요청;
 import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역_생성됨;
 import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역_파라미터_생성;
 
@@ -29,7 +26,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void 지하철_역을_생성한다() {
         // when
         StationRequest 강남역 = 지하철_역_파라미터_생성("강남역");
-        ExtractableResponse<Response> 지하철_역_생성_요청_응답 = 지하철_역_생성_요청(강남역);
+        ExtractableResponse<Response> 지하철_역_생성_요청_응답 = 생성_요청(STATION_ROOT_PATH, 강남역);
 
         // then
         지하철_역_생성됨(지하철_역_생성_요청_응답);
@@ -39,10 +36,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void 기존에_존재하는_지하철역_이름으로_지하철역을_생성한다() {
         // given
         StationRequest 강남역 = 지하철_역_파라미터_생성("강남역");
-        지하철_역_생성_요청(강남역);
+        생성_요청(STATION_ROOT_PATH, 강남역);
 
         // when
-        ExtractableResponse<Response> 지하철_역_생성_요청_응답 = 지하철_역_생성_요청(강남역);
+        ExtractableResponse<Response> 지하철_역_생성_요청_응답 = 생성_요청(STATION_ROOT_PATH, 강남역);
 
         // then
         지하철_역_생성_실패됨(지하철_역_생성_요청_응답);
@@ -53,11 +50,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
         /// given
         StationRequest 강남역 = 지하철_역_파라미터_생성("강남역");
         StationRequest 역삼역 = 지하철_역_파라미터_생성("역삼역");
-        ExtractableResponse<Response> 강남역_응답 = 지하철_역_생성_요청(강남역);
-        ExtractableResponse<Response> 역삼역_응답 = 지하철_역_생성_요청(역삼역);
+        ExtractableResponse<Response> 강남역_응답 = 생성_요청(STATION_ROOT_PATH, 강남역);
+        ExtractableResponse<Response> 역삼역_응답 = 생성_요청(STATION_ROOT_PATH, 역삼역);
 
         // when
-        ExtractableResponse<Response> 지하철_역_목록_조회_요청_응답 = 지하철_역_목록_조회_요청();
+        ExtractableResponse<Response> 지하철_역_목록_조회_요청_응답 = 조회_요청(STATION_ROOT_PATH);
 
         // then
         지하철_역_목록_응답됨(지하철_역_목록_조회_요청_응답);
@@ -70,11 +67,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void 지하철역을_제거한다() {
         // given
         StationRequest 강남역 = 지하철_역_파라미터_생성("강남역");
-        ExtractableResponse<Response> 지하철_역_생성_요청_응답 = 지하철_역_생성_요청(강남역);
+        ExtractableResponse<Response> 지하철_역_생성_요청_응답 = 생성_요청(STATION_ROOT_PATH, 강남역);
         Long 강남역_ID = 지하철_역_ID_추출(지하철_역_생성_요청_응답);
 
         // when
-        ExtractableResponse<Response> 지하철_역_삭제_요청_응답 = 지하철_역_삭제_요청(강남역_ID);
+        ExtractableResponse<Response> 지하철_역_삭제_요청_응답 = 삭제_요청(STATION_ROOT_PATH + 강남역_ID);
 
         // then
         지하철_역_삭제됨(지하철_역_삭제_요청_응답);
