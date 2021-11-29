@@ -39,7 +39,9 @@ public class Sections {
 
     private List<Station> findAllStations() {
         Section firstSection = findFirstSection();
-        List<Station> stations = Arrays.asList(firstSection.getUpStation(), firstSection.getDownStation());
+        List<Station> stations = new ArrayList<>(
+            Arrays.asList(firstSection.getUpStation(), firstSection.getDownStation())
+        );
 
         List<Station> upStations = upStationsOfSections();
         Section lastSection = firstSection;
