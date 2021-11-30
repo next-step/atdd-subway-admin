@@ -42,7 +42,7 @@ class StationsTest {
         );
     }
 
-    @DisplayName("상행역과 하행역이 모두 등록되어 있다면 추가 실패")
+    @DisplayName("상행역과 하행역이 모두 등록되어 있지 않다면 추가 실패")
     @Test
     void validateSection_errorWhenStationsNotContainsAll() {
         Stations stations = new Stations(Collections.singletonMap(강남역, 양재역));

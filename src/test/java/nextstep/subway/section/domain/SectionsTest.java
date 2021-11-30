@@ -47,7 +47,7 @@ class SectionsTest {
 
     @DisplayName("하행역을 포함하는 구간을 추가했을 때 업데이트 성공")
     @Test
-    void update1() {
+    void update_containsDownStation() {
         Sections sections = Sections.from(
             Arrays.asList(강남_판교_구간));
 
@@ -58,7 +58,7 @@ class SectionsTest {
 
     @DisplayName("상행역을 포함하는 구간을 추가했을 때 업데이트 성공")
     @Test
-    void update2() {
+    void update_containsUpStation() {
         Sections sections = Sections.from(
             Arrays.asList(강남_판교_구간));
 
@@ -81,6 +81,5 @@ class SectionsTest {
                 .isThrownBy(() -> sections.update(new Section(판교역, 강남역, new Distance(10))))
                 .withMessage("이미 모두 구간에 포함되어 있습니다.")
         );
-
     }
 }

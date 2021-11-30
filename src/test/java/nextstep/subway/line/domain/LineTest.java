@@ -36,7 +36,7 @@ class LineTest {
         assertThat(line.getStations()).isEqualTo(Arrays.asList(강남역, 양재역, 판교역));
     }
 
-    @DisplayName("하행 구간이 겹치는 새로운 구간 추가 업데이트")
+    @DisplayName("상행 구간이 겹치는 새로운 구간 추가 업데이트")
     @Test
     void updateSections2() {
         Sections sections = Sections.from(Arrays.asList(new Section(강남역, 판교역, new Distance(10))));
