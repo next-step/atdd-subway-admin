@@ -107,19 +107,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_수정됨(response);
     }
 
-    @DisplayName("중복 이름의 지하철 노선을 수정한다.")
-    @Test
-    void updateLine2() {
-        // given
-        ExtractableResponse<Response> createResponse1 = 지하철_노선_등록되어_있음(lineRequest1);
-
-        // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(lineRequest1, createResponse1);
-
-        // then
-        지하철_노선_수정되지_않음(response);
-    }
-
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
