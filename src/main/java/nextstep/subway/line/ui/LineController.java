@@ -47,6 +47,11 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity handleRuntimeException(RuntimeException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
