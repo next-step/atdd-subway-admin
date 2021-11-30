@@ -3,6 +3,7 @@ package nextstep.subway.section.domain;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.section.exception.ExisitsSectionException;
+import nextstep.subway.section.exception.NotExisitsSectionException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -20,17 +22,24 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section newSection) {
-        validateNotExistsSection(newSection);
-        addSameUpStationSection(newSection);
-        addSameDownStationSection(newSection);
+        if (sections.size() >= 1) {
+            validateExistsSection(newSection);
+            validateNotExistsSection(newSection);
+            addSameUpStationSection(newSection);
+            addSameDownStationSection(newSection);
+        }
         sections.add(newSection);
     }
 
     private void validateNotExistsSection(Section newSection) {
-        if (sections.stream().map(Section::getUpStation).anyMatch(section -> section.equals(newSection.getUpStation()))
-        && sections.stream().map(Section::getUpStation).anyMatch(section -> section.equals(newSection.getUpStation()))) {
-            throw new ExisitsSectionException();
+        Stream<Station> stations = Stream.concat(sections.stream()
+                .map(Section::getUpStation), sections.stream().map(Section::getDownStation));
+        if (stations.noneMatch(section -> section.equals(newSection.getUpStation()) || section.equals(newSection.getDownStation()))) {
+            throw new NotExisitsSectionException();
         }
+    }
+
+    private void validateExistsSection(Section newSection) {
     }
 
     private void addSameDownStationSection(Section newSection) {
