@@ -3,7 +3,6 @@ package nextstep.subway.line.domain;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
-import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -12,7 +11,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Entity
-@DynamicUpdate
 public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
