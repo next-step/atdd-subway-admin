@@ -57,12 +57,6 @@ public class Section {
         return new Section(upStation, downStation, distance);
     }
 
-    public void update(Section section) {
-        this.upStation = section.upStation;
-        this.downStation = section.downStation;
-        this.distance = section.distance;
-    }
-
     public Station getUpStation() {
         return upStation;
     }
