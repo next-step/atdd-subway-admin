@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
@@ -13,8 +14,10 @@ public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
+
     private String color;
 
     @Embedded
@@ -29,13 +32,14 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+    public Line(String name, String color, Station upStation, Station downStation, Distance distance) {
         this(name, color);
-        addSection(new Section(this, upStation, downStation, distance));
+        this.sections.addSection(new Section(this, upStation, downStation, distance));
     }
 
-    private void addSection(Section section) {
-        this.sections.addSection(section);
+    public void addSection(Section section) {
+        this.sections.updateSection(section);
+        section.addLine(this);
     }
 
     public void update(Line line) {
@@ -55,7 +59,16 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getStations() {
-        return sections.getStation();
+    public List<Station> getStations(){
+        return sections.getStations();
     }
+
+    public List<Section> getSections() {
+        return sections.getSections();
+    }
+
+    public List<Station> getOrderedSections() {
+        return sections.getOrderedtStation();
+    }
+
 }

@@ -5,6 +5,7 @@ import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class LineResponse {
@@ -15,7 +16,7 @@ public class LineResponse {
     private LocalDateTime modifiedDate;
     private List<StationResponse> stations;
 
-    public LineResponse() {
+    private LineResponse() {
     }
 
     public LineResponse(Long id, String name, String color, List<StationResponse> stations, LocalDateTime createdDate, LocalDateTime modifiedDate) {
@@ -28,10 +29,10 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        List<StationResponse> stationResponses = line.getStations().stream()
+        List<StationResponse> stationResponse = line.getOrderedSections().stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses, line.getCreatedDate(), line.getModifiedDate());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponse, line.getCreatedDate(), line.getModifiedDate());
     }
 
     public Long getId() {
@@ -56,5 +57,18 @@ public class LineResponse {
 
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LineResponse)) return false;
+        LineResponse that = (LineResponse) o;
+        return getId().equals(that.getId()) && getName().equals(that.getName()) && getStations().equals(that.getStations());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getStations());
     }
 }
