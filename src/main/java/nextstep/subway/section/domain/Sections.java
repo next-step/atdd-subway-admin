@@ -45,7 +45,7 @@ public class Sections {
     private void addSameDownStationSection(Section newSection) {
         if (existsDownStation(newSection)) {
             Section targetSection = getTargetDownSection(newSection);
-            targetSection.setUpStation(newSection.getDownStation());
+            targetSection.setDownStation(newSection.getUpStation());
             targetSection.setDistance(targetSection.getDistance() - newSection.getDistance());
         }
     }
