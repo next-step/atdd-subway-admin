@@ -1,67 +1,79 @@
 package nextstep.subway.line.application;
 
-import nextstep.subway.common.NotFoundException;
+import nextstep.subway.common.Message;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
 public class LineService {
-    public static final String THE_REQUESTED_INFORMATION_DOES_NOT_EXIST = "The requested information does not exist.";
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
-    private SectionRepository sectionRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
+    public LineService(final LineRepository lineRepository, final StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.sectionRepository = sectionRepository;
     }
 
     @Transactional
-    public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        Station upStation = stationRepository.findById(request.getUpStationId()).get();
-        Station downStation = stationRepository.findById(request.getDownStationId()).get();
-        upStation.setLine(persistLine);
-        downStation.setLine(persistLine);
-        sectionRepository.save(new Section(persistLine, upStation, downStation, request.getDistance()));
-        List<Station> stations = stationRepository.findByLine(persistLine);
-        return LineResponse.from(persistLine, stations);
+    public LineResponse saveLine(final LineRequest request) {
+        final Station upStation = getStation(request.getUpStationId());
+        final Station downStation = getStation(request.getDownStationId());
+        final Sections sections = Sections.from(Section.of(upStation, downStation, request.getDistance()));
+        final Line persistLine = lineRepository.save(Line.of(request.getName(), request.getColor(), sections));
+        return LineResponse.from(persistLine);
     }
 
     public List<LineResponse> findAllLines() {
-        List<Line> lines = lineRepository.findAll();
+        final List<Line> lines = lineRepository.findAll();
         return LineResponse.from(lines);
     }
 
-    public void deleteLineById(Long id) {
+    public void deleteLineById(final Long id) {
         lineRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)
-    public LineResponse findByLineId(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(THE_REQUESTED_INFORMATION_DOES_NOT_EXIST));
-        List<Station> stations = stationRepository.findByLine(line);
-        return LineResponse.from(line, stations);
+    public LineResponse findByLineId(final Long id) {
+        final Line line = getLine(id);
+        return LineResponse.from(line);
     }
 
     @Transactional
-    public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(THE_REQUESTED_INFORMATION_DOES_NOT_EXIST));
-        line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
+    public LineResponse updateLine(final Long id, final LineRequest lineRequest) {
+        final Line line = getLine(id);
+        line.update(lineRequest.toLine());
         return LineResponse.from(line);
+    }
+
+    public LineResponse addSection(Long id, SectionRequest sectionRequest) {
+        final Line line = getLine(id);
+        Station upStation = getStation(sectionRequest.getUpStationId());
+        Station downStation = getStation(sectionRequest.getDownStationId());
+        Section section = Section.of(upStation, downStation, sectionRequest.getDistance());
+        line.addSection(section);
+        return LineResponse.from(line);
+    }
+
+    private Line getLine(Long lineid) {
+        return lineRepository.findById(lineid)
+                .orElseThrow(() -> new IllegalArgumentException(Message.NOT_FIND_LINE.getMessage()));
+    }
+
+    private Station getStation(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new IllegalArgumentException(Message.NOT_FIND_STATION.getMessage()));
     }
 }

@@ -69,7 +69,15 @@ public class TestLineFactory {
         final Long id = 지하철_노선_ID_추출(createResponse);
         return RestAssured.given().log().all()
                 .when()
-                .get("/lines/" + id)
+                .get("/lines/"+id)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(final Long 노선번호) {
+        return RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + 노선번호)
                 .then().log().all()
                 .extract();
     }
@@ -119,10 +127,5 @@ public class TestLineFactory {
 
     public static void 지하철_노선_응답됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    public static void 지하철_노선_구간_확인됨(ExtractableResponse<Response> lineResponse) {
-        LineResponse response = lineResponse.as(LineResponse.class);
-        assertThat(response.getStationResponses().size()).isEqualTo(2);
     }
 }

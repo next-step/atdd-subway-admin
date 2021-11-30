@@ -13,7 +13,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
-    void createLine_() {
+    void createLine() {
         // given
         TestStationFactory.지하철_역_생성_요청("잠실역");
         TestStationFactory.지하철_역_생성_요청("부평구청역");
@@ -28,7 +28,6 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         TestLineFactory.지하철_노선_응답됨(lineResponse);
-        TestLineFactory.지하철_노선_구간_확인됨(lineResponse);
     }
 
 

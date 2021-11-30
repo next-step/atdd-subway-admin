@@ -1,4 +1,4 @@
-package nextstep.subway.common;
+package nextstep.subway.common.domain;
 
 import org.springframework.http.HttpStatus;
 
@@ -15,9 +15,5 @@ public class ErrorResponse {
 
     public HttpStatus getStatus() {
         return this.status;
-    }
-
-    public String getMessage() {
-        return this.message;
     }
 }
