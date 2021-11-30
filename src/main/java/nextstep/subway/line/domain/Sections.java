@@ -76,7 +76,7 @@ public class Sections {
     }
 
     private Predicate<Section> isUpStation(Station upStation) {
-        return section -> section.getUpStation().equals(upStation);
+        return section -> section.isUpStation(upStation);
     }
 
     private void changeDownSection(Section newSection) {
@@ -88,7 +88,7 @@ public class Sections {
     }
 
     private Predicate<Section> isDownStation(Station downStation) {
-        return section -> section.getDownStation().equals(downStation);
+        return section -> section.isDowStation(downStation);
     }
 
     private Optional<Section> findSections(Predicate<Section> condition) {
@@ -127,7 +127,7 @@ public class Sections {
     }
 
     private Predicate<Section> isPreStation(Section section) {
-        return s -> s.getDownStation().equals(section.getUpStation());
+        return s -> s.equalsUpStationName(section.getUpStation());
     }
 
     @Override

@@ -46,7 +46,7 @@ public class Section extends BaseEntity {
             throw new NoResultDataException();
         }
 
-        if (upStation.equals(downStation)) {
+        if (upStation.equalsName(downStation)) {
             throw new DuplicateSectionStationException();
         }
         this.upStation = upStation;
@@ -83,6 +83,28 @@ public class Section extends BaseEntity {
         this.distance = distance.subtract(newSection.getDistance());
     }
 
+    public boolean isStations(Section newSection) {
+        return (downStation.equalsName(newSection.getDownStation()) && upStation.equalsName(newSection.getUpStation()) ||
+            (downStation.equalsName(newSection.getUpStation())) && upStation.equalsName(newSection.getDownStation()));
+    }
+
+    public boolean isNotStations(Section newSection) {
+        return (downStation.equalsName(newSection.getUpStation()) || upStation.equalsName(newSection.getUpStation()) ||
+            (downStation.equalsName(newSection.getDownStation()) || upStation.equalsName(newSection.getDownStation())));
+    }
+
+    public boolean isUpStation(Station upStation) {
+        return this.upStation.equalsName(upStation);
+    }
+
+    public boolean isDowStation(Station downStation) {
+        return this.downStation.equalsName(downStation);
+    }
+
+    public boolean equalsUpStationName(Station upStation) {
+        return this.getDownStation().equalsName(upStation);
+    }
+
     public Station getUpStation() {
         return upStation;
     }
@@ -97,16 +119,6 @@ public class Section extends BaseEntity {
 
     public Long getId() {
         return id;
-    }
-
-    public boolean isStations(Section newSection) {
-        return (downStation.equals(newSection.getDownStation()) && upStation.equals(newSection.getUpStation()) ||
-            (downStation.equals(newSection.getUpStation()))  && upStation.equals(newSection.getDownStation()));
-    }
-
-    public boolean isNotStations(Section newSection) {
-        return (downStation.equals(newSection.getUpStation()) ||  upStation.equals(newSection.getUpStation())||
-            (downStation.equals(newSection.getDownStation()) || upStation.equals(newSection.getDownStation())));
     }
 
     @Override

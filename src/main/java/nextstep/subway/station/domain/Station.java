@@ -54,6 +54,10 @@ public class Station extends BaseEntity {
         return id;
     }
 
+    public boolean equalsName(Station downStation) {
+        return this.name.equals(downStation.getName()) ;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -61,12 +65,12 @@ public class Station extends BaseEntity {
         if (!(o instanceof Station))
             return false;
         Station station = (Station)o;
-        return Objects.equals(getId(), station.getId()) && Objects.equals(getName(), station.getName());
+        return Objects.equals(getId(), station.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName());
+        return Objects.hash(getId());
     }
 
     @Override

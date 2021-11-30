@@ -165,7 +165,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationResponse stationSinchon, int distance) {
         Param param = createParam()
             .addParam("lineId", lineResponse.getId());
-        return post("/{lineId}/sections", param,
+        return post("/lines/{lineId}/sections", param,
                     new SectionRequest(stationGangnam.getId(), stationSinchon.getId(), distance)
         );
     }
