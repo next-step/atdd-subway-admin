@@ -6,6 +6,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -75,7 +76,9 @@ public class LineService {
     }
 
     public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
-        Section section = null;
+        Line line = findById(lineId);
+        Sections sections = line.getSections();
+        //Section section = sectionRepository.fin;
         return null;
     }
 }

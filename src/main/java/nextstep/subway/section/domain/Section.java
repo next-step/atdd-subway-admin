@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section extends BaseEntity {
@@ -58,5 +59,29 @@ public class Section extends BaseEntity {
 
     public int getDistance() {
         return distance;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return id.equals(section.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+
+    public boolean equalsUpStation(Section section) {
+        return upStation.equals(section.getUpStation());
+    }
+
+    public void updateUpSection(Section newSection) {
+        this.upStation = newSection.getDownStation();
+        this.distance -= newSection.getDistance();
+        //TODO 거리 에러 처리
     }
 }

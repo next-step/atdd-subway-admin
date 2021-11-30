@@ -28,8 +28,13 @@ public class Sections {
         return Collections.unmodifiableList(sectionGroup);
     }
 
-    public void add(Section section) {
-        sectionGroup.add(section);
+    public void add(Section newSection) {
+        sectionGroup.stream()
+                .filter(item -> item.equalsUpStation(newSection))
+                .findFirst()
+                .ifPresent(item -> item.updateUpSection(newSection));
+
+        sectionGroup.add(newSection);
     }
 
     public int size() {
@@ -42,4 +47,5 @@ public class Sections {
                 .distinct()
                 .collect(Collectors.toList());
     }
+
 }
