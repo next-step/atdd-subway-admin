@@ -24,14 +24,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private final String LINE_DEFAULT_URL = "/lines";
-    private final String LINE_CREATE_URL = LINE_DEFAULT_URL + "/create";
-    private final String LINE_LIST_URL = LINE_DEFAULT_URL + "/list";
+    private static final String LINE_DEFAULT_URL = "/lines";
+    private static final String LINE_CREATE_URL = LINE_DEFAULT_URL + "/create";
+    private static final String LINE_LIST_URL = LINE_DEFAULT_URL + "/list";
 
     private LineRequest defaultLine;
 
     @BeforeEach
-    void lineParams() {
+    void makeDefaultLineParam() {
         defaultLine = new LineRequest("2호선", "bg-green-600");
     }
 
