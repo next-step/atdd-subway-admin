@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import nextstep.subway.common.exception.SubwayException;
+
 @RestControllerAdvice
 public class ExceptionController {
     private static final Logger log = LoggerFactory.getLogger(ExceptionController.class);
@@ -20,8 +22,8 @@ public class ExceptionController {
             .build();
     }
 
-    @ExceptionHandler({DataIntegrityViolationException.class, IllegalArgumentException.class})
-    public ResponseEntity<Void> handleIllegalArgsException(Exception e) {
+    @ExceptionHandler({DataIntegrityViolationException.class, SubwayException.class})
+    public ResponseEntity<Void> badRequestExceptionHandler(Exception e) {
         log.error("잘못된 요청입니다.", e);
 
         return ResponseEntity.badRequest()

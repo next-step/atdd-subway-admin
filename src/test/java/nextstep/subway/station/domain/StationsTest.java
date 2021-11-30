@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import nextstep.subway.common.exception.SubwayException;
 import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 
@@ -32,10 +33,10 @@ class StationsTest {
         Stations stations = new Stations(Collections.singletonMap(강남역, 양재역));
 
         assertAll(
-            () -> assertThatExceptionOfType(IllegalArgumentException.class)
+            () -> assertThatExceptionOfType(SubwayException.class)
                 .isThrownBy(() -> stations.validateSection(new Section(강남역, 양재역, new Distance(10))))
                 .withMessage("이미 모두 구간에 포함되어 있습니다."),
-            () -> assertThatExceptionOfType(IllegalArgumentException.class)
+            () -> assertThatExceptionOfType(SubwayException.class)
                 .isThrownBy(() -> stations.validateSection(new Section(양재역, 강남역, new Distance(10))))
                 .withMessage("이미 모두 구간에 포함되어 있습니다.")
         );
@@ -46,7 +47,7 @@ class StationsTest {
     void validateSection_errorWhenStationsNotContainsAll() {
         Stations stations = new Stations(Collections.singletonMap(강남역, 양재역));
 
-        assertThatExceptionOfType(IllegalArgumentException.class)
+        assertThatExceptionOfType(SubwayException.class)
             .isThrownBy(() -> stations.validateSection(new Section(판교역, 삼성역, new Distance(10))))
             .withMessage("모두 구간에 포함되어 있지 않습니다.");
     }

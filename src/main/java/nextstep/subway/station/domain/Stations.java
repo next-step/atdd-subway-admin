@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import nextstep.subway.common.exception.SubwayErrorCode;
+import nextstep.subway.common.exception.SubwayException;
 import nextstep.subway.section.domain.Section;
 
 public class Stations {
@@ -50,11 +52,11 @@ public class Stations {
         boolean containsUpStation = stations.contains(added.getUpStation());
 
         if (containsDownStation && containsUpStation) {
-            throw new IllegalArgumentException("이미 모두 구간에 포함되어 있습니다.");
+            throw new SubwayException(SubwayErrorCode.ALREADY_CONTAINS_ALL_STATION);
         }
 
         if (!containsDownStation && !containsUpStation) {
-            throw new IllegalArgumentException("모두 구간에 포함되어 있지 않습니다.");
+            throw new SubwayException(SubwayErrorCode.NOT_CONTAINS_ANY_STATION);
         }
     }
 

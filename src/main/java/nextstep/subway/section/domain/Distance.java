@@ -4,6 +4,9 @@ import java.util.Objects;
 
 import javax.persistence.Embeddable;
 
+import nextstep.subway.common.exception.SubwayErrorCode;
+import nextstep.subway.common.exception.SubwayException;
+
 @Embeddable
 public class Distance {
     private static final int MIN_DISTANCE = 1;
@@ -19,7 +22,7 @@ public class Distance {
 
     private void validate(int distance) {
         if (distance < MIN_DISTANCE) {
-            throw new IllegalArgumentException("1 이상의 길이만 입력 가능합니다. distance: " + distance);
+            throw new SubwayException(SubwayErrorCode.INVALID_DISTANCE);
         }
     }
 

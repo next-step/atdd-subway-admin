@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import nextstep.subway.common.exception.SubwayException;
 import nextstep.subway.station.domain.Station;
 
 class SectionsTest {
@@ -73,10 +74,10 @@ class SectionsTest {
             Arrays.asList(강남_판교_구간));
 
         assertAll(
-            () -> assertThatExceptionOfType(IllegalArgumentException.class)
+            () -> assertThatExceptionOfType(SubwayException.class)
                 .isThrownBy(() -> sections.update(강남_판교_구간))
                 .withMessage("이미 모두 구간에 포함되어 있습니다."),
-            () -> assertThatExceptionOfType(IllegalArgumentException.class)
+            () -> assertThatExceptionOfType(SubwayException.class)
                 .isThrownBy(() -> sections.update(new Section(판교역, 강남역, new Distance(10))))
                 .withMessage("이미 모두 구간에 포함되어 있습니다.")
         );

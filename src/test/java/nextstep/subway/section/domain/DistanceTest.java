@@ -7,15 +7,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import nextstep.subway.common.exception.SubwayException;
+
 class DistanceTest {
 
     @DisplayName("거리의 길이가 0 이하로 생성하면 에러가 발생한다")
     @ParameterizedTest
     @ValueSource(ints = {0, -1, Integer.MIN_VALUE})
     void construct_throwErrorWhenLowerThanOne(int distance) {
-        assertThatExceptionOfType(IllegalArgumentException.class)
+        assertThatExceptionOfType(SubwayException.class)
             .isThrownBy(() -> new Distance(distance))
-            .withMessage("1 이상의 길이만 입력 가능합니다. distance: " + distance);
+            .withMessage("1 이상의 길이만 입력 가능합니다.");
     }
 
     @DisplayName("거리 빼기")
