@@ -33,13 +33,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationTestHelper.지하철_역_생성_요청("중곡역");
     }
 
-    @DisplayName("노선에 구간을 등록한다.")
+    @DisplayName("역 사이에 새로운 역을 등록한다.")
     @Test
     void addSection() {
         //given
         Map<String,String> params = new HashMap<>();
         params.put("upStationId", "1");
-        params.put("upStationId", "3");
+        params.put("downStationId", "3");
         params.put("distance", "4");
 
         // when 지하철_노선에_지하철역_등록_요청
@@ -57,6 +57,32 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
                 () -> assertThat(response.header("Location")).isNotBlank()
         );
-
     }
+
+    @DisplayName("새로운 역을 상행 종점으로 등록한다.")
+    @Test
+    void addAscendingStation() {
+        //given
+        Map<String,String> params = new HashMap<>();
+        params.put("upStationId", "3");
+        params.put("downStationId", "1");
+        params.put("distance", "4");
+
+        // when 지하철_노선에_지하철역_등록_요청
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .pathParam("lineId", "1")
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/{lineId}/sections")
+                .then().log().all()
+                .extract();
+
+        // then 지하철_노선에_지하철역_등록됨
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(response.header("Location")).isNotBlank()
+        );
+    }
+
 }

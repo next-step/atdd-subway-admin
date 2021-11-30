@@ -78,7 +78,14 @@ public class LineService {
     public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = findById(lineId);
         Sections sections = line.getSections();
-        //Section section = sectionRepository.fin;
-        return null;
+        Section newSection = toSection(line, sectionRequest);
+        sections.add(newSection);
+        return LineResponse.of(line);
+    }
+
+    private Section toSection(Line line, SectionRequest sectionRequest) {
+        Station upStation = findStationById(sectionRequest.getUpStationId());
+        Station downStation = findStationById(sectionRequest.getDownStationId());
+        return Section.of(line, upStation, downStation, sectionRequest.getDistance());
     }
 }
