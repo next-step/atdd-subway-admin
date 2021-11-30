@@ -84,8 +84,11 @@ public class Section extends BaseEntity {
         updateDistance(newSection.getDistance());
     }
 
-    public void updateDistance(int distance) {
+    private void updateDistance(int distance) {
+        if(this.distance <= distance){
+            throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
+        }
         this.distance -= distance;
-        //TODO 거리 에러 처리
+
     }
 }

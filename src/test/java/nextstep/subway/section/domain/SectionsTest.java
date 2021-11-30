@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SectionsTest {
@@ -90,5 +91,20 @@ public class SectionsTest {
                 () -> assertThat(sections.size()).isEqualTo(2),
                 () -> assertThat(section.getDistance()).isEqualTo(10)
         );
+    }
+
+    @DisplayName("기존 역 사이 길이보다 크거나 같으면 등록 할 수 없음")
+    @Test
+    void distanceErrorValid() {
+        Station upStation = new Station(1L, "건대역");
+        Station downStation = new Station(2L, "용마산역");
+        Line line = new Line("bg-red-600", "7호선");
+        Section.of(line, upStation, downStation, 10);
+        Station newDownStation = new Station(3L, "뚝섬유원지역");
+
+        assertThatThrownBy(() -> {
+            Section nextSection = Section.of(line, upStation, newDownStation, 20);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
     }
 }
