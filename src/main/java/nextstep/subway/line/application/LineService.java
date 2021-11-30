@@ -78,4 +78,11 @@ public class LineService {
         lineRepository.save(line);
         return LineResponse.of(line);
     }
+
+    public LineResponse removeSection(Long id, Long stationId) {
+        Line line = findById(id);
+        Station targetStation = findStationById(stationId);
+        line.removeSection(targetStation);
+        return null;
+    }
 }

@@ -7,10 +7,14 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import nextstep.subway.common.exception.IllegalSectionRemoveException;
 import nextstep.subway.common.exception.LinkableSectionNotFoundException;
+import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
+
+    private static final int MINIMUM_SECTIONS_LIMIT = 1;
 
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -55,6 +59,16 @@ public class Sections {
 
         if (upStationRegistered && downStationRegistered) {
             throw new LinkableSectionNotFoundException();
+        }
+    }
+
+    public void removeSection(Station targetStation) {
+        validateMinimumSectionSize();
+    }
+
+    private void validateMinimumSectionSize() {
+        if (sections.size() == MINIMUM_SECTIONS_LIMIT) {
+            throw new IllegalSectionRemoveException(MINIMUM_SECTIONS_LIMIT);
         }
     }
 }
