@@ -13,8 +13,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static nextstep.subway.line.LineScenarioMethod.지하철_노선_등록되어_있음;
-import static nextstep.subway.line.LineScenarioMethod.지하철_노선_정보;
+import static nextstep.subway.line.LineScenarioMethod.*;
 import static nextstep.subway.line.SectionScenarioMethod.*;
 import static nextstep.subway.line.domain.Distance.MIN_DISTANCE;
 import static nextstep.subway.station.StationScenarioMethod.등록되지_않은_지하철_역;
@@ -34,34 +33,21 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createSectionUpStation() {
         // given
-        Map<String, Long> stations = 지하철_역_여러개_등록되어_있음(강남, 양재, 양재시민의숲);
+        Map<String, Long> stations = 지하철_역_여러개_등록되어_있음(강남, 양재, 양재시민의숲, 청계산입구);
         LineRequest 신분당선 = 지하철_노선_정보("신분당선", "bg-red-600", stations.get("양재"), stations.get("양재시민의숲"), 5);
         String createdLocationUri = 지하철_노선_등록되어_있음(신분당선);
 
-        SectionRequest request = 지하철_구간_정보(stations, "강남", "양재", 5);
+        SectionRequest request1 = 지하철_구간_정보(stations, "강남", "양재", 5);
+        SectionRequest request2 = 지하철_구간_정보(stations, "양재시민의숲", "청계산입구", 5);
 
         // when
-        ExtractableResponse<Response> response = 지하철_구간_생성_요청(createdLocationUri, request);
+        ExtractableResponse<Response> response1 = 지하철_구간_생성_요청(createdLocationUri, request1);
+        ExtractableResponse<Response> response2 = 지하철_구간_생성_요청(createdLocationUri, request2);
 
         // then
-        지하철_구간_생성됨(response);
-    }
-
-    @DisplayName("지하철 구간의 하행 종점으로 지하철 구간을 생성한다.")
-    @Test
-    void createSectionDownStation() {
-        // given
-        Map<String, Long> stations = 지하철_역_여러개_등록되어_있음(강남, 양재, 양재시민의숲);
-        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "bg-red-600", stations.get("강남"), stations.get("양재"), 5);
-        String createdLocationUri = 지하철_노선_등록되어_있음(신분당선);
-
-        SectionRequest request = 지하철_구간_정보(stations, "양재", "양재시민의숲", 5);
-
-        // when
-        ExtractableResponse<Response> response = 지하철_구간_생성_요청(createdLocationUri, request);
-
-        // then
-        지하철_구간_생성됨(response);
+        지하철_구간_생성됨(response1);
+        지하철_구간_생성됨(response2);
+        지하철_노선에_등록한_구간_포함됨(createdLocationUri, Arrays.asList("강남", "양재", "양재시민의숲", "청계산입구"));
     }
 
     @DisplayName("지하철 역 사이에 지하철 구간을 생성한다.")
@@ -153,5 +139,27 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_구간_생성_실패됨(response, BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("지하철 노선의 구간을 조회한다.")
+    void findSections() {
+        // given
+        Map<String, Long> stations = 지하철_역_여러개_등록되어_있음(강남, 양재, 양재시민의숲, 청계산입구);
+        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "bg-red-600", stations.get("강남"), stations.get("청계산입구"), 15);
+        String createdLocationUri = 지하철_노선_등록되어_있음(신분당선);
+
+        SectionRequest request1 = 지하철_구간_정보(stations, "강남", "양재", 5);
+        SectionRequest request2 = 지하철_구간_정보(stations, "양재시민의숲", "청계산입구", 5);
+
+        지하철_구간_생성됨(지하철_구간_생성_요청(createdLocationUri, request1));
+        지하철_구간_생성됨(지하철_구간_생성_요청(createdLocationUri, request2));
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdLocationUri + "/sections");
+
+        // then
+        지하철_구간_개수_일치됨(response, 3);
+        지하철_구간_상행역_일치됨(response, Arrays.asList("강남", "양재", "양재시민의숲"));
     }
 }

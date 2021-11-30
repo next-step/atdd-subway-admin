@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import nextstep.subway.assured.RestAssuredApi;
 import nextstep.subway.line.dto.SectionRequest;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -36,5 +37,18 @@ class SectionScenarioMethod {
         response.jsonPath().getList("stations.name");
         assertThat(response.jsonPath().getList("stations.name"))
                 .isEqualTo(stationNames);
+    }
+    public static void 지하철_구간_개수_일치됨(ExtractableResponse<Response> response, int size) {
+        List<String> result = response.jsonPath().getList("upStation.name");
+        assertThat(result.size()).isEqualTo(3);
+        assertThat(result)
+                .isEqualTo(Arrays.asList("강남", "양재", "양재시민의숲"));
+    }
+
+    public static void 지하철_구간_상행역_일치됨(ExtractableResponse<Response> response, List<String> stationNames) {
+        List<String> result = response.jsonPath().getList("upStation.name");
+        assertThat(result.size()).isEqualTo(3);
+        assertThat(result)
+                .isEqualTo(Arrays.asList("강남", "양재", "양재시민의숲"));
     }
 }

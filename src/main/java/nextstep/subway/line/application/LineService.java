@@ -3,16 +3,14 @@ package nextstep.subway.line.application;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
-import nextstep.subway.line.dto.LineCreateResponse;
-import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.dto.*;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static nextstep.subway.line.application.exception.LineNotFoundException.error;
 
@@ -68,6 +66,14 @@ public class LineService {
         Section section = request.toSection(upStation, downStation);
         line.addSection(section);
         return LineCreateResponse.of(line);
+    }
+
+    public List<SectionResponse> findSection(Long id) {
+        Line line = findLine(id);
+        List<Section> sections = line.getSectionsInOrder();
+        return sections.stream()
+                .map(section -> SectionResponse.of(section.getUpStation(), section.getDownStation(), section.getDistance()))
+                .collect(Collectors.toList());
     }
 
     private Line findLine(Long id) {
