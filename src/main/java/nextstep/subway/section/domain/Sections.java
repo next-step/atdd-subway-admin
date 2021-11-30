@@ -42,7 +42,7 @@ public class Sections {
         return results;
     }
 
-    public Station getFirstStation(Map<Station, Station> sortedStations) {
+    private Station getFirstStation(Map<Station, Station> sortedStations) {
         Map<Station, Station> cacheWithDownStations = doCacheWithDownStations();
         return sortedStations.keySet().stream()
                 .filter(upStation -> {
@@ -53,12 +53,12 @@ public class Sections {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    public Map<Station, Station> doCacheWithUpStations() {
+    private Map<Station, Station> doCacheWithUpStations() {
         return this.sections.stream()
                 .collect(toMap(Section::getUpStation, Section::getDownStation));
     }
 
-    public Map<Station, Station> doCacheWithDownStations() {
+    private Map<Station, Station> doCacheWithDownStations() {
         return this.sections.stream()
                 .collect(toMap(Section::getDownStation, Section::getUpStation));
     }
