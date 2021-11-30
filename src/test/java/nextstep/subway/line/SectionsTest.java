@@ -99,9 +99,9 @@ public class SectionsTest {
         return it.getDownStation().getName().equals(sectionStationName) || it.getUpStation().getName().equals(sectionStationName);
     }
 
-    private void checkStationNames(Line line, String name1, String name2, String name3) {
+    private void checkStationNames(Line line, String... stationNames) {
         assertThat(line.getOrderedSections()
                 .stream()
-                .map(it -> it.getName())).containsExactly(name1, name2, name3);
+                .map(it -> it.getName())).containsExactly(stationNames);
     }
 }

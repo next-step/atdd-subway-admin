@@ -7,10 +7,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -30,14 +27,23 @@ public class Sections {
     public List<Section> getOrderedSection() {
         List<Section> orderedSections = new ArrayList<>();
         Station firstStation = findFirstStation();
-        Optional<Section> foundSection = findFirstSection(firstStation);
+        Section foundSection = findFirstSection(firstStation);
 
-        while (foundSection.isPresent()) {
-            orderedSections.add(foundSection.get());
-            foundSection = findNextSection(foundSection.get());
+        //while (!isEmpty(foundSection)) {
+        while (hasSection(foundSection)) {
+            orderedSections.add(foundSection);
+            foundSection = findNextSection(foundSection);
         }
 
         return orderedSections;
+    }
+
+    private boolean hasSection(Section foundSection) {
+        return Optional.ofNullable(foundSection).isPresent();
+    }
+
+    private boolean isEmpty(Section foundSection) {
+        return Objects.isNull(foundSection);
     }
 
     public List<Station> getOrderedStation() {
@@ -48,16 +54,20 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    private Optional<Section> findNextSection(Section section) {
+    private Section findNextSection(Section section) {
         return this.sections.stream()
                 .filter(it -> it.getUpStation() == section.getDownStation())
-                .findFirst();
+                .findFirst()
+                .orElse(null);
     }
 
-    private Optional<Section> findFirstSection(Station firstStation) {
+    private Section findFirstSection(Station firstStation) {
         return this.sections.stream()
                 .filter(it -> it.getUpStation() == firstStation)
-                .findFirst();
+                .findFirst()
+                .orElseThrow(
+                        () -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_SECTION)
+                );
     }
 
     private Station findFirstStation() {

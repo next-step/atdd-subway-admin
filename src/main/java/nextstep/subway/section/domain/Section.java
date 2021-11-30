@@ -92,22 +92,12 @@ public class Section extends BaseEntity  {
         if (this == o) return true;
         if (!(o instanceof Section)) return false;
         Section section = (Section) o;
-        return Objects.equals(getId(), section.getId()) && Objects.equals(getUpStation(), section.getUpStation()) && Objects.equals(getDownStation(), section.getDownStation()) && Objects.equals(getLine(), section.getLine()) && Objects.equals(getDistance(), section.getDistance());
+        return Objects.equals(getUpStation(), section.getUpStation()) && Objects.equals(getDownStation(), section.getDownStation()) && Objects.equals(getLine(), section.getLine());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getUpStation(), getDownStation(), getLine(), getDistance());
+        return Objects.hash(getUpStation(), getDownStation(), getLine());
     }
 
-//    @Override
-//    public int compareTo(Section o) {
-//        if (this.getUpStation() == o.getDownStation()) {
-//            return 1;
-//        }
-//        if (this.getDownStation() == o.getUpStation()) {
-//            return -1;
-//        }
-//        return 0;
-//    }
 }
