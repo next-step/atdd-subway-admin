@@ -3,7 +3,6 @@ package nextstep.subway.line.domain;
 import static java.util.Arrays.*;
 import static java.util.stream.Collectors.*;
 import static nextstep.subway.line.LineAcceptanceTest.*;
-import static nextstep.subway.line.domain.Sections.*;
 import static nextstep.subway.line.exception.AlreadyRegisteredException.*;
 import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.*;
@@ -13,8 +12,6 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.common.exception.DuplicationException;
-import nextstep.subway.common.exception.ServiceException;
 import nextstep.subway.line.exception.AlreadyRegisteredException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.exception.StationNotFoundException;
@@ -26,16 +23,22 @@ class SectionsTest {
      */
     @Test
     void 지하철_상행_하행_에따른_노선_정렬_확인() {
+
+        // given
         Line line = new Line("1호선", "red");
         Section section2 = new Section(new Station(55L, "대화역"), new Station(3L, "용문역"), new Distance(10));
         Section section5 = new Section(new Station(5L, "신촌역"), new Station(55L, "대화역"), new Distance(10));
         Section section1 = new Section(new Station(2L, "구파발역"), new Station(5L, "신촌역"), new Distance(10));
         Section section4 = new Section(new Station(3L, "용문역"), new Station(2L, "강남역"), new Distance(5));
-        line.createSection(asList(section4, section1, section5, section2));
+        Sections sections = new Sections();
+        sections.add(asList(section4, section1, section5, section2), line);
 
-        List<Station> sections = line.getStations();
+        // when
+        List<Station> sortedSections = sections.getStations();
 
-        List<String> collect = sections.stream()
+
+        // then
+        List<String> collect = sortedSections.stream()
                                        .map(Station::getName)
                                        .collect(toList());
 
