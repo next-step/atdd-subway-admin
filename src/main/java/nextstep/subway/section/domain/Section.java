@@ -22,38 +22,56 @@ public class Section extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
-    private Station up;
+    private Station upStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
-    private Station down;
+    private Station downStation;
 
     @Embedded
     private Distance distance;
 
-    protected Section() {
+    public Section(Station upStation, Station downStation, Distance distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
     }
 
-    public Section(Station up, Station down, Distance distance) {
-        this.up = up;
-        this.down = down;
-        this.distance = distance;
+    protected Section() {
     }
 
     public Long getId() {
         return id;
     }
 
-    public Station getDown() {
-        return down;
+    public Station getDownStation() {
+        return downStation;
     }
 
-    public Station getUp() {
-        return up;
+    public Station getUpStation() {
+        return upStation;
     }
 
     public Distance getDistance() {
         return distance;
+    }
+
+    public boolean hasDownStation(Station downStation) {
+        return this.downStation.equals(downStation);
+    }
+
+    public boolean hasUpStation(Station upStation) {
+        return this.upStation.equals(upStation);
+    }
+
+    public void updateDown(Section added) {
+        this.downStation = added.getUpStation();
+        this.distance = this.distance.subtract(added.getDistance());
+    }
+
+    public void updateUp(Section added) {
+        this.upStation = added.getDownStation();
+        this.distance = this.distance.subtract(added.getDistance());
     }
 
     @Override
@@ -65,23 +83,23 @@ public class Section extends BaseEntity {
             return false;
         }
         Section section = (Section)o;
-        return distance == section.distance &&
-            Objects.equals(id, section.id) &&
-            Objects.equals(up, section.up) &&
-            Objects.equals(down, section.down);
+        return Objects.equals(id, section.id) &&
+            Objects.equals(upStation, section.upStation) &&
+            Objects.equals(downStation, section.downStation) &&
+            Objects.equals(distance, section.distance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, up, down, distance);
+        return Objects.hash(id, upStation, downStation, distance);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Section{");
         sb.append("id=").append(id);
-        sb.append(", down=").append(down);
-        sb.append(", up=").append(up);
+        sb.append(", down=").append(downStation);
+        sb.append(", up=").append(upStation);
         sb.append(", distance=").append(distance);
         sb.append('}');
         return sb.toString();

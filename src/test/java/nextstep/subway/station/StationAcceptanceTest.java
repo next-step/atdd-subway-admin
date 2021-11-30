@@ -1,6 +1,6 @@
 package nextstep.subway.station;
 
-import static nextstep.subway.station.StationAcceptanceTestUtils.*;
+import static nextstep.subway.station.StationAcceptanceTestHelper.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,6 +17,7 @@ import nextstep.subway.station.domain.Station;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
+    @DisplayName("지하철역을 생성한다")
     @Test
     void 지하철역을_생성한다() {
         // given
@@ -30,6 +31,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철_역_생성됨(response);
     }
 
+    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다")
     @Test
     void 기존에_존재하는_지하철역_이름으로_지하철역을_생성한다() {
         // given
@@ -44,6 +46,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철_역_생성_실패됨(response);
     }
 
+    @DisplayName("지하철역을 조회한다")
     @Test
     void 지하철역을_조회한다() {
         /// given
@@ -59,6 +62,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철_역_목록_포함됨(response, expectedStationIds);
     }
 
+    @DisplayName("지하철역을 제거한다")
     @Test
     void 지하철역을_제거한다() {
         // given

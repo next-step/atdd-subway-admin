@@ -1,5 +1,6 @@
 package nextstep.subway.station.dto;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -9,11 +10,8 @@ import nextstep.subway.station.domain.Station;
 public class StationResponses {
     private List<StationResponse> responses;
 
-    public StationResponses(List<StationResponse> responses) {
+    private StationResponses(List<StationResponse> responses) {
         this.responses = responses;
-    }
-
-    protected StationResponses() {
     }
 
     public static StationResponses from(List<Station> stations) {
@@ -26,7 +24,7 @@ public class StationResponses {
     }
 
     public List<StationResponse> getResponses() {
-        return responses;
+        return Collections.unmodifiableList(responses);
     }
 
     @Override

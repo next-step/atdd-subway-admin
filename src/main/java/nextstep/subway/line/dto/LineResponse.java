@@ -1,6 +1,7 @@
 package nextstep.subway.line.dto;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,7 +18,7 @@ public class LineResponse {
 
     private List<StationResponse> stations;
 
-    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate,
+    private LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate,
         List<StationResponse> stations) {
         this.id = id;
         this.name = name;
@@ -57,7 +58,7 @@ public class LineResponse {
     }
 
     public List<StationResponse> getStations() {
-        return stations;
+        return Collections.unmodifiableList(stations);
     }
 
     @Override

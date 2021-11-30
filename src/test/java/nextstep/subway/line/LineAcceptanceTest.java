@@ -1,9 +1,8 @@
 package nextstep.subway.line;
 
-import static nextstep.subway.line.LineAcceptanceTestUtils.*;
-import static nextstep.subway.station.StationAcceptanceTestUtils.*;
+import static nextstep.subway.line.LineAcceptanceTestHelper.*;
+import static nextstep.subway.station.StationAcceptanceTestHelper.*;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -16,39 +15,48 @@ import org.junit.jupiter.api.Test;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Distance;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    private Station station1;
-    private Station station2;
-    private Station station3;
-    private Station station4;
+    private Station 강남역;
+    private Station 양재역;
+    private Station 잠실역;
+    private Station 사당역;
+    private Sections 강남_양재_구간;
+    private Sections 잠실_사당_구간;
 
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
 
-        station1 = 지하철_역_등록되어_있음("강남역");
-        station2 = 지하철_역_등록되어_있음("양재역");
-        station3 = 지하철_역_등록되어_있음("잠실역");
-        station4 = 지하철_역_등록되어_있음("사당역");
+        강남역 = 지하철_역_등록되어_있음("강남역");
+        양재역 = 지하철_역_등록되어_있음("양재역");
+        잠실역 = 지하철_역_등록되어_있음("잠실역");
+        사당역 = 지하철_역_등록되어_있음("사당역");
+
+        강남_양재_구간 = Sections.from(Arrays.asList(new Section(강남역, 양재역, new Distance(10))));
+        잠실_사당_구간 = Sections.from(Arrays.asList(new Section(잠실역, 사당역, new Distance(5))));
     }
 
     private Map<String, String> 지하철_신분당선() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "red");
-        params.put("upStationId", String.valueOf(station1.getId()));
-        params.put("downStationId", String.valueOf(station2.getId()));
+        params.put("upStationId", String.valueOf(강남역.getId()));
+        params.put("downStationId", String.valueOf(양재역.getId()));
         params.put("distance", "10");
 
         return params;
     }
 
+    @DisplayName("지하철 노선을 생성한다")
     @Test
     void 지하철_노선을_생성한다() {
         // given
@@ -60,14 +68,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성됨(response);
     }
 
+    @DisplayName("잘못된 구간길이로 지하철 노선을 생성하여 실패한다")
     @Test
     void 잘못된_구간길이로_지하철_노선을_생성하여_실패한다() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "red");
-        params.put("upStationId", String.valueOf(station1.getId()));
-        params.put("downStationId", String.valueOf(station2.getId()));
+        params.put("upStationId", String.valueOf(강남역.getId()));
+        params.put("downStationId", String.valueOf(양재역.getId()));
         params.put("distance", "0");
 
         // when
@@ -77,10 +86,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성_실패됨(response);
     }
 
+    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다")
     @Test
     void 기존에_존재하는_지하철_노선_이름으로_지하철_노선을_생성한다() {
         // given
-        지하철_노선_등록되어_있음("신분당선", "red", station1, station2, 10);
+        지하철_노선_등록되어_있음("신분당선", "red", 강남역, 양재역, 10);
         Map<String, String> params = 지하철_신분당선();
 
         // when
@@ -90,17 +100,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성_실패됨(response);
     }
 
+    @DisplayName("지하철 노선 목록을 조회한다")
     @Test
     void 지하철_노선_목록을_조회한다() {
         // given
-        long id1 = 지하철_노선_등록되어_있음("신분당선", "red", station1, station2, 10);
-        long id2 = 지하철_노선_등록되어_있음("2호선", "green", station3, station4, 10);
-        LocalDateTime now = LocalDateTime.now();
+        long id1 = 지하철_노선_등록되어_있음("신분당선", "red", 강남역, 양재역, 10);
+        long id2 = 지하철_노선_등록되어_있음("2호선", "green", 잠실역, 사당역, 5);
         List<LineResponse> expected = Arrays.asList(
-            new LineResponse(id1, "신분당선", "red", now, now,
-                Arrays.asList(StationResponse.from(station1), StationResponse.from(station2))),
-            new LineResponse(id2, "2호선", "green", now, now,
-                Arrays.asList(StationResponse.from(station3), StationResponse.from(station4))));
+            LineResponse.from(new Line(id1, "신분당선", "red", 강남_양재_구간)),
+            LineResponse.from(new Line(id2, "2호선", "green", 잠실_사당_구간))
+        );
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -110,13 +119,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_목록_포함됨(response, expected);
     }
 
+    @DisplayName("지하철 노선을 조회한다")
     @Test
     void 지하철_노선을_조회한다() {
         // given
-        long id = 지하철_노선_등록되어_있음("신분당선", "red", station1, station2, 10);
-        LocalDateTime now = LocalDateTime.now();
-        LineResponse expected = new LineResponse(id, "신분당선", "red", now, now,
-            Arrays.asList(StationResponse.from(station1), StationResponse.from(station2)));
+        long id = 지하철_노선_등록되어_있음("신분당선", "red", 강남역, 양재역, 10);
+        LineResponse expected = LineResponse.from(new Line(id, "신분당선", "red", 강남_양재_구간));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(id);
@@ -125,6 +133,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_응답됨(response, expected);
     }
 
+    @DisplayName("존재하지 않는 지하철 노선을 조회하여 실패한다")
     @Test
     void 존재하지_않는_지하철_노선을_조회하여_실패한다() {
         // given
@@ -136,17 +145,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_미존재_응답됨(response);
     }
 
+    @DisplayName("지하철 노선을 수정한다")
     @Test
     void 지하철_노선을_수정한다() {
         // given
-        long id = 지하철_노선_등록되어_있음("신분당선", "red", station1, station2, 10);
+        long id = 지하철_노선_등록되어_있음("신분당선", "red", 강남역, 양재역, 10);
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "green");
 
-        LocalDateTime now = LocalDateTime.now();
-        LineResponse expected = new LineResponse(id, "2호선", "green", now, now,
-            Arrays.asList(StationResponse.from(station1), StationResponse.from(station2)));
+        LineResponse expected = LineResponse.from(new Line(id, "2호선", "green", 강남_양재_구간));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(id, params);
@@ -155,14 +163,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_수정됨(response, expected);
     }
 
+    @DisplayName("존재하지 않는 지하철 노선을 수정하여 실패한다")
     @Test
     void 존재하지_않는_지하철_노선을_수정하여_실패한다() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "green");
-        params.put("upStationId", String.valueOf(station3.getId()));
-        params.put("downStationId", String.valueOf(station4.getId()));
+        params.put("upStationId", String.valueOf(잠실역.getId()));
+        params.put("downStationId", String.valueOf(사당역.getId()));
         params.put("distance", "5");
 
         // when
@@ -172,10 +181,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_미존재_응답됨(response);
     }
 
+    @DisplayName("지하철 노선을 제거한다")
     @Test
     void 지하철_노선을_제거한다() {
         // given
-        long id = 지하철_노선_등록되어_있음("신분당선", "red", station1, station2, 10);
+        long id = 지하철_노선_등록되어_있음("신분당선", "red", 강남역, 양재역, 10);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(id);

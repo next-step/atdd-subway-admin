@@ -17,9 +17,10 @@ import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 
 @Service
+@Transactional(readOnly = true)
 public class LineService {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -35,17 +36,6 @@ public class LineService {
         return LineResponse.from(line);
     }
 
-    private Section makeSection(LineRequest request) {
-        Station downStation = stationRepository.findById(request.getDownStationId())
-            .orElseThrow(NoSuchElementException::new);
-
-        Station upStation = stationRepository.findById(request.getUpStationId())
-            .orElseThrow(NoSuchElementException::new);
-
-        return new Section(upStation, downStation, new Distance(request.getDistance()));
-    }
-
-    @Transactional(readOnly = true)
     public List<LineResponse> getLines() {
         return lineRepository.findAll()
             .stream()
@@ -53,17 +43,14 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
     public LineResponse getLine(long id) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(NoSuchElementException::new);
+        Line line = findLineById(id);
         return LineResponse.from(line);
     }
 
     @Transactional
     public LineResponse updateLine(long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(NoSuchElementException::new);
+        Line line = findLineById(id);
         line.update(lineRequest.toLine());
         lineRepository.save(line);
 
@@ -73,5 +60,22 @@ public class LineService {
     @Transactional
     public void deleteLine(long id) {
         lineRepository.deleteById(id);
+    }
+
+    private Section makeSection(LineRequest request) {
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
+
+        return new Section(upStation, downStation, new Distance(request.getDistance()));
+    }
+
+    private Station findStationById(long id) {
+        return stationRepository.findById(id)
+            .orElseThrow(NoSuchElementException::new);
+    }
+
+    private Line findLineById(long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(NoSuchElementException::new);
     }
 }

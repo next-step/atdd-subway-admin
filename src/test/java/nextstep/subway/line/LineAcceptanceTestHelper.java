@@ -17,8 +17,8 @@ import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
 
-public class LineAcceptanceTestUtils {
-    private LineAcceptanceTestUtils() {
+public class LineAcceptanceTestHelper {
+    private LineAcceptanceTestHelper() {
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {

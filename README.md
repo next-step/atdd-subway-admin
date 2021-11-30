@@ -100,7 +100,34 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [X] 노선 조회 시 응답 결과에 역 목록 추가
 - [X] 상행역 부터 하행역 순으로 정렬되어야 함
 - [X] 구간 리스트 포장
-- [ ] 구간 도메인 조건 추가
- 
+- [X] 구간 도메인 조건 추가
+
+#### 코드 리뷰사항
+- [X] 빈 주입되는 객체 `final` 사용
+- [X] `throw`가 있는 메서드를 감싸서 중복되는 `throw` 제거
+- [X] `@Transactional(readOnly = true)`를 클래스 레벨에 선언해주고 `@Transactional`을 실제 데이터 쓰기 작업이 있는 메서드에 선언
+- [X] 기본 생성자의 노출 범위 확인
+- [X] `Collections.unmodifiableList`를 활용
+- [X] `from`(정적 팩토리 메서드)를 통해 객체 생성을 유도하는 곳에서 실제 생성자는 감추기
+- [X] 변수명 너무 축약하지 말고 명확하게 사용
+- [X] 테스트코드 변수명 한글 사용
+- [X] utils 클래스명 변경
+- [ ] `@DisplayName` 추가
+
+## 3단계 - 구간 추가 기능
+#### 기능 요구사항
+- [X] 역 사이에 새로운 역을 등록한다.
+    - [X] 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정
+    - [X] 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
+- [X] 새로운 역을 상행 종점으로 등록할 경우
+- [X] 새로운 역을 하행 종점으로 등록할 경우
+- [X] 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
+- [X] 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
+- [X] 구간추가 기능 추가
+- [X] 구간에서 역 정보 상행->하행순으로 1개만 나오도록 수정
+
+     
 ## 참고 링크
-[생성자 대신 정적 팩터리 메서드를 고려하라](https://ssoco.tistory.com/61)
+- [생성자 대신 정적 팩터리 메서드를 고려하라](https://ssoco.tistory.com/61)
+- [@Transactional(readOnly=true) 성능 향상 이유](https://willseungh0.tistory.com/75)
+- [방어적 복사와 Unmodifiable Collection](https://tecoble.techcourse.co.kr/post/2021-04-26-defensive-copy-vs-unmodifiable/)
