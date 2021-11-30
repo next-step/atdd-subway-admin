@@ -38,8 +38,16 @@ public class Section extends BaseEntity {
         return upStation;
     }
 
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
     public Station getDownStation() {
         return downStation;
+    }
+
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
     }
 
     public void setLine(Line line) {
@@ -54,18 +62,10 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-    public void setUpStation(Station upStation) {
-        this.upStation = upStation;
-    }
-
     public void setDistance(int distance) {
         if (distance <= 0) {
             throw new IllegalDistanceError();
         }
         this.distance = distance;
-    }
-
-    public void setDownStation(Station downStation) {
-        this.downStation = downStation;
     }
 }

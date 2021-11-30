@@ -1,6 +1,5 @@
 package nextstep.subway.section.ui;
 
-import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.application.SectionService;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;

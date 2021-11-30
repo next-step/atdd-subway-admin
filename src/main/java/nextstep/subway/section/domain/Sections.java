@@ -2,7 +2,6 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.dto.SectionResponse;
-import nextstep.subway.section.exception.ExisitsSectionException;
 import nextstep.subway.section.exception.NotExisitsSectionException;
 import nextstep.subway.station.domain.Station;
 
@@ -20,6 +19,13 @@ public class Sections {
     public static final int DIFFERENCE_SECTIONS_STATIONS_SIZE = 1;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "line")
     private List<Section> sections = new ArrayList<>();
+
+    public Sections(List<Section> sections) {
+        this.sections = sections;
+    }
+
+    public Sections() {
+    }
 
     public void add(Section newSection) {
         if (sections.size() >= 1) {
@@ -135,13 +141,6 @@ public class Sections {
 
     public List<SectionResponse> getSectionsResponses() {
         return sections.stream().map(SectionResponse::of).collect(Collectors.toList());
-    }
-
-    public Sections(List<Section> sections) {
-        this.sections = sections;
-    }
-
-    public Sections() {
     }
 
     public void addAndSetLine(Section section, Line line) {

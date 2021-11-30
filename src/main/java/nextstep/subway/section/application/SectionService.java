@@ -2,7 +2,6 @@ package nextstep.subway.section.application;
 
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.section.domain.Sections;

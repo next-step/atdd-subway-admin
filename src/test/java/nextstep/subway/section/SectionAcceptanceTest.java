@@ -31,6 +31,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     Map<String, String> createParams;
     LineResponse 신분당선;
 
+    public static ExtractableResponse<Response> requestSectionCreation(Long id, Map<String, String> params) {
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + id.toString() + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
     @BeforeEach
     public void setUp() {
         super.setUp();
@@ -193,16 +203,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-    }
-
-    public static ExtractableResponse<Response> requestSectionCreation(Long id, Map<String, String> params) {
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/" + id.toString() + "/sections")
-                .then().log().all()
-                .extract();
     }
 
     private void assertResponseStatusAndLocation(ExtractableResponse<Response> response) {

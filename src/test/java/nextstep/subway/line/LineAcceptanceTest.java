@@ -1,6 +1,5 @@
 package nextstep.subway.line;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -13,7 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -21,6 +23,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    public static ExtractableResponse<Response> requestLineCreation(Map<String, String> params) {
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+    }
 
     @DisplayName("구간을_포함한_지하철_노선을_생성한다.")
     @Test
@@ -215,16 +227,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return RestAssured.given().log().all()
                 .when()
                 .delete(uri)
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> requestLineCreation(Map<String, String> params) {
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
                 .then().log().all()
                 .extract();
     }
