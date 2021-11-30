@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,6 +13,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.Stations;
 
 @Entity
 public class Line extends BaseEntity {
@@ -22,8 +24,8 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
-    @OneToMany(mappedBy = "line")
-    private List<Station> stations = new ArrayList<>();
+    @Embedded
+    private Stations stations;
     @Transient
     private final List<Section> sections = new ArrayList<>();
 
@@ -38,8 +40,7 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        addSection(section);
-        generateStations();
+        this.addSection(section);
     }
 
     public void update(Line line) {
@@ -59,31 +60,19 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getStations() {
-        return this.stations;
+    public Stations getStations() {
+        return stations;
     }
 
     public List<Section> getSections() {
         return sections;
     }
 
-    private void addSection(Section section) {
+    public void addSection(Section section) {
+        // todo: sections sort
         this.sections.add(section);
+        this.stations = Stations.generateStations(this.sections, this);
     }
 
-    public void addStation(Station station) {
-        this.stations.add(station);
-        station.setLine(this);
-    }
 
-    public void generateStations() {
-        this.stations = new ArrayList<>();
-        for (Section section : sections) {
-            addStation(section.getUpStation());
-            addStation(section.getDownStation());
-        }
-        if (sections.size() > 1) {
-            addStation(sections.get(sections.size() - 1).getDownStation());
-        }
-    }
 }

@@ -21,16 +21,9 @@ import org.springframework.http.MediaType;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    private static final Map<String, String> STATION1 = new HashMap<>();
-    private static final Map<String, String> STATION2 = new HashMap<>();
-
-    @BeforeAll
-    private void setUpBeforeAll() {
-        STATION1.put("name", "강남역");
-        STATION2.put("name", "역삼역");
-    }
-
-    private ExtractableResponse<Response> 지하철역_생성_요청(Map<String, String> params) {
+    private ExtractableResponse<Response> 지하철역_생성_요청(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
         return RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -45,7 +38,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStation() {
 
         // when
-        ExtractableResponse<Response> response = 지하철역_생성_요청(STATION1);
+        ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -56,10 +49,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        지하철역_생성_요청(STATION1);
+        지하철역_생성_요청("강남역");
 
         // when
-        ExtractableResponse<Response> response = 지하철역_생성_요청(STATION1);
+        ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -69,8 +62,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = 지하철역_생성_요청(STATION1);
-        ExtractableResponse<Response> createResponse2 = 지하철역_생성_요청(STATION2);
+        ExtractableResponse<Response> createResponse1 = 지하철역_생성_요청("강남역");
+        ExtractableResponse<Response> createResponse2 = 지하철역_생성_요청("양재역");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()

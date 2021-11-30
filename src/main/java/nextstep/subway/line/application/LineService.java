@@ -10,6 +10,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.Stations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,8 +74,8 @@ public class LineService {
             .orElseThrow(() -> new NoSuchElementException("해당 id의 정류장이 존재하지 않습니다. id = " + id));
     }
 
-    private void deleteStations(List<Station> stations) {
-        stations.forEach(station -> stationService.deleteStationById(station.getId()));
+    private void deleteStations(Stations stations) {
+        stations.getStations().forEach(station -> stationService.deleteStationById(station.getId()));
     }
 
 }
