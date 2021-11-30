@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Entity
@@ -72,17 +73,22 @@ public class Section extends BaseEntity {
         return new Section(upStation, downStation, line, distance);
     }
 
-    public Section getNextSection(Sections sections) {
-        return sections.getSections().stream()
+    public boolean hasNexSection() {
+        return line.getSections().stream()
+                .anyMatch(section -> section.upStation.equals(downStation));
+    }
+
+    public Section getNextSection() {
+        return line.getSections().stream()
                 .filter(section -> section.upStation.equals(downStation))
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new NoSuchElementException(String.format("다음 구간이 없습니다. (sectionId: %d)", id)));
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Section)) return false;
         Section section = (Section) o;
         return Objects.equals(id, section.id);
     }

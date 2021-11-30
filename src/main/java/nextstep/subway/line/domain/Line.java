@@ -78,8 +78,10 @@ public class Line extends BaseEntity {
         orderedStations.add(section.getUpStation());
         orderedStations.add(section.getDownStation());
 
-        while ((section = section.getNextSection(sections)) != null) {
-            orderedStations.add(section.getDownStation());
+        while (section.hasNexSection()) {
+            Section nextSection = section.getNextSection();
+            orderedStations.add(nextSection.getDownStation());
+            section = nextSection;
         }
         return orderedStations;
     }
