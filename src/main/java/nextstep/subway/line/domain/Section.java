@@ -109,6 +109,18 @@ public class Section {
         return isSameUpStation(section) && isSameDownStation(section);
     }
 
+    public boolean isSameUpStation(final Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isSameDownStation(final Station station) {
+        return downStation.equals(station);
+    }
+
+    public boolean hasSameStation(final Station station) {
+        return isSameUpStation(station) || isSameDownStation(station);
+    }
+
     public void link(Section section) {
         if (isIncludeAbleSection(section)) {
             changeLink(section);

@@ -79,10 +79,10 @@ public class LineService {
         return LineResponse.of(line);
     }
 
-    public LineResponse removeSection(Long id, Long stationId) {
+    public void removeSection(Long id, Long stationId) {
         Line line = findById(id);
         Station targetStation = findStationById(stationId);
         line.removeSection(targetStation);
-        return null;
+        lineRepository.save(line);
     }
 }

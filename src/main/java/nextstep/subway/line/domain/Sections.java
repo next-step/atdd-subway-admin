@@ -8,6 +8,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import nextstep.subway.common.exception.IllegalSectionRemoveException;
+import nextstep.subway.common.exception.IllegalStationException;
 import nextstep.subway.common.exception.LinkableSectionNotFoundException;
 import nextstep.subway.station.domain.Station;
 
@@ -64,6 +65,17 @@ public class Sections {
 
     public void removeSection(Station targetStation) {
         validateMinimumSectionSize();
+        validateRemovable(targetStation);
+    }
+
+    private void validateRemovable(Station targetStation) {
+        List<Section> targetSections = this.sections.stream()
+            .filter(section -> section.hasSameStation(targetStation))
+            .collect(Collectors.toList());
+
+        if (targetSections.isEmpty()) {
+            throw new IllegalStationException("노선에 등록되어 있지 않은 역을 제거할 수 없습니다.");
+        }
     }
 
     private void validateMinimumSectionSize() {

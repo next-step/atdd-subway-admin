@@ -96,5 +96,5 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
       - [ ] 하행 종점 제거
     - [ ] 중간역이 제거될 경우 재배치
   - [ ] 예외 케이스 인수 테스트
-    - [ ] 노선에 등록되어 있지 않은 역을 제거 할 수 없음
+    - [x] 노선에 등록되어 있지 않은 역을 제거 할 수 없음
     - [x] 구간이 하나인 경우에는 제거할 수 없음
