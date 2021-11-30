@@ -34,6 +34,12 @@ public class Section {
         this.line = line;
     }
 
+    Section(Station upStation, Station downStation, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = new Distance(distance);
+    }
+
     public static Section of(Line line, Station upStation, Station downStation, int distance) {
         return new Section(upStation, downStation, distance, line);
     }

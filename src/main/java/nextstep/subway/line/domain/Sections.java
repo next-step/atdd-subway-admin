@@ -7,6 +7,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.*;
+import java.util.function.Predicate;
 
 @Embeddable
 public class Sections {
@@ -19,6 +20,14 @@ public class Sections {
 
     public Sections(List<Section> sections) {
         this.sections = sections;
+    }
+
+    public static Sections of(Section... sections) {
+        Sections newSections = new Sections();
+        for (Section section : sections) {
+            newSections.add(section);
+        }
+        return newSections;
     }
 
     public static Sections empty() {
@@ -100,20 +109,38 @@ public class Sections {
                 .orElseThrow(() -> new IllegalArgumentException("현재 노선에 존재하지 않는 지하철 역입니다. (입력값: " + station.getName() + ")"));
     }
 
+    private Section findFirstSection() {
+        List<Station> upStations = new ArrayList<>();
+        List<Station> downStations = new ArrayList<>();
+        addUpAndDownStations(upStations, downStations);
+        upStations.removeAll(downStations);
+        Station firstStation = upStations.get(0);
+
+        return findSection(s -> s.getUpStation() == firstStation, "첫번째");
+    }
+
     private Section findLastSection() {
         List<Station> upStations = new ArrayList<>();
         List<Station> downStations = new ArrayList<>();
+        addUpAndDownStations(upStations, downStations);
+        downStations.removeAll(upStations);
+        Station lastStation = downStations.get(0);
+
+        return findSection(s -> s.getDownStation() == lastStation, "마지막");
+    }
+
+    private Section findSection(Predicate<Section> sectionPredicate, String errorMessageKeyword) {
+        return this.sections
+                .stream()
+                .filter(sectionPredicate)
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("노선의 " + errorMessageKeyword + "구간이 존재하지 않습니다."));
+    }
+
+    private void addUpAndDownStations(List<Station> upStations, List<Station> downStations) {
         for (Section section : this.sections) {
             upStations.add(section.getUpStation());
             downStations.add(section.getDownStation());
         }
-        downStations.removeAll(upStations);
-        Station lastStation = downStations.get(0);
-
-        return this.sections
-                .stream()
-                .filter(s -> s.getDownStation() == lastStation)
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("노선의 마지막 구간이 존재하지 않습니다."));
     }
 
     private List<Station> createStations(Section section) {
@@ -135,22 +162,6 @@ public class Sections {
                 .stream()
                 .filter(s -> s.getUpStation() == section.getDownStation())
                 .findFirst();
-    }
-
-    private Section findFirstSection() {
-        List<Station> upStations = new ArrayList<>();
-        List<Station> downStations = new ArrayList<>();
-        for (Section section : this.sections) {
-            upStations.add(section.getUpStation());
-            downStations.add(section.getDownStation());
-        }
-        upStations.removeAll(downStations);
-        Station firstStation = upStations.get(0);
-
-        return this.sections
-                .stream()
-                .filter(s -> s.getUpStation() == firstStation)
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("노선의 첫번째 구간이 존재하지 않습니다."));
     }
 
     private void validateDuplicatedStation(Section section) {

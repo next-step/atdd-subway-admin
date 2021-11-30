@@ -266,10 +266,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private void 노선_구간_제거_성공(ExtractableResponse<Response> response, StationResponse station1, StationResponse station2) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        LineFindResponse lineFindResponse = response.jsonPath().getObject(".", LineFindResponse.class);
-        List<StationResponse> stations = lineFindResponse.getStations();
-        List<String> stationNames = stations.stream().map(s -> s.getName()).collect(Collectors.toList());
+        List<String> stationNames = createStationNames(response);
         assertThat(stationNames).containsExactly(station1.getName(), station2.getName());
     }
 
@@ -278,10 +275,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response, StationResponse station1, StationResponse station2, StationResponse station3) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        LineFindResponse lineFindResponse = response.jsonPath().getObject(".", LineFindResponse.class);
-        List<StationResponse> stations = lineFindResponse.getStations();
-        List<String> stationNames = stations.stream().map(s -> s.getName()).collect(Collectors.toList());
+        List<String> stationNames = createStationNames(response);
         assertThat(stationNames).containsExactly(station1.getName(), station2.getName(), station3.getName());
     }
 
@@ -320,5 +314,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .queryParams(param)
                 .when().delete("/lines/{id}/sections", line.getId())
                 .then().log().all().extract();
+    }
+
+    private List<String> createStationNames(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        LineFindResponse lineFindResponse = response.jsonPath().getObject(".", LineFindResponse.class);
+        List<StationResponse> stations = lineFindResponse.getStations();
+        return stations.stream().map(s -> s.getName()).collect(Collectors.toList());
     }
 }
