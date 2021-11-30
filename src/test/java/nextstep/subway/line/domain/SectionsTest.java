@@ -1,8 +1,10 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,24 @@ class SectionsTest {
 
         // then
         Assertions.assertThat(actual).isNotNull();
+    }
+
+    @Test
+    void 구간들_생성_시_종점역_정보가_없을_경우_생성_실패() {
+        // given
+        Station 강남역 = stationRepository.save(Station.from("강남역"));
+        Station 양재역 = stationRepository.save(Station.from("양재역"));
+
+        Line 신분당선 = lineRepository.save(Line.of("신분당선", "red"));
+
+        신분당선.addSection(강남역, 양재역, 10);
+
+        // when
+        ThrowableAssert.ThrowingCallable throwingCallable = () -> 신분당선.addSection(양재역, null, 8);
+
+        // then
+        Assertions.assertThatExceptionOfType(BadRequestException.class)
+                .isThrownBy(throwingCallable);
     }
 
     @Test

@@ -34,6 +34,7 @@ public class Section {
     }
 
     private Section(Line line, Station upStation, Station downStation, int distance) {
+        validateNull(upStation, downStation);
         validateDuplicate(upStation, downStation);
         this.line = line;
         this.upStation = upStation;
@@ -63,6 +64,12 @@ public class Section {
 
     public boolean isEqualsUpStation(Station station) {
         return this.upStation.equals(station);
+    }
+
+    private void validateNull(Station upStation, Station downStation) {
+        if (upStation == null || downStation == null) {
+            throw new BadRequestException("종점역 정보가 입력되지 않았습니다.");
+        }
     }
 
     private static void validateDuplicate(Station upStation, Station downStation) {
