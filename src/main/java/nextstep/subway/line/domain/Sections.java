@@ -35,7 +35,7 @@ public class Sections {
         validateOneStationNotRegistered(section);
 
         Section linkTargetSection = sections.stream()
-            .filter(s -> s.isLinkable(section))
+            .filter(targetSection -> targetSection.isLinkable(section))
             .findFirst().orElseThrow(LinkableSectionNotFoundException::new);
 
         linkTargetSection.link(section);
