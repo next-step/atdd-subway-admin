@@ -24,10 +24,37 @@ import nextstep.subway.station.dto.StationResponse;
 public class SectionAcceptanceTest extends AcceptanceTest {
 
     /**
-     * 용산역 -> 역삼역 -> 강남역 -> 서울역 -> 신촌역
+     * 용산역 -> 강남역 -> 신촌역
      */
     @Test
-    void 노선에_새로운_상행_및_중간_구간을_등록한다() {
+    void 노선에_새로운_상행_구간을_등록한다() {
+        // given
+        StationResponse stationGangnam = 지하철역_등록되어_있음(강남역);
+        StationResponse stationSinchon = 지하철역_등록되어_있음(신촌역);
+        LineResponse lineResponse = 지하철_노선_등록되어_있음(
+            new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, stationGangnam.getId(), stationSinchon.getId(), 10));
+
+        StationResponse stationYoungSan = 지하철역_등록되어_있음(용산역);
+
+        // when
+        지하철_노선에_새로운_구간_등록_요청(lineResponse, stationYoungSan, stationGangnam, 5);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineResponse.getId());
+        지하철_노선에_해당하는_역_확인(response);
+    }
+
+    private void 지하철_노선에_해당하는_역_확인(ExtractableResponse<Response> response) {
+        JsonPath jsonPath = response.jsonPath();
+        String lineName = jsonPath.getString("name");
+        List stations = jsonPath.getObject("stations.name", List.class);
+        assertThat(lineName).isEqualTo(LINE_ONE);
+        assertThat(stations).containsExactly(용산역, 강남역, 신촌역);
+    }
+
+
+    @Test
+    void 노선에_새로운_중간_구간을_등록한다() {
         // given
         StationResponse stationGangnam = 지하철역_등록되어_있음(강남역);
         StationResponse stationSinchon = 지하철역_등록되어_있음(신촌역);
@@ -37,19 +64,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationResponse stationYoungSan = 지하철역_등록되어_있음(용산역);
         StationResponse stationSeoul = 지하철역_등록되어_있음(서울역);
         StationResponse stationYeokSam = 지하철역_등록되어_있음(역삼역);
-
         // when
         지하철_노선에_새로운_구간_등록_요청(lineResponse, stationYoungSan, stationGangnam, 5);
         지하철_노선에_새로운_구간_등록_요청(lineResponse, stationSeoul, stationSinchon, 3);
-        지하철_노선에_새로운_구간_등록_요청(lineResponse, stationYeokSam, stationGangnam, 2);
-
+        지하철_노선에_새로운_구간_등록_요청(lineResponse, stationYeokSam, stationGangnam, 3);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineResponse.getId());
-        지하철_노선에_해당하는_역_확인(response);
+        지하철_중간_구간_추가_확인(response);
     }
 
-    private void 지하철_노선에_해당하는_역_확인(ExtractableResponse<Response> response) {
+    private void 지하철_중간_구간_추가_확인(ExtractableResponse<Response> response) {
         JsonPath jsonPath = response.jsonPath();
         String lineName = jsonPath.getString("name");
         List stations = jsonPath.getObject("stations.name", List.class);
