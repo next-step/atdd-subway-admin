@@ -85,6 +85,14 @@ public class Section extends BaseEntity {
                 .orElseThrow(() -> new NoSuchElementException(String.format("다음 구간이 없습니다. (sectionId: %d)", id)));
     }
 
+    public boolean isEqualUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isEqualDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -66,32 +66,32 @@ public class Sections {
     }
 
     private boolean isUpdateUpStation(Section newSection) {
-        Section oldSection = sections.stream()
-                .filter(section -> section.getUpStation() == newSection.getUpStation())
-                .findFirst()
-                .orElse(null);
+        Station newUpStation = newSection.getUpStation();
 
-        if (oldSection != null) {
-            sections.add(newSection);
+        if (hasMatchWithUpStation(newUpStation)) {
+            Section oldSection = getOldSectionByUpStation(newUpStation);
             validateDistance(newSection, oldSection);
+
             oldSection.setUpStation(newSection.getDownStation());
             oldSection.setDistance(oldSection.getDistance() - newSection.getDistance());
+
+            sections.add(newSection);
             return true;
         }
         return false;
     }
 
     private boolean isUpdateDownStation(Section newSection) {
-        Section oldSection = sections.stream()
-                .filter(section -> section.getDownStation() == newSection.getDownStation())
-                .findFirst()
-                .orElse(null);
+        Station newDownStation = newSection.getDownStation();
 
-        if (oldSection != null) {
-            sections.add(newSection);
+        if (hasMatchWithDownStation(newDownStation)) {
+            Section oldSection = getOldSectionByDownStation(newDownStation);
             validateDistance(newSection, oldSection);
+
             oldSection.setDownStation(newSection.getUpStation());
             oldSection.setDistance(oldSection.getDistance() - newSection.getDistance());
+
+            sections.add(newSection);
             return true;
         }
         return false;
@@ -138,5 +138,29 @@ public class Sections {
             stations.add(section.getDownStation());
         });
         return new ArrayList<>(stations);
+    }
+
+    private boolean hasMatchWithUpStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.isEqualUpStation(station));
+    }
+
+    private Section getOldSectionByUpStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isEqualUpStation(station))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException(String.format("상행역이 일치하는 기존 구간이 없습니다. (upStationId: %d)", station.getId())));
+    }
+
+    private boolean hasMatchWithDownStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.isEqualDownStation(station));
+    }
+
+    private Section getOldSectionByDownStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isEqualDownStation(station))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException(String.format("하행역이 일치하는 기존 구간이 없습니다. (downStationId: %d)", station.getId())));
     }
 }
