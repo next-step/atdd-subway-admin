@@ -47,6 +47,10 @@ public class Stations {
         return stations;
     }
 
+    public List<Station> getStations() {
+        return Collections.unmodifiableList(stations);
+    }
+
     public void validateSection(Section added) {
         boolean containsDownStation = stations.contains(added.getDownStation());
         boolean containsUpStation = stations.contains(added.getUpStation());
@@ -58,9 +62,5 @@ public class Stations {
         if (!containsDownStation && !containsUpStation) {
             throw new SubwayException(SubwayErrorCode.NOT_CONTAINS_ANY_STATION);
         }
-    }
-
-    public List<Station> getStations() {
-        return Collections.unmodifiableList(stations);
     }
 }

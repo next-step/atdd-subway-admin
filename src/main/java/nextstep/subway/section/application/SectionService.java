@@ -30,14 +30,18 @@ public class SectionService {
 
     @Transactional
     public long saveSection(long lineId, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
+        Line line = findLineById(lineId);
         Section added = makeSection(sectionRequest);
 
         sectionRepository.save(added);
-
         line.updateSections(added);
 
         return added.getId();
+    }
+
+    private Line findLineById(long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(NoSuchElementException::new);
     }
 
     private Section makeSection(SectionRequest request) {

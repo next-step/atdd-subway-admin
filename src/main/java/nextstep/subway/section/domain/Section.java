@@ -40,6 +40,22 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Distance getDistance() {
+        return distance;
+    }
+
     public boolean hasDownStation(Station downStation) {
         return this.downStation.equals(downStation);
     }
@@ -56,22 +72,6 @@ public class Section extends BaseEntity {
     public void updateUp(Section added) {
         this.upStation = added.getDownStation();
         this.distance = this.distance.subtract(added.getDistance());
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Distance getDistance() {
-        return distance;
     }
 
     @Override

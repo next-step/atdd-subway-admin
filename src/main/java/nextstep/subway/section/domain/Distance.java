@@ -12,12 +12,12 @@ public class Distance {
     private static final int MIN_DISTANCE = 1;
     private int distance;
 
+    protected Distance() {
+    }
+
     public Distance(int distance) {
         validate(distance);
         this.distance = distance;
-    }
-
-    protected Distance() {
     }
 
     private void validate(int distance) {

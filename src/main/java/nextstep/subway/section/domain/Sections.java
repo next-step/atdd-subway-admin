@@ -44,13 +44,6 @@ public class Sections {
         return stations.getStations();
     }
 
-    private Stations makeStationPath() {
-        return new Stations(
-            sections.stream()
-                .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation))
-        );
-    }
-
     public void update(Section added) {
         Stations stations = makeStationPath();
         stations.validateSection(added);
@@ -58,6 +51,13 @@ public class Sections {
         updateIfDownStationEquals(added);
         updateIfUpStationEquals(added);
         addSection(added);
+    }
+
+    private Stations makeStationPath() {
+        return new Stations(
+            sections.stream()
+                .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation))
+        );
     }
 
     private void updateIfDownStationEquals(Section added) {
