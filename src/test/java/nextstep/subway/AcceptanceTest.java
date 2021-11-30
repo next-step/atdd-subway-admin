@@ -10,10 +10,10 @@ import org.springframework.boot.web.server.LocalServerPort;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
     @LocalServerPort
-    int port;
+    int port;   // Port 지정
 
     @Autowired
-    private DatabaseCleanup databaseCleanup;
+    private DatabaseCleanup databaseCleanup;    // Test Method 실행 전 DB Truncate; 초기화
 
     @BeforeEach
     public void setUp() {
