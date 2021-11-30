@@ -19,20 +19,48 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section newSection) {
-        if (sections.stream()
-                .map(Section::getUpStation)
-                .anyMatch(station -> station == newSection.getUpStation())) {
-            Section targetSection = sections.stream()
-                    .filter(section -> section
-                            .getUpStation() == newSection
-                            .getUpStation())
-                    .findFirst()
-                    .orElseThrow(RuntimeException::new);
+        if (existsUpStation(newSection)) {
+            Section targetSection = getTargetUpSection(newSection);
+            targetSection.setUpStation(newSection.getDownStation());
+            targetSection.setDistance(targetSection.getDistance() - newSection.getDistance());
+        }
+        if (existsDownStation(newSection)) {
+            Section targetSection = getTargetDownSection(newSection);
             targetSection.setUpStation(newSection.getDownStation());
             targetSection.setDistance(targetSection.getDistance() - newSection.getDistance());
         }
         sections.add(newSection);
 
+    }
+
+    private Section getTargetDownSection(Section newSection) {
+        return sections.stream()
+                .filter(section -> section
+                        .getDownStation() == newSection
+                        .getDownStation())
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+    }
+
+    private boolean existsDownStation(Section newSection) {
+        return sections.stream()
+                .map(Section::getDownStation)
+                .anyMatch(station -> station == newSection.getDownStation());
+    }
+
+    private Section getTargetUpSection(Section newSection) {
+        return sections.stream()
+                .filter(section -> section
+                        .getUpStation() == newSection
+                        .getUpStation())
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+    }
+
+    private boolean existsUpStation(Section newSection) {
+        return sections.stream()
+                .map(Section::getUpStation)
+                .anyMatch(station -> station == newSection.getUpStation());
     }
 
     public List<Station> getStations() {

@@ -67,9 +67,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertResponseStatusAndLocation(response);
     }
 
-    @DisplayName("역 사이에 새로운 역을 등록한다.")
+    @DisplayName("역 사이에 상행역이 동일한 새로운 역을 등록한다.")
     @Test
-    void 역_사이에_새로운_역을_등록한다() {
+    void 역_사이에_상행역이_동일한_새로운_역을_등록한다() {
         // when
         // 지하철_노선에_구간_등록_요청
         createParams = new HashMap<>();
@@ -85,6 +85,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then 구간 길이별로 나눠짐
         assertResponseStatusAndLocation(response);
         assertThat(sectionDistances).containsAll(Arrays.asList(2, 8));
+    }
+
+    @DisplayName("역 사이에 상행역이 동일한 새로운 역을 등록한다.")
+    @Test
+    void 역_사이에_하행역이_동일한_새로운_역을_등록한다() {
+        // when
+        // 지하철_노선에_구간_등록_요청
+        createParams = new HashMap<>();
+        createParams.put("upStationId", 판교역.getId() + "");
+        createParams.put("downStationId", 광교역.getId() + "");
+        createParams.put("distance", 7 + "");
+
+        ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
+
+        ExtractableResponse<Response> sectionsResponse = requestReadSections("/lines/" + 신분당선.getId() + "/sections");
+        List<Integer> sectionDistances = getSection(sectionsResponse);
+
+        // then 구간 길이별로 나눠짐
+        assertResponseStatusAndLocation(response);
+        assertThat(sectionDistances).containsAll(Arrays.asList(3, 7));
     }
 
     public static ExtractableResponse<Response> requestSectionCreation(Long id, Map<String, String> params) {
