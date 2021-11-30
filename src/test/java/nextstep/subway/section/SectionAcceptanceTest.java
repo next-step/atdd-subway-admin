@@ -37,7 +37,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection() {
         //given
-        Map<String,String> params = new HashMap<>();
+        Map<String, String> params = new HashMap<>();
         params.put("upStationId", "1");
         params.put("downStationId", "3");
         params.put("distance", "4");
@@ -63,7 +63,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addAscendingStation() {
         //given
-        Map<String,String> params = new HashMap<>();
+        Map<String, String> params = new HashMap<>();
         params.put("upStationId", "3");
         params.put("downStationId", "1");
         params.put("distance", "4");
@@ -85,4 +85,29 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
+    @Test
+    void addDescendingStation() {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", "2");
+        params.put("downStationId", "3");
+        params.put("distance", "4");
+
+        // when 지하철_노선에_지하철역_등록_요청
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .pathParam("lineId", "1")
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/{lineId}/sections")
+                .then().log().all()
+                .extract();
+
+        // then 지하철_노선에_지하철역_등록됨
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(response.header("Location")).isNotBlank()
+        );
+    }
 }

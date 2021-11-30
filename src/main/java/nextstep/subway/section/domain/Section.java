@@ -75,8 +75,8 @@ public class Section extends BaseEntity {
     }
 
 
-    public boolean equalsUpStation(Station station) {
-        return upStation.equals(station);
+    public boolean equalsUpStation(Section newSection) {
+        return upStation.equals(newSection.getUpStation());
     }
 
     public void updateUpSection(Section newSection) {

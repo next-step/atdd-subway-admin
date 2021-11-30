@@ -30,13 +30,12 @@ public class Sections {
 
     public void add(Section newSection) {
         updateUpStation(newSection);
-
         sectionGroup.add(newSection);
     }
 
     private void updateUpStation(Section newSection) {
         sectionGroup.stream()
-                .filter(item -> item.equalsUpStation(newSection.getUpStation()))
+                .filter(item -> item.equalsUpStation(newSection))
                 .findFirst()
                 .ifPresent(item -> item.updateUpSection(newSection));
     }

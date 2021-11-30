@@ -68,4 +68,27 @@ public class SectionsTest {
                 () -> assertThat(section.getDistance()).isEqualTo(10)
         );
     }
+
+    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
+    @Test
+    void addDescendingStation() {
+        Station upStation = new Station(1L, "건대역");
+        Station downStation = new Station(2L, "용마산역");
+        Line line = new Line("bg-red-600", "7호선");
+        Section section = Section.of(line, upStation, downStation, 10);
+
+        Station newDownStation = new Station(3L, "뚝섬유원지역");
+        Section nextSection = Section.of(line, downStation, newDownStation, 4);
+        Sections sections = Sections.empty();
+        sections.add(section);
+
+        //when
+        sections.add(nextSection);
+
+        //then
+        assertAll(
+                () -> assertThat(sections.size()).isEqualTo(2),
+                () -> assertThat(section.getDistance()).isEqualTo(10)
+        );
+    }
 }
