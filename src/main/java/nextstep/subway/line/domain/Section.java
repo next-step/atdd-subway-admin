@@ -118,7 +118,7 @@ public class Section {
     public void link(Section section) {
         if (isIncludeAbleSection(section)) {
             changeLink(section);
-            distance = Distance.of(distance.getDistance() - section.distance.getDistance());
+            distance = distance.subtract(section.distance);
         }
     }
 
