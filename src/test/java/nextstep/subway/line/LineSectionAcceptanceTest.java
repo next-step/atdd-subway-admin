@@ -2,6 +2,7 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
@@ -9,16 +10,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.StationAcceptanceTest;
-import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 public class LineSectionAcceptanceTest extends AcceptanceTest {
 
@@ -151,8 +151,105 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         새로운_구간_등록_실패됨(response);
     }
 
-    private void 지하철_노선에_등록한_구간_포함됨(ExtractableResponse<Response> response, List<String> expectedStationNames) {
-        List<StationResponse> stations = response.body().jsonPath().getList("stations", StationResponse.class);
+    @DisplayName("상행 종점역을 제거한다.")
+    @Test
+    void removeSectionUpStation() {
+        // given
+        String lineLocation = 지하철_노선에_구간_등록되어_있음();
+
+        // when
+        ExtractableResponse<Response> response = 구간에서_지하철_역_삭제_요청(lineLocation, 강남역_Id);
+
+        // then
+        지하철_노선에서_역_삭제됨(response);
+    }
+
+    @DisplayName("하행 종점역을 제거한다.")
+    @Test
+    void removeSectionDownStation() {
+        // given
+        String lineLocation = 지하철_노선에_구간_등록되어_있음();
+
+        // when
+        ExtractableResponse<Response> response = 구간에서_지하철_역_삭제_요청(lineLocation, 정자역_Id);
+
+        // then
+        지하철_노선에서_역_삭제됨(response);
+    }
+
+    @DisplayName("구간의 중간역을 제거한다.")
+    @Test
+    void removeStationBetweenSection() {
+        // given
+        String lineLocation = 지하철_노선에_구간_등록되어_있음();
+
+        // when
+        ExtractableResponse<Response> response = 구간에서_지하철_역_삭제_요청(lineLocation, 판교역_Id);
+
+        // then
+        지하철_노선에서_역_삭제됨(response);
+    }
+
+    @DisplayName("노선에 등록되어 있지 않은 역을 제거할 수 없다.")
+    @Test
+    void removeStationNotRegistered() {
+        // given
+        String lineLocation = 지하철_노선에_구간_등록되어_있음();
+
+        // when
+        ExtractableResponse<Response> response = 구간에서_지하철_역_삭제_요청(lineLocation, 광교역_Id);
+
+        // then
+        지하철_노선_삭제_실패(response);
+    }
+
+    @DisplayName("노선에 구간이 하나만 있는 경우 제거할 수 없다.")
+    @Test
+    void removeStationOnlyOneSection() {
+        // given
+        String lineLocation = LineAcceptanceTest.지하철_노선_등록되어_있음(
+            new LineRequest("신분당선", "bg-red-600", 강남역_Id, 판교역_Id, 5));
+
+        // when
+        ExtractableResponse<Response> response = 구간에서_지하철_역_삭제_요청(lineLocation, 판교역_Id);
+
+        // then
+        지하철_노선_삭제_실패(response);
+    }
+
+    private void 지하철_노선_삭제_실패(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 지하철_노선에서_역_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private ExtractableResponse<Response> 구간에서_지하철_역_삭제_요청(String path, Long stationId) {
+        String sectionRemovePath = path + "/sections";
+
+        return RestAssured.given().log().all()
+            .param("stationId", stationId)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .delete(sectionRemovePath)
+            .then().log().all()
+            .extract();
+    }
+
+    private String 지하철_노선에_구간_등록되어_있음() {
+        String lineLocation = LineAcceptanceTest.지하철_노선_등록되어_있음(
+            new LineRequest("신분당선", "bg-red-600", 강남역_Id, 정자역_Id, 10));
+
+        지하철_구간_등록_요청(new SectionRequest(강남역_Id, 판교역_Id, 6), lineLocation);
+
+        return lineLocation;
+    }
+
+    private void 지하철_노선에_등록한_구간_포함됨(ExtractableResponse<Response> response,
+        List<String> expectedStationNames) {
+        List<StationResponse> stations = response.body().jsonPath()
+            .getList("stations", StationResponse.class);
 
         List<String> stationNames = stations.stream()
             .map(StationResponse::getName)
@@ -167,7 +264,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     private void 새로운_역_등록됨(ExtractableResponse<Response> response, Long stationId) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<StationResponse> stations = response.body().jsonPath().getList("stations", StationResponse.class);
+        List<StationResponse> stations = response.body().jsonPath()
+            .getList("stations", StationResponse.class);
 
         List<Long> stationIds = stations.stream()
             .map(StationResponse::getId)
