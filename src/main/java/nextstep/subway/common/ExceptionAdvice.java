@@ -6,6 +6,7 @@ import nextstep.subway.common.exception.IllegalSectionRemoveException;
 import nextstep.subway.common.exception.IllegalStationException;
 import nextstep.subway.common.exception.LineNotFoundException;
 import nextstep.subway.common.exception.LinkableSectionNotFoundException;
+import nextstep.subway.common.exception.SectionNotFoundException;
 import nextstep.subway.common.exception.StationNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -45,6 +46,11 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(IllegalSectionRemoveException.class)
     protected ResponseEntity handleIllegalSectionRemoveException(IllegalSectionRemoveException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @ExceptionHandler(SectionNotFoundException.class)
+    protected ResponseEntity handleSectionNotFoundException(SectionNotFoundException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }

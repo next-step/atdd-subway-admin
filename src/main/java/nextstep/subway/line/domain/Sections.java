@@ -10,6 +10,7 @@ import javax.persistence.OneToMany;
 import nextstep.subway.common.exception.IllegalSectionRemoveException;
 import nextstep.subway.common.exception.IllegalStationException;
 import nextstep.subway.common.exception.LinkableSectionNotFoundException;
+import nextstep.subway.common.exception.SectionNotFoundException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -66,6 +67,39 @@ public class Sections {
     public void removeSection(Station targetStation) {
         validateMinimumSectionSize();
         validateRemovable(targetStation);
+
+        if (isBothInclude(targetStation)) {
+            mergeSection(targetStation);
+            return;
+        }
+    }
+
+    private void mergeSection(Station targetStation) {
+        Section targetSection = sections.stream()
+            .filter(section -> section.isSameUpStation(targetStation))
+            .findFirst()
+            .orElseThrow(SectionNotFoundException::new);
+
+        sections.stream()
+            .filter(section -> section.isSameDownStation(targetStation))
+            .findFirst()
+            .ifPresent(section -> section.merge(targetSection));
+
+        sections.remove(targetSection);
+    }
+
+    private boolean isUpStationMatch(Station targetStation) {
+        return sections.stream()
+            .anyMatch(section -> section.isSameUpStation(targetStation));
+    }
+
+    private boolean isDownStationMatch(Station targetStation) {
+        return sections.stream()
+            .anyMatch(section -> section.isSameUpStation(targetStation));
+    }
+
+    private boolean isBothInclude(Station targetStation) {
+        return isUpStationMatch(targetStation) && isDownStationMatch(targetStation);
     }
 
     private void validateRemovable(Station targetStation) {

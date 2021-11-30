@@ -63,6 +63,6 @@ public class LineController {
     @DeleteMapping("/{id}/sections")
     public ResponseEntity removeSection(@PathVariable Long id, @RequestParam Long stationId) {
         lineService.removeSection(id, stationId);
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.ok().build();
     }
 }

@@ -137,4 +137,9 @@ public class Section {
             downStation = section.upStation;
         }
     }
+
+    public void merge(Section section) {
+        downStation = section.downStation;
+        distance = distance.add(section.distance);
+    }
 }

@@ -33,6 +33,10 @@ public class Distance {
         return Distance.of(distance - toSubtract.getDistance());
     }
 
+    public Distance add(Distance toAdd) {
+        return Distance.of(distance - toAdd.getDistance());
+    }
+
     private void validateDistanceGreaterThanZero(int distance) {
         if (distance < MINIMUM_DISTANCE) {
             throw new IllegalDistanceException(MINIMUM_DISTANCE);
