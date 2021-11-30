@@ -1,8 +1,8 @@
-package nextstep.subway.section.domain.dto;
+package nextstep.subway.line.dto;
 
 import nextstep.subway.exception.InputDataErrorCode;
 import nextstep.subway.exception.InputDataErrorException;
-import nextstep.subway.section.domain.Distance;
+import nextstep.subway.line.domain.Distance;
 
 public class SectionRequest {
     private Long upStationId;         // 상행역 아이디

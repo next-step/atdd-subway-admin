@@ -3,8 +3,7 @@ package nextstep.subway.line.dto;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.section.domain.Distance;
-import nextstep.subway.section.domain.dto.SectionRequest;
+import nextstep.subway.line.domain.Distance;
 import org.springframework.http.MediaType;
 
 public class LineSectionAcceptanceTestRequest {

@@ -1,7 +1,7 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Distance;
+import nextstep.subway.line.domain.Distance;
 import nextstep.subway.station.domain.Station;
 
 public class LineRequest {

@@ -1,8 +1,8 @@
 package nextstep.subway.line;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Distance;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.line.domain.Distance;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.DisplayName;
