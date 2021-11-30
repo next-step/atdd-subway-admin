@@ -72,25 +72,25 @@ public class Sections {
         for (int i = 0; i < sections.size(); i++) {
             Section oldSection = sections.get(i);
             // 새 구간이 기존 구간보다 먼저 (상행역이 같을때)
-            if (sameUpStations(oldSection, section, i)) {
+            if (addIfSameUpStations(oldSection, section, i)) {
                 return;
             }
             // 기존 구간 다음에 새 구간 (하행역이 같을때)
-            if (sameDownStations(oldSection, section, i)) {
+            if (addIfSameDownStations(oldSection, section, i)) {
                 return;
             }
             // 맨 앞에 새 구간 (새 구간 하행역 == 기존 구간 상행역)
-            if (firstSection(oldSection, section, i)) {
+            if (addIfFirstSection(oldSection, section, i)) {
                 return;
             }
             // 맨 뒤에 새 구간 (기존 구간 하행역 == 새 구간 상행역)
-            if (lastSection(oldSection, section, i)) {
+            if (addIfLastSection(oldSection, section, i)) {
                 return;
             }
         }
     }
     
-    private boolean sameUpStations(Section oldSection, Section newSection, int index) {
+    private boolean addIfSameUpStations(Section oldSection, Section newSection, int index) {
         if (newSection.isSameUpStation(oldSection.getUpStation())) {
             newSection.checkShorter(oldSection.getDistance());
             oldSection.moveUpStationTo(newSection.getDownStation(), newSection.getDistance());
@@ -100,7 +100,7 @@ public class Sections {
         return false;
     }
     
-    private boolean sameDownStations(Section oldSection, Section newSection, int index) {
+    private boolean addIfSameDownStations(Section oldSection, Section newSection, int index) {
         if (newSection.isSameDownStation(oldSection.getDownStation())) {
             newSection.checkShorter(oldSection.getDistance());
             oldSection.moveDownStationTo(newSection.getUpStation(), newSection.getDistance());
@@ -110,7 +110,7 @@ public class Sections {
         return false;
     }
     
-    private boolean firstSection(Section oldSection, Section newSection, int index) {
+    private boolean addIfFirstSection(Section oldSection, Section newSection, int index) {
         if (newSection.isSameDownStation(oldSection.getUpStation()) && index == 0) {
             sections.add(index, newSection);
             return true;
@@ -118,7 +118,7 @@ public class Sections {
         return false;
     }
     
-    private boolean lastSection(Section oldSection, Section newSection, int index) {
+    private boolean addIfLastSection(Section oldSection, Section newSection, int index) {
         if (newSection.isSameUpStation(oldSection.getDownStation())&& index == sections.size()-1) {
             sections.add(newSection);
             return true;
