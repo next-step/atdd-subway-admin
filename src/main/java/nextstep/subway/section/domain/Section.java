@@ -1,6 +1,8 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.common.ErrorCode;
+import nextstep.subway.exception.NotAcceptableApiException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
@@ -61,20 +63,16 @@ public class Section extends BaseEntity {
         return new Section(upStation, downStation, line, distance);
     }
 
-    public void updateUpStation(Section section) {
-        if (section == null) {
-            throw new IllegalArgumentException("Section은 null일 수 없습니다.");
-        }
-        upStation = section.getDownStation();
-        distance = distance - section.getDistance();
+    public void updateUpStation(Section newSection) {
+        validateNewSection(newSection);
+        upStation = newSection.getDownStation();
+        distance = distance - newSection.getDistance();
     }
 
-    public void updateDownStation(Section section) {
-        if (section == null) {
-            throw new IllegalArgumentException("Section은 null일 수 없습니다.");
-        }
-        downStation = section.getUpStation();
-        distance = distance - section.getDistance();
+    public void updateDownStation(Section newSection) {
+        validateNewSection(newSection);
+        downStation = newSection.getUpStation();
+        distance = distance - newSection.getDistance();
     }
 
     public boolean hasNexSection() {
@@ -95,6 +93,15 @@ public class Section extends BaseEntity {
 
     public boolean isEqualDownStation(Station station) {
         return downStation.equals(station);
+    }
+
+    private void validateNewSection(Section newSection) {
+        if (newSection == null) {
+            throw new IllegalArgumentException("Section은 null일 수 없습니다.");
+        }
+        if (distance <= newSection.getDistance()) {
+            throw new NotAcceptableApiException(ErrorCode.INVALID_SECTION_DISTANCE);
+        }
     }
 
     @Override

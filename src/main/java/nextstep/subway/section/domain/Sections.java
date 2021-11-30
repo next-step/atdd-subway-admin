@@ -70,7 +70,6 @@ public class Sections {
 
         if (hasMatchWithUpStation(newUpStation)) {
             Section oldSection = getOldSectionByUpStation(newUpStation);
-            validateDistance(newSection, oldSection);
             oldSection.updateUpStation(newSection);
 
             sections.add(newSection);
@@ -84,7 +83,6 @@ public class Sections {
 
         if (hasMatchWithDownStation(newDownStation)) {
             Section oldSection = getOldSectionByDownStation(newDownStation);
-            validateDistance(newSection, oldSection);
             oldSection.updateDownStation(newSection);
 
             sections.add(newSection);
@@ -105,12 +103,6 @@ public class Sections {
         }
         if (isNotExistStations(section.getUpStation(), section.getDownStation())) {
             throw new NotAcceptableApiException(ErrorCode.MUST_CONTAIN_STATION);
-        }
-    }
-
-    private void validateDistance(Section newSection, Section oldSection) {
-        if (oldSection.getDistance() <= newSection.getDistance()) {
-            throw new NotAcceptableApiException(ErrorCode.INVALID_SECTION_DISTANCE);
         }
     }
 
