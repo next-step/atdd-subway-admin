@@ -4,7 +4,6 @@ import nextstep.subway.line.exception.AlreadyRegisteredSectionException;
 import nextstep.subway.line.exception.LongDistanceException;
 import nextstep.subway.line.exception.NotFoundUpAndDownStation;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -36,7 +35,7 @@ public class Sections {
         Optional<Section> nextSectionOptional = Optional.of(section);
         while (find(nextSectionOptional)) {
             nextSectionOptional = findNextSection(section);
-            nextSectionOptional.ifPresent( sec -> {
+            nextSectionOptional.ifPresent(sec -> {
                 stations.add(sec.getDownStation());
             });
         }
@@ -121,12 +120,7 @@ public class Sections {
                 .findAny()
                 .ifPresent(savedSection -> {
                     Section newSection = savedSection.createOuterSection(inputSection);
-                    int index = this.sections.indexOf(savedSection);
-                    if (savedSection.isCreateUpSection(inputSection)) {
-                        this.sections.add(index, newSection);
-                        return;
-                    }
-                    this.sections.add(index + 1, newSection);
+                    this.sections.add(newSection);
                 });
     }
 
