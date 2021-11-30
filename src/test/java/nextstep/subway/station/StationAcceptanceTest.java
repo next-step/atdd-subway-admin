@@ -15,15 +15,13 @@ import java.util.stream.Collectors;
 
 import static nextstep.subway.station.StationTestFixture.강남역_요청_데이터;
 import static nextstep.subway.station.StationTestFixture.역삼역_요청_데이터;
-import static nextstep.subway.station.StationTestFixture.지하철_노선_목록_조회_요청;
-import static nextstep.subway.station.StationTestFixture.지하철역_등록되어_있음;
-import static nextstep.subway.station.StationTestFixture.지하철역_생성_요청;
-import static nextstep.subway.station.StationTestFixture.지하철역_제거_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철역 관련 기능")
-class StationAcceptanceTest extends AcceptanceTest {
+public class StationAcceptanceTest extends AcceptanceTest {
+
+    private static final String BASE_STATION_URL = "/stations";
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -87,6 +85,23 @@ class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode())
                 .isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    public static ExtractableResponse<Response> 지하철역_생성_요청(StationRequest stationRequest) {
+        return post(BASE_STATION_URL, stationRequest);
+    }
+
+    public static StationResponse 지하철역_등록되어_있음(StationRequest stationRequest) {
+        return 지하철역_생성_요청(stationRequest)
+                .as(StationResponse.class);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
+        return get(BASE_STATION_URL);
+    }
+
+    private ExtractableResponse<Response> 지하철역_제거_요청(StationResponse stationResponse) {
+        return delete(BASE_STATION_URL + "/" + stationResponse.getId());
     }
 
     private void 지하철역_조회_데이터_확인(ExtractableResponse<Response> response, StationResponse... stationResponses) {
