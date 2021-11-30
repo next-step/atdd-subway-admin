@@ -1,22 +1,14 @@
 package nextstep.subway.common;
 
-import org.springframework.http.HttpStatus;
-
 public class ErrorResponse {
-    private int status;
     private String message;
 
-    private ErrorResponse(HttpStatus status, String message) {
-        this.status = status.value();
+    private ErrorResponse(String message) {
         this.message = message;
     }
 
-    public static ErrorResponse of (HttpStatus httpStatus, String message) {
-        return new ErrorResponse(httpStatus, message);
-    }
-
-    public int getStatus() {
-        return status;
+    public static ErrorResponse of(String message) {
+        return new ErrorResponse(message);
     }
 
     public String getMessage() {

@@ -117,7 +117,7 @@ public class Sections {
         return Collections.unmodifiableList(resultStations);
     }
 
-    public Section findFirstSection() {
+    private Section findFirstSection() {
         Section section = sections.get(0);
         while (matchStation(isPreStation(section))) {
             section = findSections(isPreStation(section))

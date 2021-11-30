@@ -46,27 +46,6 @@ class SectionsTest {
     }
 
     /**
-     * 첫번째역은 강남역
-     */
-    @Test
-    void 지하철라인의_가장_첫역을_찾는다() {
-
-        // given
-        Line line = new Line("1호선", "red");
-        Section firstSection = new Section(new Station(2L, 강남역), new Station(5L, "신촌역"), new Distance(10));
-        Section nextSection = new Section(new Station(5L, "신촌역"), new Station(55L, "대화역"), new Distance(10));
-
-        Sections sections = new Sections();
-        sections.add(asList(firstSection, nextSection), line);
-
-        // when
-        Section findSection = sections.findFirstSection();
-
-        // then
-        assertThat(findSection).isEqualTo(firstSection);
-    }
-
-    /**
      * 강남역의 다음역은 신촌역
      */
     @Test
