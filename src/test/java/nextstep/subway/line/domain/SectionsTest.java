@@ -16,14 +16,13 @@ public class SectionsTest {
         // given
         Station upStation1 = Station.from("강남역");
         Station downStation1 = Station.from("교대역");
-        Line line1 = Line.of("2호선", "초록색", upStation1, downStation1, 15);
+        Line line = Line.of("2호선", "초록색", upStation1, downStation1, 15);
         
-        Station upStation2 = Station.from("강남역");
-        Station downStation2 = Station.from("양재역");
-        Line line2 = Line.of("신분당선", "빨간색", upStation2, downStation2, 20);
+        Station upStation2 = Station.from("사당역");
+        Station downStation2 = Station.from("강남역");
         
-        Section section1 = Section.of(line1, upStation1, downStation1, 15);
-        Section section2 = Section.of(line2, upStation2, downStation2, 20);
+        Section section1 = Section.of(line, upStation1, downStation1, 15);
+        Section section2 = Section.of(line, upStation2, downStation2, 20);
         
         // when
         Sections sections = Sections.from(section1, section2);
@@ -92,25 +91,36 @@ public class SectionsTest {
     }
     
     @Test
-    @DisplayName("구간 목록의 중간 구간이 추가되는지 확인")
-    void 구간_목록_중간_구간_추가() {
+    @DisplayName("구간이 잘 정렬되는지 확인")
+    void 구간_목록_정렬_확인() {
         // given
-        Station upStation = Station.from("봉천역");
-        Station downStation = Station.from("낙성대역");
-        Line line = Line.of("2호선", "초록색", upStation, downStation, 50);
+        Station secondUpStation = Station.from("봉천역");
+        Station secondDownStation = Station.from("서울대입구역");
+        Line line = Line.of("5호선", "초록색", secondUpStation, secondDownStation, 50);
         
         Sections sections = line.getSections();
         
         // when
-        Station middleUpStation = Station.from("서울대입구역");
-        Station middleDownStation = Station.from("낙성대역");
-        Section middleSection = Section.of(line, middleUpStation, middleDownStation, 20);
-        sections.add(middleSection);
+        Station thirdUpStation = Station.from("서울대입구역");
+        Station thirdDownStation = Station.from("낙성대역");
+        Section thirdSection = Section.of(line, thirdUpStation, thirdDownStation, 20);
+        sections.add(thirdSection);
+        
+        Station firstUpStation = Station.from("신림역");
+        Station firstDownStation = Station.from("봉천역");
+        Section firstSection = Section.of(line, firstUpStation, firstDownStation, 50);
+        sections.add(firstSection);
+        
+        Station fourthUpStation = Station.from("낙성대역");
+        Station fourthDownStation = Station.from("사당역");
+        Section fourthSection = Section.of(line, fourthUpStation, fourthDownStation, 50);
+        sections.add(fourthSection);
         
         // then
         assertAll(
-                () -> assertThat(sections.getStationAt(1)).isEqualTo(middleUpStation),
-                () -> assertThat(sections.getDistanceAt(0)).isEqualTo(30)
+                () -> assertThat(sections.getSectionAt(2)).isEqualTo(thirdSection),
+                () -> assertThat(sections.getSectionAt(3)).isEqualTo(fourthSection)
                 );
     }
+    
 }

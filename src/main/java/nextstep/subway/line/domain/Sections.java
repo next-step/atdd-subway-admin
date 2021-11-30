@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,6 +24,7 @@ public class Sections {
 
     private Sections(List<Section> sections) {
         this.sections = sections;
+        sortedSections(sections);
     }
     
     public static Sections from(Section...sections) {
@@ -136,5 +138,38 @@ public class Sections {
     private boolean isNotExistStations(Station...stations) {
         return Stream.of(stations).allMatch(station -> !getStations().contains(station));
     }
-
+    
+    private void sortedSections(List<Section> sections) {
+        if (sections.size() < 2) {
+            return;
+        }
+        List<Section> sortedSections = new LinkedList<Section>();
+        Section cursorSection = getFirstSection();
+        sortedSections.add(cursorSection);
+        
+        while (sortedSections.size() < sections.size()) {
+            cursorSection = getNextSection(cursorSection.getDownStation());
+            sortedSections.add(cursorSection);
+        }
+        this.sections = sortedSections;
+    }
+    
+    private Section getFirstSection() {
+        List<Station> downStations = sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+        
+        return sections.stream()
+                .filter(section -> !downStations.contains(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("연결되지 않는 구간 목록입니다."));
+    }
+    
+    private Section getNextSection(Station downStation) {
+        return sections.stream()
+                .filter(section -> downStation.equals(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("연결되지 않는 구간 목록입니다."));
+    }
+    
 }
