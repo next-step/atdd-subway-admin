@@ -33,7 +33,7 @@ public class Line extends BaseEntity {
     private Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        addSection(Section.of(this, upStation, downStation, distance));
+        addSection(upStation, downStation, distance);
     }
     
     public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
@@ -45,8 +45,8 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
     
-    public void addSection(Section section) {
-        this.sections.add(section);
+    public void addSection(Station upStation, Station downStation, int distance) {
+        this.sections.add(Section.of(this, upStation, downStation, distance));
     }
     
     public List<Station> getStations() {
@@ -68,6 +68,7 @@ public class Line extends BaseEntity {
     public Sections getSections() {
         return sections;
     }
+    
 
     @Override
     public boolean equals(Object o) {
