@@ -7,37 +7,27 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import static nextstep.subway.line.TestLineFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
     @Autowired
     StationRepository stationRepository;
-    private static final Station ANYANG_STATION = new Station(1L, "안양역");
-    private static final Station GWANAK_STATION = new Station(2L, "관악역");
-    private static final Station SEOKSU_STATION = new Station(3L, "석수역");
-
-    @Override
-    @BeforeEach
-    public void setUp() {
-        super.setUp();
-        stationRepository.save(ANYANG_STATION);
-        stationRepository.save(GWANAK_STATION);
-        stationRepository.save(SEOKSU_STATION);
-    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given
-        LineRequest lineRequest = new LineRequest("1호선", "blue", 1L, 2L, 10);
+        Station anyangStation = createStation(1L, "안양역");
+        Station gwanakStation = createStation(2L, "관악역");
+        LineRequest lineRequest = new LineRequest("1호선", "blue", anyangStation.getId(), gwanakStation.getId(), 10);
 
         // when
         ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(lineRequest);
@@ -63,6 +53,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
+        Station anyangStation = createStation(1L, "안양역");
+        Station gwanakStation = createStation(2L, "관악역");
         LineRequest lineRequest = new LineRequest("2호선", "green", 1L, 2L, 10);
         지하철_노선_생성_요청(lineRequest);
 
@@ -81,6 +73,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
+        Station anyangStation = createStation(1L, "안양역");
+        Station gwanakStation = createStation(2L, "관악역");
         지하철_노선_생성_요청(new LineRequest("1호선", "blue", 1L, 2L, 10));
         지하철_노선_생성_요청(new LineRequest("2호선", "green", 1L, 2L, 10));
 
@@ -108,6 +102,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
+        Station anyangStation = createStation(1L, "안양역");
+        Station gwanakStation = createStation(2L, "관악역");
         지하철_노선_생성_요청(new LineRequest("1호선", "blue", 1L, 2L, 10));
 
         // when
@@ -139,6 +135,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
+        Station anyangStation = createStation(1L, "안양역");
+        Station gwanakStation = createStation(2L, "관악역");
         지하철_노선_생성_요청(new LineRequest("1호선", "blue", 1L, 2L, 10));
 
         // when
@@ -167,6 +165,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
+        Station anyangStation = createStation(1L, "안양역");
+        Station gwanakStation = createStation(2L, "관악역");
         지하철_노선_생성_요청(new LineRequest("1호선", "blue", 1L, 2L, 10));
 
         // when
@@ -187,5 +187,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
           .when().delete("/lines/1")
           .then().log().all()
           .extract();
+    }
+
+    private Station createStation(long id, String name) {
+        return stationRepository.save(stationOf(id, name));
     }
 }
