@@ -7,7 +7,9 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
@@ -26,8 +28,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
+        // given
+        final Long upStationId = createStation("강남역");
+        final Long downStationId = createStation("양재역");
+
         // when
-        final ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600");
+        final ExtractableResponse<Response> response = requestCreateLine(
+            "신분당선",
+            "bg-red-600",
+            upStationId,
+            downStationId,
+            10
+        );
 
         // then
         assertCreateLineSuccess(response);
@@ -39,10 +51,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         final String lineName = "신분당선";
         final String lineColor = "bg-red-600";
-        registerLine(lineName, lineColor);
+        final Long upStationId = createStation("강남역");
+        final Long downStationId = createStation("양재역");
+        final int distance = 10;
+        createLine(lineName, lineColor, upStationId, downStationId, distance);
 
         // when
-        final ExtractableResponse<Response> response = requestCreateLine(lineName, lineColor);
+        final ExtractableResponse<Response> response = requestCreateLine(
+            lineName,
+            lineColor,
+            upStationId,
+            downStationId,
+            distance
+        );
 
         // then
         assertCreateLineFail(response);
@@ -52,8 +73,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        final String uri1 = registerLine("신분당선", "bg-red-600");
-        final String uri2 = registerLine("2호선", "bg-green-600");
+        final Long upStationId = createStation("강남역");
+        final Long downStationId1 = createStation("양재역");
+        final Long downStationId2 = createStation("역삼역");
+        final String uri1 = createLine("신분당선", "bg-red-600", upStationId, downStationId1, 10);
+        final String uri2 = createLine("2호선", "bg-green-600", upStationId, downStationId2, 15);
 
         // when
         final ExtractableResponse<Response> response = requestGetLines();
@@ -67,7 +91,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        final String uri = registerLine("신분당선", "bg-red-600");
+        final Long upStationId = createStation("강남역");
+        final Long downStationId = createStation("양재역");
+        final String uri = createLine("신분당선", "bg-red-600", upStationId, downStationId, 10);
 
         // when
         final ExtractableResponse<Response> response = requestGetLine(uri);
@@ -91,13 +117,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        final String uri = registerLine("신분당선", "bg-red-600");
+        final Long upStationId = createStation("강남역");
+        final Long downStationId = createStation("양재역");
+        final int distance = 10;
+        final String uri = createLine("신분당선", "bg-red-600", upStationId, downStationId, distance);
 
         // when
         final String newLineName = "구분당선";
         final String newLineColor = "bg-blue-600";
-        final ExtractableResponse<Response> response = requestUpdateLine(newLineName, newLineColor,
-            uri);
+        final ExtractableResponse<Response> response = requestUpdateLine(
+            newLineName,
+            newLineColor,
+            upStationId,
+            downStationId,
+            distance,
+            uri
+        );
 
         // then
         assertGetLineSuccess(response);
@@ -111,6 +146,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> response = requestUpdateLine(
             "신분당선",
             "bg-red-600",
+            1L,
+            2L,
+            10,
             BASE_URI + "/1"
         );
 
@@ -122,7 +160,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        final String uri = registerLine("신분당선", "bg-red-600");
+        final Long upStationId = createStation("강남역");
+        final Long downStationId = createStation("양재역");
+        final String uri = createLine("신분당선", "bg-red-600", upStationId, downStationId, 10);
 
         // when
         final ExtractableResponse<Response> response = requestDeleteLine(uri);
@@ -131,13 +171,41 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertDeleteLineSuccess(response);
     }
 
-    private String registerLine(final String name, final String color) {
-        final LineRequest request = new LineRequest(name, color);
-        return postLineRequest(request).header(LOCATION);
+    @DisplayName("존재하지 않는 지하철 노선을 제거한다.")
+    @Test
+    void deleteLine_notFound() {
+        // when
+        final ExtractableResponse<Response> response = requestDeleteLine(BASE_URI + "/1");
+
+        // then
+        assertDeleteLineNotFound(response);
     }
 
-    private ExtractableResponse<Response> requestCreateLine(final String name, final String color) {
-        final LineRequest request = new LineRequest(name, color);
+    private String createLine(
+        final String name,
+        final String color,
+        final Long upStationId,
+        final Long downStationId,
+        final int distance
+    ) {
+        return requestCreateLine(name, color, upStationId, downStationId, distance)
+            .header(LOCATION);
+    }
+
+    private ExtractableResponse<Response> requestCreateLine(
+        final String name,
+        final String color,
+        final Long upStationId,
+        final Long downStationId,
+        final int distance
+    ) {
+        final LineRequest request = new LineRequest(
+            name,
+            color,
+            upStationId,
+            downStationId,
+            distance
+        );
         return postLineRequest(request);
     }
 
@@ -170,9 +238,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> requestUpdateLine(
         final String name,
         final String color,
+        final Long upStationId,
+        final Long downStationId,
+        final int distance,
         final String uri
     ) {
-        final LineRequest updateRequest = new LineRequest(name, color);
+        final LineRequest updateRequest = new LineRequest(
+            name,
+            color,
+            upStationId,
+            downStationId,
+            distance
+        );
         return RestAssured.given().log().all()
             .body(updateRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -211,10 +288,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .map(it -> Long.parseLong(it.split("/")[2]))
             .collect(Collectors.toList());
         final List<Long> actualLineIds = response.jsonPath()
-            .getList(".", LineResponse.class)
-            .stream()
-            .map(LineResponse::getId)
-            .collect(Collectors.toList());
+            .getList("id", Long.class);
         assertThat(actualLineIds).containsAll(expectedLineIds);
     }
 
@@ -227,8 +301,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final String expectedUri
     ) {
         final Long actualLineId = response.jsonPath()
-            .getObject(".", LineResponse.class)
-            .getId();
+            .getLong("id");
         final Long expectedLineId = Long.parseLong(expectedUri.split("/")[2]);
         assertThat(actualLineId).isEqualTo(expectedLineId);
     }
@@ -237,8 +310,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertResponseStatusEquals(response, HttpStatus.NOT_FOUND);
     }
 
-    private void assertUpdateLineSuccess(final String uri, final String newLineName,
-        final String newLineColor) {
+    private void assertUpdateLineSuccess(
+        final String uri,
+        final String newLineName,
+        final String newLineColor
+    ) {
         final LineResponse actualLine = RestAssured.given().log().all()
             .when()
             .get(uri)
@@ -257,10 +333,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertResponseStatusEquals(response, HttpStatus.NO_CONTENT);
     }
 
+    private void assertDeleteLineNotFound(final ExtractableResponse<Response> response) {
+        assertResponseStatusEquals(response, HttpStatus.NOT_FOUND);
+    }
+
     private void assertResponseStatusEquals(
         final ExtractableResponse<Response> response,
         final HttpStatus httpStatus
     ) {
         assertThat(response.statusCode()).isEqualTo(httpStatus.value());
+    }
+
+    //
+
+    private Long createStation(final String stationName) {
+        final Map<String, String> params = new HashMap<>();
+        params.put("name", stationName);
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
+        return response.jsonPath().getLong("id");
     }
 }
