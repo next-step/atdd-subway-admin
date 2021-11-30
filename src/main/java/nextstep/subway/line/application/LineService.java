@@ -93,4 +93,8 @@ public class LineService {
             throw new InputDataErrorException(InputDataErrorCode.THERE_IS_A_DUPLICATE_NAME);
         }
     }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+
+    }
 }

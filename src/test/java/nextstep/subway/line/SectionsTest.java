@@ -80,6 +80,38 @@ public class SectionsTest {
 
     }
 
+    @Test
+    @DisplayName("첫번째 Station 찾기")
+    public void searchFirstStationTest(){
+        Station dangSanStation = new Station("당산역");
+        Station hongDaeStation = new Station("홍대입구역");
+        Station chungJeongRoStation = new Station("충정로역");
+
+        Line line = createLine(dangSanStation, hongDaeStation);
+
+        Section newSection = new Section(line, dangSanStation, chungJeongRoStation, new Distance(7));
+        line.addSection(newSection);
+
+        Station firstStation = line.getFirstStation();
+        assertThat(firstStation).isEqualTo(dangSanStation);
+    }
+
+    @Test
+    @DisplayName("마지막 Station 찾기")
+    public void searchLastStationTest(){
+        Station dangSanStation = new Station("당산역");
+        Station hongDaeStation = new Station("홍대입구역");
+        Station chungJeongRoStation = new Station("충정로역");
+
+        Line line = createLine(dangSanStation, hongDaeStation);
+
+        Section newSection = new Section(line, dangSanStation, chungJeongRoStation, new Distance(7));
+        line.addSection(newSection);
+
+        Station lastStation = line.getLastStation();
+        assertThat(lastStation).isEqualTo(hongDaeStation);
+    }
+
     private Line createLine(Station upStation, Station downStation) {
         return new Line("2호선", "green", upStation, downStation, new Distance(10));
     }

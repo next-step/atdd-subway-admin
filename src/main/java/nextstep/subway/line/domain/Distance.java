@@ -31,6 +31,10 @@ public class Distance {
         return new Distance(this.distance -= distance.distance);
     }
 
+    public Distance sum(Distance distance) {
+        return new Distance(this.distance += distance.distance);
+    }
+
     public int getDistance() {
         return this.distance;
     }
