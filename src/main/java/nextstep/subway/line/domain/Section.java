@@ -61,18 +61,25 @@ public class Section {
         return line;
     }
 
-    public int getDistance() {
-        return distance.value();
-    }
-
     public boolean isEqualsUpStation(Station station) {
         return this.upStation.equals(station);
     }
 
     private static void validateDuplicate(Station upStation, Station downStation) {
         if (upStation.equals(downStation)) {
-            throw new BadRequestException();
+            throw new BadRequestException("상행선과 하행선은 같을 수 없습니다.");
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", line=" + line +
+                ", distance=" + distance +
+                '}';
     }
 
     @Override

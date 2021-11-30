@@ -44,7 +44,6 @@ public class Sections {
             nextStation = findNextStation(nextStation);
             orderedStations.add(nextStation);
         }
-
         return orderedStations;
     }
 
@@ -53,7 +52,9 @@ public class Sections {
                 .filter(section -> section.isEqualsUpStation(station))
                 .map(Section::getDownStation)
                 .findFirst()
-                .orElseThrow(BadRequestException::new);
+                .orElseThrow(() -> {
+                    throw new BadRequestException("해당 지하철역이 존재하지않습니다.");
+                });
     }
 
     private Station findFirstUpStation() {

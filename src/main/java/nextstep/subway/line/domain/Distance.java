@@ -28,7 +28,7 @@ public class Distance {
 
     private void validateDistance(int distance) {
         if (distance <= 0) {
-            throw new BadRequestException();
+            throw new BadRequestException("구간의 거리는 1 이상으로 입력해주세요.");
         }
     }
 
