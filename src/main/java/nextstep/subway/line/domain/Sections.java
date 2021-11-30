@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -39,6 +40,7 @@ public class Sections {
 	}
 
 	public void add(Section section) {
+		System.out.println("##");
 		if (ifAddStartLocation(section)) {
 			addSectionStartLocation(section);
 			return;
@@ -64,11 +66,10 @@ public class Sections {
 			.filter(s -> s.getDistance() > section.getDistance())
 			.findFirst()
 			.orElseThrow(() -> new IllegalArgumentException("신규구간의 길이는 기존의 구간보다 클 수 없습니다."));
-		updateNonMiddleLocationSectionSequence(middleSection);
-		section.updateSequence(middleSection.getSequence() + 1);
 		middleSection.updateDownStation(section.getUpStation());
 		middleSection.updateDistance(middleSection.getDistance() - section.getDistance());
-		sections.add(section.getSequence() - 1, section);
+		sections.add(sections.indexOf(middleSection) + 1, section);
+		updateSectionsSequence();
 	}
 
 	private void addSectionMiddleStartLocation(Section section) {
@@ -77,31 +78,25 @@ public class Sections {
 			.filter(s -> s.getDistance() > section.getDistance())
 			.findFirst()
 			.orElseThrow(() -> new IllegalArgumentException("신규구간의 길이는 기존의 구간보다 클 수 없습니다."));
-		updateNonMiddleLocationSectionSequence(middleSection);
-		section.updateSequence(middleSection.getSequence());
-		middleSection.updateSequence(middleSection.getSequence() + 1);
 		middleSection.updateUpStation(section.getDownStation());
 		middleSection.updateDistance(middleSection.getDistance() - section.getDistance());
-		sections.add(section.getSequence() - 1, section);
+		sections.add(sections.indexOf(middleSection), section);
+		updateSectionsSequence();
 	}
 
-	private void updateNonMiddleLocationSectionSequence(Section middleSection) {
-		sections.stream()
-			.filter(s -> s.getSequence() > middleSection.getSequence())
-			.forEach(s -> s.updateSequence(s.getSequence() + 1));
+	private void updateSectionsSequence() {
+		IntStream.range(0, sections.size())
+			.forEach(index -> sections.get(index).updateSequence(index + 1));
 	}
 
 	private boolean ifAddMiddleStartLocation(Section section) {
 		return sections.stream()
-			.filter(s -> s.getUpStation().equals(section.getUpStation()))
-			.findFirst()
-			.isPresent();
+			.anyMatch(s -> s.getUpStation().equals(section.getUpStation()));
 	}
 
 	private void addSectionEndLocation(Section section) {
-		Section endSection = sections.get(sections.size() - 1);
-		section.updateSequence(endSection.getSequence() + 1);
 		sections.add(sections.size() - 1, section);
+		updateSectionsSequence();
 	}
 
 	private boolean ifAddEndLocation(Section section) {
@@ -121,19 +116,17 @@ public class Sections {
 	}
 
 	private void addSectionStartLocation(Section section) {
-		Section startSection = sections.get(0);
-		section.updateSequence(startSection.getSequence());
-		startSection.updateSequence(section.getSequence() + 1);
 		sections.add(0, section);
+		updateSectionsSequence();
 	}
 
-	public boolean allContain(Station... stations) {
-		return getAllStationsBySections().containsAll(Arrays.asList(stations));
+	public boolean allContain(Section section) {
+		return getAllStationsBySections()
+			.containsAll(Arrays.asList(section.getUpStation(), section.getDownStation()));
 	}
 
-	public boolean notContain(Station[] stations) {
-		return Arrays.asList(stations).stream()
-			.filter(getAllStationsBySections()::contains)
-			.count() == 0;
+	public boolean notContain(Section section) {
+		return getAllStationsBySections().stream()
+			.noneMatch(s -> s.equals(section.getUpStation()) || s.equals(section.getDownStation()));
 	}
 }

@@ -20,7 +20,7 @@ class SectionsTest {
 		Sections sections = new Sections();
 		Section section = Section.create(new Station("강남역"), new Station("양재역"), 10);
 		//when
-		sections.add(section);
+		sections.init(section);
 		//then
 		assertThat(sections.size()).isEqualTo(1);
 	}
@@ -31,7 +31,7 @@ class SectionsTest {
 		//given
 		Sections sections = new Sections();
 		Section section = Section.create(new Station("강남역"), new Station("양재역"), 15);
-		sections.add(section);
+		sections.init(section);
 		//when
 		List<Station> stations = sections.getAllStationsBySections();
 		//then
@@ -46,6 +46,6 @@ class SectionsTest {
 		Sections sections = new Sections();
 		//when
 		assertThatThrownBy(() -> sections.getAllStationsBySections())
-			.isInstanceOf(NoSuchElementException.class);
+			.isInstanceOf(IllegalArgumentException.class);
 	}
 }

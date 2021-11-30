@@ -62,15 +62,21 @@ public class Line extends BaseEntity {
 	}
 
 	public void addSection(Section section) {
+		validateAllContainStation(section);
+		validateNotContainStation(section);
 		sections.add(section);
 		section.initLine(this);
 	}
 
-	public boolean allContain(Station ...stations) {
-		return sections.allContain(stations);
+	private void validateAllContainStation(Section section) {
+		if (sections.allContain(section)) {
+			throw new IllegalArgumentException("노선에 이미 전부 존재하는 역들입니다.");
+		}
 	}
 
-	public boolean notContain(Station[] stations) {
-		return sections.notContain(stations);
+	private void validateNotContainStation(Section section) {
+		if (sections.notContain(section)) {
+			throw new IllegalArgumentException("노선의 구간 내 일치하는 역이 없습니다.");
+		}
 	}
 }

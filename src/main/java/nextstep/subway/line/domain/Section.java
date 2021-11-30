@@ -87,8 +87,8 @@ public class Section extends BaseEntity {
 		this.distance = distance;
 	}
 
-	public void updateDownStation(Station upStation) {
-		this.downStation = upStation;
+	public void updateDownStation(Station station) {
+		this.downStation = station;
 	}
 
 	@Override

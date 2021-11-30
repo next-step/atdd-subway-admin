@@ -46,13 +46,11 @@ public class LineService {
 
 	@Transactional(readOnly = true)
 	public LineResponse findById(Long id) {
-		return LineResponse.of(lineRepository.findById(id)
-			.orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다.")));
+		return LineResponse.of(findLineById(id));
 	}
 
 	public LineResponse updateById(Long id, LineRequest lineRequest) {
-		Line line = lineRepository.findById(id)
-			.orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
+		Line line = findLineById(id);
 		line.update(lineRequest.toLine());
 		return LineResponse.of(line);
 	}
@@ -61,26 +59,16 @@ public class LineService {
 		lineRepository.deleteById(id);
 	}
 
-	public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
-		Line line = lineRepository.findById(lineId)
-			.orElseThrow(() -> new IllegalArgumentException("라인이 존재하지 않습니다."));
+	public LineResponse addSection(Long id, SectionRequest sectionRequest) {
+		Line line = findLineById(id);
 		Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
 		Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
-		validateAllContainStation(line, upStation, downStation);
-		validateNotContainStation(line, upStation, downStation);
 		line.addSection(Section.create(upStation, downStation, sectionRequest.getDistance()));
 		return LineResponse.of(line);
 	}
 
-	private void validateAllContainStation(Line line, Station... stations) {
-		if (line.allContain(stations)) {
-			throw new IllegalArgumentException("노선에 이미 전부 존재하는 역들입니다.");
-		}
-	}
-
-	private void validateNotContainStation(Line line, Station... stations) {
-		if (line.notContain(stations)) {
-			throw new IllegalArgumentException("노선의 구간 내 일치하는 역이 없습니다.");
-		}
+	private Line findLineById(Long id) {
+		return lineRepository.findById(id)
+			.orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
 	}
 }
