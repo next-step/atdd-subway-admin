@@ -29,8 +29,8 @@ public class Sections {
 
     public List<Section> getOrderedSection() {
         List<Section> orderedSections = new ArrayList<>();
-        Optional<Station> firstStation = findFirstStation();
-        Optional<Section> foundSection = findFirstSection(firstStation.get());
+        Station firstStation = findFirstStation();
+        Optional<Section> foundSection = findFirstSection(firstStation);
 
         while (foundSection.isPresent()) {
             orderedSections.add(foundSection.get());
@@ -40,7 +40,7 @@ public class Sections {
         return orderedSections;
     }
 
-    public List<Station> getOrderedtStation() {
+    public List<Station> getOrderedStation() {
         return getOrderedSection().stream()
                 .map(Section::getStations)
                 .flatMap(Collection::stream)
@@ -60,13 +60,16 @@ public class Sections {
                 .findFirst();
     }
 
-    private Optional<Station> findFirstStation() {
-        List<Station> upStations = getUpstations();
+    private Station findFirstStation() {
+        List<Station> upStations = getUpStations();
         List<Station> downStations = getDownStations();
 
         return upStations.stream()
                 .filter(it -> !hasStation(it, downStations))
-                .findFirst();
+                .findFirst()
+                .orElseThrow(
+                        ()-> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_STATION)
+                );
     }
 
     private boolean hasStation(Station station, List<Station> downStations) {
@@ -79,7 +82,7 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    private List<Station> getUpstations() {
+    private List<Station> getUpStations() {
         return this.getSections().stream()
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
