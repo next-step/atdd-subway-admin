@@ -162,4 +162,60 @@ class SectionAcceptanceTest extends AcceptanceTest {
         지하철_구간_개수_일치됨(response, 3);
         지하철_구간_상행역_일치됨(response, Arrays.asList("강남", "양재", "양재시민의숲"));
     }
+
+    @Test
+    @DisplayName("지하철 노선의 구간을 삭제한다.")
+    void deleteSection() {
+        // given
+        Map<String, Long> stations = 지하철_역_여러개_등록되어_있음(강남, 양재, 양재시민의숲, 청계산입구);
+        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "bg-red-600", stations.get("강남"), stations.get("양재"), 5);
+        String createdLineUri = 지하철_노선_등록되어_있음(신분당선);
+
+        SectionRequest request1 = 지하철_구간_정보(stations, "양재", "양재시민의숲", 5);
+        SectionRequest request2 = 지하철_구간_정보(stations, "양재시민의숲", "청계산입구", 5);
+
+        지하철_구간_생성됨(지하철_구간_생성_요청(createdLineUri, request1));
+        String createdSectionUri = 지하철_구간_생성됨(지하철_구간_생성_요청(createdLineUri, request2));
+
+        Map<String, Long> downStations = 지하철_노선_하행역(createdSectionUri);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(createdSectionUri, downStations.get("양재"));
+
+        // then
+        지하철_구간_삭제됨(response);
+    }
+
+    @Test
+    @DisplayName("지하철 구간이 등록되지 않은 경우 구간 삭제가 실패한다.")
+    void deleteSectionValidateEmptyResult() {
+        // given
+        Map<String, Long> stations = 지하철_역_여러개_등록되어_있음(강남, 양재);
+        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "bg-red-600", stations.get("강남"), stations.get("양재"), 5);
+        String createdLineUri = 지하철_노선_등록되어_있음(신분당선);
+        Long emptyId = 100L;
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(createdLineUri + "/sections", emptyId);
+
+        // then
+        지하철_구간_삭제_실패됨(response);
+    }
+
+    @Test
+    @DisplayName("지하철 구간이 1개인 경우 구간 삭제가 실패한다.")
+    void deleteSectionValidateSize() {
+        // given
+        Map<String, Long> stations = 지하철_역_여러개_등록되어_있음(강남, 양재);
+        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "bg-red-600", stations.get("강남"), stations.get("양재"), 5);
+        String createdLineUri = 지하철_노선_등록되어_있음(신분당선);
+
+        Map<String, Long> downStations = 지하철_노선_하행역(createdLineUri + "/sections");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(createdLineUri + "/sections", downStations.get("양재"));
+
+        // then
+        지하철_구간_삭제_실패됨(response);
+    }
 }

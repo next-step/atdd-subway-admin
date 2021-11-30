@@ -99,4 +99,8 @@ public class Line extends BaseEntity {
 
         return Collections.unmodifiableList(stations);
     }
+
+    public void removeSection(Station station) {
+        sections.remove(station);
+    }
 }

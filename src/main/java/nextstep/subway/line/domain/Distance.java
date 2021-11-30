@@ -34,6 +34,10 @@ public class Distance {
         return true;
     }
 
+    public void plus(int distance) {
+        this.distance += distance;
+    }
+
     public void setDistance(int distance) {
         this.distance = distance;
     }

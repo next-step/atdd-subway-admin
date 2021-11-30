@@ -46,16 +46,4 @@ public class LineController {
         lineService.deleteLind(id);
         return ResponseEntity.noContent().build();
     }
-
-    @PostMapping("/{id}/sections")
-    public ResponseEntity<LineCreateResponse> addSection(@PathVariable Long id, @RequestBody SectionRequest request) {
-        LineCreateResponse line = lineService.addSection(id, request);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId() + "/sections")).body(line);
-    }
-
-    @GetMapping("/{id}/sections")
-    public ResponseEntity<List<SectionResponse>> addSection(@PathVariable Long id) {
-        List<SectionResponse> section = lineService.findSection(id);
-        return ResponseEntity.ok().body(section);
-    }
 }

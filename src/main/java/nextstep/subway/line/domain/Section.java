@@ -82,6 +82,22 @@ public class Section {
         return upStation.equals(section.upStation) || downStation.equals(section.downStation);
     }
 
+    public boolean isEqualUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isEqualDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    public void mergeDistance(int distance) {
+        this.distance.plus(distance);
+    }
+
+    public void changeDownStationLink(Station downStation) {
+        this.downStation = downStation;
+    }
+
     public void setLine(Line line) {
         this.line = line;
     }
