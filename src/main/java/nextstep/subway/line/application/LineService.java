@@ -17,7 +17,6 @@ import static nextstep.subway.line.application.exception.LineNotFoundException.e
 @Service
 @Transactional(readOnly = true)
 public class LineService {
-
     public static final String NOT_FOUND_LINE = "지하철 노선을 찾을 수 없습니다.";
 
     private final LineRepository lineRepository;

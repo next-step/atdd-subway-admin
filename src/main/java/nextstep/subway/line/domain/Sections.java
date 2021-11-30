@@ -18,6 +18,9 @@ public class Sections {
     public static final String NOT_CONNECTABLE = "구간을 연결할 상행역 또는 하행역이 존재해야 합니다.";
     public static final String NOT_FOUND_UP_TERMINUS = "상행 종점 구간을 찾을 수 없습니다.";
     public static final String BREAK_SECTION = "구간이 끊어져 있습니다.";
+    public static final String SECTION_NOT_FOUNT = "구간의 지하철 역을 찾을 수 없습니다.";
+    public static final String PRE_SECTION_NOT_FOUND = "구간의 이전 지하철 역을 찾을 수 없습니다.";
+    public static final String NOT_DELETE_MIN_SECTION_SIZE = "노선의 구간이" + MIN_SECTION_SIZE + "개 이하인 경우 구간을 삭제할 수 없습니다.";
 
     @OneToMany(mappedBy = "line", cascade = {PERSIST, REMOVE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -85,28 +88,40 @@ public class Sections {
 
     public void remove(Station station) throws InvalidSectionException {
         if (sections.size() == MIN_SECTION_SIZE) {
-            throw error("노선의 구간이" + MIN_SECTION_SIZE + "개 이하인 경우 구간을 삭제할 수 없습니다.");
+            throw error(NOT_DELETE_MIN_SECTION_SIZE);
         }
-        Section deleteSection = findSectionByUpStation(station);
-        Section preSection = findSectionByDownStation(deleteSection.getUpStation());
+
+        Optional<Section> findUpSection = findSectionByUpStation(station);
+        Optional<Section> findDownSection = findSectionByDownStation(station);
+        if (!findUpSection.isPresent() && !findDownSection.isPresent()) {
+            throw error(SECTION_NOT_FOUNT);
+        }
+
+        Section deleteSection = findDeleteSection(findUpSection, findDownSection);
+        this.sections.remove(deleteSection);
+    }
+
+    private Section findDeleteSection(Optional<Section> findUpSection, Optional<Section> findDownSection) {
+        Section deleteSection = findUpSection.orElseGet(findDownSection::get);
+        Section preSection = findSectionByUpStation(deleteSection.getUpStation())
+                .orElseThrow(() -> error(PRE_SECTION_NOT_FOUND));
 
         preSection.mergeDistance(deleteSection.getDistance());
-        preSection.changeDownStationLink(deleteSection.getDownStation());
-
-        sections.remove(deleteSection);
+        if (findUpSection.isPresent()) {
+            preSection.changeDownStationLink(deleteSection.getDownStation());
+        }
+        return deleteSection;
     }
 
-    private Section findSectionByUpStation(Station station) {
+    private Optional<Section> findSectionByUpStation(Station station) {
         return sections.stream()
                 .filter(section -> section.isEqualUpStation(station))
-                .findFirst()
-                .orElseThrow(() -> error("구간의 지하철 역을 찾을 수 없습니다."));
+                .findFirst();
     }
 
-    private Section findSectionByDownStation(Station station) {
+    private Optional<Section> findSectionByDownStation(Station station) {
         return sections.stream()
                 .filter(section -> section.isEqualDownStation(station))
-                .findFirst()
-                .orElseThrow(() -> error("구간의 이전 지하철 역을 찾을 수 없습니다."));
+                .findFirst();
     }
 }

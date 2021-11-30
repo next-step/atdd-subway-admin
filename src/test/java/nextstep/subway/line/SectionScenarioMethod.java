@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.assured.RestAssuredApi;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -56,9 +57,9 @@ class SectionScenarioMethod {
                 .isEqualTo(Arrays.asList("강남", "양재", "양재시민의숲"));
     }
 
-    public static Map<String, Long> 지하철_노선_하행역(String uri) {
+    public static Map<String, Long> 등록된_구간_지하철역(String uri) {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(uri);
-        List<StationResponse> stations = response.jsonPath().getList("downStation", StationResponse.class);
+        List<StationResponse> stations = response.jsonPath().getList("stations", StationResponse.class);
         return stations.stream()
                 .collect(Collectors.toMap(
                         StationResponse::getName, StationResponse::getId
@@ -66,7 +67,7 @@ class SectionScenarioMethod {
     }
 
     public static ExtractableResponse<Response> 지하철_구간_삭제_요청(String uri, Long sectionId) {
-        return RestAssuredApi.delete(uri + "?stationId=" + sectionId);
+        return RestAssuredApi.delete(uri + "/sections?stationId=" + sectionId);
     }
 
     public static void 지하철_구간_삭제됨(ExtractableResponse<Response> response) {

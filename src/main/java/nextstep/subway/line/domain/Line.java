@@ -71,20 +71,8 @@ public class Line extends BaseEntity {
         newSections.forEach(this::addSection);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public List<Section> getSectionsInOrder() {
-        return Collections.unmodifiableList(sections.getSectionsInOrder());
+    public void removeSection(Station station) {
+        sections.remove(station);
     }
 
     public List<Station> getStationInOrder() {
@@ -100,7 +88,19 @@ public class Line extends BaseEntity {
         return Collections.unmodifiableList(stations);
     }
 
-    public void removeSection(Station station) {
-        sections.remove(station);
+    public List<Section> getSectionsInOrder() {
+        return Collections.unmodifiableList(sections.getSectionsInOrder());
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
     }
 }

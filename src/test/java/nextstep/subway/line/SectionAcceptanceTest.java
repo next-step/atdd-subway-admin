@@ -6,10 +6,12 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -29,9 +31,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
     private StationRequest 양재시민의숲 = new StationRequest("양재시민의숲");
     private StationRequest 청계산입구 = new StationRequest("청계산입구");
 
-    @DisplayName("지하철 구간의 상행 종점으로 지하철 구간을 생성한다.")
+    @DisplayName("지하철 구간의 종점으로 지하철 구간을 생성한다.")
     @Test
-    void createSectionUpStation() {
+    void createSectionTerminus() {
         // given
         Map<String, Long> stations = 지하철_역_여러개_등록되어_있음(강남, 양재, 양재시민의숲, 청계산입구);
         LineRequest 신분당선 = 지하철_노선_정보("신분당선", "bg-red-600", stations.get("양재"), stations.get("양재시민의숲"), 5);
@@ -164,8 +166,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("지하철 노선의 구간을 삭제한다.")
-    void deleteSection() {
+    @DisplayName("지하철 노선의 종점 구간을 삭제한다.")
+    void deleteSectionTerminus() {
         // given
         Map<String, Long> stations = 지하철_역_여러개_등록되어_있음(강남, 양재, 양재시민의숲, 청계산입구);
         LineRequest 신분당선 = 지하철_노선_정보("신분당선", "bg-red-600", stations.get("강남"), stations.get("양재"), 5);
@@ -175,12 +177,37 @@ class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest request2 = 지하철_구간_정보(stations, "양재시민의숲", "청계산입구", 5);
 
         지하철_구간_생성됨(지하철_구간_생성_요청(createdLineUri, request1));
-        String createdSectionUri = 지하철_구간_생성됨(지하철_구간_생성_요청(createdLineUri, request2));
+        지하철_구간_생성됨(지하철_구간_생성_요청(createdLineUri, request2));
 
-        Map<String, Long> downStations = 지하철_노선_하행역(createdSectionUri);
+        Map<String, Long> downStations = 등록된_구간_지하철역(createdLineUri);
 
         // when
-        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(createdSectionUri, downStations.get("양재"));
+        ExtractableResponse<Response> response1 = 지하철_구간_삭제_요청(createdLineUri, downStations.get("강남"));
+        ExtractableResponse<Response> response2 = 지하철_구간_삭제_요청(createdLineUri, downStations.get("양재시민의숲"));
+
+        // then
+        지하철_구간_삭제됨(response1);
+        지하철_구간_삭제됨(response2);
+    }
+
+    @Test
+    @DisplayName("지하철 노선 사이의 구간을 삭제한다.")
+    void deleteSectionBetweenStations() {
+        // given
+        Map<String, Long> stations = 지하철_역_여러개_등록되어_있음(강남, 양재, 양재시민의숲, 청계산입구);
+        LineRequest 신분당선 = 지하철_노선_정보("신분당선", "bg-red-600", stations.get("강남"), stations.get("양재"), 5);
+        String createdLineUri = 지하철_노선_등록되어_있음(신분당선);
+
+        SectionRequest request1 = 지하철_구간_정보(stations, "양재", "양재시민의숲", 5);
+        SectionRequest request2 = 지하철_구간_정보(stations, "양재시민의숲", "청계산입구", 5);
+
+        지하철_구간_생성됨(지하철_구간_생성_요청(createdLineUri, request1));
+        지하철_구간_생성됨(지하철_구간_생성_요청(createdLineUri, request2));
+
+        Map<String, Long> downStations = 등록된_구간_지하철역(createdLineUri);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(createdLineUri, downStations.get("양재"));
 
         // then
         지하철_구간_삭제됨(response);
@@ -196,7 +223,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         Long emptyId = 100L;
 
         // when
-        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(createdLineUri + "/sections", emptyId);
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(createdLineUri, emptyId);
 
         // then
         지하철_구간_삭제_실패됨(response);
@@ -210,10 +237,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
         LineRequest 신분당선 = 지하철_노선_정보("신분당선", "bg-red-600", stations.get("강남"), stations.get("양재"), 5);
         String createdLineUri = 지하철_노선_등록되어_있음(신분당선);
 
-        Map<String, Long> downStations = 지하철_노선_하행역(createdLineUri + "/sections");
+        Map<String, Long> downStations = 등록된_구간_지하철역(createdLineUri);
 
         // when
-        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(createdLineUri + "/sections", downStations.get("양재"));
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(createdLineUri, downStations.get("강남"));
 
         // then
         지하철_구간_삭제_실패됨(response);
