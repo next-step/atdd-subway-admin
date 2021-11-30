@@ -223,7 +223,7 @@ class SectionsTest {
                 이호선.addSection(역삼역_교대역_구간);
 
                 // when
-                이호선.deleteSection(강남역());
+                이호선.deleteSectionBy(강남역());
 
                 // then
                 assertAll(
@@ -243,7 +243,7 @@ class SectionsTest {
                 이호선.addSection(역삼역_교대역_구간);
 
                 // when
-                이호선.deleteSection(교대역());
+                이호선.deleteSectionBy(교대역());
 
                 // then
                 assertAll(
@@ -263,7 +263,7 @@ class SectionsTest {
                 이호선.addSection(역삼역_교대역_구간);
 
                 // when
-                이호선.deleteSection(역삼역());
+                이호선.deleteSectionBy(역삼역());
 
                 // then
                 assertAll(
@@ -288,7 +288,7 @@ class SectionsTest {
                 이호선.addSection(역삼역_교대역_구간);
 
                 // when
-                ThrowableAssert.ThrowingCallable throwingCallable = () -> 이호선.deleteSection(서초역());
+                ThrowableAssert.ThrowingCallable throwingCallable = () -> 이호선.deleteSectionBy(서초역());
 
                 // then
                 assertThatThrownBy(throwingCallable)
@@ -305,7 +305,7 @@ class SectionsTest {
                 이호선.addSection(강남역_역삼역_구간);
 
                 // when
-                ThrowableAssert.ThrowingCallable throwingCallable = () -> 이호선.deleteSection(역삼역());
+                ThrowableAssert.ThrowingCallable throwingCallable = () -> 이호선.deleteSectionBy(역삼역());
 
                 // then
                 assertThatThrownBy(throwingCallable)
