@@ -4,11 +4,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,7 +49,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_등록_요청(request, lineLocation);
 
         // then
-        구간_사이에_등록됨(response, request);
+        새로운_역_등록됨(response, 판교역_Id);
+        지하철_노선에_등록한_구간_포함됨(response, Arrays.asList("강남역", "판교역", "정자역"));
     }
 
     @DisplayName("노선의 구간 사이에 새로운 역을 등록 한다. (하행 종점 일치)")
@@ -58,7 +65,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_등록_요청(request, lineLocation);
 
         // then
-        구간_사이에_등록됨(response, request);
+        새로운_역_등록됨(response, 판교역_Id);
+        지하철_노선에_등록한_구간_포함됨(response, Arrays.asList("강남역", "판교역", "정자역"));
     }
 
     @DisplayName("새로운 역을 상행 종점으로 구간을 등록한다.")
@@ -73,7 +81,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_등록_요청(request, lineLocation);
 
         // then
-        새로운_상행_종점역_등록됨(response);
+        새로운_역_등록됨(response, 강남역_Id);
+        지하철_노선에_등록한_구간_포함됨(response, Arrays.asList("강남역", "판교역", "정자역"));
     }
 
     @DisplayName("새로운 역을 하행 종점으로 구간을 등록한다.")
@@ -88,7 +97,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_등록_요청(request, lineLocation);
 
         // then
-        새로운_하행_종점역_등록됨(response);
+        새로운_역_등록됨(response, 광교역_Id);
+        지하철_노선에_등록한_구간_포함됨(response, Arrays.asList("판교역", "정자역", "광교역"));
     }
 
     @DisplayName("역 사이에 새로운 역을 등록할 때 기존 역 사이 길이보다 크거나 같으면 등록할 수 없다.")
@@ -141,31 +151,29 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         새로운_구간_등록_실패됨(response);
     }
 
+    private void 지하철_노선에_등록한_구간_포함됨(ExtractableResponse<Response> response, List<String> expectedStationNames) {
+        List<StationResponse> stations = response.body().jsonPath().getList("stations", StationResponse.class);
+
+        List<String> stationNames = stations.stream()
+            .map(StationResponse::getName)
+            .collect(Collectors.toList());
+
+        assertThat(stationNames).containsAll(expectedStationNames);
+    }
+
     private void 새로운_구간_등록_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private void 새로운_하행_종점역_등록됨(ExtractableResponse<Response> response) {
+    private void 새로운_역_등록됨(ExtractableResponse<Response> response, Long stationId) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getLong("upStationId")).isEqualTo(정자역_Id);
-        assertThat(response.body().jsonPath().getLong("downStationId")).isEqualTo(광교역_Id);
-        assertThat(response.body().jsonPath().getLong("distance")).isEqualTo(5);
-    }
+        List<StationResponse> stations = response.body().jsonPath().getList("stations", StationResponse.class);
 
-    private void 새로운_상행_종점역_등록됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getLong("upStationId")).isEqualTo(강남역_Id);
-        assertThat(response.body().jsonPath().getLong("downStationId")).isEqualTo(판교역_Id);
-        assertThat(response.body().jsonPath().getLong("distance")).isEqualTo(5);
-    }
+        List<Long> stationIds = stations.stream()
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
 
-    private void 구간_사이에_등록됨(ExtractableResponse<Response> response, SectionRequest request) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getLong("upStationId")).isEqualTo(
-            request.getUpStationId());
-        assertThat(response.body().jsonPath().getLong("downStationId")).isEqualTo(
-            request.getDownStationId());
-        assertThat(response.body().jsonPath().getLong("distance")).isEqualTo(request.getDistance());
+        assertThat(stationIds).contains(stationId);
     }
 
     private ExtractableResponse<Response> 지하철_구간_등록_요청(SectionRequest request, String linePath) {

@@ -118,7 +118,7 @@ public class Section {
 
     private void changeLink(Section section) {
         if (isSameUpStation(section)) {
-            downStation = section.upStation;
+            upStation = section.downStation;
         }
 
         if (isSameDownStation(section)) {
