@@ -3,26 +3,26 @@ package nextstep.subway.line.domain;
 import static java.util.stream.Collectors.*;
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.*;
+import static nextstep.subway.common.Message.*;
+import static nextstep.subway.line.exception.AlreadyRegisteredException.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
-import nextstep.subway.common.exception.DuplicationException;
-import nextstep.subway.common.exception.ServiceException;
+import nextstep.subway.line.exception.AlreadyRegisteredException;
 import nextstep.subway.line.exception.SectionNotFoundException;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.StationNotFoundException;
 
 @Embeddable
 public class Sections {
-
-
-    public static final String MESSAGE_IS_NOT_EXISTS_STATION = "기존 노선에 해당역이 존재하지 않습니다. 상행역[%s] 하행역[%s]";
 
     @OneToMany(mappedBy = "line", fetch = LAZY, cascade = ALL)
     private List<Section> sections = new ArrayList<>();
@@ -43,17 +43,23 @@ public class Sections {
     }
 
     public void addSection(Section newSection) {
+        isNotExistsStation(newSection);
+        alreadyRegisteredSection(newSection);
+        changeUpSection(newSection);
+        changeDownSection(newSection);
+        sections.add(newSection);
+    }
 
-        if (matchStation(isDownStation(newSection))) {
-            addUpSectionOrMiddle(newSection);
-            return;
+    private void isNotExistsStation(Section newSection) {
+        if (!matchStation(section -> section.isNotStations(newSection))) {
+            throw new StationNotFoundException(MESSAGE_IS_NOT_EXISTS_STATION);
         }
+    }
 
-        if (matchStation(isUpStation(newSection))) {
-            addDownSection(newSection);
-            return;
+    void alreadyRegisteredSection(Section newSection) {
+        if (matchStation(section -> section.isStations(newSection))) {
+            throw new AlreadyRegisteredException(MESSAGE_ALREADY_REGISTERED_SECTION);
         }
-        throw new ServiceException(String.format(MESSAGE_IS_NOT_EXISTS_STATION, newSection.getUpStation(), newSection.getDownStation()));
     }
 
     private boolean matchStation(Predicate<Section> isStation) {
@@ -61,64 +67,67 @@ public class Sections {
                        .anyMatch(isStation);
     }
 
-    private Predicate<Section> isDownStation(Section newSection) {
-        return section -> section.findUpStation(newSection);
+    private void changeUpSection(Section newSection) {
+        Station upStation = newSection.getUpStation();
+        if (matchStation(isUpStation(upStation))) {
+            findSections(isUpStation(upStation))
+                .ifPresent(section -> section.changeUpSection(newSection));
+        }
     }
 
-    private void addUpSectionOrMiddle(Section newSection) {
-        Section parentStation = findSections(conditionPreviousSection(newSection));
-        parentStation.changeUpSection(newSection);
-        sections.add(newSection);
+    private Predicate<Section> isUpStation(Station upStation) {
+        return section -> section.getUpStation().equals(upStation);
     }
 
-    private Predicate<Section> conditionPreviousSection(Section newSection) {
-        return section -> section.equalsPreviousUpStation(newSection);
+    private void changeDownSection(Section newSection) {
+        Station downStation = newSection.getDownStation();
+        if (matchStation(isDownStation(downStation))) {
+            findSections(isDownStation(downStation))
+                .ifPresent(section -> section.changeDownSection(newSection));
+        }
     }
 
-
-    private Predicate<Section> isUpStation(Section newSection) {
-        return section -> section.equalsDownStation(newSection);
+    private Predicate<Section> isDownStation(Station downStation) {
+        return section -> section.getDownStation().equals(downStation);
     }
 
-    private void addDownSection(Section newSection) {
-        Section parentStation = findSections(conditionNextSection(newSection));
-        parentStation.changeDownSection(newSection);
-        sections.add(newSection);
-    }
-
-    private Predicate<Section> conditionNextSection(Section newSection) {
-        return section -> section.equalsLastStation(newSection);
-    }
-
-    private Section findSections(Predicate<Section> condition) {
-        Section findSection = sections.stream()
-                                      .filter(condition)
-                                      .findFirst()
-                                      .orElseThrow(SectionNotFoundException::new);
+    private Optional<Section> findSections(Predicate<Section> condition) {
+        Optional<Section> findSection = sections.stream()
+                                                .filter(condition)
+                                                .findFirst();
         return findSection;
     }
 
-    public boolean contains(List<Section> section) {
-        return section.contains(section);
+    public boolean contains(Section section) {
+        return sections.contains(section);
     }
 
     public List<Station> getStations() {
         Section findSection = findFirstSection();
-
         List<Station> resultStations = new ArrayList();
 
-        while (matchStation(isDownStation(findSection))) {
-            final Section section = findSection;
+        while (matchStation(isUpStation(findSection.getDownStation()))) {
             resultStations.add(findSection.getUpStation());
-            findSection = findSections(section::equalsDownStation);
+            findSection = findSections(isUpStation(findSection.getDownStation()))
+                .orElseThrow(SectionNotFoundException::new);
         }
 
         resultStations.add(findSection.getUpStation());
+        resultStations.add(findSection.getDownStation());
         return Collections.unmodifiableList(resultStations);
     }
 
     public Section findFirstSection() {
-        return findSections(SectionType::equalsFirst);
+        Section section = sections.get(0);
+        while (matchStation(isPreStation(section))) {
+            section = findSections(isPreStation(section))
+                .orElseThrow(SectionNotFoundException::new);
+        }
+        return section;
+    }
+
+    private Predicate<Section> isPreStation(Section section) {
+        return s -> s.getDownStation().equals(section.getUpStation());
     }
 
     @Override

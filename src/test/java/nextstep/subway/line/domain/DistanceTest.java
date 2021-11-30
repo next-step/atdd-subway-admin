@@ -1,9 +1,12 @@
 package nextstep.subway.line.domain;
 
+import static nextstep.subway.common.Message.*;
 import static nextstep.subway.line.domain.Distance.*;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import nextstep.subway.common.Message;
 
 class DistanceTest {
 
@@ -13,7 +16,7 @@ class DistanceTest {
         Assertions.assertThatThrownBy(() -> {
                       Distance distance = new Distance(-1);
                   }).isInstanceOf(ArithmeticException.class)
-                  .hasMessageStartingWith(String.format(MESSAGE_SECTION_DISTANCE_NOT_LESS_THAN_ZERO,"-1"));
+                  .hasMessageStartingWith(Message.format(MESSAGE_SECTION_DISTANCE_NOT_LESS_THAN_ZERO, -1));
     }
 
     /**

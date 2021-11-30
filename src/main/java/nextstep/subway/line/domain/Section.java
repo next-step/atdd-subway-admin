@@ -1,18 +1,12 @@
 package nextstep.subway.line.domain;
 
-import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.*;
-import static nextstep.subway.line.domain.SectionType.*;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -20,7 +14,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.common.exception.DuplicationException;
 import nextstep.subway.common.exception.NoResultDataException;
 import nextstep.subway.line.exception.DuplicateSectionStationException;
 import nextstep.subway.station.domain.Station;
@@ -28,23 +21,17 @@ import nextstep.subway.station.domain.Station;
 @Entity
 public class Section extends BaseEntity {
 
-    public static final String MESSAGE_ALREADY_REGISTERED_SECTION = "이미 등록되어 있는 구간입니다.";
-    public static final String MESSAGE_IS_NOT_EXISTS_STATION = "기존 노선에 해당역이 존재하지 않습니다. 상행역[%s] 하행역[%s]";
-
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = LAZY, cascade = ALL)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_line_to_station"))
     private Station upStation;
 
-    @ManyToOne(fetch = LAZY, cascade = ALL )
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_line_to_next_station"))
     private Station downStation;
-
-    @Enumerated(EnumType.STRING)
-    private SectionType sectionType;
 
     @Embedded
     private Distance distance = new Distance();
@@ -66,70 +53,34 @@ public class Section extends BaseEntity {
         this.downStation = downStation;
     }
 
-    public Section(Station upStation, Station downStation, SectionType sectionType, Distance distance) {
+    public Section(Station upStation, Station downStation, Distance distance) {
         this(upStation, downStation);
-        this.sectionType = sectionType;
         this.distance = distance;
     }
 
-    public Section(Station upStation, Station downStation, SectionType sectionType, Distance distance, Line line) {
-        this(upStation, downStation, sectionType, distance);
+    public Section(Station upStation, Station downStation, Distance distance, Line line) {
+        this(upStation, downStation, distance);
         this.line = line;
     }
 
     protected Section() {
     }
 
-    /*
-     * 기능정의
-     */
     public void setLine(Line line) {
         this.line = line;
     }
 
     public void changeUpSection(Section newSection) {
-        alreadyRegisteredSection(newSection);
-        if (isAddFirstSection(newSection))
+        if (this.upStation.getName().equals(newSection.getDownStation().getName())) {
             return;
-        addMiddleSection(newSection);
-    }
-
-    private boolean isAddFirstSection(Section newSection) {
-        if (isTypeFirstAndEqualsDownStation(newSection)) {
-            changeFirstSectionType(newSection);
-            return true;
         }
-        return false;
-    }
-
-    private boolean isTypeFirstAndEqualsDownStation(Section newSection) {
-        return SectionType.equalsFirst(sectionType) && upStation.equals(newSection.getDownStation());
+        this.upStation = newSection.getDownStation();
+        this.distance = distance.subtract(newSection.getDistance());
     }
 
     public void changeDownSection(Section newSection) {
-        alreadyRegisteredSection(newSection);
-        this.upStation = newSection.getDownStation();
-    }
-
-    private void addMiddleSection(Section newSection) {
-        downStation = newSection.getUpStation();
-        distance = distance.subtract(newSection.getDistance());
-    }
-
-    void alreadyRegisteredSection(Section section) {
-        if (getStationNames().containsAll(section.getStationNames())) {
-            throw new DuplicationException(MESSAGE_ALREADY_REGISTERED_SECTION);
-        }
-    }
-
-    // 지하철역 이름 조회
-    private List<String> getStationNames() {
-        return Arrays.asList(upStation.getName(), downStation == null ? null : downStation.getName());
-    }
-
-    private void changeFirstSectionType(Section newSection) {
-        this.sectionType = SectionType.MIDDLE;
-        newSection.sectionType = SectionType.FIRST;
+        this.downStation = newSection.getUpStation();
+        this.distance = distance.subtract(newSection.getDistance());
     }
 
     public Station getUpStation() {
@@ -144,45 +95,18 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-    public SectionType getSectionType() {
-        return sectionType;
-    }
-
     public Long getId() {
         return id;
     }
 
-    /*
-     *  비교문
-     */
-
-    // 상행
-    public boolean findUpStation(final Section newSection) {
-        return upStation.equals(newSection.getDownStation());
+    public boolean isStations(Section newSection) {
+        return (downStation.equals(newSection.getDownStation()) && upStation.equals(newSection.getUpStation()) ||
+            (downStation.equals(newSection.getUpStation()))  && upStation.equals(newSection.getDownStation()));
     }
 
-    public boolean equalsPreviousUpStation(final Section newSection) {
-        final Station downStation = newSection.getDownStation();
-
-        if (SectionType.equalsFirst(sectionType)) {
-            return true;
-        }
-
-        if (SectionType.equalsLast(sectionType)) {
-            return this.upStation.equals(downStation);
-        }
-
-        return this.downStation.equals(downStation);
-    }
-
-    // 하행
-
-    public boolean equalsLastStation(final Section newSection) {
-        return newSection.getUpStation().equals(upStation);
-    }
-
-    public boolean equalsDownStation(final Section newSection) {
-        return newSection.getUpStation().equals(downStation);
+    public boolean isNotStations(Section newSection) {
+        return (downStation.equals(newSection.getUpStation()) ||  upStation.equals(newSection.getUpStation())||
+            (downStation.equals(newSection.getDownStation()) || upStation.equals(newSection.getDownStation())));
     }
 
     @Override
@@ -192,16 +116,11 @@ public class Section extends BaseEntity {
         if (o == null || getClass() != o.getClass())
             return false;
         Section section = (Section)o;
-        return Objects.equals(id, section.id) &&
-            Objects.equals(upStation, section.upStation) &&
-            Objects.equals(downStation, section.downStation) &&
-            sectionType == section.sectionType &&
-            Objects.equals(distance, section.distance) &&
-            Objects.equals(line, section.line);
+        return Objects.equals(id, section.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, upStation, downStation, sectionType, distance, line);
+        return Objects.hash(id);
     }
 }
