@@ -263,7 +263,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return RestTestApi.post(params, path);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회(String path) {
+    public static ExtractableResponse<Response> 지하철_노선_조회(String path) {
         return RestTestApi.get(path);
     }
 

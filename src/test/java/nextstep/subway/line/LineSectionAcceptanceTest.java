@@ -162,6 +162,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에서_역_삭제됨(response);
+        지하철_노선_목록_일치함(LineAcceptanceTest.지하철_노선_조회(lineLocation), Arrays.asList("판교역", "정자역"));
     }
 
     @DisplayName("하행 종점역을 제거한다.")
@@ -175,6 +176,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에서_역_삭제됨(response);
+        지하철_노선_목록_일치함(LineAcceptanceTest.지하철_노선_조회(lineLocation), Arrays.asList("강남역", "판교역"));
     }
 
     @DisplayName("구간의 중간역을 제거한다.")
@@ -188,6 +190,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에서_역_삭제됨(response);
+        지하철_노선_목록_일치함(LineAcceptanceTest.지하철_노선_조회(lineLocation), Arrays.asList("강남역", "정자역"));
     }
 
     @DisplayName("노선에 등록되어 있지 않은 역을 제거할 수 없다.")
@@ -215,6 +218,18 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_삭제_실패(response);
+    }
+
+    private void 지하철_노선_목록_일치함(ExtractableResponse<Response> response,
+        List<String> expectedStationNames) {
+        List<StationResponse> stations = response.body().jsonPath()
+            .getList("stations", StationResponse.class);
+
+        List<String> stationNames = stations.stream()
+            .map(StationResponse::getName)
+            .collect(Collectors.toList());
+
+        assertThat(stationNames).containsAll(expectedStationNames);
     }
 
     private void 지하철_노선_삭제_실패(ExtractableResponse<Response> response) {
