@@ -40,15 +40,15 @@ class SectionTest {
         Section upStationExtend = getSection(Station.of("상행연장", "강남"), 2);
         Section downStationExtend = getSection(Station.of("판교", "하행연장"), 3);
 
-
         // when
         line.addSection(upStationExtend);
         line.addSection(downStationExtend);
-        List<Section> result = line.getSections();
+        List<Section> result = line.getSectionsInOrder();
 
         // then
         assertThat(result).hasSize(6);
-        assertThat(result).extracting("distance")
+        assertThat(result)
+                .extracting("distance")
                 .containsExactly(2, 5, 5, 5, 5, 3);
     }
 
@@ -64,12 +64,16 @@ class SectionTest {
         // when
         line.addSection(newUpSection);
         line.addSection(newDownSection);
-        List<Section> result = line.getSections();
+        List<Section> result = line.getSectionsInOrder();
 
         // then
         assertThat(result).hasSize(3);
-        assertThat(result).extracting("distance")
+        assertThat(result)
+                .extracting("distance")
                 .containsExactly(3, 2, 4);
+        assertThat(line.getStationInOrder())
+                .extracting("name")
+                .containsExactly("강남", "양재", "양재시민의숲", "청계산입구");
     }
 
     @Test
@@ -137,7 +141,7 @@ class SectionTest {
         line.addSections(sections);
 
         // then
-        assertThat(line.getStations())
+        assertThat(line.getStationInOrder())
                 .extracting("name")
                 .containsExactly("강남", "양재", "양재시민의숲", "청계산입구", "판교");
     }

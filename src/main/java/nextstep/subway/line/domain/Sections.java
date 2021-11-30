@@ -4,11 +4,9 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.CascadeType.REMOVE;
@@ -32,14 +30,14 @@ public class Sections {
             sections.add(newSection);
             return;
         }
-        connectableAdd(newSection);
+        addSection(newSection);
     }
 
-    private void connectableAdd(Section newSection) {
+    private void addSection(Section newSection) {
         Section section = sections.stream()
-                .filter(s -> s.isConnectable(newSection))
+                .filter(s -> s.isNotDuplication(newSection))
                 .findFirst()
-                .map(s -> s.connect(newSection))
+                .map(s -> s.checkAddSection(newSection))
                 .orElseThrow(() -> error(NOT_CONNECTABLE));
 
         sections.add(section);
@@ -50,38 +48,38 @@ public class Sections {
         Section orderedSection = findFirstSection();
         orderedSections.add(orderedSection);
 
-        int i = orderedSections.size();
-        while (i < sections.size()) {
-            orderedSection = findNextStation(orderedSection.getDownStation());
+        while (orderedSections.size() < sections.size()) {
+            orderedSection = findNextStation(orderedSection.getDownStationName());
             orderedSections.add(orderedSection);
-            i++;
         }
-        return orderedSections;
+
+        return Collections.unmodifiableList(orderedSections);
     }
 
     public Section findFirstSection() {
-        List<Station> downStations = getDownStations();
+        List<String> downStationIds = getDownStationNames();
 
         return sections.stream()
-                .filter(section -> !downStations.contains(section.getUpStation()))
+                .filter(section -> !downStationIds.contains(section.getUpStationName()))
                 .findFirst()
                 .orElseThrow(() -> error(NOT_FOUND_UP_TERMINUS));
     }
 
-    private Section findNextStation(Station orderedDownStation) {
+    private Section findNextStation(String downStationNames) {
         return sections.stream()
-                .filter(section -> orderedDownStation.equals(section.getUpStation()))
+                .filter(section -> Objects.equals(downStationNames, section.getUpStationName()))
                 .findFirst()
                 .orElseThrow(() -> error(BREAK_SECTION));
     }
 
-    public List<Station> getDownStations() {
+    public List<String> getDownStationNames() {
         return Collections.unmodifiableList(sections.stream()
                 .map(Section::getDownStation)
+                .map(Station::getName)
                 .collect(Collectors.toList()));
     }
 
-    public List<Section> getSections() {
+    public List<Section> getSectionsInOrder() {
         return sortSections();
     }
 }

@@ -44,7 +44,7 @@ public class Section {
         return new Section(upStation, downStation, distance);
     }
 
-    public boolean isConnectable(Section section) {
+    public boolean isNotDuplication(Section section) {
         if (isDuplicate(section)) {
             throw error(SECTION_DUPLICATION);
         }
@@ -52,7 +52,7 @@ public class Section {
         return isTerminusExtend(section) || isBetweenStations(section);
     }
 
-    public Section connect(Section section) {
+    public Section checkAddSection(Section section) {
         if (isBetweenStations(section) && distance.divisible(section)) {
             changeStationLink(section);
             distance.minus(section.getDistance());
@@ -104,5 +104,13 @@ public class Section {
 
     public Line getLine() {
         return line;
+    }
+
+    public String getUpStationName() {
+        return upStation.getName();
+    }
+
+    public String getDownStationName() {
+        return downStation.getName();
     }
 }

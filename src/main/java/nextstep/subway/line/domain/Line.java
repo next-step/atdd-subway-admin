@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -82,17 +83,19 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
-        return Collections.unmodifiableList(sections.getSections());
+    public List<Section> getSectionsInOrder() {
+        return Collections.unmodifiableList(sections.getSectionsInOrder());
     }
 
-    public List<Station> getStations() {
+    public List<Station> getStationInOrder() {
         List<Station> stations = new LinkedList<>();
-        List<Section> orderedSections = sections.getSections();
+        List<Section> orderedSections = sections.getSectionsInOrder();
         Section firstSection = orderedSections.get(0);
 
         stations.add(firstSection.getUpStation());
-        stations.addAll(sections.getDownStations());
+        stations.addAll(orderedSections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList()));
 
         return Collections.unmodifiableList(stations);
     }

@@ -5,9 +5,10 @@ import io.restassured.response.Response;
 import nextstep.subway.assured.RestAssuredApi;
 import nextstep.subway.line.dto.SectionRequest;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static nextstep.subway.line.LineScenarioMethod.지하철_노선_조회_요청;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -30,10 +31,10 @@ class SectionScenarioMethod {
         assertThat(response.statusCode()).isEqualTo(statusCode);
     }
 
-    public static Map<String, Long> 등록되지_않은_구간() {
-        HashMap<String, Long> terminus = new HashMap<>();
-        terminus.put("상행", 1L);
-        terminus.put("하행", 2L);
-        return terminus;
+    public static void 지하철_노선에_등록한_구간_포함됨(String uri, List<String> stationNames) {
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(uri);
+        response.jsonPath().getList("stations.name");
+        assertThat(response.jsonPath().getList("stations.name"))
+                .isEqualTo(stationNames);
     }
 }

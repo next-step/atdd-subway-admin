@@ -21,6 +21,7 @@ import static nextstep.subway.line.application.exception.LineNotFoundException.e
 public class LineService {
 
     public static final String NOT_FOUND_LINE = "지하철 노선을 찾을 수 없습니다.";
+
     private final LineRepository lineRepository;
     private final StationService stationService;
 
@@ -33,9 +34,8 @@ public class LineService {
     public LineCreateResponse saveLine(LineRequest request) {
         Station upStation = stationService.findById(request.getUpStationId());
         Station downStation = stationService.findById(request.getDownStationId());
-        Line line = request.toLine(upStation, downStation);
 
-        Line persistLine = lineRepository.save(line);
+        Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
         return LineCreateResponse.of(persistLine);
     }
 
@@ -49,10 +49,9 @@ public class LineService {
     }
 
     @Transactional
-    public void updateLine(Long id, LineRequest lineRequest) {
+    public void updateLine(Long id, LineRequest request) {
         Line line = findLine(id);
-        line.update(lineRequest.toLine());
-        LineResponse.of(line);
+        line.update(request.toLine());
     }
 
     @Transactional

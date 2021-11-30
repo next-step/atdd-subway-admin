@@ -9,6 +9,7 @@ import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -81,6 +82,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_구간_생성됨(response1);
         지하철_구간_생성됨(response2);
+        지하철_노선에_등록한_구간_포함됨(createdLocationUri, Arrays.asList("강남", "양재", "양재시민의숲", "청계산입구"));
     }
 
     @DisplayName("지하철 역이 등록되어 있지 않은 경우 구간 생성에 실패한다.")
