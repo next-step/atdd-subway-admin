@@ -45,16 +45,8 @@ public class Section extends BaseEntity {
         return upStation;
     }
 
-    public void setUpStation(Station upStation) {
-        this.upStation = upStation;
-    }
-
     public Station getDownStation() {
         return downStation;
-    }
-
-    public void setDownStation(Station downStation) {
-        this.downStation = downStation;
     }
 
     public Line getLine() {
@@ -65,12 +57,24 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-    public void setDistance(int distance) {
-        this.distance = distance;
-    }
-
     public static Section of(Line line, Station upStation, Station downStation, int distance) {
         return new Section(upStation, downStation, line, distance);
+    }
+
+    public void updateUpStation(Section section) {
+        if (section == null) {
+            throw new IllegalArgumentException("Section은 null일 수 없습니다.");
+        }
+        upStation = section.getDownStation();
+        distance = distance - section.getDistance();
+    }
+
+    public void updateDownStation(Section section) {
+        if (section == null) {
+            throw new IllegalArgumentException("Section은 null일 수 없습니다.");
+        }
+        downStation = section.getUpStation();
+        distance = distance - section.getDistance();
     }
 
     public boolean hasNexSection() {

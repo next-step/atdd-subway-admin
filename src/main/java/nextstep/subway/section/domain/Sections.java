@@ -71,9 +71,7 @@ public class Sections {
         if (hasMatchWithUpStation(newUpStation)) {
             Section oldSection = getOldSectionByUpStation(newUpStation);
             validateDistance(newSection, oldSection);
-
-            oldSection.setUpStation(newSection.getDownStation());
-            oldSection.setDistance(oldSection.getDistance() - newSection.getDistance());
+            oldSection.updateUpStation(newSection);
 
             sections.add(newSection);
             return true;
@@ -87,9 +85,7 @@ public class Sections {
         if (hasMatchWithDownStation(newDownStation)) {
             Section oldSection = getOldSectionByDownStation(newDownStation);
             validateDistance(newSection, oldSection);
-
-            oldSection.setDownStation(newSection.getUpStation());
-            oldSection.setDistance(oldSection.getDistance() - newSection.getDistance());
+            oldSection.updateDownStation(newSection);
 
             sections.add(newSection);
             return true;
