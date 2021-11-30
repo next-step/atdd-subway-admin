@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.exception.IllegalDistanceError;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -58,6 +59,9 @@ public class Section extends BaseEntity {
     }
 
     public void setDistance(int distance) {
+        if (distance <= 0) {
+            throw new IllegalDistanceError();
+        }
         this.distance = distance;
     }
 

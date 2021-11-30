@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.dto.SectionResponse;
+import nextstep.subway.section.exception.ExisitsSectionException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -19,18 +20,33 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section newSection) {
-        if (existsUpStation(newSection)) {
-            Section targetSection = getTargetUpSection(newSection);
-            targetSection.setUpStation(newSection.getDownStation());
-            targetSection.setDistance(targetSection.getDistance() - newSection.getDistance());
+        validateNotExistsSection(newSection);
+        addSameUpStationSection(newSection);
+        addSameDownStationSection(newSection);
+        sections.add(newSection);
+    }
+
+    private void validateNotExistsSection(Section newSection) {
+        if (sections.stream().map(Section::getUpStation).anyMatch(section -> section.equals(newSection.getUpStation()))
+        && sections.stream().map(Section::getUpStation).anyMatch(section -> section.equals(newSection.getUpStation()))) {
+            throw new ExisitsSectionException();
         }
+    }
+
+    private void addSameDownStationSection(Section newSection) {
         if (existsDownStation(newSection)) {
             Section targetSection = getTargetDownSection(newSection);
             targetSection.setUpStation(newSection.getDownStation());
             targetSection.setDistance(targetSection.getDistance() - newSection.getDistance());
         }
-        sections.add(newSection);
+    }
 
+    private void addSameUpStationSection(Section newSection) {
+        if (existsUpStation(newSection)) {
+            Section targetSection = getTargetUpSection(newSection);
+            targetSection.setUpStation(newSection.getDownStation());
+            targetSection.setDistance(targetSection.getDistance() - newSection.getDistance());
+        }
     }
 
     private Section getTargetDownSection(Section newSection) {

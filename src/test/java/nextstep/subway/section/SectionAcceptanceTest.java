@@ -107,6 +107,94 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(sectionDistances).containsAll(Arrays.asList(3, 7));
     }
 
+    @DisplayName("새로운 역을 상행 종점으로 등록한다.")
+    @Test
+    void 새로운_역을_상행_종점으로_등록한다() {
+        // when
+        // 지하철_노선에_구간_등록_요청
+        createParams = new HashMap<>();
+        createParams.put("upStationId", 양재역.getId() + "");
+        createParams.put("downStationId", 강남역.getId() + "");
+        createParams.put("distance", 7 + "");
+
+        ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
+
+        ExtractableResponse<Response> sectionsResponse = requestReadSections("/lines/" + 신분당선.getId() + "/sections");
+        List<Integer> sectionDistances = getSection(sectionsResponse);
+
+        // then 구간 길이별로 나눠짐
+        assertResponseStatusAndLocation(response);
+        assertThat(sectionDistances).containsAll(Arrays.asList(10, 7));
+    }
+
+    @DisplayName("새로운 역을 하행 종점으로 등록한다.")
+    @Test
+    void 새로운_역을_하행_종점으로_등록한다() {
+        // when
+        // 지하철_노선에_구간_등록_요청
+        createParams = new HashMap<>();
+        createParams.put("upStationId", 광교역.getId() + "");
+        createParams.put("downStationId", 양재역.getId() + "");
+        createParams.put("distance", 7 + "");
+
+        ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
+
+        ExtractableResponse<Response> sectionsResponse = requestReadSections("/lines/" + 신분당선.getId() + "/sections");
+        List<Integer> sectionDistances = getSection(sectionsResponse);
+
+        // then 구간 길이별로 나눠짐
+        assertResponseStatusAndLocation(response);
+        assertThat(sectionDistances).containsAll(Arrays.asList(10, 7));
+    }
+
+    @DisplayName("새로운 구간의 길이가 기존 구간 사이 길이보다 크거나 같다")
+    @Test
+    void 새로운_구간의_길이가_기존_구간_사이_길이보다_크거나_같다() {
+        // when
+        // 지하철_노선에_구간_등록_요청
+        createParams = new HashMap<>();
+        createParams.put("upStationId", 강남역.getId() + "");
+        createParams.put("downStationId", 판교역.getId() + "");
+        createParams.put("distance", 10 + "");
+
+        ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("새로운 구간의 상행/하행역 모두 기존에 존재한다.")
+    @Test
+    void 새로운_구간의_상행하행역_모두_기존에_존재한다() {
+        // when
+        // 지하철_노선에_구간_등록_요청
+        createParams = new HashMap<>();
+        createParams.put("upStationId", 강남역.getId() + "");
+        createParams.put("downStationId", 광교역.getId() + "");
+        createParams.put("distance", 8 + "");
+
+        ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("새로운 구간의 상행/하행역 모두 기존에 부재한다.")
+    @Test
+    void 새로운_구간의_상행하행역_모두_기존에_부재한다() {
+        // when
+        // 지하철_노선에_구간_등록_요청
+        createParams = new HashMap<>();
+        createParams.put("upStationId", 판교역.getId() + "");
+        createParams.put("downStationId", 양재역.getId() + "");
+        createParams.put("distance", 8 + "");
+
+        ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
     public static ExtractableResponse<Response> requestSectionCreation(Long id, Map<String, String> params) {
         return RestAssured.given().log().all()
                 .body(params)
