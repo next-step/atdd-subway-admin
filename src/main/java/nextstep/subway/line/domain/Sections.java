@@ -162,7 +162,7 @@ public class Sections {
         return sections.stream()
                 .filter(section -> !downStations.contains(section.getUpStation()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("연결되지 않는 구간 목록입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("첫 구간이 없습니다."));
     }
     
     private Section getNextSection(Station downStation) {
