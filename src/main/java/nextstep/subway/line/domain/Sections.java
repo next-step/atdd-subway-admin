@@ -72,6 +72,11 @@ public class Sections {
             mergeSection(targetStation);
             return;
         }
+
+        sections.stream()
+            .filter(section -> section.hasSameStation(targetStation))
+            .findFirst()
+            .ifPresent(section -> sections.remove(section));
     }
 
     private void mergeSection(Station targetStation) {
