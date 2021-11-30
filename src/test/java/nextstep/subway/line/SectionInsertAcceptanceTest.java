@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("구간 관련 기능")
-public class SectionAcceptanceTest extends AcceptanceTest {
+@DisplayName("구간 추가 기능")
+public class SectionInsertAcceptanceTest extends AcceptanceTest {
 
     private StationResponse 강남역;
     private StationResponse 잠실역;
@@ -47,7 +47,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 노선 구간 등록 요청
-        ExtractableResponse<Response> response = SectionApiRequests.지하철_노선_구간_등록_요청(서울2호선, sectionRequest);
+        ExtractableResponse<Response> response = SectionApiRequests.지하철_구간_등록_요청(서울2호선, sectionRequest);
 
         // then
         // 노선에 구간 등록됨.
@@ -67,7 +67,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 노선 구간 등록 요청
-        ExtractableResponse<Response> response = SectionApiRequests.지하철_노선_구간_등록_요청(서울2호선, sectionRequest);
+        ExtractableResponse<Response> response = SectionApiRequests.지하철_구간_등록_요청(서울2호선, sectionRequest);
 
         // then
         // 노선에 구간 등록됨.
@@ -87,7 +87,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 노선 구간 등록 요청
-        ExtractableResponse<Response> response = SectionApiRequests.지하철_노선_구간_등록_요청(서울2호선, sectionRequest);
+        ExtractableResponse<Response> response = SectionApiRequests.지하철_구간_등록_요청(서울2호선, sectionRequest);
 
         // then
         // 노선에 구간 등록됨.
@@ -106,7 +106,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 노선 구간 등록 요청
-        ExtractableResponse<Response> response = SectionApiRequests.지하철_노선_구간_등록_요청(서울2호선, sectionRequest);
+        ExtractableResponse<Response> response = SectionApiRequests.지하철_구간_등록_요청(서울2호선, sectionRequest);
 
         // then
         // 노선에 구간 등록됨.
@@ -123,7 +123,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 노선 구간 등록 요청
-        ExtractableResponse<Response> response = SectionApiRequests.지하철_노선_구간_등록_요청(서울2호선, sectionRequest);
+        ExtractableResponse<Response> response = SectionApiRequests.지하철_구간_등록_요청(서울2호선, sectionRequest);
 
         // then
         // 노선에 구간 등록됨.
@@ -142,11 +142,41 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 노선 구간 등록 요청
-        ExtractableResponse<Response> response = SectionApiRequests.지하철_노선_구간_등록_요청(서울2호선, sectionRequest);
+        ExtractableResponse<Response> response = SectionApiRequests.지하철_구간_등록_요청(서울2호선, sectionRequest);
 
         // then
         // 노선에 구간 등록됨.
         지하철_노선_구간_실패함(response,"상행역과 하행역 둘중 하나는 노선에 등록되어 있어야 합니다.");
+    }
+
+    @DisplayName("두개의 연속된 구간에서 중간역을 제거하면 남은 두 역을 새로운 구간으로 한다.")
+    @Test
+    void deleteInnerStation() {
+
+    }
+
+    @DisplayName("두개의 연속된 구간의 상행 종점역을 제거하면 하나의 구간만 남는다.")
+    @Test
+    void deleteUpStation() {
+
+    }
+
+    @DisplayName("두개의 연속된 구간의 하행 종점역을 제거하면 하나의 구간만 남는다.")
+    @Test
+    void deleteDownStation() {
+
+    }
+
+    @DisplayName("노선에 없는 역을 제거한다")
+    @Test
+    void deleteNotExistsStation() {
+
+    }
+
+    @DisplayName("구간이 하나인 노선에서 역을 제거한다")
+    @Test
+    void deleteStationInOnlyOneSection() {
+
     }
 
     private void 지하철_노선_구간_실패함(ExtractableResponse<Response> response, String message) {
