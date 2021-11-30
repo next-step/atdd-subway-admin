@@ -1,9 +1,10 @@
-package nextstep.subway.line.dto;
+package nextstep.subway.line;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.domain.Distance;
+import nextstep.subway.line.dto.SectionRequest;
 import org.springframework.http.MediaType;
 
 public class LineSectionAcceptanceTestRequest {
