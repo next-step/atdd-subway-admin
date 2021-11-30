@@ -39,4 +39,16 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
     }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
 }
