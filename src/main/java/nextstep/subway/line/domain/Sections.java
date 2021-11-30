@@ -46,10 +46,6 @@ public class Sections {
         return sections.size();
     }
     
-    int getDistanceAt(int index) {
-        return getSections().get(index).getDistance(); 
-    }
-    
     Section getSectionAt(int index) {
         return getSections().get(index); 
     }
@@ -92,7 +88,6 @@ public class Sections {
     
     private boolean addIfSameUpStations(Section oldSection, Section newSection, int index) {
         if (newSection.isSameUpStation(oldSection.getUpStation())) {
-            newSection.checkShorter(oldSection.getDistance());
             oldSection.moveUpStationTo(newSection.getDownStation(), newSection.getDistance());
             sections.add(index, newSection);
             return true;
@@ -102,7 +97,6 @@ public class Sections {
     
     private boolean addIfSameDownStations(Section oldSection, Section newSection, int index) {
         if (newSection.isSameDownStation(oldSection.getDownStation())) {
-            newSection.checkShorter(oldSection.getDistance());
             oldSection.moveDownStationTo(newSection.getUpStation(), newSection.getDistance());
             sections.add(index+1, newSection);
             return true;

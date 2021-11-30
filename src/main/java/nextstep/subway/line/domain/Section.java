@@ -1,5 +1,8 @@
 package nextstep.subway.line.domain;
 
+import java.util.Objects;
+
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -10,8 +13,6 @@ import javax.persistence.ManyToOne;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
-
-import java.util.Objects;
 
 @Entity
 public class Section extends BaseEntity {
@@ -32,7 +33,8 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
     
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
@@ -41,7 +43,7 @@ public class Section extends BaseEntity {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = Distance.from(distance);
     }
     
     public static Section of(Line line, Station upStation, Station downStation, int distance) {
@@ -60,14 +62,8 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public int getDistance() {
+    public Distance getDistance() {
         return distance;
-    }
-    
-    public void checkShorter(int distance) {
-        if (this.distance >= distance) {
-            throw new IllegalArgumentException(String.format("길이가 맞지 않는 노선입니다.(%d)", this.distance));
-        }
     }
 
     public boolean isSameUpStation(Station station) {
@@ -78,14 +74,14 @@ public class Section extends BaseEntity {
         return this.downStation.equals(station);
     }
 
-    public void moveUpStationTo(Station station, int distance) {
+    public void moveUpStationTo(Station station, Distance distance) {
         this.upStation = station;
-        this.distance -= distance;
+        this.distance = this.distance.move(distance);
     }
 
-    public void moveDownStationTo(Station station, int distance) {
+    public void moveDownStationTo(Station station, Distance distance) {
         this.downStation = station;
-        this.distance -= distance;
+        this.distance = this.distance.move(distance);
     }
     
 
