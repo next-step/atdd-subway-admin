@@ -58,19 +58,6 @@ public class Line extends BaseEntity {
         return sections;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Line line = (Line) o;
-        return Objects.equals(id, line.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
         stations.add(sections.stream()
@@ -83,5 +70,18 @@ public class Line extends BaseEntity {
                 .collect(Collectors.toList()));
 
         return stations;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Line line = (Line) o;
+        return Objects.equals(id, line.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
