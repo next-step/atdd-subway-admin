@@ -36,39 +36,6 @@ public class Sections {
         return orderedSections;
     }
 
-    private boolean hasSection(Section foundSection) {
-        return Optional.ofNullable(foundSection).isPresent();
-    }
-
-    private boolean isEmpty(Section foundSection) {
-        return Objects.isNull(foundSection);
-    }
-
-    public List<Station> getOrderedStation() {
-        return getOrderedSection().stream()
-                .map(Section::getStations)
-                .flatMap(Collection::stream)
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
-    private Section findNextSection(Section section) {
-        return this.sections.stream()
-                .filter(it -> it.getUpStation() == section.getDownStation())
-                .findFirst()
-                .orElse(null);
-    }
-
-    private Section findFirstSection() {
-        Station firstStation = findFirstStation();
-        return this.sections.stream()
-                .filter(it -> it.getUpStation() == firstStation)
-                .findFirst()
-                .orElseThrow(
-                        () -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_SECTION)
-                );
-    }
-
     public Station findFirstStation() {
         List<Station> upStations = getUpStations();
         List<Station> downStations = getDownStations();
@@ -93,6 +60,86 @@ public class Sections {
                 );
     }
 
+    public List<Station> getOrderedStation() {
+        return getOrderedSection().stream()
+                .map(Section::getStations)
+                .flatMap(Collection::stream)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public void updateSection(Section newSection) {
+        checkValidSection(newSection);
+        addSection(newSection);
+    }
+
+    public void removeStation(Station station) {
+        if(isEndStation(station)){
+            Section section = findSection(station);
+            this.sections.remove(section);
+            return;
+        }
+
+        if (!isEndStation(station)) {
+            Section foundSectionByDownStation = this.sections.stream()
+                    .filter(it -> it.getDownStation() == station)
+                    .findFirst()
+                    .get();
+
+            Section foundSectionByUpStation = this.sections.stream()
+                    .filter(it -> it.getUpStation() == station)
+                    .findFirst()
+                    .get();
+            Distance newDistance = foundSectionByDownStation.getDistance().sum(foundSectionByUpStation.getDistance());
+            Section changeSection = new Section(foundSectionByUpStation.getLine(),
+                    foundSectionByDownStation.getUpStation(), foundSectionByUpStation.getDownStation(), newDistance);
+            this.sections.add(changeSection);
+            this.sections.removeAll(Arrays.asList(foundSectionByUpStation, foundSectionByDownStation));
+        }
+    }
+
+    public void addSection(Section newSection) {
+        for (Section section : sections) {
+            section.addInnerSection(newSection);
+        }
+        sections.add(newSection);
+    }
+
+    public List<Section> getSections() {
+        return sections;
+    }
+
+    private boolean hasSection(Section foundSection) {
+        return Optional.ofNullable(foundSection).isPresent();
+    }
+
+    private Section findNextSection(Section section) {
+        return this.sections.stream()
+                .filter(it -> it.getUpStation() == section.getDownStation())
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Section findFirstSection() {
+        Station firstStation = findFirstStation();
+        return this.sections.stream()
+                .filter(it -> it.getUpStation() == firstStation)
+                .findFirst()
+                .orElseThrow(
+                        () -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_SECTION)
+                );
+    }
+
+    private Section findLastSection() {
+        Station lastStation = findLastStation();
+        return this.sections.stream()
+                .filter(it -> it.getDownStation() == lastStation)
+                .findFirst()
+                .orElseThrow(
+                        () -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_SECTION)
+                );
+    }
+
     private boolean hasStation(Station station, List<Station> stations) {
         return stations.contains(station);
     }
@@ -107,18 +154,6 @@ public class Sections {
         return this.getSections().stream()
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
-    }
-
-    public void updateSection(Section newSection) {
-        checkValidSection(newSection);
-        addSection(newSection);
-    }
-
-    public void addSection(Section newSection) {
-        for (Section section : sections) {
-            section.addInnerSection(newSection);
-        }
-        sections.add(newSection);
     }
 
     private void checkValidSection(Section section) {
@@ -158,31 +193,17 @@ public class Sections {
         return it.equals(section);
     }
 
-    public List<Section> getSections() {
-        return sections;
+    private Section findSection(Station station) {
+        return this.sections.stream()
+                .filter(it -> hasSameStationInSection(station, it))
+                .findFirst()
+                .orElseThrow(
+                        () -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_SECTION)
+                );
     }
 
-    public void removeStation(Station station) {
-        if(isEndStation(station)){
-            this.sections.remove(station);
-        }
-
-        if (!isEndStation(station)) {
-            Section foundSectionByDownStation = this.sections.stream()
-                    .filter(it -> it.getDownStation() == station)
-                    .findFirst()
-                    .get();
-
-            Section foundSectionByUpStation = this.sections.stream()
-                    .filter(it -> it.getUpStation() == station)
-                    .findFirst()
-                    .get();
-            Distance newDistance = foundSectionByDownStation.getDistance().sum(foundSectionByUpStation.getDistance());
-            Section changeSection = new Section(foundSectionByUpStation.getLine(),
-                    foundSectionByDownStation.getUpStation(), foundSectionByUpStation.getDownStation(), newDistance);
-            this.sections.add(changeSection);
-            this.sections.removeAll(Arrays.asList(foundSectionByUpStation, foundSectionByDownStation));
-        }
+    private boolean hasSameStationInSection(Station station, Section it) {
+        return it.getUpStation().equals(station) || it.getDownStation().equals(station);
     }
 
     private boolean isEndStation(Station station) {

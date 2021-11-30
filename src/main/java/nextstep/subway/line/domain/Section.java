@@ -86,6 +86,10 @@ public class Section extends BaseEntity  {
         }
     }
 
+    public int getDistanceNumber(){
+        return this.distance.getDistance();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

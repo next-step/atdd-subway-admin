@@ -44,8 +44,8 @@ public class LineTest {
 
         line.removeStation(chungJeoungRoStation);
 
-        assertThat(line.getStations().size()).isEqualTo(4);
-        checkValidateStationName(line, "당산역", "이대역", "홍대입구역", "충정로역");
+        assertThat(line.getStations().size()).isEqualTo(3);
+        checkValidateStationName(line, "당산역", "이대역", "홍대입구역");
     }
 
     @Test
@@ -70,10 +70,41 @@ public class LineTest {
         checkValidateStationName(line,  "이대역", "홍대입구역", "충정로역");
     }
 
+    @Test
+    @DisplayName("구간 제거 테스트- 중간역 제거")
+    void removeMiddleStationInLineTest() {
+        Station dangSanStation = new Station("당산역");
+        Station hongDaeStation = new Station("홍대입구역");
+        Station chungJeoungRoStation = new Station("충정로역");
+        Station ehwaStation = new Station("이대역");
+
+        Line line = new Line("2호선", "green", dangSanStation, hongDaeStation, new Distance(10));
+
+        Section newChungJeongRoSection = new Section(line, hongDaeStation, chungJeoungRoStation, new Distance(5));
+        line.addSection(newChungJeongRoSection);
+
+        Section newEwhaSection = new Section(line, ehwaStation, hongDaeStation, new Distance(2));
+        line.addSection(newEwhaSection);
+
+        line.removeStation(ehwaStation);
+
+        assertThat(line.getStations().size()).isEqualTo(3);
+        checkValidateStationName(line,  "당산역", "홍대입구역", "충정로역");
+        checkValidateDistance(line, dangSanStation, hongDaeStation, new Distance(5));
+
+
+    }
+
     private void checkValidateStationName(Line line, String... stationNames) {
-        assertThat(line.getStations().stream()
+        assertThat(line.getOrderedSections().stream()
                 .map(it -> it.getName())
                 .distinct())
-                .contains(stationNames);
+                .containsExactly(stationNames);
+    }
+
+    private void checkValidateDistance(Line line, Station upStation, Station downStation, Distance distance) {
+        Section foundSection = line.findSection(upStation, downStation);
+        assertThat(foundSection.getDistanceNumber()).isEqualTo(distance.getDistance());
+
     }
 }

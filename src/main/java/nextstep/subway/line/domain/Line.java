@@ -83,4 +83,15 @@ public class Line extends BaseEntity {
     public Station getLastStation(){
         return this.sections().findLastStation();
     }
+
+    public Section findSection(Station upStation, Station downStation) {
+        return this.getSections().stream()
+                .filter(it -> isSameSection(upStation, downStation, it))
+                .findFirst()
+                .get();
+    }
+
+    private boolean isSameSection(Station upStation, Station downStation, Section it) {
+        return it.getUpStation() == upStation && it.getDownStation() == downStation;
+    }
 }
