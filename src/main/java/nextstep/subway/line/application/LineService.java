@@ -61,4 +61,8 @@ public class LineService {
     public Line findByIdOrElseThrow(Long lineId) {
         return lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("해당 ID의 노선이 존재하지 않습니다"));
     }
+
+    public void save(Line line) {
+        lineRepository.save(line);
+    }
 }

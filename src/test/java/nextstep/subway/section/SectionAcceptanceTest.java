@@ -6,8 +6,8 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.LineAcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.StationAcceptanceTest;
-import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,8 +15,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,7 +56,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선에_구간_등록_요청
         createParams = new HashMap<>();
-        createParams.put("downStationId", 양재역.getId() + "");
+        createParams.put("downStationId", 강남역.getId() + "");
         createParams.put("upStationId", 판교역.getId() + "");
         createParams.put("distance", 8 + "");
 
@@ -62,6 +65,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선에_구간_등록됨
         assertResponseStatusAndLocation(response);
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록한다.")
+    @Test
+    void 역_사이에_새로운_역을_등록한다() {
+        // when
+        // 지하철_노선에_구간_등록_요청
+        createParams = new HashMap<>();
+        createParams.put("upStationId", 강남역.getId() + "");
+        createParams.put("downStationId", 판교역.getId() + "");
+        createParams.put("distance", 8 + "");
+
+        ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
+
+        ExtractableResponse<Response> sectionsResponse = requestReadSections("/lines/" + 신분당선.getId() + "/sections");
+        List<Integer> sectionDistances = getSection(sectionsResponse);
+
+        // then 구간 길이별로 나눠짐
+        assertResponseStatusAndLocation(response);
+        assertThat(sectionDistances).containsAll(Arrays.asList(2, 8));
     }
 
     public static ExtractableResponse<Response> requestSectionCreation(Long id, Map<String, String> params) {
@@ -77,5 +100,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private void assertResponseStatusAndLocation(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+    }
+
+    private ExtractableResponse<Response> requestReadSections(String uri) {
+        return RestAssured.given().log().all()
+                .when()
+                .get(uri)
+                .then().log().all()
+                .extract();
+    }
+
+    private List<Integer> getSection(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(".", SectionResponse.class).stream()
+                .map(SectionResponse::getDistance)
+                .collect(Collectors.toList());
     }
 }

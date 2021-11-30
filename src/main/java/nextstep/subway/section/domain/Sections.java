@@ -1,5 +1,7 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -16,8 +18,21 @@ public class Sections {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "line")
     private List<Section> sections = new ArrayList<>();
 
-    public void add(Section section) {
-        sections.add(section);
+    public void add(Section newSection) {
+        if (sections.stream()
+                .map(Section::getUpStation)
+                .anyMatch(station -> station == newSection.getUpStation())) {
+            Section targetSection = sections.stream()
+                    .filter(section -> section
+                            .getUpStation() == newSection
+                            .getUpStation())
+                    .findFirst()
+                    .orElseThrow(RuntimeException::new);
+            targetSection.setUpStation(newSection.getDownStation());
+            targetSection.setDistance(targetSection.getDistance() - newSection.getDistance());
+        }
+        sections.add(newSection);
+
     }
 
     public List<Station> getStations() {
@@ -63,5 +78,21 @@ public class Sections {
         upStations.removeAll(downStations);
 
         return upStations.get(0);
+    }
+
+    public List<SectionResponse> getSectionsResponses() {
+        return sections.stream().map(SectionResponse::of).collect(Collectors.toList());
+    }
+
+    public Sections(List<Section> sections) {
+        this.sections = sections;
+    }
+
+    public Sections() {
+    }
+
+    public void addAndSetLine(Section section, Line line) {
+        sections.add(section);
+        section.setLine(line);
     }
 }
