@@ -176,4 +176,25 @@ class SectionsTest {
         Assertions.assertThat(actual).contains(Section.of(신분당선, 강남역, 양재역, 10));
         Assertions.assertThat(actual).contains(Section.of(신분당선, 양재역, 양재시민의숲, 10));
     }
+
+    @Test
+    @DisplayName("새로운 구간을 하행 종점으로 추가한다. 강남역 -(10m)- 양재역 => 강남역 -(10m)- 양재역 -(10m)- 양재시민의숲")
+    void 새로운_구간을_하행_종점으로_추가한다() {
+        // given
+        Station 강남역 = stationRepository.save(Station.from("강남역"));
+        Station 양재역 = stationRepository.save(Station.from("양재역"));
+        Station 양재시민의숲 = stationRepository.save(Station.from("양재시민의숲"));
+
+        Line 신분당선 = lineRepository.save(Line.of("신분당선", "red", 강남역, 양재역, 10));
+        신분당선.addSection(양재역, 양재시민의숲, 10);
+        Sections sections = 신분당선.getSections();
+
+        // when
+        List<Section> actual = sections.getOrderedSections();
+
+        //then
+        Assertions.assertThat(actual).hasSize(2);
+        Assertions.assertThat(actual).contains(Section.of(신분당선, 강남역, 양재역, 10));
+        Assertions.assertThat(actual).contains(Section.of(신분당선, 양재역, 양재시민의숲, 10));
+    }
 }

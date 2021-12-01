@@ -143,4 +143,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선_목록_응답됨(지하철_노선_목록_조회_요청_응답);
     }
+
+    @Test
+    @DisplayName("새로운_구간을_하행_종점으로_추가한다. 강남역 -(10m)- 양재역 => 강남역 -(10m)- 양재역 -(10m)- 양재시민의숲")
+    void 새로운_구간을_하행_종점으로_추가한다() {
+        // given
+        ExtractableResponse<Response> 지하철_노선_생성_요청_응답 = 생성_요청(LINE_ROOT_PATH, 신분당선_강남역_양재역);
+        Long 신분당선_ID = 지하철_노선_ID_추출(지하철_노선_생성_요청_응답);
+
+        SectionRequest 강남역_양재시민의숲 = 종점역정보_파라미터_생성(양재역.getId(), 양재시민의숲.getId(), 10);
+        생성_요청(LINE_ROOT_PATH + 신분당선_ID + LINE_ADD_SECTIONS_PATH, 강남역_양재시민의숲);
+
+        // when
+        ExtractableResponse<Response> 지하철_노선_목록_조회_요청_응답 = 조회_요청(LINE_ROOT_PATH);
+
+        // then
+        지하철_노선_목록_응답됨(지하철_노선_목록_조회_요청_응답);
+    }
 }
