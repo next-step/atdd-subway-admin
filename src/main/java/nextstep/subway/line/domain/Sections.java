@@ -40,7 +40,7 @@ public class Sections {
 	}
 
 	public void add(Section section) {
-		validateStationContainAllOrNot(section);
+		validateStationsContainAllOrNot(section);
 		if (ifStartLocation(section.getDownStation())) {
 			addSectionStartLocation(section);
 			return;
@@ -52,7 +52,7 @@ public class Sections {
 		addSectionMiddleLocation(section);
 	}
 
-	private void validateStationContainAllOrNot(Section section) {
+	private void validateStationsContainAllOrNot(Section section) {
 		if (allContain(section)) {
 			throw new IllegalArgumentException("노선에 이미 전부 존재하는 역들입니다.");
 		}
@@ -60,6 +60,16 @@ public class Sections {
 		if (notContain(section)) {
 			throw new IllegalArgumentException("노선의 구간 내 일치하는 역이 없습니다.");
 		}
+	}
+
+	private boolean allContain(Section section) {
+		return getAllStationsBySections()
+			.containsAll(Arrays.asList(section.getUpStation(), section.getDownStation()));
+	}
+
+	private boolean notContain(Section section) {
+		return getAllStationsBySections().stream()
+			.noneMatch(s -> s.equals(section.getUpStation()) || s.equals(section.getDownStation()));
 	}
 
 	private void addSectionMiddleLocation(Section section) {
@@ -126,27 +136,30 @@ public class Sections {
 		updateSectionsSequence();
 	}
 
-	public boolean allContain(Section section) {
-		return getAllStationsBySections()
-			.containsAll(Arrays.asList(section.getUpStation(), section.getDownStation()));
-	}
-
-	public boolean notContain(Section section) {
-		return getAllStationsBySections().stream()
-			.noneMatch(s -> s.equals(section.getUpStation()) || s.equals(section.getDownStation()));
-	}
 
 	public void deleteStation(Station station) {
+		validateSectionsSize();
+		validateStationNotContain(station);
 		if (ifStartLocation(station)) {
 			deleteSectionContainingStartLocation();
-			return;
 		}
 
 		if (ifEndLocation(station)) {
 			deleteSectionContainingEndLocation();
-			return;
 		}
 		deleteSectionContainingMiddleLocation(station);
+	}
+
+	private void validateStationNotContain(Station station) {
+		if (!getAllStationsBySections().contains(station)) {
+			throw new IllegalArgumentException("노선 내 역이 존재하지 않습니다.");
+		}
+	}
+
+	private void validateSectionsSize() {
+		if (sections.size() == 1) {
+			throw new IllegalArgumentException("노선 내 남은 지하철역이 2개 이상이여야 삭제 가능합니다.");
+		}
 	}
 
 	private void deleteSectionContainingMiddleLocation(Station station) {

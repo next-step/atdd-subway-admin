@@ -71,4 +71,10 @@ public class LineService {
 		return lineRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
 	}
+
+	public void deleteStationByIdInLine(Long lineId, Long stationId) {
+		Line line = findLineById(lineId);
+		Station station = stationService.findStationById(stationId);
+		line.deleteStationInSections(station);
+	}
 }
