@@ -7,14 +7,13 @@ import org.junit.jupiter.api.Test;
 
 import nextstep.subway.station.domain.Station;
 
-class SectionTest
-{
+class SectionTest {
 	@Test
 	@DisplayName("Section 생성 테스트")
 	public void sectionCreateTest() {
 		//given
 		//when
-		Section section = Section.create(new Station("강남역"), new Station("선릉역"));
+		Section section = Section.create(new Station("강남역"), new Station("선릉역"), 13);
 		//then
 		assertThat(section).isNotNull();
 	}
@@ -24,7 +23,7 @@ class SectionTest
 	public void sectionTest() {
 		//given
 		//when
-		Section section = Section.create(new Station("강남역"), new Station("선릉역"));
+		Section section = Section.create(new Station("강남역"), new Station("선릉역"), 16);
 		//then
 		assertThat(section).isNotNull();
 	}

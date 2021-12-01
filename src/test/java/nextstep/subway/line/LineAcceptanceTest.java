@@ -6,9 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -18,20 +17,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-
+	private static final String LINE_ROOT_PATH = "/lines";
+	private static final String STATION_ROOT_PATH = "/stations";
 	private static LineRequest params = new LineRequest("신분당선", "pink", 1L, 2L, 10);
 	private static LineRequest otherParams = new LineRequest("1호선", "blue", 3L, 4L, 8);
 
 	@BeforeEach
 	public void createStation() {
-		requestCreateStation(new StationRequest("양재역"));
-		requestCreateStation(new StationRequest("판교역"));
-		requestCreateStation(new StationRequest("두정역"));
-		requestCreateStation(new StationRequest("천안역"));
+		post(STATION_ROOT_PATH, new StationRequest("양재역"));
+		post(STATION_ROOT_PATH, new StationRequest("판교역"));
+		post(STATION_ROOT_PATH, new StationRequest("두정역"));
+		post(STATION_ROOT_PATH, new StationRequest("천안역"));
 	}
 
 	@DisplayName("지하철 노선을 생성한다.")
@@ -40,7 +39,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// given
 		// when
 		// 지하철_노선_생성_요청
-		Response response = requestCreateLines(params);
+		ExtractableResponse<Response> response = post(LINE_ROOT_PATH, params);
+		// Response response = requestCreateLines(params);
 
 		// then
 		// 지하철_노선_생성됨
@@ -53,11 +53,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void createDuplicateLineFail() {
 		// given
 		// 지하철_노선_등록되어_있음
-		requestCreateLines(params);
+		post(LINE_ROOT_PATH, params);
 
 		// when
 		// 지하철_노선_중복생성_요청
-		Response response = requestCreateLines(params);
+		ExtractableResponse<Response> response = post(LINE_ROOT_PATH, params);
 
 		// then
 		// 지하철_노선_생성_실패됨
@@ -73,7 +73,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		// when
 		// 노선 생성 요청
-		Response response = requestCreateLines(params);
+		ExtractableResponse<Response> response = post(LINE_ROOT_PATH, params);
 
 		// then
 		// 노선 생성 실패
@@ -86,12 +86,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// given
 		// 지하철_노선_등록되어_있음
 		// 지하철_노선_등록되어_있음
-		Response createResponse = requestCreateLines(params);
-		Response otherCreateResponse = requestCreateLines(otherParams);
+		ExtractableResponse<Response> createResponse = post(LINE_ROOT_PATH, params);
+		ExtractableResponse<Response> otherCreateResponse = post(LINE_ROOT_PATH, otherParams);
 
 		// when
 		// 지하철_노선_목록_조회_요청
-		Response findResponse = requestFindAllLines();
+		ExtractableResponse<Response> findResponse = get(LINE_ROOT_PATH);
 
 		// then
 		// 지하철_노선_목록_응답됨
@@ -102,7 +102,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.collect(Collectors.toList());
 
 		List<Long> createIds = Arrays.asList(createResponse, otherCreateResponse).stream()
-			.map(res -> Long.parseLong(res.getHeader("Location").split("/")[2]))
+			.map(res -> Long.parseLong(res.header("Location").split("/")[2]))
 			.collect(Collectors.toList());
 
 		assertThat(findIds).containsAll(createIds);
@@ -113,12 +113,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void getLineSuccess() {
 		// given
 		// 지하철_노선_등록되어_있음
-		Response createResponse = requestCreateLines(params);
+		ExtractableResponse<Response> createResponse = post(LINE_ROOT_PATH, params);
 		String url = extractUrlByResponse(createResponse);
 
 		// when
 		// 지하철_노선_조회_요청
-		Response findResponse = requestFindLine(url);
+		ExtractableResponse<Response> findResponse = get(url);
 
 		// then
 		// 지하철_노선_응답됨
@@ -130,12 +130,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void getLineAndSectionSuccess() {
 		// given
 		// 지하철_노선_등록
-		Response createResponse = requestCreateLines(params);
+		ExtractableResponse<Response> createResponse = post(LINE_ROOT_PATH, params);
 		String url = extractUrlByResponse(createResponse);
 
 		// when
 		// 지하철_노선_조회_요청
-		Response findResponse = requestFindLine(url);
+		ExtractableResponse<Response> findResponse = get(url);
 
 		// then
 		// 노선 내 지하철 역 확인
@@ -148,11 +148,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void getLineFail() {
 		// given
 		// 지하철_노선_등록되어_있음
-		requestCreateLines(params);
+		post(LINE_ROOT_PATH, params);
 
 		// when
 		// 지하철_노선_조회_요청
-		Response findResponse = requestFindLine("/lines/3");
+		ExtractableResponse<Response> findResponse = get("/lines/3");
 
 		// then
 		// 지하철_노선_응답됨
@@ -164,12 +164,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void updateLineSuccess() {
 		// given
 		// 지하철_노선_등록되어_있음
-		Response createResponse = requestCreateLines(params);
+		ExtractableResponse<Response> createResponse = post(LINE_ROOT_PATH, params);
 		String url = extractUrlByResponse(createResponse);
 
 		// when
 		// 지하철_노선_수정_요청
-		Response updateResponse = requestUpdateLine(url, otherParams);
+		ExtractableResponse updateResponse = patch(url, otherParams);
 
 		// then
 		// 지하철_노선_수정됨
@@ -183,12 +183,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void updateLineFail() {
 		// given
 		// 지하철_노선_등록되어_있음
-		Response createResponse = requestCreateLines(params);
-		String url = extractUrlByResponse(createResponse);
+		ExtractableResponse<Response> createResponse = post(LINE_ROOT_PATH, params);
 
 		// when
 		// 지하철_노선_수정_요청
-		Response updateResponse = requestUpdateLine("lines/3", otherParams);
+		ExtractableResponse updateResponse = patch("lines/3", otherParams);
 
 		// then
 		// 지하철_노선_수정됨
@@ -200,14 +199,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void deleteLineSuccess() {
 		// given
 		// 지하철_노선_등록되어_있음
-		Response createResponse = requestCreateLines(params);
-		requestCreateLines(otherParams);
+		ExtractableResponse<Response> createResponse = post(LINE_ROOT_PATH, params);
+		post(LINE_ROOT_PATH, otherParams);
 		String url = extractUrlByResponse(createResponse);
 
 		// when
 		// 지하철_노선_제거_요청
-		requestDeleteLine(url);
-		List<LineResponse> findAllResponse = requestFindAllLines().jsonPath().getList(".", LineResponse.class);
+		delete(url);
+		List<LineResponse> findAllResponse = get(LINE_ROOT_PATH).jsonPath().getList(".", LineResponse.class);
 
 		// then
 		// 지하철_노선_삭제됨
@@ -219,13 +218,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void deleteLineFail() {
 		// given
 		// 지하철_노선_등록되어_있음
-		requestCreateLines(params);
+		ExtractableResponse<Response> createResponse = post(LINE_ROOT_PATH, params);
+
 		// when
 		// 지하철_노선_제거_요청
-		Response deleteResponse = requestDeleteLine("/lines/3");
+		ExtractableResponse deleteResponse = delete("/lines/3");
 
 		// then
-		// 지하철_노선_삭제됨
+		// 지하철 노선 삭제 실패
 		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
@@ -233,78 +233,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return Long.parseLong(url.split("/")[2]);
 	}
 
-	private LineResponse extractLineResponse(Response response) {
+	private LineResponse extractLineResponse(ExtractableResponse<Response> response) {
 		return response.jsonPath().getObject(".", LineResponse.class);
 	}
 
-	private String extractUrlByResponse(Response response) {
+	private String extractUrlByResponse(ExtractableResponse<Response> response) {
 		return response.header("Location");
 	}
-
-	private Response requestCreateLines(LineRequest params) {
-		return createThenPart(createGivenPart(params)
-			.when()
-			.post("/lines"));
-	}
-
-	private Response requestFindAllLines() {
-		return createThenPart(createGivenPart()
-			.when()
-			.get("/lines"));
-	}
-
-	private Response requestFindLine(String url) {
-		return createThenPart(createGivenPart()
-			.when()
-			.get(url));
-	}
-
-	private Response requestUpdateLine(String url, LineRequest updateParams) {
-		return createThenPart(createGivenPart(updateParams)
-			.when()
-			.patch(url));
-	}
-
-	private Response requestDeleteLine(String url) {
-		return createThenPart(createGivenPart()
-			.when()
-			.delete(url));
-	}
-
-	private Response requestCreateStation(StationRequest stationRequest) {
-		return createThenPart(createGivenPart(stationRequest)
-			.when()
-			.post("/stations"));
-	}
-
-	private RequestSpecification createGivenPart(LineRequest params) {
-		return RestAssured.given()
-			.log()
-			.all()
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.body(params);
-	}
-
-	private RequestSpecification createGivenPart(StationRequest params) {
-		return RestAssured.given()
-			.log()
-			.all()
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.body(params);
-	}
-
-	private RequestSpecification createGivenPart() {
-		return RestAssured.given()
-			.log()
-			.all();
-	}
-
-	private Response createThenPart(Response response) {
-		return response.then()
-			.log()
-			.all()
-			.extract()
-			.response();
-	}
-
 }

@@ -32,7 +32,7 @@ public class SectionRepositoryTest {
 	@DisplayName("구간 생성 테스트")
 	public void CreateSectionTest() {
 		//given
-		Section section = Section.create(saveStation("판교역"), saveStation("양재역"));
+		Section section = Section.create(saveStation("판교역"), saveStation("양재역"), 10);
 
 		//when
 		Section savedSection = sectionRepository.save(section);
@@ -46,8 +46,8 @@ public class SectionRepositoryTest {
 	@DisplayName("구간 삭제 테스트")
 	public void DeleteSectionTest() {
 		//given
-		Section section = Section.create(saveStation("판교역"), saveStation("양재역"));
-		Section otherSection = Section.create(saveStation("분당역"), saveStation("야탑역"));
+		Section section = Section.create(saveStation("판교역"), saveStation("양재역"), 10);
+		Section otherSection = Section.create(saveStation("분당역"), saveStation("야탑역"), 20);
 		Section savedSection = sectionRepository.save(section);
 		Section savedOtherSection = sectionRepository.save(otherSection);
 
@@ -61,9 +61,4 @@ public class SectionRepositoryTest {
 	private Station saveStation(String name) {
 		return stationRepository.save(new Station(name));
 	}
-
-	private Line saveLine(String lineName, String lineColor) {
-		return lineRepository.save(new Line(lineName, lineColor));
-	}
-
 }

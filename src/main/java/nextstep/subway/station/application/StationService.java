@@ -38,6 +38,6 @@ public class StationService {
 
     public Station findStationById(Long stationId){
         return stationRepository.findById(stationId)
-            .orElseThrow(() -> new IllegalArgumentException());
+            .orElseThrow(() -> new IllegalArgumentException("지하철 역이 존재하지 않습니다."));
     }
 }

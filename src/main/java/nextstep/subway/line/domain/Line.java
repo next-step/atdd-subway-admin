@@ -1,11 +1,6 @@
 package nextstep.subway.line.domain;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
@@ -52,9 +47,10 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
-	public void addSection(Section section) {
-		sections.add(section);
-		section.setLine(this);
+	public void initSection(Section section) {
+		sections.init(section);
+		section.initLine(this);
+		section.initSequence(this);
 	}
 
 	public int sectionsSize() {
@@ -63,5 +59,24 @@ public class Line extends BaseEntity {
 
 	public List<Station> getStations() {
 		return sections.getAllStationsBySections();
+	}
+
+	public void addSection(Section section) {
+		validateAllContainStation(section);
+		validateNotContainStation(section);
+		sections.add(section);
+		section.initLine(this);
+	}
+
+	private void validateAllContainStation(Section section) {
+		if (sections.allContain(section)) {
+			throw new IllegalArgumentException("노선에 이미 전부 존재하는 역들입니다.");
+		}
+	}
+
+	private void validateNotContainStation(Section section) {
+		if (sections.notContain(section)) {
+			throw new IllegalArgumentException("노선의 구간 내 일치하는 역이 없습니다.");
+		}
 	}
 }

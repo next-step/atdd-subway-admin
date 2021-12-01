@@ -32,7 +32,20 @@ public class Section extends BaseEntity {
 	@JoinColumn(name = "downStationId")
 	private Station downStation;
 
+	private int distance;
+
 	private int sequence;
+
+	protected Section() {
+	}
+
+	public static Section create(Station upStation, Station downStation, int distance) {
+		Section section = new Section();
+		section.upStation = upStation;
+		section.downStation = downStation;
+		section.distance = distance;
+		return section;
+	}
 
 	public Station getUpStation() {
 		return upStation;
@@ -46,23 +59,36 @@ public class Section extends BaseEntity {
 		return sequence;
 	}
 
-	protected Section() {
-	}
-
-	public static Section create(Station upStation, Station downStation) {
-		Section section = new Section();
-		section.upStation = upStation;
-		section.downStation = downStation;
-		return section;
-	}
-
-	public void setLine(Line line) {
-		this.line = line;
-		this.sequence = line.sectionsSize();
+	public int getDistance() {
+		return distance;
 	}
 
 	public Long getId() {
 		return id;
+	}
+
+	public void initSequence(Line line) {
+		this.sequence = line.sectionsSize();
+	}
+
+	public void initLine(Line line) {
+		this.line = line;
+	}
+
+	public void updateSequence(int sequence) {
+		this.sequence = sequence;
+	}
+
+	public void updateUpStation(Station station) {
+		this.upStation = station;
+	}
+
+	public void updateDistance(int distance) {
+		this.distance = distance;
+	}
+
+	public void updateDownStation(Station station) {
+		this.downStation = station;
 	}
 
 	@Override
@@ -79,4 +105,5 @@ public class Section extends BaseEntity {
 	public int hashCode() {
 		return Objects.hash(id);
 	}
+
 }

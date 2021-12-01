@@ -1,15 +1,14 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
-import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 
@@ -30,9 +29,9 @@ public class LineService {
 	public LineResponse saveLine(LineRequest request) {
 		Station upStation = stationService.findStationById(request.getUpStationId());
 		Station downStation = stationService.findStationById(request.getDownStationId());
-		Section section = Section.create(upStation, downStation);
+		Section section = Section.create(upStation, downStation, request.getDistance());
 		Line line = request.toLine();
-		line.addSection(section);
+		line.initSection(section);
 		Line savedLine = lineRepository.save(line);
 		return LineResponse.of(savedLine);
 	}
@@ -47,17 +46,29 @@ public class LineService {
 
 	@Transactional(readOnly = true)
 	public LineResponse findById(Long id) {
-		return LineResponse.of(lineRepository.findById(id)
-			.orElseThrow(() -> new IllegalArgumentException("조회 할 대상이 없습니다.")));
+		return LineResponse.of(findLineById(id));
 	}
 
 	public LineResponse updateById(Long id, LineRequest lineRequest) {
-		Line line  = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("조회 할 대상이 없습니다."));
+		Line line = findLineById(id);
 		line.update(lineRequest.toLine());
 		return LineResponse.of(line);
 	}
 
 	public void deleteById(Long id) {
 		lineRepository.deleteById(id);
+	}
+
+	public LineResponse addSection(Long id, SectionRequest sectionRequest) {
+		Line line = findLineById(id);
+		Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
+		Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
+		line.addSection(Section.create(upStation, downStation, sectionRequest.getDistance()));
+		return LineResponse.of(line);
+	}
+
+	private Line findLineById(Long id) {
+		return lineRepository.findById(id)
+			.orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
 	}
 }
