@@ -44,7 +44,7 @@ public class Sections {
                 .filter(it -> !hasStation(it, downStations))
                 .findFirst()
                 .orElseThrow(
-                        ()-> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_STATION)
+                        () -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_STATION)
                 );
     }
 
@@ -56,7 +56,7 @@ public class Sections {
                 .filter(it -> !hasStation(it, upStations))
                 .findFirst()
                 .orElseThrow(
-                        ()-> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_STATION)
+                        () -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_STATION)
                 );
     }
 
@@ -74,28 +74,40 @@ public class Sections {
     }
 
     public void removeStation(Station station) {
-        if(isEndStation(station)){
+        if (isEndStation(station)) {
             Section section = findSection(station);
             this.sections.remove(section);
             return;
         }
 
         if (!isEndStation(station)) {
-            Section foundSectionByDownStation = this.sections.stream()
-                    .filter(it -> it.getDownStation() == station)
-                    .findFirst()
-                    .get();
-
-            Section foundSectionByUpStation = this.sections.stream()
-                    .filter(it -> it.getUpStation() == station)
-                    .findFirst()
-                    .get();
-            Distance newDistance = foundSectionByDownStation.getDistance().sum(foundSectionByUpStation.getDistance());
-            Section changeSection = new Section(foundSectionByUpStation.getLine(),
-                    foundSectionByDownStation.getUpStation(), foundSectionByUpStation.getDownStation(), newDistance);
-            this.sections.add(changeSection);
-            this.sections.removeAll(Arrays.asList(foundSectionByUpStation, foundSectionByDownStation));
+            removeMiddleSection(station);
         }
+    }
+
+    private void removeMiddleSection(Station station) {
+        Section foundSectionByDownStation = findSectionByDownStation(station);
+        Section foundSectionByUpStation = findSectionByUpStation(station);
+
+        Distance newDistance = foundSectionByDownStation.sumDistance(foundSectionByUpStation.getDistance());
+        Section changeSection = new Section(foundSectionByUpStation.getLine(),
+                foundSectionByDownStation.getUpStation(), foundSectionByUpStation.getDownStation(), newDistance);
+        this.sections.add(changeSection);
+        this.sections.removeAll(Arrays.asList(foundSectionByUpStation, foundSectionByDownStation));
+    }
+
+    private Section findSectionByUpStation(Station station) {
+        return this.sections.stream()
+                .filter(it -> it.getUpStation() == station)
+                .findFirst()
+                .orElseThrow(() -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_SECTION));
+    }
+
+    private Section findSectionByDownStation(Station station) {
+        return this.sections.stream()
+                .filter(it -> it.getDownStation() == station)
+                .findFirst()
+                .orElseThrow(() -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_SECTION));
     }
 
     public void addSection(Section newSection) {
@@ -113,6 +125,10 @@ public class Sections {
         return Optional.ofNullable(foundSection).isPresent();
     }
 
+    public boolean hasLastOneSection() {
+        return this.sections.size() == 1;
+    }
+
     private Section findNextSection(Section section) {
         return this.sections.stream()
                 .filter(it -> it.getUpStation() == section.getDownStation())
@@ -124,16 +140,6 @@ public class Sections {
         Station firstStation = findFirstStation();
         return this.sections.stream()
                 .filter(it -> it.getUpStation() == firstStation)
-                .findFirst()
-                .orElseThrow(
-                        () -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_SECTION)
-                );
-    }
-
-    private Section findLastSection() {
-        Station lastStation = findLastStation();
-        return this.sections.stream()
-                .filter(it -> it.getDownStation() == lastStation)
                 .findFirst()
                 .orElseThrow(
                         () -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_SECTION)

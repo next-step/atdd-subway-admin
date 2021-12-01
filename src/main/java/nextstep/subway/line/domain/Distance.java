@@ -28,23 +28,15 @@ public class Distance {
     }
 
     public Distance minus(Distance distance) {
-        return new Distance(this.distance -= distance.distance);
+        return new Distance(this.distance - distance.distance);
     }
 
     public Distance sum(Distance distance) {
-        return new Distance(this.distance += distance.distance);
+        return new Distance(this.distance + distance.distance);
     }
 
     public int getDistance() {
         return this.distance;
-    }
-
-    public boolean isSameDistance(Distance distance) {
-        return this.equals(distance);
-    }
-
-    public boolean isOverDistance(Distance distance) {
-        return this.distance > distance.getDistance();
     }
 
     @Override

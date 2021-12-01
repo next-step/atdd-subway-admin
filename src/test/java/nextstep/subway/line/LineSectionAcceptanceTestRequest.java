@@ -19,4 +19,13 @@ public class LineSectionAcceptanceTestRequest {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> removeStation(String lineUri, Long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete(lineUri + "/sections" + "?stationId=" + stationId)
+                .then().log().all()
+                .extract();
+    }
 }

@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import nextstep.subway.exception.InputDataErrorCode;
 import nextstep.subway.exception.InputDataErrorException;
 import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Line;
@@ -76,7 +77,7 @@ public class SectionsTest {
         assertThatThrownBy(() -> {
             line.addSection(newSection);
         }).isInstanceOf(InputDataErrorException.class)
-                .hasMessageContaining("[ERROR]거리는 0 이하가 될수 없습니다.");
+                .hasMessageContaining(InputDataErrorCode.DISTANCE_IS_NOT_LESS_THEN_ZERO.errorMessage());
 
     }
 

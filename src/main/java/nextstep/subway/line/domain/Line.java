@@ -1,6 +1,8 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.exception.InputDataErrorCode;
+import nextstep.subway.exception.InputDataErrorException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -40,7 +42,26 @@ public class Line extends BaseEntity {
     }
 
     public void removeStation(Station station) {
+        checkValidateStation(station);
         this.sections.removeStation(station);
+    }
+
+   private void checkValidateStation(Station station) {
+        hasStationInLine(station);
+        isLastOneSection();
+    }
+
+    private void isLastOneSection() {
+        if (this.sections.hasLastOneSection()) {
+            throw new InputDataErrorException(InputDataErrorCode.THERE_IS_ONLY_ONE_SECTION_IN_LINE);
+        }
+    }
+
+    private void hasStationInLine(Station station) {
+        List<Station> registeredStations = getStations();
+        if (!registeredStations.contains(station)) {
+            throw new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_STATION_IN_LINE);
+        }
     }
 
     public void update(Line line) {
@@ -60,7 +81,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getStations(){
+    public List<Station> getStations() {
         return sections.getStations();
     }
 
@@ -76,11 +97,11 @@ public class Line extends BaseEntity {
         return sections.getOrderedStation();
     }
 
-    public Station getFirstStation(){
-      return this.sections().findFirstStation();
+    public Station getFirstStation() {
+        return this.sections().findFirstStation();
     }
 
-    public Station getLastStation(){
+    public Station getLastStation() {
         return this.sections().findLastStation();
     }
 
@@ -88,7 +109,9 @@ public class Line extends BaseEntity {
         return this.getSections().stream()
                 .filter(it -> isSameSection(upStation, downStation, it))
                 .findFirst()
-                .get();
+                .orElseThrow(
+                        () -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_SECTION)
+                );
     }
 
     private boolean isSameSection(Station upStation, Station downStation, Section it) {

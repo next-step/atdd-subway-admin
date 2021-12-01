@@ -13,4 +13,8 @@ public class LineSectionAcceptanceTestResponse {
     public static void isStatusOk(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
+    public static void isStatusBadRequest(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
 }

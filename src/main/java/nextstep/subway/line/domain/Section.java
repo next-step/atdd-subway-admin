@@ -70,6 +70,11 @@ public class Section extends BaseEntity  {
         this.distance = this.distance.minus(distance);
     }
 
+    public Distance sumDistance(Distance distance) {
+        this.distance = this.distance.sum(distance);
+        return this.distance;
+    }
+
     public Line getLine() {
         return line;
     }
