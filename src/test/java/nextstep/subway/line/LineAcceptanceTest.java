@@ -306,7 +306,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void 구간이_하나인_노선이면_삭제() {
+    void 지하철_구간을_삭제_한다() {
         // given
         StationResponse stationGangnam = 지하철역_등록되어_있음(강남역);
         StationResponse stationSinchon = 지하철역_등록되어_있음(신촌역);
