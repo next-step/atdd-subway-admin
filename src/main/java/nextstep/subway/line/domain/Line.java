@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.Exception.CannotUpdateSectionException;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
@@ -98,6 +99,15 @@ public class Line extends BaseEntity {
     }
 
     public void addLineSection(Station upStation, Station downStation, int distance) {
+        boolean existUpStation = sections.stream()
+                .anyMatch(it -> it.equalUpStation(upStation));
+        boolean existDownStation = sections.stream()
+                .anyMatch(it -> it.equalDownStation(downStation));
+        if(existUpStation && existDownStation) {
+            throw new CannotUpdateSectionException("상행역과 하행역이 이미 노선에 모두 등록되어있어서 추가할 수 없습니다.");
+        }
+
+
         sections.stream()
                 .filter(it -> it.equalUpStation(upStation))
                 .findFirst()

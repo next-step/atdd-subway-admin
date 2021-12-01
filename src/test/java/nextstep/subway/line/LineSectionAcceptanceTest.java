@@ -93,6 +93,16 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록_안됨(response);
     }
 
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void addLineSectionException2() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_등록_요청(신분당선, 강남역, 광교역, 10);
+
+        // then
+        지하철_노선에_지하철역_등록_안됨(response);
+    }
+
     private ExtractableResponse<Response> 지하철_노선에_지하철_구간_등록_요청(LineResponse lineResponse, StationResponse upStation, StationResponse downStation, int distance) {
         SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(), distance);
         return RestAssured
