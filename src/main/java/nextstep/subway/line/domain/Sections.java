@@ -104,14 +104,12 @@ public class Sections {
         Section firstSection = findFirstSection();
         if (firstSection.equalsUpStation(stationId)) {
             sections.remove(firstSection);
-            //firstSection.deleteLine();
             return;
         }
 
         Section lastSection = findLastSection();
         if (lastSection.equalsDownStation(stationId)) {
             sections.remove(lastSection);
-            //lastSection.deleteLine();
             return;
         }
 
@@ -134,7 +132,6 @@ public class Sections {
 
     private void deleteStationBetweenSections(Section frontSection, Section backSection) {
         frontSection.extendSection(backSection);
-        //backSection.deleteLine();
         sections.remove(backSection);
     }
 
