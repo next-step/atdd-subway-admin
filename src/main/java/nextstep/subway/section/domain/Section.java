@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.common.Message;
 import nextstep.subway.common.domain.BaseEntity;
+import nextstep.subway.common.exception.RegisterDistanceException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
@@ -83,7 +84,7 @@ public class Section extends BaseEntity {
 
     public void minusDistance(Section section){
         if (this.distance <= section.distance){
-            throw new IllegalArgumentException(Message.NOT_REGISTER_SECTION_DISTANCE.getMessage());
+            throw new RegisterDistanceException(Message.NOT_REGISTER_SECTION_DISTANCE.getMessage());
         }
         this.distance -= section.distance;
     }
@@ -92,8 +93,16 @@ public class Section extends BaseEntity {
         return this.upStation.equals(section.upStation);
     }
 
+    public boolean isUpStationEquals(Station station){
+        return this.upStation.equals(station);
+    }
+
     public boolean isDownStationEquals(Section section){
         return this.downStation.equals(section.downStation);
+    }
+
+    public boolean isDownStationEquals(Station station){
+        return this.downStation.equals(station);
     }
 
     public boolean isUpStationAndTargetDownStationEquals(Section section){
@@ -110,6 +119,11 @@ public class Section extends BaseEntity {
 
     public List<Station> getStations() {
         return Arrays.asList(downStation, upStation);
+    }
+
+    public void merge(Section targetSection) {
+        this.downStation = targetSection.downStation;
+        this.distance = this.distance + targetSection.distance;
     }
 
     @Override
