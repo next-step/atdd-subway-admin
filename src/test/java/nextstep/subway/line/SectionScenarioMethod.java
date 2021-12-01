@@ -3,17 +3,17 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.assured.RestAssuredApi;
-import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.station.dto.StationResponse;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.line.LineScenarioMethod.지하철_노선_조회_요청;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.springframework.http.HttpStatus.*;
 
 class SectionScenarioMethod {
@@ -38,23 +38,24 @@ class SectionScenarioMethod {
 
     public static void 지하철_노선에_등록한_구간_포함됨(String uri, List<String> stationNames) {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(uri);
-        response.jsonPath().getList("stations.name");
         assertThat(response.jsonPath().getList("stations.name"))
                 .isEqualTo(stationNames);
     }
 
     public static void 지하철_구간_개수_일치됨(ExtractableResponse<Response> response, int size) {
         List<String> result = response.jsonPath().getList("upStation.name");
-        assertThat(result.size()).isEqualTo(3);
-        assertThat(result)
-                .isEqualTo(Arrays.asList("강남", "양재", "양재시민의숲"));
+        assertThat(result.size()).isEqualTo(size);
     }
 
     public static void 지하철_구간_상행역_일치됨(ExtractableResponse<Response> response, List<String> stationNames) {
         List<String> result = response.jsonPath().getList("upStation.name");
         assertThat(result.size()).isEqualTo(3);
         assertThat(result)
-                .isEqualTo(Arrays.asList("강남", "양재", "양재시민의숲"));
+                .isEqualTo(stationNames);
+    }
+
+    public static ExtractableResponse<Response> 지하철_구간_조회_요청(String uri) {
+        return RestAssuredApi.get(uri + "/sections");
     }
 
     public static Map<String, Long> 등록된_구간_지하철역(String uri) {
@@ -76,5 +77,13 @@ class SectionScenarioMethod {
 
     public static void 지하철_구간_삭제_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(NOT_FOUND.value());
+    }
+
+    public static void 지하철_구간_일치됨(String uri, String upStation, String downStation, int distance) {
+        ExtractableResponse<Response> response = 지하철_구간_조회_요청(uri);
+        List<SectionResponse> list = response.jsonPath().getList(".", SectionResponse.class);
+        assertThat(list)
+                .extracting("upStation.name", "downStation.name", "distance")
+                .contains(tuple(upStation, downStation, distance));
     }
 }

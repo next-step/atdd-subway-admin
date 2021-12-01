@@ -30,7 +30,7 @@ public class SectionResponse {
         return downStation;
     }
 
-    public Integer getDistance() {
+    public int getDistance() {
         return distance;
     }
 }

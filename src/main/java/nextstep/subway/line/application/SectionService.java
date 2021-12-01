@@ -48,6 +48,7 @@ public class SectionService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void deleteStation(Long lineId, Long stationId) {
         Line line = findLine(lineId);
         Station station = findByStation(stationId);

@@ -28,7 +28,7 @@ public class SectionController {
     }
 
     @GetMapping("/{id}/sections")
-    public ResponseEntity<List<SectionResponse>> addSection(@PathVariable Long id) {
+    public ResponseEntity<List<SectionResponse>> findSection(@PathVariable Long id) {
         List<SectionResponse> section = sectionService.findSection(id);
         return ResponseEntity.ok().body(section);
     }
