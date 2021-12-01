@@ -62,7 +62,7 @@ public class LineStationTest {
         addLine1WithSeoulToYongsanLength10();
         Station addStation = stationRepository.findById(3L).get();
 
-        line.addSections(Distance.valueOf(10), addStation, seoulStation);
+        line.addLineStations(Distance.valueOf(10), addStation, seoulStation);
 
         assertAddSection(addStation, seoulStation, yongsanStation);
     }
@@ -73,7 +73,7 @@ public class LineStationTest {
         addLine1WithSeoulToYongsanLength10();
         Station addStation = stationRepository.findById(3L).get();
 
-        line.addSections(Distance.valueOf(10), yongsanStation, addStation);
+        line.addLineStations(Distance.valueOf(10), yongsanStation, addStation);
 
         assertAddSection(seoulStation, yongsanStation, addStation);
     }
@@ -84,7 +84,7 @@ public class LineStationTest {
         addLine1WithSeoulToYongsanLength10();
         Station addStation = stationRepository.findById(3L).get();
 
-        line.addSections(Distance.valueOf(5), seoulStation, addStation);
+        line.addLineStations(Distance.valueOf(5), seoulStation, addStation);
 
         assertAddSection(seoulStation, addStation, yongsanStation);
     }
@@ -95,7 +95,7 @@ public class LineStationTest {
         addLine1WithSeoulToYongsanLength10();
         Station addStation = stationRepository.findById(3L).get();
 
-        line.addSections(Distance.valueOf(3), addStation, yongsanStation);
+        line.addLineStations(Distance.valueOf(3), addStation, yongsanStation);
 
         assertAddSection(seoulStation, addStation, yongsanStation);
     }
@@ -106,7 +106,7 @@ public class LineStationTest {
         addLine1WithSeoulToYongsanLength10();
 
         assertThatThrownBy(
-            () -> line.addSections(Distance.valueOf(5), yongsanStation, seoulStation))
+            () -> line.addLineStations(Distance.valueOf(5), yongsanStation, seoulStation))
             .isInstanceOf(CannotAddException.class)
             .hasMessage(Messages.ALREADY_EXISTS_SECTION.getValues());
     }
@@ -119,7 +119,7 @@ public class LineStationTest {
         Station yeoksamStation = stationRepository.findById(5L).get();
 
         assertThatThrownBy(
-            () -> line.addSections(Distance.valueOf(10), gangnamStation, yeoksamStation))
+            () -> line.addLineStations(Distance.valueOf(10), gangnamStation, yeoksamStation))
             .isInstanceOf(CannotAddException.class)
             .hasMessage(Messages.NOT_INCLUDE_SECTION.getValues());
     }
@@ -131,7 +131,7 @@ public class LineStationTest {
         Station addStation = stationRepository.findById(3L).get();
 
         assertThatThrownBy(
-            () -> line.addSections(Distance.valueOf(10), seoulStation, addStation))
+            () -> line.addLineStations(Distance.valueOf(10), seoulStation, addStation))
             .isInstanceOf(CannotAddException.class)
             .hasMessage(Messages.LONG_OR_SAME_DISTANCE.getValues());
     }
@@ -142,7 +142,7 @@ public class LineStationTest {
         //given
         addLine1WithSeoulToYongsanLength10();
         Station addStation = stationRepository.findById(3L).get();
-        line.addSections(Distance.valueOf(5), addStation, yongsanStation);
+        line.addLineStations(Distance.valueOf(5), addStation, yongsanStation);
 
         //when
         line.deleteLineStation(addStation);
@@ -159,7 +159,7 @@ public class LineStationTest {
         Station addStation = stationRepository.findById(3L).get();
 
         assertThatThrownBy(
-            () -> line.addSections(Distance.valueOf(12), addStation, yongsanStation))
+            () -> line.addLineStations(Distance.valueOf(12), addStation, yongsanStation))
             .isInstanceOf(CannotAddException.class)
             .hasMessage(Messages.LONG_OR_SAME_DISTANCE.getValues());
     }

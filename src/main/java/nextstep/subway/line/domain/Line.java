@@ -77,8 +77,8 @@ public class Line extends BaseEntity {
         return this.sections.contains(section);
     }
 
-    public void addSections(Distance distance, Station fromStation, Station toStation) {
-        validate(fromStation, toStation);
+    public void addLineStations(Distance distance, Station fromStation, Station toStation) {
+        validateOfAdded(fromStation, toStation);
 
         sections.updateByFromStation(fromStation, distance, toStation);
         sections.updateByToStation(toStation, distance, fromStation);
@@ -103,7 +103,7 @@ public class Line extends BaseEntity {
         }
     }
 
-    private void validate(Station upStation, Station downStation) {
+    private void validateOfAdded(Station upStation, Station downStation) {
         boolean containUpStation = sections.containsStation(upStation);
         boolean containDownStation = sections.containsStation(downStation);
         if (containUpStation && containDownStation) {
