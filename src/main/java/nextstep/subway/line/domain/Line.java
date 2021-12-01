@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.domain.BaseEntity;
+import nextstep.subway.common.domain.Constant;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
@@ -65,7 +66,7 @@ public class Line extends BaseEntity {
         return sections.getSections();
     }
 
-    public void addSection(Section section) {
+    public void addSection(final Section section) {
         this.sections.add(section, this);
     }
 
@@ -73,8 +74,20 @@ public class Line extends BaseEntity {
         return sections.getStations();
     }
 
-    public boolean isContainingStation(Station station){
+    public boolean isContainingStation(final Station station){
         return this.sections.contains(station);
+    }
+
+    public void removeSectionByStationId(final Station station) {
+        this.sections.merge(station, this);
+    }
+
+    public boolean isOneSection() {
+        return this.sections.getSections().size() == Constant.INT_ONE;
+    }
+
+    public boolean isNoSection() {
+        return this.sections.getSections().size() == Constant.INT_ZERO;
     }
 
     @Override
