@@ -137,7 +137,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
             - 거리는 두 구간의 거리의 합으로 정함
 
-- [ ] 예외 케이스 처리 인수 테스트 작성
+- [x] 예외 케이스 처리 인수 테스트 작성
 
     - [ ] 노선에 등록되어있지 않은 역은 제거할 수 없다.
 

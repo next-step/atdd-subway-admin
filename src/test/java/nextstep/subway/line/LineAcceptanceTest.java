@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.exception.NotAcceptableApiException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
@@ -25,6 +26,7 @@ import java.util.NoSuchElementException;
 import static nextstep.subway.section.SectionAcceptanceTest.지하철_구간_추가_요청;
 import static nextstep.subway.station.StationAcceptanceTest.지하철_역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -198,6 +200,37 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         Section section = 지하철_구간_조회(강남역_ID, 광교역_ID);
         assertThat(section.getDistance()).isEqualTo(distance);
+    }
+
+    @DisplayName("노선의 구간을 제거한다. - 노선에 등록되어있지 않은 역은 제거할 수 없다.")
+    @Test
+    void deleteSection_notExistStation() {
+        // given
+        ExtractableResponse<Response> 신분당선_생성_응답 = 지하철_노선_생성_요청("신분당선", "red", 강남역_ID, 광교역_ID, distance);
+        long 신분당선_ID = 노선_ID(신분당선_생성_응답);
+
+        ExtractableResponse<Response> 양재역_생성_응답 = 지하철_역_생성_요청("양재역");
+        long 양재역_ID = 역_ID(양재역_생성_응답);
+        지하철_구간_추가_요청(신분당선_ID, 강남역_ID, 양재역_ID, 4);
+
+        ExtractableResponse<Response> 판교역_생성_응답 = 지하철_역_생성_요청("판교역");
+        long 판교역_ID = 역_ID(판교역_생성_응답);
+
+        // when & then
+        assertThatExceptionOfType(NotAcceptableApiException.class)
+                .isThrownBy(() -> 지하철_노선_구간_제거_요청(신분당선_ID, 판교역_ID));
+    }
+
+    @DisplayName("노선의 구간을 제거한다. - 구간이 하나인 노선에서 마지막 구간은 제거할 수 없다.")
+    @Test
+    void deleteSection_onlyOneSection() {
+        // given
+        ExtractableResponse<Response> 신분당선_생성_응답 = 지하철_노선_생성_요청("신분당선", "red", 강남역_ID, 광교역_ID, distance);
+        long 신분당선_ID = 노선_ID(신분당선_생성_응답);
+
+        // when & then
+        assertThatExceptionOfType(NotAcceptableApiException.class)
+                .isThrownBy(() -> 지하철_노선_구간_제거_요청(신분당선_ID, 강남역_ID));
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId, int distance) {
