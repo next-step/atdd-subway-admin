@@ -33,6 +33,9 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    protected Line() {
+    }
+
     public void addSections(Section section) {
         if (sections.contains(section)) {
             return;
@@ -46,7 +49,9 @@ public class Line extends BaseEntity {
         sections.addSection(section);
     }
 
-    protected Line() {
+
+    public void removeSection(Station station) {
+        sections.removeSection(station);
     }
 
     public void update(Line line) {

@@ -58,10 +58,13 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public Section(Station upStation, Station downStation, Distance distance, Line line) {
+    public Section(Long id, Station upStation, Station downStation, Distance distance, Line line) {
         this(upStation, downStation, distance);
+        this.id = id;
         this.line = line;
     }
+
+
 
     protected Section() {
     }
@@ -88,7 +91,7 @@ public class Section extends BaseEntity {
             (downStation.equalsName(newSection.getUpStation())) && upStation.equalsName(newSection.getDownStation()));
     }
 
-    public boolean contations(Section newSection) {
+    public boolean contains(Section newSection) {
         return (downStation.equalsName(newSection.getUpStation()) || upStation.equalsName(newSection.getUpStation()) ||
             (downStation.equalsName(newSection.getDownStation()) || upStation.equalsName(newSection.getDownStation())));
     }
@@ -103,6 +106,10 @@ public class Section extends BaseEntity {
 
     public boolean equalsUpStationName(Station upStation) {
         return this.getDownStation().equalsName(upStation);
+    }
+
+    public void removeSection(Section section) {
+        this.downStation = section.getDownStation();
     }
 
     public Station getUpStation() {
@@ -135,4 +142,5 @@ public class Section extends BaseEntity {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }

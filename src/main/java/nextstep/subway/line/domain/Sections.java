@@ -48,7 +48,7 @@ public class Sections {
     }
 
     private void isNotExistsStation(Section newSection) {
-        if (!matchStation(section -> section.contations(newSection))) {
+        if (!matchStation(section -> section.contains(newSection))) {
             throw new StationNotFoundException(MESSAGE_IS_NOT_EXISTS_STATION);
         }
     }
@@ -86,6 +86,18 @@ public class Sections {
 
     private Predicate<Section> isDownStation(Station downStation) {
         return section -> section.isDowStation(downStation);
+    }
+
+    public void removeSection(Station station) {
+        Section section = findSections(isUpStation(station))
+            .orElseThrow(SectionNotFoundException::new);
+
+        if (matchStation(isDownStation(station))) {
+            findSections(isDownStation(station))
+                .ifPresent(s -> s.removeSection(section));
+        }
+
+        sections.remove(section);
     }
 
     private Optional<Section> findSections(Predicate<Section> condition) {
@@ -140,4 +152,5 @@ public class Sections {
     public int hashCode() {
         return Objects.hash(sections);
     }
+
 }

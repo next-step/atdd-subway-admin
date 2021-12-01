@@ -22,8 +22,9 @@ import nextstep.subway.station.domain.Station;
 @Transactional
 public class LineService {
 
+    private final StationService stationService;
     private final LineRepository lineRepository;
-    private StationService stationService;
+
 
     public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
@@ -66,6 +67,12 @@ public class LineService {
         Line line = lineRepository.findById(id)
                                   .orElseThrow(EntityNotFoundException::new);
         lineRepository.delete(line);
+    }
+
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId)
+                                  .orElseThrow(NoResultDataException::new);
+        line.removeSection(stationService.findByIdThrow(stationId));
     }
 
     private Section createSection(SectionRequest sectionRequest) {

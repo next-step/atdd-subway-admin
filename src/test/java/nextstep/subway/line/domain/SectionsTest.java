@@ -36,11 +36,10 @@ class SectionsTest {
         // when
         List<Station> sortedSections = sections.getStations();
 
-
         // then
         List<String> collect = sortedSections.stream()
-                                       .map(Station::getName)
-                                       .collect(toList());
+                                             .map(Station::getName)
+                                             .collect(toList());
 
         assertThat(collect).containsExactly("구파발역", "신촌역", "대화역", "용문역", "강남역");
     }
@@ -80,7 +79,7 @@ class SectionsTest {
 
         // when
         Station stationYoungSan = new Station(3L, "용산역");
-        sections.addSection(new Section(stationYoungSan, stationGangnam, new Distance(4), line));
+        sections.addSection(new Section(1L, stationYoungSan, stationGangnam, new Distance(4), line));
 
         // then
         Sections expectedSections = new Sections();
@@ -106,7 +105,7 @@ class SectionsTest {
 
         // when
         Station stationYoungSan = new Station(3L, "용산역");
-        sections.addSection(new Section(stationSinChon, stationYoungSan, new Distance(4), line));
+        sections.addSection(new Section(1L, stationSinChon, stationYoungSan, new Distance(4), line));
 
         // then
         Sections expectedSections = new Sections();
@@ -124,10 +123,10 @@ class SectionsTest {
     void 등록되지_않은_구간_추가시_예외() {
         //given
         Station station1 = new Station(1L, "강남역");
-        Station station2 = new Station(1L, "신촌역");
+        Station station2 = new Station(2L, "신촌역");
 
         Station addStation1 = new Station(1L, "서울역");
-        Station addStation2 = new Station(1L, "용산역");
+        Station addStation2 = new Station(2L, "용산역");
 
         // when
         Sections sections = new Sections();
@@ -145,14 +144,39 @@ class SectionsTest {
     void 이미_등록되어_있는_구간이면_예외() {
         //given
         Station stationGangNam = new Station(1L, "강남역");
-        Station stationSinchon = new Station(1L, "신촌역");
+        Station stationSinchon = new Station(2L, "신촌역");
         Sections sections = new Sections();
-        sections.add(new Section(stationGangNam, stationSinchon, new Distance(10)), new Line(LINE_ONE, LINE_ONE_COLOR_RED));
+        sections.add(new Section(stationGangNam, stationSinchon, new Distance(10)),
+                     new Line(LINE_ONE, LINE_ONE_COLOR_RED)
+        );
 
         // then
         Assertions.assertThatThrownBy(() -> {
-                      sections.addSection(new Section(stationSinchon, stationGangNam,  new Distance(5)));
+                      sections.addSection(new Section(stationSinchon, stationGangNam, new Distance(5)));
                   }).isInstanceOf(AlreadyRegisteredException.class)
                   .hasMessage(MESSAGE_ALREADY_REGISTERED_SECTION);
+    }
+
+    @Test
+    void 상행_구간_삭제() {
+        // given
+        Station stationGangNam = new Station(1L, "강남역");
+        Station stationSinChon = new Station(2L, "신촌역");
+        Station stationYoungSan = new Station(3L, "용산역");
+        Station stationYeokSam = new Station(4L, "역삼역");
+
+        Line line = new Line(LINE_ONE, LINE_ONE_COLOR_RED);
+        Sections sections = new Sections();
+        sections.add(new Section(stationGangNam, stationSinChon, new Distance(10)), line);
+        sections.addSection(new Section(2L, stationSinChon, stationYoungSan, new Distance(4), line));
+        sections.addSection(new Section(3L, stationYeokSam, stationYoungSan, new Distance(2), line));
+
+        // when
+        sections.removeSection(stationSinChon);
+
+        // then
+        List<Station> stations = sections.getStations();
+
+        Assertions.assertThat(stations).containsExactly(stationGangNam, stationYeokSam, stationYoungSan);
     }
 }
