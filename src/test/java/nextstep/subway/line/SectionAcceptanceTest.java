@@ -131,26 +131,64 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	}
 
 	@Test
-	@DisplayName("지하철 노선 내 구간에서 역 삭제 요청 성공")
-	public void deleteStationInSectionSuccess() {
+	@DisplayName("지하철 노선 내 구간에서 중간 역 삭제 요청 성공")
+	public void deleteMiddleStationInSectionSuccess() {
 		//given
 		SectionRequest param = new SectionRequest(3L, 4L, 17);
 		post("/lines/1/sections", param);
 		//when
-		ExtractableResponse<Response> deleteResponse = delete("/lines/1/sections?stationId=3");
+		ExtractableResponse<Response> deleteStationResponse = delete("/lines/1/sections?stationId=3");
 		//then
-		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+		assertThat(deleteStationResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 		//when
-		ExtractableResponse<Response> findAllResponse = get("/lines/1");
+		ExtractableResponse<Response> findLineResponse = get("/lines/1");
 		//then
-		List<Long> stationIds = findAllResponse.body()
+		List<Long> stationIds = getStationIds(findLineResponse);
+		assertThat(stationIds).containsExactly(2L, 4L);
+	}
+
+	@Test
+	@DisplayName("지하철 노선 내 구간에서 시작역 삭제 요청 성공")
+	public void deleteStartStationInSectionSuccess() {
+		//given
+		SectionRequest param = new SectionRequest(3L, 4L, 17);
+		post("/lines/1/sections", param);
+		//when
+		ExtractableResponse<Response> deleteStationResponse = delete("/lines/1/sections?stationId=2");
+		//then
+		assertThat(deleteStationResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		//when
+		ExtractableResponse<Response> findLineResponse = get("/lines/1");
+		//then
+		List<Long> stationIds = getStationIds(findLineResponse);
+		assertThat(stationIds).containsExactly(3L, 4L);
+	}
+
+	@Test
+	@DisplayName("지하철 노선 내 구간에서 종점역 삭제 요청 성공")
+	public void deleteEndStationInSectionSuccess() {
+		//given
+		SectionRequest param = new SectionRequest(3L, 4L, 17);
+		post("/lines/1/sections", param);
+		//when
+		ExtractableResponse<Response> deleteStationResponse = delete("/lines/1/sections?stationId=4");
+		//then
+		assertThat(deleteStationResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		//when
+		ExtractableResponse<Response> findLineResponse = get("/lines/1");
+		//then
+		List<Long> stationIds = getStationIds(findLineResponse);
+		assertThat(stationIds).containsExactly(2L, 3L);
+	}
+
+	private List<Long> getStationIds(ExtractableResponse<Response> findLineResponse) {
+		return findLineResponse.body()
 			.jsonPath()
 			.getObject(".", LineResponse.class)
 			.getStations()
 			.stream()
 			.map(StationResponse::getId)
 			.collect(Collectors.toList());
-		assertThat(stationIds).containsAll(Arrays.asList(2L, 4L));
 	}
 
 }
