@@ -25,19 +25,19 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @GetMapping
-    public ResponseEntity readLineList() {
+    public ResponseEntity<List<LineResponse>> readLineList() {
         List<LineResponse> lines = lineService.findLineList();
         return ResponseEntity.ok().body(lines);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity readLine(@PathVariable("id") Long id) {
+    public ResponseEntity<LineResponse> readLine(@PathVariable("id") Long id) {
         LineResponse line = lineService.findLine(id);
         return ResponseEntity.ok().body(line);
     }
