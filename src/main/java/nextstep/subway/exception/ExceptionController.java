@@ -11,17 +11,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionController {
 
 	@ExceptionHandler(DataIntegrityViolationException.class)
-	public ResponseEntity DataIntegrityViolationException(DataIntegrityViolationException e) {
+	public ResponseEntity<Void> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
 		return ResponseEntity.badRequest().build();
 	}
 
 	@ExceptionHandler(IllegalArgumentException.class)
-	public ResponseEntity handleIllegalArgsException(IllegalArgumentException e) {
+	public ResponseEntity<Object> handleIllegalArgsException(IllegalArgumentException e) {
 		return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(EmptyResultDataAccessException.class)
-	public ResponseEntity EmptyResultDataAccessException(EmptyResultDataAccessException e) {
+	public ResponseEntity<Void> handleEmptyResultDataAccessException(EmptyResultDataAccessException e) {
 		return ResponseEntity.badRequest().build();
 	}
 }

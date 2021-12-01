@@ -40,7 +40,7 @@ public class Sections {
 	}
 
 	public void add(Section section) {
-		System.out.println("##");
+		validateStationContainAllOrNot(section);
 		if (ifAddStartLocation(section)) {
 			addSectionStartLocation(section);
 			return;
@@ -51,6 +51,17 @@ public class Sections {
 		}
 		addSectionMiddleLocation(section);
 	}
+
+	private void validateStationContainAllOrNot(Section section) {
+		if (allContain(section)) {
+			throw new IllegalArgumentException("노선에 이미 전부 존재하는 역들입니다.");
+		}
+
+		if (notContain(section)) {
+			throw new IllegalArgumentException("노선의 구간 내 일치하는 역이 없습니다.");
+		}
+	}
+
 
 	private void addSectionMiddleLocation(Section section) {
 		if (ifAddMiddleStartLocation(section)) {
