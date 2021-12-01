@@ -136,7 +136,6 @@ public class Sections {
 		updateSectionsSequence();
 	}
 
-
 	public void deleteStation(Station station) {
 		validateSectionsSize();
 		validateStationNotContain(station);
@@ -170,7 +169,8 @@ public class Sections {
 			.reduce((now, next) -> {
 				now.updateDownStation(next.getDownStation());
 				now.updateDistance(now.getDistance() + next.getDistance());
-				return next;})
+				return next;
+			})
 			.orElseThrow(() -> new IllegalArgumentException("구간 내 역이 존재하지 않습니다."));
 		sections.remove(deleteSection);
 		updateSectionsSequence();
