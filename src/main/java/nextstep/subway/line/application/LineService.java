@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.line.constants.MessageConstants;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -32,11 +33,13 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        return LineResponse.of(lineRepository.findById(id).get());
+        return LineResponse.of(lineRepository.findById(id)
+                                        .orElseThrow(() -> new IllegalArgumentException(MessageConstants.NO_SUCH_LINE + id)));
     }
 
     public LineResponse updateLineById(Long id, LineRequest request) {
-        Line line = lineRepository.findById(id).get();
+        Line line = lineRepository.findById(id)
+                                    .orElseThrow(() -> new IllegalArgumentException(MessageConstants.NO_SUCH_LINE + id));
         line.update(request.toLine());
         return LineResponse.of(lineRepository.save(line));
     }
