@@ -67,16 +67,18 @@ public class Section {
         return distance.getDistance();
     }
 
-    public void changeUpStation(Station station) {
+    public void changeUpStation(Station station, int distance) {
         this.upStation = station;
+        this.distance = subtractDistance(distance);
     }
 
-    public void changeDownStation(Station station) {
+    public void changeDownStation(Station station, int distance) {
         this.downStation = station;
+        this.distance = subtractDistance(distance);
     }
 
-    public void subtractDistance(int distance) {
-        this.distance.subtractDistance(distance);
+    public Distance subtractDistance(int distance) {
+        return this.distance.subtractDistance(new Distance(distance));
     }
 
     public boolean isSameUpStation(Station station) {

@@ -46,20 +46,14 @@ public class Sections {
         sections.stream()
                 .filter(section -> section.isSameUpStation(station))
                 .findAny()
-                .ifPresent(section -> {
-                    section.changeUpStation(changeStation);
-                    section.subtractDistance(distance);
-                });
+                .ifPresent(section -> section.changeUpStation(changeStation, distance));
     }
 
     private void changeDownSectionIfExist(Station station, Station changeStation, int distance) {
         sections.stream()
                 .filter(section -> section.isSameDownStation(station))
                 .findAny()
-                .ifPresent(section -> {
-                    section.changeDownStation(changeStation);
-                    section.subtractDistance(distance);
-                });
+                .ifPresent(section -> section.changeDownStation(changeStation, distance));
     }
 
     private void validateDuplicateSection(Station upStation, Station downStation) {

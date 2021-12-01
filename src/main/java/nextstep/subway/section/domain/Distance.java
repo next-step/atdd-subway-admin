@@ -33,9 +33,9 @@ public class Distance {
         this.distance = distance;
     }
 
-    public void subtractDistance(int distance) {
-        validateDistance(this.distance - distance);
-        this.distance -= distance;
+    public Distance subtractDistance(Distance otherDistance) {
+        validateDistance(this.distance - otherDistance.distance);
+        return new Distance(this.distance - otherDistance.distance);
     }
 
     @Override

@@ -42,7 +42,7 @@ class SectionTest {
     @Test
     void changeUpStation() {
         // when
-        section.changeUpStation(new Station("신분당역"));
+        section.changeUpStation(new Station("신분당역"), 2);
 
         // then
         assertThat(section.getUpStation()).isEqualTo(new Station("신분당역"));
@@ -52,7 +52,7 @@ class SectionTest {
     @Test
     void changeDownStation() {
         // when
-        section.changeDownStation(new Station("잠실역"));
+        section.changeDownStation(new Station("잠실역"), 3);
 
         // then
         assertThat(section.getDownStation()).isEqualTo(new Station("잠실역"));
