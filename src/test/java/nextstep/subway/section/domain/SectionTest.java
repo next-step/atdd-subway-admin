@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.common.exception.RegisterDistanceException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SectionTest {
 
@@ -77,7 +79,7 @@ public class SectionTest {
         final Section 추가구간 = Section.of(잠실역, 강변역, 10);
 
         assertThatThrownBy(() -> 등록구간.minusDistance(추가구간))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(RegisterDistanceException.class)
                 .hasMessage("등록할 수 없는 구간입니다.");
     }
 
@@ -103,5 +105,20 @@ public class SectionTest {
         등록구간.changeDownStation(추가구간);
 
         assertThat(등록구간.getDownStation()).isEqualTo(강변역);
+    }
+
+    @DisplayName("노선에 종점이 제거되면 다음으로 오던 역이 종점이 된다.")
+    @Test
+    void mergeSection() {
+        final Section 등록구간 = Section.of(잠실역, 잠실나루, 10);
+
+        final Section 추가구간 = Section.of(잠실나루, 강변역, 10);
+
+        등록구간.merge(추가구간);
+
+        assertAll(
+                () -> assertThat(등록구간.getDownStation()).isEqualTo(강변역),
+                () -> assertThat(등록구간.getDistance()).isEqualTo(20)
+        );
     }
 }
