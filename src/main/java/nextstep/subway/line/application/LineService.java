@@ -58,4 +58,13 @@ public class LineService {
 			.orElseThrow(() -> new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_LINE));
 		line.update(new Line(request.getName(), request.getColor()));
 	}
+
+	@Transactional
+	public void deleteLine(Long id) {
+		try {
+			lineRepository.deleteById(id);
+		} catch (IllegalArgumentException e) {
+			throw new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_LINE);
+		}
+	}
 }
