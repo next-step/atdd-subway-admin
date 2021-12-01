@@ -44,7 +44,7 @@ public class Section {
         return new Section(upStation, downStation, distance);
     }
 
-    public boolean isNotDuplication(Section section) {
+    public boolean isNotDuplicate(Section section) {
         if (isDuplicate(section)) {
             throw error(SECTION_DUPLICATION);
         }
@@ -52,10 +52,10 @@ public class Section {
         return isTerminusExtend(section) || isBetweenStations(section);
     }
 
-    public Section checkAddSection(Section section) {
+    public Section divide(Section section) {
         if (isBetweenStations(section) && distance.divisible(section)) {
             changeStationLink(section);
-            distance.minus(section.getDistance());
+            distance = new Distance(distance.getDistance() - section.getDistance());
         }
         return section;
     }
@@ -82,16 +82,16 @@ public class Section {
         return upStation.equals(section.upStation) || downStation.equals(section.downStation);
     }
 
-    public boolean isEqualUpStation(Station station) {
+    public boolean equalUpStation(Station station) {
         return upStation.equals(station);
     }
 
-    public boolean isEqualDownStation(Station station) {
+    public boolean equalDownStation(Station station) {
         return downStation.equals(station);
     }
 
-    public void mergeDistance(int distance) {
-        this.distance.plus(distance);
+    public void mergeDistance(int deletedDistance) {
+        distance = new Distance(distance.getDistance() + deletedDistance);
     }
 
     public void changeDownStationLink(Station downStation) {

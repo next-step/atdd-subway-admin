@@ -5,14 +5,16 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineCreateResponse;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.application.exception.StationNotFoundException;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static nextstep.subway.line.application.exception.LineNotFoundException.error;
+import static nextstep.subway.station.application.StationService.NOT_FOUND_STATION;
 
 @Service
 @Transactional(readOnly = true)
@@ -20,17 +22,17 @@ public class LineService {
     public static final String NOT_FOUND_LINE = "지하철 노선을 찾을 수 없습니다.";
 
     private final LineRepository lineRepository;
-    private final StationService stationService;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
-        this.stationService = stationService;
+        this.stationRepository = stationRepository;
     }
 
     @Transactional
     public LineCreateResponse saveLine(LineRequest request) {
-        Station upStation = stationService.findById(request.getUpStationId());
-        Station downStation = stationService.findById(request.getDownStationId());
+        Station upStation = findByStation(request.getUpStationId());
+        Station downStation = findByStation(request.getDownStationId());
 
         Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
         return LineCreateResponse.of(persistLine);
@@ -57,8 +59,13 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public Line findLine(Long id) {
+    private Line findLine(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> error(NOT_FOUND_LINE));
+    }
+
+    private Station findByStation(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> StationNotFoundException.error(NOT_FOUND_STATION));
     }
 }

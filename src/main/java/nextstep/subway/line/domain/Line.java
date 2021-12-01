@@ -88,8 +88,8 @@ public class Line extends BaseEntity {
         return Collections.unmodifiableList(stations);
     }
 
-    public List<Section> getSectionsInOrder() {
-        return Collections.unmodifiableList(sections.getSectionsInOrder());
+    public List<Section> getSections() {
+        return sections.getSectionsInOrder();
     }
 
     public Long getId() {

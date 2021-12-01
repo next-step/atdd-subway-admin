@@ -183,7 +183,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response1 = 지하철_구간_삭제_요청(createdLineUri, downStations.get("강남"));
-        ExtractableResponse<Response> response2 = 지하철_구간_삭제_요청(createdLineUri, downStations.get("양재시민의숲"));
+        ExtractableResponse<Response> response2 = 지하철_구간_삭제_요청(createdLineUri, downStations.get("청계산입구"));
 
         // then
         지하철_구간_삭제됨(response1);

@@ -9,8 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static nextstep.subway.station.application.exception.StationNotFoundException.error;
-
 @Service
 @Transactional(readOnly = true)
 public class StationService {
@@ -32,11 +30,6 @@ public class StationService {
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
         return StationResponse.ofList(stations);
-    }
-
-    public Station findById(Long stationId) {
-        return stationRepository.findById(stationId)
-                .orElseThrow(() -> error(NOT_FOUND_STATION));
     }
 
     @Transactional

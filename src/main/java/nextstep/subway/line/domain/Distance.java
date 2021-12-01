@@ -34,19 +34,11 @@ public class Distance {
         return true;
     }
 
-    public void plus(int distance) {
-        this.distance += distance;
-    }
-
-    public void setDistance(int distance) {
+    private void setDistance(int distance) {
         this.distance = distance;
     }
 
     public int getDistance() {
         return distance;
-    }
-
-    public void minus(int distance) {
-        this.distance -= distance;
     }
 }

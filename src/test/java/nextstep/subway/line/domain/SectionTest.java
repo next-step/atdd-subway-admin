@@ -43,7 +43,7 @@ class SectionTest {
         // when
         line.addSection(upStationExtend);
         line.addSection(downStationExtend);
-        List<Section> result = line.getSectionsInOrder();
+        List<Section> result = line.getSections();
 
         // then
         assertThat(result).hasSize(6);
@@ -64,7 +64,7 @@ class SectionTest {
         // when
         line.addSection(newUpSection);
         line.addSection(newDownSection);
-        List<Section> result = line.getSectionsInOrder();
+        List<Section> result = line.getSections();
 
         // then
         assertThat(result).hasSize(3);
