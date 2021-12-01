@@ -53,11 +53,18 @@ public class Sections {
 
     private void checkAddSection(Section addSection) {
         validateExistsUpStationAndDownStation(addSection);
+        validateNotExistsUpStationAndDownStation(addSection);
     }
 
     private void validateExistsUpStationAndDownStation(Section addSection) {
         if (isEqualsUpStation(addSection) && isEqualsDownStation(addSection)) {
             throw new BadRequestException("이미 등록된 구간입니다.");
+        }
+    }
+
+    private void validateNotExistsUpStationAndDownStation(Section addSection) {
+        if (isNotExistsStation(addSection.getUpStation()) && isNotExistsStation(addSection.getDownStation())) {
+            throw new BadRequestException("연결될 구간이 없습니다.");
         }
     }
 

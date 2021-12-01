@@ -111,4 +111,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선_생성_실패됨(구간_생성_요청_응답);
     }
+
+    @Test
+    void 상행역과_하행역_둘다_노선에_등록되어있지_않으면_추가할_수_없다(){
+         // given
+        ExtractableResponse<Response> 지하철_노선_생성_요청_응답 = 생성_요청(LINE_ROOT_PATH, 신분당선_강남역_양재역);
+        Long 신분당선_ID = 지하철_노선_ID_추출(지하철_노선_생성_요청_응답);
+
+        SectionRequest 양재시민의숲_청계산입구 = 종점역정보_파라미터_생성(양재시민의숲.getId(), 청계산입구.getId(), 8);
+
+        // when
+        ExtractableResponse<Response> 구간_생성_요청_응답 = 생성_요청(LINE_ROOT_PATH + 신분당선_ID + LINE_ADD_SECTIONS_PATH, 양재시민의숲_청계산입구);
+
+        // then
+        지하철_노선_생성_실패됨(구간_생성_요청_응답);
+    }
 }
