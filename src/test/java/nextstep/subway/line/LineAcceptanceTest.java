@@ -25,8 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     private static final String LINE_DEFAULT_URL = "/lines";
-    private static final String LINE_CREATE_URL = LINE_DEFAULT_URL + "/create";
-    private static final String LINE_LIST_URL = LINE_DEFAULT_URL + "/list";
 
     private LineRequest defaultLine;
 
@@ -80,7 +78,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .get(LINE_LIST_URL)
+                .get(LINE_DEFAULT_URL)
                 .then().log().all()
                 .extract();
 
@@ -189,7 +187,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .body(line)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post(LINE_CREATE_URL)
+                .post(LINE_DEFAULT_URL)
                 .then().log().all()
                 .extract();
     }
