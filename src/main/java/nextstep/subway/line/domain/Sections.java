@@ -2,14 +2,17 @@ package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
+    private static final int MIN_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections;
@@ -46,31 +49,57 @@ public class Sections {
         return getSortedList().contains(station);
     }
 
-    void updateByFromStation(Station findStation, Distance distance, Station updateStation) {
-        Section byFromStation = findByFromStation(findStation);
-        if (byFromStation != null) {
-            byFromStation.updateFromStation(distance, updateStation);
-        }
+    int countSectionByStation(Station station) {
+        return sections.stream()
+            .filter(section -> section.hasStation(station))
+            .collect(Collectors.toList())
+            .size();
     }
 
-    void updateByToStation(Station findStation, Distance distance, Station updateStation) {
-        Section byToStation = findByToStation(findStation);
-        if (byToStation != null) {
-            byToStation.updateToStation(distance, updateStation);
-        }
+    boolean isMinSize() {
+        return sections.size() == MIN_SIZE;
     }
 
-    private Section findByFromStation(Station station) {
+    Section findRemoveSection(Station station) {
+        if (countSectionByStation(station) > MIN_SIZE) {
+            return updateByRemoveStation(station);
+        }
+
+        return sections.stream()
+            .filter(section -> section.hasStation(station))
+            .findFirst().orElseThrow(() -> new NotFoundException());
+    }
+
+    void updateByFromStation(Station stationToFind, Distance distance, Station fromStation) {
+        Optional<Section> optionalSection = findByFromStation(stationToFind);
+        optionalSection.ifPresent(section ->
+            section.updateFromStation(distance, fromStation));
+    }
+
+    void updateByToStation(Station stationToFind, Distance distance, Station toStation) {
+        Optional<Section> optionalSection = findByToStation(stationToFind);
+        optionalSection.ifPresent(section ->
+            section.updateToStation(distance, toStation));
+    }
+
+    Section updateByRemoveStation(Station station) {
+        Section fromSection = findByFromStation(station)
+            .orElseThrow(() -> new NotFoundException());
+        Section toSection = findByToStation(station)
+            .orElseThrow(() -> new NotFoundException());
+        toSection.updateByRemoveSection(fromSection);
+        return fromSection;
+    }
+
+    private Optional<Section> findByFromStation(Station station) {
         return sections.stream()
             .filter(section -> section.isFromStation(station))
-            .findFirst()
-            .orElse(null);
+            .findFirst();
     }
 
-    private Section findByToStation(Station station) {
+    private Optional<Section> findByToStation(Station station) {
         return sections.stream()
             .filter(section -> section.isToStation(station))
-            .findFirst()
-            .orElse(null);
+            .findFirst();
     }
 }

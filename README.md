@@ -101,6 +101,18 @@ npm run dev
   - [x] 하행역 뒤에 새로운 역 추가 기능
   - [x] 역 사이에 새로운 역 추가 기능
 
+### 구간 제거 기능
+- [x] 구간 제거 인수 테스트 작성
+  - [x]   Happy path 테스트 케이스 작성
+  - [x] 노선에 등록되어 있지 않은 역을 제거하려는 경우 exception
+  - [x] 구간이 하나인 경우 포함된 역을 제거하려는 경우 exception
+- [x] 기능 구현
+  - [x] `DELETE /lines/1/sections?stationId=2`
+  - [x] 종점이 제거 된 경우 다음으로 오던 역이 종점이 된다.
+  - [x] 중간역을 제거한 경우 재배치 -> 중간 역만 제거하고 길이는 두구간의 길이의 합!!
+  - [x] 노선에 등록되지 않은 역을 제거하려는 경우 CannotDeleteException
+  - [x] 구간이 하나인데 노선에 포함에 역을 제거하려는 경우 CannotDeleteException
+
 
 ## 📝 License
 

@@ -62,21 +62,19 @@ public class Section extends BaseEntity implements Comparable<Section>{
      */
     public Section toLine(Line line) {
         if (this.line != null) {
-            this.line.removeLineStation(this);
+            this.line.removeSection(this);
         }
 
         this.line = line;
         if (!line.containsLineStation(this)) {
-            line.addLineStation(this);
+            line.addSection(this);
         }
         return this;
     }
 
-    private Distance calculateDistance(Distance distance) {
-        try {
-            return this.distance.minus(distance);
-        }catch (BusinessException e) {
-            throw new CannotAddException(Messages.LONG_OR_SAME_DISTANCE.getValues());
+    public void removeLine() {
+        if (this.line != null) {
+            this.line = null;
         }
     }
 
@@ -85,6 +83,10 @@ public class Section extends BaseEntity implements Comparable<Section>{
             return false;
         }
         return this.line.equals(line);
+    }
+
+    boolean hasStation(Station station) {
+        return isFromStation(station) || isToStation(station);
     }
 
     boolean isFromStation(Station station) {
@@ -96,11 +98,15 @@ public class Section extends BaseEntity implements Comparable<Section>{
     }
 
     Section updateFromStation(Distance distance, Station fromStation) {
-        return update(calculateDistance(distance), fromStation, this.toStation);
+        return update(minusDistance(distance), fromStation, this.toStation);
     }
 
     Section updateToStation(Distance distance, Station toStation) {
-        return update(calculateDistance(distance), this.fromStation, toStation);
+        return update(minusDistance(distance), this.fromStation, toStation);
+    }
+
+    Section updateByRemoveSection(Section section) {
+        return update(plusDistance(section.distance), this.fromStation, section.toStation);
     }
 
     private Section update(Distance distance, Station fromStation, Station toStation) {
@@ -108,6 +114,18 @@ public class Section extends BaseEntity implements Comparable<Section>{
         this.fromStation = fromStation;
         this.toStation = toStation;
         return this;
+    }
+
+    private Distance plusDistance(Distance distance) {
+        return this.distance.plus(distance);
+    }
+
+    private Distance minusDistance(Distance distance) {
+        try {
+            return this.distance.minus(distance);
+        }catch (BusinessException e) {
+            throw new CannotAddException(Messages.LONG_OR_SAME_DISTANCE.getValues());
+        }
     }
 
     @Override

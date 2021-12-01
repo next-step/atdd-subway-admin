@@ -81,7 +81,6 @@ public class LineTest {
 
         Optional<Line> optionalLine2 = lineRepository.findById(save.getId());
         assertThat(optionalLine2.isPresent()).isFalse();
-
     }
 
 

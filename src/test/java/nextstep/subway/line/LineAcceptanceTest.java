@@ -21,8 +21,6 @@ import org.springframework.http.HttpStatus;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final Integer TEST_REFERENCE_DISTANCE = 10;
-
     private static final String API_URL = "/lines";
     private static final String STATION_API_URL = "/stations";
 
@@ -43,7 +41,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // 이름, 색상, 상행역id, 하행역id, 거리
         LineRequest lineRequest =
-            new LineRequest("1호선", "Blue", 상행역_ID, 하행역_ID, TEST_REFERENCE_DISTANCE);
+            new LineRequest("1호선", "Blue", 상행역_ID, 하행역_ID, 10);
 
         //when
         //지하철 노선 생성 (상행, 하행 역 정보 포함) 요청
@@ -63,7 +61,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        상행역_하행역_추가역_AND_1호선_저장되어있다();
+        상행역_하행역_구간의_1호선_생성한다(10);
         // 역 등록되어 있음
         Long 상행_서울역_ID = getLongIdByResponse(저장한다(new Station("서울역"), STATION_API_URL));
         Long 햐행_용산역_ID = getLongIdByResponse(저장한다(new Station("용산역"), STATION_API_URL));
@@ -71,7 +69,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_생성_요청
         ExtractableResponse<Response> response =
-            저장한다(new LineRequest("1호선", "Orange", 상행_서울역_ID, 햐행_용산역_ID, TEST_REFERENCE_DISTANCE), API_URL);
+            저장한다(new LineRequest("1호선", "Orange", 상행_서울역_ID, 햐행_용산역_ID, 10), API_URL);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -83,12 +81,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getList() {
         // given
         // 지하철_노선_등록되어_있음
-        상행역_하행역_추가역_AND_1호선_저장되어있다();
+        상행역_하행역_구간의_1호선_생성한다(10);
 
         Long 역삼역_ID = getLongIdByResponse(저장한다(new Station("역삼역"), STATION_API_URL));
         Long 강남역_ID = getLongIdByResponse(저장한다(new Station("강남역"), STATION_API_URL));
         ExtractableResponse<Response> line2 =
-            저장한다(new LineRequest("2호선", "green", 강남역_ID, 역삼역_ID, TEST_REFERENCE_DISTANCE), API_URL);
+            저장한다(new LineRequest("2호선", "green", 강남역_ID, 역삼역_ID, 10), API_URL);
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -111,7 +109,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getOne() {
         // given
         // 지하철_노선_등록되어_있음
-        상행역_하행역_추가역_AND_1호선_저장되어있다();
+        상행역_하행역_구간의_1호선_생성한다(10);
         // when
         // 지하철_노선_조회_요청
         ExtractableResponse<Response> response = 조회한다(line1.header("Location"));
@@ -129,7 +127,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void update() {
         // given
         // 지하철_노선_등록되어_있음
-        상행역_하행역_추가역_AND_1호선_저장되어있다();
+        상행역_하행역_구간의_1호선_생성한다(10);
 
         // when
         // 지하철_노선_수정_요청
@@ -146,7 +144,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void delete() {
         // given
         // 지하철_노선_등록되어_있음
-        상행역_하행역_추가역_AND_1호선_저장되어있다();
+        상행역_하행역_구간의_1호선_생성한다(10);
 
         // when
         // 지하철_노선_제거_요청
@@ -163,12 +161,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         // 지하철 역 3개(상행역, 하행역, 추가역) 추가 되어 있음
         // 상행역-하행역을 구간으로 가진 1호선 등록되어 있음
-        상행역_하행역_추가역_AND_1호선_저장되어있다();
+        상행역_하행역_구간의_1호선_생성한다(10);
+        addStationId = getLongIdByResponse(저장한다(new Station("추가역"), STATION_API_URL));
 
         //when
         // 하행역-추가역 구간 추가
         SectionRequest sectionRequest =
-            new SectionRequest(downStationId, addStationId, TEST_REFERENCE_DISTANCE);
+            new SectionRequest(downStationId, addStationId, 10);
         ExtractableResponse<Response> saveResponse = 저장한다(sectionRequest, sectionUrl);
 
         //then
@@ -180,13 +179,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존 1호선(상행역-하행역, 10)에 상행 구간(추가역-상행역, 10) 추가")
     void addUpSection() {
         //given
-        // 지하철 역 3개(상행역, 하행역, 추가역) 추가 되어 있음
         // 상행역-하행역을 구간으로 가진 1호선 등록되어 있음
-        상행역_하행역_추가역_AND_1호선_저장되어있다();
+        상행역_하행역_구간의_1호선_생성한다(10);
+        // 추가역 저장되어 있음.
+        addStationId = getLongIdByResponse(저장한다(new Station("추가역"), STATION_API_URL));
 
         //when
         // 추가역-서울역 구간 추가
-        SectionRequest sectionRequest = new SectionRequest(addStationId, upStationId, TEST_REFERENCE_DISTANCE);
+        SectionRequest sectionRequest = new SectionRequest(addStationId, upStationId, 10);
         ExtractableResponse<Response> saveResponse = 저장한다(sectionRequest, sectionUrl);
 
         //then
@@ -198,9 +198,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존 1호선(상행역-하행역, 10)에 중간 구간(상행역-추가역, 4) 추가")
     void addMiddleSection() {
         //given
-        // 지하철 역 3개(상행역, 하행역, 추가역) 추가 되어 있음
         // 상행역-하행역(distance : 10)을 구간으로 가진 1호선 등록되어 있음
-        상행역_하행역_추가역_AND_1호선_저장되어있다();
+        상행역_하행역_구간의_1호선_생성한다(10);
+        // 추가역 저장되어 있음.
+        addStationId = getLongIdByResponse(저장한다(new Station("추가역"), STATION_API_URL));
 
         //when
         // 서울역-추가역(distance: 4) 구간 추가
@@ -217,7 +218,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void addSectionAlreadyExistFail() {
         //given
         //상행역,하행역을 구간으로 가진 1호선 등록되어 있음
-        상행역_하행역_추가역_AND_1호선_저장되어있다();
+        상행역_하행역_구간의_1호선_생성한다(10);
+        // 추가역 저장되어 있음.
+        addStationId = getLongIdByResponse(저장한다(new Station("추가역"), STATION_API_URL));
 
         //when
         //서울역,하행역을 상행-하행으로 구간 추가
@@ -228,7 +231,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //"상행역, 하행역이 이미 구간으로 등록되어 있습니다." 오류 메세지 반환
         assertAll(() -> {
             assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-            assertThat(saveResponse.body().jsonPath().getString("message")).isEqualTo("상행역, 하행역이 이미 구간으로 등록되어 있습니다.");
+            assertExceptionMessage(saveResponse, "상행역, 하행역이 이미 구간으로 등록되어 있습니다.");
         });
     }
 
@@ -237,7 +240,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void addSectionNotIncludeFail() {
         //given
         //상행역,하행역을 구간으로 가진 1호선 등록되어 있음
-        상행역_하행역_추가역_AND_1호선_저장되어있다();
+        상행역_하행역_구간의_1호선_생성한다(10);
 
         //강남역,역삼역이 저장되어 있음
         Long 강남역ID = getLongIdByResponse(저장한다(new Station("강남역"), STATION_API_URL));
@@ -252,7 +255,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //"상행역과 하행역이 포함된 구간이 없습니다." 오류 메세지 반환
         assertAll(() -> {
             assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-            assertThat(saveResponse.body().jsonPath().getString("message")).isEqualTo("상행역과 하행역이 포함된 구간이 없습니다.");
+            assertExceptionMessage(saveResponse, "상행역과 하행역이 포함된 구간이 없습니다.");
         });
     }
 
@@ -261,7 +264,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void addSectionLongDistanceFail() {
         //given
         //상행역,하행역을 10길이 구간으로 가진 1호선, 추가역 등록되어 있음
-        상행역_하행역_추가역_AND_1호선_저장되어있다();
+        상행역_하행역_구간의_1호선_생성한다(10);
+        // 추가역 저장되어 있음.
+        addStationId = getLongIdByResponse(저장한다(new Station("추가역"), STATION_API_URL));
 
         //when
         //상행역-추가역을 상행-하행으로 15길이 구간 추가
@@ -272,7 +277,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //"구간의 길이는 기존 구간보다 작아야 합니다." 오류 메세지 반환
         assertAll(() -> {
             assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-            assertThat(saveResponse.body().jsonPath().getString("message")).isEqualTo("구간의 길이는 기존 구간보다 작아야 합니다.");
+            assertExceptionMessage(saveResponse, "구간의 길이는 기존 구간보다 작아야 합니다.");
         });
     }
 
@@ -281,18 +286,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void addSectionSameDistanceFail() {
         //given
         //상행역,하행역을 10길이 구간으로 가진 1호선, 추가역 등록되어 있음
-        상행역_하행역_추가역_AND_1호선_저장되어있다();
+        상행역_하행역_구간의_1호선_생성한다(10);
+        // 추가역 저장되어 있음.
+        addStationId = getLongIdByResponse(저장한다(new Station("추가역"), STATION_API_URL));
 
         //when
         //상행역-추가역을 상행-하행으로 10길이 구간 추가
-        SectionRequest sectionRequest = new SectionRequest(upStationId, addStationId, TEST_REFERENCE_DISTANCE);
+        SectionRequest sectionRequest = new SectionRequest(upStationId, addStationId, 10);
         ExtractableResponse<Response> saveResponse = 저장한다(sectionRequest, sectionUrl);
 
         //then
         //"구간의 길이는 기존 구간보다 작아야 합니다." 오류 메세지 반환
         assertAll(() -> {
             assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-            assertThat(saveResponse.body().jsonPath().getString("message")).isEqualTo("구간의 길이는 기존 구간보다 작아야 합니다.");
+            assertExceptionMessage(saveResponse, "구간의 길이는 기존 구간보다 작아야 합니다.");
         });
 
     }
@@ -302,17 +309,105 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine1Cheonan() {
         //given
         //상행역,하행역을 10길이 구간으로 가진 1호선, 추가역 등록되어 있음
-        상행역_하행역_추가역_AND_1호선_저장되어있다();
+        상행역_하행역_구간의_1호선_생성한다(10);
 
         //when
         //상행역-하행역을 구간으로 가지는 1호선-천안 노선 생성 요청
         LineRequest lineRequest =
-            new LineRequest("1호선-천안", "navy", upStationId, downStationId, TEST_REFERENCE_DISTANCE);
+            new LineRequest("1호선-천안", "navy", upStationId, downStationId, 10);
         ExtractableResponse<Response> response = 저장한다(lineRequest, API_URL);
 
         //then
         //1호선-천안 노선 생성 성공
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @Test
+    @DisplayName("1호선(상행역-추가역-하행역, 5-5)에서 추가역 삭제 성공")
+    void deleteLine1AddStation() {
+        //given 1호선(상행역-추가역-하행역, 5-5) 저장되어 있다.
+        상행역_하행역_구간의_1호선_생성한다(10);
+        추가역을_1호선_구간사이에_생성한다(5);
+
+        // when
+        // 추가역_제거_요청
+        ExtractableResponse<Response> response = 삭제한다(getSectionDeleteUrl(addStationId));
+
+        // then
+        // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    @DisplayName("1호선(상행역-추가역-하행역, 5-5)에서 상행역 삭제 성공")
+    void deleteLine1UpStation() {
+        //given 1호선(상행역-추가역-하행역, 5-5) 저장되어 있다.
+        상행역_하행역_구간의_1호선_생성한다(10);
+        추가역을_1호선_구간사이에_생성한다(5);
+
+        // when
+        // 추가역_제거_요청
+        ExtractableResponse<Response> deletedResponse = 삭제한다(getSectionDeleteUrl(upStationId));
+
+        // then
+        // 지하철_노선_삭제됨
+        assertThat(deletedResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    @DisplayName("1호선(상행역-추가역-하행역, 5-5)에서 하행역 삭제 성공")
+    void deleteLine1DownStation() {
+        //given 1호선(상행역-추가역-하행역, 5-5) 저장되어 있다.
+        상행역_하행역_구간의_1호선_생성한다(10);
+        추가역을_1호선_구간사이에_생성한다(5);
+
+        // when
+        // 추가역_제거_요청
+        ExtractableResponse<Response> deletedResponse = 삭제한다(getSectionDeleteUrl(downStationId));
+
+        // then
+        // 지하철_노선_삭제됨
+        assertThat(deletedResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+;
+    }
+
+    @Test
+    @DisplayName("1호선(상행역-추가역-하행역, 10-10)에서 노선에 포함되지 않은 강남역 삭제 요청 시 실패")
+    void deleteLine1NotIncludeStation() {
+        //given 1호선(상행역-추가역-하행역, 5-5) 저장되어 있다.
+        상행역_하행역_구간의_1호선_생성한다(10);
+        추가역을_1호선_구간사이에_생성한다(5);
+        //강남역 저장되어 있음
+        Long 강남역ID = getLongIdByResponse(저장한다(new Station("강남역"), STATION_API_URL));
+
+        // when
+        // 강남역_제거_요청 시
+        ExtractableResponse<Response> response = 삭제한다(getSectionDeleteUrl(강남역ID));
+
+        //then
+        //"구간으로 등록되어 있지 않은 역입니다." 오류 메세지 반환
+        assertAll(() -> {
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertExceptionMessage(response, "구간으로 등록되어 있지 않은 역입니다.");
+        });
+    }
+
+    @Test
+    @DisplayName("구간이 하나만 있는 1호선(상행역-하행역, 10)에서 상행역 삭제 요청 시 등록된 구간이 하나밖에 없어서 실패")
+    void deleteLine1CannotDeleteStation() {
+        //given 1호선(상행역-하행역, 10) 저장되어 있다.
+        상행역_하행역_구간의_1호선_생성한다(10);
+
+        // when
+        // 상행역_제거_요청 시
+        ExtractableResponse<Response> response = 삭제한다(getSectionDeleteUrl(upStationId));
+
+        //then
+        //"노선에 등록된 구간이 1개만 존재하므로 삭제할 수 없습니다." 오류 메세지 반환
+        assertAll(() -> {
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertExceptionMessage(response, "노선에 등록된 구간이 1개만 존재하므로 삭제할 수 없습니다.");
+        });
     }
 
     private void 노선정보에구간추가되어_역정보목록정렬되어조회됨(ExtractableResponse<Response> response,
@@ -330,18 +425,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
         });
     }
 
-    private void 상행역_하행역_추가역_AND_1호선_저장되어있다() {
+    private void 상행역_하행역_구간의_1호선_생성한다(Integer distance) {
         // given
         // 지하철 역 3개(상행역, 하행역, 추가역) 추가 되어 있음
         upStationId = getLongIdByResponse(저장한다(new Station("상행역"), STATION_API_URL));
         downStationId = getLongIdByResponse(저장한다(new Station("하행역"), STATION_API_URL));
-        addStationId = getLongIdByResponse(저장한다(new Station("추가역"), STATION_API_URL));
 
         // 상행역-하행역을 구간으로 가진 1호선 등록되어 있음
         LineRequest lineRequest =
-            new LineRequest("1호선", "blue", upStationId, downStationId, TEST_REFERENCE_DISTANCE);
+            new LineRequest("1호선", "blue", upStationId, downStationId, distance);
         line1 = 저장한다(lineRequest, API_URL);
         sectionUrl = line1.header("Location") + "/sections";
+    }
+
+    private void 추가역을_1호선_구간사이에_생성한다(Integer distance) {
+        addStationId = getLongIdByResponse(저장한다(new Station("추가역"), STATION_API_URL));
+        SectionRequest sectionRequest = new SectionRequest(upStationId, addStationId, distance);
+        저장한다(sectionRequest, sectionUrl);
+    }
+
+    private String getSectionDeleteUrl(Long targetId) {
+        return sectionUrl+"?stationId="+targetId;
+    }
+
+    private void assertExceptionMessage(ExtractableResponse<Response> response, String message) {
+        assertThat(response.body().jsonPath().getString("message")).isEqualTo(message);
     }
 
 }
