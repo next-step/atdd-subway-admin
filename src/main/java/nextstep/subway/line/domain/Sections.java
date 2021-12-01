@@ -1,6 +1,5 @@
 package nextstep.subway.line.domain;
 
-import static java.util.stream.Collectors.*;
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.*;
 import static nextstep.subway.common.Message.*;
@@ -28,10 +27,8 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(List<Section> newSections, Line line) {
-        List<Section> addNewSections = newSections.stream()
-                                                  .peek(section -> section.setLine(line))
-                                                  .collect(toList());
-        this.sections.addAll(addNewSections);
+        newSections.forEach(section -> section.setLine(line));
+        this.sections.addAll(newSections);
     }
 
     public void add(Section newSection, Line line) {
@@ -51,7 +48,7 @@ public class Sections {
     }
 
     private void isNotExistsStation(Section newSection) {
-        if (!matchStation(section -> section.isNotStations(newSection))) {
+        if (!matchStation(section -> section.contations(newSection))) {
             throw new StationNotFoundException(MESSAGE_IS_NOT_EXISTS_STATION);
         }
     }
@@ -92,10 +89,9 @@ public class Sections {
     }
 
     private Optional<Section> findSections(Predicate<Section> condition) {
-        Optional<Section> findSection = sections.stream()
-                                                .filter(condition)
-                                                .findFirst();
-        return findSection;
+        return sections.stream()
+                       .filter(condition)
+                       .findFirst();
     }
 
     public boolean contains(Section section) {
@@ -104,7 +100,7 @@ public class Sections {
 
     public List<Station> getStations() {
         Section findSection = findFirstSection();
-        List<Station> resultStations = new ArrayList();
+        List<Station> resultStations = new ArrayList<>();
 
         while (matchStation(isUpStation(findSection.getDownStation()))) {
             resultStations.add(findSection.getUpStation());

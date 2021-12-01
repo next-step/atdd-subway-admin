@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import static nextstep.subway.common.Message.*;
-import static nextstep.subway.line.domain.Distance.*;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -28,5 +27,13 @@ class DistanceTest {
         Assertions.assertThatThrownBy(() -> {
             distance.subtract(new Distance(10));
         }).isInstanceOf(ArithmeticException.class);
+    }
+
+    @Test
+    void 현재거리보다_작은_수를_입력시_정상() {
+        Distance distance = new Distance(9);
+        Distance result = distance.subtract(new Distance(5));
+
+        Assertions.assertThat(result).isEqualTo(new Distance(4));
     }
 }

@@ -37,7 +37,8 @@ public class LineService {
     }
 
     public void addSection(Long lineId, SectionRequest newSectionRequest) {
-        Line line = lineRepository.findById(lineId).orElseThrow(NoResultDataException::new);
+        Line line = lineRepository.findById(lineId)
+                                  .orElseThrow(NoResultDataException::new);
         line.addSection(createSection(newSectionRequest));
     }
 

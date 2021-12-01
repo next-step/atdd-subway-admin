@@ -71,7 +71,7 @@ public class Section extends BaseEntity {
     }
 
     public void changeUpSection(Section newSection) {
-        if (this.upStation.getName().equals(newSection.getDownStation().getName())) {
+        if (this.upStation.equalsName(newSection.getDownStation())) {
             return;
         }
         this.upStation = newSection.getDownStation();
@@ -88,7 +88,7 @@ public class Section extends BaseEntity {
             (downStation.equalsName(newSection.getUpStation())) && upStation.equalsName(newSection.getDownStation()));
     }
 
-    public boolean isNotStations(Section newSection) {
+    public boolean contations(Section newSection) {
         return (downStation.equalsName(newSection.getUpStation()) || upStation.equalsName(newSection.getUpStation()) ||
             (downStation.equalsName(newSection.getDownStation()) || upStation.equalsName(newSection.getDownStation())));
     }
