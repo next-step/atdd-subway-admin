@@ -9,8 +9,8 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SectionFixture {
-    private SectionFixture() {
+public class SectionAcceptanceFixture {
+    private SectionAcceptanceFixture() {
 
     }
 

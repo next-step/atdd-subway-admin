@@ -29,6 +29,7 @@ class LineNameTest {
     void emptyLineNameException() {
         assertThatThrownBy(() -> {
             final LineName emptyLineName = new LineName("");
+
         }).isInstanceOf(InvalidEntityRequiredException.class)
                 .hasMessageContaining("필수로 필요한 Entity member가 들어오지 않았습니다.");
     }

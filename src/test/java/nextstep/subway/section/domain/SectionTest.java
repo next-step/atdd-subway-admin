@@ -63,6 +63,7 @@ class SectionTest {
     void subtractDistanceException() {
         assertThatThrownBy(() -> {
            section.subtractDistance(9);
+
         }).isInstanceOf(NegativeNumberDistanceException.class)
         .hasMessageContaining("현재 계산된 거리 값이 음수입니다.");
     }

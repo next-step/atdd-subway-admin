@@ -4,9 +4,9 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.LineAcceptanceTest;
-import nextstep.subway.line.LineFixture;
+import nextstep.subway.line.LineAcceptanceFixture;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.StationFixture;
+import nextstep.subway.station.StationAcceptanceFixture;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,9 +29,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
-        upStation = StationFixture.ofStationResponse(StationFixture.requestCreateStations("강남역"));
-        downStation = StationFixture.ofStationResponse(StationFixture.requestCreateStations("역삼역"));
-        lineResponse = LineFixture.ofLineResponse(
+        upStation = StationAcceptanceFixture.ofStationResponse(StationAcceptanceFixture.requestCreateStations("강남역"));
+        downStation = StationAcceptanceFixture.ofStationResponse(StationAcceptanceFixture.requestCreateStations("역삼역"));
+        lineResponse = LineAcceptanceFixture.ofLineResponse(
                 LineAcceptanceTest.requestCreateLineWithStation(upStation, downStation, 9, "2호선", "green")
         );
 
@@ -42,20 +42,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSectionAsFirstStation() {
         // given
         // 지하철 역_생성
-        StationResponse upStation = StationFixture.ofStationResponse(StationFixture.requestCreateStations("신분당역"));
+        StationResponse upStation = StationAcceptanceFixture.ofStationResponse(StationAcceptanceFixture.requestCreateStations("신분당역"));
         StationResponse downStation = this.upStation;
-        Map<String, String> params = SectionFixture.createParams(upStation, downStation, 4);
+        Map<String, String> params = SectionAcceptanceFixture.createParams(upStation, downStation, 4);
 
         // when
         // 지하철_노선에_구간_등록_요청
-        ExtractableResponse<Response> response = SectionFixture.requestAddSection(lineResponse.getId(), params);
+        ExtractableResponse<Response> response = SectionAcceptanceFixture.requestAddSection(lineResponse.getId(), params);
 
         // then
         // 지하철_노선에_지하철역_등록됨
         checkResponseStatus(response, HttpStatus.OK);
         // 지하철_노선_순서_확인
-        checkSameStations(StationFixture.ofStationResponses(upStation, this.upStation, downStation),
-                LineFixture.ofLineResponse(response));
+        checkSameStations(StationAcceptanceFixture.ofStationResponses(upStation, this.upStation, downStation),
+                LineAcceptanceFixture.ofLineResponse(response));
     }
 
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
@@ -64,19 +64,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철 역_생성
         StationResponse upStation = this.downStation;
-        StationResponse downStation = StationFixture.ofStationResponse(StationFixture.requestCreateStations("잠실역"));
-        Map<String, String> params = SectionFixture.createParams(upStation, downStation, 4);
+        StationResponse downStation = StationAcceptanceFixture.ofStationResponse(StationAcceptanceFixture.requestCreateStations("잠실역"));
+        Map<String, String> params = SectionAcceptanceFixture.createParams(upStation, downStation, 4);
 
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = SectionFixture.requestAddSection(lineResponse.getId(), params);
+        ExtractableResponse<Response> response = SectionAcceptanceFixture.requestAddSection(lineResponse.getId(), params);
 
         // then
         // 지하철_노선에_지하철역_등록됨
         checkResponseStatus(response, HttpStatus.OK);
         // 지하철_노선_순서_확인
-        checkSameStations(StationFixture.ofStationResponses(this.upStation, upStation, downStation),
-                LineFixture.ofLineResponse(response));
+        checkSameStations(StationAcceptanceFixture.ofStationResponses(this.upStation, upStation, downStation),
+                LineAcceptanceFixture.ofLineResponse(response));
     }
 
     @DisplayName("역 사이에 새로운 역을 등록한다. (위쪽 부터)")
@@ -85,12 +85,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철 역_생성
         StationResponse upStation = this.upStation;
-        StationResponse downStation = StationFixture.ofStationResponse(StationFixture.requestCreateStations("강남역삼사이역"));
-        Map<String, String> params = SectionFixture.createParams(upStation, downStation, 4);
+        StationResponse downStation = StationAcceptanceFixture.ofStationResponse(StationAcceptanceFixture.requestCreateStations("강남역삼사이역"));
+        Map<String, String> params = SectionAcceptanceFixture.createParams(upStation, downStation, 4);
 
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = SectionFixture.requestAddSection(lineResponse.getId(), params);
+        ExtractableResponse<Response> response = SectionAcceptanceFixture.requestAddSection(lineResponse.getId(), params);
 
         // then
         // 지하철_노선에_지하철역_등록됨
@@ -98,10 +98,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_조회
-        LineFixture.requestGetLineById(lineResponse.getId());
+        LineAcceptanceFixture.requestGetLineById(lineResponse.getId());
         // 지하철_노선_순서_확인
-        checkSameStations(StationFixture.ofStationResponses(this.upStation, downStation, upStation),
-                LineFixture.ofLineResponse(response));
+        checkSameStations(StationAcceptanceFixture.ofStationResponses(this.upStation, downStation, upStation),
+                LineAcceptanceFixture.ofLineResponse(response));
     }
 
     @DisplayName("역 사이에 새로운 역을 등록한다. (아래쪽 부터)")
@@ -109,20 +109,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSectionAsNewStation2() {
         // given
         // 지하철 역_생성
-        StationResponse upStation = StationFixture.ofStationResponse(StationFixture.requestCreateStations("강남역삼사이역"));
+        StationResponse upStation = StationAcceptanceFixture.ofStationResponse(StationAcceptanceFixture.requestCreateStations("강남역삼사이역"));
         StationResponse downStation = this.downStation;
-        Map<String, String> params = SectionFixture.createParams(upStation, downStation, 4);
+        Map<String, String> params = SectionAcceptanceFixture.createParams(upStation, downStation, 4);
 
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = SectionFixture.requestAddSection(lineResponse.getId(), params);
+        ExtractableResponse<Response> response = SectionAcceptanceFixture.requestAddSection(lineResponse.getId(), params);
 
         // then
         // 지하철_노선에_지하철역_등록됨
         checkResponseStatus(response, HttpStatus.OK);
         // 지하철_노선_순서_확인
-        checkSameStations(StationFixture.ofStationResponses(this.upStation, upStation, downStation),
-                LineFixture.ofLineResponse(response));
+        checkSameStations(StationAcceptanceFixture.ofStationResponses(this.upStation, upStation, downStation),
+                LineAcceptanceFixture.ofLineResponse(response));
     }
 
     @DisplayName("역 사이 요청 역의 길이가 기존 역 길이보다 긴 경우 등록할 수 없다.")
@@ -130,13 +130,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSectionWithLongerDistanceThanOrigin() {
         // given
         // 지하철 역_생성
-        StationResponse upStation = StationFixture.ofStationResponse(StationFixture.requestCreateStations("강남역삼사이역"));
+        StationResponse upStation = StationAcceptanceFixture.ofStationResponse(StationAcceptanceFixture.requestCreateStations("강남역삼사이역"));
         StationResponse downStation = this.downStation;
-        Map<String, String> params = SectionFixture.createParams(upStation, downStation, 10);
+        Map<String, String> params = SectionAcceptanceFixture.createParams(upStation, downStation, 10);
 
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = SectionFixture.requestAddSection(lineResponse.getId(), params);
+        ExtractableResponse<Response> response = SectionAcceptanceFixture.requestAddSection(lineResponse.getId(), params);
 
         // then
         // 지하철_노선에_지하철역_등록_실패
@@ -148,11 +148,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSectionWithAlreadyRegisteredStations() {
         // given
         // 지하철 역_생성
-        Map<String, String> params = SectionFixture.createParams(upStation, downStation, 4);
+        Map<String, String> params = SectionAcceptanceFixture.createParams(upStation, downStation, 4);
 
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = SectionFixture.requestAddSection(lineResponse.getId(), params);
+        ExtractableResponse<Response> response = SectionAcceptanceFixture.requestAddSection(lineResponse.getId(), params);
 
         // then
         // 지하철_노선에_지하철역_등록_실패
@@ -164,13 +164,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSectionWithNoRegisteredStations() {
         // given
         // 지하철 역_생성
-        StationResponse upStation = StationFixture.ofStationResponse(StationFixture.requestCreateStations("새로운 역1"));
-        StationResponse downStation = StationFixture.ofStationResponse(StationFixture.requestCreateStations("새로운 역2"));
-        Map<String, String> params = SectionFixture.createParams(upStation, downStation, 4);
+        StationResponse upStation = StationAcceptanceFixture.ofStationResponse(StationAcceptanceFixture.requestCreateStations("새로운 역1"));
+        StationResponse downStation = StationAcceptanceFixture.ofStationResponse(StationAcceptanceFixture.requestCreateStations("새로운 역2"));
+        Map<String, String> params = SectionAcceptanceFixture.createParams(upStation, downStation, 4);
 
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = SectionFixture.requestAddSection(lineResponse.getId(), params);
+        ExtractableResponse<Response> response = SectionAcceptanceFixture.requestAddSection(lineResponse.getId(), params);
 
         // then
         // 지하철_노선에_지하철역_등록_실패

@@ -26,6 +26,7 @@ class DistanceTest {
         // then
         assertThatThrownBy(() -> {
             final Distance distance = new Distance(-1);
+
         }).isInstanceOf(NegativeNumberDistanceException.class)
         .hasMessageContaining("현재 계산된 거리 값이 음수입니다. : -1");
     }

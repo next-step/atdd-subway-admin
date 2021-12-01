@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class LineFixture {
-    private LineFixture() {
+public class LineAcceptanceFixture {
+    private LineAcceptanceFixture() {
     }
 
     public static Map<String, String> createParams(String name, String color) {
@@ -90,7 +90,7 @@ public class LineFixture {
     @SafeVarargs
     public static List<LineResponse> ofLineResponses(ExtractableResponse<Response>... createdResponses) {
         return Arrays.stream(createdResponses)
-                .map(LineFixture::ofLineResponse)
+                .map(LineAcceptanceFixture::ofLineResponse)
                 .collect(Collectors.toList());
     }
 }

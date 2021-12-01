@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class StationFixture {
-    private StationFixture() {
+public class StationAcceptanceFixture {
+    private StationAcceptanceFixture() {
     }
 
     private static Map<String, String> createParams(String name) {

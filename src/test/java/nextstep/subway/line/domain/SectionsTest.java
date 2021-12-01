@@ -68,6 +68,7 @@ class SectionsTest {
     void addSectionBothStationsException() {
         assertThatThrownBy(() -> {
             this.sections.addSection(line, upStation, downStation, 5);
+
         }).isInstanceOf(InvalidDuplicatedSection.class)
         .hasMessageContaining("현재 입력된 역들이 겹치는 구간입니다.");
     }
@@ -77,6 +78,7 @@ class SectionsTest {
     void addSectionNoStationsException() {
         assertThatThrownBy(() -> {
             this.sections.addSection(line, new Station("새로운 역1"), new Station("새로운 역2"), 5);
+
         }).isInstanceOf(NotContainsStationException.class)
         .hasMessageContaining("현재 입력된 역들이 노선에 존재하지 않습니다.");
     }

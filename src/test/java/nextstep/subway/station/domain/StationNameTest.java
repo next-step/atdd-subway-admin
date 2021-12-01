@@ -29,6 +29,7 @@ class StationNameTest {
     void emptyStationNameException() {
         assertThatThrownBy(() -> {
             final StationName emptyStationName = new StationName("");
+
         }).isInstanceOf(InvalidEntityRequiredException.class)
                 .hasMessageContaining("필수로 필요한 Entity member가 들어오지 않았습니다.");
     }
