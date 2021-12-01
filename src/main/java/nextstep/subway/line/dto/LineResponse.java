@@ -32,7 +32,7 @@ public class LineResponse {
     }
 
     private static List<StationResponse> assembleStationsResponse(Line line) {
-        return line.getUpStationAndDownStation().stream()
+        return line.getStations().stream()
                 .map(station -> StationResponse.of(station))
                 .collect(Collectors.toList());
     }

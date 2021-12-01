@@ -50,12 +50,50 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getUpStationAndDownStation() {
-        List<Station> upStationAndDownStation = new ArrayList<>();
-        for(Section section : sections) {
-            upStationAndDownStation.add(section.getUpStation());
-            upStationAndDownStation.add(section.getDownStation());
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+
+        Station station = findFirstStation();
+        stations.add(station);
+
+        while (isExistNextSection(station)) {
+            Section nextSection = findNextSection(station);
+            station = nextSection.getDownStation();
+            stations.add(station);
         }
-        return upStationAndDownStation;
+        return stations;
+    }
+
+    private Station findFirstStation() {
+        Station station = sections.get(0).getUpStation();
+        while (isExistPreSection(station)) {
+            Section section = findPreSection(station);
+            station = section.getUpStation();
+        }
+        return station;
+    }
+
+    private boolean isExistPreSection(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.equalDownStation(station));
+    }
+
+    private Section findPreSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.equalDownStation(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("이전 구간이 없습니다."));
+    }
+
+    private boolean isExistNextSection(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.equalUpStation(station));
+    }
+
+    private Section findNextSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.equalUpStation(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("다음 구간이 없습니다."));
     }
 }
