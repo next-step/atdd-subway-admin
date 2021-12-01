@@ -1,6 +1,7 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.Sections;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -24,13 +25,15 @@ public class LineResponse {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = generateStations(sections);
+        this.stations = getSortedStations(sections);
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
     }
 
-    private List<StationResponse> generateStations(List<Section> sections) {
-        return StationResponse.listFromSectionsOf(sections);
+    private List<StationResponse> getSortedStations(List<Section> sections) {
+        return StationResponse.listOf(
+                new Sections(sections).getSortedStations()
+        );
     }
 
     public static LineResponse of(Line line) {
