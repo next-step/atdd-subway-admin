@@ -85,4 +85,12 @@ public class LineService {
         line.removeSection(targetStation);
         lineRepository.save(line);
     }
+
+    public SectionResponse findSection(Long id, Long upStationId, Long downStationId) {
+        Line line = findById(id);
+        Station upStation = findStationById(upStationId);
+        Station downStation = findStationById(downStationId);
+        Section section = line.getSections().findSection(upStation, downStation);
+        return SectionResponse.of(section);
+    }
 }

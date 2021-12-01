@@ -79,6 +79,13 @@ public class Sections {
             .ifPresent(section -> sections.remove(section));
     }
 
+    public Section findSection(Station upStation, Station downStation) {
+        return sections.stream()
+            .filter(section -> section.isSameUpStation(upStation)
+                && section.isSameDownStation(downStation))
+            .findFirst().orElseThrow(SectionNotFoundException::new);
+    }
+
     private void mergeSection(Station targetStation) {
         Section targetSection = sections.stream()
             .filter(section -> section.isSameUpStation(targetStation))

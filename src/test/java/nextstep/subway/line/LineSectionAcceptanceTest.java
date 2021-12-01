@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
@@ -191,6 +192,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선에서_역_삭제됨(response);
         지하철_노선_목록_일치함(LineAcceptanceTest.지하철_노선_조회(lineLocation), Arrays.asList("강남역", "정자역"));
+        노선_길이_일치함(노선에서_구간_조회(lineLocation, 강남역_Id, 정자역_Id), 10);
     }
 
     @DisplayName("노선에 등록되어 있지 않은 역을 제거할 수 없다.")
@@ -218,6 +220,27 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_삭제_실패(response);
+    }
+
+    private void 노선_길이_일치함(ExtractableResponse<Response> response, int expectedDistance) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        SectionResponse sectionResponse = response.body().as(SectionResponse.class);
+
+        assertThat(sectionResponse.getDistance()).isEqualTo(expectedDistance);
+    }
+
+    private ExtractableResponse<Response> 노선에서_구간_조회(String path, Long upStationId,
+        Long downStationId) {
+        String queryPath = path + "/sections";
+
+        return RestAssured.given().log().all()
+            .param("upStationId", upStationId)
+            .param("downStationId", downStationId)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get(queryPath)
+            .then().log().all()
+            .extract();
     }
 
     private void 지하철_노선_목록_일치함(ExtractableResponse<Response> response,
