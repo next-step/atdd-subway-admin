@@ -34,7 +34,7 @@ public class Distance {
     }
 
     public Distance add(Distance toAdd) {
-        return Distance.of(distance - toAdd.getDistance());
+        return Distance.of(distance + toAdd.getDistance());
     }
 
     private void validateDistanceGreaterThanZero(int distance) {

@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -26,5 +27,19 @@ class DistanceTest {
             () -> assertThatThrownBy(() -> distance.subtract(Distance.of(3)))
                 .isInstanceOf(IllegalDistanceException.class)
         );
+    }
+
+    @Test
+    void test_거리_빼기() {
+        Distance distance = Distance.of(5);
+
+        assertThat(distance.subtract(Distance.of(3)).getDistance()).isEqualTo(2);
+    }
+
+    @Test
+    void test_거리_더하기() {
+        Distance distance = Distance.of(1);
+
+        assertThat(distance.add(Distance.of(7)).getDistance()).isEqualTo(8);
     }
 }
