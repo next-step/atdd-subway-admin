@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import static java.util.Arrays.*;
 import static java.util.stream.Collectors.*;
+import static nextstep.subway.common.Message.*;
 import static nextstep.subway.line.LineAcceptanceTest.*;
 import static nextstep.subway.line.exception.AlreadyRegisteredException.*;
 import static nextstep.subway.station.StationAcceptanceTest.*;
@@ -13,6 +14,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import nextstep.subway.line.exception.AlreadyRegisteredException;
+import nextstep.subway.line.exception.OnlyOneSectionException;
+import nextstep.subway.line.exception.SectionNotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.exception.StationNotFoundException;
 
@@ -155,7 +158,7 @@ class SectionsTest {
         Assertions.assertThatThrownBy(() -> {
                       sections.addSection(new Section(stationSinchon, stationGangNam, new Distance(5)));
                   }).isInstanceOf(AlreadyRegisteredException.class)
-                  .hasMessage(MESSAGE_ALREADY_REGISTERED_SECTION);
+                  .hasMessage(MESSAGE_ALREADY_REGISTERED_SECTION.getMessage());
     }
 
     @Test
@@ -225,5 +228,39 @@ class SectionsTest {
         List<Station> stations = sections.getStations();
 
         Assertions.assertThat(stations).containsExactly(stationGangNam, stationSinChon, stationYeokSam);
+    }
+
+    @Test
+    void 등록되지_않은_구간_삭제시_예외() {
+        // given
+        Station stationGangNam = new Station(1L, "강남역");
+        Station stationSinChon = new Station(2L, "신촌역");
+        Station stationYoungSan = new Station(3L, "용산역");
+        Station stationYeokSam = new Station(4L, "역삼역");
+        Line line = new Line(LINE_ONE, LINE_ONE_COLOR_RED);
+        Sections sections = new Sections();
+        sections.add(new Section(stationGangNam, stationSinChon, new Distance(10)), line);
+        sections.addSection(new Section(2L, stationSinChon, stationYoungSan, new Distance(4), line));
+
+        // then
+        Assertions.assertThatThrownBy(() -> {
+            sections.removeSection(stationYeokSam);
+        }).isInstanceOf(SectionNotFoundException.class);
+
+    }
+
+    @Test
+    void 구간이_한개만_있는경우_예외() {
+        // given
+        Station stationGangNam = new Station(1L, "강남역");
+        Station stationSinChon = new Station(2L, "신촌역");
+        Line line = new Line(LINE_ONE, LINE_ONE_COLOR_RED);
+        Sections sections = new Sections();
+        sections.add(new Section(stationGangNam, stationSinChon, new Distance(10)), line);
+
+        // then
+        Assertions.assertThatThrownBy(() -> {
+            sections.removeSection(stationSinChon);
+        }).isInstanceOf(OnlyOneSectionException.class);
     }
 }

@@ -1,11 +1,13 @@
 package nextstep.subway.line.exception;
 
+import static nextstep.subway.common.Message.*;
+
 import nextstep.subway.common.exception.ServiceException;
 
 public class OnlyOneSectionException extends ServiceException {
-    public static final String MESSAGE_ONLY_ONE_SECTION = "해당 라인에는 하나의 구간밖에 없습니다.";
+
     public OnlyOneSectionException() {
-        super(MESSAGE_ONLY_ONE_SECTION);
+        super(MESSAGE_ONLY_ONE_SECTION.getMessage());
     }
 
     public OnlyOneSectionException(String message) {

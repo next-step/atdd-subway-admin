@@ -50,13 +50,13 @@ public class Sections {
 
     private void isNotExistsStation(Section newSection) {
         if (!matchStation(section -> section.contains(newSection))) {
-            throw new StationNotFoundException(MESSAGE_IS_NOT_EXISTS_STATION);
+            throw new StationNotFoundException(MESSAGE_IS_NOT_EXISTS_STATION.getMessage());
         }
     }
 
     void alreadyRegisteredSection(Section newSection) {
         if (matchStation(section -> section.isStations(newSection))) {
-            throw new AlreadyRegisteredException(MESSAGE_ALREADY_REGISTERED_SECTION);
+            throw new AlreadyRegisteredException(MESSAGE_ALREADY_REGISTERED_SECTION.getMessage());
         }
     }
 
