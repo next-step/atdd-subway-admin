@@ -62,38 +62,12 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.addSection(lineId, sectionRequest));
     }
 
-    @ExceptionHandler(NegativeNumberDistanceException.class)
-    public ResponseEntity<LineResponse> handleNegativeDistanceException(NegativeNumberDistanceException e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(InvalidDuplicatedSection.class)
-    public ResponseEntity<LineResponse> handleInvalidDuplicatedSectionException(InvalidDuplicatedSection e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(NotContainsStationException.class)
-    public ResponseEntity<LineResponse> handleNotContainsStationException(NotContainsStationException e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(DuplicateEntityException.class)
-    public ResponseEntity<LineResponse> handleDuplicateEntityException(DuplicateEntityException e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(InvalidEntityRequiredException.class)
-    public ResponseEntity<StationResponse> handleIllegalArgsException(InvalidEntityRequiredException e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(NotFoundEntityException.class)
-    public ResponseEntity<LineResponse> handleNotFoundEntityException(NotFoundEntityException e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(NotFoundStationException.class)
-    public ResponseEntity<LineResponse> handleNotFoundStationException(NotFoundStationException e) {
+    @ExceptionHandler({
+            NegativeNumberDistanceException.class, InvalidDuplicatedSection.class,
+            NotContainsStationException.class, DuplicateEntityException.class,
+            InvalidEntityRequiredException.class, NotFoundEntityException.class, NotFoundStationException.class
+    })
+    public ResponseEntity<LineResponse> handleInvalidInputException(RuntimeException e) {
         return ResponseEntity.badRequest().build();
     }
 }
