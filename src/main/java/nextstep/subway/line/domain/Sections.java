@@ -7,14 +7,17 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Embeddable
 public class Sections {
   @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
   private List<Section> sections = new ArrayList<>();
 
-  public Sections() {}
+  public Sections() {
+  }
 
   public Sections(List<Section> sections) {
     this.sections = sections;
@@ -35,6 +38,20 @@ public class Sections {
       .orElseThrow(IllegalStateException::new);
   }
 
+  private Station downEndPointStation() {
+    return sections.stream()
+      .filter(this::isDownEndPoint)
+      .findAny()
+      .orElseThrow(IllegalStateException::new)
+      .getDownStation();
+  }
+
+  private boolean isDownEndPoint(Section parentSection) {
+    return sections.stream()
+      .map(Section::getUpStation)
+      .noneMatch(station -> station.equals(parentSection.getDownStation()));
+  }
+
   private boolean isUpEndPoint(Section parentSection) {
     return sections.stream()
       .map(Section::getDownStation)
@@ -42,19 +59,27 @@ public class Sections {
   }
 
   public Stations getUpToDownStations() {
-    List<Station> stations = new ArrayList<>();
-    Section upEndPointSection = upEndPoint();
-    stations.add(upEndPointSection.getUpStation());
-    Station nextStation = upEndPointSection.getDownStation();
-    while (true) {
-      stations.add(nextStation);
-      final Station finalNextStation = nextStation;
-      Section nextSection = sections.stream()
-        .filter(section -> section.getUpStation().equals(finalNextStation))
-        .findAny().orElse(null);
-      if (nextSection == null) break;
-      nextStation = nextSection.getDownStation();
+    List<Station> stations = new ArrayList<>(Arrays.asList(upEndPoint().getUpStation(), upEndPoint().getDownStation()));
+    while (!isEndPointStation(stations)) {
+      stations.add(findNextLinkedStation(stations));
     }
+
     return new Stations(stations);
+  }
+
+  private Station findNextLinkedStation(List<Station> stations) {
+    return sections.stream()
+      .filter(section -> section.getUpStation().equals(stationsLastElement(stations)))
+      .findAny()
+      .orElseThrow(IllegalArgumentException::new)
+      .getDownStation();
+  }
+
+  private boolean isEndPointStation(List<Station> stations) {
+    return stationsLastElement(stations).equals(downEndPointStation());
+  }
+
+  private Station stationsLastElement(List<Station> stations) {
+    return stations.get(stations.size() - 1);
   }
 }

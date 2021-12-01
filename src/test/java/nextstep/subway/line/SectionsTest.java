@@ -38,10 +38,12 @@ public class SectionsTest {
     Station gangnamStation = stationOf(5L, "강남역");
     Station yeoksamStation = stationOf(1L, "역삼역");
     Station kyodaeStation = stationOf(2L, "교대역");
+    Station seochoStation = stationOf(9L, "서초역");
 
     Section firstSection = new Section(1L, secondLine, gangnamStation, yeoksamStation, Distance.of(10));
     Section secondSection = new Section(2L, secondLine, kyodaeStation, gangnamStation, Distance.of(10));
+    Section thirdSection = new Section(2L, secondLine, seochoStation, kyodaeStation, Distance.of(10));
 
-    return new Sections(Arrays.asList(firstSection, secondSection));
+    return new Sections(Arrays.asList(firstSection, secondSection, thirdSection));
   }
 }
