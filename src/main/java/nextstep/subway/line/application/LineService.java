@@ -1,49 +1,67 @@
 package nextstep.subway.line.application;
 
-import javassist.NotFoundException;
-import nextstep.subway.exceptions.DuplicateLineException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.exception.LineDuplicateException;
+import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
-        if (lineRepository.findByName(request.getName()).isPresent()) {
-            throw new DuplicateLineException("중복된 지하철 노선 이름이 있습니다.");
-        }
-        Line persistLine = lineRepository.save(request.toLine());
+        checkDuplicateLine(request);
+
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
+
+        Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
 
-    public List<LineResponse> findAllLines() {
-        return lineRepository.findAll()
-          .stream()
-          .map(LineResponse::of)
-          .collect(Collectors.toList());
+    private Station findStationById(Long stationId) {
+        return stationRepository.findById(stationId)
+          .orElseThrow(StationNotFoundException::new);
     }
 
+    private void checkDuplicateLine(LineRequest request) {
+        if (lineRepository.findByName(request.getName()).isPresent()) {
+            throw new LineDuplicateException(request.getName());
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<LineResponse> findAllLines() {
+        List<Line> persistLines = lineRepository.findAll();
+        return LineResponse.ofList(persistLines);
+    }
+
+    @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException("노선을 찾을 수 없습니다."));
+        Line line = lineRepository.findById(id)
+          .orElseThrow(LineNotFoundException::new);
         return LineResponse.of(line);
     }
 
     public void update(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException("노선을 찾을 수 없습니다."));
+        Line line = lineRepository.findById(id)
+          .orElseThrow(LineNotFoundException::new);
         line.update(lineRequest.toLine());
     }
 
