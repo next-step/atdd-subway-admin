@@ -30,7 +30,7 @@ public class LineController {
     }
 
     @GetMapping
-    public ResponseEntity readLineList(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity readLineList() {
         List<LineResponse> lines = lineService.findLineList();
         return ResponseEntity.ok().body(lines);
     }
