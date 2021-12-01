@@ -29,19 +29,33 @@ public class Sections {
     }
 
     public void add(Section newSection) {
+        if (sectionGroup.isEmpty()) {
+            sectionGroup.add(newSection);
+            return;
+        }
         validAlreadyAdded(newSection);
+        validNotAdded(newSection);
         updateUpStation(newSection);
         sectionGroup.add(newSection);
     }
 
+    private void validNotAdded(Section newSection) {
+        boolean duplicateStation = sectionGroup.stream()
+                .anyMatch(item -> item.containsStation(newSection));
+
+        if (!duplicateStation) {
+            throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어 있지 않습니다.");
+        }
+    }
+
     private void validAlreadyAdded(Section newSection) {
-        boolean duplicateUpstation = sectionGroup.stream()
+        boolean duplicateUpStation = sectionGroup.stream()
                 .anyMatch(item -> item.equalsUpStation(newSection));
 
-        boolean duplicateDownstation = sectionGroup.stream()
+        boolean duplicateDownStation = sectionGroup.stream()
                 .anyMatch(item -> item.equalsDownStation(newSection));
 
-        if (duplicateUpstation && duplicateDownstation) {
+        if (duplicateUpStation && duplicateDownStation) {
             throw new IllegalArgumentException("이미 구역의 역들이 등록 되어 있습니다.");
         }
 

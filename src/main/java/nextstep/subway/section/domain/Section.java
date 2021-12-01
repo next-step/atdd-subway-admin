@@ -29,7 +29,7 @@ public class Section extends BaseEntity {
     @Column
     private int distance;
 
-    protected Section(){
+    protected Section() {
     }
 
     private Section(Line line, Station upStation, Station downStation, int distance) {
@@ -60,7 +60,7 @@ public class Section extends BaseEntity {
     public int getDistance() {
         return distance;
     }
-    
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -89,10 +89,19 @@ public class Section extends BaseEntity {
     }
 
     private void updateDistance(int distance) {
-        if(this.distance <= distance){
+        if (this.distance <= distance) {
             throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
         }
         this.distance -= distance;
 
+    }
+
+    public boolean containsStation(Section newSection) {
+        return equalsUpStation(newSection) || equalsDownStation(newSection)
+                || equalsCrossStation(newSection);
+    }
+
+    private boolean equalsCrossStation(Section newSection) {
+        return upStation.equals(newSection.getDownStation()) || downStation.equals(newSection.getUpStation());
     }
 }

@@ -156,4 +156,27 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어 있지 않을때 ")
+    @Test
+    void validNotAdded() {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", "4");
+        params.put("downStationId", "5");
+        params.put("distance", "5");
+
+        // when 지하철_노선에_지하철역_등록_요청
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .pathParam("lineId", "1")
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/{lineId}/sections")
+                .then().log().all()
+                .extract();
+
+        // then 지하철_노선에_지하철역_등록됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
