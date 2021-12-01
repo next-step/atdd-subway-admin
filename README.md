@@ -121,7 +121,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ## 지하철 구간 제거 기능을 구현하기
 
-- [ ] 기능 구현 전 인수 테스트 작성
+- [x] 기능 구현 전 인수 테스트 작성
 
     - [ ] 노선의 구간을 제거한다.
 
