@@ -28,6 +28,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     private StationResponse 신사역;
     private StationResponse 강남역;
     private StationResponse 양재역;
+    private StationResponse 정자역;
     private StationResponse 광교역;
     private StationResponse 수원역;
 
@@ -37,6 +38,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         신사역 = 지하철역_등록되어_있음("신사역").as(StationResponse.class);
         강남역 = 지하철역_등록되어_있음("강남역").as(StationResponse.class);
         양재역 = 지하철역_등록되어_있음("양재역").as(StationResponse.class);
+        정자역 = 지하철역_등록되어_있음("정자역").as(StationResponse.class);
         광교역 = 지하철역_등록되어_있음("광교역").as(StationResponse.class);
         수원역 = 지하철역_등록되어_있음("수원역").as(StationResponse.class);
         신분당선 = 지하철_노선_등록되어_있음(new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10)).as(LineResponse.class);
@@ -68,6 +70,21 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선에_지하철역_등록됨(response);
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 광교역, 수원역));
+    }
+
+    @DisplayName("지하철 구간 등록 - 역 사이에 새로운 역을 등록")
+    @Test
+    void addLineSection3() {
+        // when
+        지하철_노선에_지하철_구간_등록_요청(신분당선, 강남역, 양재역, 3);
+        지하철_노선에_지하철_구간_등록_요청(신분당선, 정자역, 광교역, 3);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+
+        // then
+        지하철_노선에_지하철역_등록됨(response);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 양재역, 정자역, 광교역));
     }
 
     private void 지하철_노선에_지하철_구간_등록_요청(LineResponse lineResponse, StationResponse upStation, StationResponse downStation, int distance) {

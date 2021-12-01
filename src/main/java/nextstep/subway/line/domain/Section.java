@@ -48,4 +48,14 @@ public class Section {
     public boolean equalDownStation(Station station) {
         return downStation.equals(station);
     }
+
+    public void updateUpStation(Station downStation, int distance) {
+        this.upStation = downStation;
+        this.distance -= distance;
+    }
+
+    public void updateDownStation(Station upStation) {
+        this.downStation = upStation;
+        this.distance -= distance;
+    }
 }
