@@ -29,15 +29,29 @@ public class Sections {
     }
 
     public void add(Section newSection) {
+        validAlreadyAdded(newSection);
         updateUpStation(newSection);
         sectionGroup.add(newSection);
     }
 
+    private void validAlreadyAdded(Section newSection) {
+        boolean duplicateUpstation = sectionGroup.stream()
+                .anyMatch(item -> item.equalsUpStation(newSection));
+
+        boolean duplicateDownstation = sectionGroup.stream()
+                .anyMatch(item -> item.equalsDownStation(newSection));
+
+        if (duplicateUpstation && duplicateDownstation) {
+            throw new IllegalArgumentException("이미 구역의 역들이 등록 되어 있습니다.");
+        }
+
+    }
+
     private void updateUpStation(Section newSection) {
         sectionGroup.stream()
-                .filter(item -> item.equalsUpStation(newSection))
+                .filter(section -> section.equalsUpStation(newSection))
                 .findFirst()
-                .ifPresent(item -> item.updateUpSection(newSection));
+                .ifPresent(section -> section.updateUpSection(newSection));
     }
 
     public int size() {

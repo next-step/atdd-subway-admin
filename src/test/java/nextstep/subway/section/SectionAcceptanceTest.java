@@ -133,4 +133,27 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("이미 등록되어 있어서 등록 할 수 없음")
+    @Test
+    void alreadyAddedValid() {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "5");
+
+        // when 지하철_노선에_지하철역_등록_요청
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .pathParam("lineId", "1")
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/{lineId}/sections")
+                .then().log().all()
+                .extract();
+
+        // then 지하철_노선에_지하철역_등록됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

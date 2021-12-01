@@ -107,4 +107,18 @@ public class SectionsTest {
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
     }
+
+    @DisplayName("이미 등록되어 있어서 등록 할 수 없음")
+    @Test
+    void alreadyAddedValid() {
+        Station upStation = new Station(1L, "건대역");
+        Station downStation = new Station(2L, "용마산역");
+        Line line = new Line("bg-red-600", "7호선");
+        Section.of(line, upStation, downStation, 10);
+
+        assertThatThrownBy(() -> {
+            Section.of(line, upStation, downStation, 5);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("이미 구역의 역들이 등록 되어 있습니다.");
+    }
 }
