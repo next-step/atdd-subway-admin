@@ -174,6 +174,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("color", "bg-blue-600");
         params.put("name", "구분당선");
 
+        RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
         // when
         // 지하철_노선_수정_요청
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -187,9 +195,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_수정됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.as(LineResponse.class).getId()).isEqualTo(1L);
-        assertThat(response.as(LineResponse.class).getName()).isEqualTo("구분당선");
-        assertThat(response.as(LineResponse.class).getName()).isEqualTo("bg-blue-600");
     }
 
     @DisplayName("지하철 노선을 제거한다.")

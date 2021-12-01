@@ -51,4 +51,11 @@ public class LineService {
 			throw new ResourceAlreadyExistException(EXCEPTION_MESSAGE_LINE_ALREADY_EXIST);
 		}
 	}
+
+	@Transactional
+	public void updateLine(Long id, LineRequest request) {
+		Line line = lineRepository.findById(id)
+			.orElseThrow(() -> new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_LINE));
+		line.update(new Line(request.getName(), request.getColor()));
+	}
 }
