@@ -77,9 +77,7 @@ public class LineService {
 
     public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = findById(lineId);
-        Sections sections = line.getSections();
-        Section newSection = toSection(line, sectionRequest);
-        sections.add(newSection);
+        toSection(line, sectionRequest);
         return LineResponse.of(line);
     }
 
