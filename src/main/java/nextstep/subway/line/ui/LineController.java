@@ -1,6 +1,7 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.Exception.CannotSaveException;
+import nextstep.subway.Exception.CannotUpdateSectionException;
 import nextstep.subway.Exception.NotFoundException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
@@ -56,7 +57,7 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
-    @ExceptionHandler({NotFoundException.class, CannotSaveException.class})
+    @ExceptionHandler({NotFoundException.class, CannotSaveException.class, CannotUpdateSectionException.class})
     public ResponseEntity handleRuntimeException(RuntimeException e) {
         return ResponseEntity.badRequest().build();
     }

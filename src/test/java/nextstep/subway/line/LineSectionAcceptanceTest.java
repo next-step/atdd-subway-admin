@@ -66,8 +66,6 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-
-        // then
         지하철_노선에_지하철역_등록됨(response);
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 광교역, 수원역));
     }
@@ -78,8 +76,6 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         // when
         지하철_노선에_지하철_구간_등록_요청(신분당선, 강남역, 양재역, 3);
         지하철_노선에_지하철_구간_등록_요청(신분당선, 정자역, 광교역, 3);
-
-        // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
 
         // then
@@ -87,9 +83,19 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 양재역, 정자역, 광교역));
     }
 
-    private void 지하철_노선에_지하철_구간_등록_요청(LineResponse lineResponse, StationResponse upStation, StationResponse downStation, int distance) {
+    @DisplayName("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @Test
+    void addLineSectionException() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_등록_요청(신분당선, 강남역, 양재역, 12);
+
+        // then
+        지하철_노선에_지하철역_등록_안됨(response);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선에_지하철_구간_등록_요청(LineResponse lineResponse, StationResponse upStation, StationResponse downStation, int distance) {
         SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(), distance);
-        RestAssured
+        return RestAssured
                 .given().log().all()
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -99,6 +105,10 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철_노선에_지하철역_등록_안됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private void 지하철_노선에_지하철역_순서_정렬됨(ExtractableResponse<Response> response, List<StationResponse> stationResponses) {

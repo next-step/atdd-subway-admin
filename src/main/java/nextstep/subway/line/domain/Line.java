@@ -106,7 +106,7 @@ public class Line extends BaseEntity {
         sections.stream()
                 .filter(it -> it.equalDownStation(downStation))
                 .findFirst()
-                .ifPresent(it -> it.updateDownStation(upStation));
+                .ifPresent(it -> it.updateDownStation(upStation, distance));
 
         sections.add(new Section(this, upStation, downStation, distance));
     }
