@@ -16,7 +16,7 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
-	@OneToMany(mappedBy = "line", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "line", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	private final List<Section> sections = new ArrayList<>();
 
 	public void init(Section section) {
@@ -41,11 +41,11 @@ public class Sections {
 
 	public void add(Section section) {
 		validateStationContainAllOrNot(section);
-		if (ifAddStartLocation(section)) {
+		if (ifStartLocation(section.getDownStation())) {
 			addSectionStartLocation(section);
 			return;
 		}
-		if (ifAddEndLocation(section)) {
+		if (ifEndLocation(section.getUpStation())) {
 			addSectionEndLocation(section);
 			return;
 		}
@@ -62,9 +62,8 @@ public class Sections {
 		}
 	}
 
-
 	private void addSectionMiddleLocation(Section section) {
-		if (ifAddMiddleStartLocation(section)) {
+		if (ifMiddleStartLocation(section.getUpStation())) {
 			addSectionMiddleStartLocation(section);
 			return;
 		}
@@ -100,30 +99,26 @@ public class Sections {
 			.forEach(index -> sections.get(index).updateSequence(index + 1));
 	}
 
-	private boolean ifAddMiddleStartLocation(Section section) {
+	private boolean ifMiddleStartLocation(Station station) {
 		return sections.stream()
-			.anyMatch(s -> s.getUpStation().equals(section.getUpStation()));
+			.anyMatch(s -> s.getUpStation().equals(station));
+	}
+
+	private boolean ifEndLocation(Station station) {
+		return sections.stream()
+			.filter(s -> s.getSequence() == sections.size())
+			.anyMatch(s -> s.getDownStation().equals(station));
+	}
+
+	private boolean ifStartLocation(Station station) {
+		return sections.stream()
+			.filter(s -> s.getSequence() == 1)
+			.anyMatch(s -> s.getUpStation().equals(station));
 	}
 
 	private void addSectionEndLocation(Section section) {
-		sections.add(sections.size() - 1, section);
+		sections.add(section);
 		updateSectionsSequence();
-	}
-
-	private boolean ifAddEndLocation(Section section) {
-		return sections.stream()
-			.filter(s -> s.getSequence() == sections.size())
-			.filter(s -> s.getDownStation().equals(section.getUpStation()))
-			.findFirst()
-			.isPresent();
-	}
-
-	private boolean ifAddStartLocation(Section section) {
-		return sections.stream()
-			.filter(s -> s.getSequence() == 1)
-			.filter(s -> s.getUpStation().equals(section.getDownStation()))
-			.findFirst()
-			.isPresent();
 	}
 
 	private void addSectionStartLocation(Section section) {
@@ -140,4 +135,40 @@ public class Sections {
 		return getAllStationsBySections().stream()
 			.noneMatch(s -> s.equals(section.getUpStation()) || s.equals(section.getDownStation()));
 	}
+
+	public void deleteStation(Station station) {
+		if (ifStartLocation(station)) {
+			deleteSectionContainingStartLocation();
+			return;
+		}
+
+		if (ifEndLocation(station)) {
+			deleteSectionContainingEndLocation();
+			return;
+		}
+		deleteSectionContainingMiddleLocation(station);
+	}
+
+	private void deleteSectionContainingMiddleLocation(Station station) {
+		Section deleteSection = this.sections.stream()
+			.filter(s -> s.getUpStation().equals(station) || s.getDownStation().equals(station))
+			.reduce((now, next) -> {
+				now.updateDownStation(next.getDownStation());
+				now.updateDistance(now.getDistance() + next.getDistance());
+				return next;})
+			.orElseThrow(() -> new IllegalArgumentException("구간 내 역이 존재하지 않습니다."));
+		sections.remove(deleteSection);
+		updateSectionsSequence();
+	}
+
+	private void deleteSectionContainingEndLocation() {
+		sections.remove(sections.size() - 1);
+		updateSectionsSequence();
+	}
+
+	private void deleteSectionContainingStartLocation() {
+		sections.remove(0);
+		updateSectionsSequence();
+	}
+
 }

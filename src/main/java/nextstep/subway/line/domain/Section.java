@@ -47,6 +47,15 @@ public class Section extends BaseEntity {
 		return section;
 	}
 
+	public static Section create(Long id, Station upStation, Station downStation, int distance) {
+		Section section = new Section();
+		section.id = id;
+		section.upStation = upStation;
+		section.downStation = downStation;
+		section.distance = distance;
+		return section;
+	}
+
 	public Station getUpStation() {
 		return upStation;
 	}
