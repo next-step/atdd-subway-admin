@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.common.exception.*;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
@@ -87,7 +88,7 @@ class SectionsTest {
         final Sections sections = Sections.from(노선.getSections());
 
         assertThatThrownBy(() -> sections.add(추가구간, 노선))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(RegisterAllIncludeException.class)
                 .hasMessage("상행, 하행 역 모두가 포함되어 있어 등록할 수 없습니다.");
     }
 
@@ -101,7 +102,7 @@ class SectionsTest {
         final Sections sections = Sections.from(노선.getSections());
 
         assertThatThrownBy(() -> sections.add(추가구간, 노선))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(RegisterNotAllIncludeException.class)
                 .hasMessage("상행, 하행 역 모두가 포함되지 않아서 등록할 수 없습니다.");
     }
 
@@ -114,7 +115,72 @@ class SectionsTest {
         final Sections sections = Sections.from(노선.getSections());
 
         assertThatThrownBy(() -> sections.add(추가구간, 노선))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(RegisterDistanceException.class)
                 .hasMessage("등록할 수 없는 구간입니다.");
+    }
+
+    @DisplayName("노선에 종점이 제거되면 다음으로 오던 역이 종점이 된다.")
+    @Test
+    void mergeSection() {
+        final Station 구의역 = new Station(4L, "구의역", 노선);
+        final Section 추가구간 = new Section(2L, 노선, 강변역, 구의역, 10);
+        final Sections sections = Sections.from(노선.getSections());
+        sections.add(추가구간, 노선);
+
+        assertThat(sections.getSections()).hasSize(2);
+
+        sections.merge(강변역, 노선);
+
+        assertAll(
+                () -> assertThat(sections.getSections()).hasSize(1),
+                () -> assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(잠실역),
+                () -> assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(구의역),
+                () -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(20)
+        );
+    }
+
+    @DisplayName("노선에 구간이 하나인 경우 삭제가 불가능하다.")
+    @Test
+    void mergeSection_예외() {
+        final Sections sections = Sections.from(노선.getSections());
+
+        assertThat(sections.getSections()).hasSize(1);
+
+        assertThatThrownBy(() -> sections.merge(강변역, 노선))
+                .isInstanceOf(OneSectionDeleteException.class)
+                .hasMessage("구간이 하나인 경우 삭제할 수 없습니다.");
+    }
+
+    @DisplayName("노선에 구간이 하나도 없으면 삭제가 불가능하다.")
+    @Test
+    void mergeSection_예외2() {
+        final List<Section> 다른목록 = new ArrayList<>();
+        final Line 다른노선 = Line.of("8호선", "pink", Sections.from(다른목록));
+
+        final Sections sections = Sections.from(다른노선.getSections());
+
+        assertThatThrownBy(() -> sections.merge(잠실역, 다른노선))
+                .isInstanceOf(NoSectionDeleteException.class)
+                .hasMessage("등록된 구간이 없어서 삭제할 수 없습니다.");
+    }
+
+    @DisplayName("삭제할 역이 노선에 없는 경우 삭제가 불가능하다.")
+    @Test
+    void mergeSection_예외3() {
+        final Station 구의역 = new Station(4L, "구의역", 노선);
+        final Section 추가구간 = new Section(2L, 노선, 강변역, 구의역, 10);
+        final Sections sections = Sections.from(노선.getSections());
+        sections.add(추가구간, 노선);
+
+        final List<Section> 구간목록 = new ArrayList<>();
+        final Line 다른노선 = Line.of("8호선", "pink", Sections.from(구간목록));
+        final Station 몽촌토성역 = new Station(4L, "잠실나루역", 다른노선);
+        final Station 강동구청역 = new Station(4L, "잠실나루역", 다른노선);
+        final Section 다른등록구간 = new Section(1L, 노선, 몽촌토성역, 강동구청역, 10);
+        구간목록.add(다른등록구간);
+
+        assertThatThrownBy(() -> sections.merge(몽촌토성역, 노선))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("해당 역은 존재하지 않습니다.");
     }
 }
