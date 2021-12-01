@@ -4,11 +4,11 @@ import static java.util.stream.Collectors.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 public class LineResponse {
@@ -20,9 +20,8 @@ public class LineResponse {
     private LocalDateTime modifiedDate;
 
     public static LineResponse of(Line line) {
-
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(),
-                                line.getModifiedDate(), toStations(line)
+                                line.getModifiedDate(), StationResponse.ofList(line.getStations())
         );
     }
 
@@ -69,12 +68,4 @@ public class LineResponse {
         return modifiedDate;
     }
 
-    public static List<StationResponse> toStations(Line line) {
-        List<StationResponse> stations = new ArrayList<>();
-        List<Section> sections = line.getSections();
-        for (Section section : sections) {
-            stations.add(StationResponse.of(section.getStation()));
-        }
-        return stations;
-    }
 }

@@ -30,6 +30,11 @@ public class StationController {
         return ResponseEntity.ok().body(stationService.findAllStations());
     }
 
+    @GetMapping(value = "/stations")
+    public ResponseEntity<StationResponse> showStations(@RequestParam(required = false) String name) {
+        return ResponseEntity.ok().body(stationService.findByStationName(name));
+    }
+
     @DeleteMapping("/stations/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationService.deleteStationById(id);

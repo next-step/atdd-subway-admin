@@ -15,13 +15,18 @@ import nextstep.subway.common.exception.ServiceException;
 @ControllerAdvice
 public class SubwayAdvice {
 
-    @ExceptionHandler(value = {EntityNotFoundException.class, DataIntegrityViolationException.class})
+    @ExceptionHandler(value = {EntityNotFoundException.class, DataIntegrityViolationException.class, NoResultDataException.class})
     public ResponseEntity<ErrorResponse> EntityNotFoundException(Exception e) {
-        return new ResponseEntity<>(ErrorResponse.of(BAD_REQUEST, e.getMessage()), BAD_REQUEST);
+        return new ResponseEntity<>(ErrorResponse.of(e.getMessage()), BAD_REQUEST);
     }
 
     @ExceptionHandler(value = {ServiceException.class})
     public ResponseEntity<ErrorResponse> serviceException(Exception e) {
-        return new ResponseEntity<>(ErrorResponse.of(INTERNAL_SERVER_ERROR, e.getMessage()), INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(ErrorResponse.of(e.getMessage()), BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class, ArithmeticException.class})
+    public ResponseEntity<ErrorResponse> standardException(Exception e) {
+        return new ResponseEntity<>(ErrorResponse.of(e.getMessage()), BAD_REQUEST);
     }
 }

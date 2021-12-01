@@ -7,8 +7,6 @@ import java.util.Objects;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -16,27 +14,24 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.exception.DuplicationStationException;
 import nextstep.subway.common.exception.NoResultDataException;
+import nextstep.subway.line.exception.DuplicateSectionStationException;
 import nextstep.subway.station.domain.Station;
 
 @Entity
-public class Section extends BaseEntity implements Comparable<Section> {
+public class Section extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @Enumerated(value = EnumType.STRING)
-    private SectionType sectionType;
-
     @ManyToOne(fetch = LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_line_to_station"))
-    private Station station;
+    private Station upStation;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_line_to_next_station"))
-    private Station nextStation;
+    private Station downStation;
 
     @Embedded
     private Distance distance = new Distance();
@@ -45,23 +40,27 @@ public class Section extends BaseEntity implements Comparable<Section> {
     @JoinColumn(name = "line_id")
     private Line line;
 
-    public Section(Station upStation, Station downStation) {
+    private Section(Station upStation, Station downStation) {
 
         if (Objects.isNull(upStation)) {
             throw new NoResultDataException();
         }
 
-        if (upStation.equals(downStation)) {
-            throw new DuplicationStationException();
+        if (upStation.equalsName(downStation)) {
+            throw new DuplicateSectionStationException();
         }
-        this.station = upStation;
-        this.nextStation = downStation;
+        this.upStation = upStation;
+        this.downStation = downStation;
     }
 
-    public Section(Station station, Station nextStation, SectionType sectionType, Distance distance) {
-        this(station, nextStation);
-        this.sectionType = sectionType;
+    public Section(Station upStation, Station downStation, Distance distance) {
+        this(upStation, downStation);
         this.distance = distance;
+    }
+
+    public Section(Station upStation, Station downStation, Distance distance, Line line) {
+        this(upStation, downStation, distance);
+        this.line = line;
     }
 
     protected Section() {
@@ -71,50 +70,69 @@ public class Section extends BaseEntity implements Comparable<Section> {
         this.line = line;
     }
 
-    @Override
-    public int compareTo(Section target) {
-
-        if (isUpStation()) {
-            return -1;
+    public void changeUpSection(Section newSection) {
+        if (this.upStation.getName().equals(newSection.getDownStation().getName())) {
+            return;
         }
-
-        if (isNotExistsNextStationOrEqualsNextStation(target) ) {
-            return 1;
-        }
-
-        if (isNotExistsTargetNextStation(target)) {
-            return -1;
-        }
-
-        return 0;
+        this.upStation = newSection.getDownStation();
+        this.distance = distance.subtract(newSection.getDistance());
     }
 
-    private boolean isUpStation() {
-        return this.sectionType.equals(SectionType.UP);
+    public void changeDownSection(Section newSection) {
+        this.downStation = newSection.getUpStation();
+        this.distance = distance.subtract(newSection.getDistance());
     }
 
-    private boolean isNotExistsNextStationOrEqualsNextStation(Section target) {
-        return (this.nextStation == null || this.nextStation.equals(target.station));
+    public boolean isStations(Section newSection) {
+        return (downStation.equalsName(newSection.getDownStation()) && upStation.equalsName(newSection.getUpStation()) ||
+            (downStation.equalsName(newSection.getUpStation())) && upStation.equalsName(newSection.getDownStation()));
     }
 
-    private boolean isNotExistsTargetNextStation(Section target) {
-        return target.nextStation == null ;
+    public boolean isNotStations(Section newSection) {
+        return (downStation.equalsName(newSection.getUpStation()) || upStation.equalsName(newSection.getUpStation()) ||
+            (downStation.equalsName(newSection.getDownStation()) || upStation.equalsName(newSection.getDownStation())));
     }
 
-
-    public SectionType getSectionType() {
-        return sectionType;
+    public boolean isUpStation(Station upStation) {
+        return this.upStation.equalsName(upStation);
     }
 
-    public Station getStation() {
-        return station;
+    public boolean isDowStation(Station downStation) {
+        return this.downStation.equalsName(downStation);
     }
 
-    public Station getNextStation() {
-        return nextStation;
+    public boolean equalsUpStationName(Station upStation) {
+        return this.getDownStation().equalsName(upStation);
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 
     public Distance getDistance() {
         return distance;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Section section = (Section)o;
+        return Objects.equals(id, section.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
