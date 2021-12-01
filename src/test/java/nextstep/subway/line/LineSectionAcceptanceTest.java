@@ -164,6 +164,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선에서_역_삭제됨(response);
         지하철_노선_목록_일치함(LineAcceptanceTest.지하철_노선_조회(lineLocation), Arrays.asList("판교역", "정자역"));
+        노선_길이_일치함(노선에서_구간_조회(lineLocation, 판교역_Id, 정자역_Id), 4);
     }
 
     @DisplayName("하행 종점역을 제거한다.")
@@ -178,6 +179,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선에서_역_삭제됨(response);
         지하철_노선_목록_일치함(LineAcceptanceTest.지하철_노선_조회(lineLocation), Arrays.asList("강남역", "판교역"));
+        노선_길이_일치함(노선에서_구간_조회(lineLocation, 강남역_Id, 판교역_Id), 6);
     }
 
     @DisplayName("구간의 중간역을 제거한다.")
