@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.common.Message;
+import nextstep.subway.common.exception.*;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
@@ -108,14 +109,14 @@ public class Sections {
     private void checkContainingStations(Line line, Station upStation, Station downStation) {
         if (line.isContainingStation(upStation) &&
                 line.isContainingStation(downStation)) {
-            throw new IllegalArgumentException(Message.NOT_REGISTER_ALL_INCLUDE.getMessage());
+            throw new RegisterAllIncludeException(Message.NOT_REGISTER_ALL_INCLUDE.getMessage());
         }
     }
 
     private void checkNotContainingStations(Line line, Station upStation, Station downStation) {
         if (line.isContainingStation(upStation) == false &&
                 line.isContainingStation(downStation) == false) {
-            throw new IllegalArgumentException(Message.NOT_REGISTER_NOT_ALL_INCLUDE.getMessage());
+            throw new RegisterNotAllIncludeException(Message.NOT_REGISTER_NOT_ALL_INCLUDE.getMessage());
         }
     }
 
@@ -132,5 +133,37 @@ public class Sections {
                 .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public void merge(Station station, Line line) {
+        validateDeleteSection(line);
+
+        final Section downSection = getDownSection(station);
+        final Section upSection = getUpSection(station);
+        downSection.merge(upSection);
+        this.sections.remove(upSection);
+    }
+
+    private Section getDownSection(Station station) {
+        return getSections().stream()
+                .filter(section -> section.isDownStationEquals(station))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(Message.NOT_FIND_STATION.getMessage()));
+    }
+
+    private Section getUpSection(Station station) {
+        return getSections().stream()
+                .filter(section -> section.isUpStationEquals(station))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(Message.NOT_FIND_STATION.getMessage()));
+    }
+
+    private void validateDeleteSection(Line line) {
+        if(line.isOneSection()) {
+            throw new OneSectionDeleteException(Message.NOT_ONE_SECTION_DELETE.getMessage());
+        }
+        if(line.isNoSection()) {
+            throw new NoSectionDeleteException(Message.NOT_NO_SECTION_DELETE.getMessage());
+        }
     }
 }
