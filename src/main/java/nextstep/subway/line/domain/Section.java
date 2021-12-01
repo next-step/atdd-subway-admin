@@ -41,6 +41,9 @@ public class Section {
         return downStation;
     }
 
+    public int getDistance() {
+        return distance;
+    }
 
     public boolean equalUpStation(Station station) {
         return upStation.equals(station);

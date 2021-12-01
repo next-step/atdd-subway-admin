@@ -134,4 +134,8 @@ public class Line extends BaseEntity {
             throw new CannotUpdateSectionException("상행역과 하행역 둘 중 하나도 포함되어있지 않아서 추가할 수 없습니다.");
         }
     }
+
+    public List<Section> getSections() {
+        return sections;
+    }
 }
