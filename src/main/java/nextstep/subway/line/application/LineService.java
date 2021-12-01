@@ -74,6 +74,13 @@ public class LineService {
         return LineFindResponse.of(line);
     }
 
+    public LineFindResponse removeSectionByStationId(Long lindId, Long stationId) {
+        Line line = lineRepository.findById(lindId).orElseThrow(() -> new NotFoundResourceException("존재하지 않는 노선입니다. (입력값: " + lindId + ")"));
+        Station station = findStation(stationId);
+        line.remove(station);
+        return LineFindResponse.of(line);
+    }
+
     private void validateDuplicatedLineName(String name) {
         if (lineRepository.findByName(name).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 노선 이름입니다. (입력값: " + name + ")");

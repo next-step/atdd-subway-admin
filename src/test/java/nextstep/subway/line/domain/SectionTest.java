@@ -13,20 +13,20 @@ public class SectionTest {
     @DisplayName("기존 구간과 새로운 구간을 수정한다.")
     void updateSection() {
         // given
-        Station station1 = new Station("강남역");
-        Station station2 = new Station("판교역");
-        Station station3 = new Station("양재역");
+        Station 강남역 = new Station("강남역");
+        Station 판교역 = new Station("판교역");
+        Station 양재역 = new Station("양재역");
 
-        int distance = 10;
-        int newDistance = 3;
-        Section section = new Section(station1, station2, distance, null);
-        Section newSection = new Section(station1, station3, newDistance, null);
+        int 강남_판교_길이 = 10;
+        int 강남_양재_길이 = 3;
+        Section 강남_판교_구간 = new Section(강남역, 판교역, 강남_판교_길이);
+        Section 강남_양재_구간 = new Section(강남역, 양재역, 강남_양재_길이);
 
         // when
-        section.updateUpSection(newSection);
+        강남_판교_구간.updateUpSection(강남_양재_구간);
 
         // then
-        assertThat(section.getUpStation()).isEqualTo(station3);
-        assertThat(section.getDistance().getDistance()).isEqualTo(distance - newDistance);
+        assertThat(강남_판교_구간.getUpStation()).isEqualTo(양재역);
+        assertThat(강남_판교_구간.getDistance().getDistance()).isEqualTo(강남_판교_길이 - 강남_양재_길이);
     }
 }

@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -11,10 +12,10 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Station downStation;
 
     @Embedded
@@ -31,6 +32,12 @@ public class Section {
         this.downStation = downStation;
         this.distance = new Distance(distance);
         this.line = line;
+    }
+
+    Section(Station upStation, Station downStation, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = new Distance(distance);
     }
 
     public static Section of(Line line, Station upStation, Station downStation, int distance) {
@@ -52,15 +59,47 @@ public class Section {
     }
 
     public boolean hasEqualUpStation(Section section) {
-        return this.getUpStation() == section.getUpStation();
+        return this.upStation == section.upStation;
     }
 
     public boolean hasEqualDownStation(Section section) {
-        return this.getDownStation() == section.getDownStation();
+        return this.downStation == section.downStation;
+    }
+
+    public boolean isContainsStation(Section section) {
+        if (this.upStation.equals(section.upStation)
+                || this.upStation.equals(section.downStation)
+                || this.downStation.equals(section.upStation)
+                || this.downStation.equals(section.downStation)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean hasEqualDownStation(Station station) {
+        return this.downStation == station;
+    }
+
+    public boolean hasEqualUpStation(Station station) {
+        return this.upStation == station;
+    }
+
+    public void updateForRemove(Section section) {
+        this.downStation = section.downStation;
+        this.distance = this.distance.plus(section.distance);
+    }
+
+    public boolean isSameUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return this.downStation.equals(station);
     }
 
     public Long getId() {
         return id;
+
     }
 
     public Station getUpStation() {
@@ -77,5 +116,18 @@ public class Section {
 
     public Line getLine() {
         return line;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(distance, section.distance) && Objects.equals(line, section.line);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(upStation, downStation, distance, line);
     }
 }
