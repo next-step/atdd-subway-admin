@@ -36,10 +36,6 @@ public class TestLineAcceptanceFactory {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    public static LineRequest 지하철_노선_파라미터_생성(String name, String color) {
-        return LineRequest.of(name, color);
-    }
-
     public static LineRequest 지하철_노선과_종점역정보_파라미터_생성(String name, String color, Long upStationId, Long downStationId, int distance) {
         return LineRequest.of(name, color, upStationId, downStationId, distance);
     }

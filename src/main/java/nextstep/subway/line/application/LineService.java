@@ -30,7 +30,6 @@ public class LineService {
         validateDuplicate(lineRequest);
         Line line = lineRepository.save(lineRequest.toLine());
         addSectionBySectionInfo(line, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
-
         return LineResponse.of(line);
     }
 
@@ -77,14 +76,8 @@ public class LineService {
     }
 
     private void addSectionBySectionInfo(Line line, Long upStationId, Long downStationId, int distance) {
-        if (hasSectionInfo(upStationId, downStationId, distance)) {
-            Station upStation = stationService.findStationById(upStationId);
-            Station downStation = stationService.findStationById(downStationId);
-            line.addSection(upStation, downStation, distance);
-        }
-    }
-
-    private boolean hasSectionInfo(Long upStationId, Long downStationId, int distance) {
-        return upStationId != null || downStationId != null || distance > 0;
+        Station upStation = stationService.findStationById(upStationId);
+        Station downStation = stationService.findStationById(downStationId);
+        line.addSection(upStation, downStation, distance);
     }
 }

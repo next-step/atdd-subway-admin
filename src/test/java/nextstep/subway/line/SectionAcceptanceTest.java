@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import static nextstep.subway.line.TestLineAcceptanceFactory.종점역정보_파라미터_생성;
 import static nextstep.subway.line.TestLineAcceptanceFactory.지하철_노선_ID_추출;
 import static nextstep.subway.line.TestLineAcceptanceFactory.지하철_노선_목록_응답됨;
-import static nextstep.subway.line.TestLineAcceptanceFactory.지하철_노선_생성됨;
 import static nextstep.subway.line.TestLineAcceptanceFactory.지하철_노선과_종점역정보_파라미터_생성;
 import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역_생성;
 import static nextstep.subway.station.TestStationAcceptanceFactory.지하철_역_파라미터_생성;
@@ -37,21 +36,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         양재역 = 지하철_역_생성(생성_요청(STATION_ROOT_PATH, 지하철_역_파라미터_생성("양재역")));
         양재시민의숲 = 지하철_역_생성(생성_요청(STATION_ROOT_PATH, 지하철_역_파라미터_생성("양재시민의숲")));
         청계산입구 = 지하철_역_생성(생성_요청(STATION_ROOT_PATH, 지하철_역_파라미터_생성("청계산입구")));
-
         신분당선_강남역_양재역 = 지하철_노선과_종점역정보_파라미터_생성("신분당선", "red", 강남역.getId(), 양재역.getId(), 10);
     }
 
     @Test
-    void 지하철_노선을_종점역_정보와_함께_생성한다() {
-        // when
-        ExtractableResponse<Response> 지하철_노선_생성_요청_응답 = 생성_요청(LINE_ROOT_PATH, 신분당선_강남역_양재역);
-
-        // then
-        지하철_노선_생성됨(지하철_노선_생성_요청_응답);
-    }
-
-    @Test
-    void 지하철_노선을_종점역_정보와_함께_조회한다() {
+    void 지하철_노선에_종점역_정보를_추가한다() {
         // given
         ExtractableResponse<Response> 지하철_노선_생성_요청_응답 = 생성_요청(LINE_ROOT_PATH, 신분당선_강남역_양재역);
         Long 신분당선_ID = 지하철_노선_ID_추출(지하철_노선_생성_요청_응답);
