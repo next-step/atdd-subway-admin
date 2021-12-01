@@ -1,10 +1,12 @@
 package nextstep.subway.line.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
 public class Distance {
   private static final int MINIMUM_DISTANCE = 1;
+  @Column
   private int distance;
 
   protected Distance() {}
@@ -26,9 +28,5 @@ public class Distance {
 
   public int getDistance() {
     return distance;
-  }
-
-  public void setDistance(int distance) {
-    this.distance = distance;
   }
 }
