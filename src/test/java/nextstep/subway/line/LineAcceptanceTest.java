@@ -305,17 +305,43 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선에_새로운구간_등록_실패(response);
     }
 
-    public ExtractableResponse<Response> 지하철_노선에_새로운_구간_등록_요청(
-        LineResponse lineResponse, StationResponse stationGangnam,
-        StationResponse stationSinchon, int distance) {
-        Param param = createParam()
-            .addParam("lineId", lineResponse.getId());
-        return post("/lines/{lineId}/sections", param,
-                    new SectionRequest(stationGangnam.getId(), stationSinchon.getId(), distance)
-        );
+    @Test
+    void 구간이_하나인_노선이면_삭제() {
+        // given
+        StationResponse stationGangnam = 지하철역_등록되어_있음(강남역);
+        StationResponse stationSinchon = 지하철역_등록되어_있음(신촌역);
+        StationResponse stationSeoul = 지하철역_등록되어_있음(서울역);
+        StationResponse stationYounSan = 지하철역_등록되어_있음(용산역);
+
+        LineResponse lineResponse = 지하철_노선_등록되어_있음(
+            new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, stationGangnam.getId(), stationSinchon.getId(), 10));
+        지하철_노선에_새로운_구간_등록_요청(lineResponse, stationSeoul, stationYounSan, 5);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제요청(lineResponse.getId(), stationGangnam.getId());
+
+        // then
+        지하철_삭제됨(response);
     }
 
+    @Test
+    void 구간이_하나인_노선이면_삭제_예외() {
+        // given
+        StationResponse stationGangnam = 지하철역_등록되어_있음(강남역);
+        StationResponse stationSinchon = 지하철역_등록되어_있음(신촌역);
+        StationResponse stationSeoul = 지하철역_등록되어_있음(서울역);
+        StationResponse stationYounSan = 지하철역_등록되어_있음(용산역);
 
+        LineResponse lineResponse = 지하철_노선_등록되어_있음(
+            new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, stationGangnam.getId(), stationSinchon.getId(), 10));
+        지하철_노선에_새로운_구간_등록_요청(lineResponse, stationSeoul, stationYounSan, 5);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제요청(lineResponse.getId(), stationGangnam.getId());
+
+        // then
+        지하철_삭제_실패(response);
+    }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(Object obj) {
         return TestFactory.post("/lines", obj);
@@ -346,7 +372,32 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-    private void 지하철_노선에_새로운구간_등록_실패(ExtractableResponse<Response> response) {
+    public void 지하철_노선에_새로운구간_등록_실패(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    public ExtractableResponse<Response> 지하철_노선에_새로운_구간_등록_요청(
+        LineResponse lineResponse, StationResponse stationGangnam,
+        StationResponse stationSinchon, int distance) {
+        Param param = createParam()
+            .addParam("lineId", lineResponse.getId());
+        return post("/lines/{lineId}/sections", param,
+                    new SectionRequest(stationGangnam.getId(), stationSinchon.getId(), distance)
+        );
+    }
+
+    private ExtractableResponse<Response> 지하철_구간_삭제요청(Long lineId, Long stationId) {
+        Param param = Param.createParam()
+                           .addParam("stationId", stationId);
+        return delete("/lines/{lineId}/sections", lineId, param);
+    }
+
+    public static void 지하철_삭제_실패(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 지하철_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(OK.value());
+    }
+
 }
