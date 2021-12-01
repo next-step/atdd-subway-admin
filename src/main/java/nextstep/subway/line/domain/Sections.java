@@ -142,10 +142,12 @@ public class Sections {
 		validateStationNotContain(station);
 		if (ifStartLocation(station)) {
 			deleteSectionContainingStartLocation();
+			return;
 		}
 
 		if (ifEndLocation(station)) {
 			deleteSectionContainingEndLocation();
+			return;
 		}
 		deleteSectionContainingMiddleLocation(station);
 	}
