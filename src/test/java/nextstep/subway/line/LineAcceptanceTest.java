@@ -306,7 +306,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void 지하철_구간을_삭제_한다() {
+    void 지하철_첫번째_구간을_삭제한다() {
         // given
         StationResponse stationGangnam = 지하철역_등록되어_있음(강남역);
         StationResponse stationSinchon = 지하철역_등록되어_있음(신촌역);
@@ -315,10 +315,48 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         LineResponse lineResponse = 지하철_노선_등록되어_있음(
             new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, stationGangnam.getId(), stationSinchon.getId(), 10));
-        지하철_노선에_새로운_구간_등록_요청(lineResponse, stationSeoul, stationYounSan, 5);
+        지하철_노선에_새로운_구간_등록_요청(lineResponse, stationSeoul, stationSinchon, 5);
 
         // when
         ExtractableResponse<Response> response = 지하철_구간_삭제요청(lineResponse.getId(), stationGangnam.getId());
+
+        // then
+        지하철_삭제됨(response);
+    }
+
+    @Test
+    void 지하철_마지막_중간구간을_삭제한다() {
+        // given
+        StationResponse stationGangnam = 지하철역_등록되어_있음(강남역);
+        StationResponse stationSinchon = 지하철역_등록되어_있음(신촌역);
+        StationResponse stationSeoul = 지하철역_등록되어_있음(서울역);
+        StationResponse stationYounSan = 지하철역_등록되어_있음(용산역);
+
+        LineResponse lineResponse = 지하철_노선_등록되어_있음(
+            new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, stationGangnam.getId(), stationSinchon.getId(), 10));
+        지하철_노선에_새로운_구간_등록_요청(lineResponse, stationSeoul, stationSinchon, 5);
+        지하철_노선에_새로운_구간_등록_요청(lineResponse, stationYounSan, stationSeoul, 5);
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제요청(lineResponse.getId(), stationSeoul.getId());
+
+        // then
+        지하철_삭제됨(response);
+    }
+
+    @Test
+    void 지하철_마지막_구간을_삭제한다() {
+        // given
+        StationResponse stationGangnam = 지하철역_등록되어_있음(강남역);
+        StationResponse stationSinchon = 지하철역_등록되어_있음(신촌역);
+        StationResponse stationSeoul = 지하철역_등록되어_있음(서울역);
+        StationResponse stationYounSan = 지하철역_등록되어_있음(용산역);
+
+        LineResponse lineResponse = 지하철_노선_등록되어_있음(
+            new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, stationGangnam.getId(), stationSinchon.getId(), 10));
+        지하철_노선에_새로운_구간_등록_요청(lineResponse, stationSeoul, stationSinchon, 5);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제요청(lineResponse.getId(), stationSinchon.getId());
 
         // then
         지하철_삭제됨(response);
@@ -329,12 +367,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         StationResponse stationGangnam = 지하철역_등록되어_있음(강남역);
         StationResponse stationSinchon = 지하철역_등록되어_있음(신촌역);
-        StationResponse stationSeoul = 지하철역_등록되어_있음(서울역);
-        StationResponse stationYounSan = 지하철역_등록되어_있음(용산역);
 
         LineResponse lineResponse = 지하철_노선_등록되어_있음(
             new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, stationGangnam.getId(), stationSinchon.getId(), 10));
-        지하철_노선에_새로운_구간_등록_요청(lineResponse, stationSeoul, stationYounSan, 5);
 
         // when
         ExtractableResponse<Response> response = 지하철_구간_삭제요청(lineResponse.getId(), stationGangnam.getId());

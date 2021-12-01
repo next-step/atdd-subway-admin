@@ -16,6 +16,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.line.exception.AlreadyRegisteredException;
+import nextstep.subway.line.exception.OnlyOneSectionException;
 import nextstep.subway.line.exception.SectionNotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.exception.StationNotFoundException;
@@ -89,6 +90,10 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
+        if (sections.size() == 1) {
+            throw new OnlyOneSectionException();
+        }
+
         Section section = findRemoveSection(station);
 
         if (matchStation(isDownStation(station))) {

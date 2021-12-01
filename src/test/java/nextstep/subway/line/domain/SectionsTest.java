@@ -73,20 +73,21 @@ class SectionsTest {
         Line line = new Line(LINE_ONE, LINE_ONE_COLOR_RED);
         Station stationGangnam = new Station(1L, 강남역);
         Station stationSinChon = new Station(2L, "신촌역");
-        Section section = new Section(stationGangnam, stationSinChon, new Distance(10));
+        Section section = new Section(1L, stationGangnam, stationSinChon, new Distance(10));
         Sections sections = new Sections();
         sections.add(section, line);
 
         // when
         Station stationYoungSan = new Station(3L, "용산역");
-        sections.addSection(new Section(1L, stationYoungSan, stationGangnam, new Distance(4), line));
+        sections.addSection(new Section(2L, stationYoungSan, stationGangnam, new Distance(4), line));
 
         // then
         Sections expectedSections = new Sections();
         List<Section> sections1 = asList(
-            new Section(stationGangnam, stationSinChon, new Distance(10)),
-            new Section(stationYoungSan, stationGangnam, new Distance(4))
+            new Section(1L, stationGangnam, stationSinChon, new Distance(10)),
+            new Section(2L, stationSinChon, stationYoungSan, new Distance(4))
         );
+
 
         expectedSections.add(sections1, line);
 
@@ -99,19 +100,19 @@ class SectionsTest {
         Line line = new Line(LINE_ONE, LINE_ONE_COLOR_RED);
         Station stationGangnam = new Station(1L, "강남역");
         Station stationSinChon = new Station(2L, "신촌역");
-        Section firstSection = new Section(stationGangnam, stationSinChon, new Distance(10));
+        Section firstSection = new Section(1L, stationGangnam, stationSinChon, new Distance(10));
         Sections sections = new Sections();
         sections.add(firstSection, line);
 
         // when
         Station stationYoungSan = new Station(3L, "용산역");
-        sections.addSection(new Section(1L, stationSinChon, stationYoungSan, new Distance(4), line));
+        sections.addSection(new Section(2L, stationSinChon, stationYoungSan, new Distance(4), line));
 
         // then
         Sections expectedSections = new Sections();
         List<Section> sections1 = asList(
-            new Section(stationGangnam, stationSinChon, new Distance(10)),
-            new Section(stationSinChon, stationYoungSan, new Distance(4))
+            new Section(1L, stationGangnam, stationSinChon, new Distance(10)),
+            new Section(2L, stationSinChon, stationYoungSan, new Distance(4))
         );
 
         expectedSections.add(sections1, line);

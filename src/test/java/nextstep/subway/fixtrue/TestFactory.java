@@ -77,7 +77,7 @@ public class TestFactory {
 
     public static ExtractableResponse<Response> delete(String url, Long id, Param param) {
         return givenLog()
-            .pathParams(ID, id)
+            .pathParams("lineId", id)
             .queryParams(param.result())
             .delete(url)
             .then().log().all()
