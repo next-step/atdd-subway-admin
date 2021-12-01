@@ -87,6 +87,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
 
+        RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("color", "bg-blue-600");
+        params2.put("name", "구분당선");
+
+        RestAssured.given().log().all()
+            .body(params2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+
         // when
         // 지하철_노선_목록_조회_요청
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -101,9 +122,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_목록_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_목록_포함됨
-        assertThat(response.jsonPath().getList("$", LineResponse.class).size()).isEqualTo(1);
+        assertThat(response.jsonPath().getList("$", LineResponse.class).size()).isEqualTo(2);
         assertThat(response.jsonPath().getList("$", LineResponse.class).get(0).getId()).isEqualTo(1L);
         assertThat(response.jsonPath().getList("$", LineResponse.class).get(0).getName()).isEqualTo("신분당선");
+        assertThat(response.jsonPath().getList("$", LineResponse.class).get(0).getColor()).isEqualTo("bg-red-600");
+        assertThat(response.jsonPath().getList("$", LineResponse.class).get(1).getId()).isEqualTo(2L);
+        assertThat(response.jsonPath().getList("$", LineResponse.class).get(1).getName()).isEqualTo("구분당선");
+        assertThat(response.jsonPath().getList("$", LineResponse.class).get(1).getColor()).isEqualTo("bg-blue-600");
     }
 
     @DisplayName("지하철 노선을 조회한다.")
