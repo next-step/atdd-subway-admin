@@ -45,7 +45,6 @@ public class Section {
     public static Section of(Line line, Station upStation, Station downStation, int distance) {
         return new Section(line, upStation, downStation, distance);
     }
-
     public Long getId() {
         return id;
     }
@@ -62,8 +61,21 @@ public class Section {
         return line;
     }
 
+    public boolean isDistanceGreaterThan(Section addSection) {
+        return this.distance.isGreaterThan(addSection.distance);
+    }
+
     public boolean isEqualsUpStation(Station station) {
         return this.upStation.equals(station);
+    }
+
+    public boolean isEqualsDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public void modifyDownStationMoveBackStation(Section addSection) {
+        this.upStation = addSection.getDownStation();
+        this.distance.minus(addSection.distance);
     }
 
     private void validateNull(Station upStation, Station downStation) {
@@ -94,11 +106,15 @@ public class Section {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return Objects.equals(getId(), section.getId());
+        return Objects.equals(getId(), section.getId())
+                && Objects.equals(getUpStation(), section.getUpStation())
+                && Objects.equals(getDownStation(), section.getDownStation())
+                && Objects.equals(getLine(), section.getLine())
+                && Objects.equals(distance, section.distance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId());
+        return Objects.hash(getId(), getUpStation(), getDownStation(), getLine(), distance);
     }
 }

@@ -7,6 +7,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,8 +21,13 @@ public class Sections {
 
     }
 
-    public void add(Section section) {
-        sections.add(section);
+    public List<Section> getAllSections() {
+        return Collections.unmodifiableList(sections);
+    }
+
+    public void add(Section addSection) {
+        addSectionBetweenSections(addSection);
+        sections.add(addSection);
     }
 
     public List<Station> getOrderedStations() {
@@ -33,6 +39,32 @@ public class Sections {
         Station lastDownStation = findLastDownStation();
 
         return makeOrderedStations(firstUpStation, lastDownStation);
+    }
+
+    private void addSectionBetweenSections(Section addSection) {
+        if (isEqualsUpStation(addSection)) {
+            sections.stream()
+                    .filter(section -> section.isEqualsUpStation(addSection.getUpStation()))
+                    .filter(section -> section.isDistanceGreaterThan(addSection))
+                    .findFirst()
+                    .orElseThrow(() -> {
+                        throw new BadRequestException("기존 역 사이 길이 보다 크거나 같으면 등록을 할 수 없습니다.");
+                    }).modifyDownStationMoveBackStation(addSection);
+        }
+    }
+
+    private boolean isEqualsUpStation(Section addSection) {
+        return sections.stream()
+                .anyMatch(section -> section.isEqualsUpStation(addSection.getUpStation()));
+    }
+
+    private boolean isEqualsDownStation(Section addSection) {
+        return sections.stream()
+                .anyMatch(section -> section.isEqualsDownStation(addSection.getDownStation()));
+    }
+
+    private boolean isEqualsFirstUpStation(Section addSection) {
+        return findFirstUpStation().equals(addSection.getDownStation());
     }
 
     private List<Station> makeOrderedStations(Station firstStation, Station lastDownStation) {

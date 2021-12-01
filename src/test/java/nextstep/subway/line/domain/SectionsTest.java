@@ -7,6 +7,8 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -65,7 +67,7 @@ class SectionsTest {
     }
 
     @Test
-    void 구간들을_정렬하여_조회() {
+    void 구간들을_정렬하여_조회한다() {
         // given
         Station 강남역 = stationRepository.save(Station.from("강남역"));
         Station 양재역 = stationRepository.save(Station.from("양재역"));
@@ -85,5 +87,47 @@ class SectionsTest {
         //then
         Assertions.assertThat(actual).hasSize(4);
         Assertions.assertThat(actual).containsExactlyElementsOf(Arrays.asList(강남역, 양재역, 양재시민의숲, 청계산입구));
+    }
+
+    @Test
+    @DisplayName("구간들 사이에 구간을 추가한다. 강남역 -(10m)- 양재시민의숲 => 강남역 -(8m)- 양재역 -(2m)- 양재시민의숲")
+    void 구간들_사이에_새로운_구간을_추가한다() {
+        // given
+        Station 강남역 = stationRepository.save(Station.from("강남역"));
+        Station 양재역 = stationRepository.save(Station.from("양재역"));
+        Station 양재시민의숲 = stationRepository.save(Station.from("양재시민의숲"));
+
+        Line 신분당선 = lineRepository.save(Line.of("신분당선", "red"));
+
+        신분당선.addSection(강남역, 양재시민의숲, 10);
+        신분당선.addSection(강남역, 양재역, 8);
+        Sections sections = 신분당선.getSections();
+
+        // when
+        List<Section> actual = sections.getAllSections();
+
+        //then
+        Assertions.assertThat(actual).hasSize(2);
+        Assertions.assertThat(actual).contains(Section.of(신분당선, 강남역, 양재역, 8));
+        Assertions.assertThat(actual).contains(Section.of(신분당선, 양재역, 양재시민의숲, 2));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {10, 11})
+    void 기존_구간의_사이_길이_보다_크거나_같으면_등록할_수_없다(int distance){
+        // given
+        Station 강남역 = stationRepository.save(Station.from("강남역"));
+        Station 양재역 = stationRepository.save(Station.from("양재역"));
+        Station 양재시민의숲 = stationRepository.save(Station.from("양재시민의숲"));
+
+        Line 신분당선 = lineRepository.save(Line.of("신분당선", "red"));
+        신분당선.addSection(강남역, 양재시민의숲, 10);
+
+        // when
+        ThrowableAssert.ThrowingCallable throwingCallable = () -> 신분당선.addSection(강남역, 양재역, distance);
+
+        // then
+        Assertions.assertThatExceptionOfType(BadRequestException.class)
+                .isThrownBy(throwingCallable);
     }
 }
