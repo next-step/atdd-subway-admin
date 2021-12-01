@@ -30,6 +30,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     LineRequest 신분당선_강남역_양재역;
     LineRequest 신분당선_강남역_양재시민의숲;
+    LineRequest 신분당선_양재역_양재시민의숲;
 
     @BeforeEach
     public void setUp() {
@@ -42,6 +43,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         청계산입구 = 지하철_역_생성(생성_요청(STATION_ROOT_PATH, 지하철_역_파라미터_생성("청계산입구")));
         신분당선_강남역_양재역 = 지하철_노선과_종점역정보_파라미터_생성("신분당선", "red", 강남역.getId(), 양재역.getId(), 10);
         신분당선_강남역_양재시민의숲 = 지하철_노선과_종점역정보_파라미터_생성("신분당선", "red", 강남역.getId(), 양재시민의숲.getId(), 10);
+        신분당선_양재역_양재시민의숲 = 지하철_노선과_종점역정보_파라미터_생성("신분당선", "red", 양재역.getId(), 양재시민의숲.getId(), 10);
     }
 
     @Test
@@ -87,6 +89,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Long 신분당선_ID = 지하철_노선_ID_추출(지하철_노선_생성_요청_응답);
 
         SectionRequest 강남역_양재역 = 종점역정보_파라미터_생성(강남역.getId(), 양재역.getId(), distance);
+
+        // when
+        ExtractableResponse<Response> 구간_생성_요청_응답 = 생성_요청(LINE_ROOT_PATH + 신분당선_ID + LINE_ADD_SECTIONS_PATH, 강남역_양재역);
+
+        // then
+        지하철_노선_생성_실패됨(구간_생성_요청_응답);
+    }
+
+    @Test
+    void 상행역과_하행역이_이미_노선에_등록되어있으면_추가할_수_없다(){
+         // given
+        ExtractableResponse<Response> 지하철_노선_생성_요청_응답 = 생성_요청(LINE_ROOT_PATH, 신분당선_강남역_양재역);
+        Long 신분당선_ID = 지하철_노선_ID_추출(지하철_노선_생성_요청_응답);
+
+        SectionRequest 강남역_양재역 = 종점역정보_파라미터_생성(강남역.getId(), 양재역.getId(), 8);
 
         // when
         ExtractableResponse<Response> 구간_생성_요청_응답 = 생성_요청(LINE_ROOT_PATH + 신분당선_ID + LINE_ADD_SECTIONS_PATH, 강남역_양재역);

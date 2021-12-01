@@ -7,9 +7,9 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -21,12 +21,11 @@ public class Sections {
 
     }
 
-    public List<Section> getAllSections() {
-        return Collections.unmodifiableList(sections);
-    }
-
     public void add(Section addSection) {
-        addSectionBetweenSections(addSection);
+        if (sections.size() > 0) {
+            checkAddSection(addSection);
+            addSectionBetweenSections(addSection);
+        }
         sections.add(addSection);
     }
 
@@ -41,6 +40,27 @@ public class Sections {
         return makeOrderedStations(firstUpStation, lastDownStation);
     }
 
+    public List<Section> getOrderedSections() {
+        if (sections.isEmpty()) {
+            return sections;
+        }
+
+        Section firstSection = findFirstSection();
+        Section lastSection = findLastSection();
+
+        return makeOrderedSections(firstSection, lastSection);
+    }
+
+    private void checkAddSection(Section addSection) {
+        validateExistsUpStationAndDownStation(addSection);
+    }
+
+    private void validateExistsUpStationAndDownStation(Section addSection) {
+        if (isEqualsUpStation(addSection) && isEqualsDownStation(addSection)) {
+            throw new BadRequestException("이미 등록된 구간입니다.");
+        }
+    }
+
     private void addSectionBetweenSections(Section addSection) {
         if (isEqualsUpStation(addSection)) {
             sections.stream()
@@ -49,7 +69,7 @@ public class Sections {
                     .findFirst()
                     .orElseThrow(() -> {
                         throw new BadRequestException("기존 역 사이 길이 보다 크거나 같으면 등록을 할 수 없습니다.");
-                    }).modifyDownStationMoveBackStation(addSection);
+                    }).changeDownStationToAddSectionUpStation(addSection);
         }
     }
 
@@ -63,8 +83,16 @@ public class Sections {
                 .anyMatch(section -> section.isEqualsDownStation(addSection.getDownStation()));
     }
 
-    private boolean isEqualsFirstUpStation(Section addSection) {
-        return findFirstUpStation().equals(addSection.getDownStation());
+    private boolean isNotExistsStation(Station addStation) {
+        return makeStations().stream()
+                .noneMatch(station -> station.equals(addStation));
+    }
+
+    private List<Station> makeStations() {
+        return sections.stream()
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     private List<Station> makeOrderedStations(Station firstStation, Station lastDownStation) {
@@ -113,5 +141,47 @@ public class Sections {
         return sections.stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
+    }
+
+    private List<Section> makeOrderedSections(Section firstSection, Section lastSection) {
+        List<Section> orderedSections = new ArrayList<>();
+        orderedSections.add(firstSection);
+
+        Section nextSection = firstSection;
+
+        while (!lastSection.equals(nextSection)) {
+            nextSection = findNextSection(nextSection);
+            orderedSections.add(nextSection);
+        }
+        return orderedSections;
+    }
+
+    private Section findNextSection(Section findSection) {
+        return sections.stream()
+                .filter(section -> section.isEqualsUpStation(findSection.getDownStation()))
+                .findFirst()
+                .orElseThrow(() -> {
+                    throw new BadRequestException("해당 노선이 존재하지않습니다.");
+                });
+    }
+
+    private Section findLastSection() {
+        Station lastDownStation = findLastDownStation();
+        return sections.stream()
+                .filter(section -> section.isEqualsDownStation(lastDownStation))
+                .findFirst()
+                .orElseThrow(() -> {
+                    throw new BadRequestException("하행역 종점을 찾을 수 없습니다.");
+                });
+    }
+
+    private Section findFirstSection() {
+        Station firstUpStation = findFirstUpStation();
+        return sections.stream()
+                .filter(section -> section.isEqualsUpStation(firstUpStation))
+                .findFirst()
+                .orElseThrow(() -> {
+                    throw new BadRequestException("상행역 종점을 찾을 수 없습니다.");
+                });
     }
 }

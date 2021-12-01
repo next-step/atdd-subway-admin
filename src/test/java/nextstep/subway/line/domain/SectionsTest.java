@@ -35,9 +35,7 @@ class SectionsTest {
         Station 양재시민의숲 = stationRepository.save(Station.from("양재시민의숲"));
         Station 청계산입구 = stationRepository.save(Station.from("청계산입구"));
 
-        Line 신분당선 = lineRepository.save(Line.of("신분당선", "red"));
-
-        신분당선.addSection(강남역, 양재역, 10);
+        Line 신분당선 = lineRepository.save(Line.of("신분당선", "red", 강남역, 양재역, 10));
         신분당선.addSection(양재역, 양재시민의숲, 8);
         신분당선.addSection(양재시민의숲, 청계산입구, 8);
 
@@ -54,9 +52,7 @@ class SectionsTest {
         Station 강남역 = stationRepository.save(Station.from("강남역"));
         Station 양재역 = stationRepository.save(Station.from("양재역"));
 
-        Line 신분당선 = lineRepository.save(Line.of("신분당선", "red"));
-
-        신분당선.addSection(강남역, 양재역, 10);
+        Line 신분당선 = lineRepository.save(Line.of("신분당선", "red", 강남역, 양재역, 10));
 
         // when
         ThrowableAssert.ThrowingCallable throwingCallable = () -> 신분당선.addSection(양재역, null, 8);
@@ -74,9 +70,7 @@ class SectionsTest {
         Station 양재시민의숲 = stationRepository.save(Station.from("양재시민의숲"));
         Station 청계산입구 = stationRepository.save(Station.from("청계산입구"));
 
-        Line 신분당선 = lineRepository.save(Line.of("신분당선", "red"));
-
-        신분당선.addSection(강남역, 양재역, 10);
+        Line 신분당선 = lineRepository.save(Line.of("신분당선", "red", 강남역, 양재역, 10));
         신분당선.addSection(양재역, 양재시민의숲, 8);
         신분당선.addSection(양재시민의숲, 청계산입구, 8);
         Sections sections = 신분당선.getSections();
@@ -97,14 +91,12 @@ class SectionsTest {
         Station 양재역 = stationRepository.save(Station.from("양재역"));
         Station 양재시민의숲 = stationRepository.save(Station.from("양재시민의숲"));
 
-        Line 신분당선 = lineRepository.save(Line.of("신분당선", "red"));
-
-        신분당선.addSection(강남역, 양재시민의숲, 10);
+        Line 신분당선 = lineRepository.save(Line.of("신분당선", "red", 강남역, 양재시민의숲, 10));
         신분당선.addSection(강남역, 양재역, 8);
         Sections sections = 신분당선.getSections();
 
         // when
-        List<Section> actual = sections.getAllSections();
+        List<Section> actual = sections.getOrderedSections();
 
         //then
         Assertions.assertThat(actual).hasSize(2);
@@ -120,11 +112,26 @@ class SectionsTest {
         Station 양재역 = stationRepository.save(Station.from("양재역"));
         Station 양재시민의숲 = stationRepository.save(Station.from("양재시민의숲"));
 
-        Line 신분당선 = lineRepository.save(Line.of("신분당선", "red"));
-        신분당선.addSection(강남역, 양재시민의숲, 10);
+        Line 신분당선 = lineRepository.save(Line.of("신분당선", "red", 강남역, 양재시민의숲, 10));
 
         // when
         ThrowableAssert.ThrowingCallable throwingCallable = () -> 신분당선.addSection(강남역, 양재역, distance);
+
+        // then
+        Assertions.assertThatExceptionOfType(BadRequestException.class)
+                .isThrownBy(throwingCallable);
+    }
+
+    @Test
+    void 상행역과_하행역이_이미_노선에_등록되어있으면_추가할_수_없다(){
+        // given
+        Station 강남역 = stationRepository.save(Station.from("강남역"));
+        Station 양재역 = stationRepository.save(Station.from("양재역"));
+
+        Line 신분당선 = lineRepository.save(Line.of("신분당선", "red", 강남역, 양재역, 10));
+
+        // when
+        ThrowableAssert.ThrowingCallable throwingCallable = () -> 신분당선.addSection(강남역, 양재역, 10);
 
         // then
         Assertions.assertThatExceptionOfType(BadRequestException.class)
