@@ -99,25 +99,39 @@ public class Line extends BaseEntity {
     }
 
     public void addLineSection(Station upStation, Station downStation, int distance) {
-        boolean existUpStation = sections.stream()
-                .anyMatch(it -> it.equalUpStation(upStation));
-        boolean existDownStation = sections.stream()
-                .anyMatch(it -> it.equalDownStation(downStation));
-        if(existUpStation && existDownStation) {
-            throw new CannotUpdateSectionException("상행역과 하행역이 이미 노선에 모두 등록되어있어서 추가할 수 없습니다.");
+        boolean existUpStation = getStations().stream().anyMatch(it -> it.equals(upStation));
+        boolean existDownStation = getStations().stream().anyMatch(it -> it.equals(downStation));
+
+        validStation(existUpStation, existDownStation);
+        if (existUpStation) {
+            updateUpStation(upStation, downStation, distance);
         }
+        if (existDownStation) {
+            updateDownStation(upStation, downStation, distance);
+        }
+        sections.add(new Section(this, upStation, downStation, distance));
+    }
 
-
-        sections.stream()
-                .filter(it -> it.equalUpStation(upStation))
-                .findFirst()
-                .ifPresent(it -> it.updateUpStation(downStation, distance));
-
+    private void updateDownStation(Station upStation, Station downStation, int distance) {
         sections.stream()
                 .filter(it -> it.equalDownStation(downStation))
                 .findFirst()
                 .ifPresent(it -> it.updateDownStation(upStation, distance));
+    }
 
-        sections.add(new Section(this, upStation, downStation, distance));
+    private void updateUpStation(Station upStation, Station downStation, int distance) {
+        sections.stream()
+                .filter(it -> it.equalUpStation(upStation))
+                .findFirst()
+                .ifPresent(it -> it.updateUpStation(downStation, distance));
+    }
+
+    private void validStation(boolean existUpStation, boolean existDownStation) {
+        if (existUpStation && existDownStation) {
+            throw new CannotUpdateSectionException("상행역과 하행역이 이미 노선에 모두 등록되어있어서 추가할 수 없습니다.");
+        }
+        if (!existUpStation && !existDownStation) {
+            throw new CannotUpdateSectionException("상행역과 하행역 둘 중 하나도 포함되어있지 않아서 추가할 수 없습니다.");
+        }
     }
 }
