@@ -96,4 +96,8 @@ public class Line extends BaseEntity {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("다음 구간이 없습니다."));
     }
+
+    public void addLineSection(Station upStation, Station downStation, int distance) {
+        sections.add(new Section(this, upStation, downStation, distance));
+    }
 }

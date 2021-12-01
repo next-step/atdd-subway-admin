@@ -120,11 +120,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제됨(response);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest lineRequest) {
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest lineRequest) {
         return 지하철_노선_생성_요청(lineRequest);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
                 .body(lineRequest)
@@ -135,7 +135,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return response;
     }
 
-    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
+    public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -145,7 +145,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return response;
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> createResponse) {
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> createResponse) {
         String uri = getURI(createResponse);
 
         ExtractableResponse<Response> response = RestAssured
@@ -157,7 +157,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return response;
     }
 
-    private ExtractableResponse<Response> 지하철_노선_수정_요청(LineRequest lineRequest2, ExtractableResponse<Response> createResponse) {
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(LineResponse lineResponse) {
+        return RestAssured
+                .given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines/{id}", lineResponse.getId())
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_수정_요청(LineRequest lineRequest2, ExtractableResponse<Response> createResponse) {
         String uri = getURI(createResponse);
 
         ExtractableResponse<Response> response = RestAssured
@@ -169,7 +178,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return response;
     }
 
-    private ExtractableResponse<Response> 지하철_노선_제거_요청(ExtractableResponse<Response> createResponse) {
+    public static ExtractableResponse<Response> 지하철_노선_제거_요청(ExtractableResponse<Response> createResponse) {
         String uri = getURI(createResponse);
 
         ExtractableResponse<Response> response = RestAssured
@@ -179,7 +188,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return response;
     }
 
-    private String getURI(ExtractableResponse<Response> createResponse) {
+    public static String getURI(ExtractableResponse<Response> createResponse) {
         return createResponse.header("Location");
     }
 
