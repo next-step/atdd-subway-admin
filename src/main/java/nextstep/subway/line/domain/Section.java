@@ -128,4 +128,21 @@ public class Section {
         this.upStation = inputDownStation;
         this.distance = this.distance.minus(inputDistance);
     }
+
+    public boolean equalsUpStation(Long stationId) {
+        return this.upStation.getId().equals(stationId);
+    }
+
+    public boolean equalsDownStation(Long stationId) {
+        return this.downStation.getId().equals(stationId);
+    }
+
+    public void deleteLine() {
+        this.line = null;
+    }
+
+    public void extendSection(Section backSection) {
+        this.downStation = backSection.downStation;
+        this.distance = distance.plus(backSection.distance);
+    }
 }

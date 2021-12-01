@@ -1,9 +1,7 @@
 package nextstep.subway.common.exception;
 
-import nextstep.subway.line.exception.AlreadyRegisteredSectionException;
-import nextstep.subway.line.exception.LongDistanceException;
-import nextstep.subway.line.exception.NotFoundLineException;
-import nextstep.subway.line.exception.NotFoundUpAndDownStation;
+import nextstep.subway.line.exception.*;
+import nextstep.subway.station.exception.NotFoundStationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +16,14 @@ public class CommonControllerAdvice {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler({NotFoundLineException.class})
+    @ExceptionHandler({NotFoundLineException.class, NotFoundStationException.class})
     public ResponseEntity handleNotFoundLineException(NotFoundLineException e) {
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(e);
     }
 
-    @ExceptionHandler({AlreadyRegisteredSectionException.class, NotFoundUpAndDownStation.class, LongDistanceException.class})
+    @ExceptionHandler(
+            {AlreadyRegisteredSectionException.class, NotFoundUpAndDownStation.class,
+                    LongDistanceException.class, NotFoundStationInLineException.class, ExistsOnlyOneSectionInLine.class})
     public ResponseEntity handleAlreadyRegisteredSectionException(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
     }

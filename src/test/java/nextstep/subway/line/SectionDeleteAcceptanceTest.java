@@ -92,7 +92,7 @@ public class SectionDeleteAcceptanceTest extends AcceptanceTest {
 
         // then
         // 노선 삭제 실패함
-        지하철_노선_구간_삭제_실패함(response, "구간에 없는 역을 제거할 수 없습니다.");
+        지하철_노선_구간_삭제_실패함(response, "구간에 " + 홍대입구역.getId() + " 지하철역이 없습니다");
     }
 
     @DisplayName("구간이 하나인 노선에서 역을 제거한다")
@@ -116,18 +116,9 @@ public class SectionDeleteAcceptanceTest extends AcceptanceTest {
         지하철_노선_구간_삭제됨(response);
     }
 
-    private void 지하철_노선_구간_생성_실패함(ExtractableResponse<Response> response, String message) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        assertThat(response.jsonPath().getObject("message", String.class)).isEqualTo(message);
-    }
-
     private void 지하철_노선_구간_삭제_실패함(ExtractableResponse<Response> response, String message) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
         assertThat(response.jsonPath().getObject("message", String.class)).isEqualTo(message);
-    }
-
-    private void 지하철_노선_구간_등록됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     private void 지하철_노선에_등록된_역_확인(Long lineId, String... names) {

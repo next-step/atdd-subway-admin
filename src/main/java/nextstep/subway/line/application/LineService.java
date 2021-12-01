@@ -73,6 +73,12 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
+    public void deleteSection(Long id, Long stationId) {
+        Line line = findById(id);
+        line.deleteSection(stationId);
+
+    }
+
     private Station findStationById(Long id) {
         return stationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundStationException(id + " 지하철역이 없습니다"));
@@ -88,4 +94,5 @@ public class LineService {
             throw new DuplicateLineException("이미 저장된 지하철 노선 입니다.");
         }
     }
+
 }

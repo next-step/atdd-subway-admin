@@ -30,4 +30,8 @@ public class Distance {
     public boolean isLong(Distance distance) {
         return this.distance >= distance.distance;
     }
+
+    public Distance plus(Distance distance) {
+        return new Distance(this.distance + distance.distance);
+    }
 }
