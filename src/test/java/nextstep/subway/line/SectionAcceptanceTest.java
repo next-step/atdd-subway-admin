@@ -181,6 +181,28 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		assertThat(stationIds).containsExactly(2L, 3L);
 	}
 
+	@Test
+	@DisplayName("지하철 노선 내 1개 구간만 존재 시 역 삭제 요청 실패")
+	public void deleteStationInSectionsSizeOneFail() {
+		//given
+		//when
+		ExtractableResponse<Response> deleteStationResponse = delete("/lines/1/sections?stationId=2");
+		//then
+		assertThat(deleteStationResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	@Test
+	@DisplayName("지하철 노선 내 구간에 미 존재 역 삭제 요청 실패")
+	public void deleteNotContainStationInSectionsFail() {
+		//given
+		SectionRequest param = new SectionRequest(3L, 4L, 17);
+		post("/lines/1/sections", param);
+		//when
+		ExtractableResponse<Response> deleteStationResponse = delete("/lines/1/sections?stationId=1");
+		//then
+		assertThat(deleteStationResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
 	private List<Long> getStationIds(ExtractableResponse<Response> findLineResponse) {
 		return findLineResponse.body()
 			.jsonPath()

@@ -175,4 +175,22 @@ class SectionsTest {
 		//when
 		assertThat(sections.getAllStationsBySections()).containsExactly(station2, station3);
 	}
+
+	@Test
+	@DisplayName("Sections 내 구간 1개만 존재 시 삭제 실패")
+	public void deleteStationInSectionsSizeOneFail() {
+		assertThatThrownBy(() -> sections.deleteStation(station2))
+			.isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@Test
+	@DisplayName("Sections 내 미 존재 역 삭제 실패")
+	public void deleteStationNotContainInSectionsFail() {
+		//given
+		Section section = Section.create(2L,station2, station3, 12);
+		sections.add(section);
+		//then
+		assertThatThrownBy(() -> sections.deleteStation(station1))
+			.isInstanceOf(IllegalArgumentException.class);
+	}
 }
