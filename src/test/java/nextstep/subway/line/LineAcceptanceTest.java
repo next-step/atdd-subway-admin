@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import static java.util.stream.Collectors.*;
 import static nextstep.subway.fixtrue.Param.*;
 import static nextstep.subway.fixtrue.TestFactory.*;
 import static nextstep.subway.station.StationAcceptanceTest.*;
@@ -8,12 +9,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
@@ -28,6 +32,7 @@ import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
+@Transactional
 public class LineAcceptanceTest extends AcceptanceTest {
 
     public static final String LINE_ONE = "1호선";
@@ -311,7 +316,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         StationResponse stationGangnam = 지하철역_등록되어_있음(강남역);
         StationResponse stationSinchon = 지하철역_등록되어_있음(신촌역);
         StationResponse stationSeoul = 지하철역_등록되어_있음(서울역);
-        StationResponse stationYounSan = 지하철역_등록되어_있음(용산역);
 
         LineResponse lineResponse = 지하철_노선_등록되어_있음(
             new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, stationGangnam.getId(), stationSinchon.getId(), 10));
@@ -322,8 +326,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_삭제됨(response);
+        지하철_삭제된_구간을_제외한역_출력(lineResponse.getId(), 서울역, 신촌역);
     }
 
+    /**
+     *  강남역 - 용산역 - 서울역(삭제) - 신촌역
+     */
     @Test
     void 지하철_마지막_중간구간을_삭제한다() {
         // given
@@ -341,15 +349,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_삭제됨(response);
+        지하철_삭제된_구간을_제외한역_출력(lineResponse.getId(), 강남역, 용산역, 신촌역);
     }
 
+    /**
+     *  강남역 - 용산역 - 신촌역(삭제)
+     */
     @Test
     void 지하철_마지막_구간을_삭제한다() {
         // given
         StationResponse stationGangnam = 지하철역_등록되어_있음(강남역);
         StationResponse stationSinchon = 지하철역_등록되어_있음(신촌역);
         StationResponse stationSeoul = 지하철역_등록되어_있음(서울역);
-        StationResponse stationYounSan = 지하철역_등록되어_있음(용산역);
 
         LineResponse lineResponse = 지하철_노선_등록되어_있음(
             new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, stationGangnam.getId(), stationSinchon.getId(), 10));
@@ -360,6 +371,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_삭제됨(response);
+        지하철_삭제된_구간을_제외한역_출력(lineResponse.getId(), 강남역, 서울역);
     }
 
     @Test
@@ -433,6 +445,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(OK.value());
+    }
+
+    private void 지하철_삭제된_구간을_제외한역_출력(Long lineId, String ...stationNames) {
+        ExtractableResponse<Response> lineResponses = 지하철_노선_조회_요청(lineId);
+        JsonPath jsonPath = lineResponses.jsonPath();
+        String lineName = jsonPath.getString("name");
+        List<String> stations = jsonPath.getObject("stations.name", List.class);
+        assertThat(lineName).isEqualTo(LINE_ONE);
+        assertThat(stations).containsExactly(stationNames);
     }
 
 }

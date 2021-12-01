@@ -24,7 +24,7 @@ import nextstep.subway.station.exception.StationNotFoundException;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", fetch = LAZY, cascade = ALL)
+    @OneToMany(mappedBy = "line", fetch = LAZY, cascade = ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public void add(List<Section> newSections, Line line) {
