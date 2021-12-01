@@ -110,6 +110,7 @@ public class SectionsTest {
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("이미 구역의 역들이 등록 되어 있습니다.");
     }
+
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어 있지 않을때 ")
     @Test
     void validNotAdded() {
@@ -119,7 +120,7 @@ public class SectionsTest {
         Station newUpStation = new Station(3L, "뚝섬유원지역");
         Station newDownStation = new Station(4L, "중곡역");
         Section.of(line, upStation, downStation, 10);
-        
+
         assertThatThrownBy(() -> {
             Section.of(line, newUpStation, newDownStation, 5);
         }).isInstanceOf(IllegalArgumentException.class)

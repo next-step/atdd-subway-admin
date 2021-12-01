@@ -66,8 +66,8 @@ public class LineService {
     private Line findById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() ->
-                new NullPointerException("라인이 없습니다.")
-        );
+                        new NullPointerException("라인이 없습니다.")
+                );
     }
 
     @Transactional

@@ -1,6 +1,5 @@
 package nextstep.subway.section;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -11,9 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,20 +34,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection() {
         //given
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", "1");
-        params.put("downStationId", "3");
-        params.put("distance", "4");
+        Map<String, String> params = SectionTestHelper.구간_생성_요청_파라미터("1","3","4");
 
         // when 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .pathParam("lineId", "1")
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/{lineId}/sections")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = SectionTestHelper.구간_등록_요청(params);
 
         // then 지하철_노선에_지하철역_등록됨
         assertAll(
@@ -63,20 +50,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addAscendingStation() {
         //given
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", "3");
-        params.put("downStationId", "1");
-        params.put("distance", "4");
+        Map<String, String> params = SectionTestHelper.구간_생성_요청_파라미터("3","1","4");
 
         // when 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .pathParam("lineId", "1")
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/{lineId}/sections")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = SectionTestHelper.구간_등록_요청(params);
 
         // then 지하철_노선에_지하철역_등록됨
         assertAll(
@@ -89,20 +66,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addDescendingStation() {
         //given
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", "2");
-        params.put("downStationId", "3");
-        params.put("distance", "4");
+        Map<String, String> params = SectionTestHelper.구간_생성_요청_파라미터("2","3","4");
 
         // when 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .pathParam("lineId", "1")
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/{lineId}/sections")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = SectionTestHelper.구간_등록_요청(params);
 
         // then 지하철_노선에_지하철역_등록됨
         assertAll(
@@ -115,20 +82,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void distanceErrorValid() {
         //given
-        Map<String, String> params = new HashMap<>();
+        Map<String, String> params = SectionTestHelper.구간_생성_요청_파라미터("1","3","20");
         params.put("upStationId", "1");
         params.put("downStationId", "3");
         params.put("distance", "20");
 
         // when 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .pathParam("lineId", "1")
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/{lineId}/sections")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = SectionTestHelper.구간_등록_요청(params);
 
         // then 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -138,20 +98,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void alreadyAddedValid() {
         //given
-        Map<String, String> params = new HashMap<>();
+        Map<String, String> params = SectionTestHelper.구간_생성_요청_파라미터("1","2","5");
         params.put("upStationId", "1");
         params.put("downStationId", "2");
         params.put("distance", "5");
 
         // when 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .pathParam("lineId", "1")
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/{lineId}/sections")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = SectionTestHelper.구간_등록_요청(params);
 
         // then 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -161,20 +114,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void validNotAdded() {
         //given
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", "4");
-        params.put("downStationId", "5");
-        params.put("distance", "5");
+        Map<String, String> params = SectionTestHelper.구간_생성_요청_파라미터("4","5","5");
 
         // when 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .pathParam("lineId", "1")
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/{lineId}/sections")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = SectionTestHelper.구간_등록_요청(params);
 
         // then 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
