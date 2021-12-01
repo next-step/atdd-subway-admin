@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-public class Section extends BaseEntity  {
+public class Section extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,7 +50,7 @@ public class Section extends BaseEntity  {
         return upStation;
     }
 
-    public List<Station> getStations(){
+    public List<Station> getStations() {
         return Collections.unmodifiableList(Arrays.asList(upStation, downStation));
     }
 
@@ -62,7 +62,7 @@ public class Section extends BaseEntity  {
         return id;
     }
 
-    public void addLine(Line line){
+    public void addLine(Line line) {
         this.line = line;
     }
 
@@ -80,18 +80,18 @@ public class Section extends BaseEntity  {
     }
 
     public void addInnerSection(Section newSection) {
-        if(this.getUpStation() == newSection.getUpStation()){
+        if (this.getUpStation() == newSection.getUpStation()) {
             this.upStation = newSection.getDownStation();
             this.minusDistance(newSection.getDistance());
         }
 
-        if(this.getDownStation() == newSection.getDownStation()){
+        if (this.getDownStation() == newSection.getDownStation()) {
             this.downStation = newSection.getUpStation();
             this.minusDistance(newSection.getDistance());
         }
     }
 
-    public int getDistanceNumber(){
+    public int getDistanceNumber() {
         return this.distance.getDistance();
     }
 

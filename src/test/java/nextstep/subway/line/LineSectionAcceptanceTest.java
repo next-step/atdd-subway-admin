@@ -107,7 +107,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         LineSectionAcceptanceTestResponse.isStatusOk(response);
         ExtractableResponse<Response> searchLineResponse = LineAcceptanceTestRequest.selectOneLine(lindId);
 
-        checkValidCompareSearchStations(searchLineResponse, 2,"수원역","광교역");
+        checkValidCompareSearchStations(searchLineResponse, 2, "수원역", "광교역");
     }
 
     @Test
@@ -125,7 +125,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         LineSectionAcceptanceTestResponse.isStatusOk(response);
         ExtractableResponse<Response> searchLineResponse = LineAcceptanceTestRequest.selectOneLine(lindId);
 
-        checkValidCompareSearchStations(searchLineResponse, 2,"강남역","수원역");
+        checkValidCompareSearchStations(searchLineResponse, 2, "강남역", "수원역");
     }
 
     @Test
@@ -143,7 +143,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         LineSectionAcceptanceTestResponse.isStatusOk(response);
         ExtractableResponse<Response> searchLineResponse = LineAcceptanceTestRequest.selectOneLine(lindId);
 
-        checkValidCompareSearchStations(searchLineResponse, 2,"강남역","광교역");
+        checkValidCompareSearchStations(searchLineResponse, 2, "강남역", "광교역");
     }
 
     @Test
@@ -163,7 +163,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         LineSectionAcceptanceTestResponse.isStatusBadRequest(response);
         ExtractableResponse<Response> searchLineResponse = LineAcceptanceTestRequest.selectOneLine(lindId);
 
-        checkValidCompareSearchStations(searchLineResponse, 3,"강남역","수원역","광교역");
+        checkValidCompareSearchStations(searchLineResponse, 3, "강남역", "수원역", "광교역");
     }
 
     @Test
@@ -173,7 +173,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         LineSectionAcceptanceTestResponse.isStatusBadRequest(response);
     }
 
-    private void checkValidCompareSearchStations(ExtractableResponse response, int sectionSize,String... stationNames) {
+    private void checkValidCompareSearchStations(ExtractableResponse response, int sectionSize, String... stationNames) {
         LineResponse searchedLineResponse = response.jsonPath()
                 .getObject(".", LineResponse.class);
 

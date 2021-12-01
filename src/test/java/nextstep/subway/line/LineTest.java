@@ -71,7 +71,7 @@ public class LineTest {
         line.removeStation(dangSanStation);
 
         assertThat(line.getStations().size()).isEqualTo(3);
-        checkValidateStationName(line,  "이대역", "홍대입구역", "충정로역");
+        checkValidateStationName(line, "이대역", "홍대입구역", "충정로역");
     }
 
     @Test
@@ -93,13 +93,13 @@ public class LineTest {
         line.removeStation(ehwaStation);
 
         assertThat(line.getStations().size()).isEqualTo(3);
-        checkValidateStationName(line,  "당산역", "홍대입구역", "충정로역");
+        checkValidateStationName(line, "당산역", "홍대입구역", "충정로역");
         checkValidateDistance(line, dangSanStation, hongDaeStation, new Distance(10));
     }
 
     @Test
     @DisplayName("구간에 등록되지 않는 노선을 삭제할때 예외케이스")
-    public void removeStationIsNotRegisteredTest(){
+    public void removeStationIsNotRegisteredTest() {
         Station dangSanStation = new Station("당산역");
         Station hongDaeStation = new Station("홍대입구역");
         Station chungJeongRoStation = new Station("충정로역");
@@ -119,7 +119,7 @@ public class LineTest {
 
     @Test
     @DisplayName("노선에서 하나 남아있는 구간을 삭제할때 예외케이스")
-    public void removeLastOneStationTest(){
+    public void removeLastOneStationTest() {
         Station dangSanStation = new Station("당산역");
         Station hongDaeStation = new Station("홍대입구역");
 

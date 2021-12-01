@@ -83,7 +83,7 @@ public class SectionsTest {
 
     @Test
     @DisplayName("첫번째 Station 찾기")
-    public void searchFirstStationTest(){
+    public void searchFirstStationTest() {
         Station dangSanStation = new Station("당산역");
         Station hongDaeStation = new Station("홍대입구역");
         Station chungJeongRoStation = new Station("충정로역");
@@ -99,7 +99,7 @@ public class SectionsTest {
 
     @Test
     @DisplayName("마지막 Station 찾기")
-    public void searchLastStationTest(){
+    public void searchLastStationTest() {
         Station dangSanStation = new Station("당산역");
         Station hongDaeStation = new Station("홍대입구역");
         Station chungJeongRoStation = new Station("충정로역");

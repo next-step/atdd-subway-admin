@@ -32,7 +32,6 @@ public class Sections {
             orderedSections.add(foundSection);
             foundSection = findNextSection(foundSection);
         }
-
         return orderedSections;
     }
 
@@ -85,6 +84,21 @@ public class Sections {
         }
     }
 
+    public void addSection(Section newSection) {
+        for (Section section : sections) {
+            section.addInnerSection(newSection);
+        }
+        sections.add(newSection);
+    }
+
+    public List<Section> getSections() {
+        return sections;
+    }
+
+    public boolean hasLastOneSection() {
+        return this.sections.size() == 1;
+    }
+
     private void removeMiddleSection(Station station) {
         Section foundSectionByDownStation = findSectionByDownStation(station);
         Section foundSectionByUpStation = findSectionByUpStation(station);
@@ -110,30 +124,15 @@ public class Sections {
                 .orElseThrow(() -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_SECTION));
     }
 
-    public void addSection(Section newSection) {
-        for (Section section : sections) {
-            section.addInnerSection(newSection);
-        }
-        sections.add(newSection);
-    }
-
-    public List<Section> getSections() {
-        return sections;
-    }
-
-    private boolean hasSection(Section foundSection) {
-        return Optional.ofNullable(foundSection).isPresent();
-    }
-
-    public boolean hasLastOneSection() {
-        return this.sections.size() == 1;
-    }
-
     private Section findNextSection(Section section) {
         return this.sections.stream()
                 .filter(it -> it.getUpStation() == section.getDownStation())
                 .findFirst()
                 .orElse(null);
+    }
+
+    private boolean hasSection(Section foundSection) {
+        return Optional.ofNullable(foundSection).isPresent();
     }
 
     private Section findFirstSection() {
