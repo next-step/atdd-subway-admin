@@ -51,16 +51,13 @@ public class Sections {
 
     int countSectionByStation(Station station) {
         return sections.stream()
-            .filter(section -> section.isFromStation(station) || section.isToStation(station))
+            .filter(section -> section.hasStation(station))
             .collect(Collectors.toList())
             .size();
     }
 
     boolean isMinSize() {
-        if (sections.size() == MIN_SIZE) {
-            return true;
-        }
-        return false;
+        return sections.size() == MIN_SIZE;
     }
 
     Section findRemoveSection(Station station) {
@@ -69,7 +66,7 @@ public class Sections {
         }
 
         return sections.stream()
-            .filter(section -> section.isFromStation(station) || section.isToStation(station))
+            .filter(section -> section.hasStation(station))
             .findFirst().orElseThrow(() -> new NotFoundException());
     }
 

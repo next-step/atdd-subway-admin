@@ -85,12 +85,11 @@ public class Line extends BaseEntity {
         sections.add(Section.create(distance, fromStation, toStation, this));
     }
 
-    public Section deleteSection(Station station) {
+    public void deleteLineStation(Station station) {
         validateOfDelete(station);
 
         Section section = sections.findRemoveSection(station);
         removeSection(section);
-        return section;
     }
 
     private void validateOfDelete(Station station) {

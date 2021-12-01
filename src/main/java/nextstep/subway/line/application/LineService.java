@@ -4,13 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.common.Messages;
 import nextstep.subway.exception.NotFoundException;
+import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.domain.Distance;
-import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -24,13 +23,9 @@ public class LineService {
 
     private final StationRepository stationRepository;
 
-    private final SectionRepository sectionRepository;
-
-    public LineService(LineRepository lineRepository, StationRepository stationRepository,
-        SectionRepository sectionRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
@@ -83,11 +78,10 @@ public class LineService {
         return LineResponse.of(line);
     }
 
-    public void deleteSection(Long lineId, Long stationId) {
+    public void deleteLineStation(Long lineId, Long stationId) {
         Line line = findById(lineId);
         Station station = findStationById(stationId);
-        Section section = line.deleteSection(station);
-        sectionRepository.delete(section);
+        line.deleteLineStation(station);
     }
 
     private Line findById(Long lineId) {

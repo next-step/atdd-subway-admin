@@ -73,7 +73,9 @@ public class Section extends BaseEntity implements Comparable<Section>{
     }
 
     public void removeLine() {
-        this.line = null;
+        if (this.line != null) {
+            this.line = null;
+        }
     }
 
     boolean equalsLine(Line line) {
@@ -81,6 +83,10 @@ public class Section extends BaseEntity implements Comparable<Section>{
             return false;
         }
         return this.line.equals(line);
+    }
+
+    boolean hasStation(Station station) {
+        return isFromStation(station) || isToStation(station);
     }
 
     boolean isFromStation(Station station) {

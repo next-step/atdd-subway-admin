@@ -9,6 +9,7 @@ import nextstep.subway.common.Messages;
 import nextstep.subway.exception.CannotAddException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +18,10 @@ import org.springframework.test.context.jdbc.Sql;
 
 @DataJpaTest
 @Sql(scripts = "classpath:scripts/sectionTestData.sql")
-public class SectionTest {
+public class LineStationTest {
 
     @Autowired
     LineRepository lineRepository;
-
-    @Autowired
-    SectionRepository sectionRepository;
 
     @Autowired
     StationRepository stationRepository;
@@ -33,12 +31,16 @@ public class SectionTest {
     private Station seoulStation;
     private Station yongsanStation;
 
+    @BeforeEach
+    public void setUp() {
+        seoulStation = stationRepository.findById(1L).get();
+        yongsanStation = stationRepository.findById(2L).get();
+    }
+
+
     @Test
     @DisplayName("라인 생성시 구간 추가 성공")
     void createLineWithSection() {
-        seoulStation = stationRepository.findById(1L).get();
-        yongsanStation = stationRepository.findById(2L).get();
-
         Line line = lineRepository.save(new Line("1호선-천안", "blue"));
         Section.create(Distance.valueOf(10), seoulStation, yongsanStation, line);
 
@@ -99,7 +101,7 @@ public class SectionTest {
     }
 
     @Test
-    @DisplayName("이미 저장된 1호선(서울역-용산역, 길이 10)에 (길이가 다른) 같은 구간(서울역-용산역(길이 5)) 추가시 이미 존재한다는 CannotAddException 발생")
+    @DisplayName("기존 구간과 같은 역을 가진 구간 추가시 이미 존재한다는 CannotAddException 발생")
     void addSectionAlreadyExistsFail() {
         addLine1WithSeoulToYongsanLength10();
 
@@ -110,7 +112,7 @@ public class SectionTest {
     }
 
     @Test
-    @DisplayName("이미 저장된 1호선(서울역-용산역)에 기존 노선에 포함되지 않은 역만 있는 구간(강남역-역삼역) 추가시 포함된 구간이 없다는 CannotAddException 발생")
+    @DisplayName("기존 구간과 겹치지 않은 역 추가시 포함된 구간이 없다는 CannotAddException 발생")
     void addSectionNotIncludeFail() {
         addLine1WithSeoulToYongsanLength10();
         Station gangnamStation = stationRepository.findById(4L).get();
@@ -123,7 +125,7 @@ public class SectionTest {
     }
 
     @Test
-    @DisplayName("이미 저장된 1호선(서울역-용산역, 길이 10)에 기존 구간과 길이가 같은 중간 구간(서울역-추가역(길이 10)) 추가 시 구간의 길이는 기존 구간보다 작아야 한다는  CannotAddException")
+    @DisplayName("기존 역 사이에 기존 구간과 같은 길이로 추가 시 구간의 길이는 기존 구간보다 작아야 한다는 CannotAddException")
     void addSectionSameDistanceFail() {
         addLine1WithSeoulToYongsanLength10();
         Station addStation = stationRepository.findById(3L).get();
@@ -143,7 +145,7 @@ public class SectionTest {
         line.addSections(Distance.valueOf(5), addStation, yongsanStation);
 
         //when
-        line.deleteSection(addStation);
+        line.deleteLineStation(addStation);
 
         //then
         assertThat(line.getSortedStations()).extracting(Station::getName).containsExactly("서울역", "용산역");
@@ -151,7 +153,7 @@ public class SectionTest {
     }
 
     @Test
-    @DisplayName("이미 저장된 1호선(서울역-용산역, 길이 10)에 기존 구간보다 길이가 긴 구간(추가역-용산역(길이 12)) 추가 시 기존 구간보다 작아야 한다는 CannotAddException")
+    @DisplayName("기존 역 사이에 기존 구간보다 긴 길이로 새로운 역 추가 시 기존 구간보다 작아야 한다는 CannotAddException")
     void addSectionLongDistanceFail() {
         addLine1WithSeoulToYongsanLength10();
         Station addStation = stationRepository.findById(3L).get();
@@ -171,11 +173,9 @@ public class SectionTest {
     }
 
     private void addLine1WithSeoulToYongsanLength10() {
-        seoulStation = stationRepository.findById(1L).get();
-        yongsanStation = stationRepository.findById(2L).get();
-
         line = lineRepository.save(new Line("1호선", "blue"));
-        sectionRepository.save(Section.create(Distance.valueOf(10), seoulStation, yongsanStation, line));
+        Section.create(Distance.valueOf(10), seoulStation, yongsanStation, line);
+        lineRepository.flush();
     }
 
 }
