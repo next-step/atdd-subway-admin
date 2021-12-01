@@ -89,15 +89,22 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
-        Section section = findSections(isUpStation(station))
-            .orElseThrow(SectionNotFoundException::new);
+        Section section = findRemoveSection(station);
 
         if (matchStation(isDownStation(station))) {
             findSections(isDownStation(station))
                 .ifPresent(s -> s.removeSection(section));
         }
-
         sections.remove(section);
+    }
+
+    private Section findRemoveSection(Station station) {
+        return  findSections(isUpStation(station)).orElse(findLastSection(station));
+    }
+
+    private Section findLastSection(Station station) {
+        return findSections(isDownStation(station))
+            .orElseThrow(SectionNotFoundException::new);
     }
 
     private Optional<Section> findSections(Predicate<Section> condition) {
