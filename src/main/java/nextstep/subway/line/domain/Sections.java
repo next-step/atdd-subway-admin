@@ -99,7 +99,7 @@ public class Sections {
     }
 
     private Section findRemoveSection(Station station) {
-        return  findSections(isUpStation(station)).orElse(findLastSection(station));
+        return findSections(isUpStation(station)).orElseGet(() -> findLastSection(station));
     }
 
     private Section findLastSection(Station station) {

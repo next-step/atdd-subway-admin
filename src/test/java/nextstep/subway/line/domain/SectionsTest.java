@@ -158,7 +158,30 @@ class SectionsTest {
     }
 
     @Test
-    void 지하철_구간_삭제() {
+    void 첫번째_구간_삭제() {
+        // given
+        Station stationGangNam = new Station(1L, "강남역");
+        Station stationSinChon = new Station(2L, "신촌역");
+        Station stationYoungSan = new Station(3L, "용산역");
+        Station stationYeokSam = new Station(4L, "역삼역");
+
+        Line line = new Line(LINE_ONE, LINE_ONE_COLOR_RED);
+        line.addSections(new Section(1L, stationGangNam, stationSinChon, new Distance(10)));
+        line.addSection(new Section(2L, stationSinChon, stationYoungSan, new Distance(4)));
+        line.addSection(new Section(3L, stationYeokSam, stationYoungSan, new Distance(2)));
+
+        // when
+        line.removeSection(stationGangNam);
+
+        // then
+        List<Station> stations = line.getStations();
+
+        Assertions.assertThat(stations).containsExactly(stationSinChon, stationYeokSam, stationYoungSan);
+    }
+
+
+    @Test
+    void 지하철_중간_구간_삭제() {
         // given
         Station stationGangNam = new Station(1L, "강남역");
         Station stationSinChon = new Station(2L, "신촌역");

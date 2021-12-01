@@ -58,13 +58,17 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
+    public Section(Long id, Station upStation, Station downStation, Distance distance) {
+        this(upStation, downStation);
+        this.id = id;
+        this.distance = distance;
+    }
+
     public Section(Long id, Station upStation, Station downStation, Distance distance, Line line) {
         this(upStation, downStation, distance);
         this.id = id;
         this.line = line;
     }
-
-
 
     protected Section() {
     }
@@ -110,6 +114,7 @@ public class Section extends BaseEntity {
 
     public void removeSection(Section section) {
         this.downStation = section.getDownStation();
+        this.distance = distance.add(section.getDistance());
     }
 
     public Station getUpStation() {

@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import static nextstep.subway.common.Message.*;
+import static org.assertj.core.api.Assertions.*;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -29,11 +30,24 @@ class DistanceTest {
         }).isInstanceOf(ArithmeticException.class);
     }
 
+    /**
+     *  9 - 5 = 4
+     */
     @Test
-    void 현재거리보다_작은_수를_입력시_정상() {
+    void 현재거리_빼기_계산() {
         Distance distance = new Distance(9);
         Distance result = distance.subtract(new Distance(5));
 
-        Assertions.assertThat(result).isEqualTo(new Distance(4));
+        assertThat(result).isEqualTo(new Distance(4));
+    }
+
+    /**
+     *  4 + 5 = 9
+     */
+    @Test
+    void 현재거리_더하기_계산() {
+        Distance distance = new Distance(4);
+        Distance result = distance.add(new Distance(5));
+        assertThat(result).isEqualTo(new Distance(9));
     }
 }
