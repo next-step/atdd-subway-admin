@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.exception.CannotAddSectionException;
+import nextstep.subway.exception.CannotDeleteSectionException;
 import nextstep.subway.station.domain.Station;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
@@ -199,6 +200,116 @@ class SectionsTest {
                 // then
                 assertThatThrownBy(throwingCallable)
                         .isInstanceOf(CannotAddSectionException.class);
+            }
+        }
+    }
+
+    @DisplayName("구간 삭제 테스트")
+    @Nested
+    class 구간_삭제_테스트 {
+        @DisplayName("성공 테스트")
+        @Nested
+        class 성공_테스트 {
+
+            @DisplayName("상행 종점 제거")
+            @Test
+            void 상행_종점_제거() {
+                // given
+                Sections 이호선 = new Sections();
+                Section 강남역_역삼역_구간 = Section.of(강남역(), 역삼역(), 5);
+                Section 역삼역_교대역_구간 = Section.of(역삼역(), 교대역(), 5);
+
+                이호선.addSection(강남역_역삼역_구간);
+                이호선.addSection(역삼역_교대역_구간);
+
+                // when
+                이호선.deleteSectionBy(강남역());
+
+                // then
+                assertAll(
+                        () -> 등록된_구간_순서_확인(이호선, 역삼역(), 교대역())
+                );
+            }
+
+            @DisplayName("하행 종점 제거")
+            @Test
+            void 하행_종점_제거() {
+                // given
+                Sections 이호선 = new Sections();
+                Section 강남역_역삼역_구간 = Section.of(강남역(), 역삼역(), 5);
+                Section 역삼역_교대역_구간 = Section.of(역삼역(), 교대역(), 5);
+
+                이호선.addSection(강남역_역삼역_구간);
+                이호선.addSection(역삼역_교대역_구간);
+
+                // when
+                이호선.deleteSectionBy(교대역());
+
+                // then
+                assertAll(
+                        () -> 등록된_구간_순서_확인(이호선, 강남역(), 역삼역())
+                );
+            }
+
+            @DisplayName("중간역 제거")
+            @Test
+            void 중간역_제거() {
+                // given
+                Sections 이호선 = new Sections();
+                Section 강남역_역삼역_구간 = Section.of(강남역(), 역삼역(), 5);
+                Section 역삼역_교대역_구간 = Section.of(역삼역(), 교대역(), 5);
+
+                이호선.addSection(강남역_역삼역_구간);
+                이호선.addSection(역삼역_교대역_구간);
+
+                // when
+                이호선.deleteSectionBy(역삼역());
+
+                // then
+                assertAll(
+                        () -> 등록된_구간_순서_확인(이호선, 강남역(), 교대역())
+                );
+            }
+        }
+
+        @DisplayName("실패 테스트")
+        @Nested
+        class 실패_테스트 {
+
+            @DisplayName("노선에 존재하지 않는 역 제거")
+            @Test
+            void 노선에_존재하지_않는_역_제거() {
+                // given
+                Sections 이호선 = new Sections();
+                Section 강남역_역삼역_구간 = Section.of(강남역(), 역삼역(), 5);
+                Section 역삼역_교대역_구간 = Section.of(역삼역(), 교대역(), 5);
+
+                이호선.addSection(강남역_역삼역_구간);
+                이호선.addSection(역삼역_교대역_구간);
+
+                // when
+                ThrowableAssert.ThrowingCallable throwingCallable = () -> 이호선.deleteSectionBy(서초역());
+
+                // then
+                assertThatThrownBy(throwingCallable)
+                        .isInstanceOf(CannotDeleteSectionException.class);
+            }
+
+            @DisplayName("노선의 마지막 구간을 제거 시도")
+            @Test
+            void 노선의_마지막_구간을_제거_시도() {
+                // given
+                Sections 이호선 = new Sections();
+                Section 강남역_역삼역_구간 = Section.of(강남역(), 역삼역(), 5);
+
+                이호선.addSection(강남역_역삼역_구간);
+
+                // when
+                ThrowableAssert.ThrowingCallable throwingCallable = () -> 이호선.deleteSectionBy(역삼역());
+
+                // then
+                assertThatThrownBy(throwingCallable)
+                        .isInstanceOf(CannotDeleteSectionException.class);
             }
         }
     }

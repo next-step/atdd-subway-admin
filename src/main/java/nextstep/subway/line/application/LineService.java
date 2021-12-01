@@ -84,6 +84,13 @@ public class LineService {
         line.addSection(section);
     }
 
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = findLine(lineId);
+        Station station = findStation(stationId);
+
+        line.deleteSectionBy(station);
+    }
+
     private Line findLine(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new CannotFindEntityException(ERROR_MESSAGE_CANNOT_FIND_LINE));

@@ -79,7 +79,19 @@ public class Section extends BaseEntity {
         return upStation.equals(section.upStation);
     }
 
+    public boolean isEqualUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
     public boolean isEqualDownStation(Section section) {
         return downStation.equals(section.downStation);
+    }
+
+    public boolean isEqualDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    public boolean isContainStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
     }
 }

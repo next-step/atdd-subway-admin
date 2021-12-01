@@ -46,6 +46,10 @@ public class Line extends BaseEntity {
         this.sections.addSection(section);
     }
 
+    public void deleteSectionBy(Station station) {
+        this.sections.deleteSectionBy(station);
+    }
+
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();

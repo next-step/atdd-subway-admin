@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.exception.CannotAddSectionException;
+import nextstep.subway.exception.CannotDeleteSectionException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -23,6 +25,12 @@ public class Sections {
     private static final String ERROR_MESSAGE_DISTANCE_IS_GREATER = "기존 구간보다 길이가 길거나 같습니다.";
     private static final String ERROR_MESSAGE_DISCONNECTED_SECTION = "연결될 수 없는 구간입니다.";
     private static final String ERROR_MESSAGE_EXISTED_SECTION = "이미 존재하는 구간입니다.";
+    private static final String ERROR_MESSAGE_MIN_SECTIONS = "구간의 갯수가 1개 이하입니다.";
+    private static final String ERROR_MESSAGE_NOT_CONTAIN_STATION = "해당역이 포함된 구간이 없습니다.";
+
+    private static final int MIN_SECTIONS_SIZE = 2;
+    private static final int MATCH_ONLY_ONE_SECTION = 1;
+    private static final int MATCH_DOUBLE_SECTION = 2;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_line_section"))
@@ -47,6 +55,15 @@ public class Sections {
         }
 
         addSectionInExistSections(requestSection);
+    }
+
+    public void deleteSectionBy(Station station) {
+        List<Section> targetSections = findSectionsBy(station);
+
+        validateNonEmpty(targetSections);
+        validateAbleToDeleteSectionsSize();
+
+        removeSection(station, targetSections);
     }
 
     public List<Station> getStations() {
@@ -168,6 +185,68 @@ public class Sections {
 
         throw new IllegalArgumentException();
     }
+
+    private void removeSection(Station station, List<Section> targetSections) {
+        if (targetSections.size() == MATCH_ONLY_ONE_SECTION) {
+            sections.remove(targetSections.get(0));
+            return;
+        }
+
+        if (targetSections.size() == MATCH_DOUBLE_SECTION) {
+            removeInnerSection(station, targetSections);
+            return;
+        }
+
+        throw new IllegalArgumentException();
+    }
+
+    private void removeInnerSection(Station station, List<Section> targetSections) {
+        Section upSection = findUpSectionByStation(station, targetSections);
+        Section downSection = findDownSectionByStation(station, targetSections);
+
+        sections.remove(upSection);
+        sections.remove(downSection);
+        sections.add(createNewSectionFromRemoveSection(upSection, downSection));
+    }
+
+    private Section findUpSectionByStation(Station station, List<Section> targetSections) {
+        return targetSections.stream()
+                .filter(section -> section.isEqualDownStation(station))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Section findDownSectionByStation(Station station, List<Section> targetSections) {
+        return targetSections.stream()
+                .filter(section -> section.isEqualUpStation(station))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Section createNewSectionFromRemoveSection(Section upSection, Section downSection) {
+        return Section.of(upSection.getUpStation()
+                , downSection.getDownStation()
+                , upSection.getDistance() + downSection.getDistance());
+    }
+
+    private void validateAbleToDeleteSectionsSize() {
+        if (sections.size() < MIN_SECTIONS_SIZE) {
+            throw new CannotDeleteSectionException(ERROR_MESSAGE_MIN_SECTIONS);
+        }
+    }
+
+    private void validateNonEmpty(List<Section> targetSections) {
+        if (targetSections.isEmpty()) {
+            throw new CannotDeleteSectionException(ERROR_MESSAGE_NOT_CONTAIN_STATION);
+        }
+    }
+
+    private List<Section> findSectionsBy(Station station) {
+        return sections.stream()
+                .filter(section -> section.isContainStation(station))
+                .collect(Collectors.toList());
+    }
+
 
     private Set<Station> findAllStation() {
         Set<Station> existedStation = new HashSet<>();

@@ -21,27 +21,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.line.LineTestFixture.BASE_LINE_URL;
 import static nextstep.subway.line.LineTestFixture.구분당선_요청_데이터;
-import static nextstep.subway.line.LineTestFixture.노선에_구간_추가_요청;
 import static nextstep.subway.line.LineTestFixture.신분당선_요청_데이터;
 import static nextstep.subway.line.LineTestFixture.이호선_요청_데이터;
-import static nextstep.subway.line.LineTestFixture.지하철_노선_등록되어_있음;
-import static nextstep.subway.line.LineTestFixture.지하철_노선_목록_조회_요청;
-import static nextstep.subway.line.LineTestFixture.지하철_노선_생성_요청;
-import static nextstep.subway.line.LineTestFixture.지하철_노선_수정_요청;
-import static nextstep.subway.line.LineTestFixture.지하철_노선_제거_요청;
-import static nextstep.subway.line.LineTestFixture.특정_지하철_노선_조회_요청;
+import static nextstep.subway.station.StationAcceptanceTest.지하철역_등록되어_있음;
 import static nextstep.subway.station.StationTestFixture.강남역_요청_데이터;
 import static nextstep.subway.station.StationTestFixture.교대역_요청_데이터;
 import static nextstep.subway.station.StationTestFixture.서초역_요청_데이터;
 import static nextstep.subway.station.StationTestFixture.역삼역_요청_데이터;
-import static nextstep.subway.station.StationTestFixture.지하철역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
+
+    private static final String BASE_LINE_URL = "/lines";
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -318,6 +312,156 @@ class LineAcceptanceTest extends AcceptanceTest {
                         .isEqualTo(HttpStatus.BAD_REQUEST.value());
             }
         }
+    }
+
+    @DisplayName("구간 제거 테스트")
+    @Nested
+    class 구간_제거_테스트 {
+
+        @DisplayName("성공 테스트")
+        @Nested
+        class 성공_테스트 {
+
+            @DisplayName("상행 종점 제거")
+            @Test
+            void 상행_종점_제거() {
+                // given
+                StationResponse 강남역 = 지하철역_등록되어_있음(강남역_요청_데이터());
+                StationResponse 역삼역 = 지하철역_등록되어_있음(역삼역_요청_데이터());
+                LineResponse 이호선 = 지하철_노선_등록되어_있음(이호선_요청_데이터(강남역, 역삼역, 5));
+
+                StationResponse 교대역 = 지하철역_등록되어_있음(교대역_요청_데이터());
+                SectionAddRequest 구간_추가_요청_데이터 = SectionAddRequest.of(역삼역.getId(), 교대역.getId(), 5);
+                노선에_구간_추가_요청(이호선, 구간_추가_요청_데이터);
+
+                // when
+                ExtractableResponse<Response> 구간_삭제_응답 = 노선에_구간_제거_요청(이호선, 강남역);
+
+                // then
+                assertThat(구간_삭제_응답.statusCode())
+                        .isEqualTo(HttpStatus.OK.value());
+            }
+
+            @DisplayName("하행 종점 제거")
+            @Test
+            void 하행_종점_제거() {
+                // given
+                StationResponse 강남역 = 지하철역_등록되어_있음(강남역_요청_데이터());
+                StationResponse 역삼역 = 지하철역_등록되어_있음(역삼역_요청_데이터());
+                LineResponse 이호선 = 지하철_노선_등록되어_있음(이호선_요청_데이터(강남역, 역삼역, 5));
+
+                StationResponse 교대역 = 지하철역_등록되어_있음(교대역_요청_데이터());
+                SectionAddRequest 구간_추가_요청_데이터 = SectionAddRequest.of(역삼역.getId(), 교대역.getId(), 5);
+                노선에_구간_추가_요청(이호선, 구간_추가_요청_데이터);
+
+                // when
+                ExtractableResponse<Response> 구간_삭제_응답 = 노선에_구간_제거_요청(이호선, 교대역);
+
+                // then
+                assertThat(구간_삭제_응답.statusCode())
+                        .isEqualTo(HttpStatus.OK.value());
+            }
+
+            @DisplayName("중간역 제거")
+            @Test
+            void 중간역_제거() {
+                // given
+                StationResponse 강남역 = 지하철역_등록되어_있음(강남역_요청_데이터());
+                StationResponse 역삼역 = 지하철역_등록되어_있음(역삼역_요청_데이터());
+                LineResponse 이호선 = 지하철_노선_등록되어_있음(이호선_요청_데이터(강남역, 역삼역, 5));
+
+                StationResponse 교대역 = 지하철역_등록되어_있음(교대역_요청_데이터());
+                SectionAddRequest 구간_추가_요청_데이터 = SectionAddRequest.of(역삼역.getId(), 교대역.getId(), 5);
+                노선에_구간_추가_요청(이호선, 구간_추가_요청_데이터);
+
+                // when
+                ExtractableResponse<Response> 구간_삭제_응답 = 노선에_구간_제거_요청(이호선, 역삼역);
+
+                // then
+                assertThat(구간_삭제_응답.statusCode())
+                        .isEqualTo(HttpStatus.OK.value());
+            }
+        }
+
+        @DisplayName("실패 테스트")
+        @Nested
+        class 실패_테스트 {
+
+            @DisplayName("노선에 존재하지 않는 역 제거")
+            @Test
+            void 노선에_존재하지_않는_역_제거() {
+                // given
+                StationResponse 강남역 = 지하철역_등록되어_있음(강남역_요청_데이터());
+                StationResponse 역삼역 = 지하철역_등록되어_있음(역삼역_요청_데이터());
+                LineResponse 이호선 = 지하철_노선_등록되어_있음(이호선_요청_데이터(강남역, 역삼역, 5));
+
+                StationResponse 교대역 = 지하철역_등록되어_있음(교대역_요청_데이터());
+                SectionAddRequest 구간_추가_요청_데이터 = SectionAddRequest.of(역삼역.getId(), 교대역.getId(), 5);
+                노선에_구간_추가_요청(이호선, 구간_추가_요청_데이터);
+
+                StationResponse 서초역 = 지하철역_등록되어_있음(서초역_요청_데이터());
+
+                // when
+                ExtractableResponse<Response> 구간_삭제_응답 = 노선에_구간_제거_요청(이호선, 서초역);
+
+                // then
+                assertThat(구간_삭제_응답.statusCode())
+                        .isEqualTo(HttpStatus.BAD_REQUEST.value());
+            }
+
+            @DisplayName("노선의 마지막 구간을 제거 시도")
+            @Test
+            void 노선의_마지막_구간을_제거_시도() {
+                // given
+                StationResponse 강남역 = 지하철역_등록되어_있음(강남역_요청_데이터());
+                StationResponse 역삼역 = 지하철역_등록되어_있음(역삼역_요청_데이터());
+                LineResponse 이호선 = 지하철_노선_등록되어_있음(이호선_요청_데이터(강남역, 역삼역, 5));
+
+                // when
+                ExtractableResponse<Response> 구간_삭제_응답 = 노선에_구간_제거_요청(이호선, 역삼역);
+
+                // then
+                assertThat(구간_삭제_응답.statusCode())
+                        .isEqualTo(HttpStatus.BAD_REQUEST.value());
+            }
+        }
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
+        return post(BASE_LINE_URL, lineRequest);
+    }
+
+    private LineResponse 지하철_노선_등록되어_있음(LineRequest lineRequest) {
+        return 지하철_노선_생성_요청(lineRequest)
+                .as(LineResponse.class);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
+        return 지하철_노선_목록_조회_요청(BASE_LINE_URL);
+    }
+
+    private ExtractableResponse<Response> 특정_지하철_노선_조회_요청(LineResponse lineResponse) {
+        return 지하철_노선_목록_조회_요청(BASE_LINE_URL + "/" + lineResponse.getId());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청(String requestUrl) {
+        return get(requestUrl);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(LineResponse lineResponse, LineRequest lineRequest) {
+        return put(BASE_LINE_URL + "/" + lineResponse.getId(), lineRequest);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(LineResponse lineResponse) {
+        return delete(BASE_LINE_URL + "/" + lineResponse.getId());
+    }
+
+    private ExtractableResponse<Response> 노선에_구간_추가_요청(LineResponse lineResponse, SectionAddRequest sectionAddRequest) {
+        return post(BASE_LINE_URL + "/" + lineResponse.getId() + "/sections", sectionAddRequest);
+    }
+
+    private ExtractableResponse<Response> 노선에_구간_제거_요청(LineResponse lineResponse, StationResponse stationResponse) {
+        return delete(BASE_LINE_URL + "/" + lineResponse.getId() + "/sections?stationId=" + stationResponse.getId());
     }
 
     private void 등록된_노선_순서_확인(LineResponse 이호선, StationResponse... expectedStationResponses) {
