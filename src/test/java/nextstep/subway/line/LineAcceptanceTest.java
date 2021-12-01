@@ -6,7 +6,6 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -26,19 +25,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private static final String LINE_DEFAULT_URL = "/lines";
 
-    private LineRequest defaultLine;
-
-    @BeforeEach
-    void makeDefaultLineParam() {
-        defaultLine = new LineRequest("2호선", "bg-green-600");
-    }
-
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = _createLineHandler(defaultLine);
+        LineRequest defaultLine = _getLineRequest("2호선", "bg-green-600");
+        ExtractableResponse<Response> response = _createLine(defaultLine);
 
         // then
         // 지하철_노선_생성됨
@@ -51,11 +44,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        _createLineHandler(defaultLine);
+        LineRequest defaultLine = _getLineRequest("2호선", "bg-green-600");
+        _createLine(defaultLine);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = _createLineHandler(new LineRequest("2호선", "bg-green-600"));
+        ExtractableResponse<Response> response = _createLine(defaultLine);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -68,19 +62,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음 : 2호선
-        ExtractableResponse<Response> createLineResponse1 = _createLineHandler(defaultLine);
+        LineRequest defaultLine = _getLineRequest("2호선", "bg-green-600");
+        ExtractableResponse<Response> createLineResponse1 = _createLine(defaultLine);
 
         // 지하철_노선_등록되어_있음 : 신분당선
-        ExtractableResponse<Response> createLineResponse2 = _createLineHandler(new LineRequest("신분당선", "bg-red-600"));
+        ExtractableResponse<Response> createLineResponse2 = _createLine(_getLineRequest("신분당선", "bg-red-600"));
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get(LINE_DEFAULT_URL)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = _getLines();
 
         // then
         // 지하철_노선_목록_응답됨
@@ -100,19 +90,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createLineResponse = _createLineHandler(defaultLine);
+        LineRequest defaultLine = _getLineRequest("2호선", "bg-green-600");
+        ExtractableResponse<Response> createLineResponse = _createLine(defaultLine);
 
         // 생성 요청 Response로부터 Line 정보 가져오기.
         LineResponse createdLine = _getLineResponseByApiResponse(createLineResponse);
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> getLineResponse = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get(LINE_DEFAULT_URL + "/" + createdLine.getId())
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> getLineResponse = _getLine(createdLine.getId());
 
         // then
         // 지하철_노선_응답됨
@@ -124,7 +110,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createLineResponse = _createLineHandler(defaultLine);
+        LineRequest defaultLine = _getLineRequest("2호선", "bg-green-600");
+        ExtractableResponse<Response> createLineResponse = _createLine(defaultLine);
 
         LineResponse createdLine = _getLineResponseByApiResponse(createLineResponse);
 
@@ -134,13 +121,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> updateLineResponse = RestAssured.given().log().all()
-                .body(updateParams)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put(LINE_DEFAULT_URL + "/" + createdLine.getId())
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> updateLineResponse = _updateLine(createdLine.getId(), updateParams);
 
         LineResponse updatedLine = _getLineResponseByApiResponse(updateLineResponse);
 
@@ -159,18 +140,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createLineResponse = _createLineHandler(defaultLine);
+        LineRequest defaultLine = _getLineRequest("2호선", "bg-green-600");
+        ExtractableResponse<Response> createLineResponse = _createLine(defaultLine);
 
         LineResponse createdLine = _getLineResponseByApiResponse(createLineResponse);
 
         // when
         // 지하철_노선_제거_요청
-        ExtractableResponse<Response> updateLineResponse = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete(LINE_DEFAULT_URL + "/" + createdLine.getId())
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> updateLineResponse = _deleteLine(createdLine.getId());
 
         // then
         // 지하철_노선_삭제됨
@@ -178,11 +155,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Line 생성 Handler
+     * 지하철 Line 생성 요청
      * @param line
      * @return
      */
-    private ExtractableResponse<Response> _createLineHandler(LineRequest line) {
+    private ExtractableResponse<Response> _createLine(LineRequest line) {
         return RestAssured.given().log().all()
                 .body(line)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -190,6 +167,73 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .post(LINE_DEFAULT_URL)
                 .then().log().all()
                 .extract();
+    }
+
+    /**
+     * 지하철 Line 목록 조회 요청
+     * @return
+     */
+    private ExtractableResponse<Response> _getLines() {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get(LINE_DEFAULT_URL)
+                .then().log().all()
+                .extract();
+    }
+
+    /**
+     * 지하철 Line 정보 조회 요청
+     * @param lineId
+     * @return
+     */
+    private ExtractableResponse<Response> _getLine(Long lineId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get(LINE_DEFAULT_URL + "/" + lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    /**
+     * 지하철 Line 정보 수정 요청
+     * @param lineId
+     * @param updateParams
+     * @return
+     */
+    private ExtractableResponse<Response> _updateLine(Long lineId, Map<String, String> updateParams) {
+        return RestAssured.given().log().all()
+                .body(updateParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put(LINE_DEFAULT_URL + "/" + lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    /**
+     * 지하철 Line 삭제
+     * @param lineId
+     * @return
+     */
+    private ExtractableResponse<Response> _deleteLine(Long lineId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete(LINE_DEFAULT_URL + "/" + lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    /**
+     * 지하철 LineRequestion(객체) 가져오기
+     * @param name
+     * @param color
+     * @return
+     */
+    private LineRequest _getLineRequest(String name, String color) {
+        return new LineRequest(name, color);
     }
 
     /**
