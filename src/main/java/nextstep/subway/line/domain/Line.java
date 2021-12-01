@@ -58,11 +58,11 @@ public class Line extends BaseEntity {
 
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
-        stations.add(sections.stream()
-                .findFirst()
-                .map(section -> section.getUpStation())
-                .get());
+        if (Objects.isNull(sections) || sections.size() == 0) {
+            return stations;
+        }
 
+        stations.add(sections.get(0).getUpStation());
         stations.addAll(sections.stream()
                 .map(section -> section.getDownStation())
                 .collect(Collectors.toList()));
