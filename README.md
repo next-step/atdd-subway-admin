@@ -57,7 +57,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [x] 기능 구현 전 인수 테스트 작성
 - [x] 노선 생성 구현
 - [x] 노선 목록 조회 구현
-- [ ] 노선 단건 조회 구현
+- [x] 노선 단건 조회 구현
 - [ ] 노선 수정 구현
 - [ ] 노선 삭제 구현
 - [ ] 인수 테스트 리팩토링 구현 

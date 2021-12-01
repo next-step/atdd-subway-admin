@@ -140,6 +140,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
 
+        RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
         // when
         // 지하철_노선_조회_요청
         ExtractableResponse<Response> response = RestAssured.given().log().all()
