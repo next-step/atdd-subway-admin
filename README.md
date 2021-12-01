@@ -101,7 +101,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - 기능 구현 전 인수테스트 작성
   - Feature: 지하철 노선 및 구관 관리 기능
     - [X] Scenario: 지하철 노선을 생성한다.
-      - given 지하철 역을 생성 요청한다.
+      - Given 지하철 역을 생성 요청한다.
       - When 지하철 노선을 생성 요청한다.
       - Then 지하철 노선이 생성된다.
       - When 지하철 노선을 조회 요청한다.
@@ -131,7 +131,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - 기능 구현 전 인수테스트 작성
   - Feature : 역 사이에 새로운 역을 등록 기능
     - [X] Scenario: 지하철 노선의 구간을 추가 한다.
-      - given 지하철_노선에_지하철역_등록_요청
+      - Given 지하철_노선에_지하철역_등록_요청
       - When 지하철_노선에_구간_등록_요청
       - Then 지하철_노선에_구간_등록됨
       - When 지하철_지하철_노선_조회_요청
@@ -139,7 +139,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
       - Then 지하철_노선에_지하철역_구간_목록_포함됨
   - Feature : 노선에 새로운 상행 종점을 등록
     - [X] Scenario: 기존 노선의 새로운 구간을 등록하면서 상행역을 변경한다.
-      - given 지하철_노선에_지하철역_등록_요청
+      - Given 지하철_노선에_지하철역_등록_요청
       - When 지하철_노선에_구간_등록_요청
       - Then 지하철_노선에_구간_등록됨
       - When 지하철_지하철_노선_조회_요청
@@ -147,7 +147,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
       - Then 지하철_노선에_지하철역_구간_목록_포함됨
   - Feature : 노선에 새로운 하행 종점을 등록
     - [X] Scenario: 기존 노선의 새로운 구간을 등록하면서 하행역을 변경한다.
-      - given 지하철_노선에_지하철역_등록_요청
+      - Given 지하철_노선에_지하철역_등록_요청
       - When 지하철_노선에_구간_등록_요청
       - Then 지하철_노선에_구간_등록됨
       - When 지하철_지하철_노선_조회_요청
@@ -155,17 +155,17 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
       - Then 지하철_노선에_지하철역_구간_목록_포함됨
   - Feature : 노선 등록 시 예외 처리
     - [X] Scenario: 노선 사이에 역을 추가할 시 길이가 똑같으면 등록 실패한다.
-      - given 지하철_노선에_지하철역_등록_요청
+      - Given 지하철_노선에_지하철역_등록_요청
       - When 지하철_노선에_구간_등록_요청
       - Then 지하철_노선에_지하철역_구간_생성_실패됨
   - Feature : 노선 등록 시 예외 처리
     - [X] Scenario: 노선에 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 실패한다.
-      - given 지하철_노선에_지하철역_등록_요청
+      - Given 지하철_노선에_지하철역_등록_요청
       - When 지하철_노선에_구간_등록_요청
       - Then 지하철_노선에_지하철역_구간_생성_실패됨
   - Feature : 노선 등록 시 예외 처리
     - [X] Scenario: 노선에 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 실패한다.
-      - given 지하철_노선에_지하철역_등록_요청
+      - Given 지하철_노선에_지하철역_등록_요청
       - When 지하철_노선에_구간_등록_요청
       - Then 지하철_노선에_지하철역_구간_생성_실패됨
 - 기능 구현 
@@ -180,3 +180,40 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - 구간
     - CascadeType 추가
     - 정적 메소드 추가
+
+### 4단계 - 구간 제거 기능
+- 지하철 구간 제거 인수 테스트 작성과 기능 구현
+- 기능 구현 전 인수테스트 작성
+  - Feature : 노선의 구간을 제거하는 기능
+    - [X] Scenario: 노선에 종점이 제거되면 다음으로 오던 역이 종점이 된다.
+      - Given 지하철_노선에_지하철역_등록_요청
+      - When 지하철_노선에_구간_등록_요청
+      - Then 지하철_노선에_구간_등록됨
+      - When 지하철_노선_구간_삭제_요청
+      - Then 지하철_노선_구간_삭제됨
+      - When 지하철_노선_조회_요청
+      - Then 지하철_노선_응답됨
+      - Then 지하철_노선에_지하철역_구간_목록_포함됨
+  - Feature : 노선의 구간을 제거 시 예외처리
+    - [X] Scenario: 노선에 구간이 하나인 경우 삭제가 불가능하다.
+      - Given 지하철_노선에_지하철역_등록_요청
+      - When 지하철_노선_구간_삭제_요청
+      - Then 지하철_노선_구간_삭제_실패됨
+  - Feature : 노선의 구간을 제거 시 예외처리
+    - [X] Scenario: 삭제할 역이 노선에 없는 경우 삭제가 불가능하다.
+      - Given 지하철_노선에_지하철역_등록_요청
+      - Given 지하철_다른노선에_지하철역_등록_요청
+      - When 지하철_노선_구간_삭제_요청
+      - Then 지하철_노선_구간_삭제_실패됨
+- 기능 구현
+  - 공통
+    - 공통 상수 클래스 생성
+    - 커스텀 예외처리 클래스 생성
+  - 노선
+    - 구간의 역 삭제 기능
+    - 구간 개수 체크 기능
+  - 구간
+    - 구간의 역 합치는 기능
+  - 구간들
+    - 구간의 속한 역 찾는 기능 
+    - 구간의 역 제거 기능
