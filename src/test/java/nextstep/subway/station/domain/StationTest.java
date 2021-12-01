@@ -1,6 +1,7 @@
 package nextstep.subway.station.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,6 +33,21 @@ public class StationTest {
         
         // then
         assertThat(station.getName()).isEqualTo(updatedName);
+    }
+    
+    @DisplayName("같은 지하철역인지 확인")
+    @ParameterizedTest
+    @CsvSource(value = { "강남역:교대역:false", "서울대입구역:서울대입구역:true" }, delimiter = ':')
+    void 지하철역_구별(String name, String comparedName, boolean expected) {
+        // given
+        Station station = Station.from(name);
+        Station comparedStation = Station.from(comparedName);
+        
+        // when, then
+        assertAll(
+                () -> assertThat(station.equals(comparedStation)).isEqualTo(expected),
+                () -> assertThat(station.hashCode() == comparedStation.hashCode()).isEqualTo(expected)
+                );
     }
 
 }

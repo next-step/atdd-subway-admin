@@ -45,7 +45,7 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
     
-    private void addSection(Station upStation, Station downStation, int distance) {
+    public void addSection(Station upStation, Station downStation, int distance) {
         this.sections.add(Section.of(this, upStation, downStation, distance));
     }
     
@@ -68,17 +68,18 @@ public class Line extends BaseEntity {
     public Sections getSections() {
         return sections;
     }
+    
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects.equals(sections, line.sections);
+        return Objects.equals(name, line.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, sections);
+        return Objects.hash(name);
     }
 }

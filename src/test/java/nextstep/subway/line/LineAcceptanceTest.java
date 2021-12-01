@@ -137,7 +137,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
     
     
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest request) {
+    private static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest request) {
         return RestAssured
                 .given().log().all()
                 .body(request)
@@ -148,7 +148,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
     
-    private LineResponse 지하철_노선_등록되어_있음(LineRequest request) {
+    public static LineResponse 지하철_노선_등록되어_있음(LineRequest request) {
         return 지하철_노선_생성_요청(request).as(LineResponse.class);
     }
     

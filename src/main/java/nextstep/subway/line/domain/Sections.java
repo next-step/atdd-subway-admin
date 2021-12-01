@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,10 +24,13 @@ public class Sections {
 
     private Sections(List<Section> sections) {
         this.sections = sections;
+        sortedSections(sections);
     }
     
-    public static Sections from(List<Section> sections) {
-        return new Sections(sections);
+    public static Sections from(Section...sections) {
+        return new Sections(Stream
+                .of(sections)
+                .collect(Collectors.toList()));
     }
 
     public List<Station> getStations() {
@@ -35,14 +39,137 @@ public class Sections {
                 .distinct()
                 .collect(Collectors.toList());
     }
-
-    public void add(Section section) {
-        sections.add(section);
+    
+    List<Section> getSections() {
+        return sections;
     }
     
-    public int count() {
+    int count() {
         return sections.size();
     }
     
+    Section getSectionAt(int index) {
+        return getSections().get(index); 
+    }
+    
+    
+    Station getStationAt(int index) {
+        return getStations().get(index); 
+    }
 
+    void add(Section section) {
+        if (sections.isEmpty()) {
+            sections.add(section);
+            return;
+        }
+        checkValidStations(section);
+        sortedAdd(section);
+    }
+    
+    private void sortedAdd(Section section) {
+        for (int i = 0; i < sections.size(); i++) {
+            Section oldSection = sections.get(i);
+            // 새 구간이 기존 구간보다 먼저 (상행역이 같을때)
+            if (addIfSameUpStations(oldSection, section, i)) {
+                return;
+            }
+            // 기존 구간 다음에 새 구간 (하행역이 같을때)
+            if (addIfSameDownStations(oldSection, section, i)) {
+                return;
+            }
+            // 맨 앞에 새 구간 (새 구간 하행역 == 기존 구간 상행역)
+            if (addIfFirstSection(oldSection, section, i)) {
+                return;
+            }
+            // 맨 뒤에 새 구간 (기존 구간 하행역 == 새 구간 상행역)
+            if (addIfLastSection(oldSection, section, i)) {
+                return;
+            }
+        }
+    }
+    
+    private boolean addIfSameUpStations(Section oldSection, Section newSection, int index) {
+        if (newSection.isSameUpStation(oldSection.getUpStation())) {
+            oldSection.moveUpStationTo(newSection.getDownStation(), newSection.getDistance());
+            sections.add(index, newSection);
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean addIfSameDownStations(Section oldSection, Section newSection, int index) {
+        if (newSection.isSameDownStation(oldSection.getDownStation())) {
+            oldSection.moveDownStationTo(newSection.getUpStation(), newSection.getDistance());
+            sections.add(index+1, newSection);
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean addIfFirstSection(Section oldSection, Section newSection, int index) {
+        if (newSection.isSameDownStation(oldSection.getUpStation()) && index == 0) {
+            sections.add(index, newSection);
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean addIfLastSection(Section oldSection, Section newSection, int index) {
+        if (newSection.isSameUpStation(oldSection.getDownStation())&& index == sections.size()-1) {
+            sections.add(newSection);
+            return true;
+        }
+        return false;
+    }
+
+    private void checkValidStations(Section section) {
+        if(isExistStations(section.getUpStation(), section.getDownStation())) {
+            throw new IllegalArgumentException(String.format("이미 등록된 노선입니다.(%s-%s)", section.getUpStation().getName(), section.getDownStation().getName()));
+        }
+        if(isNotExistStations(section.getUpStation(), section.getDownStation())) {
+            throw new IllegalArgumentException(String.format("연결할 수 없는 노선입니다.(%s-%s)", section.getUpStation().getName(), section.getDownStation().getName()));
+        }
+    }
+    
+    private boolean isExistStations(Station...stations) {
+        return Stream.of(stations).allMatch(station -> getStations().contains(station));
+    }
+    
+    private boolean isNotExistStations(Station...stations) {
+        return Stream.of(stations).allMatch(station -> !getStations().contains(station));
+    }
+    
+    private void sortedSections(List<Section> sections) {
+        if (sections.size() < 2) {
+            return;
+        }
+        List<Section> sortedSections = new LinkedList<Section>();
+        Section cursorSection = getFirstSection();
+        sortedSections.add(cursorSection);
+        
+        while (sortedSections.size() < sections.size()) {
+            cursorSection = getNextSection(cursorSection.getDownStation());
+            sortedSections.add(cursorSection);
+        }
+        this.sections = sortedSections;
+    }
+    
+    private Section getFirstSection() {
+        List<Station> downStations = sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+        
+        return sections.stream()
+                .filter(section -> !downStations.contains(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("첫 구간이 없습니다."));
+    }
+    
+    private Section getNextSection(Station downStation) {
+        return sections.stream()
+                .filter(section -> downStation.equals(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("연결되지 않는 구간 목록입니다."));
+    }
+    
 }

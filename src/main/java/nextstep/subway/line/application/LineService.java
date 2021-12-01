@@ -10,6 +10,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 
@@ -61,7 +62,7 @@ public class LineService {
     
     private void checkDuplicatedName(String name) {
         if (lineRepository.existsByName(name)) {
-            throw new IllegalArgumentException(String.format("라인 이름(%d)이 중복되었습니다.", name));
+            throw new IllegalArgumentException(String.format("라인 이름(%s)이 중복되었습니다.", name));
         }
     }
 
@@ -70,5 +71,13 @@ public class LineService {
         Station downStation = stationService.findById(request.getDownStationId());
         
         return request.toLine(upStation, downStation);
+    }
+
+    public void addSection(Long id, SectionRequest sectionRequest) {
+        Line line = findById(id);
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
+        
+        line.addSection(upStation, downStation, sectionRequest.getDistance());
     }
 }
