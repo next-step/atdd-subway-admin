@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.common.exception.InvalidEntityRequiredException;
+
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
@@ -11,7 +13,14 @@ public class LineColor {
     }
 
     public LineColor(String color) {
+        validateEmptyColor(color);
         this.color = color;
+    }
+
+    private void validateEmptyColor(String color) {
+        if (color.isEmpty()) {
+            throw new InvalidEntityRequiredException(color);
+        }
     }
 
     public String getColor() {

@@ -1,5 +1,7 @@
 package nextstep.subway.station.domain;
 
+import nextstep.subway.common.exception.InvalidEntityRequiredException;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.Objects;
@@ -13,7 +15,14 @@ public class StationName {
     }
 
     public StationName(String name) {
+        validateEmptyName(name);
         this.name = name;
+    }
+
+    private void validateEmptyName(String name) {
+        if (name.isEmpty()) {
+            throw new InvalidEntityRequiredException(name);
+        }
     }
 
     public String getName() {
