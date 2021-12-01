@@ -53,6 +53,16 @@ class SectionsTest {
         assertThat(sections.getSections().size()).isEqualTo(2);
     }
 
+    @DisplayName("구간을 정렬하고 목록을 확인한다.")
+    @Test
+    void sortSections() {
+        // when
+        sections.addSection(line, new Station("강남역"), new Station("강남신사사이역"), 3);
+
+        // then
+        assertThat(sections.getSortedStations()).containsAll(SectionsFixture.listOf("강남역", "강남신사사이역", "신사역"));
+    }
+
     @DisplayName("두 역을 모두 포함한 경우 예외를 발생시킨다.")
     @Test
     void addSectionBothStationsException() {
