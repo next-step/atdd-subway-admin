@@ -204,7 +204,7 @@ class SectionsTest {
         Sections sections = new Sections();
         sections.add(new Section(1L, stationGangNam, stationSinChon, new Distance(10)), line);
         sections.addSection(new Section(2L, stationSinChon, stationYoungSan, new Distance(4), line));
-        sections.addSection(new Section(3L, stationYeokSam, stationYoungSan, new Distance(2), line));
+        sections.addSection(new Section(3L, stationYoungSan, stationYeokSam, new Distance(2), line));
         // when
         sections.removeSection(stationSinChon);
 
