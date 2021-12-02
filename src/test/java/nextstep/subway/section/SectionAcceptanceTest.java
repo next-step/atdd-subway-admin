@@ -66,7 +66,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_구간_생성됨(response, Arrays.asList(newStationId, DEFAULT_UP_STATION_ID, DEFAULT_DOWN_STATION_ID));
     }
 
-    @DisplayName("새로운 역을 행 종점으로 등록할 경우")
+    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
     @Test
     void addNewDownStationSection() {
         // when
