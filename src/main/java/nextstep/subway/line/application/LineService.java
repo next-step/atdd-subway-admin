@@ -72,12 +72,12 @@ public class LineService {
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId)
                                   .orElseThrow(NoResultDataException::new);
-        line.removeSection(stationService.findByIdThrow(stationId));
+        line.removeSection(stationService.findById(stationId));
     }
 
     private Section createSection(SectionRequest sectionRequest) {
-        Station upStation = stationService.findByIdThrow(sectionRequest.getUpStationId());
-        Station downStation = stationService.findByIdThrow(sectionRequest.getDownStationId());
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
         return new Section(upStation, downStation, new Distance(sectionRequest.getDistance()));
     }
 }

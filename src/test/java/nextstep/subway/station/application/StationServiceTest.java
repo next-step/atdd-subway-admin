@@ -17,7 +17,7 @@ class StationServiceTest {
     @Test
     void 존재하지_않는_지하철역_조회시_예외() {
         assertThatThrownBy(() -> {
-            stationService.findByIdThrow(1L);
+            stationService.findById(1L);
         }).isInstanceOf(StationNotFoundException.class);
     }
 }
