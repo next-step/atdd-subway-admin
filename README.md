@@ -94,7 +94,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 * [x] Distance 객체에서 setter 제거하기
 * [x] Sections.getUpToDownStations() 메소드 리팩터링
 * [x] 엔티티 클래스에서의 equals overriding 시 주의사항 학습하고 적용
-* [ ] SectionsTest.지하철_노선_생성_요청() -> 지하철_노선_등록되어_있음() 메소드로 변경, 요청 및 검증 실행 필요!
+* [x] SectionsTest.지하철_노선_생성_요청() -> 지하철_노선_등록되어_있음() 메소드로 변경, 요청 및 검증 실행 필요!
 
 
 ## 지하철 노선 관리 인수 조건 정의

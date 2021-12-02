@@ -165,15 +165,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Station anyangStation = createStation(1L, "안양역");
-        Station gwanakStation = createStation(2L, "관악역");
-        지하철_노선_생성_요청(new LineRequest("1호선", "blue", 1L, 2L, 10));
+        지하철_노선_생성됨();
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_제거_요청();
 
         // then
         지하철_노선_삭제됨(response);
+    }
+
+    private void 지하철_노선_생성됨() {
+        Station anyangStation = createStation(1L, "안양역");
+        Station gwanakStation = createStation(2L, "관악역");
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(new LineRequest(
+          "1호선",
+          "blue",
+          anyangStation.getId(),
+          gwanakStation.getId(),
+          10));
+
+        지하철_노선_생성됨(response);
     }
 
     private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
