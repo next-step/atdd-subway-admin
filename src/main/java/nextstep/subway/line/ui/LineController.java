@@ -66,7 +66,7 @@ public class LineController {
                 sectionRequest.getDownStationId(),
                 sectionRequest.getDistance()));
         SectionResponse sectionResponse =
-                new SectionResponse(section.getId(), section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
+                new SectionResponse(section.getId(), section.getUpStation().getId(), section.getDownStation().getId(), section.getDistanceValue());
         return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections/" + sectionResponse.getId())).body(sectionResponse);
     }
 

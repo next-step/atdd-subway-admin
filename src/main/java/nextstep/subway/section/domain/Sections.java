@@ -86,12 +86,12 @@ public class Sections {
     private void isBetweenStation(List<Station> stations, Section addedSection) {
         if (stations.contains(addedSection.getUpStation())) {
             findSectionByUpStation(addedSection.getUpStation()).ifPresent(foundSection ->
-                    foundSection.update(addedSection.getDownStation(), foundSection.getDownStation(), -addedSection.getDistance()));
+                    foundSection.update(addedSection.getDownStation(), foundSection.getDownStation(), -addedSection.getDistanceValue()));
         }
 
         if (stations.contains(addedSection.getDownStation())) {
             findSectionByDownStation(addedSection.getDownStation()).ifPresent(foundSection ->
-                    foundSection.update(foundSection.getUpStation(), addedSection.getUpStation(), -addedSection.getDistance()));
+                    foundSection.update(foundSection.getUpStation(), addedSection.getUpStation(), -addedSection.getDistanceValue()));
         }
     }
 
