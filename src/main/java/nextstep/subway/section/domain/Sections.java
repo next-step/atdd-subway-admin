@@ -49,20 +49,20 @@ public class Sections {
     }
 
     private void validateSection(List<Station> stations, Section sectionToAdd) {
-        if (isContainsAllAddedSection(stations, sectionToAdd)) {
+        if (isContainsAllSectionStations(stations, sectionToAdd)) {
             throw new NotValidStationException("구간 추가할 역이 모두 노선에 포함되어 있습니다.");
         }
 
-        if (isNotContainsAllAddedSection(stations, sectionToAdd)) {
+        if (isNotContainsAllSectionStations(stations, sectionToAdd)) {
             throw new NotValidStationException("구간 추가할 역 중 노선에 포함되는 역이 없습니다.");
         }
     }
 
-    private boolean isContainsAllAddedSection(List<Station> stations, Section sectionToAdd) {
+    private boolean isContainsAllSectionStations(List<Station> stations, Section sectionToAdd) {
         return stations.contains(sectionToAdd.getUpStation()) && stations.contains(sectionToAdd.getDownStation());
     }
 
-    private boolean isNotContainsAllAddedSection(List<Station> stations, Section sectionToAdd) {
+    private boolean isNotContainsAllSectionStations(List<Station> stations, Section sectionToAdd) {
         return !stations.isEmpty() && !stations.contains(sectionToAdd.getUpStation()) && !stations.contains(sectionToAdd.getDownStation());
     }
 
