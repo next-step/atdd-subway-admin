@@ -57,12 +57,6 @@ public class Section {
         return new Section(upStation, downStation, distance);
     }
 
-    public void update(Section section) {
-        this.upStation = section.upStation;
-        this.downStation = section.downStation;
-        this.distance = section.distance;
-    }
-
     public Station getUpStation() {
         return upStation;
     }
@@ -115,20 +109,37 @@ public class Section {
         return isSameUpStation(section) && isSameDownStation(section);
     }
 
+    public boolean isSameUpStation(final Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isSameDownStation(final Station station) {
+        return downStation.equals(station);
+    }
+
+    public boolean hasSameStation(final Station station) {
+        return isSameUpStation(station) || isSameDownStation(station);
+    }
+
     public void link(Section section) {
         if (isIncludeAbleSection(section)) {
             changeLink(section);
-            distance = Distance.of(distance.getDistance() - section.distance.getDistance());
+            distance = distance.subtract(section.distance);
         }
     }
 
     private void changeLink(Section section) {
         if (isSameUpStation(section)) {
-            downStation = section.upStation;
+            upStation = section.downStation;
         }
 
         if (isSameDownStation(section)) {
             downStation = section.upStation;
         }
+    }
+
+    public void merge(Section section) {
+        downStation = section.downStation;
+        distance = distance.add(section.distance);
     }
 }

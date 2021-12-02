@@ -69,13 +69,28 @@ public class LineService {
             .orElseThrow(StationNotFoundException::new);
     }
 
-    public SectionResponse addSection(Long id, SectionRequest request) {
+    public LineResponse addSection(Long id, SectionRequest request) {
         Line line = findById(id);
         Station upStation = findStationById(request.getUpStationId());
         Station downStation = findStationById(request.getDownStationId());
         Section section = Section.of(upStation, downStation, request.getDistance());
         line.addSection(section);
         lineRepository.save(line);
+        return LineResponse.of(line);
+    }
+
+    public void removeSection(Long id, Long stationId) {
+        Line line = findById(id);
+        Station targetStation = findStationById(stationId);
+        line.removeSection(targetStation);
+        lineRepository.save(line);
+    }
+
+    public SectionResponse findSection(Long id, Long upStationId, Long downStationId) {
+        Line line = findById(id);
+        Station upStation = findStationById(upStationId);
+        Station downStation = findStationById(downStationId);
+        Section section = line.getSections().findSection(upStation, downStation);
         return SectionResponse.of(section);
     }
 }

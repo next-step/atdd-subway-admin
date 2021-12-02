@@ -74,4 +74,8 @@ public class Line extends BaseEntity {
             .sorted(Comparator.comparing(Station::getId))
             .collect(Collectors.toList());
     }
+
+    public void removeSection(Station targetStation) {
+        sections.removeSection(targetStation);
+    }
 }
