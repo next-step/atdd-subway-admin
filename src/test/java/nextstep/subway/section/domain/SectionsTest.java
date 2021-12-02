@@ -82,4 +82,15 @@ class SectionsTest {
                 .withMessage("이미 모두 구간에 포함되어 있습니다.")
         );
     }
+
+    @DisplayName("지하철 역 삭제")
+    @Test
+    void deleteStation() {
+        Sections sections = Sections.from(
+            Arrays.asList(강남_양재_구간, 양재_판교_구간));
+
+        sections.deleteStation(판교역);
+
+        assertThat(sections.getStations()).isEqualTo(Arrays.asList(강남역, 양재역));
+    }
 }

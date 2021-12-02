@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.line.application.LineService;
@@ -68,6 +69,13 @@ public class LineController {
     public ResponseEntity<Void> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
         long sectionId = sectionService.saveSection(lineId, sectionRequest);
         return ResponseEntity.created(URI.create("/" + sectionId + "/sections"))
+            .build();
+    }
+
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity<Void> removeLineStation(@PathVariable long lineId, @RequestParam long stationId) {
+        sectionService.removeSectionByStationId(lineId, stationId);
+        return ResponseEntity.noContent()
             .build();
     }
 }

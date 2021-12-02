@@ -39,6 +39,14 @@ public class SectionService {
         return added.getId();
     }
 
+    @Transactional
+    public void removeSectionByStationId(long lineId, long stationId) {
+        Line line = findLineById(lineId);
+        Station station = findStationById(stationId);
+
+        line.deleteStation(station);
+    }
+
     private Line findLineById(long id) {
         return lineRepository.findById(id)
             .orElseThrow(NoSuchElementException::new);

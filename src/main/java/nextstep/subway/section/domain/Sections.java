@@ -60,6 +60,20 @@ public class Sections {
         );
     }
 
+    public void deleteStation(Station station) {
+        Optional<Section> optionalDownSection = findSectionByUpStation(station);
+        if (optionalDownSection.isPresent()) {
+            Section section = optionalDownSection.get();
+            sections.remove(section);
+        }
+
+        Optional<Section> optionalUpSection = findSectionByDownStation(station);
+        if (optionalUpSection.isPresent()) {
+            Section section = optionalUpSection.get();
+            sections.remove(section);
+        }
+    }
+
     private void updateIfDownStationEquals(Section added) {
         Optional<Section> optionalDownSection = findSectionByDownStation(added.getDownStation());
 
