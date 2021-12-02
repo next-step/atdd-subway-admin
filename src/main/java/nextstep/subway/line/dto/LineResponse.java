@@ -15,7 +15,7 @@ public class LineResponse {
     private String name;
     private String color;
     @JsonProperty("stations")
-    private List<Station> stations;
+    private List<StationResponse> stationResponses;
 
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
@@ -23,17 +23,21 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    private LineResponse(Long id, String name, String color, List<Station> stations, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    private LineResponse(Long id, String name, String color, List<StationResponse> stationResponses, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = stations;
+        this.stationResponses = stationResponses;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStations(), line.getCreatedDate(), line.getModifiedDate());
+        List<StationResponse> stationResponses = line.getStations()
+                .stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses, line.getCreatedDate(), line.getModifiedDate());
     }
 
     public Long getId() {
@@ -48,8 +52,8 @@ public class LineResponse {
         return color;
     }
 
-    public List<Station> getStations() {
-        return Collections.unmodifiableList(stations);
+    public List<StationResponse> getStations() {
+        return Collections.unmodifiableList(stationResponses);
     }
 
     public LocalDateTime getCreatedDate() {

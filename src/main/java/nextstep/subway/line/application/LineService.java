@@ -6,6 +6,8 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.domain.Sections;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -30,11 +32,15 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
-        Station upStation = stationRepository.findById(request.getUpStationId()).get();
-        Station downStation = stationRepository.findById(request.getDownStationId()).get();
-        Section section = sectionRepository.save(Section.of(persistLine, upStation, downStation, request.getDistance()));
-        persistLine.addSection(section);
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
+        sectionRepository.save(Section.of(persistLine, upStation, downStation, request.getDistance()));
         return LineResponse.of(persistLine);
+    }
+
+    private Station findStationById(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당되는 지하철이 없습니다."));
     }
 
     public List<LineResponse> findAllLines() {
@@ -60,12 +66,24 @@ public class LineService {
     private Line findById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() ->
-                new NullPointerException("라인이 없습니다.")
-        );
+                        new NullPointerException("라인이 없습니다.")
+                );
     }
 
     @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = findById(lineId);
+        toSection(line, sectionRequest);
+        return LineResponse.of(line);
+    }
+
+    private Section toSection(Line line, SectionRequest sectionRequest) {
+        Station upStation = findStationById(sectionRequest.getUpStationId());
+        Station downStation = findStationById(sectionRequest.getDownStationId());
+        return Section.of(line, upStation, downStation, sectionRequest.getDistance());
     }
 }

@@ -108,3 +108,47 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   * [x] 구역 일급 콜렉션
     * [x] 노선 생성시 구역정보 추가
   * [x 노선 목록 조회
+
+### 피드백 공부 내용 정리
+* Java Optional 바르게 쓰기
+  * 참고자료 : https://homoefficio.github.io/2019/10/03/Java-Optional-%EB%B0%94%EB%A5%B4%EA%B2%8C-%EC%93%B0%EA%B8%B0/
+  * 메서드가 반환할 결과값이 ‘없음’을 명백하게 표현할 필요가 있고, null을 반환하면 에러를 유발할 가능성이 높은 상황에서 메서드의 반환 타입으로 Optional을 사용하자는 것이 Optional을 만든 주된 목적이다.
+* 엔티티 기본 생성자의 노출 범위
+  * 참고자료 : https://wbluke.tistory.com/6
+* flatMap
+  * 참고자료 : https://madplay.github.io/post/difference-between-map-and-flatmap-methods-in-java
+  * flatMap 메서드는 스트림의 형태가 배열과 같을 때, 모든 원소를 단일 원소 스트림으로 반환할 수 있습니다.
+
+## 3단계 - 구간 추가 기능
+지하철 구간 등록 기능을 구현하기
+~~~
+구간 등록 API Request
+POST /lines/1/sections HTTP/1.1
+accept: */*
+content-type: application/json; charset=UTF-8
+host: localhost:52165
+
+{
+    "downStationId": "4",
+    "upStationId": "2",
+    "distance": 10
+}
+~~~
+* 기능 구현 전 인수 테스트 작성
+  * [x] 역 사이에 새로운 역을 등록할 경우 -> 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정
+  * [x] 새로운 역을 상행 종점으로 등록할 경우
+  * [x] 새로운 역을 하행 종점으로 등록할 경우
+* 예외 케이스 처리 인수 테스트 작성
+  * [x] 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
+  * [x] 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
+  * [x] 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
+* 기능 구현
+  * [x] 구간 등록 기능
+  * [x] request, controller , dto 생성
+  * [x] 역 사이에 새로운 역을 등록
+  * [x] 새로운 역을 상행 종점으로 등록
+  * [x] 새로운 역을 하행 종점으로 등록
+  * [x] 등록시 valid 처리
+    * [x] 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
+    * [x] 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
+    * [x] 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음

@@ -59,7 +59,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         StationTestHelper.지하철_역_생성_요청("건대역");
         StationTestHelper.지하철_역_생성_요청("용마산역");
-        Map<String, String> params1 = LineMap.of("green darken-2", "7호선","1", "2", "10");
+        Map<String, String> params1 = LineMap.of("green darken-2", "7호선", "1", "2", "10");
         ExtractableResponse<Response> createResponse1 = LineTestHelper.지하철_노선_생성_요청(params1);
 
         // 지하철_노선_등록되어_있음
