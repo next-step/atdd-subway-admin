@@ -1,7 +1,6 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.line.exception.NotValidStationException;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -23,25 +22,10 @@ public class Sections {
     public void add(Section addedSection) {
         List<Station> stations = getStations();
         validateStation(stations, addedSection);
-        
-        if (stations.contains(addedSection.getUpStation())) {
-            findSectionByUpStation(addedSection.getUpStation()).ifPresent(foundSection ->
-                    foundSection.update(addedSection.getDownStation(), foundSection.getDownStation(), foundSection.getDistance() - addedSection.getDistance()));
-        }
 
-        if (stations.contains(addedSection.getDownStation())) {
-            findSectionByDownStation(addedSection.getDownStation()).ifPresent(foundSection ->
-                    foundSection.update(foundSection.getUpStation(), addedSection.getUpStation(), foundSection.getDistance() - addedSection.getDistance()));
-        }
+        isBetweenStation(stations, addedSection);
 
         sections.add(addedSection);
-    }
-
-    private void validateStation(List<Station> stations, Section addedSection) {
-        if ((stations.contains(addedSection.getUpStation()) && stations.contains(addedSection.getDownStation())) ||
-                !stations.isEmpty() && !(stations.contains(addedSection.getUpStation()) && stations.contains(addedSection.getDownStation()))) {
-            throw new NotValidStationException("구간 추가할 역이 잘못 입력됐습니다.");
-        }
     }
 
     public void removeSection(Section section) {
@@ -79,6 +63,25 @@ public class Sections {
         }
 
         return stations;
+    }
+
+    private void validateStation(List<Station> stations, Section addedSection) {
+        if ((stations.contains(addedSection.getUpStation()) && stations.contains(addedSection.getDownStation())) ||
+                !stations.isEmpty() && !(stations.contains(addedSection.getUpStation()) && stations.contains(addedSection.getDownStation()))) {
+            throw new NotValidStationException("구간 추가할 역이 잘못 입력됐습니다.");
+        }
+    }
+
+    private void isBetweenStation(List<Station> stations, Section addedSection) {
+        if (stations.contains(addedSection.getUpStation())) {
+            findSectionByUpStation(addedSection.getUpStation()).ifPresent(foundSection ->
+                    foundSection.update(addedSection.getDownStation(), foundSection.getDownStation(), foundSection.getDistance() - addedSection.getDistance()));
+        }
+
+        if (stations.contains(addedSection.getDownStation())) {
+            findSectionByDownStation(addedSection.getDownStation()).ifPresent(foundSection ->
+                    foundSection.update(foundSection.getUpStation(), addedSection.getUpStation(), foundSection.getDistance() - addedSection.getDistance()));
+        }
     }
 
     private Section nextSection(Section firstSection) {
