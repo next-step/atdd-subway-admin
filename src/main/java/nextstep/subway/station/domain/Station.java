@@ -29,4 +29,15 @@ public class Station extends BaseEntity {
     public String getName() {
         return name;
     }
+
+    public void setLine(Line line) {
+        this.line = line;
+        if (!line.getStations().contains(this)) {
+            line.addStation(this);
+        }
+    }
+
+    public Line getLine() {
+        return line;
+    }
 }

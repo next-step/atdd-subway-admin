@@ -32,6 +32,13 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
+    public void addStation(Station station) {
+        stations.add(station);
+        if (!station.getLine().equals(this)) {
+            station.setLine(this);
+        }
+    }
+
     public Long getId() {
         return id;
     }
