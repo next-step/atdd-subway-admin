@@ -29,7 +29,7 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         validateDuplicate(lineRequest);
         Line line = lineRepository.save(lineRequest.toLine());
-        addSectionBySectionInfo(line, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        addSection(line, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
         return LineResponse.of(line);
     }
 
@@ -55,7 +55,7 @@ public class LineService {
 
     public LineResponse addSection(Long id, SectionRequest sectionRequest) {
         Line line = findLineById(id);
-        addSectionBySectionInfo(line, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        addSection(line, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         return LineResponse.of(line);
     }
 
@@ -64,9 +64,10 @@ public class LineService {
     }
 
     private Line findLineById(Long id) {
-        return lineRepository.findById(id).orElseThrow(() -> {
-            throw new BadRequestException("존재하지않는 노선 ID 입니다.");
-        });
+        return lineRepository.findById(id)
+                .orElseThrow(() -> {
+                    throw new BadRequestException("존재하지않는 노선 ID 입니다.");
+                });
     }
 
     private void validateDuplicate(LineRequest lineRequest) {
@@ -75,7 +76,7 @@ public class LineService {
         }
     }
 
-    private void addSectionBySectionInfo(Line line, Long upStationId, Long downStationId, int distance) {
+    private void addSection(Line line, Long upStationId, Long downStationId, int distance) {
         Station upStation = stationService.findStationById(upStationId);
         Station downStation = stationService.findStationById(downStationId);
         line.addSection(upStation, downStation, distance);

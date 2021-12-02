@@ -68,7 +68,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // given
         StationRequest 강남역 = 지하철_역_파라미터_생성("강남역");
         ExtractableResponse<Response> 지하철_역_생성_요청_응답 = 생성_요청(STATION_ROOT_PATH, 강남역);
-        Long 강남역_ID = 지하철_역_ID_추출(지하철_역_생성_요청_응답);
+        long 강남역_ID = 지하철_역_ID_추출(지하철_역_생성_요청_응답);
 
         // when
         ExtractableResponse<Response> 지하철_역_삭제_요청_응답 = 삭제_요청(STATION_ROOT_PATH + 강남역_ID);

@@ -33,12 +33,16 @@ public class Section {
     protected Section() {
     }
 
+    public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
+        this(line, upStation, downStation, distance);
+        this.id = id;
+    }
+
     private Section(Line line, Station upStation, Station downStation, int distance) {
-        validateNull(upStation, downStation);
         validateDuplicate(upStation, downStation);
-        this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
+        this.line = Objects.requireNonNull(line, "노선의 정보가 입력되지 않았습니다.");
+        this.upStation = Objects.requireNonNull(upStation, "종점역 정보가 입력되지 않았습니다.");
+        this.downStation = Objects.requireNonNull(downStation, "종점역 정보가 입력되지 않았습니다.");
         this.distance = Distance.from(distance);
     }
 
@@ -79,12 +83,6 @@ public class Section {
         this.distance.minus(addSection.distance);
     }
 
-    private void validateNull(Station upStation, Station downStation) {
-        if (upStation == null || downStation == null) {
-            throw new BadRequestException("종점역 정보가 입력되지 않았습니다.");
-        }
-    }
-
     private static void validateDuplicate(Station upStation, Station downStation) {
         if (upStation.equals(downStation)) {
             throw new BadRequestException("상행선과 하행선은 같을 수 없습니다.");
@@ -107,11 +105,15 @@ public class Section {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return Objects.equals(getId(), section.getId());
+        return Objects.equals(getId(), section.getId())
+                && Objects.equals(getUpStation(), section.getUpStation())
+                && Objects.equals(getDownStation(), section.getDownStation())
+                && Objects.equals(getLine(), section.getLine())
+                && Objects.equals(distance, section.distance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId());
+        return Objects.hash(getId(), getUpStation(), getDownStation(), getLine(), distance);
     }
 }

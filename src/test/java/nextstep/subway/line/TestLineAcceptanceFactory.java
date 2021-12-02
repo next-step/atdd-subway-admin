@@ -28,8 +28,8 @@ public class TestLineAcceptanceFactory {
                 .collect(Collectors.toList());
     }
 
-    public static Long 지하철_노선_ID_추출(ExtractableResponse<Response> createResponse) {
-        return Long.valueOf(createResponse.header("Location").split("/")[2]);
+    public static long 지하철_노선_ID_추출(ExtractableResponse<Response> createResponse) {
+        return Long.parseLong(createResponse.header("Location").split("/")[2]);
     }
 
     public static void 지하철_노선_목록_포함됨(List<Long> expectedLineIds, List<Long> resultLineIds) {

@@ -24,6 +24,11 @@ public class Station extends BaseEntity {
         this.name = name;
     }
 
+    public Station(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public static Station from(String name) {
         return new Station(name);
     }
@@ -49,7 +54,8 @@ public class Station extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Station station = (Station) o;
-        return Objects.equals(getId(), station.getId()) && Objects.equals(getName(), station.getName());
+        return Objects.equals(getId(), station.getId())
+                && Objects.equals(getName(), station.getName());
     }
 
     @Override

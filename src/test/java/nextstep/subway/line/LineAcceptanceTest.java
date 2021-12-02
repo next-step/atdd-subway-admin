@@ -90,7 +90,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         LineRequest 신분당선_강남역_양재역 = 지하철_노선과_종점역정보_파라미터_생성("신분당선", "red", 강남역.getId(), 양재역.getId(), 10);
         ExtractableResponse<Response> 지하철_노선_생성_요청_응답 = 생성_요청(LINE_ROOT_PATH, 신분당선_강남역_양재역);
-        Long 신분당선_ID = 지하철_노선_ID_추출(지하철_노선_생성_요청_응답);
+        long 신분당선_ID = 지하철_노선_ID_추출(지하철_노선_생성_요청_응답);
 
         // when
         ExtractableResponse<Response> 지하철_노선_조회_요청_응답 = 조회_요청(LINE_ROOT_PATH + 신분당선_ID);
@@ -100,11 +100,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    void 등록되어있지_않은_노선을_조회한다() {
+        // given
+        long 신분당선_ID = 1L;
+
+        // when
+        ExtractableResponse<Response> 지하철_노선_조회_요청_응답 = 조회_요청(LINE_ROOT_PATH + 신분당선_ID);
+
+        // then
+        지하철_노선_생성_실패됨(지하철_노선_조회_요청_응답);
+    }
+
+    @Test
     void 지하철_노선을_수정한다() {
         // given
         LineRequest 신분당선_강남역_양재역 = 지하철_노선과_종점역정보_파라미터_생성("신분당선", "red", 강남역.getId(), 양재역.getId(), 10);
         ExtractableResponse<Response> 지하철_노선_생성_요청_응답 = 생성_요청(LINE_ROOT_PATH, 신분당선_강남역_양재역);
-        Long 신분당선_ID = 지하철_노선_ID_추출(지하철_노선_생성_요청_응답);
+        long 신분당선_ID = 지하철_노선_ID_추출(지하철_노선_생성_요청_응답);
 
         LineRequest 이호선_강남역_양재역 = 지하철_노선과_종점역정보_파라미터_생성("이호선", "green", 강남역.getId(), 양재역.getId(), 10);
 
@@ -120,7 +132,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         LineRequest 신분당선_강남역_양재역 = 지하철_노선과_종점역정보_파라미터_생성("신분당선", "red", 강남역.getId(), 양재역.getId(), 10);
         ExtractableResponse<Response> 지하철_노선_생성_요청_응답 = 생성_요청(LINE_ROOT_PATH, 신분당선_강남역_양재역);
-        Long 신분당선_ID = 지하철_노선_ID_추출(지하철_노선_생성_요청_응답);
+        long 신분당선_ID = 지하철_노선_ID_추출(지하철_노선_생성_요청_응답);
 
         // when
         ExtractableResponse<Response> 지하철_노선_제거_요청_응답 = 삭제_요청(LINE_ROOT_PATH + 신분당선_ID);

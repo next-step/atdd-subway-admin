@@ -22,7 +22,7 @@ public class Sections {
     }
 
     public void add(Section addSection) {
-        if (sections.size() > 0) {
+        if (!sections.isEmpty()) {
             checkAddSection(addSection);
             addSectionBetweenSections(addSection);
         }
