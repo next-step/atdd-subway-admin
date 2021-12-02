@@ -1,9 +1,7 @@
 package nextstep.subway.line.domain;
 
 import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
 import static nextstep.subway.common.Message.*;
-import static nextstep.subway.line.exception.AlreadyRegisteredException.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,7 +22,9 @@ import nextstep.subway.station.exception.StationNotFoundException;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", fetch = LAZY, cascade = ALL, orphanRemoval = true)
+    private static final int SECTION_MIN_LIMIT_SIZE = 1;
+
+    @OneToMany(mappedBy = "line", cascade = ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public void add(List<Section> newSections, Line line) {
@@ -90,17 +90,19 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
-        if (sections.size() == 1) {
+        isOnlyOneSection();
+        Section section = findRemoveSection(station);
+        removeSection(station, section);
+    }
+
+    private void isOnlyOneSection() {
+        if (isLessThan()) {
             throw new OnlyOneSectionException();
         }
+    }
 
-        Section section = findRemoveSection(station);
-
-        if (matchStation(isDownStation(station))) {
-            findSections(isDownStation(station))
-                .ifPresent(s -> s.removeSection(section));
-        }
-        sections.remove(section);
+    private boolean isLessThan() {
+        return sections.size() <= SECTION_MIN_LIMIT_SIZE;
     }
 
     private Section findRemoveSection(Station station) {
@@ -110,6 +112,14 @@ public class Sections {
     private Section findLastSection(Station station) {
         return findSections(isDownStation(station))
             .orElseThrow(SectionNotFoundException::new);
+    }
+
+    private void removeSection(Station station, Section section) {
+        if (matchStation(isDownStation(station))) {
+            findSections(isDownStation(station))
+                .ifPresent(s -> s.concatSection(section));
+        }
+        sections.remove(section);
     }
 
     private Optional<Section> findSections(Predicate<Section> condition) {

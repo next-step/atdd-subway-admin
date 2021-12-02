@@ -112,7 +112,7 @@ public class Section extends BaseEntity {
         return this.getDownStation().equalsName(upStation);
     }
 
-    public void removeSection(Section section) {
+    public void concatSection(Section section) {
         this.downStation = section.getDownStation();
         this.distance = distance.add(section.getDistance());
     }
