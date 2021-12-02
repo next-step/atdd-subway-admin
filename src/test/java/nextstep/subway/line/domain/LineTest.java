@@ -17,11 +17,12 @@ import java.util.stream.IntStream;
 import static nextstep.subway.line.domain.Distance.*;
 import static nextstep.subway.line.domain.Section.SECTION_DUPLICATION;
 import static nextstep.subway.line.domain.Sections.NOT_CONNECTABLE;
+import static nextstep.subway.line.domain.Sections.NOT_DELETE_MIN_SECTION_SIZE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철 구간")
-class SectionTest {
+class LineTest {
 
     private List<Station> stations;
     private Line line;
@@ -34,12 +35,11 @@ class SectionTest {
 
     @DisplayName("종점역을 연장한 구간 추가")
     @Test
-    void connectTerminusExtend() {
+    void addTerminusExtend() {
         // given
         line.addSections(generateSections(stations, 5));
         Section upStationExtend = getSection(Station.of("상행연장", "강남"), 2);
         Section downStationExtend = getSection(Station.of("판교", "하행연장"), 3);
-
 
         // when
         line.addSection(upStationExtend);
@@ -48,13 +48,14 @@ class SectionTest {
 
         // then
         assertThat(result).hasSize(6);
-        assertThat(result).extracting("distance")
+        assertThat(result)
+                .extracting("distance")
                 .containsExactly(2, 5, 5, 5, 5, 3);
     }
 
     @DisplayName("구간 사이에 새로운 구간을 추가")
     @Test
-    void connectBetweenStations() {
+    void addBetweenStations() {
         // given
         Section section = getSection(Station.of("강남", "청계산입구"), 9);
         Section newUpSection = getSection(Station.of("강남", "양재"), 3);
@@ -68,8 +69,12 @@ class SectionTest {
 
         // then
         assertThat(result).hasSize(3);
-        assertThat(result).extracting("distance")
+        assertThat(result)
+                .extracting("distance")
                 .containsExactly(3, 2, 4);
+        assertThat(line.getStationInOrder())
+                .extracting("name")
+                .containsExactly("강남", "양재", "양재시민의숲", "청계산입구");
     }
 
     @Test
@@ -137,9 +142,56 @@ class SectionTest {
         line.addSections(sections);
 
         // then
-        assertThat(line.getStations())
+        assertThat(line.getStationInOrder())
                 .extracting("name")
                 .containsExactly("강남", "양재", "양재시민의숲", "청계산입구", "판교");
+    }
+
+    @Test
+    @DisplayName("노선의 종점 구간을 제거")
+    void removeTerminusSection() {
+        // given
+        List<Section> sections = generateSections(stations, 4);
+        line.addSections(sections);
+
+        // when
+        line.removeSection(Station.from("강남"));
+        line.removeSection(Station.from("판교"));
+
+        // then
+        assertThat(line.getStationInOrder())
+                .extracting("name")
+                .containsExactly("양재", "양재시민의숲", "청계산입구");
+    }
+
+    @DisplayName("노선의 중간에 있는 구간을 제거")
+    @Test
+    void removeBetweenStations() {
+        // given
+        List<Section> sections = generateSections(stations, 4);
+        line.addSections(sections);
+
+        // when
+        line.removeSection(Station.from("양재"));
+        line.removeSection(Station.from("양재시민의숲"));
+
+        // then
+        assertThat(line.getStationInOrder())
+                .extracting("name")
+                .containsExactly("강남", "청계산입구", "판교");
+    }
+
+    @DisplayName("구간이 1개인 경우 제거 시 예외 발생")
+    @Test
+    void removeValidateSize() {
+        // given
+        Section section = getSection(Station.of("양재", "양재시민의숲"), 5);
+        line.addSection(section);
+
+        // when // then
+        assertThatThrownBy(() -> line.removeSection(Station.from("양재시민의숲")))
+                .withFailMessage(NOT_DELETE_MIN_SECTION_SIZE)
+                .isInstanceOf(InvalidSectionException.class);
     }
 
     private Section getSection(List<Station> stations, int distance) {

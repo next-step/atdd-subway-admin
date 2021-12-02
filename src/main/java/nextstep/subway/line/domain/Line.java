@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -70,6 +71,27 @@ public class Line extends BaseEntity {
         newSections.forEach(this::addSection);
     }
 
+    public void removeSection(Station station) {
+        sections.remove(station);
+    }
+
+    public List<Station> getStationInOrder() {
+        List<Station> stations = new LinkedList<>();
+        List<Section> orderedSections = sections.getSectionsInOrder();
+        Section firstSection = orderedSections.get(0);
+
+        stations.add(firstSection.getUpStation());
+        stations.addAll(orderedSections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList()));
+
+        return Collections.unmodifiableList(stations);
+    }
+
+    public List<Section> getSections() {
+        return sections.getSectionsInOrder();
+    }
+
     public Long getId() {
         return id;
     }
@@ -80,20 +102,5 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    public List<Section> getSections() {
-        return Collections.unmodifiableList(sections.getSections());
-    }
-
-    public List<Station> getStations() {
-        List<Station> stations = new LinkedList<>();
-        List<Section> orderedSections = sections.getSections();
-        Section firstSection = orderedSections.get(0);
-
-        stations.add(firstSection.getUpStation());
-        stations.addAll(sections.getDownStations());
-
-        return Collections.unmodifiableList(stations);
     }
 }

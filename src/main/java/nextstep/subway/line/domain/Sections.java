@@ -1,13 +1,11 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.application.exception.InvalidSectionException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static javax.persistence.CascadeType.PERSIST;
@@ -16,10 +14,11 @@ import static nextstep.subway.line.application.exception.SectionNotFoundExceptio
 
 @Embeddable
 public class Sections {
-
+    private static final int MIN_SECTION_SIZE = 1;
     public static final String NOT_CONNECTABLE = "구간을 연결할 상행역 또는 하행역이 존재해야 합니다.";
-    public static final String NOT_FOUND_UP_TERMINUS = "상행 종점 구간을 찾을 수 없습니다.";
+    public static final String NOT_FOUND_TERMINUS = "종점 구간을 찾을 수 없습니다.";
     public static final String BREAK_SECTION = "구간이 끊어져 있습니다.";
+    public static final String NOT_DELETE_MIN_SECTION_SIZE = "노선의 구간이" + MIN_SECTION_SIZE + "개 이하인 경우 구간을 삭제할 수 없습니다.";
 
     @OneToMany(mappedBy = "line", cascade = {PERSIST, REMOVE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -32,56 +31,86 @@ public class Sections {
             sections.add(newSection);
             return;
         }
-        connectableAdd(newSection);
+        addSection(newSection);
     }
 
-    private void connectableAdd(Section newSection) {
+    private void addSection(Section newSection) {
         Section section = sections.stream()
-                .filter(s -> s.isConnectable(newSection))
+                .filter(oldSection -> oldSection.isNotDuplicate(newSection))
                 .findFirst()
-                .map(s -> s.connect(newSection))
+                .map(oldSection -> oldSection.divide(newSection))
                 .orElseThrow(() -> error(NOT_CONNECTABLE));
 
         sections.add(section);
     }
 
-    private List<Section> sortSections() {
+    public List<Section> getSectionsInOrder() {
         List<Section> orderedSections = new LinkedList<>();
         Section orderedSection = findFirstSection();
         orderedSections.add(orderedSection);
 
-        int i = orderedSections.size();
-        while (i < sections.size()) {
-            orderedSection = findNextStation(orderedSection.getDownStation());
+        while (orderedSections.size() < sections.size()) {
+            orderedSection = findNextStation(orderedSection.getDownStationName());
             orderedSections.add(orderedSection);
-            i++;
         }
-        return orderedSections;
+
+        return Collections.unmodifiableList(orderedSections);
     }
 
     public Section findFirstSection() {
-        List<Station> downStations = getDownStations();
+        List<String> downStationNames = getDownStationNames();
 
         return sections.stream()
-                .filter(section -> !downStations.contains(section.getUpStation()))
+                .filter(section -> !downStationNames.contains(section.getUpStationName()))
                 .findFirst()
-                .orElseThrow(() -> error(NOT_FOUND_UP_TERMINUS));
+                .orElseThrow(() -> error(NOT_FOUND_TERMINUS));
     }
 
-    private Section findNextStation(Station orderedDownStation) {
+    public List<String> getDownStationNames() {
+        return Collections.unmodifiableList(sections.stream()
+                .map(Section::getDownStation)
+                .map(Station::getName)
+                .collect(Collectors.toList()));
+    }
+
+    private Section findNextStation(String downStationNames) {
         return sections.stream()
-                .filter(section -> orderedDownStation.equals(section.getUpStation()))
+                .filter(section -> Objects.equals(downStationNames, section.getUpStationName()))
                 .findFirst()
                 .orElseThrow(() -> error(BREAK_SECTION));
     }
 
-    public List<Station> getDownStations() {
-        return Collections.unmodifiableList(sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList()));
+    public void remove(Station station) {
+        if (sections.size() == MIN_SECTION_SIZE) {
+            throw InvalidSectionException.error(NOT_DELETE_MIN_SECTION_SIZE);
+        }
+
+        removeUpSection(station);
+        removeDownSection(station);
     }
 
-    public List<Section> getSections() {
-        return sortSections();
+    private void removeUpSection(Station station) {
+        sections.stream()
+                .filter(section -> section.equalUpStation(station))
+                .findFirst()
+                .ifPresent(this::mergeRemove);
+    }
+
+    private void mergeRemove(Section deleteSection) {
+        sections.stream()
+                .filter(section -> section.equalDownStation(deleteSection.getUpStation()))
+                .findFirst()
+                .ifPresent(preSection -> {
+                    preSection.mergeDistance(preSection.getDistance());
+                    preSection.changeDownStationLink(deleteSection.getDownStation());
+                });
+        sections.remove(deleteSection);
+    }
+
+    private void removeDownSection(Station station) {
+        sections.stream()
+                .filter(section -> section.equalDownStation(station))
+                .findFirst()
+                .ifPresent(section -> sections.remove(section));
     }
 }
