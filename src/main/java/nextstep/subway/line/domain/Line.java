@@ -2,9 +2,9 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {

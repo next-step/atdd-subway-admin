@@ -1,4 +1,4 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.section.domain;
 
 import nextstep.subway.line.exception.NotValidStationException;
 import nextstep.subway.section.domain.Section;
