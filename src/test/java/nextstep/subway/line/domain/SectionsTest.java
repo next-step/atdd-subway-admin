@@ -141,7 +141,7 @@ class SectionsTest {
         Assertions.assertThatThrownBy(() -> {
                       sections.addSection(new Section(addStation1, addStation2, new Distance(5)));
                   }).isInstanceOf(StationNotFoundException.class)
-                  .hasMessageStartingWith("기존 노선에 해당역이 존재하지 않습니다.");
+                  .hasMessageStartingWith("지하철역이 존재하지 않습니다.");
     }
 
     @Test
