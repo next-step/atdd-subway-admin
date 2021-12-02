@@ -6,20 +6,21 @@ import java.util.List;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.Stations;
 import nextstep.subway.station.dto.StationResponse;
 
 public class LineResponse {
 	private Long id;
 	private String name;
 	private String color;
-	private List<Station> stations = new ArrayList<>();
+	private Stations stations;
 	private LocalDateTime createdDate;
 	private LocalDateTime modifiedDate;
 
 	public LineResponse() {
 	}
 
-	public LineResponse(Long id, String name, String color, List<Station> stations, LocalDateTime createdDate,
+	public LineResponse(Long id, String name, String color, Stations stations, LocalDateTime createdDate,
 		LocalDateTime modifiedDate) {
 		this.id = id;
 		this.name = name;
@@ -46,7 +47,7 @@ public class LineResponse {
 		return color;
 	}
 
-	public List<Station> getStations() {
+	public Stations getStations() {
 		return stations;
 	}
 

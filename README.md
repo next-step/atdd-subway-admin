@@ -63,4 +63,4 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [x] 인수 테스트 리팩토링
 - [x] line-station 다대일 연관관계 매핑
 - [x] List<LineResponse> 일급 컬렉션 리팩토링
-- [ ] List<Station> 일급 컬렉션 리팩토링
+- [x] List<Station> 일급 컬렉션 리팩토링
