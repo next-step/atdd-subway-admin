@@ -79,54 +79,20 @@ public class Section {
         return this.downStation.equals(inputSection.upStation);
     }
 
-    public List<Section> new_createInnerSection(Section inputSection) {
-        Station inputUpStation = inputSection.upStation;
-        Station inputDownStation = inputSection.downStation;
-        Distance inputDistance = inputSection.distance;
-
-        if (equalsUpStation(inputSection)) {
-            Section backSection = Section.of(inputDownStation, this.downStation, distance.minus(inputDistance), inputSection.getLine());
-            this.downStation = inputDownStation;
-
-
-
-            Section frontSection = Section.of(this.upStation, inputDownStation, inputDistance, inputSection.getLine());
-            return Arrays.asList(frontSection, backSection);
+    public Section createInnerSection(Section newSection) {
+        if (equalsUpStation(newSection)) {
+            updateUpStationToNewDownStation(newSection.getDownStation(), newSection.distance);
+            return newSection;
         }
-
-        Section frontSection = Section.of(this.upStation, inputUpStation, distance.minus(inputDistance), inputSection.getLine());
-        Section backSection = Section.of(inputUpStation, this.downStation, inputDistance, inputSection.getLine());
-        return Arrays.asList(frontSection, backSection);
+        updateDownStationToNewUpStation(newSection.getUpStation(), newSection.distance);
+        return newSection;
     }
 
-    public Section createInnerSection(Section inputSection) {
-        Station inputUpStation = inputSection.upStation;
-        Station inputDownStation = inputSection.downStation;
-        Distance inputDistance = inputSection.distance;
-
-        if (equalsUpStation(inputSection)) {
-            Section backSection = Section.of(inputDownStation, this.downStation, distance.minus(inputDistance), inputSection.getLine());
-            this.downStation = inputDownStation;
-            this.distance = inputDistance;
-            return backSection;
+    public Section createOuterSection(Section newSection) {
+        if (isCreateUpSection(newSection)) {
+            return Section.of(newSection.upStation, this.upStation, newSection.distance, newSection.getLine());
         }
-
-        Section backSection = Section.of(inputUpStation, this.downStation, inputDistance, inputSection.getLine());
-        this.downStation = inputUpStation;
-        this.distance = this.distance.minus(inputDistance);
-        return backSection;
-    }
-
-    public Section createOuterSection(Section inputSection) {
-        Station inputUpStation = inputSection.upStation;
-        Station inputDownStation = inputSection.downStation;
-        Distance inputDistance = inputSection.distance;
-
-        if (isCreateUpSection(inputSection)) {
-            return Section.of(inputUpStation, this.upStation, inputDistance, inputSection.getLine());
-        }
-
-        return Section.of(this.downStation, inputDownStation, inputDistance, inputSection.getLine());
+        return Section.of(this.downStation, newSection.downStation, newSection.distance, newSection.getLine());
     }
 
     public Line getLine() {
@@ -151,5 +117,32 @@ public class Section {
 
     public void addLine(Line line) {
         this.line = line;
+    }
+
+    private void updateDownStationToNewUpStation(Station inputUpStation, Distance inputDistance) {
+        this.downStation = inputUpStation;
+        this.distance = this.distance.minus(inputDistance);
+    }
+
+    private void updateUpStationToNewDownStation(Station inputDownStation, Distance inputDistance) {
+        this.upStation = inputDownStation;
+        this.distance = this.distance.minus(inputDistance);
+    }
+
+    public boolean equalsUpStation(Long stationId) {
+        return this.upStation.getId().equals(stationId);
+    }
+
+    public boolean equalsDownStation(Long stationId) {
+        return this.downStation.getId().equals(stationId);
+    }
+
+    public void deleteLine() {
+        this.line = null;
+    }
+
+    public void extendSection(Section backSection) {
+        this.downStation = backSection.downStation;
+        this.distance = distance.plus(backSection.distance);
     }
 }

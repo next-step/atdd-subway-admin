@@ -1,10 +1,7 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.exception.AlreadyRegisteredSectionException;
-import nextstep.subway.line.exception.LongDistanceException;
-import nextstep.subway.line.exception.NotFoundUpAndDownStation;
+import nextstep.subway.line.exception.*;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -34,9 +31,9 @@ public class Sections {
         stations.add(section.getDownStation());
 
         Optional<Section> nextSectionOptional = Optional.of(section);
-        while (find(nextSectionOptional)) {
-            nextSectionOptional = findNextSection(section);
-            nextSectionOptional.ifPresent( sec -> {
+        while (existsNextSection(nextSectionOptional)) {
+            nextSectionOptional = findNextSection(nextSectionOptional.get());
+            nextSectionOptional.ifPresent(sec -> {
                 stations.add(sec.getDownStation());
             });
         }
@@ -59,12 +56,27 @@ public class Sections {
                 .get();
     }
 
-    private boolean find(Optional<Section> section) {
+    private Section findLastSection() {
+        List<Station> downStations = new ArrayList<>();
+        List<Station> upStations = new ArrayList<>();
+        for (Section section : sections) {
+            downStations.add(section.getDownStation());
+            upStations.add(section.getUpStation());
+        }
+        downStations.removeAll(upStations);
+        Station lastStation = downStations.get(downStations.size() - 1);
+
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(lastStation))
+                .findAny()
+                .get();
+    }
+
+    private boolean existsNextSection(Optional<Section> section) {
         return section
-                .filter(value ->
-                        this.sections
-                                .stream()
-                                .anyMatch(it -> it.getUpStation().equals(value.getDownStation()))
+                .filter(value -> this.sections
+                        .stream()
+                        .anyMatch(it -> it.getUpStation().equals(value.getDownStation()))
                 ).isPresent();
     }
 
@@ -83,6 +95,48 @@ public class Sections {
         if (!isRegisteredSection(inputSection)) {
             createOuterSection(inputSection);
         }
+    }
+
+    public void deleteSection(Long stationId) {
+        checkOnlyOneSectionInLine();
+        checkContainsStationInLine(stationId);
+
+        Section firstSection = findFirstSection();
+        if (firstSection.equalsUpStation(stationId)) {
+            sections.remove(firstSection);
+            return;
+        }
+
+        Section lastSection = findLastSection();
+        if (lastSection.equalsDownStation(stationId)) {
+            sections.remove(lastSection);
+            return;
+        }
+
+        Section frontSection = sections.stream().filter(it -> it.equalsDownStation(stationId)).findFirst().get();
+        Section backSection = sections.stream().filter(it -> it.equalsUpStation(stationId)).findFirst().get();
+        deleteStationBetweenSections(frontSection, backSection);
+    }
+
+    private void checkOnlyOneSectionInLine() {
+        if (sections.size() == 1) {
+            throw new ExistsOnlyOneSectionInLine();
+        }
+    }
+
+    private void checkContainsStationInLine(Long stationId) {
+        if (notContainsStation(stationId)) {
+            throw new NotFoundStationInLineException(stationId);
+        }
+    }
+
+    private void deleteStationBetweenSections(Section frontSection, Section backSection) {
+        frontSection.extendSection(backSection);
+        sections.remove(backSection);
+    }
+
+    private boolean notContainsStation(Long stationId) {
+        return getStations().stream().noneMatch(station -> station.getId().equals(stationId));
     }
 
     private void createInnerSection(Section inputSection) {
@@ -121,12 +175,7 @@ public class Sections {
                 .findAny()
                 .ifPresent(savedSection -> {
                     Section newSection = savedSection.createOuterSection(inputSection);
-                    int index = this.sections.indexOf(savedSection);
-                    if (savedSection.isCreateUpSection(inputSection)) {
-                        this.sections.add(index, newSection);
-                        return;
-                    }
-                    this.sections.add(index + 1, newSection);
+                    this.sections.add(newSection);
                 });
     }
 
