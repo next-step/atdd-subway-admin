@@ -20,4 +20,9 @@ public class LineControllerAdvice {
     public ResponseEntity<ErrorResponse> notFoundLineException(NotFoundLineException e) {
         return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
     }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> illegalException(IllegalStateException e) {
+        return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+    }
 }
