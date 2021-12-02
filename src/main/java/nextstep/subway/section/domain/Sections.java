@@ -19,13 +19,13 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
-    public void add(Section addedSection) {
+    public void add(Section sectionToAdd) {
         List<Station> stations = getStations();
-        validateStation(stations, addedSection);
+        validateStation(stations, sectionToAdd);
 
-        isBetweenStation(stations, addedSection);
+        isBetweenStation(stations, sectionToAdd);
 
-        sections.add(addedSection);
+        sections.add(sectionToAdd);
     }
 
     public void removeSection(Section section) {
