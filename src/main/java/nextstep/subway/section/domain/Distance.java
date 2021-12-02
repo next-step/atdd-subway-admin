@@ -23,13 +23,13 @@ public class Distance {
         return distance;
     }
 
-    public void update(int distance) {
+    public void plus(int distance) {
         validateDistance(distance);
-        this.distance = distance;
+        this.distance += distance;
     }
 
     private void validateDistance(int distance) {
-        if (distance < MINIMUM_DISTANCE) {
+        if (this.distance + distance < MINIMUM_DISTANCE) {
             throw new NotValidDistanceException("구간 입력이 잘못되었습니다.");
         }
     }

@@ -69,7 +69,7 @@ public class Section extends BaseEntity {
     public void update(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance.update(distance);
+        this.distance.plus(distance);
     }
 
     public boolean isPrevSection(Section section) {
