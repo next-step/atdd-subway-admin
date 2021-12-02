@@ -1,7 +1,9 @@
 package nextstep.subway.common.exception;
 
-public class ResourceAlreadyExistException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class ResourceAlreadyExistException extends BaseException {
 	public ResourceAlreadyExistException(String message) {
-		super(message);
+		super(message, HttpStatus.CONFLICT);
 	}
 }

@@ -1,7 +1,9 @@
 package nextstep.subway.common.exception;
 
-public class ResourceNotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class ResourceNotFoundException extends BaseException {
 	public ResourceNotFoundException(String message) {
-		super(message);
+		super(message, HttpStatus.NOT_FOUND);
 	}
 }
