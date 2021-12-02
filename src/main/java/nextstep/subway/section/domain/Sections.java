@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(name = "line_id")
     private List<Section> sections;
 
@@ -45,17 +45,17 @@ public class Sections {
         targetSection.addLine(line);
 
         for (Section original : sections) {
-            if (isUpStationEquals(targetSection, original)) return;
+            if (addUpStation(targetSection, original)) return;
 
-            if (isDownStationEquals(targetSection, original)) return;
+            if (addDownStation(targetSection, original)) return;
 
-            if (isUpStationAndTargetDownStationEquals(targetSection, original)) return;
+            if (adUpStationAndMiddlStation(targetSection, original)) return;
 
-            if (isDownStationAndTargetUpStationEquals(targetSection, original)) return;
+            if (addDownStationAndMiddleStation(targetSection, original)) return;
         }
     }
 
-    private boolean isUpStationAndTargetDownStationEquals(Section targetSection, Section original) {
+    private boolean adUpStationAndMiddlStation(Section targetSection, Section original) {
         if (original.isUpStationAndTargetDownStationEquals(targetSection)) {
             addSectionOriginalIndex(targetSection, original);
             return true;
@@ -63,7 +63,7 @@ public class Sections {
         return false;
     }
 
-    private boolean isDownStationEquals(Section targetSection, Section original) {
+    private boolean addDownStation(Section targetSection, Section original) {
         if (original.isDownStationEquals(targetSection)) {
             original.minusDistance(targetSection);
             original.changeDownStation(targetSection);
@@ -73,7 +73,7 @@ public class Sections {
         return false;
     }
 
-    private boolean isDownStationAndTargetUpStationEquals(Section targetSection, Section original) {
+    private boolean addDownStationAndMiddleStation(Section targetSection, Section original) {
         if (original.isDownStationAndTargetUpStationEquals(targetSection)) {
             addSectionBehindOfOriginal(targetSection, original);
             return true;
@@ -81,7 +81,7 @@ public class Sections {
         return false;
     }
 
-    private boolean isUpStationEquals(Section targetSection, Section original) {
+    private boolean addUpStation(Section targetSection, Section original) {
         if(original.isUpStationEquals(targetSection)) {
             addSectionOriginalIndex(targetSection, original);
             original.minusDistance(targetSection);
