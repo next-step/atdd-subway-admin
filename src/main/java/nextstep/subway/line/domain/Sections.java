@@ -74,9 +74,8 @@ public class Sections {
                     .filter(section -> section.isEqualsUpStation(addSection.getUpStation()))
                     .filter(section -> section.isDistanceGreaterThan(addSection))
                     .findFirst()
-                    .orElseThrow(() -> {
-                        throw new BadRequestException("기존 역 사이 길이 보다 크거나 같으면 등록을 할 수 없습니다.");
-                    }).changeDownStationToAddSectionUpStation(addSection);
+                    .orElseThrow(() -> new BadRequestException("기존 역 사이 길이 보다 크거나 같으면 등록을 할 수 없습니다."))
+                    .changeDownStationToAddSectionUpStation(addSection);
         }
     }
 
@@ -119,9 +118,7 @@ public class Sections {
                 .filter(section -> section.isEqualsUpStation(station))
                 .map(Section::getDownStation)
                 .findFirst()
-                .orElseThrow(() -> {
-                    throw new BadRequestException("해당 지하철역이 존재하지않습니다.");
-                });
+                .orElseThrow(() -> new BadRequestException("해당 지하철역이 존재하지않습니다."));
     }
 
     private Station findFirstUpStation() {
@@ -167,9 +164,7 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.isEqualsUpStation(findSection.getDownStation()))
                 .findFirst()
-                .orElseThrow(() -> {
-                    throw new BadRequestException("해당 노선이 존재하지않습니다.");
-                });
+                .orElseThrow(() -> new BadRequestException("해당 노선이 존재하지않습니다."));
     }
 
     private Section findLastSection() {
@@ -177,9 +172,7 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.isEqualsDownStation(lastDownStation))
                 .findFirst()
-                .orElseThrow(() -> {
-                    throw new BadRequestException("하행역 종점을 찾을 수 없습니다.");
-                });
+                .orElseThrow(() -> new BadRequestException("하행역 종점을 찾을 수 없습니다."));
     }
 
     private Section findFirstSection() {
@@ -187,8 +180,6 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.isEqualsUpStation(firstUpStation))
                 .findFirst()
-                .orElseThrow(() -> {
-                    throw new BadRequestException("상행역 종점을 찾을 수 없습니다.");
-                });
+                .orElseThrow(() -> new BadRequestException("상행역 종점을 찾을 수 없습니다."));
     }
 }

@@ -65,9 +65,7 @@ public class LineService {
 
     private Line findLineById(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> {
-                    throw new BadRequestException("존재하지않는 노선 ID 입니다.");
-                });
+                .orElseThrow(() -> new BadRequestException("존재하지않는 노선 ID 입니다."));
     }
 
     private void validateDuplicate(LineRequest lineRequest) {

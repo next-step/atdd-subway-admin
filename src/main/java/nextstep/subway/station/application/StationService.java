@@ -36,9 +36,7 @@ public class StationService {
 
     public Station findStationById(Long stationId) {
         return stationRepository.findById(stationId)
-                .orElseThrow(() -> {
-                    throw new BadRequestException("존재하지않는 지하철역 ID 입니다.");
-                });
+                .orElseThrow(() -> new BadRequestException("존재하지않는 지하철역 ID 입니다."));
     }
 
     public void deleteStationById(Long id) {
