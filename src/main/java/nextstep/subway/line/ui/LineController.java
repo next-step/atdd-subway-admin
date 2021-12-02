@@ -21,39 +21,39 @@ import nextstep.subway.line.dto.LineResponses;
 @RestController
 @RequestMapping("/lines")
 public class LineController {
-    private final LineService lineService;
+	private final LineService lineService;
 
-    public LineController(final LineService lineService) {
-        this.lineService = lineService;
-    }
+	public LineController(final LineService lineService) {
+		this.lineService = lineService;
+	}
 
-    @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse line = lineService.saveLine(lineRequest);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
-    }
+	@PostMapping
+	public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+		LineResponse line = lineService.saveLine(lineRequest);
+		return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+	}
 
-    @GetMapping
-    public ResponseEntity<List<LineResponse>> readLineList() {
-        LineResponses lines = lineService.findLineList();
-        return ResponseEntity.ok().body(lines.getLineResponses());
-    }
+	@GetMapping
+	public ResponseEntity<List<LineResponse>> readLineList() {
+		LineResponses lines = lineService.findLineList();
+		return ResponseEntity.ok().body(lines.get());
+	}
 
-    @GetMapping("/{id}")
-    public ResponseEntity<LineResponse> readLine(@PathVariable("id") Long id) {
-        LineResponse line = lineService.findLine(id);
-        return ResponseEntity.ok().body(line);
-    }
+	@GetMapping("/{id}")
+	public ResponseEntity<LineResponse> readLine(@PathVariable("id") Long id) {
+		LineResponse line = lineService.findLine(id);
+		return ResponseEntity.ok().body(line);
+	}
 
-    @PutMapping("/{id}")
-    public ResponseEntity<LineResponse> updateLine(@PathVariable("id") Long id, @RequestBody LineRequest lineRequest) {
-        lineService.updateLine(id, lineRequest);
-        return ResponseEntity.ok().build();
-    }
+	@PutMapping("/{id}")
+	public ResponseEntity<LineResponse> updateLine(@PathVariable("id") Long id, @RequestBody LineRequest lineRequest) {
+		lineService.updateLine(id, lineRequest);
+		return ResponseEntity.ok().build();
+	}
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<LineResponse> deleteLine(@PathVariable("id") Long id) {
-        lineService.deleteLine(id);
-        return ResponseEntity.noContent().build();
-    }
+	@DeleteMapping("/{id}")
+	public ResponseEntity<LineResponse> deleteLine(@PathVariable("id") Long id) {
+		lineService.deleteLine(id);
+		return ResponseEntity.noContent().build();
+	}
 }

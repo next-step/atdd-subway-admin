@@ -1,19 +1,17 @@
 package nextstep.subway.line.dto;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.Stations;
-import nextstep.subway.station.dto.StationResponse;
 
 public class LineResponse {
 	private Long id;
 	private String name;
 	private String color;
-	private Stations stations;
+	private Stations stations = new Stations();
 	private LocalDateTime createdDate;
 	private LocalDateTime modifiedDate;
 
@@ -31,7 +29,7 @@ public class LineResponse {
 	}
 
 	public static LineResponse of(Line line) {
-		return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStations(),
+		return new LineResponse(line.getId(), line.getName(), line.getColor(), new Stations(),
 			line.getCreatedDate(), line.getModifiedDate());
 	}
 
@@ -47,15 +45,15 @@ public class LineResponse {
 		return color;
 	}
 
-	public Stations getStations() {
-		return stations;
-	}
-
 	public LocalDateTime getCreatedDate() {
 		return createdDate;
 	}
 
 	public LocalDateTime getModifiedDate() {
 		return modifiedDate;
+	}
+
+	public List<Station> getStations() {
+		return stations.get();
 	}
 }

@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import nextstep.subway.line.domain.Line;
 
 public class LineResponses {
-	List<LineResponse> lineResponses;
+	private List<LineResponse> lineResponses;
 
 	public LineResponses(List<LineResponse> lineResponses) {
 		this.lineResponses = lineResponses;
@@ -20,7 +20,7 @@ public class LineResponses {
 		);
 	}
 
-	public List<LineResponse> getLineResponses() {
+	public List<LineResponse> get() {
 		return lineResponses;
 	}
 }
