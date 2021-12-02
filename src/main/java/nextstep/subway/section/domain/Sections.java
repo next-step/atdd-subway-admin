@@ -19,9 +19,9 @@ public class Sections {
 
     public void add(Section sectionToAdd) {
         List<Station> stations = getStations();
-        validateStation(stations, sectionToAdd);
+        validateSection(stations, sectionToAdd);
 
-        isBetweenStation(stations, sectionToAdd);
+        ifAddBetweenStation(stations, sectionToAdd);
 
         sections.add(sectionToAdd);
     }
@@ -48,7 +48,7 @@ public class Sections {
         return stations.stream().distinct().collect(Collectors.toList());
     }
 
-    private void validateStation(List<Station> stations, Section sectionToAdd) {
+    private void validateSection(List<Station> stations, Section sectionToAdd) {
         if (isContainsAllAddedSection(stations, sectionToAdd)) {
             throw new NotValidStationException("구간 추가할 역이 모두 노선에 포함되어 있습니다.");
         }
@@ -66,27 +66,35 @@ public class Sections {
         return !stations.isEmpty() && !stations.contains(sectionToAdd.getUpStation()) && !stations.contains(sectionToAdd.getDownStation());
     }
 
-    private void isBetweenStation(List<Station> stations, Section addedSection) {
-        if (stations.contains(addedSection.getUpStation())) {
-            findSectionByUpStation(addedSection.getUpStation()).ifPresent(foundSection ->
-                    foundSection.update(addedSection.getDownStation(), foundSection.getDownStation(), -addedSection.getDistanceValue()));
-        }
+    private void ifAddBetweenStation(List<Station> stations, Section sectionToAdd) {
+        addOriginDownStation(stations, sectionToAdd);
 
-        if (stations.contains(addedSection.getDownStation())) {
-            findSectionByDownStation(addedSection.getDownStation()).ifPresent(foundSection ->
-                    foundSection.update(foundSection.getUpStation(), addedSection.getUpStation(), -addedSection.getDistanceValue()));
+        addOriginUpStation(stations, sectionToAdd);
+    }
+
+    private void addOriginDownStation(List<Station> stations, Section sectionToAdd) {
+        if (stations.contains(sectionToAdd.getUpStation())) {
+            findSectionByUpStation(sectionToAdd.getUpStation()).ifPresent(foundSection ->
+                    foundSection.update(sectionToAdd.getDownStation(), foundSection.getDownStation(), -sectionToAdd.getDistanceValue()));
         }
     }
 
-    private Optional<Section> findSectionByDownStation(Station downStation) {
-        return sections.stream()
-                .filter(section -> section.getDownStation().equals(downStation))
-                .findFirst();
+    private void addOriginUpStation(List<Station> stations, Section sectionToAdd) {
+        if (stations.contains(sectionToAdd.getDownStation())) {
+            findSectionByDownStation(sectionToAdd.getDownStation()).ifPresent(foundSection ->
+                    foundSection.update(foundSection.getUpStation(), sectionToAdd.getUpStation(), -sectionToAdd.getDistanceValue()));
+        }
     }
 
     private Optional<Section> findSectionByUpStation(Station upStation) {
         return sections.stream()
                 .filter(section -> section.getUpStation().equals(upStation))
+                .findFirst();
+    }
+
+    private Optional<Section> findSectionByDownStation(Station downStation) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(downStation))
                 .findFirst();
     }
 }
