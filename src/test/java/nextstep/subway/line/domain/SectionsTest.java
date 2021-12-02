@@ -4,7 +4,6 @@ import static java.util.Arrays.*;
 import static java.util.stream.Collectors.*;
 import static nextstep.subway.common.Message.*;
 import static nextstep.subway.line.LineAcceptanceTest.*;
-import static nextstep.subway.line.exception.AlreadyRegisteredException.*;
 import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.*;
 
@@ -14,7 +13,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import nextstep.subway.line.exception.AlreadyRegisteredException;
-import nextstep.subway.line.exception.OnlyOneSectionException;
+import nextstep.subway.line.exception.LimitSectionSizeException;
 import nextstep.subway.line.exception.SectionNotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.exception.StationNotFoundException;
@@ -261,6 +260,6 @@ class SectionsTest {
         // then
         Assertions.assertThatThrownBy(() -> {
             sections.removeSection(stationSinChon);
-        }).isInstanceOf(OnlyOneSectionException.class);
+        }).isInstanceOf(LimitSectionSizeException.class);
     }
 }

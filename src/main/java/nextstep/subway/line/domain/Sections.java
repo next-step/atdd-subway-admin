@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import static javax.persistence.CascadeType.*;
-import static nextstep.subway.common.Message.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,7 +13,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.line.exception.AlreadyRegisteredException;
-import nextstep.subway.line.exception.OnlyOneSectionException;
+import nextstep.subway.line.exception.LimitSectionSizeException;
 import nextstep.subway.line.exception.SectionNotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.exception.StationNotFoundException;
@@ -22,7 +21,7 @@ import nextstep.subway.station.exception.StationNotFoundException;
 @Embeddable
 public class Sections {
 
-    private static final int SECTION_MIN_LIMIT_SIZE = 1;
+    private static final int LIMIT_SECTION_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -41,14 +40,14 @@ public class Sections {
     }
 
     public void addSection(Section newSection) {
-        isNotExistsStation(newSection);
+        validateNotExistsStation(newSection);
         alreadyRegisteredSection(newSection);
         changeUpSection(newSection);
         changeDownSection(newSection);
         sections.add(newSection);
     }
 
-    private void isNotExistsStation(Section newSection) {
+    private void validateNotExistsStation(Section newSection) {
         if (!matchStation(section -> section.contains(newSection))) {
             throw new StationNotFoundException();
         }
@@ -90,19 +89,15 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
-        isOnlyOneSection();
+        validateLimitSectionSize();
         Section section = findRemoveSection(station);
         removeSection(station, section);
     }
 
-    private void isOnlyOneSection() {
-        if (isLessThan()) {
-            throw new OnlyOneSectionException();
+    private void validateLimitSectionSize() {
+        if (sections.size() <= LIMIT_SECTION_SIZE) {
+            throw new LimitSectionSizeException();
         }
-    }
-
-    private boolean isLessThan() {
-        return sections.size() <= SECTION_MIN_LIMIT_SIZE;
     }
 
     private Section findRemoveSection(Station station) {
