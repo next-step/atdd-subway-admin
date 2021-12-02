@@ -93,7 +93,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_추가_요청(DEFAULT_UP_STATION_ID, DEFAULT_DOWN_STATION_ID, DISTANCE);
 
         //then
-        구간_역_관련_에러_발생함(response);
+        상행역_하행역_모두_등록된_에러_발생함(response);
     }
 
     @DisplayName("상행역, 하행역 모두 등록 안된 경우")
@@ -106,7 +106,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_추가_요청(newStationId, anotherStationId, DISTANCE);
 
         //then
-        구간_역_관련_에러_발생함(response);
+        상행역_하행역_모두_등록안된_에러_발생함(response);
     }
 
     private ExtractableResponse<Response> 지하철_구간_추가_요청(Long upStationId, Long downStationId, int distance) {
@@ -142,10 +142,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private void 구간_역_관련_에러_발생함(ExtractableResponse<Response> response) {
+    private void 상행역_하행역_모두_등록된_에러_발생함(ExtractableResponse<Response> response) {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().asString()).isEqualTo("구간 추가할 역이 잘못 입력됐습니다.")
+                () -> assertThat(response.body().asString()).isEqualTo("구간 추가할 역이 모두 노선에 포함되어 있습니다.")
+        );
+    }
+
+    private void 상행역_하행역_모두_등록안된_에러_발생함(ExtractableResponse<Response> response) {
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().asString()).isEqualTo("구간 추가할 역 중 노선에 포함되는 역이 없습니다.")
         );
     }
 }

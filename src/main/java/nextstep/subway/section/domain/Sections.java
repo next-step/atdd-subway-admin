@@ -66,10 +66,21 @@ public class Sections {
     }
 
     private void validateStation(List<Station> stations, Section addedSection) {
-        if ((stations.contains(addedSection.getUpStation()) && stations.contains(addedSection.getDownStation())) ||
-                !stations.isEmpty() && !(stations.contains(addedSection.getUpStation()) && stations.contains(addedSection.getDownStation()))) {
-            throw new NotValidStationException("구간 추가할 역이 잘못 입력됐습니다.");
+        if (isContainsAllAddedSection(stations, addedSection)) {
+            throw new NotValidStationException("구간 추가할 역이 모두 노선에 포함되어 있습니다.");
         }
+
+        if (isNotContainsAllAddedSection(stations, addedSection)) {
+            throw new NotValidStationException("구간 추가할 역 중 노선에 포함되는 역이 없습니다.");
+        }
+    }
+
+    private boolean isContainsAllAddedSection(List<Station> stations, Section addedSection) {
+        return stations.contains(addedSection.getUpStation()) && stations.contains(addedSection.getDownStation());
+    }
+
+    private boolean isNotContainsAllAddedSection(List<Station> stations, Section addedSection) {
+        return !stations.isEmpty() && !stations.contains(addedSection.getUpStation()) && !stations.contains(addedSection.getDownStation());
     }
 
     private void isBetweenStation(List<Station> stations, Section addedSection) {
