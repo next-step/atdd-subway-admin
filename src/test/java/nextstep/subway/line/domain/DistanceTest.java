@@ -26,7 +26,7 @@ public class DistanceTest {
         
         // when, then
         assertThrows(IllegalArgumentException.class, ()->{
-            distance.move(Distance.from(50));
+            distance.minus(Distance.from(50));
                 });
     }
     
@@ -38,6 +38,6 @@ public class DistanceTest {
         Distance distance = Distance.from(oldDistance);
         
         // when, then
-        assertThat(distance.move(Distance.from(newDistance))).isEqualTo(Distance.from(expected));
+        assertThat(distance.minus(Distance.from(newDistance))).isEqualTo(Distance.from(expected));
     }
 }

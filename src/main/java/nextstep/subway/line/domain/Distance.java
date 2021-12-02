@@ -37,7 +37,7 @@ public class Distance {
         }
     }
     
-    public Distance move(Distance distance) {
+    public Distance minus(Distance distance) {
         checkShorter(distance);
         return Distance.from(this.distance - distance.getDistance());
     }

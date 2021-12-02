@@ -76,12 +76,12 @@ public class Section extends BaseEntity {
 
     public void moveUpStationTo(Station station, Distance distance) {
         this.upStation = station;
-        this.distance = this.distance.move(distance);
+        this.distance = this.distance.minus(distance);
     }
 
     public void moveDownStationTo(Station station, Distance distance) {
         this.downStation = station;
-        this.distance = this.distance.move(distance);
+        this.distance = this.distance.minus(distance);
     }
     
 
