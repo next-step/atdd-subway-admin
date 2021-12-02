@@ -17,9 +17,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
-    @JoinColumn(name = "line_id")
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = new Sections();
 
     public Line() {
     }
@@ -51,23 +50,11 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 
     public List<Station> getStations() {
-
-        List<Station> stations = new ArrayList<>();
-
-        Iterator<Section> iterator = sections.iterator();
-        while(iterator.hasNext()) {
-            Section next = iterator.next();
-            stations.add(next.getUpStation());
-            if(!iterator.hasNext()) {
-                stations.add(next.getDownStation());
-            }
-        }
-
-        return stations;
+        return sections.getStations();
     }
 }
 
