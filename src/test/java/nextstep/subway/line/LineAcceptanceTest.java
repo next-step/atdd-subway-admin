@@ -108,6 +108,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		지하철_노선_삭제_검증(id);
 	}
 
+	@DisplayName("지하철 노선이 추가되지 않은 상태에서 노선을 제거한다.")
+	@Test
+	void deleteLine2() {
+		Long id = 1L;
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선_제거_요청(id);
+
+		// then
+		지하철_노선_응답_검증(response, HttpStatus.NOT_FOUND);
+	}
+
 	private void 지하철_노선_삭제_검증(Long id) {
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
 			.when()
@@ -173,9 +185,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id) {
-        Map<String, String> params = new HashMap<>();
-        params.put("color", COLOR2);
-        params.put("name", NAME2);
+		Map<String, String> params = new HashMap<>();
+		params.put("color", COLOR2);
+		params.put("name", NAME2);
 
 		return RestAssured.given().log().all()
 			.body(params)
