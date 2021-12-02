@@ -53,9 +53,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .when().post("/lines/{id}/sections")
                 .then().log().all()
                 .extract();
-        
+
         // then
         // 지하철_노선에_지하철역_등록됨
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }

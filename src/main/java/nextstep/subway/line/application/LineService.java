@@ -29,7 +29,7 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
         persistLine.addSection(request.toSectionRequest().toSection());
-        return LineResponse.of(persistLine);
+        return getLine(persistLine.getId());
     }
 
     public LinesResponse getLines() {
@@ -62,6 +62,6 @@ public class LineService {
     public LineResponse addSection(Long id, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(id).orElseThrow(NotFoundException::new);
         line.addSection(sectionRequest.toSection());
-        return LineResponse.of(line);
+        return getLine(id);
     }
 }
