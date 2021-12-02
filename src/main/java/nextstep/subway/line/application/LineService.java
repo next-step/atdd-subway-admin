@@ -47,14 +47,14 @@ public class LineService {
 
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        Line persisLine = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
 
         Station upStation = findStation(lineRequest.getUpStationId());
         Station downStation = findStation(lineRequest.getDownStationId());
 
-        persisLine.update(lineRequest.toLine(upStation, downStation));
+        line.update(lineRequest.toLine(upStation, downStation));
 
-        return LineResponse.of(persisLine);
+        return LineResponse.of(line);
     }
 
     public Boolean deleteLine(Long id) {

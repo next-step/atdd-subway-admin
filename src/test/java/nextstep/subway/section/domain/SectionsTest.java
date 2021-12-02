@@ -11,10 +11,10 @@ import java.util.List;
 
 public class SectionsTest {
 
-    public static final Station 강남역 = new Station("강남역");
-    public static final Station 양재역 = new Station("양재역");
-    public static final Station 양재시민의숲 = new Station("양재시민의숲");
-    public static final Station 광교역 = new Station("광교역");
+    public static final Station 강남역 = new Station(1L, "강남역");
+    public static final Station 양재역 = new Station(2L, "양재역");
+    public static final Station 양재시민의숲 = new Station(3L, "양재시민의숲");
+    public static final Station 광교역 = new Station(4L, "광교역");
 
 
     @DisplayName("상행선부터 하행선까지 정렬된 station 을 테스트")

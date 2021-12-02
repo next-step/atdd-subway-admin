@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -32,7 +33,7 @@ public class Sections {
         List<Station> results = new ArrayList<>();
 
         Map<Station, Station> sortedStations = doCacheWithUpStations();
-        Station upStation = getFirstStation(sortedStations);
+        Station upStation = getFirstStation();
 
         while (upStation != null) {
             results.add(upStation);
@@ -42,13 +43,12 @@ public class Sections {
         return results;
     }
 
-    private Station getFirstStation(Map<Station, Station> sortedStations) {
-        Map<Station, Station> cacheWithDownStations = doCacheWithDownStations();
-        return sortedStations.keySet().stream()
-                .filter(upStation -> {
-                    Station targetStation = cacheWithDownStations.get(upStation);
-                    return Objects.isNull(targetStation);
-                })
+    private Station getFirstStation() {
+        List<Station> upStreamStations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
+        List<Station> downStreamStations = sections.stream().map(Section::getDownStation).collect(Collectors.toList());
+
+        return upStreamStations.stream()
+                .filter(upStreamStation -> !downStreamStations.contains(upStreamStation))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }
@@ -56,10 +56,5 @@ public class Sections {
     private Map<Station, Station> doCacheWithUpStations() {
         return this.sections.stream()
                 .collect(toMap(Section::getUpStation, Section::getDownStation));
-    }
-
-    private Map<Station, Station> doCacheWithDownStations() {
-        return this.sections.stream()
-                .collect(toMap(Section::getDownStation, Section::getUpStation));
     }
 }

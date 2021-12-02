@@ -6,9 +6,9 @@ import nextstep.subway.station.domain.Station;
 public class LineRequest {
     private String name;
     private String color;
-    private Long upStationId;       // 추가
-    private Long downStationId;     // 추가
-    private int distance;           // 추가
+    private Long upStationId;
+    private Long downStationId;
+    private int distance;
 
     public LineRequest() {
     }
