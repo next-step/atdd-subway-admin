@@ -77,11 +77,14 @@ public class Line extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return Objects.equals(getId(), line.getId());
+        return Objects.equals(getId(), line.getId())
+                && Objects.equals(getName(), line.getName())
+                && Objects.equals(getColor(), line.getColor())
+                && Objects.equals(getSections(), line.getSections());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId());
+        return Objects.hash(getId(), getName(), getColor(), getSections());
     }
 }

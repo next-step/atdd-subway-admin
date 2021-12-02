@@ -33,11 +33,6 @@ public class Section {
     protected Section() {
     }
 
-    public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
-        this(line, upStation, downStation, distance);
-        this.id = id;
-    }
-
     private Section(Line line, Station upStation, Station downStation, int distance) {
         validateDuplicate(upStation, downStation);
         this.line = Objects.requireNonNull(line, "노선의 정보가 입력되지 않았습니다.");

@@ -18,17 +18,17 @@ class SectionsTest {
     @Test
     void 구간들_생성() {
         // given
-        Station 강남역 = new Station(1L, "강남역");
-        Station 양재역 = new Station(2L, "양재역");
-        Station 양재시민의숲 = new Station(3L, "양재시민의숲");
-        Station 청계산입구 = new Station(4L, "청계산입구");
+        Station 강남역 = Station.from("강남역");
+        Station 양재역 = Station.from("양재역");
+        Station 양재시민의숲 = Station.from("양재시민의숲");
+        Station 청계산입구 = Station.from("청계산입구");
 
         Line 신분당선 = Line.of("신분당선", "red");
 
         Sections sections = 신분당선.getSections();
-        sections.add(new Section(1L, 신분당선, 강남역, 양재역, 10));
-        sections.add(new Section(2L, 신분당선, 양재역, 양재시민의숲, 8));
-        sections.add(new Section(3L, 신분당선, 양재시민의숲, 청계산입구, 8));
+        sections.add(Section.of(신분당선, 강남역, 양재역, 10));
+        sections.add(Section.of(신분당선, 양재역, 양재시민의숲, 8));
+        sections.add(Section.of(신분당선, 양재시민의숲, 청계산입구, 8));
 
         // when
         Sections actual = 신분당선.getSections();
@@ -40,12 +40,13 @@ class SectionsTest {
     @Test
     void 구간들_생성_시_종점역_정보가_없을_경우_생성_실패() {
         // given
-        Station 강남역 = new Station(1L, "강남역");
-        Station 양재역 = new Station(2L, "양재역");
+        Station 강남역 = Station.from("강남역");
+        Station 양재역 = Station.from("양재역");
 
         Line 신분당선 = Line.of("신분당선", "red");
+
         Sections sections = 신분당선.getSections();
-        sections.add(new Section(1L, 신분당선, 강남역, 양재역, 10));
+        sections.add(Section.of(신분당선, 강남역, 양재역, 10));
 
         // when
         ThrowableAssert.ThrowingCallable throwingCallable = () -> 신분당선.addSection(양재역, null, 8);
@@ -58,16 +59,17 @@ class SectionsTest {
     @Test
     void 구간들을_정렬하여_조회한다() {
         // given
-        Station 강남역 = new Station(1L, "강남역");
-        Station 양재역 = new Station(2L, "양재역");
-        Station 양재시민의숲 = new Station(3L, "양재시민의숲");
-        Station 청계산입구 = new Station(4L, "청계산입구");
+        Station 강남역 = Station.from("강남역");
+        Station 양재역 = Station.from("양재역");
+        Station 양재시민의숲 = Station.from("양재시민의숲");
+        Station 청계산입구 = Station.from("청계산입구");
 
         Line 신분당선 = Line.of("신분당선", "red");
+
         Sections sections = 신분당선.getSections();
-        sections.add(new Section(1L, 신분당선, 강남역, 양재역, 10));
-        sections.add(new Section(2L, 신분당선, 양재역, 양재시민의숲, 8));
-        sections.add(new Section(3L, 신분당선, 양재시민의숲, 청계산입구, 8));
+        sections.add(Section.of(신분당선, 강남역, 양재역, 10));
+        sections.add(Section.of(신분당선, 양재역, 양재시민의숲, 8));
+        sections.add(Section.of(신분당선, 양재시민의숲, 청계산입구, 8));
 
         // when
         List<Station> actual = sections.getOrderedStations();
@@ -82,40 +84,40 @@ class SectionsTest {
     @DisplayName("구간들 사이에 구간을 추가한다. 강남역 -(10m)- 양재시민의숲 => 강남역 -(8m)- 양재역 -(2m)- 양재시민의숲")
     void 구간들_사이에_새로운_구간을_추가한다() {
         // given
-        Station 강남역 = new Station(1L, "강남역");
-        Station 양재역 = new Station(2L, "양재역");
-        Station 양재시민의숲 = new Station(3L, "양재시민의숲");
+        Station 강남역 = Station.from("강남역");
+        Station 양재역 = Station.from("양재역");
+        Station 양재시민의숲 = Station.from("양재시민의숲");
 
         Line 신분당선 = Line.of("신분당선", "red");
 
         Sections sections = 신분당선.getSections();
-        sections.add(new Section(1L, 신분당선, 강남역, 양재시민의숲, 10));
-        sections.add(new Section(2L, 신분당선, 강남역, 양재역, 8));
+        sections.add(Section.of(신분당선, 강남역, 양재시민의숲, 10));
+        sections.add(Section.of(신분당선, 강남역, 양재역, 8));
 
         // when
         List<Section> actual = sections.getOrderedSections();
 
-        //then
+        // then
         Assertions.assertThat(actual).hasSize(2);
-        Assertions.assertThat(actual.get(0)).isEqualTo(new Section(2L, 신분당선, 강남역, 양재역, 8));
-        Assertions.assertThat(actual.get(1)).isEqualTo(new Section(1L, 신분당선, 양재역, 양재시민의숲, 2));
+        Assertions.assertThat(actual.get(0)).isEqualTo(Section.of(신분당선, 강남역, 양재역, 8));
+        Assertions.assertThat(actual.get(1)).isEqualTo(Section.of(신분당선, 양재역, 양재시민의숲, 2));
     }
 
     @ParameterizedTest
     @ValueSource(ints = {10, 11})
     void 기존_구간의_사이_길이_보다_크거나_같으면_등록할_수_없다(int distance) {
         // given
-        Station 강남역 = new Station(1L, "강남역");
-        Station 양재역 = new Station(2L, "양재역");
-        Station 양재시민의숲 = new Station(3L, "양재시민의숲");
+        Station 강남역 = Station.from("강남역");
+        Station 양재역 = Station.from("양재역");
+        Station 양재시민의숲 = Station.from("양재시민의숲");
 
         Line 신분당선 = Line.of("신분당선", "red");
 
         Sections sections = 신분당선.getSections();
-        sections.add(new Section(1L, 신분당선, 강남역, 양재시민의숲, 10));
+        sections.add(Section.of(신분당선, 강남역, 양재시민의숲, 10));
 
         // when
-        ThrowableAssert.ThrowingCallable throwingCallable = () -> sections.add(new Section(2L, 신분당선, 강남역, 양재역, distance));
+        ThrowableAssert.ThrowingCallable throwingCallable = () -> sections.add(Section.of(신분당선, 강남역, 양재역, distance));
 
         // then
         Assertions.assertThatExceptionOfType(BadRequestException.class)
@@ -125,16 +127,16 @@ class SectionsTest {
     @Test
     void 상행역과_하행역이_이미_노선에_등록되어있으면_추가할_수_없다() {
         // given
-        Station 강남역 = new Station(1L, "강남역");
-        Station 양재역 = new Station(2L, "양재역");
+        Station 강남역 = Station.from("강남역");
+        Station 양재역 = Station.from("양재역");
 
         Line 신분당선 = Line.of("신분당선", "red");
 
         Sections sections = 신분당선.getSections();
-        sections.add(new Section(1L, 신분당선, 강남역, 양재역, 10));
+        sections.add(Section.of(신분당선, 강남역, 양재역, 10));
 
         // when
-        ThrowableAssert.ThrowingCallable throwingCallable = () -> sections.add(new Section(2L, 신분당선, 강남역, 양재역, 10));
+        ThrowableAssert.ThrowingCallable throwingCallable = () -> sections.add(Section.of(신분당선, 강남역, 양재역, 10));
 
         // then
         Assertions.assertThatExceptionOfType(BadRequestException.class)
@@ -144,18 +146,18 @@ class SectionsTest {
     @Test
     void 상행역과_하행역_둘다_노선에_등록되어있지_않으면_추가할_수_없다() {
         // given
-        Station 강남역 = new Station(1L, "강남역");
-        Station 양재역 = new Station(2L, "양재역");
-        Station 양재시민의숲 = new Station(3L, "양재시민의숲");
-        Station 청계산입구 = new Station(4L, "청계산입구");
+        Station 강남역 = Station.from("강남역");
+        Station 양재역 = Station.from("양재역");
+        Station 양재시민의숲 = Station.from("양재시민의숲");
+        Station 청계산입구 = Station.from("청계산입구");
 
         Line 신분당선 = Line.of("신분당선", "red");
 
         Sections sections = 신분당선.getSections();
-        sections.add(new Section(1L, 신분당선, 강남역, 양재역, 10));
+        sections.add(Section.of(신분당선, 강남역, 양재역, 10));
 
         // when
-        ThrowableAssert.ThrowingCallable throwingCallable = () -> sections.add(new Section(1L, 신분당선, 양재시민의숲, 청계산입구, 10));
+        ThrowableAssert.ThrowingCallable throwingCallable = () -> sections.add(Section.of(신분당선, 양재시민의숲, 청계산입구, 10));
 
         // then
         Assertions.assertThatExceptionOfType(BadRequestException.class)
@@ -166,45 +168,45 @@ class SectionsTest {
     @DisplayName("새로운 구간을 상행 종점으로 추가한다. 양재역 -(10m)- 양재시민의숲 => 강남역 -(10m)- 양재역 -(10m)- 양재시민의숲")
     void 새로운_구간을_상행_종점으로_추가한다() {
         // given
-        Station 강남역 = new Station(1L, "강남역");
-        Station 양재역 = new Station(2L, "양재역");
-        Station 양재시민의숲 = new Station(3L, "양재시민의숲");
+        Station 강남역 = Station.from("강남역");
+        Station 양재역 = Station.from("양재역");
+        Station 양재시민의숲 = Station.from("양재시민의숲");
 
         Line 신분당선 = Line.of("신분당선", "red");
 
         Sections sections = 신분당선.getSections();
-        sections.add(new Section(1L, 신분당선, 양재역, 양재시민의숲, 10));
-        sections.add(new Section(2L, 신분당선, 강남역, 양재역, 10));
+        sections.add(Section.of(신분당선, 양재역, 양재시민의숲, 10));
+        sections.add(Section.of(신분당선, 강남역, 양재역, 10));
 
         // when
         List<Section> actual = sections.getOrderedSections();
 
         // then
         Assertions.assertThat(actual).hasSize(2);
-        Assertions.assertThat(actual.get(0)).isEqualTo(new Section(2L, 신분당선, 강남역, 양재역, 10));
-        Assertions.assertThat(actual.get(1)).isEqualTo(new Section(1L, 신분당선, 양재역, 양재시민의숲, 10));
+        Assertions.assertThat(actual.get(0)).isEqualTo(Section.of(신분당선, 강남역, 양재역, 10));
+        Assertions.assertThat(actual.get(1)).isEqualTo(Section.of(신분당선, 양재역, 양재시민의숲, 10));
     }
 
     @Test
     @DisplayName("새로운 구간을 하행 종점으로 추가한다. 강남역 -(10m)- 양재역 => 강남역 -(10m)- 양재역 -(10m)- 양재시민의숲")
     void 새로운_구간을_하행_종점으로_추가한다() {
         // given
-        Station 강남역 = new Station(1L, "강남역");
-        Station 양재역 = new Station(2L, "양재역");
-        Station 양재시민의숲 = new Station(3L, "양재시민의숲");
+        Station 강남역 = Station.from("강남역");
+        Station 양재역 = Station.from("양재역");
+        Station 양재시민의숲 = Station.from("양재시민의숲");
 
         Line 신분당선 = Line.of("신분당선", "red");
 
         Sections sections = 신분당선.getSections();
-        sections.add(new Section(1L, 신분당선, 강남역, 양재역, 10));
-        sections.add(new Section(2L, 신분당선, 양재역, 양재시민의숲, 10));
+        sections.add(Section.of(신분당선, 강남역, 양재역, 10));
+        sections.add(Section.of(신분당선, 양재역, 양재시민의숲, 10));
 
         // when
         List<Section> actual = sections.getOrderedSections();
 
         // then
         Assertions.assertThat(actual).hasSize(2);
-        Assertions.assertThat(actual.get(0)).isEqualTo(new Section(1L, 신분당선, 강남역, 양재역, 10));
-        Assertions.assertThat(actual.get(1)).isEqualTo(new Section(2L, 신분당선, 양재역, 양재시민의숲, 10));
+        Assertions.assertThat(actual.get(0)).isEqualTo(Section.of(신분당선, 강남역, 양재역, 10));
+        Assertions.assertThat(actual.get(1)).isEqualTo(Section.of(신분당선, 양재역, 양재시민의숲, 10));
     }
 }

@@ -20,12 +20,7 @@ public class Station extends BaseEntity {
     protected Station() {
     }
 
-    public Station(String name) {
-        this.name = name;
-    }
-
-    public Station(Long id, String name) {
-        this.id = id;
+    private Station(String name) {
         this.name = name;
     }
 
