@@ -14,8 +14,6 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
-    private static final int START_INDEX = 0;
-
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
@@ -37,32 +35,17 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
-        sections.forEach(section -> {
-            stations.add(section.getUpStation());
-            stations.add(section.getDownStation());
-        });
-
-        return stations.stream().distinct().collect(Collectors.toList());
-    }
-
-    public List<Station> getSortedStations() {
-        if (sections.isEmpty()) {
-            return new ArrayList<>();
-        }
         List<Station> stations = new LinkedList<>();
 
-        Section firstSection = findFirstSection();
-        stations.add(firstSection.getUpStation());
-        stations.add(firstSection.getDownStation());
-        Section nextSection = nextSection(firstSection);
+        sections.stream()
+                .sorted(Section::compareTo)
+                .collect(Collectors.toList())
+                .forEach(section -> {
+                    stations.add(section.getUpStation());
+                    stations.add(section.getDownStation());
+                });
 
-        while (nextSection != null) {
-            stations.add(nextSection.getDownStation());
-            nextSection = nextSection(nextSection);
-        }
-
-        return stations;
+        return stations.stream().distinct().collect(Collectors.toList());
     }
 
     private void validateStation(List<Station> stations, Section sectionToAdd) {
@@ -95,13 +78,6 @@ public class Sections {
         }
     }
 
-    private Section nextSection(Section firstSection) {
-        return sections.stream()
-                .filter(firstSection::isNextSection)
-                .findFirst()
-                .orElse(null);
-    }
-
     private Optional<Section> findSectionByDownStation(Station downStation) {
         return sections.stream()
                 .filter(section -> section.getDownStation().equals(downStation))
@@ -112,20 +88,5 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.getUpStation().equals(upStation))
                 .findFirst();
-    }
-
-    private Section findFirstSection() {
-        Section section = sections.get(START_INDEX);
-        Section foundFirstSection = null;
-
-        while (section != null) {
-            foundFirstSection = section;
-            section = sections.stream()
-                    .filter(section::isPrevSection)
-                    .findFirst()
-                    .orElse(null);
-        }
-
-        return foundFirstSection;
     }
 }
