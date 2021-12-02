@@ -25,6 +25,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private static final String LOCATION = "Location";
     private static final String BASE_URI = "/lines";
 
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(final LineRequest request) {
+        return RestAssured.given().log().all()
+            .body(request)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post(BASE_URI)
+            .then().log().all()
+            .extract();
+
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
