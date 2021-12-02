@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철 구간")
-class SectionTest {
+class LineTest {
 
     private List<Station> stations;
     private Line line;
