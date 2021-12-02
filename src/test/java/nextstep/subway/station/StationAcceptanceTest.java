@@ -12,9 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -84,7 +82,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
 
-    public static  ExtractableResponse<Response> 지하철_역_생성_요청(StationRequest request) {
+    public static ExtractableResponse<Response> 지하철_역_생성_요청(StationRequest request) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -118,6 +116,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     public static StationRequest 역삼역_생성_파라미터() {
         return new StationRequest("역삼역");
+    }
+
+    public static StationRequest 광교역_생성_파라미터() {
+        return new StationRequest("역삼역");
+    }
+
+    public static StationRequest 신규역_생성_파라미터(String name) {
+        return new StationRequest(name);
     }
 }
 
