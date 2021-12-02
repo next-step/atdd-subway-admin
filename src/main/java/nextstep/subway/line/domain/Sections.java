@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import static java.util.stream.Collectors.*;
 import static javax.persistence.CascadeType.*;
 
 import java.util.ArrayList;
@@ -8,6 +9,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -128,17 +131,26 @@ public class Sections {
     }
 
     public List<Station> getStations() {
+        List<Station> resultStations = getSections().stream()
+                                            .flatMap(
+                                                section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                                            .distinct()
+                                            .collect(toList());
+
+        return Collections.unmodifiableList(resultStations);
+    }
+
+    public List<Section> getSections() {
         Section findSection = findFirstSection();
-        List<Station> resultStations = new ArrayList<>();
+        List<Section> resultStations = new ArrayList<>();
 
         while (matchStation(isUpStation(findSection.getDownStation()))) {
-            resultStations.add(findSection.getUpStation());
+            resultStations.add(findSection);
             findSection = findSections(isUpStation(findSection.getDownStation()))
                 .orElseThrow(SectionNotFoundException::new);
         }
 
-        resultStations.add(findSection.getUpStation());
-        resultStations.add(findSection.getDownStation());
+        resultStations.add(findSection);
         return Collections.unmodifiableList(resultStations);
     }
 

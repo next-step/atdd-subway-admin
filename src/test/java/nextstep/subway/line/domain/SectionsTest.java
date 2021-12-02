@@ -8,6 +8,7 @@ import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,7 @@ class SectionsTest {
         Section section2 = new Section(new Station(55L, "대화역"), new Station(3L, "용문역"), new Distance(10));
         Section section5 = new Section(new Station(5L, "신촌역"), new Station(55L, "대화역"), new Distance(10));
         Section section1 = new Section(new Station(2L, "구파발역"), new Station(5L, "신촌역"), new Distance(10));
-        Section section4 = new Section(new Station(3L, "용문역"), new Station(2L, "강남역"), new Distance(5));
+        Section section4 = new Section(new Station(3L, "용문역"), new Station(42L, "강남역"), new Distance(5));
         Sections sections = new Sections();
         sections.add(asList(section4, section1, section5, section2), line);
 
@@ -52,11 +53,11 @@ class SectionsTest {
     @Test
     void 다음_구간을_찾는다() {
         // given
-        Section firstSection = new Section(new Station(2L, "강남역"), new Station(5L, "신촌역"), new Distance(10));
-        Section nextSection = new Section(new Station(5L, "신촌역"), new Station(55L, "대화역"), new Distance(10));
+        Line line = new Line();
+        Section firstSection = new Section(1L, new Station(2L, "강남역"), new Station(5L, "신촌역"), new Distance(10));
+        Section nextSection = new Section(2L, new Station(5L, "신촌역"), new Station(55L, "대화역"), new Distance(10));
 
         Sections sections = new Sections();
-        Line line = new Line();
         sections.add(asList(firstSection, nextSection), line);
 
         // when
@@ -73,27 +74,27 @@ class SectionsTest {
     void 상행역을_등록한다() {
         //given
         Line line = new Line(LINE_ONE, LINE_ONE_COLOR_RED);
-        Station stationGangnam = new Station(1L, 강남역);
+        Station stationGangnam = new Station(1L, "강남역");
         Station stationSinChon = new Station(2L, "신촌역");
-        Section section = new Section(1L, stationGangnam, stationSinChon, new Distance(10));
+        Section firstSection = new Section(1L, stationGangnam, stationSinChon, new Distance(10));
         Sections sections = new Sections();
-        sections.add(section, line);
+        sections.add(firstSection, line);
 
         // when
         Station stationYoungSan = new Station(3L, "용산역");
-        sections.addSection(new Section(2L, stationYoungSan, stationGangnam, new Distance(4), line));
+        Section secondSection = new Section(2L, stationSinChon, stationYoungSan, new Distance(4), line);
+        sections.addSection(secondSection);
 
         // then
         Sections expectedSections = new Sections();
         List<Section> sections1 = asList(
-            new Section(1L, stationGangnam, stationSinChon, new Distance(10)),
-            new Section(2L, stationSinChon, stationYoungSan, new Distance(4))
+            firstSection,
+            secondSection
         );
-
 
         expectedSections.add(sections1, line);
 
-        Assertions.assertThat(sections).isEqualTo(expectedSections);
+        assertThat(sections).isEqualTo(expectedSections);
     }
 
     @Test
@@ -108,18 +109,19 @@ class SectionsTest {
 
         // when
         Station stationYoungSan = new Station(3L, "용산역");
-        sections.addSection(new Section(2L, stationSinChon, stationYoungSan, new Distance(4), line));
+        Section secondSection = new Section(2L, stationSinChon, stationYoungSan, new Distance(4), line);
+        sections.addSection(secondSection);
 
         // then
         Sections expectedSections = new Sections();
         List<Section> sections1 = asList(
-            new Section(1L, stationGangnam, stationSinChon, new Distance(10)),
-            new Section(2L, stationSinChon, stationYoungSan, new Distance(4))
+            firstSection,
+            secondSection
         );
 
         expectedSections.add(sections1, line);
 
-        Assertions.assertThat(sections).isEqualTo(expectedSections);
+        assertThat(sections).isEqualTo(expectedSections);
     }
 
     @Test
@@ -133,12 +135,12 @@ class SectionsTest {
 
         // when
         Sections sections = new Sections();
-        Section section = new Section(station1, station2, new Distance(10));
+        Section section = new Section(1L, station1, station2, new Distance(10));
         sections.add(section, new Line(LINE_ONE, LINE_ONE_COLOR_RED));
 
         // then
         Assertions.assertThatThrownBy(() -> {
-                      sections.addSection(new Section(addStation1, addStation2, new Distance(5)));
+                      sections.addSection(new Section(2L, addStation1, addStation2, new Distance(5)));
                   }).isInstanceOf(StationNotFoundException.class)
                   .hasMessageStartingWith("지하철역이 존재하지 않습니다.");
     }
@@ -149,40 +151,47 @@ class SectionsTest {
         Station stationGangNam = new Station(1L, "강남역");
         Station stationSinchon = new Station(2L, "신촌역");
         Sections sections = new Sections();
-        sections.add(new Section(stationGangNam, stationSinchon, new Distance(10)),
+        sections.add(new Section(1L, stationGangNam, stationSinchon, new Distance(10)),
                      new Line(LINE_ONE, LINE_ONE_COLOR_RED)
         );
 
         // then
         Assertions.assertThatThrownBy(() -> {
-                      sections.addSection(new Section(stationSinchon, stationGangNam, new Distance(5)));
+                      sections.addSection(new Section(2L, stationSinchon, stationGangNam, new Distance(5)));
                   }).isInstanceOf(AlreadyRegisteredException.class)
                   .hasMessage(MESSAGE_ALREADY_REGISTERED_SECTION.getMessage());
     }
 
+    /**
+     *  신촌역 - 용산역
+     *  거리 : 4
+     */
     @Test
     void 첫번째_구간_삭제() {
         // given
         Station stationGangNam = new Station(1L, "강남역");
         Station stationSinChon = new Station(2L, "신촌역");
         Station stationYoungSan = new Station(3L, "용산역");
-        Station stationYeokSam = new Station(4L, "역삼역");
 
         Line line = new Line(LINE_ONE, LINE_ONE_COLOR_RED);
-        line.addSections(new Section(1L, stationGangNam, stationSinChon, new Distance(10)));
-        line.addSection(new Section(2L, stationSinChon, stationYoungSan, new Distance(4)));
-        line.addSection(new Section(3L, stationYeokSam, stationYoungSan, new Distance(2)));
+        Sections sections = new Sections();
+        sections.add(new Section(1L, stationGangNam, stationSinChon, new Distance(10)), line);
+        Section addSection = new Section(2L, stationSinChon, stationYoungSan, new Distance(4), line);
+        sections.addSection(addSection);
 
         // when
-        line.removeSection(stationGangNam);
+        sections.removeSection(stationGangNam);
 
         // then
-        List<Station> stations = line.getStations();
-
-        Assertions.assertThat(stations).containsExactly(stationSinChon, stationYeokSam, stationYoungSan);
+        List<Section> resultSections = sections.getSections();
+        List<Station> stations = sections.getStations();
+        assertThat(stations).doesNotContain(stationGangNam);
+        assertThat(getDistance(resultSections)).containsExactly(new Distance(4));
     }
 
-
+    /**
+     * 강남역 - 용산역 - 역삼역
+     */
     @Test
     void 지하철_중간_구간_삭제() {
         // given
@@ -193,40 +202,42 @@ class SectionsTest {
 
         Line line = new Line(LINE_ONE, LINE_ONE_COLOR_RED);
         Sections sections = new Sections();
-        sections.add(new Section(stationGangNam, stationSinChon, new Distance(10)), line);
+        sections.add(new Section(1L, stationGangNam, stationSinChon, new Distance(10)), line);
         sections.addSection(new Section(2L, stationSinChon, stationYoungSan, new Distance(4), line));
         sections.addSection(new Section(3L, stationYeokSam, stationYoungSan, new Distance(2), line));
-
         // when
         sections.removeSection(stationSinChon);
 
         // then
+        List<Section> resultSections = sections.getSections();
         List<Station> stations = sections.getStations();
-
-        Assertions.assertThat(stations).containsExactly(stationGangNam, stationYeokSam, stationYoungSan);
+        assertThat(stations).doesNotContain(stationSinChon);
+        assertThat(getDistance(resultSections)).containsExactly(new Distance(10), new Distance(2));
     }
-
+    
+    /**
+     * 강남역 - 신촌역
+     */
     @Test
     void 지하철_구간_마지막_삭제() {
         // given
         Station stationGangNam = new Station(1L, "강남역");
         Station stationSinChon = new Station(2L, "신촌역");
         Station stationYoungSan = new Station(3L, "용산역");
-        Station stationYeokSam = new Station(4L, "역삼역");
 
         Line line = new Line(LINE_ONE, LINE_ONE_COLOR_RED);
         Sections sections = new Sections();
-        sections.add(new Section(stationGangNam, stationSinChon, new Distance(10)), line);
+        sections.add(new Section(1L, stationGangNam, stationSinChon, new Distance(10)), line);
         sections.addSection(new Section(2L, stationSinChon, stationYoungSan, new Distance(4), line));
-        sections.addSection(new Section(3L, stationYeokSam, stationYoungSan, new Distance(2), line));
 
         // when
         sections.removeSection(stationYoungSan);
 
         // then
+        List<Section> resultSections = sections.getSections();
         List<Station> stations = sections.getStations();
-
-        Assertions.assertThat(stations).containsExactly(stationGangNam, stationSinChon, stationYeokSam);
+        assertThat(stations).doesNotContain(stationYoungSan);
+        assertThat(getDistance(resultSections)).containsExactly(new Distance(10));
     }
 
     @Test
@@ -238,7 +249,7 @@ class SectionsTest {
         Station stationYeokSam = new Station(4L, "역삼역");
         Line line = new Line(LINE_ONE, LINE_ONE_COLOR_RED);
         Sections sections = new Sections();
-        sections.add(new Section(stationGangNam, stationSinChon, new Distance(10)), line);
+        sections.add(new Section(1L, stationGangNam, stationSinChon, new Distance(10)), line);
         sections.addSection(new Section(2L, stationSinChon, stationYoungSan, new Distance(4), line));
 
         // then
@@ -255,11 +266,15 @@ class SectionsTest {
         Station stationSinChon = new Station(2L, "신촌역");
         Line line = new Line(LINE_ONE, LINE_ONE_COLOR_RED);
         Sections sections = new Sections();
-        sections.add(new Section(stationGangNam, stationSinChon, new Distance(10)), line);
+        sections.add(new Section(1L, stationGangNam, stationSinChon, new Distance(10)), line);
 
         // then
         Assertions.assertThatThrownBy(() -> {
             sections.removeSection(stationSinChon);
         }).isInstanceOf(LimitSectionSizeException.class);
+    }
+
+    private List<Distance> getDistance(List<Section> resultSections) {
+        return resultSections.stream().map(Section::getDistance).collect(toList());
     }
 }
