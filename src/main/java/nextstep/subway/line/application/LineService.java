@@ -12,7 +12,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.exception.ResourceAlreadyExistException;
+import nextstep.subway.common.exception.ResourceAlreadyExistException;
 
 @Service
 @Transactional(readOnly = true)

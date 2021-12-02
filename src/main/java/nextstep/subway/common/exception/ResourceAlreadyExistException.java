@@ -1,4 +1,4 @@
-package nextstep.subway.line.exception;
+package nextstep.subway.common.exception;
 
 public class ResourceAlreadyExistException extends RuntimeException {
 	public ResourceAlreadyExistException(String message) {
