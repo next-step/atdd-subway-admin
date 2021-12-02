@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationTestFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -105,7 +106,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getObject(".", Line.class).getName()).isEqualTo(line.getName());
+        assertThat(response.jsonPath().getObject(".", LineResponse.class).getName()).isEqualTo(line.getName());
     }
 
     @DisplayName("지하철 노선 조회 실패")

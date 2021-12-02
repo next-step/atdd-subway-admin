@@ -8,26 +8,31 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesResponse;
 import nextstep.subway.section.application.SectionService;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
     private final SectionService sectionService;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, SectionService sectionService) {
+    public LineService(LineRepository lineRepository, SectionService sectionService, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.sectionService = sectionService;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
         Section section = sectionService.saveSection(request.toSectionRequest());
-        section.ofLine(persistLine);
+        persistLine.addSection(section);
         return LineResponse.of(persistLine);
     }
 
@@ -37,9 +42,14 @@ public class LineService {
     }
 
     public LineResponse getLine(Long id) throws NotFoundException {
-        return lineRepository.findById(id)
-                .map(LineResponse::of)
+        Line line = lineRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
+
+        List<StationResponse> stationResponses = stationRepository.findAllById(line.getStations())
+                .stream().map(station -> StationResponse.of(station))
+                .collect(Collectors.toList());
+
+        return LineResponse.of(line, stationResponses);
     }
 
     public LineResponse updateLine(Long id, LineRequest request) throws NotFoundException {
