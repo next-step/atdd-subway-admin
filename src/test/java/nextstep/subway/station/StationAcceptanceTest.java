@@ -42,35 +42,35 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // @BeforeEach로 대체
 
         // when
-        ExtractableResponse<Response> response = _createStationHandler(params);
+        ExtractableResponse<Response> response = 지하철역_생성_요청(params);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        응답_코드_검증(response, HttpStatus.CREATED.value());
+        응답_헤더_정보_존재여부_검증(response);
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
     void createStationWithDuplicateName() {
         // given
-        _createStationHandler(params);
+        지하철역_생성_요청(params);
 
         // when
-        ExtractableResponse<Response> response = _createStationHandler(params);
+        ExtractableResponse<Response> response = 지하철역_생성_요청(params);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        응답_코드_검증(response, HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = _createStationHandler(params);
+        ExtractableResponse<Response> createResponse1 = 지하철역_생성_요청(params);
 
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "역삼역");
-        ExtractableResponse<Response> createResponse2 = _createStationHandler(params2);
+        ExtractableResponse<Response> createResponse2 = 지하철역_생성_요청(params2);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -80,21 +80,21 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        응답_코드_검증(response, HttpStatus.OK.value());
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        지하철_노선_목록_포함여부_검증(resultLineIds, expectedLineIds);
     }
 
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = _createStationHandler(params);
+        ExtractableResponse<Response> createResponse = 지하철역_생성_요청(params);
 
         // when
         String uri = createResponse.header("Location");
@@ -105,15 +105,15 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        응답_코드_검증(response, HttpStatus.NO_CONTENT.value());
     }
 
     /**
-     * Line 생성 Handler
+     * 지하철역 생성요청
      * @param params
      * @return
      */
-    private ExtractableResponse<Response> _createStationHandler(Map<String, String> params) {
+    private ExtractableResponse<Response> 지하철역_생성_요청(Map<String, String> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -121,5 +121,18 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .post(STATION_DEFAULT_URL)
                 .then().log().all()
                 .extract(); // extract가 객체로 반환해줌.
+    }
+
+    // 검증 코드는 Line과 동일하므로 Class 분리하여 관리하기.
+    private void 응답_코드_검증(ExtractableResponse<Response> response, int statusCode) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private void 응답_헤더_정보_존재여부_검증(ExtractableResponse<Response> response) {
+        assertThat(response.header("Location")).isNotBlank();
+    }
+
+    public void 지하철_노선_목록_포함여부_검증(List<Long> resultLineIds, List<Long> expectedLineIds) {
+        assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 }
