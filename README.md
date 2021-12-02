@@ -214,6 +214,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - 구간 개수 체크 기능
   - 구간
     - 구간의 역 합치는 기능
+    - Cascade 옵션 변경
   - 구간들
     - 구간의 속한 역 찾는 기능 
     - 구간의 역 제거 기능
+    - Cascade 옵션 변경
