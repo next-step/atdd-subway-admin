@@ -5,12 +5,9 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,8 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
-
-import javax.sound.sampled.Line;
 
 @RestController
 @RequestMapping("/lines")
@@ -71,7 +66,7 @@ public class LineController {
 
 	@DeleteMapping(value = "/{lineId}/sections")
 	public ResponseEntity<Void> deleteLine(@PathVariable("lineId") Long lineId, @RequestParam("stationId") Long stationId) {
-		lineService.deleteStationByIdInLine(lineId, stationId);
+		lineService.deleteStation(lineId, stationId);
 		return ResponseEntity.noContent().build();
 	}
 

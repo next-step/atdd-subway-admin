@@ -16,8 +16,8 @@ public class ExceptionController {
 	}
 
 	@ExceptionHandler(IllegalArgumentException.class)
-	public ResponseEntity<Object> handleIllegalArgsException(IllegalArgumentException e) {
-		return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+	public ResponseEntity<String> handleIllegalArgsException(IllegalArgumentException e) {
+		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(EmptyResultDataAccessException.class)
