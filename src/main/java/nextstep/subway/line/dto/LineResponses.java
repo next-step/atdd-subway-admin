@@ -1,5 +1,6 @@
 package nextstep.subway.line.dto;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,7 +12,7 @@ public class LineResponses {
 	public LineResponses(List<LineResponse> lineResponses) {
 		this.lineResponses = lineResponses;
 	}
-
+	
 	public static LineResponses of(List<Line> lines) {
 		return new LineResponses(
 			lines.stream()
@@ -21,6 +22,6 @@ public class LineResponses {
 	}
 
 	public List<LineResponse> get() {
-		return lineResponses;
+		return Collections.unmodifiableList(lineResponses);
 	}
 }

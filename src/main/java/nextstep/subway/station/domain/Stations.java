@@ -1,6 +1,7 @@
 package nextstep.subway.station.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Stations {
@@ -15,6 +16,6 @@ public class Stations {
 	}
 
 	public List<Station> get() {
-		return stations;
+		return Collections.unmodifiableList(stations);
 	}
 }
