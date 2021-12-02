@@ -12,19 +12,19 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
 public class StationTestUtil {
     public static final String STATIONS_PATH = "/stations/";
 
-    public static Station 지하철역_정보(String name) {
-        return new Station(name);
+    public static StationRequest 지하철역_정보(String name) {
+        return new StationRequest(name);
     }
 
-    public static ExtractableResponse<Response> 지하철역_생성_요청(Station station) {
+    public static ExtractableResponse<Response> 지하철역_생성_요청(StationRequest stationRequest) {
         return RestAssured.given().log().all()
-            .body(station)
+            .body(stationRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post(STATIONS_PATH)
@@ -49,8 +49,8 @@ public class StationTestUtil {
     }
 
     public static Long 지하철역_생성_및_아이디_반환(String name) {
-        Station station = 지하철역_정보(name);
-        ExtractableResponse<Response> response = 지하철역_생성_요청(station);
+        StationRequest stationRequest = 지하철역_정보(name);
+        ExtractableResponse<Response> response = 지하철역_생성_요청(stationRequest);
         return response.jsonPath().getLong("id");
     }
 
