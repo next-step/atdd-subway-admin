@@ -3,6 +3,7 @@ package nextstep.subway.line.application;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +21,7 @@ public class LineService {
 	public static final String EXCEPTION_MESSAGE_LINE_ALREADY_EXIST = "이미 존재하는 노선입니다.";
 	public static final String EXCEPTION_MESSAGE_NOT_FOUND_LINE = "존재하지 않는 노선입니다.";
 
-	private LineRepository lineRepository;
+	private final LineRepository lineRepository;
 
 	public LineService(LineRepository lineRepository) {
 		this.lineRepository = lineRepository;
@@ -61,8 +62,8 @@ public class LineService {
 	public void deleteLine(Long id) {
 		try {
 			lineRepository.deleteById(id);
-		} catch (IllegalArgumentException e) {
-			throw new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_LINE);
+		} catch (EmptyResultDataAccessException e) {
+			throw new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_LINE, e);
 		}
 	}
 }
