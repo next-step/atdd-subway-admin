@@ -13,6 +13,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.common.exception.ResourceAlreadyExistException;
+import nextstep.subway.line.dto.LineResponses;
 
 @Service
 @Transactional(readOnly = true)
@@ -33,11 +34,9 @@ public class LineService {
 		return LineResponse.of(persistLine);
 	}
 
-	public List<LineResponse> findLineList() {
-		List<Line> line = lineRepository.findAll();
-		return line.stream()
-			.map(LineResponse::of)
-			.collect(Collectors.toList());
+	public LineResponses findLineList() {
+		List<Line> lines = lineRepository.findAll();
+		return LineResponses.of(lines);
 	}
 
 	public LineResponse findLine(Long id) {

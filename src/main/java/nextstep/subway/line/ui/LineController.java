@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineResponses;
 
 @RestController
 @RequestMapping("/lines")
@@ -34,8 +35,8 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> readLineList() {
-        List<LineResponse> lines = lineService.findLineList();
-        return ResponseEntity.ok().body(lines);
+        LineResponses lines = lineService.findLineList();
+        return ResponseEntity.ok().body(lines.getLineResponses());
     }
 
     @GetMapping("/{id}")
