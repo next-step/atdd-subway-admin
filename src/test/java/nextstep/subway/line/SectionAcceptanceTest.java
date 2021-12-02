@@ -1,95 +1,161 @@
 package nextstep.subway.line;
 
-import org.junit.jupiter.api.BeforeEach;
+import static nextstep.subway.line.LineTestUtil.*;
+import static nextstep.subway.line.SectionTestUtil.*;
+import static nextstep.subway.station.StationTestUtil.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.SectionRequest;
 
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
-    @Override
-    @BeforeEach
-    public void setUp() {
-        super.setUp();
-
-    }
-
-    @DisplayName("노선에 지하철역 등록 요청")
-    @Test
-    void addSection() {
-        //given
-
-        //when
-
-        //then
-
-    }
-
     @DisplayName("역 사이에 새로운 역 등록 요청")
     @Test
     void addBetweenStations() {
-        //given
+        // given
+        // 지하철_노선_등록_되어_있음
+        Long 상행역_생성_아이디 = 지하철역_생성_및_아이디_반환("화곡역");
+        Long 하행역_생성_아이디 = 지하철역_생성_및_아이디_반환("목동역");
+        Long 노선_생성_아이디 = 지하철_노선_생성_및_아이디_반환("신분당선", "red",
+            상행역_생성_아이디, 하행역_생성_아이디, 10);
+        Long 새로운역_생성_아이디 = 지하철역_생성_및_아이디_반환("까치산역");
+        SectionRequest 구간_요청_정보 = 구간_요청_등록_정보(상행역_생성_아이디, 새로운역_생성_아이디, 5);
 
-        //when
+        // when
+        // 역_사이에_새로운_역_등록_요청
+        ExtractableResponse<Response> 노선_구간_등록_응답 = 노선_구간_등록_요청(노선_생성_아이디, 구간_요청_정보);
 
-        //then
-
+        // then
+        지하철_노선에_지하철역_등록됨(노선_구간_등록_응답);
+        역_사이에_새로운_역_등록됨(노선_구간_등록_응답, 새로운역_생성_아이디);
     }
 
     @DisplayName("새로운 역을 상행 종점으로 등록 요청")
     @Test
     void addEndUpStation() {
-        //given
+        // given
+        // 지하철_노선_등록_되어_있음
+        Long 상행역_생성_아이디 = 지하철역_생성_및_아이디_반환("화곡역");
+        Long 하행역_생성_아이디 = 지하철역_생성_및_아이디_반환("목동역");
+        Long 노선_생성_아이디 = 지하철_노선_생성_및_아이디_반환("신분당선", "red",
+            상행역_생성_아이디, 하행역_생성_아이디, 10);
+        Long 새로운역_생성_아이디 = 지하철역_생성_및_아이디_반환("까치산역");
+        SectionRequest 상행_종점_구간_등록_정보 = 구간_요청_등록_정보(새로운역_생성_아이디, 상행역_생성_아이디, 5);
 
-        //when
+        // when
+        // 새로운역_상행_종점으로_등록_요청
+        ExtractableResponse<Response> 노선_구간_등록_응답 = 노선_구간_등록_요청(노선_생성_아이디, 상행_종점_구간_등록_정보);
 
-        //then
-
+        // then
+        지하철_노선에_지하철역_등록됨(노선_구간_등록_응답);
+        새로운역_상행_종점으로_등록됨(노선_구간_등록_응답, 새로운역_생성_아이디);
     }
 
     @DisplayName("새로운 역을 하행 종점으로 등록 요청")
     @Test
     void addEndDownStation() {
-        //given
+        // given
+        // 지하철_노선_등록_되어_있음
+        Long 상행역_생성_아이디 = 지하철역_생성_및_아이디_반환("화곡역");
+        Long 하행역_생성_아이디 = 지하철역_생성_및_아이디_반환("목동역");
+        Long 노선_생성_아이디 = 지하철_노선_생성_및_아이디_반환("신분당선", "red",
+            상행역_생성_아이디, 하행역_생성_아이디, 10);
+        Long 새로운역_생성_아이디 = 지하철역_생성_및_아이디_반환("까치산역");
+        SectionRequest 하행_종점_구간_등록_정보 = 구간_요청_등록_정보(새로운역_생성_아이디, 상행역_생성_아이디, 5);
 
-        //when
+        // when
+        // 지하철_노선에_지하철_구간_등록_요청
+        ExtractableResponse<Response> 노선_구간_등록_응답 = 노선_구간_등록_요청(노선_생성_아이디, 하행_종점_구간_등록_정보);
 
-        //then
+        // then
+        지하철_노선에_지하철역_등록됨(노선_구간_등록_응답);
+        새로운역_하행_종점으로_등록됨(노선_구간_등록_응답, 새로운역_생성_아이디);
 
     }
 
-    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크면 등록 할 수 없음")
     @Test
-    void addInvalidDistance() {
-        //given
+    void invalidAddFatherThanDistance() {
+        // given
+        // 지하철_노선_등록_되어_있음
+        Long 상행역_생성_아이디 = 지하철역_생성_및_아이디_반환("화곡역");
+        Long 하행역_생성_아이디 = 지하철역_생성_및_아이디_반환("목동역");
+        Long 노선_생성_아이디 = 지하철_노선_생성_및_아이디_반환("신분당선", "red",
+            상행역_생성_아이디, 하행역_생성_아이디, 10);
+        Long 새로운역_생성_아이디 = 지하철역_생성_및_아이디_반환("까치산역");
+        SectionRequest 기존_역_사이_거리보다_큰_구간_등록_정보 = 구간_요청_등록_정보(상행역_생성_아이디, 새로운역_생성_아이디, 15);
 
-        //when
+        // when
+        // 기존_역_사이_거리보다_클_경우
+        ExtractableResponse<Response> 노선_구간_등록_응답 = 노선_구간_등록_요청(노선_생성_아이디, 기존_역_사이_거리보다_큰_구간_등록_정보);
 
-        //then
+        // then
+        지하철_노선_등록_실패됨(노선_구간_등록_응답);
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이와 같을 경우 등록 할 수 없음")
+    @Test
+    void invalidAddSameDistance() {
+        // given
+        // 지하철_노선_등록_되어_있음
+        Long 상행역_생성_아이디 = 지하철역_생성_및_아이디_반환("화곡역");
+        Long 하행역_생성_아이디 = 지하철역_생성_및_아이디_반환("목동역");
+        Long 노선_생성_아이디 = 지하철_노선_생성_및_아이디_반환("신분당선", "red",
+            상행역_생성_아이디, 하행역_생성_아이디, 10);
+        Long 새로운역_생성_아이디 = 지하철역_생성_및_아이디_반환("까치산역");
+        SectionRequest 기존_역_사이_거리와_같은_구간_등록_정보 = 구간_요청_등록_정보(상행역_생성_아이디, 새로운역_생성_아이디, 3);
+
+        // when
+        // 기존역_사이_거리와_같은_경우
+        ExtractableResponse<Response> 노선_구간_등록_응답 = 노선_구간_등록_요청(노선_생성_아이디, 기존_역_사이_거리와_같은_구간_등록_정보);
+
+        // then
+        지하철_노선_등록_실패됨(노선_구간_등록_응답);
 
     }
 
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test
-    void addInvalidContainsStations() {
-        //given
-
-        //when
+    void invalidAddContainsStation() {
+        // given
+        // 지하철_노선_등록_되어_있음
+        Long 상행역_생성_아이디 = 지하철역_생성_및_아이디_반환("화곡역");
+        Long 하행역_생성_아이디 = 지하철역_생성_및_아이디_반환("목동역");
+        Long 노선_생성_아이디 = 지하철_노선_생성_및_아이디_반환("신분당선", "red",
+            상행역_생성_아이디, 하행역_생성_아이디, 10);
+        SectionRequest 이미_등록되어_있는_구간_정보 = 구간_요청_등록_정보(상행역_생성_아이디, 하행역_생성_아이디, 3);
+        // when
+        // 지하철_노선에_지하철_구간_등록_요청
+        ExtractableResponse<Response> 노선_구간_등록_응답 = 노선_구간_등록_요청(노선_생성_아이디, 이미_등록되어_있는_구간_정보);
 
         //then
-
+        지하철_노선_등록_실패됨(노선_구간_등록_응답);
     }
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
     @Test
-    void addInvalidNotNotExistsStations() {
-        //given
+    void invalidAddNotExistsStations() {
+        // given
+        // 지하철_노선_등록_되어_있음
+        Long 상행역_생성_아이디 = 지하철역_생성_및_아이디_반환("화곡역");
+        Long 하행역_생성_아이디 = 지하철역_생성_및_아이디_반환("목동역");
+        Long 노선_생성_아이디 = 지하철_노선_생성_및_아이디_반환("신분당선", "red",
+            상행역_생성_아이디, 하행역_생성_아이디, 10);
+        Long 새로운_상행역_생성_아이디 = 지하철역_생성_및_아이디_반환("까치산역");
+        Long 새로운_하행역_생성_아이디 = 지하철역_생성_및_아이디_반환("마곡역");
+        SectionRequest 기존_역에_포함되지_않는_구간_정보 = 구간_요청_등록_정보(새로운_상행역_생성_아이디, 새로운_하행역_생성_아이디, 3);
 
-        //when
+        // when
+        // 상행역_하행역_모두_포함하지_않는_구간_등록_요청
+        ExtractableResponse<Response> 노선_구간_등록_응답 = 노선_구간_등록_요청(노선_생성_아이디, 기존_역에_포함되지_않는_구간_정보);
 
-        //then
-
+        // then
+        지하철_노선_등록_실패됨(노선_구간_등록_응답);
     }
 }
