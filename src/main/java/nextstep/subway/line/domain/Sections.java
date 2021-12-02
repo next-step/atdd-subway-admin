@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.application.exception.InvalidSectionException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.Embeddable;
@@ -81,7 +82,7 @@ public class Sections {
 
     public void remove(Station station) {
         if (sections.size() == MIN_SECTION_SIZE) {
-            throw error(NOT_DELETE_MIN_SECTION_SIZE);
+            throw InvalidSectionException.error(NOT_DELETE_MIN_SECTION_SIZE);
         }
 
         removeUpSection(station);
@@ -101,7 +102,7 @@ public class Sections {
                 .findFirst()
                 .ifPresent(preSection -> {
                     preSection.mergeDistance(preSection.getDistance());
-                    preSection.changeDownStationLink(preSection.getDownStation());
+                    preSection.changeDownStationLink(deleteSection.getDownStation());
                 });
         sections.remove(deleteSection);
     }

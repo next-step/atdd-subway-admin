@@ -242,7 +242,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_삭제_요청(createdLineUri, emptyId);
 
         // then
-        지하철_구간_삭제_실패됨(response);
+        지하철_구간_삭제_실패됨(response, NOT_FOUND.value());
     }
 
     @Test
@@ -259,6 +259,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_삭제_요청(createdLineUri, downStations.get("강남"));
 
         // then
-        지하철_구간_삭제_실패됨(response);
+        지하철_구간_삭제_실패됨(response, BAD_REQUEST.value());
     }
 }

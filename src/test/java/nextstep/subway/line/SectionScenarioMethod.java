@@ -14,7 +14,8 @@ import java.util.stream.Collectors;
 import static nextstep.subway.line.LineScenarioMethod.지하철_노선_조회_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 class SectionScenarioMethod {
 
@@ -75,14 +76,13 @@ class SectionScenarioMethod {
         assertThat(response.statusCode()).isEqualTo(NO_CONTENT.value());
     }
 
-    public static void 지하철_구간_삭제_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(NOT_FOUND.value());
+    public static void 지하철_구간_삭제_실패됨(ExtractableResponse<Response> response, int statusCode) {
+        assertThat(response.statusCode()).isEqualTo(statusCode);
     }
 
     public static void 지하철_구간_일치됨(String uri, String upStation, String downStation, int distance) {
         ExtractableResponse<Response> response = 지하철_구간_조회_요청(uri);
-        List<SectionResponse> list = response.jsonPath().getList(".", SectionResponse.class);
-        assertThat(list)
+        assertThat(response.jsonPath().getList(".", SectionResponse.class))
                 .extracting("upStation.name", "downStation.name", "distance")
                 .contains(tuple(upStation, downStation, distance));
     }
