@@ -6,7 +6,8 @@ public enum Message {
     MESSAGE_ALREADY_REGISTERED_SECTION("이미 등록되어 있는 구간입니다."),
     MESSAGE_ONLY_ONE_SECTION("해당 라인에는 하나의 구간밖에 없습니다."),
     STATION_DUPLICATION("상행선과 하행선은 동일할 수 없습니다."),
-    SECTION_NOT_FOUND_EXCEPTION("해당_구간_영역이_존재하지 않습니다.");
+    SECTION_NOT_FOUND_EXCEPTION("해당_구간_영역이_존재하지 않습니다."),
+    STATION_NOTFOUND_EXCEPTION ("지하철역이 존재하지 않습니다.");
 
     private String message;
 
