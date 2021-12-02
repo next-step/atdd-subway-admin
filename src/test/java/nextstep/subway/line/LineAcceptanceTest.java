@@ -118,7 +118,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제됨(response);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest request) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest request) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
@@ -202,7 +202,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private LineRequest 신분당선_생성_파라미터(StationResponse upStationResponse, StationResponse downStationResponse) {
+    public static LineRequest 신분당선_생성_파라미터(StationResponse upStationResponse, StationResponse downStationResponse) {
         return new LineRequest("신분당선", "bg-red-600", upStationResponse.getId(), downStationResponse.getId(), 10);
     }
 

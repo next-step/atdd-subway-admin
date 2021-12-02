@@ -8,6 +8,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.exception.DuplicateLineNameException;
 import nextstep.subway.exception.NotFoundLineException;
 import nextstep.subway.exception.NotFoundStationException;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -80,5 +81,16 @@ public class LineService {
 
     public void deleteLineById(Long lineId) {
         lineRepository.deleteById(lineId);
+    }
+
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(lineId).orElseThrow(
+                () -> new NotFoundLineException(String.format("존재하지 않는 노선입니다.[lineId: %s]", lineId))
+        );
+
+        Station upStation = findStationById(sectionRequest.getUpStationId());
+        Station downStation = findStationById(sectionRequest.getDownStationId());
+
+        line.addSection(Section.of(upStation, downStation, sectionRequest.getDistance()));
     }
 }
