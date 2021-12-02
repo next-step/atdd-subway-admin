@@ -1,32 +1,18 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.line.LineFixture;
+import nextstep.subway.common.exception.NegativeNumberDistanceException;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("구간 도메인 관련 기능")
-@DataJpaTest
 class SectionTest {
-    @Autowired
-    private LineRepository lineRepository;
-
-    @Autowired
-    private StationRepository stationRepository;
-
-    @Autowired
-    private SectionRepository sectionRepository;
-
     private Station upStation;
     private Station downStation;
     private Line line;
@@ -34,10 +20,10 @@ class SectionTest {
 
     @BeforeEach
     void setUp() {
-        upStation = stationRepository.save(new Station("강남역"));
-        downStation = stationRepository.save(new Station("역삼역"));
-        line = lineRepository.save(LineFixture.of("2호선", "green", upStation, downStation, 9));
-        section = sectionRepository.save(Section.of(line, upStation, downStation, 9));
+        upStation = new Station("강남역");
+        downStation = new Station("역삼역");
+        line = new Line("2호선", "green", upStation, downStation, 9);
+        section = Section.of(line, upStation, downStation, 9);
     }
 
     @DisplayName("구간을 생성한다.")
@@ -45,7 +31,6 @@ class SectionTest {
     void createSection() {
         // then
         assertAll(
-                () -> assertThat(section.getId()).isNotNull(),
                 () -> assertThat(section.getLine()).isEqualTo(line),
                 () -> assertThat(section.getUpStation()).isEqualTo(upStation),
                 () -> assertThat(section.getDownStation()).isEqualTo(downStation),
@@ -53,23 +38,33 @@ class SectionTest {
         );
     }
 
-    @DisplayName("구간 노선을 변경한다.")
+    @DisplayName("상행역을 변경한다.")
     @Test
-    void updateSectionWithLine() {
+    void changeUpStation() {
         // when
-        final Line newLine = lineRepository.save(new Line("3호선", "orange"));
-        section.changeLine(newLine);
+        section.changeUpStation(new Station("신분당역"), 2);
 
         // then
-        assertAll(
-                () -> assertThat(section.getLine()).isEqualTo(newLine)
-        );
+        assertThat(section.getUpStation()).isEqualTo(new Station("신분당역"));
     }
 
-    @AfterEach
-    void tearDown() {
-        sectionRepository.flush();
-        lineRepository.flush();
-        stationRepository.flush();
+    @DisplayName("하행역을 변경한다.")
+    @Test
+    void changeDownStation() {
+        // when
+        section.changeDownStation(new Station("잠실역"), 3);
+
+        // then
+        assertThat(section.getDownStation()).isEqualTo(new Station("잠실역"));
+    }
+
+    @DisplayName("변경되는 거리가 기존의 거리보다 큰 경우 예외가 발생한다.")
+    @Test
+    void subtractDistanceException() {
+        assertThatThrownBy(() -> {
+           section.subtractDistance(9);
+
+        }).isInstanceOf(NegativeNumberDistanceException.class)
+        .hasMessageContaining("현재 계산된 거리 값이 음수입니다.");
     }
 }

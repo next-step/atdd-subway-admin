@@ -5,7 +5,6 @@ import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -14,58 +13,58 @@ public class Line extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
-    private String name;
+    @Embedded
+    private LineName name;
 
-    private String color;
+    @Embedded
+    private LineColor color;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
-    public Line() {
-    }
-
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
+    protected Line() {
     }
 
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
-        this.name = name;
-        this.color = color;
-        generateSections(upStation, downStation, distance);
+        this.name = new LineName(name);
+        this.color = new LineColor(color);
+        sections.addToSections(this, upStation, downStation, distance);
     }
 
-    private void generateSections(Station upStation, Station downStation, int distance) {
-        new Section(this, upStation, downStation, distance);
+    public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
+        return new Line(name, color, upStation, downStation, distance);
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        sections.addSection(this, upStation, downStation, distance);
     }
 
     public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
+        this.name = line.getLineName();
+        this.color = line.getLineColor();
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
+    public LineName getLineName() {
         return name;
     }
 
-    public String getColor() {
+    public LineColor getLineColor() {
         return color;
     }
 
-    public void clearSections() {
-        for (Section section: sections) {
-            section.toLine(null);
-        }
+    public String getName() {
+        return name.getName();
+    }
 
-        this.sections.clear();
+    public String getColor() {
+        return color.getColor();
     }
 }

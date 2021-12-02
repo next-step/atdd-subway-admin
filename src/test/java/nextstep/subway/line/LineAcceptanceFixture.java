@@ -3,17 +3,17 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.domain.Station;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-public class LineFixture {
-    private LineFixture() {
+public class LineAcceptanceFixture {
+    private LineAcceptanceFixture() {
     }
 
     public static Map<String, String> createParams(String name, String color) {
@@ -53,26 +53,6 @@ public class LineFixture {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> requestUpdateLine(Long id, String name, String color) {
-        Map<String, String> params = createParams(name, color);
-
-        return RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/" + id)
-                .then().log().all().extract();
-    }
-
-    public static ExtractableResponse<Response> requestUpdateLine(Long id, Map<String, String> params) {
-        return RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/" + id)
-                .then().log().all().extract();
-    }
-
     public static ExtractableResponse<Response> requestGetLines() {
         return RestAssured
                 .given().log().all()
@@ -98,14 +78,19 @@ public class LineFixture {
     }
 
     public static LineResponse ofLineResponse(ExtractableResponse<Response> createdResponse) {
-        return createdResponse.jsonPath().getObject(".", LineResponse.class);
+        return createdResponse.jsonPath()
+                .getObject(".", LineResponse.class);
     }
 
     public static List<LineResponse> ofLineResponses(ExtractableResponse<Response> response) {
-        return response.jsonPath().getList(".", LineResponse.class);
+        return response.jsonPath()
+                .getList(".", LineResponse.class);
     }
 
-    public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
-        return new Line(name, color, upStation, downStation, distance);
+    @SafeVarargs
+    public static List<LineResponse> ofLineResponses(ExtractableResponse<Response>... createdResponses) {
+        return Arrays.stream(createdResponses)
+                .map(LineAcceptanceFixture::ofLineResponse)
+                .collect(Collectors.toList());
     }
 }

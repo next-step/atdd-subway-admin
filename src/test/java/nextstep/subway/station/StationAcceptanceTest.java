@@ -19,7 +19,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = StationFixture.requestCreateStations("강남역");
+        ExtractableResponse<Response> response = StationAcceptanceFixture.requestCreateStations("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -30,10 +30,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        StationFixture.requestCreateStations("강남역");
+        StationAcceptanceFixture.requestCreateStations("강남역");
 
         // when
-        ExtractableResponse<Response> response = StationFixture.requestCreateStations("강남역");
+        ExtractableResponse<Response> response = StationAcceptanceFixture.requestCreateStations("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -43,18 +43,18 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = StationFixture.requestCreateStations("강남역");
-        ExtractableResponse<Response> createResponse2 = StationFixture.requestCreateStations("역삼역");
+        ExtractableResponse<Response> createResponse1 = StationAcceptanceFixture.requestCreateStations("강남역");
+        ExtractableResponse<Response> createResponse2 = StationAcceptanceFixture.requestCreateStations("역삼역");
 
         // when
-        ExtractableResponse<Response> response = StationFixture.requestGetStations();
+        ExtractableResponse<Response> response = StationAcceptanceFixture.requestGetStations();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = StationFixture.ofStationResponseIds(response);
+        List<Long> resultLineIds = StationAcceptanceFixture.ofStationResponseIds(response);
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -62,11 +62,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = StationFixture.requestCreateStations("강남역");
+        ExtractableResponse<Response> createResponse = StationAcceptanceFixture.requestCreateStations("강남역");
 
         // when
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = StationFixture.requestDeleteStations(uri);
+        ExtractableResponse<Response> response = StationAcceptanceFixture.requestDeleteStations(uri);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());

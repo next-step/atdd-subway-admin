@@ -11,14 +11,14 @@ public class Station extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
-    private String name;
+    @Embedded
+    private StationName name;
 
-    public Station() {
+    protected Station() {
     }
 
     public Station(String name) {
-        this.name = name;
+        this.name = new StationName(name);
     }
 
     public Long getId() {
@@ -26,19 +26,19 @@ public class Station extends BaseEntity {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Station)) return false;
         Station station = (Station) o;
-        return Objects.equals(id, station.id) && Objects.equals(name, station.name);
+        return Objects.equals(getName(), station.getName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(getName());
     }
 }
