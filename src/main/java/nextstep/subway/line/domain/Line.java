@@ -2,12 +2,11 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -17,9 +16,8 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
-    @OneToMany(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "line_id")
-    private List<Section> sections;
+    @Embedded
+    private final Sections sections = new Sections();
 
     public Line() {
     }
@@ -27,20 +25,6 @@ public class Line extends BaseEntity {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.sections = new ArrayList<>();
-    }
-
-    public Line update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
-        return this;
-    }
-
-    public void addSection(Section section) {
-        //TODO
-        if (sections.isEmpty()) {
-            sections.add(section);
-        }
     }
 
     public Long getId() {
@@ -55,22 +39,18 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public List<Long> getStations() {
+        return sections.getStations();
     }
 
-    public List<Long> getStations() {
-        List<Long> stations = new ArrayList<>();
-        if (Objects.isNull(sections) || sections.size() == 0) {
-            return stations;
-        }
+    public Line update(Line line) {
+        this.name = line.getName();
+        this.color = line.getColor();
+        return this;
+    }
 
-        stations.add(sections.get(0).getUpStationId());
-        stations.addAll(sections.stream()
-                .map(section -> section.getDownStationId())
-                .collect(Collectors.toList()));
-
-        return stations;
+    public void addSection(Section section) {
+        sections.addSection(section);
     }
 
     @Override

@@ -6,8 +6,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesResponse;
-import nextstep.subway.section.application.SectionService;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
@@ -20,19 +19,16 @@ import java.util.stream.Collectors;
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
-    private final SectionService sectionService;
     private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, SectionService sectionService, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
-        this.sectionService = sectionService;
         this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
-        Section section = sectionService.saveSection(request.toSectionRequest());
-        persistLine.addSection(section);
+        persistLine.addSection(request.toSectionRequest().toSection());
         return LineResponse.of(persistLine);
     }
 
@@ -63,4 +59,9 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
+    public LineResponse addSection(Long id, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(id).orElseThrow(NotFoundException::new);
+        line.addSection(sectionRequest.toSection());
+        return LineResponse.of(line);
+    }
 }
