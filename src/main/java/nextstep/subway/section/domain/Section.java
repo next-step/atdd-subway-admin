@@ -61,20 +61,6 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Section section = (Section) o;
-        return id.equals(section.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
-
     public boolean equalsUpStation(Section newSection) {
         return upStation.equals(newSection.getUpStation());
     }
@@ -104,4 +90,18 @@ public class Section extends BaseEntity {
     private boolean equalsCrossStation(Section newSection) {
         return upStation.equals(newSection.getDownStation()) || downStation.equals(newSection.getUpStation());
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return id.equals(section.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
 }

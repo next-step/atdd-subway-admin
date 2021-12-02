@@ -63,13 +63,6 @@ public class LineService {
         return LineResponse.of(line);
     }
 
-    private Line findById(Long id) {
-        return lineRepository.findById(id)
-                .orElseThrow(() ->
-                        new NullPointerException("라인이 없습니다.")
-                );
-    }
-
     @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
@@ -79,6 +72,13 @@ public class LineService {
         Line line = findById(lineId);
         toSection(line, sectionRequest);
         return LineResponse.of(line);
+    }
+
+    private Line findById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("라인이 없습니다.")
+                );
     }
 
     private Section toSection(Line line, SectionRequest sectionRequest) {

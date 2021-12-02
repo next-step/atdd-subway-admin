@@ -34,92 +34,95 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection() {
         //given
-        Map<String, String> params = SectionTestHelper.구간_생성_요청_파라미터("1","3","4");
+        Map<String, String> params = SectionTestHelper.구간_생성_요청_파라미터("1", "3", "4");
 
-        // when 지하철_노선에_지하철역_등록_요청
+        // when
         ExtractableResponse<Response> response = SectionTestHelper.구간_등록_요청(params);
 
-        // then 지하철_노선에_지하철역_등록됨
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(response.header("Location")).isNotBlank()
-        );
+        // then
+        지하철_노선에_지하철역_등록됨(response);
     }
 
     @DisplayName("새로운 역을 상행 종점으로 등록한다.")
     @Test
     void addAscendingStation() {
         //given
-        Map<String, String> params = SectionTestHelper.구간_생성_요청_파라미터("3","1","4");
+        Map<String, String> params = SectionTestHelper.구간_생성_요청_파라미터("3", "1", "4");
 
-        // when 지하철_노선에_지하철역_등록_요청
+        // when
         ExtractableResponse<Response> response = SectionTestHelper.구간_등록_요청(params);
 
-        // then 지하철_노선에_지하철역_등록됨
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(response.header("Location")).isNotBlank()
-        );
+        // then
+        지하철_노선에_지하철역_등록됨(response);
     }
 
     @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
     @Test
     void addDescendingStation() {
         //given
-        Map<String, String> params = SectionTestHelper.구간_생성_요청_파라미터("2","3","4");
+        Map<String, String> params = SectionTestHelper.구간_생성_요청_파라미터("2", "3", "4");
 
-        // when 지하철_노선에_지하철역_등록_요청
+        // when
         ExtractableResponse<Response> response = SectionTestHelper.구간_등록_요청(params);
 
-        // then 지하철_노선에_지하철역_등록됨
+        // then
+        지하철_노선에_지하철역_등록됨(response);
+    }
+
+    @DisplayName("기존 역 사이 길이보다 크거나 같으면 등록 할 수 없음")
+    @Test
+    void distanceErrorValid() {
+        // given
+        Map<String, String> params = SectionTestHelper.구간_생성_요청_파라미터("1", "3", "20");
+        params.put("upStationId", "1");
+        params.put("downStationId", "3");
+        params.put("distance", "20");
+
+        // when
+        ExtractableResponse<Response> response = SectionTestHelper.구간_등록_요청(params);
+
+        // then
+        지하철_노선에_지하철역_등록되지않음(response);
+    }
+
+    @DisplayName("이미 등록되어 있어서 등록 할 수 없음")
+    @Test
+    void alreadyAddedValid() {
+        // given
+        Map<String, String> params = SectionTestHelper.구간_생성_요청_파라미터("1", "2", "5");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "5");
+
+        // when
+        ExtractableResponse<Response> response = SectionTestHelper.구간_등록_요청(params);
+
+        // then
+        지하철_노선에_지하철역_등록되지않음(response);
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어 있지 않을때 ")
+    @Test
+    void validNotAdded() {
+        // given
+        Map<String, String> params = SectionTestHelper.구간_생성_요청_파라미터("4", "5", "5");
+
+        // when
+        ExtractableResponse<Response> response = SectionTestHelper.구간_등록_요청(params);
+
+        // then
+        지하철_노선에_지하철역_등록되지않음(response);
+    }
+
+    private void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
                 () -> assertThat(response.header("Location")).isNotBlank()
         );
     }
 
-    @DisplayName("기존 역 사이 길이보다 크거나 같으면 등록 할 수 없음")
-    @Test
-    void distanceErrorValid() {
-        //given
-        Map<String, String> params = SectionTestHelper.구간_생성_요청_파라미터("1","3","20");
-        params.put("upStationId", "1");
-        params.put("downStationId", "3");
-        params.put("distance", "20");
-
-        // when 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = SectionTestHelper.구간_등록_요청(params);
-
-        // then 지하철_노선에_지하철역_등록됨
+    private void 지하철_노선에_지하철역_등록되지않음(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("이미 등록되어 있어서 등록 할 수 없음")
-    @Test
-    void alreadyAddedValid() {
-        //given
-        Map<String, String> params = SectionTestHelper.구간_생성_요청_파라미터("1","2","5");
-        params.put("upStationId", "1");
-        params.put("downStationId", "2");
-        params.put("distance", "5");
-
-        // when 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = SectionTestHelper.구간_등록_요청(params);
-
-        // then 지하철_노선에_지하철역_등록됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어 있지 않을때 ")
-    @Test
-    void validNotAdded() {
-        //given
-        Map<String, String> params = SectionTestHelper.구간_생성_요청_파라미터("4","5","5");
-
-        // when 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = SectionTestHelper.구간_등록_요청(params);
-
-        // then 지하철_노선에_지하철역_등록됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
 }

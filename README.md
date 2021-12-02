@@ -152,3 +152,14 @@ host: localhost:52165
     * [x] 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
     * [x] 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
     * [x] 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
+
+### 피드백 공부 내용 정리
+* [질문답변링크](https://github.com/next-step/atdd-subway-admin/pull/536#issuecomment-984358858)
+* Exception Guide
+  * 참고자료 : https://cheese10yun.github.io/spring-guide-exception/#null
+  * Error Response 객체는 항상 동일한 Error Response를 가져야 합니다.
+* 외부에 도메인(엔티티)를 노출하면 안되는 이유 
+  * [링크](https://github.com/next-step/atdd-subway-admin/pull/536#discussion_r760711630)
+  * 참고자료 : https://tecoble.techcourse.co.kr/post/2021-04-25-dto-layer-scope/
+  
+## 4단계 - 구간 제거 기능
