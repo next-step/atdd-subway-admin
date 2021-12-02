@@ -1,10 +1,12 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.line.application.dto.AddSectionRequest;
 import nextstep.subway.line.application.dto.LineUpdateRequest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.exception.ExistDuplicatedNameException;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -13,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,11 +31,18 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = findStation(request.getUpStationId());
-        Station downStation = findStation(request.getDownStationId());
+        validateSaveLine(request.getName());
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
 
         Line persistLine = lineRepository.save(requestToLIne(request, upStation, downStation));
         return lineToResponse(persistLine);
+    }
+
+    private void validateSaveLine(String name) {
+        if (lineRepository.existsByName(name)) {
+            throw new ExistDuplicatedNameException(String.format("노선 이름이 이미 존재합니다.[%s]", name));
+        }
     }
 
     public List<LineResponse> findLines() {
@@ -45,18 +53,14 @@ public class LineService {
     }
 
     public LineResponse findLine(Long lineId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() ->
-                        new EntityNotFoundException("노선이 존재하지 않습니다."));
+        Line line = findLineById(lineId);
 
         return lineToResponse(line);
     }
 
     @Transactional
     public LineResponse update(LineUpdateRequest lineUpdateRequest) {
-        Line line = lineRepository.findById(lineUpdateRequest.getId())
-                .orElseThrow(() ->
-                        new EntityNotFoundException("노선이 존재하지 않습니다."));
+        Line line = findLineById(lineUpdateRequest.getId());
         line.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
 
         return lineToResponse(line);
@@ -67,9 +71,24 @@ public class LineService {
         lineRepository.deleteById(lineId);
     }
 
-    private Station findStation(Long id) {
+    @Transactional
+    public Section addSection(AddSectionRequest addSectionRequest) {
+        Line line = findLineById(addSectionRequest.getLineId());
+        Station upStation = findStationById(addSectionRequest.getUpStationId());
+        Station downStation = findStationById(addSectionRequest.getDownStationId());
+        Section section = new Section(upStation, downStation, addSectionRequest.getDistance(), line);
+        line.addSection(section);
+        return section;
+    }
+
+    private Line findLineById(Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new EntityNotFoundException("노선이 존재하지 않습니다."));
+    }
+
+    private Station findStationById(Long id) {
         return stationRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException());
+                .orElseThrow(() -> new EntityNotFoundException("역이 존재하지 않습니다."));
     }
 
     private Line requestToLIne(LineRequest request, Station upStation, Station downStation) {
@@ -81,12 +100,9 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        List<StationResponse> stationResponses = new LinkedList<>();
-        line.getSections()
-                .forEach(section -> {
-                    stationResponses.add(StationResponse.of(section.getUpStation()));
-                    stationResponses.add(StationResponse.of(section.getDownStation()));
-                });
-        return stationResponses;
+        return line.getSections().getStations()
+                .stream()
+                .map(station -> StationResponse.of(station))
+                .collect(Collectors.toList());
     }
 }

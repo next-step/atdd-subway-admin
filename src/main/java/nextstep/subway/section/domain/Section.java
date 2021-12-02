@@ -7,7 +7,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 
 @Entity
-public class Section extends BaseEntity {
+public class Section extends BaseEntity implements Comparable<Section> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,8 +20,7 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    @Column(nullable = false)
-    private int distance;
+    private Distance distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
@@ -33,12 +32,16 @@ public class Section extends BaseEntity {
     public Section(Station upStation, Station downStation, int distance, Line line) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
         this.line = line;
     }
 
     public Section(Station upStation, Station downStation, int distance) {
         this(upStation, downStation, distance, null);
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Station getUpStation() {
@@ -49,14 +52,44 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public void setLine(Line line) {
-        isExistLine();
-        this.line = line;
+    public Distance getDistance() {
+        return distance;
     }
 
-    private void isExistLine() {
-        if (line != null) {
+    public int getDistanceValue() {
+        return distance.getValue();
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public void setLine(Line line) {
+        isExistLine(line);
+        this.line = line;
+        this.line.addSection(this);
+    }
+
+    public void update(Station upStation, Station downStation, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance.plus(distance);
+    }
+
+    private void isExistLine(Line line) {
+        if (this.line != null && !this.line.equals(line)) {
             line.removeSection(this);
         }
+    }
+
+    @Override
+    public int compareTo(Section o) {
+        if (downStation.equals(o.getUpStation())) {
+            return -1;
+        }
+        if (upStation.equals(o.getDownStation())) {
+            return 1;
+        }
+        return 0;
     }
 }

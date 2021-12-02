@@ -2,9 +2,9 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -38,8 +38,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
-        return sections.getSections();
+    public Sections getSections() {
+        return sections;
     }
 
     public void update(String name, String color) {
@@ -48,8 +48,12 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        sections.add(section);
-        section.setLine(this);
+        if (!sections.isContainsSection(section)) {
+            sections.add(section);
+        }
+        if (section.getLine() == null || !section.getLine().equals(this)) {
+            section.setLine(this);
+        }
     }
 
     public void removeSection(Section section) {

@@ -14,11 +14,7 @@ public class LineResponse {
     private LocalDateTime modifiedDate;
     private List<StationResponse> stations = new ArrayList<>();
 
-    public LineResponse() {
-    }
-
-    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
-        this(id, name, color, createdDate, modifiedDate, null);
+    protected LineResponse() {
     }
 
     public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<StationResponse> stations) {
