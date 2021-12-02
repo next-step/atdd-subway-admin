@@ -65,22 +65,22 @@ public class Sections {
         return stations;
     }
 
-    private void validateStation(List<Station> stations, Section addedSection) {
-        if (isContainsAllAddedSection(stations, addedSection)) {
+    private void validateStation(List<Station> stations, Section sectionToAdd) {
+        if (isContainsAllAddedSection(stations, sectionToAdd)) {
             throw new NotValidStationException("구간 추가할 역이 모두 노선에 포함되어 있습니다.");
         }
 
-        if (isNotContainsAllAddedSection(stations, addedSection)) {
+        if (isNotContainsAllAddedSection(stations, sectionToAdd)) {
             throw new NotValidStationException("구간 추가할 역 중 노선에 포함되는 역이 없습니다.");
         }
     }
 
-    private boolean isContainsAllAddedSection(List<Station> stations, Section addedSection) {
-        return stations.contains(addedSection.getUpStation()) && stations.contains(addedSection.getDownStation());
+    private boolean isContainsAllAddedSection(List<Station> stations, Section sectionToAdd) {
+        return stations.contains(sectionToAdd.getUpStation()) && stations.contains(sectionToAdd.getDownStation());
     }
 
-    private boolean isNotContainsAllAddedSection(List<Station> stations, Section addedSection) {
-        return !stations.isEmpty() && !stations.contains(addedSection.getUpStation()) && !stations.contains(addedSection.getDownStation());
+    private boolean isNotContainsAllAddedSection(List<Station> stations, Section sectionToAdd) {
+        return !stations.isEmpty() && !stations.contains(sectionToAdd.getUpStation()) && !stations.contains(sectionToAdd.getDownStation());
     }
 
     private void isBetweenStation(List<Station> stations, Section addedSection) {
