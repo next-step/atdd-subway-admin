@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,48 +50,8 @@ public class SectionsTest {
     }
     
     @Test
-    @DisplayName("구간 목록의 맨 앞에 구간이 추가되는지 확인")
-    void 구간_목록_맨_앞_구간_추가() {
-        // given
-        Station upStation = Station.from("서울대입구역");
-        Station downStation = Station.from("낙성대역");
-        Line line = Line.of("2호선", "초록색", upStation, downStation, 15);
-        
-        Sections sections = line.getSections();
-        
-        // when
-        Station firstUpStation = Station.from("봉천역");
-        Station firstDownStation = Station.from("서울대입구역");
-        Section firstSection = Section.of(line, firstUpStation, firstDownStation, 50);
-        sections.add(firstSection);
-        
-        // then
-        assertThat(sections.getStationAt(0)).isEqualTo(firstUpStation);
-    }
-    
-    @Test
-    @DisplayName("구간 목록의 맨 뒤에 구간이 추가되는지 확인")
-    void 구간_목록_맨_뒤_구간_추가() {
-        // given
-        Station upStation = Station.from("봉천역");
-        Station downStation = Station.from("서울대입구역");
-        Line line = Line.of("2호선", "초록색", upStation, downStation, 15);
-        
-        Sections sections = line.getSections();
-        
-        // when
-        Station lastUpStation = Station.from("서울대입구역");
-        Station lastDownStation = Station.from("낙성대역");
-        Section lastSection = Section.of(line, lastUpStation, lastDownStation, 50);
-        sections.add(lastSection);
-        
-        // then
-        assertThat(sections.getSectionAt(sections.count()-1)).isEqualTo(lastSection);
-    }
-    
-    @Test
-    @DisplayName("구간이 잘 정렬되는지 확인")
-    void 구간_목록_정렬_확인() {
+    @DisplayName("지하철역 목록을 순서대로 잘 조회하는지 확인")
+    void 지하철역_목록_조회() {
         // given
         Station secondUpStation = Station.from("봉천역");
         Station secondDownStation = Station.from("서울대입구역");
@@ -100,7 +59,6 @@ public class SectionsTest {
         
         Sections sections = line.getSections();
         
-        // when
         Station thirdUpStation = Station.from("서울대입구역");
         Station thirdDownStation = Station.from("낙성대역");
         Section thirdSection = Section.of(line, thirdUpStation, thirdDownStation, 20);
@@ -116,11 +74,8 @@ public class SectionsTest {
         Section fourthSection = Section.of(line, fourthUpStation, fourthDownStation, 50);
         sections.add(fourthSection);
         
-        // then
-        assertAll(
-                () -> assertThat(sections.getSectionAt(2)).isEqualTo(thirdSection),
-                () -> assertThat(sections.getSectionAt(3)).isEqualTo(fourthSection)
-                );
+        // when, then
+        assertThat(sections.getStations()).containsExactly(firstUpStation, firstDownStation, secondDownStation, thirdDownStation, fourthDownStation);
     }
     
 }
