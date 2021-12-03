@@ -6,11 +6,16 @@ import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +25,19 @@ import static org.hamcrest.Matchers.is;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    @Autowired
+    private StationRepository stationRepository;
+
+    @BeforeEach
+    void before() {
+        stationRepository.save(new Station(1L, "강남역"));
+        stationRepository.save(new Station(2L, "정자역"));
+        stationRepository.save(new Station(3L, "미금역"));
+        stationRepository.save(new Station(4L, "광교역"));
+        stationRepository.save(new Station(5L, "양재역"));
+        stationRepository.save(new Station(6L, "고속버스터미널역"));
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -73,8 +91,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_목록_응답됨
         assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.OK.value());
-        response.body("lines.name", hasItems("신분당선", "3호선"));
-
+        response.body("name", hasItems("신분당선", "3호선"));
+        response.body("stations.name", hasItems(Arrays.asList("강남역", "정자역"), Arrays.asList("양재역", "고속버스터미널역")));
         // 지하철_노선_목록_포함됨
         지하철_노선_목록_포함됨_검증(redLineResponse.header("Location"));
         지하철_노선_목록_포함됨_검증(orangeLineResponse.header("Location"));
@@ -149,6 +167,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "red");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
         return params;
     }
 
@@ -156,6 +176,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "3호선");
         params.put("color", "orange");
+        params.put("upStationId", "5");
+        params.put("downStationId", "6");
         return params;
     }
 

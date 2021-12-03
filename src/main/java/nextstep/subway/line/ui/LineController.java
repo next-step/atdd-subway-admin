@@ -17,10 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
+
     private final LineService lineService;
 
     public LineController(final LineService lineService) {
@@ -34,8 +36,8 @@ public class LineController {
     }
 
     @GetMapping
-    public ResponseEntity<LinesResponse> getLines() {
-        LinesResponse lines = lineService.getLines();
+    public ResponseEntity<List<LineResponse>> getLines() {
+        List<LineResponse> lines = lineService.getLines();
         return ResponseEntity.ok(lines);
     }
 

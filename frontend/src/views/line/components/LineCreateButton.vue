@@ -21,6 +21,7 @@
         <div class="d-flex">
           <v-select
               v-model="lineForm.upStationId"
+              :rules="rules.section.upStationId"
               class="pr-4"
               :items="allStationsView"
               label="상행 종점"
@@ -33,6 +34,7 @@
           <v-icon class="relative bottom-15">mdi-arrow-left-right-bold</v-icon>
           <v-select
               v-model="lineForm.downStationId"
+              :rules="rules.section.downStationId"
               class="pl-4"
               :items="allStationsView"
               label="하행 종점"
