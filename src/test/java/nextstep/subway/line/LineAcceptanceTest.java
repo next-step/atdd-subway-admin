@@ -4,7 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.exception.NotAcceptableApiException;
+import nextstep.subway.common.ErrorCode;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
@@ -26,7 +26,6 @@ import java.util.NoSuchElementException;
 import static nextstep.subway.section.SectionAcceptanceTest.지하철_구간_추가_요청;
 import static nextstep.subway.station.StationAcceptanceTest.지하철_역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -139,7 +138,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_제거됨(response);
     }
 
-    @DisplayName("노선의 구간을 제거한다. - 상행 종점을 제거하면 해당 구간의 하행 역이 종점이 된다.")
+    @DisplayName("지하철 노선의 구간을 제거한다. - 상행 종점을 제거하면 해당 구간의 하행 역이 종점이 된다.")
     @Test
     void deleteSection_ascendingEndPoint() {
         // given
@@ -161,7 +160,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(newAscendingEndPointId).isEqualTo(양재역_ID);
     }
 
-    @DisplayName("노선의 구간을 제거한다. - 하행 종점을 제거하면 해당 구간의 상행 역이 종점이 된다.")
+    @DisplayName("지하철 노선의 구간을 제거한다. - 하행 종점을 제거하면 해당 구간의 상행 역이 종점이 된다.")
     @Test
     void deleteSection_descendingEndpoint() {
         // given
@@ -179,11 +178,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> 노선_구간_제거후_신분당선_조회_응답 = 지하철_노선_조회_요청(신분당선_ID);
-        long newAscendingEndPointId = 노선_구간_제거후_신분당선_조회_응답.jsonPath().getInt("stations[2].id");
+        long newAscendingEndPointId = 노선_구간_제거후_신분당선_조회_응답.jsonPath().getInt("stations[1].id");
         assertThat(newAscendingEndPointId).isEqualTo(양재역_ID);
     }
 
-    @DisplayName("노선의 구간을 제거한다. - 중간역이 제거될 경우 구간을 재배치 한다.")
+    @DisplayName("지하철 노선의 구간을 제거한다. - 중간역이 제거될 경우 구간을 재배치 한다.")
     @Test
     void deleteSection_betweenStation() {
         // given
@@ -202,7 +201,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(section.getDistance()).isEqualTo(distance);
     }
 
-    @DisplayName("노선의 구간을 제거한다. - 노선에 등록되어있지 않은 역은 제거할 수 없다.")
+    @DisplayName("지하철 노선의 구간을 제거한다. - 노선에 등록되어있지 않은 역은 제거할 수 없다.")
     @Test
     void deleteSection_notExistStation() {
         // given
@@ -216,21 +215,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 판교역_생성_응답 = 지하철_역_생성_요청("판교역");
         long 판교역_ID = 역_ID(판교역_생성_응답);
 
-        // when & then
-        assertThatExceptionOfType(NotAcceptableApiException.class)
-                .isThrownBy(() -> 지하철_노선_구간_제거_요청(신분당선_ID, 판교역_ID));
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_제거_요청(신분당선_ID, 판교역_ID);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value())
+                , () -> assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.NOT_REGISTERED_STATION_TO_LINE.getMessage())
+        );
     }
 
-    @DisplayName("노선의 구간을 제거한다. - 구간이 하나인 노선에서 마지막 구간은 제거할 수 없다.")
+    @DisplayName("지하철 노선의 구간을 제거한다. - 구간이 하나인 노선에서 마지막 구간은 제거할 수 없다.")
     @Test
     void deleteSection_onlyOneSection() {
         // given
         ExtractableResponse<Response> 신분당선_생성_응답 = 지하철_노선_생성_요청("신분당선", "red", 강남역_ID, 광교역_ID, distance);
         long 신분당선_ID = 노선_ID(신분당선_생성_응답);
 
-        // when & then
-        assertThatExceptionOfType(NotAcceptableApiException.class)
-                .isThrownBy(() -> 지하철_노선_구간_제거_요청(신분당선_ID, 강남역_ID));
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_제거_요청(신분당선_ID, 강남역_ID);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value())
+                , () -> assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.CAN_NOT_DELETE_SECTION.getMessage())
+        );
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId, int distance) {
@@ -325,8 +334,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("name", String.class).containsAll(names)).isTrue();
     }
 
-    private void 지하철_노선_구간_제거_요청(long lineId, long ascendingEndPointId) {
-        RestAssured.given().log().all()
+    private ExtractableResponse<Response> 지하철_노선_구간_제거_요청(long lineId, long ascendingEndPointId) {
+        return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .pathParam("lineId", lineId)
                 .queryParam("stationId", ascendingEndPointId)

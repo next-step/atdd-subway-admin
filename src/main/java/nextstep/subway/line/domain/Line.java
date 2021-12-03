@@ -1,6 +1,8 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.common.ErrorCode;
+import nextstep.subway.exception.NotAcceptableApiException;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
@@ -13,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -88,6 +91,63 @@ public class Line extends BaseEntity {
 
     public List<Section> getSections() {
         return sections.getSections();
+    }
+
+    public void deleteStation(Station station) {
+        validateDeleteStation(station);
+
+        if (deleteFirstStation(station)) {
+            return;
+        }
+        if (deleteLastStation(station)) {
+            return;
+        }
+        deleteBetweenStation(station);
+    }
+
+    public void validateDeleteStation(Station station) {
+        if (!hasDeletableSection()) {
+            throw new NotAcceptableApiException(ErrorCode.CAN_NOT_DELETE_SECTION);
+        }
+        if (!getOrderedStations().contains(station)) {
+            throw new NotAcceptableApiException(ErrorCode.NOT_REGISTERED_STATION_TO_LINE);
+        }
+    }
+
+    private boolean hasDeletableSection() {
+        return getSections().size() > 1;
+    }
+
+    private boolean deleteFirstStation(Station station) {
+        Section firstSection = sections.getFirstSection();
+        if (firstSection.getUpStation().equals(station)) {
+            sections.getSections().remove(firstSection);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean deleteLastStation(Station station) {
+        Section lastSection = sections.getLastSection();
+        if (lastSection.getDownStation().equals(station)) {
+            sections.getSections().remove(lastSection);
+            return true;
+        }
+        return false;
+    }
+
+    private void deleteBetweenStation(Station station) {
+        Section oldSection = sections.getOldSectionByDownStation(station);
+        Section nextOldSection = sections.getOldSectionByUpStation(station);
+
+        Section newSection = Section.of(
+                this
+                , oldSection.getUpStation()
+                , nextOldSection.getDownStation()
+                , oldSection.getDistance() + nextOldSection.getDistance());
+
+        sections.getSections().removeAll(Arrays.asList(oldSection, nextOldSection));
+        sections.addSection(newSection);
     }
 
     @Override

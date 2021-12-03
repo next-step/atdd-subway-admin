@@ -13,8 +13,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -43,22 +43,47 @@ public class Sections {
     }
 
     public Section getFirstSection() {
-        List<Station> upStations = new ArrayList<>();
-        List<Station> downStations = new ArrayList<>();
-        for (Section section : sections) {
-            upStations.add(section.getUpStation());
-            downStations.add(section.getDownStation());
-        }
+        List<Station> upStations = getUpStations();
+        List<Station> downStations = getDownStations();
+
         upStations.removeAll(downStations);
         Station firstUpStation = upStations.get(0);
         return getSectionByUpStation(firstUpStation);
     }
 
+    public Section getLastSection() {
+        List<Station> upStations = getUpStations();
+        List<Station> downStations = getDownStations();
+
+        downStations.removeAll(upStations);
+        Station lastDownStation = downStations.get(downStations.size() - 1);
+        return getSectionByDownStation(lastDownStation);
+    }
+
+    private List<Station> getUpStations() {
+        return sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+    }
+
+    private List<Station> getDownStations() {
+        return sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+    }
+
     private Section getSectionByUpStation(Station upStation) {
         return sections.stream()
-                .filter(section -> Objects.equals(section.getUpStation().getId(), upStation.getId()))
+                .filter(section -> section.getUpStation().equals(upStation))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException(String.format("%s (stationId: %s)", NOT_EXIST_STATION, upStation.getId())));
+    }
+
+    private Section getSectionByDownStation(Station downStation) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(downStation))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException(String.format("%s (stationId: %s)", NOT_EXIST_STATION, downStation.getId())));
     }
 
     private boolean isInsertBetweenSection(Section section) {
@@ -133,7 +158,7 @@ public class Sections {
                 .anyMatch(section -> section.isEqualUpStation(station));
     }
 
-    private Section getOldSectionByUpStation(Station station) {
+    public Section getOldSectionByUpStation(Station station) {
         return sections.stream()
                 .filter(section -> section.isEqualUpStation(station))
                 .findFirst()
@@ -145,7 +170,7 @@ public class Sections {
                 .anyMatch(section -> section.isEqualDownStation(station));
     }
 
-    private Section getOldSectionByDownStation(Station station) {
+    public Section getOldSectionByDownStation(Station station) {
         return sections.stream()
                 .filter(section -> section.isEqualDownStation(station))
                 .findFirst()

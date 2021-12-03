@@ -65,8 +65,10 @@ public class LineService {
         return line.addSection(upStation, downStation, sectionRequest.getDistance());
     }
 
-    public void deleteSection(Long lineId, String stationId) {
-        // TODO: 구간 삭제하기 구현
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = findById(lineId);
+        Station station = stationService.findStation(stationId);
+        line.deleteStation(station);
     }
 
     private Line findById(Long lineId) {
