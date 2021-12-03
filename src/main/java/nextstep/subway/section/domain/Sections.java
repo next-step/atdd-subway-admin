@@ -56,7 +56,7 @@ public class Sections {
             throw new IllegalArgumentException(SECTION_NOT_EXIST_MESSAGE);
         }
 
-        addSectionIfSum(station);
+        addSectionIf(station);
         return removeSection(station);
     }
 
@@ -77,11 +77,11 @@ public class Sections {
             return this.sections.addAll(divideBySections);
     }
 
-    private void addSectionIfSum(Station station) {
-        List<Section> sections = findSections(s -> s.matchDownStation(station) || s.matchUpStation(station));
+    private void addSectionIf(Station station) {
+        List<Section> sections = findSections(s -> s.matchAnyStation(station));
         if(sections.size() >= 2) {
             sections.stream()
-                    .reduce((a, b) -> a.sumBySection(b))
+                    .reduce((a, b) -> a.addBySection(b))
                     .ifPresent(s -> this.sections.add(s));
         }
     }
@@ -92,7 +92,7 @@ public class Sections {
     }
 
     private boolean removeSection(Station station) {
-        return this.sections.removeIf(s -> s.matchDownStation(station) || s.matchUpStation(station));
+        return this.sections.removeIf(s -> s.matchAnyStation(station));
     }
 
     private Optional<Section> matchStation(Section section) {
