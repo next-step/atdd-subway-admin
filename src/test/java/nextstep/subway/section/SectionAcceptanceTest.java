@@ -124,6 +124,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @DisplayName("구간이 하나 일땐 제거 안됨")
+    @Test
+    void validSize() {
+        Map<String, String> params = SectionTestHelper.구간_제거_요청_파라미터("1");
+
+        // when
+        ExtractableResponse<Response> response = SectionTestHelper.구간_제거_요청(params);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
