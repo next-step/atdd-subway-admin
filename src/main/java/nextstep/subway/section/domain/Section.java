@@ -17,15 +17,15 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
     private Line line;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_up_station_to_line"))
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_down_station_to_line"))
     private Station downStation;
 
