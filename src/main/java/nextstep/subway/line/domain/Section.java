@@ -1,6 +1,5 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.Exception.CannotUpdateSectionException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -20,17 +19,17 @@ public class Section {
     @ManyToOne
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
-
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public Station getUpStation() {
@@ -42,7 +41,7 @@ public class Section {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.getDistance();
     }
 
     public boolean equalUpStation(Station station) {
@@ -54,18 +53,16 @@ public class Section {
     }
 
     public void updateUpStation(Station downStation, int distance) {
-        if (this.distance <= distance) {
-            throw new CannotUpdateSectionException("역과 역 사이의 거리보다 좁은 거리를 입력해주세요");
+        if (this.distance.isGreaterThan(distance)) {
+            this.upStation = downStation;
+            this.distance.minus(distance);
         }
-        this.upStation = downStation;
-        this.distance -= distance;
     }
 
     public void updateDownStation(Station upStation, int distance) {
-        if (this.distance <= distance) {
-            throw new CannotUpdateSectionException("역과 역 사이의 거리보다 좁은 거리를 입력해주세요");
+        if (this.distance.isGreaterThan(distance)) {
+            this.downStation = upStation;
+            this.distance.minus(distance);
         }
-        this.downStation = upStation;
-        this.distance -= distance;
     }
 }

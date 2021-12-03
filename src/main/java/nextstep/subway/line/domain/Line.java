@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.Exception.CannotUpdateSectionException;
+import nextstep.subway.Exception.NotFoundException;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
@@ -17,8 +18,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -66,7 +67,11 @@ public class Line extends BaseEntity {
     }
 
     private Station findFirstStation() {
-        Station station = sections.get(0).getUpStation();
+        if(sections.getSections().isEmpty()) {
+            throw new NotFoundException("지하철 구간이 등록되지 않았습니다.");
+        }
+
+        Station station = sections.getUpStation();
         while (isExistPreSection(station)) {
             Section section = findPreSection(station);
             station = section.getUpStation();
@@ -75,32 +80,24 @@ public class Line extends BaseEntity {
     }
 
     private boolean isExistPreSection(Station station) {
-        return sections.stream()
-                .anyMatch(section -> section.equalDownStation(station));
+        return sections.isExistPreSection(station);
     }
 
     private Section findPreSection(Station station) {
-        return sections.stream()
-                .filter(section -> section.equalDownStation(station))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("이전 구간이 없습니다."));
+        return sections.findPreSection(station);
     }
 
     private boolean isExistNextSection(Station station) {
-        return sections.stream()
-                .anyMatch(section -> section.equalUpStation(station));
+        return sections.isExistNextSection(station);
     }
 
     private Section findNextSection(Station station) {
-        return sections.stream()
-                .filter(section -> section.equalUpStation(station))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("다음 구간이 없습니다."));
+        return sections.findNextSection(station);
     }
 
     public void addLineSection(Station upStation, Station downStation, int distance) {
-        boolean existUpStation = getStations().stream().anyMatch(it -> it.equals(upStation));
-        boolean existDownStation = getStations().stream().anyMatch(it -> it.equals(downStation));
+        boolean existUpStation = isExisted(upStation);
+        boolean existDownStation = isExisted(downStation);
 
         validStation(existUpStation, existDownStation);
         if (existUpStation) {
@@ -112,18 +109,16 @@ public class Line extends BaseEntity {
         sections.add(new Section(this, upStation, downStation, distance));
     }
 
+    private boolean isExisted(Station station) {
+        return getStations().stream().anyMatch(it -> it.equals(station));
+    }
+
     private void updateDownStation(Station upStation, Station downStation, int distance) {
-        sections.stream()
-                .filter(it -> it.equalDownStation(downStation))
-                .findFirst()
-                .ifPresent(it -> it.updateDownStation(upStation, distance));
+        sections.updateDownStation(upStation, downStation, distance);
     }
 
     private void updateUpStation(Station upStation, Station downStation, int distance) {
-        sections.stream()
-                .filter(it -> it.equalUpStation(upStation))
-                .findFirst()
-                .ifPresent(it -> it.updateUpStation(downStation, distance));
+        sections.updateUpStation(upStation, downStation, distance);
     }
 
     private void validStation(boolean existUpStation, boolean existDownStation) {
@@ -136,6 +131,6 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 }
