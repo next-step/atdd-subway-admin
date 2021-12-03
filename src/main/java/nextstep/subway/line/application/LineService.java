@@ -38,11 +38,6 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    private Station findStationById(Long id) {
-        return stationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당되는 지하철이 없습니다."));
-    }
-
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
@@ -68,10 +63,23 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
+    @Transactional
     public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = findById(lineId);
         toSection(line, sectionRequest);
         return LineResponse.of(line);
+    }
+
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = findById(lineId);
+        Station station = findStationById(stationId);
+        line.removeSection(station);
+    }
+
+    private Station findStationById(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당되는 지하철이 없습니다."));
     }
 
     private Line findById(Long id) {

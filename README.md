@@ -169,7 +169,9 @@ host: localhost:52165
 * 예외상황 인수테스트 작성
   * [ ] 구간이 하나일때는 제거 할 수 없음
 * 기능 구현
-  * [ ] 노선의 구간을 제거하는 기능
-  * [ ] stationId으로 Section 2개를 찾는다.
-  * [ ] 찾은 Section에 upStation, downStation, distance를 하나로 합친다.
-  * [ ] 구간이 하나일때는 제거 할 수 없다
+  * [x] 노선의 구간을 제거하는 기능
+  * [X] station으로 Section 2개를 찾는다.
+  * [x] 라인 중간에 껴있는 구간을 제거하는 경우
+  * [x] 상행 또는 하행역이 포함된 구간을 제거하는 경우
+  * [x] 찾은 Section에 upStation, downStation, distance를 하나로 합친다.
+  * [x] 구간이 하나일때는 제거 할 수 없다

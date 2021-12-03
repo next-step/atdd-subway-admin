@@ -61,12 +61,12 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-    public boolean equalsUpStation(Section newSection) {
-        return upStation.equals(newSection.getUpStation());
+    public boolean equalsUpStation(Station upStation) {
+        return this.upStation.equals(upStation);
     }
 
-    public boolean equalsDownStation(Section newSection) {
-        return downStation.equals(newSection.getDownStation());
+    public boolean equalsDownStation(Station downStation) {
+        return this.downStation.equals(downStation);
     }
 
     public void updateUpSection(Section newSection) {
@@ -83,7 +83,7 @@ public class Section extends BaseEntity {
     }
 
     public boolean containsStation(Section newSection) {
-        return equalsUpStation(newSection) || equalsDownStation(newSection)
+        return equalsUpStation(newSection.getUpStation()) || equalsDownStation(newSection.getDownStation())
                 || equalsCrossStation(newSection);
     }
 
@@ -96,7 +96,7 @@ public class Section extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return id.equals(section.id);
+        return upStation.equals(section.getUpStation()) && downStation.equals(section.getDownStation());
     }
 
     @Override
@@ -104,4 +104,8 @@ public class Section extends BaseEntity {
         return Objects.hash(id);
     }
 
+    public void merge(Section mergeSection) {
+        this.downStation = mergeSection.getDownStation();
+        this.distance += mergeSection.getDistance();
+    }
 }

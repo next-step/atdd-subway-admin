@@ -37,11 +37,10 @@ public class SectionTestHelper {
 
     public static ExtractableResponse<Response> 구간_제거_요청(Map params) {
         return RestAssured.given().log().all()
-                .pathParam("lindId", "1")
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParam("lineId", "1")
+                .params(params)
                 .when()
-                .delete("lines/{lineId}/sections")
+                .delete("/lines/{lineId}/sections")
                 .then().log().all()
                 .extract();
     }
