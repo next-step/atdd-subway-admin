@@ -49,6 +49,13 @@ public class Section {
 		return new Section(upStation, downStation, distance);
 	}
 
+	public List<Station> getStations() {
+		List<Station> stations = new ArrayList<>();
+		stations.add(this.upStation);
+		stations.add(this.downStation);
+		return stations;
+	}
+
 	public void setLine(Line line) {
 		this.line = line;
 	}
@@ -67,6 +74,10 @@ public class Section {
 
 	public int getDistance() {
 		return distance;
+	}
+
+	public Line getLine() {
+		return this.line;
 	}
 
 	@Override
@@ -96,10 +107,4 @@ public class Section {
 		return result;
 	}
 
-	public List<Station> getStations() {
-		List<Station> stations = new ArrayList<>();
-		stations.add(this.upStation);
-		stations.add(this.downStation);
-		return stations;
-	}
 }

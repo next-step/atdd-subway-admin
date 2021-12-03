@@ -16,7 +16,7 @@ import javax.persistence.OneToMany;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line extends BaseEntity {
@@ -70,11 +70,10 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
-	public List<StationResponse> getStations() {
+	public List<Station> getStations() {
 		return sections.stream()
 			.map(Section::getStations)
 			.flatMap(Collection::stream)
-			.map(StationResponse::of)
 			.collect(Collectors.toList());
 	}
 
@@ -97,5 +96,9 @@ public class Line extends BaseEntity {
 		int result = id != null ? id.hashCode() : 0;
 		result = 31 * result + (name != null ? name.hashCode() : 0);
 		return result;
+	}
+
+	public List<Section> getSections() {
+		return this.sections;
 	}
 }
