@@ -89,12 +89,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
 
-        ExtractableResponse<Response> sectionsResponse = requestReadSections("/lines/" + 신분당선.getId() + "/sections");
+        ExtractableResponse<Response> sectionsResponse = requestReadURI("/lines/" + 신분당선.getId() + "/sections");
+        ExtractableResponse<Response> lineResponse = requestReadURI("/lines/" + 신분당선.getId());
         List<Integer> sectionDistances = getSection(sectionsResponse);
+        List<String> stations = getStations(lineResponse);
 
         // then 구간 길이별로 나눠짐
         assertResponseStatusAndLocation(response);
         assertThat(sectionDistances).containsAll(Arrays.asList(2, 8));
+        assertThat(stations).containsExactlyElementsOf(Arrays.asList("강남역", "판교역", "광교역"));
     }
 
     @DisplayName("역 사이에 상행역이 동일한 새로운 역을 등록한다.")
@@ -108,13 +111,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams.put("distance", 7 + "");
 
         ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
+        ExtractableResponse<Response> lineResponse = requestReadURI("/lines/" + 신분당선.getId());
 
-        ExtractableResponse<Response> sectionsResponse = requestReadSections("/lines/" + 신분당선.getId() + "/sections");
+        ExtractableResponse<Response> sectionsResponse = requestReadURI("/lines/" + 신분당선.getId() + "/sections");
         List<Integer> sectionDistances = getSection(sectionsResponse);
+        List<String> stations = getStations(lineResponse);
 
         // then 구간 길이별로 나눠짐
         assertResponseStatusAndLocation(response);
         assertThat(sectionDistances).containsAll(Arrays.asList(3, 7));
+        assertThat(stations).containsExactlyElementsOf(Arrays.asList("강남역", "판교역", "광교역"));
     }
 
     @DisplayName("새로운 역을 상행 종점으로 등록한다.")
@@ -128,13 +134,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams.put("distance", 7 + "");
 
         ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
+        ExtractableResponse<Response> lineResponse = requestReadURI("/lines/" + 신분당선.getId());
 
-        ExtractableResponse<Response> sectionsResponse = requestReadSections("/lines/" + 신분당선.getId() + "/sections");
+        ExtractableResponse<Response> sectionsResponse = requestReadURI("/lines/" + 신분당선.getId() + "/sections");
         List<Integer> sectionDistances = getSection(sectionsResponse);
+        List<String> stations = getStations(lineResponse);
 
         // then 구간 길이별로 나눠짐
         assertResponseStatusAndLocation(response);
         assertThat(sectionDistances).containsAll(Arrays.asList(10, 7));
+        assertThat(stations).containsExactlyElementsOf(Arrays.asList("양재역", "강남역", "광교역"));
     }
 
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
@@ -148,13 +157,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams.put("distance", 7 + "");
 
         ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
+        ExtractableResponse<Response> lineResponse = requestReadURI("/lines/" + 신분당선.getId());
 
-        ExtractableResponse<Response> sectionsResponse = requestReadSections("/lines/" + 신분당선.getId() + "/sections");
+        ExtractableResponse<Response> sectionsResponse = requestReadURI("/lines/" + 신분당선.getId() + "/sections");
         List<Integer> sectionDistances = getSection(sectionsResponse);
+        List<String> stations = getStations(lineResponse);
 
         // then 구간 길이별로 나눠짐
         assertResponseStatusAndLocation(response);
         assertThat(sectionDistances).containsAll(Arrays.asList(10, 7));
+        assertThat(stations).containsExactlyElementsOf(Arrays.asList("강남역", "광교역", "양재역"));
     }
 
     @DisplayName("새로운 구간의 길이가 기존 구간 사이 길이보다 크거나 같다")
@@ -210,7 +222,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    private ExtractableResponse<Response> requestReadSections(String uri) {
+    private ExtractableResponse<Response> requestReadURI(String uri) {
         return RestAssured.given().log().all()
                 .when()
                 .get(uri)
@@ -221,6 +233,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private List<Integer> getSection(ExtractableResponse<Response> response) {
         return response.jsonPath().getList(".", SectionResponse.class).stream()
                 .map(SectionResponse::getDistance)
+                .collect(Collectors.toList());
+    }
+
+    private List<String> getStations(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList("stations", StationResponse.class).stream()
+                .map(StationResponse::getName)
                 .collect(Collectors.toList());
     }
 }
