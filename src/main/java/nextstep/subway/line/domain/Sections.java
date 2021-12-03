@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import nextstep.subway.common.exception.InvalidDuplicatedSection;
 import nextstep.subway.common.exception.NotContainsStationException;
 import nextstep.subway.common.exception.NotFoundStationException;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
@@ -33,15 +34,15 @@ public class Sections {
         return sections;
     }
 
-    public void addToSections(Line line, Station upStation, Station downStation, int distance) {
-        sections.add(Section.of(line, upStation, downStation, distance));
+    public void addToSections(Line line, Station upStation, Station downStation, Distance distance) {
+        sections.add(new Section(line, upStation, downStation, distance));
     }
 
-    public void addSection(Line line, Station upStation, Station downStation, int distance) {
+    public void addSection(Line line, Station upStation, Station downStation, Distance distance) {
         validateSection(upStation, downStation);
 
-        changeUpSectionIfExist(upStation, downStation, distance);
-        changeDownSectionIfExist(downStation, upStation, distance);
+        changeUpStationIfExist(upStation, downStation, distance);
+        changeDownStationIfExist(downStation, upStation, distance);
 
         addToSections(line, upStation, downStation, distance);
     }
@@ -51,14 +52,14 @@ public class Sections {
         notContainsStationException(upStation, downStation);
     }
 
-    private void changeUpSectionIfExist(Station station, Station changeStation, int distance) {
+    private void changeUpStationIfExist(Station station, Station changeStation, Distance distance) {
         sections.stream()
                 .filter(section -> section.isSameUpStation(station))
                 .findAny()
                 .ifPresent(section -> section.changeUpStation(changeStation, distance));
     }
 
-    private void changeDownSectionIfExist(Station station, Station changeStation, int distance) {
+    private void changeDownStationIfExist(Station station, Station changeStation, Distance distance) {
         sections.stream()
                 .filter(section -> section.isSameDownStation(station))
                 .findAny()

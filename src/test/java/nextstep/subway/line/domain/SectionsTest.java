@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.exception.InvalidDuplicatedSection;
 import nextstep.subway.common.exception.NotContainsStationException;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +48,7 @@ class SectionsTest {
     @Test
     void addSection() {
         // when
-        this.sections.addSection(line, new Station("잠실역"), downStation, 5);
+        this.sections.addSection(line, new Station("잠실역"), downStation, new Distance(5));
 
         // then
         assertThat(sections.getSections().size()).isEqualTo(2);
@@ -57,7 +58,7 @@ class SectionsTest {
     @Test
     void sortSections() {
         // when
-        sections.addSection(line, new Station("강남역"), new Station("강남신사사이역"), 3);
+        sections.addSection(line, new Station("강남역"), new Station("강남신사사이역"), new Distance(3));
 
         // then
         assertThat(sections.getSortedStations()).containsAll(SectionsFixture.listOf("강남역", "강남신사사이역", "신사역"));
@@ -67,7 +68,7 @@ class SectionsTest {
     @Test
     void addSectionBothStationsException() {
         assertThatThrownBy(() -> {
-            this.sections.addSection(line, upStation, downStation, 5);
+            this.sections.addSection(line, upStation, downStation, new Distance(5));
 
         }).isInstanceOf(InvalidDuplicatedSection.class)
         .hasMessageContaining("현재 입력된 역들이 겹치는 구간입니다.");
@@ -77,7 +78,7 @@ class SectionsTest {
     @Test
     void addSectionNoStationsException() {
         assertThatThrownBy(() -> {
-            this.sections.addSection(line, new Station("새로운 역1"), new Station("새로운 역2"), 5);
+            this.sections.addSection(line, new Station("새로운 역1"), new Station("새로운 역2"), new Distance(5));
 
         }).isInstanceOf(NotContainsStationException.class)
         .hasMessageContaining("현재 입력된 역들이 노선에 존재하지 않습니다.");

@@ -35,7 +35,7 @@ class LineTest {
     @Test
     void updateLine() {
         // when
-        final Line updateLine = new Line("3호선", "orange", upStation, downStation, 9);
+        final Line updateLine = Line.of("3호선", "orange", upStation, downStation, 9);
         line.update(updateLine);
 
         // then

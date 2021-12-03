@@ -36,15 +36,15 @@ public class Section {
     protected Section() {
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    public Section(Line line, Station upStation, Station downStation, Distance distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = new Distance(distance);
+        this.distance = distance;
     }
 
     public static Section of(Line line, Station upStation, Station downStation, int distance) {
-        return new Section(line, upStation, downStation, distance);
+        return new Section(line, upStation, downStation, new Distance(distance));
     }
 
     public Long getId() {
@@ -67,18 +67,18 @@ public class Section {
         return distance.getDistance();
     }
 
-    public void changeUpStation(Station station, int distance) {
+    public void changeUpStation(Station station, Distance distance) {
         this.upStation = station;
         this.distance = subtractDistance(distance);
     }
 
-    public void changeDownStation(Station station, int distance) {
+    public void changeDownStation(Station station, Distance distance) {
         this.downStation = station;
         this.distance = subtractDistance(distance);
     }
 
-    public Distance subtractDistance(int distance) {
-        return this.distance.subtractDistance(new Distance(distance));
+    public Distance subtractDistance(Distance distance) {
+        return this.distance.subtractDistance(distance);
     }
 
     public boolean isSameUpStation(Station station) {

@@ -22,7 +22,7 @@ class SectionTest {
     void setUp() {
         upStation = new Station("강남역");
         downStation = new Station("역삼역");
-        line = new Line("2호선", "green", upStation, downStation, 9);
+        line = Line.of("2호선", "green", upStation, downStation, 9);
         section = Section.of(line, upStation, downStation, 9);
     }
 
@@ -42,7 +42,7 @@ class SectionTest {
     @Test
     void changeUpStation() {
         // when
-        section.changeUpStation(new Station("신분당역"), 2);
+        section.changeUpStation(new Station("신분당역"), new Distance(2));
 
         // then
         assertThat(section.getUpStation()).isEqualTo(new Station("신분당역"));
@@ -52,7 +52,7 @@ class SectionTest {
     @Test
     void changeDownStation() {
         // when
-        section.changeDownStation(new Station("잠실역"), 3);
+        section.changeDownStation(new Station("잠실역"), new Distance(3));
 
         // then
         assertThat(section.getDownStation()).isEqualTo(new Station("잠실역"));
@@ -62,7 +62,7 @@ class SectionTest {
     @Test
     void subtractDistanceException() {
         assertThatThrownBy(() -> {
-           section.subtractDistance(9);
+           section.subtractDistance(new Distance(9));
 
         }).isInstanceOf(NegativeNumberDistanceException.class)
         .hasMessageContaining("현재 계산된 거리 값이 음수입니다.");
