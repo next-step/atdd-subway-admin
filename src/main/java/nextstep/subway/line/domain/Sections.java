@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -77,18 +78,13 @@ public class Sections {
     }
     
     void remove(Station station) {
-        Section upSection = sections.stream()
-                            .filter(section -> section.getDownStation().equals(station))
-                            .findFirst()
-                            .get();
+        checkRemovableStation(station);
         
-        Section downSection = sections.stream()
-                            .filter(section -> section.getUpStation().equals(station))
-                            .findFirst()
-                            .get();
+        if (removeIfCombinableStation(station)) {
+            return;
+        }
         
-        upSection.combine(downSection);
-        sections.removeIf(section -> section.equals(downSection));
+        removeEdgeStation(station);
     }
     
     private boolean addIfSameUpStations(Section oldSection, Section newSection) {
@@ -146,6 +142,67 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("역이 연결되지 않았습니다."))
                 .getDownStation();
+    }
+    
+    private void checkRemovableStation(Station station) {
+        if (sections.size() <= 1) {
+            throw new IllegalArgumentException("구간은 하나이상 존재해야 합니다.");
+        }
+        
+        if (!getStations().contains(station)) {
+            throw new IllegalArgumentException("노선에 등록된 역만 제거할 수 있습니다.");
+        }
+    }
+    
+    private boolean removeIfCombinableStation(Station station) {
+        Optional<Section> upSection = sections.stream()
+                .filter(section -> station.isSameStation(section.getDownStation()))
+                .findFirst();
+
+        Optional<Section> downSection = sections.stream()
+                        .filter(section -> station.isSameStation(section.getUpStation()))
+                        .findFirst();
+        
+        if (upSection.isPresent() && downSection.isPresent()) {
+            upSection.get().combine(downSection.get());
+            sections.removeIf(section -> section.equals(downSection.get()));
+            return true;
+        }
+        return false;
+    }
+    
+    private void removeEdgeStation(Station station) {
+        if (removeIfFirstStation(station)) {
+            return;
+        }
+        
+        if (removeIfLastStation(station)) {
+            return;
+        }
+    }
+    
+    private boolean removeIfFirstStation(Station station) {
+        Optional<Section> firstSection = sections.stream()
+                .filter(section -> station.isSameStation(section.getUpStation()))
+                .findFirst();
+        
+        if (firstSection.isPresent()) {
+            sections.removeIf(section -> section.equals(firstSection.get()));
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean removeIfLastStation(Station station) {
+        Optional<Section> lastSection = sections.stream()
+                .filter(section -> station.isSameStation(section.getDownStation()))
+                .findFirst();
+        
+        if (lastSection.isPresent()) {
+            sections.removeIf(section -> section.equals(lastSection.get()));
+            return true;
+        }
+        return false;
     }
     
 
