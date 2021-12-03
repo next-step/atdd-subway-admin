@@ -100,12 +100,7 @@ public class Sections {
                 .filter(s -> Objects.equals(s.getUpStation(), tmp.getDownStation()))
                 .findFirst()
                 .orElse(null);
-            if (it != null) {
-                stationsInOrder.add(it.getUpStation());
-            }
-            if (it == null) {
-                stationsInOrder.add(tmp.getDownStation());
-            }
+            stationsInOrder.add(tmp.getDownStation());
         }
         return stationsInOrder;
     }
