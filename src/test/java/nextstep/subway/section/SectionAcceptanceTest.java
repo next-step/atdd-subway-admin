@@ -83,7 +83,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_추가_요청(DEFAULT_UP_STATION_ID, newStationId, FIRST_SECTION_DISTANCE);
 
         //then
-        구간_초과_에러_발생함(response);
+        잘못된_요청_응답됨(response, "구간 입력이 잘못되었습니다.");
     }
 
     @DisplayName("상행역, 하행역 모두 등록된 경우")
@@ -93,7 +93,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_추가_요청(DEFAULT_UP_STATION_ID, DEFAULT_DOWN_STATION_ID, DISTANCE);
 
         //then
-        상행역_하행역_모두_등록된_에러_발생함(response);
+        잘못된_요청_응답됨(response, "구간 추가할 역이 모두 노선에 포함되어 있습니다.");
     }
 
     @DisplayName("상행역, 하행역 모두 등록 안된 경우")
@@ -106,7 +106,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_추가_요청(newStationId, anotherStationId, DISTANCE);
 
         //then
-        상행역_하행역_모두_등록안된_에러_발생함(response);
+        잘못된_요청_응답됨(response, "구간 추가할 역 중 노선에 포함되는 역이 없습니다.");
     }
 
     private ExtractableResponse<Response> 지하철_구간_추가_요청(Long upStationId, Long downStationId, int distance) {
@@ -135,24 +135,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         }
     }
 
-    private void 구간_초과_에러_발생함(ExtractableResponse<Response> response) {
+    private void 잘못된_요청_응답됨(ExtractableResponse<Response> response, String expectedMessage) {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().asString()).isEqualTo("구간 입력이 잘못되었습니다.")
-        );
-    }
-
-    private void 상행역_하행역_모두_등록된_에러_발생함(ExtractableResponse<Response> response) {
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().asString()).isEqualTo("구간 추가할 역이 모두 노선에 포함되어 있습니다.")
-        );
-    }
-
-    private void 상행역_하행역_모두_등록안된_에러_발생함(ExtractableResponse<Response> response) {
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().asString()).isEqualTo("구간 추가할 역 중 노선에 포함되는 역이 없습니다.")
+                () -> assertThat(response.body().asString()).isEqualTo(expectedMessage)
         );
     }
 }
