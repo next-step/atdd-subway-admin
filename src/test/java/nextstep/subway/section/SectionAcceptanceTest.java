@@ -210,6 +210,38 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철역이_같은순서인지_확인한다(LineAcceptanceFixture.노선을_조회를_요청한다(lineResponse.getId()), 강남역, 역삼역);
     }
 
+    @DisplayName("노선에 등록되어있지 않은 역을 제거하려 한다.")
+    @Test
+    void removeUnRegisteredStationException() {
+        // given
+        // 지하철 역_생성
+        StationResponse 강남역삼사이역 = StationAcceptanceTest.지하철역을_생성한다("강남역삼사이역");
+        StationResponse 새로운역1 = StationAcceptanceTest.지하철역을_생성한다("새로운역1");
+        구간을_추가한다(lineResponse.getId(), 강남역삼사이역, 역삼역, 4);
+
+        // when
+        // 지하철_노선에_지하철역_삭제_요청
+        ExtractableResponse<Response> response = SectionAcceptanceFixture.구간_삭제를_요청한다(lineResponse.getId(), 새로운역1.getId());
+
+
+        // then
+        // 지하철_노선에_지하철역_삭제됨
+        같은_응답인지_확인한다(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @DisplayName("구간이 하나일 때 제거하려 한다.")
+    @Test
+    void removeLastSectionInLineException() {
+        // when
+        // 지하철_노선에_지하철역_삭제_요청
+        ExtractableResponse<Response> response = SectionAcceptanceFixture.구간_삭제를_요청한다(lineResponse.getId(), 강남역.getId());
+
+
+        // then
+        // 지하철_노선에_지하철역_삭제됨
+        같은_응답인지_확인한다(response, HttpStatus.BAD_REQUEST);
+    }
+
     private LineResponse 구간을_추가한다(Long lineId, StationResponse upStation, StationResponse downStation, int distance) {
         return LineAcceptanceFixture.ofLineResponse(
                 SectionAcceptanceFixture.구간_추가를_요청한다(lineId, upStation, downStation, distance)

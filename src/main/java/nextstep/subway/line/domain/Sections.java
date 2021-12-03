@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.exception.EmptySectionException;
 import nextstep.subway.common.exception.InvalidDuplicatedSection;
+import nextstep.subway.common.exception.MinimumRemovableSectionSizeException;
 import nextstep.subway.common.exception.NotContainsStationException;
 import nextstep.subway.common.exception.NotFoundStationException;
 import nextstep.subway.section.domain.Distance;
@@ -21,6 +22,8 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+    public static final int MINIMUM_REMOVABLE_SECTION_SIZE = 2;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -40,7 +43,7 @@ public class Sections {
     }
 
     public void addSection(Line line, Station upStation, Station downStation, Distance distance) {
-        validateSection(upStation, downStation);
+        validateAddSection(upStation, downStation);
 
         changeUpStationIfExist(upStation, downStation, distance);
         changeDownStationIfExist(downStation, upStation, distance);
@@ -48,8 +51,22 @@ public class Sections {
         addToSections(line, upStation, downStation, distance);
     }
 
+    private void changeUpStationIfExist(Station station, Station changeStation, Distance distance) {
+        sections.stream()
+                .filter(section -> section.isSameUpStation(station))
+                .findAny()
+                .ifPresent(section -> section.changeUpStation(changeStation, distance));
+    }
+
+    private void changeDownStationIfExist(Station station, Station changeStation, Distance distance) {
+        sections.stream()
+                .filter(section -> section.isSameDownStation(station))
+                .findAny()
+                .ifPresent(section -> section.changeDownStation(changeStation, distance));
+    }
+
     public void removeSection(Line line, Station station) {
-//        validateRemoveSection(upStation, downStation);
+        validateRemoveSection(station);
         updateRemovableMiddleSection(line, station);
 
         removeSectionIfStationExist(station);
@@ -76,9 +93,9 @@ public class Sections {
 
     private Distance getRemovableSumDistance(Station station) {
         int removableDistance = sections.stream()
-                        .filter(section -> section.isSameUpStation(station) || section.isSameDownStation(station))
-                        .mapToInt(Section::getDistance)
-                        .sum();
+                .filter(section -> section.isSameUpStation(station) || section.isSameDownStation(station))
+                .mapToInt(Section::getDistance)
+                .sum();
 
         return new Distance(removableDistance);
     }
@@ -111,51 +128,6 @@ public class Sections {
                 .filter(section -> section.isSameDownStation(station))
                 .findAny()
                 .ifPresent(section -> sections.remove(section));
-    }
-
-
-    private void validateSection(Station upStation, Station downStation) {
-        validateDuplicateSection(upStation, downStation);
-        notContainsStationException(upStation, downStation);
-    }
-
-    private void changeUpStationIfExist(Station station, Station changeStation, Distance distance) {
-        sections.stream()
-                .filter(section -> section.isSameUpStation(station))
-                .findAny()
-                .ifPresent(section -> section.changeUpStation(changeStation, distance));
-    }
-
-    private void changeDownStationIfExist(Station station, Station changeStation, Distance distance) {
-        sections.stream()
-                .filter(section -> section.isSameDownStation(station))
-                .findAny()
-                .ifPresent(section -> section.changeDownStation(changeStation, distance));
-    }
-
-    private void validateDuplicateSection(Station upStation, Station downStation) {
-        if (containsUpStation(upStation) && containsDownStation(downStation)) {
-            throw new InvalidDuplicatedSection(upStation.getName(), downStation.getName());
-        }
-    }
-
-    private void notContainsStationException(Station upStation, Station downStation) {
-        if (!containsUpStation(upStation) &&
-            !containsUpStation(downStation) &&
-            !containsDownStation(upStation) &&
-            !containsDownStation(downStation)) {
-            throw new NotContainsStationException(upStation.getName(), downStation.getName());
-        }
-    }
-
-    private boolean containsUpStation(Station station) {
-        return sections.stream()
-                .anyMatch(section -> section.isSameUpStation(station));
-    }
-
-    private boolean containsDownStation(Station station) {
-        return sections.stream()
-                .anyMatch(section -> section.isSameDownStation(station));
     }
 
     public List<Station> getSortedStations() {
@@ -212,6 +184,54 @@ public class Sections {
                 .filter(section -> section.isSameUpStation(currentSection.getDownStation()))
                 .findAny()
                 .orElseThrow(NotFoundStationException::new);
+    }
+
+    private boolean notContainsStation(Station station) {
+        return !containsUpStation(station) && !containsDownStation(station);
+    }
+
+    private boolean containsUpStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.isSameUpStation(station));
+    }
+
+    private boolean containsDownStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.isSameDownStation(station));
+    }
+
+    private void validateRemoveSection(Station station) {
+        validateMinimumRemovableSectionSize();
+        validateContainsRemovableStation(station);
+    }
+
+    private void validateMinimumRemovableSectionSize() {
+        if (sections.size() < MINIMUM_REMOVABLE_SECTION_SIZE) {
+            throw new MinimumRemovableSectionSizeException(sections.size());
+        }
+    }
+
+    private void validateContainsRemovableStation(Station station) {
+        if (notContainsStation(station)) {
+            throw new NotContainsStationException(station.getName());
+        }
+    }
+
+    private void validateAddSection(Station upStation, Station downStation) {
+        validateDuplicateSection(upStation, downStation);
+        validateContainsAddableStation(upStation, downStation);
+    }
+
+    private void validateDuplicateSection(Station upStation, Station downStation) {
+        if (containsUpStation(upStation) && containsDownStation(downStation)) {
+            throw new InvalidDuplicatedSection(upStation.getName(), downStation.getName());
+        }
+    }
+
+    private void validateContainsAddableStation(Station upStation, Station downStation) {
+        if (notContainsStation(upStation) && notContainsStation(downStation)) {
+            throw new NotContainsStationException(upStation.getName(), downStation.getName());
+        }
     }
 
 }

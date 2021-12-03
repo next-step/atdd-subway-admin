@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.exception.EmptySectionException;
 import nextstep.subway.common.exception.InvalidDuplicatedSection;
+import nextstep.subway.common.exception.MinimumRemovableSectionSizeException;
 import nextstep.subway.common.exception.NotContainsStationException;
 import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
@@ -101,5 +102,28 @@ class SectionsTest {
 
         }).isInstanceOf(NotContainsStationException.class)
         .hasMessageContaining("현재 입력된 역들이 노선에 존재하지 않습니다.");
+    }
+
+    @DisplayName("제거하려는 역이 없다면 예외를 발생시킨다.")
+    @Test
+    void removeSectionNoStationException() {
+        assertThatThrownBy(() -> {
+            final Station 강남신사사이역 = new Station("강남신사사이역");
+            sections.addSection(호선2, 강남역, 강남신사사이역, new Distance(3));
+
+            this.sections.removeSection(호선2, new Station("새로운 역1"));
+
+        }).isInstanceOf(NotContainsStationException.class)
+                .hasMessageContaining("현재 입력된 역들이 노선에 존재하지 않습니다.");
+    }
+
+    @DisplayName("최수 구간 크키보다 작을 때 제거를 시도하면 예외를 발생시킨다.")
+    @Test
+    void removeSectionMinimumSectionSizeException() {
+        assertThatThrownBy(() -> {
+            this.sections.removeSection(호선2, 강남역);
+
+        }).isInstanceOf(MinimumRemovableSectionSizeException.class)
+                .hasMessageContaining("삭제할 수 없는 구간 크기 입니다.");
     }
 }

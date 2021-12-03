@@ -3,6 +3,7 @@ package nextstep.subway.line.ui;
 import nextstep.subway.common.exception.DuplicateEntityException;
 import nextstep.subway.common.exception.InvalidDuplicatedSection;
 import nextstep.subway.common.exception.InvalidEntityRequiredException;
+import nextstep.subway.common.exception.MinimumRemovableSectionSizeException;
 import nextstep.subway.common.exception.NegativeNumberDistanceException;
 import nextstep.subway.common.exception.NotContainsStationException;
 import nextstep.subway.common.exception.NotFoundEntityException;
@@ -71,7 +72,8 @@ public class LineController {
     @ExceptionHandler({
             NegativeNumberDistanceException.class, InvalidDuplicatedSection.class,
             NotContainsStationException.class, DuplicateEntityException.class,
-            InvalidEntityRequiredException.class, NotFoundEntityException.class, NotFoundStationException.class
+            InvalidEntityRequiredException.class, NotFoundEntityException.class,
+            NotFoundStationException.class, MinimumRemovableSectionSizeException.class
     })
     public ResponseEntity<LineResponse> handleInvalidInputException(RuntimeException e) {
         return ResponseEntity.badRequest().build();
