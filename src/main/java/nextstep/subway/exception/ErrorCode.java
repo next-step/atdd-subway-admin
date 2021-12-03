@@ -5,7 +5,8 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
 	WRONG_INPUT("입력값을 확인해주세요", HttpStatus.BAD_REQUEST),
-	DUPLICATE_INPUT("입력값이 중복입니다", HttpStatus.BAD_REQUEST);
+	DUPLICATE_INPUT("입력값이 중복입니다", HttpStatus.BAD_REQUEST),
+	NOT_FOUND("해당 데이터를 찾을 수 없습니다", HttpStatus.NOT_FOUND);
 
 	private String message;
 	private HttpStatus httpStatus;
