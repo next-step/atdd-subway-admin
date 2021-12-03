@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
     private List<Section> sections;
 
@@ -49,13 +49,13 @@ public class Sections {
 
             if (addDownStation(targetSection, original)) return;
 
-            if (adUpStationAndMiddlStation(targetSection, original)) return;
+            if (addUpStationAndMiddlStation(targetSection, original)) return;
 
             if (addDownStationAndMiddleStation(targetSection, original)) return;
         }
     }
 
-    private boolean adUpStationAndMiddlStation(Section targetSection, Section original) {
+    private boolean addUpStationAndMiddlStation(Section targetSection, Section original) {
         if (original.isUpStationAndTargetDownStationEquals(targetSection)) {
             addSectionOriginalIndex(targetSection, original);
             return true;
