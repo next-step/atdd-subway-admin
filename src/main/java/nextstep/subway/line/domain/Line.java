@@ -30,13 +30,13 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    private Line(String name, String color, Station upStation, Station downStation, int distance) {
+    private Line(String name, String color, Station upStation, Station downStation, Distance distance) {
         this.name = name;
         this.color = color;
         addSection(upStation, downStation, distance);
     }
     
-    public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
+    public static Line of(String name, String color, Station upStation, Station downStation, Distance distance) {
         return new Line(name, color, upStation, downStation, distance);
     }
 
@@ -45,8 +45,12 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
     
-    public void addSection(Station upStation, Station downStation, int distance) {
+    public void addSection(Station upStation, Station downStation, Distance distance) {
         this.sections.add(Section.of(this, upStation, downStation, distance));
+    }
+    
+    public void removeSection(Station station) {
+        sections.remove(station);
     }
     
     public List<Station> getStations() {
@@ -82,4 +86,5 @@ public class Line extends BaseEntity {
     public int hashCode() {
         return Objects.hash(name);
     }
+
 }

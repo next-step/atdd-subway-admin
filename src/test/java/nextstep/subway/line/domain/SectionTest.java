@@ -18,10 +18,10 @@ public class SectionTest {
         // given
         Station upStation = Station.from("강남역");
         Station downStation = Station.from("교대역");
-        Line line = Line.of("2호선", "파란색", upStation, downStation, 15);
+        Line line = Line.of("2호선", "파란색", upStation, downStation, Distance.from(15));
         
         // when
-        Section section = Section.of(line, upStation, downStation, 15);
+        Section section = Section.of(line, upStation, downStation, Distance.from(15));
         
         // then
         assertAll(
@@ -37,10 +37,10 @@ public class SectionTest {
         // given
         Station upStation = Station.from("강남역");
         Station downStation = Station.from("교대역");
-        Line line = Line.of("2호선", "파란색", upStation, downStation, 15);
+        Line line = Line.of("2호선", "파란색", upStation, downStation, Distance.from(15));
         
-        Section section = Section.of(line, upStation, downStation, 15);
-        Section comparedSection = Section.of(line, upStation, downStation, 15);
+        Section section = Section.of(line, upStation, downStation, Distance.from(15));
+        Section comparedSection = Section.of(line, upStation, downStation, Distance.from(15));
         
         // when, then
         assertAll(
@@ -55,11 +55,11 @@ public class SectionTest {
         // given
         Station upStation = Station.from("강남역");
         Station downStation = Station.from("교대역");
-        Line line = Line.of("2호선", "파란색", upStation, downStation, 15);
-        Section section = Section.of(line, upStation, downStation, 15);
+        Line line = Line.of("2호선", "파란색", upStation, downStation, Distance.from(15));
+        Section section = Section.of(line, upStation, downStation, Distance.from(15));
         
-        Line comparedLine = Line.of("3호선", "빨간색", upStation, downStation, 17);
-        Section comparedSection = Section.of(comparedLine, upStation, downStation, 17);
+        Line comparedLine = Line.of("3호선", "빨간색", upStation, downStation, Distance.from(17));
+        Section comparedSection = Section.of(comparedLine, upStation, downStation, Distance.from(17));
         
         // when, then
         assertAll(
@@ -77,8 +77,8 @@ public class SectionTest {
         // given
         Station upStation = Station.from("서울대입구역");
         Station downStation = Station.from("교대역");
-        Line line = Line.of("2호선", "파란색", upStation, downStation, 30);
-        Section section = Section.of(line, upStation, downStation, 30);
+        Line line = Line.of("2호선", "파란색", upStation, downStation, Distance.from(30));
+        Section section = Section.of(line, upStation, downStation, Distance.from(30));
         
         Station newUpStation = Station.from(stationName);
         
@@ -93,8 +93,8 @@ public class SectionTest {
         // given
         Station upStation = Station.from("서울대입구역");
         Station downStation = Station.from("교대역");
-        Line line = Line.of("2호선", "파란색", upStation, downStation, 30);
-        Section section = Section.of(line, upStation, downStation, 30);
+        Line line = Line.of("2호선", "파란색", upStation, downStation, Distance.from(30));
+        Section section = Section.of(line, upStation, downStation, Distance.from(30));
         
         Station newDownStation = Station.from(stationName);
         
@@ -108,8 +108,8 @@ public class SectionTest {
         // given
         Station upStation = Station.from("서울대입구역");
         Station downStation = Station.from("교대역");
-        Line line = Line.of("2호선", "파란색", upStation, downStation, 30);
-        Section section = Section.of(line, upStation, downStation, 30);
+        Line line = Line.of("2호선", "파란색", upStation, downStation, Distance.from(30));
+        Section section = Section.of(line, upStation, downStation, Distance.from(30));
 
         Station newUpStation = Station.from("사당역");
         
@@ -129,8 +129,8 @@ public class SectionTest {
         // given
         Station upStation = Station.from("서울대입구역");
         Station downStation = Station.from("교대역");
-        Line line = Line.of("2호선", "파란색", upStation, downStation, 30);
-        Section section = Section.of(line, upStation, downStation, 30);
+        Line line = Line.of("2호선", "파란색", upStation, downStation, Distance.from(30));
+        Section section = Section.of(line, upStation, downStation, Distance.from(30));
 
         Station newDownStation = Station.from("낙성대입구역");
         
@@ -141,6 +141,28 @@ public class SectionTest {
         assertAll(
                 () -> assertThat(section.getDownStation()).isEqualTo(newDownStation),
                 () -> assertThat(section.getDistance()).isEqualTo(Distance.from(10))
+                );
+    }
+    
+    @Test
+    @DisplayName("두 구간이 하나로 합쳐지는지 확인")
+    void 구간_병합_확인() {
+        // given
+        Station firstStation = Station.from("봉천역");
+        Station secondStation = Station.from("서울대입구역");
+        Line line = Line.of("2호선", "초록색", firstStation, secondStation, Distance.from(10));
+        Section section = Section.of(line, firstStation, secondStation, Distance.from(10));
+        
+        Station thirdStation = Station.from("낙성대역");
+        Section newSection = Section.of(line, secondStation, thirdStation, Distance.from(30));
+        
+        // when
+        section.combine(newSection);
+        
+        // then
+        assertAll(
+                () -> assertThat(section.getDownStation()).isEqualTo(thirdStation),
+                () -> assertThat(section.getDistance()).isEqualTo(Distance.from(40))
                 );
     }
 

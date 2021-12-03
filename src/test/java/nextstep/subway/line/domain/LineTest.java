@@ -20,7 +20,7 @@ public class LineTest {
         Station downStation = Station.from("교대역");
         
         // when
-        Line line = Line.of("2호선", "파란색", upStation, downStation, 15);
+        Line line = Line.of("2호선", "파란색", upStation, downStation, Distance.from(15));
         
         // then
         assertAll(
@@ -35,8 +35,8 @@ public class LineTest {
         // given
         Station upStation = Station.from("강남역");
         Station downStation = Station.from("교대역");
-        Line line = Line.of("2호선", "파란색", upStation, downStation, 15);
-        Line updateLine = Line.of("분당선", "노란색", upStation, downStation, 15);
+        Line line = Line.of("2호선", "파란색", upStation, downStation, Distance.from(15));
+        Line updateLine = Line.of("분당선", "노란색", upStation, downStation, Distance.from(15));
         
         // when
         line.update(updateLine);
@@ -55,8 +55,8 @@ public class LineTest {
         // given
         Station upStation = Station.from("강남역");
         Station downStation = Station.from("교대역");
-        Line line = Line.of(name, "파란색", upStation, downStation, 15);
-        Line comparedLine = Line.of(comparedName, "파란색", upStation, downStation, 15);
+        Line line = Line.of(name, "파란색", upStation, downStation, Distance.from(15));
+        Line comparedLine = Line.of(comparedName, "파란색", upStation, downStation, Distance.from(15));
         
         // when, then
         assertAll(

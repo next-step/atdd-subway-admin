@@ -76,6 +76,21 @@ public class Sections {
         sections.add(otherSection);
     }
     
+    void remove(Station station) {
+        Section upSection = sections.stream()
+                            .filter(section -> section.getDownStation().equals(station))
+                            .findFirst()
+                            .get();
+        
+        Section downSection = sections.stream()
+                            .filter(section -> section.getUpStation().equals(station))
+                            .findFirst()
+                            .get();
+        
+        upSection.combine(downSection);
+        sections.removeIf(section -> section.equals(downSection));
+    }
+    
     private boolean addIfSameUpStations(Section oldSection, Section newSection) {
         if (newSection.isSameUpStation(oldSection.getUpStation())) {
             oldSection.moveUpStationTo(newSection.getDownStation(), newSection.getDistance());
@@ -132,4 +147,6 @@ public class Sections {
                 .orElseThrow(() -> new IllegalArgumentException("역이 연결되지 않았습니다."))
                 .getDownStation();
     }
+    
+
 }
