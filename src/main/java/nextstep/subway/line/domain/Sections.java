@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.common.exception.EmptySectionException;
 import nextstep.subway.common.exception.InvalidDuplicatedSection;
 import nextstep.subway.common.exception.NotContainsStationException;
 import nextstep.subway.common.exception.NotFoundStationException;
@@ -93,7 +94,7 @@ public class Sections {
 
     public List<Station> getSortedStations() {
         if (sections.isEmpty()) {
-            return new ArrayList<>();
+            throw new EmptySectionException();
         }
 
         return sortStations();
