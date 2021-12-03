@@ -13,17 +13,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("구간 도메인 관련 기능")
 class SectionTest {
-    private Station upStation;
-    private Station downStation;
-    private Line line;
+    private Station 강남역;
+    private Station 역삼역;
+    private Line 호선2;
     private Section section;
 
     @BeforeEach
     void setUp() {
-        upStation = new Station("강남역");
-        downStation = new Station("역삼역");
-        line = Line.of("2호선", "green", upStation, downStation, 9);
-        section = Section.of(line, upStation, downStation, 9);
+        강남역 = new Station("강남역");
+        역삼역 = new Station("역삼역");
+        호선2 = Line.of("2호선", "green", 강남역, 역삼역, 9);
+        section = Section.of(호선2, 강남역, 역삼역, 9);
     }
 
     @DisplayName("구간을 생성한다.")
@@ -31,9 +31,9 @@ class SectionTest {
     void createSection() {
         // then
         assertAll(
-                () -> assertThat(section.getLine()).isEqualTo(line),
-                () -> assertThat(section.getUpStation()).isEqualTo(upStation),
-                () -> assertThat(section.getDownStation()).isEqualTo(downStation),
+                () -> assertThat(section.getLine()).isEqualTo(호선2),
+                () -> assertThat(section.getUpStation()).isEqualTo(강남역),
+                () -> assertThat(section.getDownStation()).isEqualTo(역삼역),
                 () -> assertThat(section.getDistance()).isEqualTo(9)
         );
     }
@@ -42,7 +42,8 @@ class SectionTest {
     @Test
     void changeUpStation() {
         // when
-        section.changeUpStation(new Station("신분당역"), new Distance(2));
+        final Station 신분당역 = new Station("신분당역");
+        section.changeUpStation(신분당역, new Distance(2));
 
         // then
         assertThat(section.getUpStation()).isEqualTo(new Station("신분당역"));
@@ -52,7 +53,8 @@ class SectionTest {
     @Test
     void changeDownStation() {
         // when
-        section.changeDownStation(new Station("잠실역"), new Distance(3));
+        final Station 잠실역 = new Station("잠실역");
+        section.changeDownStation(잠실역, new Distance(3));
 
         // then
         assertThat(section.getDownStation()).isEqualTo(new Station("잠실역"));

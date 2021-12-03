@@ -18,17 +18,18 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("구간 목록 도메인 관련")
 class SectionsTest {
     private Sections sections;
-    private Station upStation;
-    private Station downStation;
-    private Line line;
+    private Station 강남역;
+    private Station 신사역;
+    private Line 호선2;
 
     @BeforeEach
     void setUp() {
-        upStation = new Station("강남역");
-        downStation = new Station("신사역");
-        line = Line.of("2호선", "green", upStation, downStation, 9);
+        강남역 = new Station("강남역");
+        신사역 = new Station("신사역");
+        호선2 = Line.of("2호선", "green", 강남역, 신사역, 9);
+        final Section 강남_신사_구간 = Section.of(호선2, 강남역, 신사역, 9);
         sections = new Sections();
-        sections.getSections().add(Section.of(line, upStation, downStation, 9));
+        sections.getSections().add(강남_신사_구간);
     }
 
     @DisplayName("구간 목록을 저장한다.")
@@ -47,8 +48,11 @@ class SectionsTest {
     @DisplayName("구간을 추가한다.")
     @Test
     void addSection() {
+        //given
+        final Station 잠실역 = new Station("잠실역");
+
         // when
-        this.sections.addSection(line, new Station("잠실역"), downStation, new Distance(5));
+        this.sections.addSection(호선2, 잠실역, 신사역, new Distance(5));
 
         // then
         assertThat(sections.getSections().size()).isEqualTo(2);
@@ -57,18 +61,21 @@ class SectionsTest {
     @DisplayName("구간을 정렬하고 목록을 확인한다.")
     @Test
     void sortSections() {
+        // given
+        final Station 강남신사사이역 = new Station("강남신사사이역");
+
         // when
-        sections.addSection(line, new Station("강남역"), new Station("강남신사사이역"), new Distance(3));
+        sections.addSection(호선2, 강남역, 강남신사사이역, new Distance(3));
 
         // then
-        assertThat(sections.getSortedStations()).containsAll(SectionsFixture.listOf("강남역", "강남신사사이역", "신사역"));
+        assertThat(sections.getSortedStations()).containsExactly(강남역, 강남신사사이역, 신사역);
     }
 
     @DisplayName("두 역을 모두 포함한 경우 예외를 발생시킨다.")
     @Test
     void addSectionBothStationsException() {
         assertThatThrownBy(() -> {
-            this.sections.addSection(line, upStation, downStation, new Distance(5));
+            this.sections.addSection(호선2, 강남역, 신사역, new Distance(5));
 
         }).isInstanceOf(InvalidDuplicatedSection.class)
         .hasMessageContaining("현재 입력된 역들이 겹치는 구간입니다.");
@@ -78,7 +85,7 @@ class SectionsTest {
     @Test
     void addSectionNoStationsException() {
         assertThatThrownBy(() -> {
-            this.sections.addSection(line, new Station("새로운 역1"), new Station("새로운 역2"), new Distance(5));
+            this.sections.addSection(호선2, new Station("새로운 역1"), new Station("새로운 역2"), new Distance(5));
 
         }).isInstanceOf(NotContainsStationException.class)
         .hasMessageContaining("현재 입력된 역들이 노선에 존재하지 않습니다.");
