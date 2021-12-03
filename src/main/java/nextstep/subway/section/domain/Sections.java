@@ -7,7 +7,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,16 +34,11 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        List<Station> stations = new LinkedList<>();
-
-        sections.stream()
+        return sections.stream()
                 .sorted(Section::compareTo)
-                .collect(Collectors.toList())
-                .forEach(section -> {
-                    stations.add(section.getUpStation());
-                    stations.add(section.getDownStation());
-                });
-        return stations.stream().distinct().collect(Collectors.toList());
+                .flatMap(Section::stations)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     private void validateSection(List<Station> stations, Section sectionToAdd) {
