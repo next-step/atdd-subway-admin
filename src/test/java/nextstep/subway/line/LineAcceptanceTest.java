@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import static nextstep.subway.AcceptanceTestUtil.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.HashMap;
@@ -31,7 +32,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_노선_생성_요청(NAME1, COLOR1);
 
 		// then
-		지하철_노선_응답_검증(response, HttpStatus.CREATED);
+		응답_검증(response, HttpStatus.CREATED);
 		지하철_노선_생성_헤더_검증(response);
 		지하철_노선_생성_검증(response.header(LOCATION_HEADER_NAME));
 	}
@@ -60,7 +61,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
 		// then
-		지하철_노선_응답_검증(response, HttpStatus.OK);
+		응답_검증(response, HttpStatus.OK);
 		지하철_노선_목록_포함됨(response);
 	}
 
@@ -74,7 +75,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_노선_조회_요청(1L);
 
 		// then
-		지하철_노선_응답_검증(response, HttpStatus.OK);
+		응답_검증(response, HttpStatus.OK);
 		지하철_노선_포함_검증(response, NAME1, COLOR1);
 	}
 
@@ -89,7 +90,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_노선_수정_요청(lineId);
 
 		// then
-		지하철_노선_응답_검증(response, HttpStatus.OK);
+		응답_검증(response, HttpStatus.OK);
 		지하철_노선_수정_검증(lineId);
 	}
 
@@ -104,7 +105,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_노선_제거_요청(id);
 
 		// then
-		지하철_노선_응답_검증(response, HttpStatus.NO_CONTENT);
+		응답_검증(response, HttpStatus.NO_CONTENT);
 		지하철_노선_삭제_검증(id);
 	}
 
@@ -117,7 +118,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_노선_제거_요청(id);
 
 		// then
-		지하철_노선_응답_검증(response, HttpStatus.NOT_FOUND);
+		응답_검증(response, HttpStatus.NOT_FOUND);
 	}
 
 	private void 지하철_노선_삭제_검증(Long id) {
@@ -127,7 +128,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.then().log().all()
 			.extract();
 
-		지하철_노선_응답_검증(response, HttpStatus.NOT_FOUND);
+		응답_검증(response, HttpStatus.NOT_FOUND);
 	}
 
 	private void 지하철_노선_생성_헤더_검증(ExtractableResponse<Response> response) {
@@ -153,7 +154,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	}
 
 	private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
-		지하철_노선_응답_검증(response, HttpStatus.CONFLICT);
+		응답_검증(response, HttpStatus.CONFLICT);
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_등록되어_있음2() {
@@ -166,10 +167,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.get("/lines")
 			.then().log().all()
 			.extract();
-	}
-
-	private void 지하철_노선_응답_검증(ExtractableResponse<Response> response, HttpStatus status) {
-		assertThat(response.statusCode()).isEqualTo(status.value());
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_조회_요청(String url) {
