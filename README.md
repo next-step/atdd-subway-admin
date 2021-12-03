@@ -163,3 +163,13 @@ host: localhost:52165
   * 참고자료 : https://tecoble.techcourse.co.kr/post/2021-04-25-dto-layer-scope/
   
 ## 4단계 - 구간 제거 기능
+지하철 구간 제거 기능을 구현하기
+* HappyPath 인수테스트 작성
+  * [ ] 노선의 구간을 제거하는 기능
+* 예외상황 인수테스트 작성
+  * [ ] 구간이 하나일때는 제거 할 수 없음
+* 기능 구현
+  * [ ] 노선의 구간을 제거하는 기능
+  * [ ] stationId으로 Section 2개를 찾는다.
+  * [ ] 찾은 Section에 upStation, downStation, distance를 하나로 합친다.
+  * [ ] 구간이 하나일때는 제거 할 수 없다
