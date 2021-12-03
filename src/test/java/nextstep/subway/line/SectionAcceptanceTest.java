@@ -45,8 +45,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 구간을 등록한다.")
     @Test
     void addSection() {
+        // given
+        final StationResponse 판교역 = StationAcceptanceTest.지하철역_등록되어_있음("판교역")
+            .as(StationResponse.class);
+
         // when
-        final SectionRequest request = new SectionRequest(강남역.getId(), 광교역.getId(), 2);
+        final SectionRequest request = new SectionRequest(강남역.getId(), 판교역.getId(), 4);
         final ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(request);
 
         // then
@@ -58,7 +62,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .body(request)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .post("/lines/" + 신분당선.getId() + "sections")
+            .post("/lines/" + 신분당선.getId() + "/sections")
             .then().log().all()
             .extract();
     }
