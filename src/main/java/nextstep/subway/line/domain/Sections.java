@@ -68,7 +68,7 @@ public class Sections {
     }
 
     private void validateExistsUpStationAndDownStation(Section addSection) {
-        if (isEqualsUpStation(addSection) && isEqualsDownStation(addSection)) {
+        if (isExistsStation(addSection.getUpStation()) && isExistsStation(addSection.getDownStation())) {
             throw new BadRequestException("이미 등록된 구간입니다.");
         }
     }
@@ -123,9 +123,9 @@ public class Sections {
                 .anyMatch(section -> section.isEqualsUpStation(addSection.getUpStation()));
     }
 
-    private boolean isEqualsDownStation(Section addSection) {
-        return sections.stream()
-                .anyMatch(section -> section.isEqualsDownStation(addSection.getDownStation()));
+    private boolean isExistsStation(Station addStation) {
+        return makeStations().stream()
+                .anyMatch(station -> station.equals(addStation));
     }
 
     private boolean isNotExistsStation(Station addStation) {
