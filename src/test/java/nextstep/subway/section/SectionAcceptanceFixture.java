@@ -22,7 +22,8 @@ public class SectionAcceptanceFixture {
         return params;
     }
 
-    public static ExtractableResponse<Response> requestAddSection(Long lineId, Map<String, String> params) {
+    public static ExtractableResponse<Response> 구간_추가를_요청한다(Long lineId, StationResponse upStation, StationResponse downStation, int distance) {
+        Map<String, String> params = createParams(upStation, downStation, distance);
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
