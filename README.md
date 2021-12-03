@@ -1,3 +1,14 @@
+# 인수테스트를 통한 지하철 노선 관리
+- version : 1.0.0
+---
+## 기능 목록
+- 지하철 노선 생성
+- 지하철 노선 목록 조회
+- 지하철 노선 ID를 통한 노선 상세 조회
+- 지하철 노선 ID를 통한 노선 정보 수정
+- 지하철 노선 ID를 통한 노선 삭제
+
+---
 <p align="center">
     <img width="200px;" src="https://raw.githubusercontent.com/woowacourse/atdd-subway-admin-frontend/master/images/main_logo.png"/>
 </p>
