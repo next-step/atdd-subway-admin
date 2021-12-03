@@ -18,6 +18,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -128,4 +129,88 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// then (노선에 전부 있는 역들이라서 실패)
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
+
+	@Test
+	@DisplayName("지하철 노선 내 구간에서 중간 역 삭제 요청 성공")
+	public void deleteMiddleStationInSectionSuccess() {
+		//given
+		SectionRequest param = new SectionRequest(3L, 4L, 17);
+		post("/lines/1/sections", param);
+		//when
+		ExtractableResponse<Response> deleteStationResponse = delete("/lines/1/sections?stationId=3");
+		//then
+		assertThat(deleteStationResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		//when
+		ExtractableResponse<Response> findLineResponse = get("/lines/1");
+		//then
+		List<Long> stationIds = getStationIds(findLineResponse);
+		assertThat(stationIds).containsExactly(2L, 4L);
+	}
+
+	@Test
+	@DisplayName("지하철 노선 내 구간에서 시작역 삭제 요청 성공")
+	public void deleteStartStationInSectionSuccess() {
+		//given
+		SectionRequest param = new SectionRequest(3L, 4L, 17);
+		post("/lines/1/sections", param);
+		//when
+		ExtractableResponse<Response> deleteStationResponse = delete("/lines/1/sections?stationId=2");
+		//then
+		assertThat(deleteStationResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		//when
+		ExtractableResponse<Response> findLineResponse = get("/lines/1");
+		//then
+		List<Long> stationIds = getStationIds(findLineResponse);
+		assertThat(stationIds).containsExactly(3L, 4L);
+	}
+
+	@Test
+	@DisplayName("지하철 노선 내 구간에서 종점역 삭제 요청 성공")
+	public void deleteEndStationInSectionSuccess() {
+		//given
+		SectionRequest param = new SectionRequest(3L, 4L, 17);
+		post("/lines/1/sections", param);
+		//when
+		ExtractableResponse<Response> deleteStationResponse = delete("/lines/1/sections?stationId=4");
+		//then
+		assertThat(deleteStationResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		//when
+		ExtractableResponse<Response> findLineResponse = get("/lines/1");
+		//then
+		List<Long> stationIds = getStationIds(findLineResponse);
+		assertThat(stationIds).containsExactly(2L, 3L);
+	}
+
+	@Test
+	@DisplayName("지하철 노선 내 1개 구간만 존재 시 역 삭제 요청 실패")
+	public void deleteStationInSectionsSizeOneFail() {
+		//given
+		//when
+		ExtractableResponse<Response> deleteStationResponse = delete("/lines/1/sections?stationId=2");
+		//then
+		assertThat(deleteStationResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	@Test
+	@DisplayName("지하철 노선 내 구간에 미 존재 역 삭제 요청 실패")
+	public void deleteNotContainStationInSectionsFail() {
+		//given
+		SectionRequest param = new SectionRequest(3L, 4L, 17);
+		post("/lines/1/sections", param);
+		//when
+		ExtractableResponse<Response> deleteStationResponse = delete("/lines/1/sections?stationId=1");
+		//then
+		assertThat(deleteStationResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	private List<Long> getStationIds(ExtractableResponse<Response> findLineResponse) {
+		return findLineResponse.body()
+			.jsonPath()
+			.getObject(".", LineResponse.class)
+			.getStations()
+			.stream()
+			.map(StationResponse::getId)
+			.collect(Collectors.toList());
+	}
+
 }

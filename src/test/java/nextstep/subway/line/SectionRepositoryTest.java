@@ -23,9 +23,6 @@ public class SectionRepositoryTest {
 	private StationRepository stationRepository;
 
 	@Autowired
-	private LineRepository lineRepository;
-
-	@Autowired
 	private SectionRepository sectionRepository;
 
 	@Test

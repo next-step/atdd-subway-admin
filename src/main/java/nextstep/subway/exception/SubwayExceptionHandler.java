@@ -8,20 +8,20 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class ExceptionController {
+public class SubwayExceptionHandler {
 
 	@ExceptionHandler(DataIntegrityViolationException.class)
-	public ResponseEntity DataIntegrityViolationException(DataIntegrityViolationException e) {
+	public ResponseEntity<Void> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
 		return ResponseEntity.badRequest().build();
 	}
 
 	@ExceptionHandler(IllegalArgumentException.class)
-	public ResponseEntity handleIllegalArgsException(IllegalArgumentException e) {
-		return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+	public ResponseEntity<String> handleIllegalArgsException(IllegalArgumentException e) {
+		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(EmptyResultDataAccessException.class)
-	public ResponseEntity EmptyResultDataAccessException(EmptyResultDataAccessException e) {
+	public ResponseEntity<Void> handleEmptyResultDataAccessException(EmptyResultDataAccessException e) {
 		return ResponseEntity.badRequest().build();
 	}
 }

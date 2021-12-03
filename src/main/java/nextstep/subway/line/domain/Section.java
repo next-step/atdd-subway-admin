@@ -39,12 +39,19 @@ public class Section extends BaseEntity {
 	protected Section() {
 	}
 
+	private Section(Long id, Station upStation, Station downStation, int distance) {
+		this.id = id;
+		this.upStation = upStation;
+		this.downStation = downStation;
+		this.distance = distance;
+	}
+
 	public static Section create(Station upStation, Station downStation, int distance) {
-		Section section = new Section();
-		section.upStation = upStation;
-		section.downStation = downStation;
-		section.distance = distance;
-		return section;
+		return new Section(null, upStation, downStation, distance);
+	}
+
+	public static Section create(Long id, Station upStation, Station downStation, int distance) {
+		return new Section(id, upStation, downStation, distance);
 	}
 
 	public Station getUpStation() {

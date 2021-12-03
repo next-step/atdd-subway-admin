@@ -16,7 +16,7 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
-	@OneToMany(mappedBy = "line", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "line", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	private final List<Section> sections = new ArrayList<>();
 
 	public void init(Section section) {
@@ -40,20 +40,40 @@ public class Sections {
 	}
 
 	public void add(Section section) {
-		System.out.println("##");
-		if (ifAddStartLocation(section)) {
+		validateStationsContainAllOrNot(section);
+		if (ifStartLocation(section.getDownStation())) {
 			addSectionStartLocation(section);
 			return;
 		}
-		if (ifAddEndLocation(section)) {
+		if (ifEndLocation(section.getUpStation())) {
 			addSectionEndLocation(section);
 			return;
 		}
 		addSectionMiddleLocation(section);
 	}
 
+	private void validateStationsContainAllOrNot(Section section) {
+		if (allContain(section)) {
+			throw new IllegalArgumentException("노선에 이미 전부 존재하는 역들입니다.");
+		}
+
+		if (notContain(section)) {
+			throw new IllegalArgumentException("노선의 구간 내 일치하는 역이 없습니다.");
+		}
+	}
+
+	private boolean allContain(Section section) {
+		return getAllStationsBySections()
+			.containsAll(Arrays.asList(section.getUpStation(), section.getDownStation()));
+	}
+
+	private boolean notContain(Section section) {
+		return getAllStationsBySections().stream()
+			.noneMatch(s -> s.equals(section.getUpStation()) || s.equals(section.getDownStation()));
+	}
+
 	private void addSectionMiddleLocation(Section section) {
-		if (ifAddMiddleStartLocation(section)) {
+		if (ifMiddleStartLocation(section.getUpStation())) {
 			addSectionMiddleStartLocation(section);
 			return;
 		}
@@ -89,30 +109,26 @@ public class Sections {
 			.forEach(index -> sections.get(index).updateSequence(index + 1));
 	}
 
-	private boolean ifAddMiddleStartLocation(Section section) {
+	private boolean ifMiddleStartLocation(Station station) {
 		return sections.stream()
-			.anyMatch(s -> s.getUpStation().equals(section.getUpStation()));
+			.anyMatch(s -> s.getUpStation().equals(station));
+	}
+
+	private boolean ifEndLocation(Station station) {
+		return sections.stream()
+			.filter(s -> s.getSequence() == sections.size())
+			.anyMatch(s -> s.getDownStation().equals(station));
+	}
+
+	private boolean ifStartLocation(Station station) {
+		return sections.stream()
+			.filter(s -> s.getSequence() == 1)
+			.anyMatch(s -> s.getUpStation().equals(station));
 	}
 
 	private void addSectionEndLocation(Section section) {
-		sections.add(sections.size() - 1, section);
+		sections.add(section);
 		updateSectionsSequence();
-	}
-
-	private boolean ifAddEndLocation(Section section) {
-		return sections.stream()
-			.filter(s -> s.getSequence() == sections.size())
-			.filter(s -> s.getDownStation().equals(section.getUpStation()))
-			.findFirst()
-			.isPresent();
-	}
-
-	private boolean ifAddStartLocation(Section section) {
-		return sections.stream()
-			.filter(s -> s.getSequence() == 1)
-			.filter(s -> s.getUpStation().equals(section.getDownStation()))
-			.findFirst()
-			.isPresent();
 	}
 
 	private void addSectionStartLocation(Section section) {
@@ -120,13 +136,54 @@ public class Sections {
 		updateSectionsSequence();
 	}
 
-	public boolean allContain(Section section) {
-		return getAllStationsBySections()
-			.containsAll(Arrays.asList(section.getUpStation(), section.getDownStation()));
+	public void deleteStation(Station station) {
+		validateSectionsSize();
+		validateStationNotContain(station);
+		if (ifStartLocation(station)) {
+			deleteSectionContainingStartLocation();
+			return;
+		}
+
+		if (ifEndLocation(station)) {
+			deleteSectionContainingEndLocation();
+			return;
+		}
+		deleteSectionContainingMiddleLocation(station);
 	}
 
-	public boolean notContain(Section section) {
-		return getAllStationsBySections().stream()
-			.noneMatch(s -> s.equals(section.getUpStation()) || s.equals(section.getDownStation()));
+	private void validateStationNotContain(Station station) {
+		if (!getAllStationsBySections().contains(station)) {
+			throw new IllegalArgumentException("노선 내 역이 존재하지 않습니다.");
+		}
 	}
+
+	private void validateSectionsSize() {
+		if (sections.size() == 1) {
+			throw new IllegalArgumentException("노선 내 남은 지하철역이 2개 이상이여야 삭제 가능합니다.");
+		}
+	}
+
+	private void deleteSectionContainingMiddleLocation(Station station) {
+		Section deleteSection = this.sections.stream()
+			.filter(s -> s.getUpStation().equals(station) || s.getDownStation().equals(station))
+			.reduce((now, next) -> {
+				now.updateDownStation(next.getDownStation());
+				now.updateDistance(now.getDistance() + next.getDistance());
+				return next;
+			})
+			.orElseThrow(() -> new IllegalArgumentException("구간 내 역이 존재하지 않습니다."));
+		sections.remove(deleteSection);
+		updateSectionsSequence();
+	}
+
+	private void deleteSectionContainingEndLocation() {
+		sections.remove(sections.size() - 1);
+		updateSectionsSequence();
+	}
+
+	private void deleteSectionContainingStartLocation() {
+		sections.remove(0);
+		updateSectionsSequence();
+	}
+
 }
