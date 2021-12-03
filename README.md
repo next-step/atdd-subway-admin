@@ -98,5 +98,5 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   
 #### 예외 기능
 
-- [ ] 노선에 등록되어있지 않은 역을 제거하려 한다.
-- [ ] 구간이 하나인 노선에서 마지막 구간을 제거하려 한다.
+- [x] 노선에 등록되어있지 않은 역을 제거하려 한다.
+- [x] 구간이 하나인 노선에서 마지막 구간을 제거하려 한다.
