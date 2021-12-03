@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.common.exception.EmptySectionException;
 import nextstep.subway.common.exception.InvalidDuplicatedSection;
 import nextstep.subway.common.exception.NotContainsStationException;
 import nextstep.subway.section.domain.Distance;
@@ -69,6 +70,17 @@ class SectionsTest {
 
         // then
         assertThat(sections.getSortedStations()).containsExactly(강남역, 강남신사사이역, 신사역);
+    }
+
+    @DisplayName("구간이 추가된 것이 없는데 역 조회할 경우 예외를 발생시킨다.")
+    @Test
+    void emptySectionException() {
+        assertThatThrownBy(() -> {
+            final Sections sections = new Sections();
+            sections.getSortedStations();
+
+        }).isInstanceOf(EmptySectionException.class)
+                .hasMessageContaining("구간을 찾을 수 없습니다.");
     }
 
     @DisplayName("두 역을 모두 포함한 경우 예외를 발생시킨다.")

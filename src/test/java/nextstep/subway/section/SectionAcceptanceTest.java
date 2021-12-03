@@ -160,11 +160,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선에_지하철역_삭제_요청
+        ExtractableResponse<Response> response = SectionAcceptanceFixture.구간_삭제를_요청한다(lineResponse.getId(), 신분당역.getId());
 
 
         // then
         // 지하철_노선에_지하철역_삭제됨
-        // 지하철_노선_삭제_확인
+        같은_응답인지_확인한다(response, HttpStatus.NO_CONTENT);
+        // 지하철_노선_순서_확인
+        지하철역이_같은순서인지_확인한다(LineAcceptanceFixture.노선을_조회를_요청한다(lineResponse.getId()), 강남역, 역삼역);
     }
 
     @DisplayName("하행 종점을 삭제한다.")
@@ -172,16 +175,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void removeLastStation() {
         // given
         // 지하철 역_생성
-        StationResponse 신분당역 = StationAcceptanceTest.지하철역을_생성한다("신분당역");
-        구간을_추가한다(lineResponse.getId(), 신분당역, 역삼역, 4);
+        StationResponse 잠실역 = StationAcceptanceTest.지하철역을_생성한다("잠실역");
+        구간을_추가한다(lineResponse.getId(), 역삼역, 잠실역, 4);
 
         // when
         // 지하철_노선에_지하철역_삭제_요청
+        ExtractableResponse<Response> response = SectionAcceptanceFixture.구간_삭제를_요청한다(lineResponse.getId(), 잠실역.getId());
 
 
         // then
         // 지하철_노선에_지하철역_삭제됨
+        같은_응답인지_확인한다(response, HttpStatus.NO_CONTENT);
         // 지하철_노선_삭제_확인
+        지하철역이_같은순서인지_확인한다(LineAcceptanceFixture.노선을_조회를_요청한다(lineResponse.getId()), 강남역, 역삼역);
     }
 
     @DisplayName("중간 역을 삭제한다.")
@@ -189,16 +195,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void removeStationMiddle() {
         // given
         // 지하철 역_생성
-        StationResponse 신분당역 = StationAcceptanceTest.지하철역을_생성한다("신분당역");
-        구간을_추가한다(lineResponse.getId(), 신분당역, 역삼역, 4);
+        StationResponse 강남역삼사이역 = StationAcceptanceTest.지하철역을_생성한다("강남역삼사이역");
+        구간을_추가한다(lineResponse.getId(), 강남역삼사이역, 역삼역, 4);
 
         // when
         // 지하철_노선에_지하철역_삭제_요청
+        ExtractableResponse<Response> response = SectionAcceptanceFixture.구간_삭제를_요청한다(lineResponse.getId(), 강남역삼사이역.getId());
 
 
         // then
         // 지하철_노선에_지하철역_삭제됨
+        같은_응답인지_확인한다(response, HttpStatus.NO_CONTENT);
         // 지하철_노선_삭제_확인
+        지하철역이_같은순서인지_확인한다(LineAcceptanceFixture.노선을_조회를_요청한다(lineResponse.getId()), 강남역, 역삼역);
     }
 
     private LineResponse 구간을_추가한다(Long lineId, StationResponse upStation, StationResponse downStation, int distance) {

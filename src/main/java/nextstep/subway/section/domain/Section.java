@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.common.exception.SameStationsInSectionException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
@@ -37,10 +38,17 @@ public class Section {
     }
 
     public Section(Line line, Station upStation, Station downStation, Distance distance) {
+        validateSection(upStation, downStation);
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private void validateSection(Station upStation, Station downStation) {
+        if (upStation.equals(downStation)) {
+            throw new SameStationsInSectionException(upStation.getName());
+        }
     }
 
     public static Section of(Line line, Station upStation, Station downStation, int distance) {

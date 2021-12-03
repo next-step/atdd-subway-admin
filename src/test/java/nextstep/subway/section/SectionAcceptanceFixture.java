@@ -30,4 +30,12 @@ public class SectionAcceptanceFixture {
                 .when().post("/lines/" + lineId.toString() + "/sections")
                 .then().log().all().extract();
     }
+
+    public static ExtractableResponse<Response> 구간_삭제를_요청한다(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .param("stationId", stationId)
+                .when().delete("/lines/" + lineId.toString() + "/sections")
+                .then().log().all().extract();
+    }
 }

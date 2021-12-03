@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.common.exception.NegativeNumberDistanceException;
+import nextstep.subway.common.exception.SameStationsInSectionException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,5 +69,15 @@ class SectionTest {
 
         }).isInstanceOf(NegativeNumberDistanceException.class)
         .hasMessageContaining("현재 계산된 거리 값이 음수입니다.");
+    }
+
+    @DisplayName("상행, 하행 두 역이 같은 경우 예외가 발생한다.")
+    @Test
+    void sameStationRegisteredException() {
+        assertThatThrownBy(() -> {
+            final Section sameStationSection = Section.of(호선2, 강남역, 강남역, 9);
+
+        }).isInstanceOf(SameStationsInSectionException.class)
+                .hasMessageContaining("한 구간을 같은 역을 가리킬 수 없습니다.");
     }
 }

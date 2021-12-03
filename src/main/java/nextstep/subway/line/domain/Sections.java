@@ -48,6 +48,72 @@ public class Sections {
         addToSections(line, upStation, downStation, distance);
     }
 
+    public void removeSection(Line line, Station station) {
+//        validateRemoveSection(upStation, downStation);
+        updateRemovableMiddleSection(line, station);
+
+        removeSectionIfStationExist(station);
+    }
+
+    private void updateRemovableMiddleSection(Line line, Station station) {
+        if (!containsUpStation(station) || !containsDownStation(station)) {
+            return;
+        }
+
+        Station upStation = getRemovableUpStation(station);
+        Station downStation = getRemovableDownStation(station);
+        Distance distance = getRemovableSumDistance(station);
+
+        removeSectionIfStationExist(station);
+        addToSections(line, upStation, downStation, distance);
+
+    }
+
+    private void removeSectionIfStationExist(Station station) {
+        removeSectionIfUpStationExist(station);
+        removeSectionIfDownStationExist(station);
+    }
+
+    private Distance getRemovableSumDistance(Station station) {
+        int removableDistance = sections.stream()
+                        .filter(section -> section.isSameUpStation(station) || section.isSameDownStation(station))
+                        .mapToInt(Section::getDistance)
+                        .sum();
+
+        return new Distance(removableDistance);
+    }
+
+    private Station getRemovableUpStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isSameDownStation(station))
+                .findAny()
+                .orElseThrow(NotFoundStationException::new)
+                .getUpStation();
+    }
+
+    private Station getRemovableDownStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isSameUpStation(station))
+                .findAny()
+                .orElseThrow(NotFoundStationException::new)
+                .getDownStation();
+    }
+
+    private void removeSectionIfUpStationExist(Station station) {
+        sections.stream()
+                .filter(section -> section.isSameUpStation(station))
+                .findAny()
+                .ifPresent(section -> sections.remove(section));
+    }
+
+    private void removeSectionIfDownStationExist(Station station) {
+        sections.stream()
+                .filter(section -> section.isSameDownStation(station))
+                .findAny()
+                .ifPresent(section -> sections.remove(section));
+    }
+
+
     private void validateSection(Station upStation, Station downStation) {
         validateDuplicateSection(upStation, downStation);
         notContainsStationException(upStation, downStation);
