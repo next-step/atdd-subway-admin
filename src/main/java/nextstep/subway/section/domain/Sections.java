@@ -9,6 +9,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -38,8 +39,8 @@ public class Sections {
     }
 
     private void validateNotExistsSection(Section newSection) {
-        Stream<Station> stations = Stream.concat(sections.stream()
-                .map(Section::getUpStation), sections.stream().map(Section::getDownStation));
+        Stream<Station> stations = sections.stream()
+                .flatMap(section -> Arrays.stream(new Station[]{section.getUpStation(), section.getDownStation()}));
         if (stations.noneMatch(section -> section.equals(newSection.getUpStation()) || section.equals(newSection.getDownStation()))) {
             throw new NotExisitsSectionException();
         }
