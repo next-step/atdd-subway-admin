@@ -100,7 +100,7 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        return line.getSections().getStations()
+        return line.getStations()
                 .stream()
                 .map(station -> StationResponse.of(station))
                 .collect(Collectors.toList());
