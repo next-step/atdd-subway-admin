@@ -58,11 +58,6 @@ public class Sections {
     Section getSectionAt(int index) {
         return getSections().get(index); 
     }
-    
-    
-    Station getStationAt(int index) {
-        return getStations().get(index); 
-    }
 
     void add(Section otherSection) {
         checkValidStations(otherSection);
