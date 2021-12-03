@@ -112,7 +112,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_응답됨
         같은_응답인지_확인한다(조회된_노선, HttpStatus.OK);
         // 지하철_노선_동일_확인됨
-        지하철_노선_동일_확인(생성된_노선, 조회된_노선);
+        지하철_노선_동일_확인한다(생성된_노선, 조회된_노선);
     }
 
 
@@ -141,7 +141,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private void 지하철_노선_동일_확인(LineResponse createdLineResponse, ExtractableResponse<Response> response) {
+    private void 지하철_노선_동일_확인한다(LineResponse createdLineResponse, ExtractableResponse<Response> response) {
         assertThat(createdLineResponse).isEqualTo(LineAcceptanceFixture.ofLineResponse(response));
     }
 
