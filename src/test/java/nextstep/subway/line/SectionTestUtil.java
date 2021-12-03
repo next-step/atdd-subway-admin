@@ -24,7 +24,7 @@ public class SectionTestUtil {
             .given().log().all()
             .body(sectionRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("{lineId}/sections", lineId)
+            .when().post(LineTestUtil.LINES_PATH + "{lineId}/sections", lineId)
             .then().log().all().extract();
     }
 
@@ -53,6 +53,6 @@ public class SectionTestUtil {
     }
 
     public static void 지하철_노선_등록_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

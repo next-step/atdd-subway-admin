@@ -22,8 +22,34 @@ public class Sections {
     protected Sections() {
     }
 
-    public void add(Section addSection) {
-        sections.add(addSection);
+    public void add(Section section) {
+        if (sections.size() > 0) {
+            checkValidation(section);
+        }
+        sections.add(section);
+    }
+
+    private void checkValidation(Section section) {
+        boolean isUpStation = isExistUpStation(section.getUpStation());
+        boolean isDownStation = isExistDownStation(section.getDownStation());
+
+        if (isUpStation && isDownStation) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 등록되어 있습니다.");
+        }
+
+        if (!isUpStation && !isDownStation) {
+            throw new IllegalArgumentException("상행역과 하행역 모두 존재하지 않습니다.");
+        }
+    }
+
+    private boolean isExistDownStation(Station downStation) {
+        return sections.stream()
+            .anyMatch(section -> section.getDownStation() == downStation);
+    }
+
+    private boolean isExistUpStation(Station upStation) {
+        return sections.stream()
+            .anyMatch(section -> section.getUpStation() == upStation);
     }
 
     public List<Station> getSortedStations() {
