@@ -13,6 +13,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static nextstep.subway.line.TestLineAcceptanceFactory.종점역정보_파라미터_생성;
+import static nextstep.subway.line.TestLineAcceptanceFactory.지하철_구간_삭제_실패됨;
 import static nextstep.subway.line.TestLineAcceptanceFactory.지하철_구간_삭제됨;
 import static nextstep.subway.line.TestLineAcceptanceFactory.지하철_노선_ID_추출;
 import static nextstep.subway.line.TestLineAcceptanceFactory.지하철_노선_목록_응답됨;
@@ -205,5 +206,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 하행_종점역_삭제_요청_응답 = 삭제_요청(LINE_ROOT_PATH + 신분당선_ID + LINE_SECTIONS_PATH, 양재시민의숲.getId());
 
         지하철_구간_삭제됨(하행_종점역_삭제_요청_응답);
+    }
+
+    @Test
+    void 등록되어있는_구간이_하나일때는_구간을_제거할_수_없다() {
+        // given
+        ExtractableResponse<Response> 지하철_노선_생성_요청_응답 = 생성_요청(LINE_ROOT_PATH, 신분당선_강남역_양재역);
+        long 신분당선_ID = 지하철_노선_ID_추출(지하철_노선_생성_요청_응답);
+
+        ExtractableResponse<Response> 마지막_구간_삭제_요청_응답 = 삭제_요청(LINE_ROOT_PATH + 신분당선_ID + LINE_SECTIONS_PATH, 강남역.getId());
+
+        지하철_구간_삭제_실패됨(마지막_구간_삭제_요청_응답);
     }
 }

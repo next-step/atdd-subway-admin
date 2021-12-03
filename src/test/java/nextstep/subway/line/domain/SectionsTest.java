@@ -278,4 +278,23 @@ class SectionsTest {
         Assertions.assertThat(actual).hasSize(1);
         Assertions.assertThat(actual.get(0)).isEqualTo(Section.of(신분당선, 강남역, 양재역, 10));
     }
+
+    @Test
+    void 등록되어있는_구간이_하나일때는_구간을_제거할_수_없다() {
+        // given
+        Station 강남역 = Station.from("강남역");
+        Station 양재역 = Station.from("양재역");
+
+        Line 신분당선 = Line.of("신분당선", "red");
+
+        Sections sections = 신분당선.getSections();
+        sections.add(Section.of(신분당선, 강남역, 양재역, 10));
+
+        // when
+        ThrowableAssert.ThrowingCallable throwingCallable = () -> sections.remove(강남역);
+
+        // then
+        Assertions.assertThatExceptionOfType(BadRequestException.class)
+                .isThrownBy(throwingCallable);
+    }
 }

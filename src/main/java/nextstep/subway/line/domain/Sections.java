@@ -34,6 +34,7 @@ public class Sections {
     }
 
     public void remove(Station removeStation) {
+        validateRemove();
         List<Section> findSections = findSections(removeStation);
         removeSectionNotBetweenSections(findSections);
         removeSectionBetweenSections(findSections);
@@ -86,6 +87,12 @@ public class Sections {
                     .findFirst()
                     .orElseThrow(() -> new BadRequestException("기존 역 사이 길이 보다 크거나 같으면 등록을 할 수 없습니다."))
                     .changeUpStationToAddSectionDownStation(addSection);
+        }
+    }
+
+    private void validateRemove() {
+        if (sections.size() == REMOVE_SECTION_MIN_SIZE) {
+            throw new BadRequestException("구간을 제거할 수 없습니다.");
         }
     }
 
