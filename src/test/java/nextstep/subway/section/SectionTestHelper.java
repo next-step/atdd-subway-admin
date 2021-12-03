@@ -28,4 +28,21 @@ public class SectionTestHelper {
                 .then().log().all()
                 .extract();
     }
+
+    public static Map 구간_제거_요청_파라미터(String stationId){
+        Map<String, String> params = new HashMap<>();
+        params.put("stationId", stationId);
+        return params;
+    }
+
+    public static ExtractableResponse<Response> 구간_제거_요청(Map params) {
+        return RestAssured.given().log().all()
+                .pathParam("lindId", "1")
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("lines/{lineId}/sections")
+                .then().log().all()
+                .extract();
+    }
 }

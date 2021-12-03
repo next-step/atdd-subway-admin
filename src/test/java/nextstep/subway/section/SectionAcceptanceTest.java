@@ -1,5 +1,6 @@
 package nextstep.subway.section;
 
+import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import java.util.Map;
 
@@ -74,9 +76,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void distanceErrorValid() {
         // given
         Map<String, String> params = SectionTestHelper.구간_생성_요청_파라미터("1", "3", "20");
-        params.put("upStationId", "1");
-        params.put("downStationId", "3");
-        params.put("distance", "20");
 
         // when
         ExtractableResponse<Response> response = SectionTestHelper.구간_등록_요청(params);
@@ -90,9 +89,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void alreadyAddedValid() {
         // given
         Map<String, String> params = SectionTestHelper.구간_생성_요청_파라미터("1", "2", "5");
-        params.put("upStationId", "1");
-        params.put("downStationId", "2");
-        params.put("distance", "5");
 
         // when
         ExtractableResponse<Response> response = SectionTestHelper.구간_등록_요청(params);
@@ -114,6 +110,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록되지않음(response);
     }
 
+    @DisplayName("구간 제거 기능")
+    @Test
+    void deleteSection() {
+        // given
+        SectionTestHelper.구간_등록_요청(SectionTestHelper.구간_생성_요청_파라미터("1", "3", "4"));
+        Map<String, String> params = SectionTestHelper.구간_제거_요청_파라미터("3");
+
+        // when
+        ExtractableResponse<Response> response = SectionTestHelper.구간_제거_요청(params);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
     private void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
@@ -124,5 +134,4 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private void 지하철_노선에_지하철역_등록되지않음(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
-
 }
