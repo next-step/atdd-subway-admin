@@ -35,7 +35,8 @@ public class StationService {
     }
 
     public Station findStationById(Long stationId) {
-        return stationRepository.findById(stationId).orElseThrow(BadRequestException::new);
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new BadRequestException("존재하지않는 지하철역 ID 입니다."));
     }
 
     public void deleteStationById(Long id) {
@@ -44,7 +45,7 @@ public class StationService {
 
     private void validateDuplicate(StationRequest request) {
         if (stationRepository.existsByName(request.getName())) {
-            throw new BadRequestException();
+            throw new BadRequestException("이미 존재하는 역 이름입니다.");
         }
     }
 }

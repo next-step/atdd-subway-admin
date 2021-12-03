@@ -29,8 +29,7 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         validateDuplicate(lineRequest);
         Line line = lineRepository.save(lineRequest.toLine());
-        addSectionByRequest(line, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
-
+        addSection(line, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
         return LineResponse.of(line);
     }
 
@@ -56,7 +55,7 @@ public class LineService {
 
     public LineResponse addSection(Long id, SectionRequest sectionRequest) {
         Line line = findLineById(id);
-        addSectionByRequest(line, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        addSection(line, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         return LineResponse.of(line);
     }
 
@@ -65,24 +64,19 @@ public class LineService {
     }
 
     private Line findLineById(Long id) {
-        return lineRepository.findById(id).orElseThrow(BadRequestException::new);
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("존재하지않는 노선 ID 입니다."));
     }
 
     private void validateDuplicate(LineRequest lineRequest) {
         if (lineRepository.existsByName(lineRequest.getName())) {
-            throw new BadRequestException();
+            throw new BadRequestException("이미 존재하는 노선 이름입니다.");
         }
     }
 
-    private void addSectionByRequest(Line line, Long upStationId, Long downStationId, int distance) {
-        if (hasSectionInfo(upStationId, downStationId, distance)) {
-            Station upStation = stationService.findStationById(upStationId);
-            Station downStation = stationService.findStationById(downStationId);
-            line.addSection(upStation, downStation, distance);
-        }
-    }
-
-    private boolean hasSectionInfo(Long upStationId, Long downStationId, int distance) {
-        return upStationId != null || downStationId != null || distance > 0;
+    private void addSection(Line line, Long upStationId, Long downStationId, int distance) {
+        Station upStation = stationService.findStationById(upStationId);
+        Station downStation = stationService.findStationById(downStationId);
+        line.addSection(upStation, downStation, distance);
     }
 }

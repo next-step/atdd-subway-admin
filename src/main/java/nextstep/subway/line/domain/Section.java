@@ -35,9 +35,9 @@ public class Section {
 
     private Section(Line line, Station upStation, Station downStation, int distance) {
         validateDuplicate(upStation, downStation);
-        this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
+        this.line = Objects.requireNonNull(line, "노선의 정보가 입력되지 않았습니다.");
+        this.upStation = Objects.requireNonNull(upStation, "종점역 정보가 입력되지 않았습니다.");
+        this.downStation = Objects.requireNonNull(downStation, "종점역 정보가 입력되지 않았습니다.");
         this.distance = Distance.from(distance);
     }
 
@@ -61,18 +61,38 @@ public class Section {
         return line;
     }
 
-    public int getDistance() {
-        return distance.value();
+    public boolean isDistanceGreaterThan(Section addSection) {
+        return this.distance.isGreaterThan(addSection.distance);
     }
 
     public boolean isEqualsUpStation(Station station) {
         return this.upStation.equals(station);
     }
 
+    public boolean isEqualsDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public void changeDownStationToAddSectionUpStation(Section addSection) {
+        this.upStation = addSection.getDownStation();
+        this.distance.minus(addSection.distance);
+    }
+
     private static void validateDuplicate(Station upStation, Station downStation) {
         if (upStation.equals(downStation)) {
-            throw new BadRequestException();
+            throw new BadRequestException("상행선과 하행선은 같을 수 없습니다.");
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", line=" + line +
+                ", distance=" + distance +
+                '}';
     }
 
     @Override
@@ -80,11 +100,15 @@ public class Section {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return Objects.equals(getId(), section.getId());
+        return Objects.equals(getId(), section.getId())
+                && Objects.equals(getUpStation(), section.getUpStation())
+                && Objects.equals(getDownStation(), section.getDownStation())
+                && Objects.equals(getLine(), section.getLine())
+                && Objects.equals(distance, section.distance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId());
+        return Objects.hash(getId(), getUpStation(), getDownStation(), getLine(), distance);
     }
 }

@@ -28,16 +28,12 @@ public class TestLineAcceptanceFactory {
                 .collect(Collectors.toList());
     }
 
-    public static Long 지하철_노선_ID_추출(ExtractableResponse<Response> createResponse) {
-        return Long.valueOf(createResponse.header("Location").split("/")[2]);
+    public static long 지하철_노선_ID_추출(ExtractableResponse<Response> createResponse) {
+        return Long.parseLong(createResponse.header("Location").split("/")[2]);
     }
 
     public static void 지하철_노선_목록_포함됨(List<Long> expectedLineIds, List<Long> resultLineIds) {
         assertThat(resultLineIds).containsAll(expectedLineIds);
-    }
-
-    public static LineRequest 지하철_노선_파라미터_생성(String name, String color) {
-        return LineRequest.of(name, color);
     }
 
     public static LineRequest 지하철_노선과_종점역정보_파라미터_생성(String name, String color, Long upStationId, Long downStationId, int distance) {

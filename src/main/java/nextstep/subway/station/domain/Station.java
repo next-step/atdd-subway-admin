@@ -20,7 +20,7 @@ public class Station extends BaseEntity {
     protected Station() {
     }
 
-    public Station(String name) {
+    private Station(String name) {
         this.name = name;
     }
 
@@ -49,7 +49,8 @@ public class Station extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Station station = (Station) o;
-        return Objects.equals(getId(), station.getId()) && Objects.equals(getName(), station.getName());
+        return Objects.equals(getId(), station.getId())
+                && Objects.equals(getName(), station.getName());
     }
 
     @Override
