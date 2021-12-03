@@ -92,9 +92,9 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 #### 일반 기능
 
-- [ ] 상행 종점 역을 제거한다.
-- [ ] 중간 역을 제거한다.
-- [ ] 하행 종점 역을 제거한다.
+- [x] 상행 종점 역을 제거한다.
+- [x] 중간 역을 제거한다.
+- [x] 하행 종점 역을 제거한다.
   
 #### 예외 기능
 
