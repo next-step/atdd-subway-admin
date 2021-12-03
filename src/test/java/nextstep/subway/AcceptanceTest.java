@@ -14,7 +14,7 @@ import org.springframework.http.MediaType;
 public class AcceptanceTest {
 
     public static final String LINE_ROOT_PATH = "/lines/";
-    public static final String LINE_ADD_SECTIONS_PATH = "/sections/";
+    public static final String LINE_SECTIONS_PATH = "/sections/";
     public static final String STATION_ROOT_PATH = "/stations/";
 
     @LocalServerPort
@@ -61,6 +61,14 @@ public class AcceptanceTest {
     public ExtractableResponse<Response> 삭제_요청(String path) {
         return RestAssured
                 .given().log().all()
+                .when().delete(path)
+                .then().log().all().extract();
+    }
+
+    public ExtractableResponse<Response> 삭제_요청(String path, Long id) {
+        return RestAssured
+                .given().log().all()
+                .queryParam("stationId", id)
                 .when().delete(path)
                 .then().log().all().extract();
     }

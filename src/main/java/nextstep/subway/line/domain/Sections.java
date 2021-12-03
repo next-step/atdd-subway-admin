@@ -29,6 +29,25 @@ public class Sections {
         sections.add(addSection);
     }
 
+    public void remove(Station removeStation) {
+        removeSectionBetweenSections(removeStation);
+    }
+
+    private void removeSectionBetweenSections(Station removeStation) {
+        List<Section> findSections = findSections(removeStation);
+        Section upSection = findSections.get(0);
+        Section downSection = findSections.get(1);
+        upSection.changeDownStationToRemoveSectionDownStation(downSection);
+        sections.remove(downSection);
+    }
+
+    private List<Section> findSections(Station removeStation) {
+        return getOrderedSections().stream()
+                .filter(section -> section.isEqualsUpStation(removeStation)
+                        || section.isEqualsDownStation(removeStation))
+                .collect(Collectors.toList());
+    }
+
     public List<Station> getOrderedStations() {
         if (sections.isEmpty()) {
             return new ArrayList<>();
@@ -75,7 +94,7 @@ public class Sections {
                     .filter(section -> section.isDistanceGreaterThan(addSection))
                     .findFirst()
                     .orElseThrow(() -> new BadRequestException("기존 역 사이 길이 보다 크거나 같으면 등록을 할 수 없습니다."))
-                    .changeDownStationToAddSectionUpStation(addSection);
+                    .changeUpStationToAddSectionDownStation(addSection);
         }
     }
 

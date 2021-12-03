@@ -79,4 +79,11 @@ public class LineService {
         Station downStation = stationService.findStationById(downStationId);
         line.addSection(upStation, downStation, distance);
     }
+
+    public LineResponse removeSection(Long id, Long stationId) {
+        Line line = findLineById(id);
+        Station removeStation = stationService.findStationById(stationId);
+        line.removeSection(removeStation);
+        return LineResponse.of(line);
+    }
 }
