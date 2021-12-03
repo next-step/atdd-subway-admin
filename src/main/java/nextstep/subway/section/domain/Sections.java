@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.dto.SectionResponse;
+import nextstep.subway.section.exception.ExistsSectionException;
 import nextstep.subway.section.exception.NotExisitsSectionException;
 import nextstep.subway.station.domain.Station;
 
@@ -47,29 +48,29 @@ public class Sections {
     }
 
     private void validateExistsSection(Section newSection) {
+        sections.stream()
+                .filter(section -> section.hasSameStation(newSection))
+                .findAny()
+                .ifPresent(a -> {throw new ExistsSectionException();});
     }
 
     private void addSameDownStationSection(Section newSection) {
         if (existsDownStation(newSection)) {
             Section targetSection = getTargetDownSection(newSection);
-            targetSection.setDownStation(newSection.getUpStation());
-            targetSection.setDistance(targetSection.getDistance() - newSection.getDistance());
+            targetSection.insertNewDownStation(newSection.getUpStation(), newSection.getDistance());
         }
     }
 
     private void addSameUpStationSection(Section newSection) {
         if (existsUpStation(newSection)) {
             Section targetSection = getTargetUpSection(newSection);
-            targetSection.setUpStation(newSection.getDownStation());
-            targetSection.setDistance(targetSection.getDistance() - newSection.getDistance());
+            targetSection.insertNewUpStation(newSection.getDownStation(), newSection.getDistance());
         }
     }
 
     private Section getTargetDownSection(Section newSection) {
         return sections.stream()
-                .filter(section -> section
-                        .getDownStation() == newSection
-                        .getDownStation())
+                .filter(section -> section.hasSameDownStation(newSection))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
     }

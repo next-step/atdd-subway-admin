@@ -72,4 +72,22 @@ public class Section extends BaseEntity {
     public boolean hasStation(Station station) {
         return station.equals(upStation) || station.equals(downStation);
     }
+
+    public void insertNewDownStation(Station upStation, int distance) {
+        this.downStation = upStation;
+        setDistance(this.distance - distance);
+    }
+
+    public void insertNewUpStation(Station downStation, int distance) {
+        this.upStation = downStation;
+        setDistance(this.distance - distance);
+    }
+
+    public boolean hasSameDownStation(Section newSection) {
+        return this.downStation == newSection.downStation;
+    }
+
+    public boolean hasSameStation(Section newSection) {
+        return this.upStation.equals(newSection.upStation) && this.downStation.equals(newSection.downStation);
+    }
 }
