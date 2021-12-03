@@ -44,7 +44,6 @@ public class Sections {
                     stations.add(section.getUpStation());
                     stations.add(section.getDownStation());
                 });
-
         return stations.stream().distinct().collect(Collectors.toList());
     }
 
