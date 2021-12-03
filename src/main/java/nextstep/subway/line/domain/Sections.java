@@ -167,38 +167,13 @@ public class Sections {
     }
     
     private void removeEdgeStation(Station station) {
-        if (removeIfFirstStation(station)) {
-            return;
-        }
-        
-        if (removeIfLastStation(station)) {
-            return;
-        }
-    }
-    
-    private boolean removeIfFirstStation(Station station) {
-        Optional<Section> firstSection = sections.stream()
-                .filter(section -> station.isSameStation(section.getUpStation()))
+        Optional<Section> edgeSection = sections.stream()
+                .filter(section -> section.isContainStation(station))
                 .findFirst();
         
-        if (firstSection.isPresent()) {
-            sections.removeIf(section -> section.equals(firstSection.get()));
-            return true;
+        if (edgeSection.isPresent()) {
+            sections.removeIf(section -> section.equals(edgeSection.get()));
         }
-        return false;
     }
     
-    private boolean removeIfLastStation(Station station) {
-        Optional<Section> lastSection = sections.stream()
-                .filter(section -> station.isSameStation(section.getDownStation()))
-                .findFirst();
-        
-        if (lastSection.isPresent()) {
-            sections.removeIf(section -> section.equals(lastSection.get()));
-            return true;
-        }
-        return false;
-    }
-    
-
 }

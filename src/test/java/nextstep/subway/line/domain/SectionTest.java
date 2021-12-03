@@ -165,5 +165,21 @@ public class SectionTest {
                 () -> assertThat(section.getDistance()).isEqualTo(Distance.from(40))
                 );
     }
+    
+    @Test
+    @DisplayName("구간에 포함된 역인지 확인")
+    void 지하철역_포함여부_확인() {
+        // given
+        Station upStation = Station.from("강남역");
+        Station downStation = Station.from("교대역");
+        Line line = Line.of("2호선", "파란색", upStation, downStation, Distance.from(15));
+        Section section = Section.of(line, upStation, downStation, Distance.from(15));
+        
+        // when, then
+        assertAll(
+                () -> assertThat(section.isContainStation(downStation)).isTrue(),
+                () -> assertThat(section.isContainStation(Station.from("잠실역"))).isFalse()
+                );
+    }
 
 }

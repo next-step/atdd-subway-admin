@@ -73,6 +73,10 @@ public class Section extends BaseEntity {
     public boolean isSameDownStation(Station station) {
         return this.downStation.equals(station);
     }
+    
+    public boolean isContainStation(Station station) {
+        return isSameUpStation(station) || isSameDownStation(station);
+    }
 
     public void moveUpStationTo(Station station, Distance distance) {
         this.upStation = station;
