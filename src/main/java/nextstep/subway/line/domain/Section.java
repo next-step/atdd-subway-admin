@@ -114,9 +114,6 @@ public class Section extends BaseEntity {
 
     public void concatSection(Section section) {
         this.downStation = section.getDownStation();
-        if (isFirstStation(section)) {
-            return;
-        }
         this.distance = distance.add(section.getDistance());
     }
 

@@ -212,7 +212,7 @@ class SectionsTest {
         List<Section> resultSections = sections.getSections();
         List<Station> stations = sections.getStations();
         assertThat(stations).doesNotContain(stationSinChon);
-        assertThat(getDistance(resultSections)).containsExactly(new Distance(10), new Distance(2));
+        assertThat(getDistance(resultSections)).containsExactly(new Distance(14), new Distance(2));
     }
     
     /**
