@@ -2,9 +2,6 @@ package nextstep.subway.line.domain;
 
 import static java.util.stream.Collectors.*;
 import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
-import static nextstep.subway.common.Message.*;
-import static nextstep.subway.line.exception.AlreadyRegisteredException.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,11 +9,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.line.exception.AlreadyRegisteredException;
+import nextstep.subway.line.exception.LimitSectionSizeException;
 import nextstep.subway.line.exception.SectionNotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.exception.StationNotFoundException;
@@ -24,14 +24,14 @@ import nextstep.subway.station.exception.StationNotFoundException;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", fetch = LAZY, cascade = ALL)
+    private static final int LIMIT_SECTION_SIZE = 1;
+
+    @OneToMany(mappedBy = "line", cascade = ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public void add(List<Section> newSections, Line line) {
-        List<Section> addNewSections = newSections.stream()
-                                                  .peek(section -> section.setLine(line))
-                                                  .collect(toList());
-        this.sections.addAll(addNewSections);
+        newSections.forEach(section -> section.setLine(line));
+        this.sections.addAll(newSections);
     }
 
     public void add(Section newSection, Line line) {
@@ -43,22 +43,22 @@ public class Sections {
     }
 
     public void addSection(Section newSection) {
-        isNotExistsStation(newSection);
+        validateNotExistsStation(newSection);
         alreadyRegisteredSection(newSection);
         changeUpSection(newSection);
         changeDownSection(newSection);
         sections.add(newSection);
     }
 
-    private void isNotExistsStation(Section newSection) {
-        if (!matchStation(section -> section.isNotStations(newSection))) {
-            throw new StationNotFoundException(MESSAGE_IS_NOT_EXISTS_STATION);
+    private void validateNotExistsStation(Section newSection) {
+        if (!matchStation(section -> section.contains(newSection))) {
+            throw new StationNotFoundException();
         }
     }
 
     void alreadyRegisteredSection(Section newSection) {
         if (matchStation(section -> section.isStations(newSection))) {
-            throw new AlreadyRegisteredException(MESSAGE_ALREADY_REGISTERED_SECTION);
+            throw new AlreadyRegisteredException();
         }
     }
 
@@ -91,11 +91,39 @@ public class Sections {
         return section -> section.isDowStation(downStation);
     }
 
+    public void removeSection(Station station) {
+        validateLimitSectionSize();
+        Section section = findRemoveSection(station);
+        removeSection(station, section);
+    }
+
+    private void validateLimitSectionSize() {
+        if (sections.size() <= LIMIT_SECTION_SIZE) {
+            throw new LimitSectionSizeException();
+        }
+    }
+
+    private Section findRemoveSection(Station station) {
+        return findSections(isUpStation(station)).orElseGet(() -> findLastSection(station));
+    }
+
+    private Section findLastSection(Station station) {
+        return findSections(isDownStation(station))
+            .orElseThrow(SectionNotFoundException::new);
+    }
+
+    private void removeSection(Station station, Section section) {
+        if (matchStation(isDownStation(station))) {
+            findSections(isDownStation(station))
+                .ifPresent(s -> s.concatSection(section));
+        }
+        sections.remove(section);
+    }
+
     private Optional<Section> findSections(Predicate<Section> condition) {
-        Optional<Section> findSection = sections.stream()
-                                                .filter(condition)
-                                                .findFirst();
-        return findSection;
+        return sections.stream()
+                       .filter(condition)
+                       .findFirst();
     }
 
     public boolean contains(Section section) {
@@ -103,17 +131,26 @@ public class Sections {
     }
 
     public List<Station> getStations() {
+        List<Station> resultStations = getSections().stream()
+                                            .flatMap(
+                                                section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                                            .distinct()
+                                            .collect(toList());
+
+        return Collections.unmodifiableList(resultStations);
+    }
+
+    public List<Section> getSections() {
         Section findSection = findFirstSection();
-        List<Station> resultStations = new ArrayList();
+        List<Section> resultStations = new ArrayList<>();
 
         while (matchStation(isUpStation(findSection.getDownStation()))) {
-            resultStations.add(findSection.getUpStation());
+            resultStations.add(findSection);
             findSection = findSections(isUpStation(findSection.getDownStation()))
                 .orElseThrow(SectionNotFoundException::new);
         }
 
-        resultStations.add(findSection.getUpStation());
-        resultStations.add(findSection.getDownStation());
+        resultStations.add(findSection);
         return Collections.unmodifiableList(resultStations);
     }
 
@@ -144,4 +181,5 @@ public class Sections {
     public int hashCode() {
         return Objects.hash(sections);
     }
+
 }

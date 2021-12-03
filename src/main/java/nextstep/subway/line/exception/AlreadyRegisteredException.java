@@ -1,12 +1,14 @@
 package nextstep.subway.line.exception;
 
+import static nextstep.subway.common.Message.*;
+
 import nextstep.subway.common.exception.ServiceException;
 
 public class AlreadyRegisteredException extends ServiceException {
-    public static final String MESSAGE_ALREADY_REGISTERED_SECTION = "이미 등록되어 있는 구간입니다.";
+
 
     public AlreadyRegisteredException() {
-        super(MESSAGE_ALREADY_REGISTERED_SECTION);
+        super(MESSAGE_ALREADY_REGISTERED_SECTION.getMessage());
     }
 
     public AlreadyRegisteredException(String message) {

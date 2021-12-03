@@ -75,6 +75,15 @@ public class TestFactory {
             .then().log().all().extract();
     }
 
+    public static ExtractableResponse<Response> delete(String url, Long id, Param param) {
+        return givenLog()
+            .pathParams("lineId", id)
+            .queryParams(param.result())
+            .delete(url)
+            .then().log().all()
+            .extract();
+    }
+
     public static <T> T toResponseData(ExtractableResponse<Response> resource, Class<T> clazz) {
         return resource.jsonPath().getObject(".", clazz);
     }

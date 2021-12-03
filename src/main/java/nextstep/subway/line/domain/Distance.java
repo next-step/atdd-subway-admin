@@ -12,8 +12,6 @@ import nextstep.subway.common.Message;
 @Embeddable
 public class Distance {
 
-
-
     @Column
     private int distance = 0;
 
@@ -32,8 +30,9 @@ public class Distance {
         return new Distance(result);
     }
 
-    public int getDistance() {
-        return distance;
+    public Distance add(Distance addDistance) {
+        final int result = distance + addDistance.distance;
+        return new Distance(result);
     }
 
     @Override
@@ -50,4 +49,6 @@ public class Distance {
     public int hashCode() {
         return Objects.hash(distance);
     }
+
+
 }

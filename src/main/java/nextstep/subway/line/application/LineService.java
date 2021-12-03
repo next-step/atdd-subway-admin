@@ -22,8 +22,9 @@ import nextstep.subway.station.domain.Station;
 @Transactional
 public class LineService {
 
+    private final StationService stationService;
     private final LineRepository lineRepository;
-    private StationService stationService;
+
 
     public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
@@ -37,7 +38,8 @@ public class LineService {
     }
 
     public void addSection(Long lineId, SectionRequest newSectionRequest) {
-        Line line = lineRepository.findById(lineId).orElseThrow(NoResultDataException::new);
+        Line line = lineRepository.findById(lineId)
+                                  .orElseThrow(NoResultDataException::new);
         line.addSection(createSection(newSectionRequest));
     }
 
@@ -67,9 +69,15 @@ public class LineService {
         lineRepository.delete(line);
     }
 
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId)
+                                  .orElseThrow(NoResultDataException::new);
+        line.removeSection(stationService.findById(stationId));
+    }
+
     private Section createSection(SectionRequest sectionRequest) {
-        Station upStation = stationService.findByIdThrow(sectionRequest.getUpStationId());
-        Station downStation = stationService.findByIdThrow(sectionRequest.getDownStationId());
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
         return new Section(upStation, downStation, new Distance(sectionRequest.getDistance()));
     }
 }

@@ -58,8 +58,15 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public Section(Station upStation, Station downStation, Distance distance, Line line) {
+    public Section(Long id, Station upStation, Station downStation, Distance distance) {
+        this(upStation, downStation);
+        this.id = id;
+        this.distance = distance;
+    }
+
+    public Section(Long id, Station upStation, Station downStation, Distance distance, Line line) {
         this(upStation, downStation, distance);
+        this.id = id;
         this.line = line;
     }
 
@@ -71,7 +78,7 @@ public class Section extends BaseEntity {
     }
 
     public void changeUpSection(Section newSection) {
-        if (this.upStation.getName().equals(newSection.getDownStation().getName())) {
+        if (this.upStation.equalsName(newSection.getDownStation())) {
             return;
         }
         this.upStation = newSection.getDownStation();
@@ -88,7 +95,7 @@ public class Section extends BaseEntity {
             (downStation.equalsName(newSection.getUpStation())) && upStation.equalsName(newSection.getDownStation()));
     }
 
-    public boolean isNotStations(Section newSection) {
+    public boolean contains(Section newSection) {
         return (downStation.equalsName(newSection.getUpStation()) || upStation.equalsName(newSection.getUpStation()) ||
             (downStation.equalsName(newSection.getDownStation()) || upStation.equalsName(newSection.getDownStation())));
     }
@@ -103,6 +110,15 @@ public class Section extends BaseEntity {
 
     public boolean equalsUpStationName(Station upStation) {
         return this.getDownStation().equalsName(upStation);
+    }
+
+    public void concatSection(Section section) {
+        this.downStation = section.getDownStation();
+        this.distance = distance.add(section.getDistance());
+    }
+
+    public boolean isFirstStation(Section section) {
+        return isDowStation(section.getDownStation());
     }
 
     public Station getUpStation() {
@@ -135,4 +151,5 @@ public class Section extends BaseEntity {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }
