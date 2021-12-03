@@ -150,6 +150,63 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         같은_응답인지_확인한다(response, HttpStatus.BAD_REQUEST);
     }
 
+    @DisplayName("상행 종점을 삭제한다.")
+    @Test
+    void removeFirstStation() {
+        // given
+        // 지하철 역_생성
+        StationResponse 신분당역 = StationAcceptanceTest.지하철역을_생성한다("신분당역");
+        구간을_추가한다(lineResponse.getId(), 신분당역, 역삼역, 4);
+
+        // when
+        // 지하철_노선에_지하철역_삭제_요청
+
+
+        // then
+        // 지하철_노선에_지하철역_삭제됨
+        // 지하철_노선_삭제_확인
+    }
+
+    @DisplayName("하행 종점을 삭제한다.")
+    @Test
+    void removeLastStation() {
+        // given
+        // 지하철 역_생성
+        StationResponse 신분당역 = StationAcceptanceTest.지하철역을_생성한다("신분당역");
+        구간을_추가한다(lineResponse.getId(), 신분당역, 역삼역, 4);
+
+        // when
+        // 지하철_노선에_지하철역_삭제_요청
+
+
+        // then
+        // 지하철_노선에_지하철역_삭제됨
+        // 지하철_노선_삭제_확인
+    }
+
+    @DisplayName("중간 역을 삭제한다.")
+    @Test
+    void removeStationMiddle() {
+        // given
+        // 지하철 역_생성
+        StationResponse 신분당역 = StationAcceptanceTest.지하철역을_생성한다("신분당역");
+        구간을_추가한다(lineResponse.getId(), 신분당역, 역삼역, 4);
+
+        // when
+        // 지하철_노선에_지하철역_삭제_요청
+
+
+        // then
+        // 지하철_노선에_지하철역_삭제됨
+        // 지하철_노선_삭제_확인
+    }
+
+    private LineResponse 구간을_추가한다(Long lineId, StationResponse upStation, StationResponse downStation, int distance) {
+        return LineAcceptanceFixture.ofLineResponse(
+                SectionAcceptanceFixture.구간_추가를_요청한다(lineId, upStation, downStation, distance)
+        );
+    }
+
     private void 같은_응답인지_확인한다(ExtractableResponse<Response> response, HttpStatus status) {
         assertThat(response.statusCode()).isEqualTo(status.value());
     }
