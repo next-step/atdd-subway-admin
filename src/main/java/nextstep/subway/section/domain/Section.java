@@ -87,6 +87,15 @@ public class Section extends BaseEntity implements Comparable<Section> {
         }
     }
 
+    public void removeLine(Line line) {
+        if (line.equals(this.line)) {
+            this.line = null;
+        }
+        if (line.isContainsSection(this)) {
+            line.removeSection(this);
+        }
+    }
+
     @Override
     public int compareTo(Section o) {
         if (downStation.equals(o.getUpStation())) {

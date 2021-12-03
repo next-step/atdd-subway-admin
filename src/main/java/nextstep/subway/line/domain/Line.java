@@ -60,9 +60,16 @@ public class Line extends BaseEntity {
 
     public void removeSection(Section section) {
         sections.removeSection(section);
+        if (this.equals(section.getLine())) {
+            section.removeLine(this);
+        }
     }
 
     public List<Station> getStations() {
         return sections.getStations();
+    }
+
+    public boolean isContainsSection(Section section) {
+        return sections.isContainsSection(section);
     }
 }
