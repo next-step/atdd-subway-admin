@@ -78,8 +78,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ## 2단계 기능 목록
 
-- [ ] 구간 생성 인수 테스트 작성
-- [ ] 구간 생성 구현
 - [ ] 노선 생성시 구간 지정하는 인수 테스트 추가
 - [ ] 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기
     - 구간(Section)의 형태로 관리되어야 함
