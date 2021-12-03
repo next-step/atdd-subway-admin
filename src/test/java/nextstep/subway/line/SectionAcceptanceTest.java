@@ -83,6 +83,66 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     생성_요청이_성공함(response);
   }
 
+  @DisplayName("동일한 구간을 입력하였을 경우 예외를 처리한다.")
+  @Test
+  void 지하철_구간_추가_중복_발생() {
+    // given
+    지하철_노선_생성됨();
+
+    SectionRequest sectionRequest = new SectionRequest( 1L, 2L, 2);
+
+    // when
+    ExtractableResponse<Response> response = 지하철_구간_생성_요청(sectionRequest);
+
+    // then
+    중복된_구간이_등록되어_있음(response);
+  }
+
+  @DisplayName("기존에 등록된 구간에 연결된 역들과 연결할 수 있는 역이 없을 경우")
+  @Test
+  void 지하철_구간_추가_연결된_구간_없음() {
+    // given
+    지하철_노선_생성됨();
+    지하철_역_생성(3L, "명학역");
+    지하철_역_생성(4L, "금정역");
+
+    SectionRequest sectionRequest = new SectionRequest( 3L, 4L, 2);
+
+    // when
+    ExtractableResponse<Response> response = 지하철_구간_생성_요청(sectionRequest);
+
+    // then
+    연결된_구간이_없음(response);
+  }
+
+  @DisplayName("기존에 등록된 구간 사이에 추가될 때 거리가 기존 구간보다 높거나 같을 경우")
+  @Test
+  void 지하철_구간_추가_잘못된_구간간_거리_입력() {
+    // given
+    지하철_노선_생성됨();
+    지하철_역_생성(3L, "관악");
+
+    SectionRequest sectionRequest = new SectionRequest( 1L, 3L, 20);
+
+    // when
+    ExtractableResponse<Response> response = 지하철_구간_생성_요청(sectionRequest);
+
+    // then
+    구간_길이가_유효하지_않음(response);
+  }
+
+  private void 구간_길이가_유효하지_않음(ExtractableResponse<Response> response) {
+    assertThat((String) response.jsonPath().get("message.")).isEqualTo("거리의 최소 값은 1 입니다. 입력: -10");
+  }
+
+  private void 연결된_구간이_없음(ExtractableResponse<Response> response) {
+    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+  }
+
+  private void 중복된_구간이_등록되어_있음(ExtractableResponse<Response> response) {
+    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+  }
+
   private ExtractableResponse<Response> 지하철_구간_생성_요청(SectionRequest sectionRequest) {
     return RestAssured
       .given().log().all()
