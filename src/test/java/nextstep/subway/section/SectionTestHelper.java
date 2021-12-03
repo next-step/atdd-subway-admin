@@ -18,7 +18,7 @@ public class SectionTestHelper {
         return params;
     }
 
-    public static ExtractableResponse<Response> 구간_등록_요청(Map params){
+    public static ExtractableResponse<Response> 구간_등록_요청(Map params) {
         return RestAssured.given().log().all()
                 .pathParam("lineId", "1")
                 .body(params)
@@ -29,7 +29,7 @@ public class SectionTestHelper {
                 .extract();
     }
 
-    public static Map 구간_제거_요청_파라미터(String stationId){
+    public static Map 구간_제거_요청_파라미터(String stationId) {
         Map<String, String> params = new HashMap<>();
         params.put("stationId", stationId);
         return params;
