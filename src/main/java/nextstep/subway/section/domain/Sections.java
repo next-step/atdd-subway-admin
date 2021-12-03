@@ -41,7 +41,7 @@ public class Sections {
     private void validateNotExistsSection(Section newSection) {
         Stream<Station> stations = sections.stream()
                 .flatMap(section -> Arrays.stream(new Station[]{section.getUpStation(), section.getDownStation()}));
-        if (stations.noneMatch(section -> section.equals(newSection.getUpStation()) || section.equals(newSection.getDownStation()))) {
+        if (stations.noneMatch(newSection::hasStation)) {
             throw new NotExisitsSectionException();
         }
     }

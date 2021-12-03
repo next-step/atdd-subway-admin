@@ -68,4 +68,8 @@ public class Section extends BaseEntity {
         }
         this.distance = distance;
     }
+
+    public boolean hasStation(Station station) {
+        return station.equals(upStation) || station.equals(downStation);
+    }
 }
