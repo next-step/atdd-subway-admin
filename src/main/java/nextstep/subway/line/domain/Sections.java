@@ -14,6 +14,10 @@ import java.util.stream.Stream;
 @Embeddable
 public class Sections {
 
+    public static final int REMOVE_SECTION_MIN_SIZE = 1;
+    public static final int NOT_BETWEEN_SECTION = 1;
+    public static final int BETWEEN_SECTION = 2;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -30,22 +34,9 @@ public class Sections {
     }
 
     public void remove(Station removeStation) {
-        removeSectionBetweenSections(removeStation);
-    }
-
-    private void removeSectionBetweenSections(Station removeStation) {
         List<Section> findSections = findSections(removeStation);
-        Section upSection = findSections.get(0);
-        Section downSection = findSections.get(1);
-        upSection.changeDownStationToRemoveSectionDownStation(downSection);
-        sections.remove(downSection);
-    }
-
-    private List<Section> findSections(Station removeStation) {
-        return getOrderedSections().stream()
-                .filter(section -> section.isEqualsUpStation(removeStation)
-                        || section.isEqualsDownStation(removeStation))
-                .collect(Collectors.toList());
+        removeSectionNotBetweenSections(findSections);
+        removeSectionBetweenSections(findSections);
     }
 
     public List<Station> getOrderedStations() {
@@ -95,6 +86,28 @@ public class Sections {
                     .findFirst()
                     .orElseThrow(() -> new BadRequestException("기존 역 사이 길이 보다 크거나 같으면 등록을 할 수 없습니다."))
                     .changeUpStationToAddSectionDownStation(addSection);
+        }
+    }
+
+    private List<Section> findSections(Station removeStation) {
+        return getOrderedSections().stream()
+                .filter(section -> section.isEqualsUpStation(removeStation)
+                        || section.isEqualsDownStation(removeStation))
+                .collect(Collectors.toList());
+    }
+
+    private void removeSectionNotBetweenSections(List<Section> findSections) {
+        if (findSections.size() == NOT_BETWEEN_SECTION) {
+            sections.remove(findSections.get(0));
+        }
+    }
+
+    private void removeSectionBetweenSections(List<Section> findSections) {
+        if (findSections.size() == BETWEEN_SECTION) {
+            Section upSection = findSections.get(0);
+            Section downSection = findSections.get(1);
+            upSection.changeDownStationToRemoveSectionDownStation(downSection);
+            sections.remove(downSection);
         }
     }
 
