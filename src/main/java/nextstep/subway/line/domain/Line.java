@@ -37,11 +37,14 @@ public class Line extends BaseEntity {
 
   public static Line of(String name, String color, Station upStation, Station downStation, Distance distance) {
     Line line = new Line(name, color);
-    line.addSection(Section.of(line, upStation, downStation, distance));
+    Section section = Section.of(upStation, downStation, distance);
+    section.addLine(line);
+    line.sections.add(section);
     return line;
   }
 
   public void addSection(Section section) {
+    section.addLine(this);
     sections.add(section);
   }
 

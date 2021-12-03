@@ -43,4 +43,8 @@ public class Distance {
   public int hashCode() {
     return Objects.hash(distance);
   }
+
+  public Distance minus(Distance distance) {
+    return of(this.distance - distance.distance);
+  }
 }

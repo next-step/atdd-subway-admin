@@ -45,6 +45,14 @@ public class Stations {
     this.stations = stations;
   }
 
+  public List<Station> asList() {
+    return stations;
+  }
+
+  public boolean containAny(List<Station> stationList) {
+    return stationList.removeAll(stations);
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -63,9 +71,5 @@ public class Stations {
     return "Stations{" +
       "stations=" + stations +
       '}';
-  }
-
-  public List<Station> asList() {
-    return stations;
   }
 }
