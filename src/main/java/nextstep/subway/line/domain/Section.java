@@ -16,11 +16,11 @@ public class Section extends BaseEntity {
   @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
   private Line line;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_up_station"))
   private Station upStation;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_down_station"))
   private Station downStation;
 
@@ -37,8 +37,12 @@ public class Section extends BaseEntity {
     this.distance = distance;
   }
 
-  public static Section of(Line line, Station upStation, Station downStation, Distance distance) {
-    return new Section(null, line, upStation, downStation, distance);
+  public static Section of(Station upStation, Station downStation, Distance distance) {
+    return new Section(null, null, upStation, downStation, distance);
+  }
+
+  public void addLine(Line line) {
+    this.line = line;
   }
 
   public Long getId() {
@@ -55,6 +59,10 @@ public class Section extends BaseEntity {
 
   public Distance getDistance() {
     return distance;
+  }
+
+  public Line getLine() {
+    return line;
   }
 
   @Override
@@ -79,5 +87,19 @@ public class Section extends BaseEntity {
       ", downStation=" + downStation +
       ", distance=" + distance +
       '}';
+  }
+
+  public void updateUpSideSection(Section newSection) {
+    upStation = newSection.downStation;
+    distance = distance.minus(newSection.distance);
+  }
+
+  public void updateDownSideSection(Section newSection) {
+    downStation = newSection.upStation;
+    distance = distance.minus(newSection.distance);
+  }
+
+  public boolean isMatch(Section section) {
+    return upStation.equals(section.upStation) && downStation.equals(section.downStation);
   }
 }
