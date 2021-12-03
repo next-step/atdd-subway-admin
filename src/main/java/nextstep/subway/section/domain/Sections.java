@@ -77,23 +77,19 @@ public class Sections {
 
     private boolean existsDownStation(Section newSection) {
         return sections.stream()
-                .map(Section::getDownStation)
-                .anyMatch(station -> station == newSection.getDownStation());
+                .anyMatch(section -> section.hasSameDownStation(newSection));
     }
 
     private Section getTargetUpSection(Section newSection) {
         return sections.stream()
-                .filter(section -> section
-                        .getUpStation() == newSection
-                        .getUpStation())
+                .filter(section -> section.hasSameUpStation(newSection))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
     }
 
     private boolean existsUpStation(Section newSection) {
         return sections.stream()
-                .map(Section::getUpStation)
-                .anyMatch(station -> station == newSection.getUpStation());
+                .anyMatch(section -> section.hasSameUpStation(newSection));
     }
 
     public List<Station> getStations() {

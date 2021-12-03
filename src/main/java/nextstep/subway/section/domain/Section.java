@@ -90,4 +90,8 @@ public class Section extends BaseEntity {
     public boolean hasSameStation(Section newSection) {
         return this.upStation.equals(newSection.upStation) && this.downStation.equals(newSection.downStation);
     }
+
+    public boolean hasSameUpStation(Section newSection) {
+        return this.upStation == newSection.upStation;
+    }
 }
