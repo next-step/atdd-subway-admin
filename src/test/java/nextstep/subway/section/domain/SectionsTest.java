@@ -93,4 +93,14 @@ class SectionsTest {
 
         assertThat(sections.getStations()).isEqualTo(Arrays.asList(강남역, 양재역));
     }
+
+    @DisplayName("존재하지 않는 지하철 역 삭제 에러")
+    @Test
+    void deleteStation_errorWhenStationNotExists() {
+        Sections sections = Sections.from(Arrays.asList(강남_양재_구간));
+
+        assertThatExceptionOfType(SubwayException.class)
+            .isThrownBy(() -> sections.deleteStation(판교역))
+            .withMessage("존재하지 않는 지하철 역 입니다.");
+    }
 }

@@ -175,4 +175,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_구간_삭제됨(response);
         지하철_노선에_포함된_역들이_일치함(지하철_2호선_id, Arrays.asList(삼성역, 강남역));
     }
+
+    @DisplayName("노선에 등록되어 있지 않은 역을 제거할 수 없음")
+    @Test
+    void 노선에_등록되어_있지_않은_역을_제거할_수_없음() {
+        // given
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선예_구간_삭제_요청(지하철_2호선_id, 양재역.getId());
+
+        // then
+        지하철_노선에_구간_삭제_실패됨(response);
+    }
 }

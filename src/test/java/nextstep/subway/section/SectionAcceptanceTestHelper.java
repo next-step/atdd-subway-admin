@@ -27,13 +27,16 @@ public class SectionAcceptanceTestHelper {
             .given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/lines/" + lineId + "/sections")
-            .then().log().all().extract();
+            .when()
+            .post("/lines/" + lineId + "/sections")
+            .then().log().all()
+            .extract();
 
     }
 
     public static void 지하철_노선에_구간_등록됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode())
+            .isEqualTo(HttpStatus.CREATED.value());
 
         assertThat(response.header("Location"))
             .isNotBlank();
@@ -43,7 +46,8 @@ public class SectionAcceptanceTestHelper {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineId);
         LineResponse lineResponse = response.as(LineResponse.class);
 
-        assertThat(lineResponse.getStations()).contains(StationResponse.from(station));
+        assertThat(lineResponse.getStations())
+            .contains(StationResponse.from(station));
     }
 
     public static void 지하철_노선에_포함된_역들이_일치함(long lineId, List<Station> stations) {
@@ -58,7 +62,8 @@ public class SectionAcceptanceTestHelper {
     }
 
     public static void 지하철_노선에_구간_추가_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode())
+            .isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     public static void 지하철_노선에_구간_등록되어_있음(long lineId, Station upStation, Station downStation, String distance) {
@@ -84,5 +89,8 @@ public class SectionAcceptanceTestHelper {
             .isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-
+    public static void 지하철_노선에_구간_삭제_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode())
+            .isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

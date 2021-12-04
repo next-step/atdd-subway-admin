@@ -10,6 +10,8 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.common.exception.SubwayErrorCode;
+import nextstep.subway.common.exception.SubwayException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.Stations;
 
@@ -62,12 +64,17 @@ public class Sections {
 
     public void deleteStation(Station station) {
         Optional<Section> optionalDownSection = findSectionByUpStation(station);
+        Optional<Section> optionalUpSection = findSectionByDownStation(station);
+
+        if(!optionalDownSection.isPresent() && !optionalUpSection.isPresent()) {
+            throw new SubwayException(SubwayErrorCode.STATION_NOT_EXISTS);
+        }
+
         if (optionalDownSection.isPresent()) {
             Section section = optionalDownSection.get();
             sections.remove(section);
         }
 
-        Optional<Section> optionalUpSection = findSectionByDownStation(station);
         if (optionalUpSection.isPresent()) {
             Section section = optionalUpSection.get();
             sections.remove(section);
