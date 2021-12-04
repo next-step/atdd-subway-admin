@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import nextstep.subway.common.Message;
+import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -13,7 +14,6 @@ import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -41,11 +41,11 @@ public class LineService {
         return LineResponse.from(lines);
     }
 
+    @Transactional
     public void deleteLineById(final Long id) {
         lineRepository.deleteById(id);
     }
 
-    @Transactional(readOnly = true)
     public LineResponse findByLineId(final Long id) {
         final Line line = getLine(id);
         return LineResponse.from(line);
@@ -58,22 +58,30 @@ public class LineService {
         return LineResponse.from(line);
     }
 
-    public LineResponse addSection(Long id, SectionRequest sectionRequest) {
+    @Transactional
+    public LineResponse addSection(final Long id, final SectionRequest sectionRequest) {
         final Line line = getLine(id);
-        Station upStation = getStation(sectionRequest.getUpStationId());
-        Station downStation = getStation(sectionRequest.getDownStationId());
-        Section section = Section.of(upStation, downStation, sectionRequest.getDistance());
+        final Station upStation = getStation(sectionRequest.getUpStationId());
+        final Station downStation = getStation(sectionRequest.getDownStationId());
+        final Section section = Section.of(upStation, downStation, sectionRequest.getDistance());
         line.addSection(section);
         return LineResponse.from(line);
     }
 
-    private Line getLine(Long lineid) {
-        return lineRepository.findById(lineid)
-                .orElseThrow(() -> new IllegalArgumentException(Message.NOT_FIND_LINE.getMessage()));
+    @Transactional
+    public void removeSectionByStationId(final Long lineId, final Long stationId) {
+        final Line line = getLine(lineId);
+        final Station station = getStation(stationId);
+        line.removeSectionByStationId(station);
     }
 
-    private Station getStation(Long stationId) {
+    private Line getLine(final Long lineid) {
+        return lineRepository.findById(lineid)
+                .orElseThrow(() -> new NotFoundException(Message.NOT_FIND_LINE.getMessage()));
+    }
+
+    private Station getStation(final Long stationId) {
         return stationRepository.findById(stationId)
-                .orElseThrow(() -> new IllegalArgumentException(Message.NOT_FIND_STATION.getMessage()));
+                .orElseThrow(() -> new NotFoundException(Message.NOT_FIND_STATION.getMessage()));
     }
 }
