@@ -16,11 +16,10 @@ public class Sections {
   @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Section> sections = new ArrayList<>();
 
-  public Sections() {
-  }
+  protected Sections() {}
 
   public Sections(List<Section> sections) {
-    this.sections = sections;
+    this.sections.addAll(sections);
   }
 
   public Sections of(List<Section> sections) {
@@ -28,29 +27,44 @@ public class Sections {
   }
 
   public void add(Section section) {
-    if (!sections.isEmpty()) {
+    if (isUpdateSection(section)) {
       checkAddSectionValidation(section);
       updateSection(section);
     }
     sections.add(section);
   }
 
+  private boolean isUpdateSection(Section section) {
+    return !sections.isEmpty()
+      && !isUpEndPointStation(section.getDownStation())
+      && !isDownEndPointStation(section.getUpStation());
+  }
+
+  private boolean isDownEndPointStation(Station station) {
+    return downEndPoint().getDownStation().equals(station);
+  }
+
+  private boolean isUpEndPointStation(Station station) {
+    return upEndPoint().getUpStation().equals(station);
+  }
+
   private void checkAddSectionValidation(Section section) {
-    if (!isContainsStation(section)) {
+    if (!containsStation(section)) {
       throw new NoSuchElementException("해당 구간에 연결된 역들과 연결할 수 있는 역이 없습니다. 입력: "
         + section.getUpStation() + ", " + section.getDownStation());
     }
 
-    if (isContainSection(section)) {
+    if (containSection(section)) {
       throw new IllegalArgumentException("이미 연결된 구간이 존재합니다. 입력: " + section);
     }
   }
 
-  private boolean isContainSection(Section section) {
-    return sections.stream().anyMatch(existSection -> existSection.isMatch(section));
+  private boolean containSection(Section section) {
+    return sections.stream()
+      .anyMatch(existSection -> existSection.isMatch(section));
   }
 
-  private boolean isContainsStation(Section section) {
+  private boolean containsStation(Section section) {
     List<Station> stationList = new ArrayList<>(Arrays.asList(section.getUpStation(), section.getDownStation()));
     return getUpToDownStations().containAny(stationList);
   }
@@ -137,5 +151,9 @@ public class Sections {
 
   private Station stationsLastElement(List<Station> stations) {
     return stations.get(stations.size() - 1);
+  }
+
+  public List<Section> asList() {
+    return sections;
   }
 }
