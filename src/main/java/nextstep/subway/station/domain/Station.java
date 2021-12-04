@@ -1,29 +1,66 @@
 package nextstep.subway.station.domain;
 
-import nextstep.subway.common.BaseEntity;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
-import javax.persistence.*;
+import nextstep.subway.common.BaseEntity;
 
 @Entity
 public class Station extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(unique = true)
-    private String name;
 
-    public Station() {
-    }
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    public Station(String name) {
-        this.name = name;
-    }
+	@Column(unique = true)
+	private String name;
 
-    public Long getId() {
-        return id;
-    }
+	protected Station() {
+	}
 
-    public String getName() {
-        return name;
-    }
+	private Station(Long id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+
+	private Station(Long id) {
+		this.id = id;
+	}
+
+	public static Station of(Long id, String name) {
+		return new Station(id, name);
+	}
+
+	public static Station of(Long id) {
+		return new Station(id);
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+
+		Station station = (Station)o;
+
+		return id.equals(station.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return id.hashCode();
+	}
+
 }
