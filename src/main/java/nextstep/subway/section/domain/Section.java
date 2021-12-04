@@ -74,7 +74,8 @@ public class Section extends BaseEntity implements Comparable<Section> {
     public void update(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance.plus(distance);
+        this.distance.validateDistance(distance);
+        this.distance = new Distance(this.distance.getValue() + distance);
     }
 
     public Stream<Station> stations() {
