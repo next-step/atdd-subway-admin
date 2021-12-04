@@ -3,7 +3,6 @@ package nextstep.subway.line.domain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -33,17 +32,18 @@ public class Line extends BaseEntity {
 	protected Line() {
 	}
 
-	private Line(String name, String color) {
+	private Line(Long id, String name, String color) {
+		this.id = id;
 		this.name = name;
 		this.color = color;
 	}
 
-	public static Line of(String name, String color) {
-		return new Line(name, color);
+	public static Line of(Long id, String name, String color) {
+		return new Line(id, name, color);
 	}
 
-	public static Line of(String name, String color, List<Section> sections) {
-		Line line = new Line(name, color);
+	public static Line of(Long id, String name, String color, List<Section> sections) {
+		Line line = new Line(id, name, color);
 		line.sections = sections;
 		return line;
 	}
@@ -77,6 +77,10 @@ public class Line extends BaseEntity {
 			.collect(Collectors.toList());
 	}
 
+	public List<Section> getSections() {
+		return this.sections;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -86,19 +90,12 @@ public class Line extends BaseEntity {
 
 		Line line = (Line)o;
 
-		if (!Objects.equals(id, line.id))
-			return false;
-		return Objects.equals(name, line.name);
+		return id.equals(line.id);
 	}
 
 	@Override
 	public int hashCode() {
-		int result = id != null ? id.hashCode() : 0;
-		result = 31 * result + (name != null ? name.hashCode() : 0);
-		return result;
+		return id.hashCode();
 	}
 
-	public List<Section> getSections() {
-		return this.sections;
-	}
 }

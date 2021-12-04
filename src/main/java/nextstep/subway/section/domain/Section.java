@@ -2,7 +2,6 @@ package nextstep.subway.section.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,14 +38,15 @@ public class Section {
 	protected Section() {
 	}
 
-	private Section(Station upStation, Station downStation, int distance) {
+	private Section(Long id, Station upStation, Station downStation, int distance) {
+		this.id = id;
 		this.upStation = upStation;
 		this.downStation = downStation;
 		this.distance = distance;
 	}
 
-	public static Section of(Station upStation, Station downStation, int distance) {
-		return new Section(upStation, downStation, distance);
+	public static Section of(Long id, Station upStation, Station downStation, int distance) {
+		return new Section(id, upStation, downStation, distance);
 	}
 
 	public List<Station> getStations() {
@@ -89,22 +89,11 @@ public class Section {
 
 		Section section = (Section)o;
 
-		if (distance != section.distance)
-			return false;
-		if (!Objects.equals(id, section.id))
-			return false;
-		if (!Objects.equals(upStation, section.upStation))
-			return false;
-		return Objects.equals(downStation, section.downStation);
+		return id.equals(section.id);
 	}
 
 	@Override
 	public int hashCode() {
-		int result = id != null ? id.hashCode() : 0;
-		result = 31 * result + (upStation != null ? upStation.hashCode() : 0);
-		result = 31 * result + (downStation != null ? downStation.hashCode() : 0);
-		result = 31 * result + distance;
-		return result;
+		return id.hashCode();
 	}
-
 }

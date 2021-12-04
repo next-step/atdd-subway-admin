@@ -21,7 +21,7 @@ public class LineRequest {
 	}
 
 	public Line toLine() {
-		return Line.of(name, color);
+		return Line.of(0L, name, color);
 	}
 
 	public String getName() {

@@ -15,29 +15,23 @@ import nextstep.subway.station.domain.Station;
 @DisplayName("구간 도메인 테스트")
 public class SectionTest {
 
-	public static final Section SECTION_1 = Section.of(StationTest.노포역, StationTest.다대포해수욕장역, 40);
+	public static final Section SECTION_1 = Section.of(1L, StationTest.노포역, StationTest.다대포해수욕장역, 40);
 
 	@Test
 	@DisplayName("생성한다")
 	void create() {
-		// given
-		int distance = 40;
-
-		// when
-		Section section = Section.of(StationTest.노포역, StationTest.다대포해수욕장역, distance);
+		// given, when
+		Section section = Section.of(1L, StationTest.노포역, StationTest.다대포해수욕장역, 40);
 
 		// then
-		assertThat(section).isEqualTo(Section.of(StationTest.노포역, StationTest.다대포해수욕장역, distance));
+		assertThat(section).isEqualTo(SECTION_1);
 	}
 
 	@Test
 	@DisplayName("역들을 반환한다")
 	void getStationsTest() {
-		// given
-		Section section = Section.of(StationTest.노포역, StationTest.다대포해수욕장역, 40);
-
-		// when
-		List<Station> stations = section.getStations();
+		// given, when
+		List<Station> stations = SECTION_1.getStations();
 		// then
 		assertThat(stations.size()).isEqualTo(2);
 	}
@@ -45,15 +39,12 @@ public class SectionTest {
 	@Test
 	@DisplayName("역들을 상행선부터 하행선 순으로 정렬되어 반환한다")
 	void getStationsTest2() {
-		// given
-		Section section = Section.of(StationTest.노포역, StationTest.다대포해수욕장역, 40);
-
-		// when
-		List<Station> stations = section.getStations();
+		// given, when
+		List<Station> stations = SECTION_1.getStations();
 		// then
 		assertAll(
-			() -> assertThat(stations.get(0)).isEqualTo(section.getUpStation()),
-			() -> assertThat(stations.get(1)).isEqualTo(section.getDownStation())
+			() -> assertThat(stations.get(0)).isEqualTo(SECTION_1.getUpStation()),
+			() -> assertThat(stations.get(1)).isEqualTo(SECTION_1.getDownStation())
 		);
 	}
 

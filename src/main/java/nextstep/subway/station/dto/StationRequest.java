@@ -10,6 +10,6 @@ public class StationRequest {
 	}
 
 	public Station toStation() {
-		return Station.of(name);
+		return Station.of(0L, name);
 	}
 }

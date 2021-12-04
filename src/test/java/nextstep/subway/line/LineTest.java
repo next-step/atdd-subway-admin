@@ -18,20 +18,21 @@ import nextstep.subway.station.domain.Station;
 @DisplayName("호선 도메인 테스트")
 public class LineTest {
 
-	public static final Line FIRST = Line.of("1호선", "RED");
-	public static final Line SECOND = Line.of("2호선", "BLUE");
+	public static final Line FIRST = Line.of(1L, "1호선", "RED");
+	public static final Line SECOND = Line.of(2L, "2호선", "BLUE");
 
 	@Test
 	@DisplayName("생성 테스트")
 	void createTest() {
 		// given
+		Long id = 1L;
 		String name = "1호선";
 
 		// when
-		Line line = Line.of(name, "red");
+		Line line = Line.of(id, name, "red");
 
 		// then
-		assertThat(line).isEqualTo(Line.of(name, "red"));
+		assertThat(line).isEqualTo(Line.of(id, name, "red"));
 	}
 
 	@Test
@@ -43,18 +44,18 @@ public class LineTest {
 		List<Section> sections = Collections.singletonList(SECTION_1);
 
 		// when
-		Line line = Line.of(name, color, sections);
+		Line line = Line.of(1L, name, color, sections);
 
 		// then
-		assertThat(line).isEqualTo(Line.of(name, color, sections));
+		assertThat(line).isEqualTo(Line.of(1L, name, color, sections));
 	}
 
 	@Test
 	@DisplayName("Line 이 주어지면 업데이트한다")
 	void updateTest() {
 		// given
-		Line line = Line.of("신분당선", "red");
-		Line newLine = Line.of("1호선", "green");
+		Line line = Line.of(1L, "신분당선", "red");
+		Line newLine = Line.of(2L, "1호선", "green");
 
 		// when
 		line.update(newLine);
@@ -68,16 +69,15 @@ public class LineTest {
 	@DisplayName("Section 을 추가한다")
 	void addSectionTest() {
 		// given
-		Line line = Line.of("신분당선", "red");
-		Section section = Section.of(StationTest.노포역, StationTest.다대포해수욕장역, 40);
+		Line line = Line.of(1L, "신분당선", "red");
 
 		// when
-		line.addSection(section);
+		line.addSection(SECTION_1);
 
 		// then
 		assertAll(
-			() -> assertThat(line.getSections()).contains(section),
-			() -> assertThat(line).isEqualTo(section.getLine())
+			() -> assertThat(line.getSections()).contains(SECTION_1),
+			() -> assertThat(line).isEqualTo(SECTION_1.getLine())
 		);
 	}
 
@@ -85,9 +85,8 @@ public class LineTest {
 	@DisplayName("Stations 들을 조회한다")
 	void getStationsTest() {
 		// given
-		Line line = Line.of("신분당선", "red");
-		Section section = Section.of(StationTest.노포역, StationTest.다대포해수욕장역, 40);
-		line.addSection(section);
+		Line line = Line.of(1L, "신분당선", "red");
+		line.addSection(SECTION_1);
 
 		// when
 		List<Station> stations = line.getStations();
