@@ -41,6 +41,20 @@ public class Section extends BaseEntity {
     return new Section(null, null, upStation, downStation, distance);
   }
 
+  public void updateUpSideSection(Section newSection) {
+    upStation = newSection.downStation;
+    distance = distance.minus(newSection.distance);
+  }
+
+  public void updateDownSideSection(Section newSection) {
+    downStation = newSection.upStation;
+    distance = distance.minus(newSection.distance);
+  }
+
+  public boolean isMatch(Section section) {
+    return upStation.equals(section.upStation) && downStation.equals(section.downStation);
+  }
+
   public void addLine(Line line) {
     this.line = line;
   }
@@ -87,19 +101,5 @@ public class Section extends BaseEntity {
       ", downStation=" + downStation +
       ", distance=" + distance +
       '}';
-  }
-
-  public void updateUpSideSection(Section newSection) {
-    upStation = newSection.downStation;
-    distance = distance.minus(newSection.distance);
-  }
-
-  public void updateDownSideSection(Section newSection) {
-    downStation = newSection.upStation;
-    distance = distance.minus(newSection.distance);
-  }
-
-  public boolean isMatch(Section section) {
-    return upStation.equals(section.upStation) && downStation.equals(section.downStation);
   }
 }

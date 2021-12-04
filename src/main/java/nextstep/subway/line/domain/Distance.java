@@ -7,6 +7,7 @@ import java.util.Objects;
 @Embeddable
 public class Distance {
   private static final int MINIMUM_DISTANCE = 1;
+
   @Column
   private int distance;
 
@@ -17,14 +18,18 @@ public class Distance {
     this.distance = distance;
   }
 
+  public static Distance of(int distance) {
+    return new Distance(distance);
+  }
+
+  public Distance minus(Distance distance) {
+    return of(this.distance - distance.distance);
+  }
+
   private void checkDistanceValidate(int distance) {
     if (distance < MINIMUM_DISTANCE) {
       throw new IllegalArgumentException("거리의 최소 값은 " + MINIMUM_DISTANCE +  " 입니다. 입력: " + distance);
     }
-  }
-
-  public static Distance of(int distance) {
-    return new Distance(distance);
   }
 
   public int getDistance() {
@@ -42,9 +47,5 @@ public class Distance {
   @Override
   public int hashCode() {
     return Objects.hash(distance);
-  }
-
-  public Distance minus(Distance distance) {
-    return of(this.distance - distance.distance);
   }
 }

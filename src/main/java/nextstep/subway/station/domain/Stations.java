@@ -33,6 +33,14 @@ public class Stations {
     }
   }
 
+  public List<Station> asList() {
+    return stations;
+  }
+
+  public boolean containAny(List<Station> stationList) {
+    return stationList.removeAll(stations);
+  }
+
   public void addStation(Station station) {
     stations.add(station);
   }
@@ -43,14 +51,6 @@ public class Stations {
 
   public void setStations(List<Station> stations) {
     this.stations = stations;
-  }
-
-  public List<Station> asList() {
-    return stations;
-  }
-
-  public boolean containAny(List<Station> stationList) {
-    return stationList.removeAll(stations);
   }
 
   @Override

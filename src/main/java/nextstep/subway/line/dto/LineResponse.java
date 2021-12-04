@@ -8,15 +8,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LineResponse {
-  private Long id;
-  private String name;
-  private String color;
-  private List<Station> stations;
-  private LocalDateTime createdDate;
-  private LocalDateTime modifiedDate;
-
-  protected LineResponse() {
-  }
+  private final Long id;
+  private final String name;
+  private final String color;
+  private final List<Station> stations;
+  private final LocalDateTime createdDate;
+  private final LocalDateTime modifiedDate;
 
   public LineResponse(Long id, String name, String color, List<Station> stations, LocalDateTime createdDate, LocalDateTime modifiedDate) {
     this.id = id;
