@@ -7,10 +7,8 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -18,9 +16,6 @@ import static nextstep.subway.line.TestLineFactory.stationOf;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SectionAcceptanceTest extends AcceptanceTest {
-  @Autowired
-  private StationRepository stationRepository;
-
   @DisplayName("역과 역 사이 구간 추가 상행역이 일치한 경우")
   @Test
   void 지하철_기존역_사이_구간_추가_상행역_일치() {
@@ -186,7 +181,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
       .extract();
   }
 
+  private ExtractableResponse<Response> 지하철_역_생성_요청(Station station) {
+    return RestAssured.given().log().all()
+      .body(station)
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .when()
+      .post("/stations")
+      .then().log().all()
+      .extract();
+  }
+
   private Station 지하철_역_생성(long id, String name) {
-    return stationRepository.save(stationOf(id, name));
+    return 지하철_역_생성_요청(stationOf(id, name)).as(Station.class);
   }
 }
