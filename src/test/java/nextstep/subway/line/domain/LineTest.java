@@ -46,4 +46,16 @@ class LineTest {
 
         assertThat(line.getStations()).isEqualTo(Arrays.asList(강남역, 양재역, 판교역));
     }
+
+    @DisplayName("지하철 역 삭제")
+    @Test
+    void deleteStation() {
+        Sections sections = Sections.from(
+            Arrays.asList(new Section(강남역, 양재역, new Distance(10)), new Section(양재역, 판교역, new Distance(10))));
+        Line line = new Line(1L, "신분당선", "red", sections);
+
+        line.deleteStation(강남역);
+
+        assertThat(line.getStations()).isEqualTo(Arrays.asList(양재역, 판교역));
+    }
 }

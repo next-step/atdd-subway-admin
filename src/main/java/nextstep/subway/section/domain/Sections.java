@@ -10,11 +10,14 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.common.exception.SubwayErrorCode;
+import nextstep.subway.common.exception.SubwayException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.Stations;
 
 @Embeddable
 public class Sections {
+    private static final int MIN_SIZE = 1;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
     private List<Section> sections = new ArrayList<>();
@@ -58,6 +61,45 @@ public class Sections {
             sections.stream()
                 .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation))
         );
+    }
+
+    public void deleteStation(Station station) {
+        Optional<Section> optionalDownSection = findSectionByUpStation(station);
+        Optional<Section> optionalUpSection = findSectionByDownStation(station);
+
+        boolean upSectionExists = optionalUpSection.isPresent();
+        boolean downSectionExists = optionalDownSection.isPresent();
+
+        validateDeleteStation(upSectionExists, downSectionExists);
+
+        removeSectionIfExists(optionalUpSection);
+        removeSectionIfExists(optionalDownSection);
+
+        if (upSectionExists && downSectionExists) {
+            addCombinedSection(optionalUpSection.get(), optionalDownSection.get());
+        }
+    }
+
+    private void removeSectionIfExists(Optional<Section> optionalSection) {
+        if (optionalSection.isPresent()) {
+            Section section = optionalSection.get();
+            sections.remove(section);
+        }
+    }
+
+    private void addCombinedSection(Section upSection, Section downSection) {
+        Section combinedSection = Section.combine(upSection, downSection);
+        addSection(combinedSection);
+    }
+
+    private void validateDeleteStation(boolean containsUpStation, boolean containsDownStation) {
+        if (!containsUpStation && !containsDownStation) {
+            throw new SubwayException(SubwayErrorCode.STATION_NOT_EXISTS);
+        }
+
+        if (sections.size() <= MIN_SIZE) {
+            throw new SubwayException(SubwayErrorCode.CANNOT_DELETE_LAST_LINE);
+        }
     }
 
     private void updateIfDownStationEquals(Section added) {

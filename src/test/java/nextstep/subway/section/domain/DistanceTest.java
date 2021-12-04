@@ -23,9 +23,20 @@ class DistanceTest {
     @DisplayName("거리 빼기")
     @Test
     void subtract() {
-        Distance result = new Distance(10).subtract(new Distance(5));
+        Distance result = new Distance(10)
+            .subtract(new Distance(5));
 
         assertThat(result)
             .isEqualTo(new Distance(5));
+    }
+
+    @DisplayName("거리 더하기")
+    @Test
+    void add() {
+        Distance result = new Distance(10)
+            .add(new Distance(5));
+
+        assertThat(result)
+            .isEqualTo(new Distance(15));
     }
 }

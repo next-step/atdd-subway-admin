@@ -126,8 +126,17 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [X] 구간추가 기능 추가
 - [X] 구간에서 역 정보 상행->하행순으로 1개만 나오도록 수정
 
+## 4단계 - 구간 제거 기능
+- [X] 노선의 구간을 제거하는 기능을 구현하기
+    - [X] 종점이 제거될 경우 다음으로 오던 역이 종점이 됨
+    - [X] 중간역이 제거될 경우 재배치를 함
+        - [X] 노선에 A - B - C 역이 연결되어 있을 때 B역을 제거할 경우 A - C로 재배치 됨
+        - [X] 거리는 두 구간의 거리의 합으로 정함
+    - [X] 노선에 등록되어 있지 않은 역을 제거할 수 없음
+    - [X] 구간이 하나인 노선에서 마지막 구간을 제거할 수 없음
      
 ## 참고 링크
 - [생성자 대신 정적 팩터리 메서드를 고려하라](https://ssoco.tistory.com/61)
 - [@Transactional(readOnly=true) 성능 향상 이유](https://willseungh0.tistory.com/75)
 - [방어적 복사와 Unmodifiable Collection](https://tecoble.techcourse.co.kr/post/2021-04-26-defensive-copy-vs-unmodifiable/)
+- [JUnit 5 에서 @Nested 와 @DisplayName 으로 가독성 있는 테스트 코드 작성하기](https://bcp0109.tistory.com/297)

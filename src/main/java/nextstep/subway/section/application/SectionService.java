@@ -7,9 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -19,24 +19,28 @@ import nextstep.subway.station.domain.StationRepository;
 public class SectionService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    private final SectionRepository sectionRepository;
 
-    public SectionService(LineRepository lineRepository, StationRepository stationRepository,
-        SectionRepository sectionRepository) {
+    public SectionService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.sectionRepository = sectionRepository;
     }
 
     @Transactional
-    public long saveSection(long lineId, SectionRequest sectionRequest) {
+    public LineResponse saveSection(long lineId, SectionRequest sectionRequest) {
         Line line = findLineById(lineId);
         Section added = makeSection(sectionRequest);
 
-        sectionRepository.save(added);
         line.updateSections(added);
 
-        return added.getId();
+        return LineResponse.from(line);
+    }
+
+    @Transactional
+    public void removeSectionByStationId(long lineId, long stationId) {
+        Line line = findLineById(lineId);
+        Station station = findStationById(stationId);
+
+        line.deleteStation(station);
     }
 
     private Line findLineById(long id) {

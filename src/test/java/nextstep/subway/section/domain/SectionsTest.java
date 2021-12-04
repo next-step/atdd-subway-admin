@@ -82,4 +82,46 @@ class SectionsTest {
                 .withMessage("이미 모두 구간에 포함되어 있습니다.")
         );
     }
+
+    @DisplayName("지하철 종점 삭제")
+    @Test
+    void deleteLastStation() {
+        Sections sections = Sections.from(
+            Arrays.asList(강남_양재_구간, 양재_판교_구간));
+
+        sections.deleteStation(판교역);
+
+        assertThat(sections.getStations()).isEqualTo(Arrays.asList(강남역, 양재역));
+    }
+
+    @DisplayName("중간역이 제거될 경우 재배치를 함")
+    @Test
+    void deleteBetweenStation() {
+        Sections sections = Sections.from(
+            Arrays.asList(강남_양재_구간, 양재_판교_구간));
+
+        sections.deleteStation(양재역);
+
+        assertThat(sections.getStations()).isEqualTo(Arrays.asList(강남역, 판교역));
+    }
+
+    @DisplayName("존재하지 않는 지하철 역 삭제 에러")
+    @Test
+    void deleteStation_errorWhenStationNotExists() {
+        Sections sections = Sections.from(Arrays.asList(강남_양재_구간));
+
+        assertThatExceptionOfType(SubwayException.class)
+            .isThrownBy(() -> sections.deleteStation(판교역))
+            .withMessage("존재하지 않는 지하철 역 입니다.");
+    }
+
+    @DisplayName("구간이 하나일 때 삭제 에러")
+    @Test
+    void deleteStation_errorWhenLineHasOnlyOneStation() {
+        Sections sections = Sections.from(Arrays.asList(강남_양재_구간));
+
+        assertThatExceptionOfType(SubwayException.class)
+            .isThrownBy(() -> sections.deleteStation(강남역))
+            .withMessage("구간이 하나인 노선에서 마지막 구간을 제거할 수 없습니다.");
+    }
 }

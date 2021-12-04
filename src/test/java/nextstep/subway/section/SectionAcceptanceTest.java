@@ -59,7 +59,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_구간_등록됨(response);
-        지하철_노선에_지하철역_포함됨(지하철_신분당선_id, 판교역);
+        지하철_노선에_포함된_역들이_일치함(지하철_신분당선_id, Arrays.asList(강남역, 양재역, 판교역));
     }
 
     @DisplayName("노선 구간 사이에 새로운 역을 등록한다")
@@ -76,7 +76,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_구간_등록됨(response);
-        지하철_노선에_새로운_역_추가됨(지하철_2호선_id, Arrays.asList(잠실역, 삼성역, 강남역));
+        지하철_노선에_포함된_역들이_일치함(지하철_2호선_id, Arrays.asList(잠실역, 삼성역, 강남역));
     }
 
     @DisplayName("기존 역 사이 길이보다 큰 노선을 추가하여 실패한다")
@@ -110,7 +110,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_구간_등록됨(response);
-        지하철_노선에_새로운_역_추가됨(지하철_신분당선_id, Arrays.asList(삼성역, 강남역, 양재역));
+        지하철_노선에_포함된_역들이_일치함(지하철_신분당선_id, Arrays.asList(삼성역, 강남역, 양재역));
     }
 
     @DisplayName("새로운 역을 하행 종점으로 등록한다")
@@ -127,7 +127,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_구간_등록됨(response);
-        지하철_노선에_새로운_역_추가됨(지하철_신분당선_id, Arrays.asList(강남역, 양재역, 판교역));
+        지하철_노선에_포함된_역들이_일치함(지하철_신분당선_id, Arrays.asList(강남역, 양재역, 판교역));
     }
 
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
@@ -160,5 +160,53 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_구간_추가_실패됨(response);
+    }
+
+    @DisplayName("종점이 제거될 경우 다음으로 오던 역이 종점이 됨")
+    @Test
+    void 종점이_제거될_경우_다음으로_오던_역이_종점이_됨() {
+        // given
+        지하철_노선에_구간_등록되어_있음(지하철_2호선_id, 잠실역, 삼성역, "10");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선예_구간_삭제_요청(지하철_2호선_id, 잠실역.getId());
+
+        // then
+        지하철_노선에_구간_삭제됨(response);
+        지하철_노선에_포함된_역들이_일치함(지하철_2호선_id, Arrays.asList(삼성역, 강남역));
+    }
+
+    @DisplayName("중간역이 제거될 경우 재배치를 함")
+    @Test
+    void 중간역이_제거될_경우_재배치를_함() {
+        // given
+        지하철_노선에_구간_등록되어_있음(지하철_2호선_id, 잠실역, 삼성역, "10");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선예_구간_삭제_요청(지하철_2호선_id, 삼성역.getId());
+
+        // then
+        지하철_노선에_구간_삭제됨(response);
+        지하철_노선에_포함된_역들이_일치함(지하철_2호선_id, Arrays.asList(잠실역, 강남역));
+    }
+
+    @DisplayName("노선에 등록되어 있지 않은 역을 제거할 수 없음")
+    @Test
+    void 노선에_등록되어_있지_않은_역을_제거할_수_없음() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선예_구간_삭제_요청(지하철_2호선_id, 양재역.getId());
+
+        // then
+        지하철_노선에_구간_삭제_실패됨(response);
+    }
+
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 수 없음")
+    @Test
+    void 구간이_하나인_노선에서_마지막_구간을_제거할_수_없음() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선예_구간_삭제_요청(지하철_2호선_id, 양재역.getId());
+
+        // then
+        지하철_노선에_구간_삭제_실패됨(response);
     }
 }
