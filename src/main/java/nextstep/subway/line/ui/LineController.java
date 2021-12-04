@@ -10,6 +10,7 @@ import nextstep.subway.line.exception.NotValidStationException;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
+import nextstep.subway.section.exception.NotRemoveSectionException;
 import nextstep.subway.section.exception.NotValidDistanceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -99,6 +100,11 @@ public class LineController {
 
     @ExceptionHandler(NotValidStationException.class)
     public ResponseEntity<String> handleNotValidStationException(NotValidStationException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(NotRemoveSectionException.class)
+    public ResponseEntity<String> handleNotRemoveSectionException(NotRemoveSectionException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
