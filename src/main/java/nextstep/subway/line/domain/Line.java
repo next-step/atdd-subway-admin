@@ -9,7 +9,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import org.apache.commons.lang3.StringUtils;
+
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.exception.AppException;
+import nextstep.subway.exception.ErrorCode;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -53,8 +57,15 @@ public class Line extends BaseEntity {
 	}
 
 	public void update(Line line) {
-		this.name = line.getName();
-		this.color = line.getColor();
+		if (!this.equals(line)) {
+			throw new AppException(ErrorCode.WRONG_INPUT, "업데이트할 Line 이 같지 않습니다");
+		}
+		if (StringUtils.isNotBlank(line.getName())) {
+			this.name = line.getName();
+		}
+		if (StringUtils.isNotBlank(line.getColor())) {
+			this.color = line.getColor();
+		}
 	}
 
 	public void addSection(Section section) {

@@ -11,6 +11,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineUpdateRequest;
 
 @Service
 @Transactional
@@ -43,9 +44,9 @@ public class LineService {
 		return LineResponse.of(line);
 	}
 
-	public LineResponse modify(Long id, LineRequest lineRequest) {
+	public LineResponse modify(Long id, LineUpdateRequest lineRequest) {
 		Line line = getById(id);
-		line.update(lineRequest.toLine());
+		line.update(lineRequest.toLine(id));
 		return LineResponse.of(line);
 	}
 
