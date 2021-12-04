@@ -73,11 +73,20 @@ public class LineService {
     }
 
     public LineResponse saveSection(Long lineId, SectionRequest request) {
-        Line persistLine = lineRepository.findById(lineId).orElseThrow(LineNotFoundException::new);
-        Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(StationNotFoundException::new);
-        Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(StationNotFoundException::new);
+        Line persistLine = findLine(lineId);
+        Station upStation = findStation(request.getUpStationId());
+        Station downStation = findStation(request.getDownStationId());
 
         persistLine.addSection(Section.of(upStation, downStation, Distance.of(request.getDistance())));
         return LineResponse.of(persistLine);
+    }
+
+    private Line findLine(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(LineNotFoundException::new);
+    }
+
+    private Station findStation(Long stationId) {
+        return stationRepository.findById(stationId)
+          .orElseThrow(StationNotFoundException::new);
     }
 }
