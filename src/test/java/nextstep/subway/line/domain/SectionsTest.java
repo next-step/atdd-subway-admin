@@ -110,7 +110,7 @@ class SectionsTest {
         this.sections.addSection(호선2, 잠실역, 신사역, new Distance(5));
 
         // when
-        this.sections.removeSection(호선2, 잠실역);
+        this.sections.removeSection(잠실역);
 
         // then
         assertThat(sections.getSections().size()).isEqualTo(1);
@@ -123,7 +123,7 @@ class SectionsTest {
             final Station 강남신사사이역 = new Station("강남신사사이역");
             sections.addSection(호선2, 강남역, 강남신사사이역, new Distance(3));
 
-            this.sections.removeSection(호선2, new Station("새로운 역1"));
+            this.sections.removeSection(new Station("새로운 역1"));
 
         }).isInstanceOf(NotContainsStationException.class)
                 .hasMessageContaining("현재 입력된 역들이 노선에 존재하지 않습니다.");
@@ -133,7 +133,7 @@ class SectionsTest {
     @Test
     void removeSectionMinimumSectionSizeException() {
         assertThatThrownBy(() -> {
-            this.sections.removeSection(호선2, 강남역);
+            this.sections.removeSection(강남역);
 
         }).isInstanceOf(MinimumRemovableSectionSizeException.class)
                 .hasMessageContaining("삭제할 수 없는 구간 크기 입니다.");

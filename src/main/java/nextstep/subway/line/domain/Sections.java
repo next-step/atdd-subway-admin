@@ -53,34 +53,32 @@ public class Sections {
         sections.stream()
                 .filter(section -> section.isSameUpStation(station))
                 .findAny()
-                .ifPresent(section -> section.changeUpStation(changeStation, distance));
+                .ifPresent(section -> section.changeUpStation(changeStation, section.subtractDistance(distance)));
     }
 
     private void changeDownStationIfExist(Station station, Station changeStation, Distance distance) {
         sections.stream()
                 .filter(section -> section.isSameDownStation(station))
                 .findAny()
-                .ifPresent(section -> section.changeDownStation(changeStation, distance));
+                .ifPresent(section -> section.changeDownStation(changeStation, section.subtractDistance(distance)));
     }
 
-    public void removeSection(Line line, Station station) {
+    public void removeSection(Station station) {
         validateRemoveSection(station);
-        updateRemovableMiddleSection(line, station);
+
+        updateIfMiddleSection(station);
 
         removeSectionIfStationExist(station);
     }
 
-    private void updateRemovableMiddleSection(Line line, Station station) {
+    private void updateIfMiddleSection(Station station) {
         if (!containsUpStation(station) || !containsDownStation(station)) {
             return;
         }
 
-        Station upStation = getRemovableUpStation(station);
         Station downStation = getRemovableDownStation(station);
-        Distance distance = getRemovableSumDistance(station);
-
-        removeSectionIfStationExist(station);
-        addToSections(line, upStation, downStation, distance);
+        Distance distance = getRemovableDistance(station);
+        updateMiddleSection(station, downStation, distance);
 
     }
 
@@ -89,21 +87,19 @@ public class Sections {
         removeSectionIfDownStationExist(station);
     }
 
-    private Distance getRemovableSumDistance(Station station) {
-        int removableDistance = sections.stream()
-                .filter(section -> section.isSameUpStation(station) || section.isSameDownStation(station))
-                .mapToInt(Section::getDistance)
-                .sum();
-
-        return new Distance(removableDistance);
-    }
-
-    private Station getRemovableUpStation(Station station) {
+    private Distance getRemovableDistance(Station station) {
         return sections.stream()
-                .filter(section -> section.isSameDownStation(station))
+                .filter(section -> section.isSameUpStation(station))
                 .findAny()
                 .orElseThrow(NotFoundStationException::new)
-                .getUpStation();
+                .getDistance();
+    }
+
+    private void updateMiddleSection(Station station, Station downStation, Distance distance) {
+        sections.stream()
+                .filter(section -> section.isSameDownStation(station))
+                .findAny()
+                .ifPresent(section -> section.changeDownStation(downStation, section.addDistance(distance)));
     }
 
     private Station getRemovableDownStation(Station station) {

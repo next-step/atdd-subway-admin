@@ -70,18 +70,22 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
-        return distance.getDistance();
+    public Distance getDistance() {
+        return distance;
     }
 
     public void changeUpStation(Station station, Distance distance) {
         this.upStation = station;
-        this.distance = subtractDistance(distance);
+        this.distance = distance;
     }
 
     public void changeDownStation(Station station, Distance distance) {
         this.downStation = station;
-        this.distance = subtractDistance(distance);
+        this.distance = distance;
+    }
+
+    public Distance addDistance(Distance distance) {
+        return this.distance.addDistance(distance);
     }
 
     public Distance subtractDistance(Distance distance) {

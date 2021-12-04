@@ -2,9 +2,6 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.exception.NegativeNumberDistanceException;
 import nextstep.subway.common.exception.SameStationsInSectionException;
-import nextstep.subway.line.domain.Distance;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,7 +34,7 @@ class SectionTest {
                 () -> assertThat(section.getLine()).isEqualTo(호선2),
                 () -> assertThat(section.getUpStation()).isEqualTo(강남역),
                 () -> assertThat(section.getDownStation()).isEqualTo(역삼역),
-                () -> assertThat(section.getDistance()).isEqualTo(9)
+                () -> assertThat(section.getDistance()).isEqualTo(new Distance(9))
         );
     }
 
