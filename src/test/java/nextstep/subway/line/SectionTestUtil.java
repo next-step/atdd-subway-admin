@@ -29,7 +29,7 @@ public class SectionTestUtil {
     }
 
     public static void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
     }
 
@@ -48,7 +48,7 @@ public class SectionTestUtil {
     public static void 역_사이에_새로운_역_등록됨(ExtractableResponse<Response> response, Long stationId) {
         List<Station> stations = response.jsonPath().getList("stations", Station.class);
         boolean isContains = stations.stream()
-            .anyMatch(station -> station.getId() == stationId);
+            .anyMatch(station -> stationId.equals(station.getId()));
         assertThat(isContains).isTrue();
     }
 
