@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.line.exception.NotValidStationException;
+import nextstep.subway.section.exception.NotRemoveSectionException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -112,10 +113,10 @@ public class Sections {
 
     private void validateStationToRemove(List<Station> stations, Station stationToRemove) {
         if (!stations.contains(stationToRemove)) {
-            // 에러 처리
+            throw new NotRemoveSectionException("구간에 등록되지 않은 역은 삭제할 수 없습니다.");
         }
         if (sections.size() == 1) {
-            // 에러 처리
+            throw new NotRemoveSectionException("구간이 하나일 경우 역을 제거할 수 없습니다.");
         }
     }
 
