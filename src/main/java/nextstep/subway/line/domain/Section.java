@@ -90,6 +90,11 @@ public class Section extends BaseEntity {
         }
     }
 
+    public void removeInnerSection(Section upSection, Section downSection) {
+        downSection.downStation = upSection.getDownStation();
+        downSection.sumDistance(upSection.getDistance());
+    }
+
     public int getDistanceNumber() {
         return this.distance.getDistance();
     }

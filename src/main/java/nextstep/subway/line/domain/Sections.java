@@ -68,19 +68,42 @@ public class Sections {
     }
 
     public void removeStation(Station station) {
-        if (isEndStation(station)) {
-            Section section = findSection(station);
-            this.sections.remove(section);
-            return;
-        }
 
-        if (!isEndStation(station)) {
-            removeMiddleSection(station);
+        List<Section> foundSections = findSections(station);
+        checkValidateRemoveSection(foundSections);
+
+        updateSection(station, foundSections);
+        sections.remove(findSection(station));
+    }
+
+    private void updateSection(Station station, List<Section> foundSections) {
+        if (isMiddleRemoval(foundSections)) {
+            Section upSection = foundSections.stream()
+                    .filter(it -> it.getUpStation() == station)
+                    .findFirst()
+                    .orElseThrow(() -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_STATION));
+
+            Section downSection = this.sections.stream()
+                    .filter(it -> it.getDownStation() == station)
+                    .findFirst()
+                    .orElseThrow(() -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_STATION));
+
+            downSection.removeInnerSection(upSection, downSection);
+        }
+    }
+
+    private boolean isMiddleRemoval(List<Section> foundSections) {
+        return foundSections.size() > 1;
+    }
+
+    private void checkValidateRemoveSection(List<Section> foundSections) {
+        if (foundSections.isEmpty()) {
+            throw new InputDataErrorException(InputDataErrorCode.THEY_ARE_NOT_SEARCHED_STATIONS);
         }
     }
 
     public void addSection(Section newSection) {
-        checkValidSection(newSection);
+        checkValidAddSection(newSection);
         for (Section section : sections) {
             section.addInnerSection(newSection);
         }
@@ -97,31 +120,6 @@ public class Sections {
 
     public boolean contains(Station station) {
         return getStations().contains(station);
-    }
-
-    private void removeMiddleSection(Station station) {
-        Section foundSectionByDownStation = findSectionByDownStation(station);
-        Section foundSectionByUpStation = findSectionByUpStation(station);
-
-        foundSectionByDownStation.sumDistance(foundSectionByUpStation.getDistance());
-        Section changeSection = new Section(foundSectionByUpStation.getLine(),
-                foundSectionByDownStation.getUpStation(), foundSectionByUpStation.getDownStation(), foundSectionByDownStation.getDistance());
-        this.sections.add(changeSection);
-        this.sections.removeAll(Arrays.asList(foundSectionByUpStation, foundSectionByDownStation));
-    }
-
-    private Section findSectionByUpStation(Station station) {
-        return this.sections.stream()
-                .filter(it -> it.getUpStation() == station)
-                .findFirst()
-                .orElseThrow(() -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_SECTION));
-    }
-
-    private Section findSectionByDownStation(Station station) {
-        return this.sections.stream()
-                .filter(it -> it.getDownStation() == station)
-                .findFirst()
-                .orElseThrow(() -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_SECTION));
     }
 
     private Section findNextSection(Section section) {
@@ -161,7 +159,7 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    private void checkValidSection(Section section) {
+    private void checkValidAddSection(Section section) {
         if (checkAddFirstSection()) {
             return;
         }
@@ -214,19 +212,14 @@ public class Sections {
                 );
     }
 
+    private List<Section> findSections(Station station) {
+        return this.sections.stream()
+                .filter(it -> hasSameStationInSection(station, it))
+                .collect(Collectors.toList());
+    }
+
     private boolean hasSameStationInSection(Station station, Section it) {
         return it.getUpStation().equals(station) || it.getDownStation().equals(station);
     }
 
-    private boolean isEndStation(Station station) {
-        return isFirstSection(station) || isLastSection(station);
-    }
-
-    private boolean isFirstSection(Station station) {
-        return findFirstStation().equals(station);
-    }
-
-    private boolean isLastSection(Station station) {
-        return findLastStation().equals(station);
-    }
 }
