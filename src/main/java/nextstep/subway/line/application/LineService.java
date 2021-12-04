@@ -11,36 +11,21 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.application.SectionService;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.dto.SectionRequest;
 
 @Service
 @Transactional
 public class LineService {
 
 	private final LineRepository lineRepository;
-	private final SectionService sectionService;
 
-	public LineService(LineRepository lineRepository, SectionService sectionService) {
+	public LineService(LineRepository lineRepository) {
 		this.lineRepository = lineRepository;
-		this.sectionService = sectionService;
 	}
 
 	public LineResponse saveLine(LineRequest request) {
 		validateDuplication(request.getName());
 		Line persistLine = lineRepository.save(request.toLine());
-		Section section = saveSection(request);
-		persistLine.addSection(section);
 		return LineResponse.of(persistLine);
-	}
-
-	private Section saveSection(LineRequest lineRequest) {
-		SectionRequest sectionRequest = new SectionRequest(
-			lineRequest.getUpStationId(),
-			lineRequest.getDownStationId(),
-			lineRequest.getDistance());
-		return sectionService.saveSection(sectionRequest);
 	}
 
 	private void validateDuplication(String name) {

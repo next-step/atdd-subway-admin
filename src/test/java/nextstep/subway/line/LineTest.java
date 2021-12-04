@@ -1,6 +1,6 @@
 package nextstep.subway.line;
 
-import static nextstep.subway.section.SectionTest.*;
+import static nextstep.subway.line.SectionTest.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -11,8 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.station.StationTest;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 @DisplayName("호선 도메인 테스트")
@@ -76,7 +75,7 @@ public class LineTest {
 
 		// then
 		assertAll(
-			() -> assertThat(line.getSections()).contains(SECTION_1),
+			() -> assertThat(line.getSections().contains(SECTION_1)).isTrue(),
 			() -> assertThat(line).isEqualTo(SECTION_1.getLine())
 		);
 	}
@@ -92,6 +91,6 @@ public class LineTest {
 		List<Station> stations = line.getStations();
 
 		// then
-		assertThat(stations).containsExactly(StationTest.노포역, StationTest.다대포해수욕장역);
+		assertThat(stations).containsExactly(SECTION_1.getUpStation(), SECTION_1.getDownStation());
 	}
 }

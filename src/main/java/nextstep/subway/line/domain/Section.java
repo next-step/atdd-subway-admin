@@ -1,4 +1,4 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -45,8 +44,16 @@ public class Section {
 		this.distance = distance;
 	}
 
+	private Section(Long id) {
+		this.id = id;
+	}
+
 	public static Section of(Long id, Station upStation, Station downStation, int distance) {
 		return new Section(id, upStation, downStation, distance);
+	}
+
+	public static Section of(Long id) {
+		return new Section(id);
 	}
 
 	public List<Station> getStations() {

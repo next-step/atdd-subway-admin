@@ -1,4 +1,4 @@
-package nextstep.subway.section;
+package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -8,14 +8,15 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.StationTest;
 import nextstep.subway.station.domain.Station;
 
 @DisplayName("구간 도메인 테스트")
 public class SectionTest {
 
-	public static final Section SECTION_1 = Section.of(1L, StationTest.노포역, StationTest.다대포해수욕장역, 40);
+	public static final Section SECTION_1 = Section.of(1L, StationTest.노포역, StationTest.서면역, 10);
+	public static final Section SECTION_2 = Section.of(2L, StationTest.범내골역, StationTest.다대포해수욕장역, 20);
 
 	@Test
 	@DisplayName("생성한다")
