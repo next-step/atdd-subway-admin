@@ -13,4 +13,9 @@ public class LineControllerAdvice extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
+
+    @ExceptionHandler(value = {IllegalArgumentException.class})
+    protected ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }
