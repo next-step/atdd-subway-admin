@@ -67,17 +67,29 @@ public class Sections {
         Optional<Section> optionalDownSection = findSectionByUpStation(station);
         Optional<Section> optionalUpSection = findSectionByDownStation(station);
 
-        validateDeleteStation(optionalUpSection.isPresent(), optionalDownSection.isPresent());
+        boolean upSectionExists = optionalUpSection.isPresent();
+        boolean downSectionExists = optionalDownSection.isPresent();
 
-        if (optionalDownSection.isPresent()) {
-            Section section = optionalDownSection.get();
+        validateDeleteStation(upSectionExists, downSectionExists);
+
+        removeSectionIfExists(optionalUpSection);
+        removeSectionIfExists(optionalDownSection);
+
+        if (upSectionExists && downSectionExists) {
+            addCombinedSection(optionalUpSection.get(), optionalDownSection.get());
+        }
+    }
+
+    private void removeSectionIfExists(Optional<Section> optionalSection) {
+        if (optionalSection.isPresent()) {
+            Section section = optionalSection.get();
             sections.remove(section);
         }
+    }
 
-        if (optionalUpSection.isPresent()) {
-            Section section = optionalUpSection.get();
-            sections.remove(section);
-        }
+    private void addCombinedSection(Section upSection, Section downSection) {
+        Section combinedSection = Section.combine(upSection, downSection);
+        addSection(combinedSection);
     }
 
     private void validateDeleteStation(boolean containsUpStation, boolean containsDownStation) {

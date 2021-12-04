@@ -176,11 +176,23 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_포함된_역들이_일치함(지하철_2호선_id, Arrays.asList(삼성역, 강남역));
     }
 
+    @DisplayName("중간역이 제거될 경우 재배치를 함")
+    @Test
+    void 중간역이_제거될_경우_재배치를_함() {
+        // given
+        지하철_노선에_구간_등록되어_있음(지하철_2호선_id, 잠실역, 삼성역, "10");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선예_구간_삭제_요청(지하철_2호선_id, 삼성역.getId());
+
+        // then
+        지하철_노선에_구간_삭제됨(response);
+        지하철_노선에_포함된_역들이_일치함(지하철_2호선_id, Arrays.asList(잠실역, 강남역));
+    }
+
     @DisplayName("노선에 등록되어 있지 않은 역을 제거할 수 없음")
     @Test
     void 노선에_등록되어_있지_않은_역을_제거할_수_없음() {
-        // given
-
         // when
         ExtractableResponse<Response> response = 지하철_노선예_구간_삭제_요청(지하철_2호선_id, 양재역.getId());
 
@@ -191,8 +203,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 수 없음")
     @Test
     void 구간이_하나인_노선에서_마지막_구간을_제거할_수_없음() {
-        // given
-
         // when
         ExtractableResponse<Response> response = 지하철_노선예_구간_삭제_요청(지하철_2호선_id, 양재역.getId());
 

@@ -37,6 +37,14 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
+    public static Section combine(Section upSection, Section downSection) {
+        return new Section(upSection.getUpStation(),
+            downSection.getDownStation(),
+            upSection.distance
+                .add(downSection.distance)
+        );
+    }
+
     protected Section() {
     }
 

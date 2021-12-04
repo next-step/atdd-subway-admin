@@ -59,4 +59,16 @@ class SectionTest {
 
         assertThat(section).isEqualTo(new Section(양재역, 판교역, new Distance(8)));
     }
+
+    @DisplayName("상위 구간과 하단 구간을 하나로 합친다")
+    @Test
+    void combine() {
+        Section upSection = new Section(강남역, 양재역, new Distance(10));
+        Section downSection = new Section(양재역, 판교역, new Distance(2));
+
+        Section actual = Section.combine(upSection, downSection);
+
+        assertThat(actual)
+            .isEqualTo(new Section(강남역, 판교역, new Distance(12)));
+    }
 }

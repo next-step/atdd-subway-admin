@@ -83,15 +83,26 @@ class SectionsTest {
         );
     }
 
-    @DisplayName("지하철 역 삭제")
+    @DisplayName("지하철 종점 삭제")
     @Test
-    void deleteStation() {
+    void deleteLastStation() {
         Sections sections = Sections.from(
             Arrays.asList(강남_양재_구간, 양재_판교_구간));
 
         sections.deleteStation(판교역);
 
         assertThat(sections.getStations()).isEqualTo(Arrays.asList(강남역, 양재역));
+    }
+
+    @DisplayName("중간역이 제거될 경우 재배치를 함")
+    @Test
+    void deleteBetweenStation() {
+        Sections sections = Sections.from(
+            Arrays.asList(강남_양재_구간, 양재_판교_구간));
+
+        sections.deleteStation(양재역);
+
+        assertThat(sections.getStations()).isEqualTo(Arrays.asList(강남역, 판교역));
     }
 
     @DisplayName("존재하지 않는 지하철 역 삭제 에러")
