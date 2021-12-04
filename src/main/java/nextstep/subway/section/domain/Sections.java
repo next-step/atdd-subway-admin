@@ -23,7 +23,7 @@ public class Sections {
         List<Station> stations = getStations();
         validateSection(stations, sectionToAdd);
 
-        ifAddBetweenStation(stations, sectionToAdd);
+        addStationBetweenSection(stations, sectionToAdd);
 
         sections.add(sectionToAdd);
     }
@@ -79,7 +79,7 @@ public class Sections {
         return !stations.isEmpty() && !stations.contains(sectionToAdd.getUpStation()) && !stations.contains(sectionToAdd.getDownStation());
     }
 
-    private void ifAddBetweenStation(List<Station> stations, Section sectionToAdd) {
+    private void addStationBetweenSection(List<Station> stations, Section sectionToAdd) {
         addOriginDownStation(stations, sectionToAdd);
 
         addOriginUpStation(stations, sectionToAdd);
