@@ -34,9 +34,7 @@ public class Line extends BaseEntity {
     public void update(final String name, final String color, final Station upStation, final Station downStation, final Distance distance) {
         this.name = name;
         this.color = color;
-        this.sections.getSections()
-                .get(0)
-                .update(upStation, downStation, distance);
+        this.sections.updateSection(upStation, downStation, distance);
     }
 
     public Long getId() {

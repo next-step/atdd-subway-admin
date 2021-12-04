@@ -5,6 +5,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 @Entity
 public class Section extends BaseEntity {
@@ -32,6 +34,13 @@ public class Section extends BaseEntity {
     }
 
     public Section(final Station upStation, final Station downStation, final Distance distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
+    public Section(final Line line, final Station upStation, final Station downStation, final Distance distance) {
+        this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -65,6 +74,53 @@ public class Section extends BaseEntity {
 
     public Distance getDistance() {
         return distance;
+    }
+
+    public boolean connectable(final Section section) {
+        if (this.equals(section)) {
+            return false;
+        }
+
+        long matchCount = new ArrayList<>(Arrays.asList(upStation, downStation))
+                .stream()
+                .filter(station -> !(station.equals(section.getUpStation()) && station.equals(section.getDownStation()))
+                        && (station.equals(section.getUpStation()) || station.equals(section.getDownStation())))
+                .count();
+
+        return matchCount == 1;
+    }
+
+    public void deductDistance(final Section section) {
+        if (this.upStation.equals(section.getUpStation())) {
+            this.upStation = section.getDownStation();
+            this.distance.deduct(section.getDistance().getDistance());
+        }
+
+        if (this.downStation.equals(section.getDownStation())) {
+            this.downStation = section.getUpStation();
+            this.distance.deduct(section.getDistance().getDistance());
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof Section) || o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Section that = (Section) o;
+        if (this.line.equals(that.getLine()) &&
+            this.upStation.equals(that.getUpStation()) &&
+            this.downStation.equals(that.getDownStation()) &&
+            this.distance.equals(that.getDistance())) {
+            return true;
+        }
+
+        return false;
     }
 
 }
