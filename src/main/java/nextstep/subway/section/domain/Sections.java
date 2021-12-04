@@ -49,10 +49,12 @@ public class Sections {
 
         if (isIndexStation(FIRST_INDEX, stationToRemove, stations)) {
             removeFirstSection(stationToRemove);
+            return;
         }
 
         if (isIndexStation(stations.size() - 1, stationToRemove, stations)) {
             removeLastSection(stationToRemove);
+            return;
         }
 
         removeBetweenSection(stationToRemove);
