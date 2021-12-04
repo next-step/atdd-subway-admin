@@ -61,26 +61,12 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Section section = (Section) o;
-        return id.equals(section.id);
+    public boolean equalsUpStation(Station upStation) {
+        return this.upStation.equals(upStation);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
-
-    public boolean equalsUpStation(Section newSection) {
-        return upStation.equals(newSection.getUpStation());
-    }
-
-    public boolean equalsDownStation(Section newSection) {
-        return downStation.equals(newSection.getDownStation());
+    public boolean equalsDownStation(Station downStation) {
+        return this.downStation.equals(downStation);
     }
 
     public void updateUpSection(Section newSection) {
@@ -97,11 +83,29 @@ public class Section extends BaseEntity {
     }
 
     public boolean containsStation(Section newSection) {
-        return equalsUpStation(newSection) || equalsDownStation(newSection)
+        return equalsUpStation(newSection.getUpStation()) || equalsDownStation(newSection.getDownStation())
                 || equalsCrossStation(newSection);
     }
 
     private boolean equalsCrossStation(Section newSection) {
         return upStation.equals(newSection.getDownStation()) || downStation.equals(newSection.getUpStation());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return upStation.equals(section.getUpStation()) && downStation.equals(section.getDownStation());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    public void merge(Section mergeSection) {
+        this.downStation = mergeSection.getDownStation();
+        this.distance += mergeSection.getDistance();
     }
 }

@@ -18,13 +18,29 @@ public class SectionTestHelper {
         return params;
     }
 
-    public static ExtractableResponse<Response> 구간_등록_요청(Map params){
+    public static ExtractableResponse<Response> 구간_등록_요청(Map params) {
         return RestAssured.given().log().all()
                 .pathParam("lineId", "1")
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines/{lineId}/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    public static Map 구간_제거_요청_파라미터(String stationId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("stationId", stationId);
+        return params;
+    }
+
+    public static ExtractableResponse<Response> 구간_제거_요청(Map params) {
+        return RestAssured.given().log().all()
+                .pathParam("lineId", "1")
+                .params(params)
+                .when()
+                .delete("/lines/{lineId}/sections")
                 .then().log().all()
                 .extract();
     }

@@ -126,4 +126,75 @@ public class SectionsTest {
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("상행역과 하행역 둘 중 하나도 포함되어 있지 않습니다.");
     }
+
+    @DisplayName("라인 중간에 껴있는 구간을 제거하는 기능 검증")
+    @Test
+    void removeMiddleSection() {
+        Station upStation = new Station(1L, "건대역");
+        Station downStation = new Station(2L, "용마산역");
+        Line line = new Line("bg-red-600", "7호선");
+        Section checkSection = Section.of(line, upStation, downStation, 10);
+
+        downStation = new Station(3L, "뚝섬유원지역");
+        Section.of(line, upStation, downStation, 3);
+
+        //when
+        line.getSections().removeSection(downStation);
+
+        //then
+        assertAll(
+                () -> assertThat(line.getSections().size()).isEqualTo(1),
+                () -> assertThat(checkSection.getDistance()).isEqualTo(10)
+        );
+    }
+
+    @DisplayName("상행이 포함된 구간을 제거하는 기능 검증")
+    @Test
+    void removeAscendSection() {
+        Station upStation = new Station(1L, "건대역");
+        Station downStation = new Station(2L, "용마산역");
+        Line line = new Line("bg-red-600", "7호선");
+        Section.of(line, upStation, downStation, 10);
+
+        Station newDownStation = new Station(3L, "뚝섬유원지역");
+        Section.of(line, upStation, newDownStation, 3);
+
+        //when
+        line.getSections().removeSection(upStation);
+
+        //then
+        assertThat(line.getSections().size()).isEqualTo(1);
+    }
+
+    @DisplayName("하행이 포함된 구간을 제거하는 기능 검증")
+    @Test
+    void removeDescendSection() {
+        Station upStation = new Station(1L, "건대역");
+        Station downStation = new Station(2L, "용마산역");
+        Line line = new Line("bg-red-600", "7호선");
+        Section.of(line, upStation, downStation, 10);
+
+        Station newDownStation = new Station(3L, "뚝섬유원지역");
+        Section.of(line, upStation, newDownStation, 3);
+
+        //when
+        line.getSections().removeSection(downStation);
+
+        //then
+        assertThat(line.getSections().size()).isEqualTo(1);
+    }
+
+    @DisplayName("구간이 하나일때는 제거 안됨")
+    @Test
+    void removeValidSize() {
+        Station upStation = new Station(1L, "건대역");
+        Station downStation = new Station(2L, "용마산역");
+        Line line = new Line("bg-red-600", "7호선");
+        Section.of(line, upStation, downStation, 10);
+
+        assertThatThrownBy(() -> {
+            line.getSections().removeSection(downStation);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("하나 이상 구간일때만 제거 할 수 있습니다.");
+    }
 }
