@@ -70,6 +70,13 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections/" + sectionResponse.getId())).body(sectionResponse);
     }
 
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity removeSection(@PathVariable Long lineId,
+                                        @RequestParam Long stationId) {
+        lineService.removeSection(lineId, stationId);
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler(ExistDuplicatedNameException.class)
     public ResponseEntity<String> handleExistDuplicatedNameException(ExistDuplicatedNameException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
