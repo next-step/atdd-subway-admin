@@ -36,18 +36,7 @@ public class SectionAcceptanceTestHelper {
 
     public static void 지하철_노선에_구간_등록됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode())
-            .isEqualTo(HttpStatus.CREATED.value());
-
-        assertThat(response.header("Location"))
-            .isNotBlank();
-    }
-
-    public static void 지하철_노선에_지하철역_포함됨(long lineId, Station station) {
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineId);
-        LineResponse lineResponse = response.as(LineResponse.class);
-
-        assertThat(lineResponse.getStations())
-            .contains(StationResponse.from(station));
+            .isEqualTo(HttpStatus.OK.value());
     }
 
     public static void 지하철_노선에_포함된_역들이_일치함(long lineId, List<Station> stations) {

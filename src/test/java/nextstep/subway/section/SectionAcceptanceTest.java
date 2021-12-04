@@ -59,7 +59,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_구간_등록됨(response);
-        지하철_노선에_지하철역_포함됨(지하철_신분당선_id, 판교역);
+        지하철_노선에_포함된_역들이_일치함(지하철_신분당선_id, Arrays.asList(강남역, 양재역, 판교역));
     }
 
     @DisplayName("노선 구간 사이에 새로운 역을 등록한다")
