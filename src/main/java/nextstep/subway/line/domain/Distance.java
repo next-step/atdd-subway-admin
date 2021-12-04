@@ -5,6 +5,7 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class Distance {
+    public static final String ERROR_INVALID_DISTANCE = "구간의 거리가 같거나 더 멉니다.";
     @Column(name = "distance")
     private int distance;
 
@@ -17,7 +18,7 @@ public class Distance {
 
     public Distance minus(Distance target) {
         if (isSameOrFarther(target)) {
-            throw new IllegalArgumentException("구간의 거리가 같거나 더 멉니다.");
+            throw new IllegalArgumentException(ERROR_INVALID_DISTANCE);
         }
         return new Distance(this.distance - target.distance);
     }

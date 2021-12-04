@@ -19,6 +19,9 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
+    public static final String ERROR_NOT_FOUND_STATIONS = "구간에서 상/하행역 정보를 찾을 수 없습니다.";
+    public static final String ERROR_ALREADY_ADDED_SECTION = "상/하행역 정보가 이미 등록되어 있습니다.";
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -58,10 +61,10 @@ public class Sections {
 
     private void checkStationOfSection(Section section) {
         if (isNotContainsStation(section)) {
-            throw new IllegalArgumentException("상/하행역 정보가 등록되어 있지 않습니다.");
+            throw new IllegalArgumentException(ERROR_NOT_FOUND_STATIONS);
         }
         if (isAlreadyAdded(section)) {
-            throw new IllegalArgumentException("상/하행역 정보가 이미 등록되어 있습니다.");
+            throw new IllegalArgumentException(ERROR_ALREADY_ADDED_SECTION);
         }
     }
 
