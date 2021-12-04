@@ -27,12 +27,12 @@ public class Distance {
         }
     }
 
-    public Distance minus(Distance distance) {
-        return new Distance(this.distance - distance.distance);
+    public int minus(Distance distance) {
+        return this.distance - distance.distance;
     }
 
-    public Distance sum(Distance distance) {
-        return new Distance(this.distance + distance.distance);
+    public int sum(Distance distance) {
+        return this.distance + distance.distance;
     }
 
     public int getDistance() {

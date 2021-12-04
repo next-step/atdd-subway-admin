@@ -103,9 +103,9 @@ public class Sections {
         Section foundSectionByDownStation = findSectionByDownStation(station);
         Section foundSectionByUpStation = findSectionByUpStation(station);
 
-        Distance newDistance = foundSectionByDownStation.sumDistance(foundSectionByUpStation.getDistance());
+        foundSectionByDownStation.sumDistance(foundSectionByUpStation.getDistance());
         Section changeSection = new Section(foundSectionByUpStation.getLine(),
-                foundSectionByDownStation.getUpStation(), foundSectionByUpStation.getDownStation(), newDistance);
+                foundSectionByDownStation.getUpStation(), foundSectionByUpStation.getDownStation(), foundSectionByDownStation.getDistance());
         this.sections.add(changeSection);
         this.sections.removeAll(Arrays.asList(foundSectionByUpStation, foundSectionByDownStation));
     }
