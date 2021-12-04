@@ -37,7 +37,7 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        this.sections.updateSection(section);
+        this.sections.addSection(section);
         section.addLine(this);
     }
 
@@ -47,19 +47,18 @@ public class Line extends BaseEntity {
     }
 
    private void checkValidateStation(Station station) {
-        hasStationInLine(station);
-        isLastOneSection();
+        checkExistStationInLine(station);
+        checkLastOneSection();
     }
 
-    private void isLastOneSection() {
+    private void checkLastOneSection() {
         if (this.sections.hasLastOneSection()) {
             throw new InputDataErrorException(InputDataErrorCode.THERE_IS_ONLY_ONE_SECTION_IN_LINE);
         }
     }
 
-    private void hasStationInLine(Station station) {
-        List<Station> registeredStations = getStations();
-        if (!registeredStations.contains(station)) {
+    private void checkExistStationInLine(Station station) {
+        if(!this.sections.contains(station)){
             throw new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_STATION_IN_LINE);
         }
     }
@@ -89,10 +88,6 @@ public class Line extends BaseEntity {
         return sections.getSections();
     }
 
-    public Sections sections() {
-        return sections;
-    }
-
     public List<Station> getOrderedSections() {
         return sections.getOrderedStation();
     }
@@ -116,5 +111,9 @@ public class Line extends BaseEntity {
 
     private boolean isSameSection(Station upStation, Station downStation, Section it) {
         return it.getUpStation() == upStation && it.getDownStation() == downStation;
+    }
+
+    private Sections sections() {
+        return sections;
     }
 }

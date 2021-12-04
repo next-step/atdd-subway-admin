@@ -67,11 +67,6 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public void updateSection(Section newSection) {
-        checkValidSection(newSection);
-        addSection(newSection);
-    }
-
     public void removeStation(Station station) {
         if (isEndStation(station)) {
             Section section = findSection(station);
@@ -85,6 +80,7 @@ public class Sections {
     }
 
     public void addSection(Section newSection) {
+        checkValidSection(newSection);
         for (Section section : sections) {
             section.addInnerSection(newSection);
         }
@@ -97,6 +93,10 @@ public class Sections {
 
     public boolean hasLastOneSection() {
         return this.sections.size() == 1;
+    }
+
+    public boolean contains(Station station) {
+        return getStations().contains(station);
     }
 
     private void removeMiddleSection(Station station) {
@@ -162,6 +162,9 @@ public class Sections {
     }
 
     private void checkValidSection(Section section) {
+        if (checkAddFirstSection()) {
+            return;
+        }
         if (isExist(section)) {
             throw new InputDataErrorException(InputDataErrorCode.THE_SECTION_ALREADY_EXISTS);
         }
@@ -171,6 +174,10 @@ public class Sections {
         if (isFindNoOneStationInLine(section)) {
             throw new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_STATION);
         }
+    }
+
+    private boolean checkAddFirstSection() {
+        return this.sections.isEmpty();
     }
 
     private boolean hasBothStationInLine(Section section) {
