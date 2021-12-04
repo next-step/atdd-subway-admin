@@ -72,4 +72,8 @@ public class Line extends BaseEntity {
     public boolean isContainsSection(Section section) {
         return sections.isContainsSection(section);
     }
+
+    public void removeSectionByStation(Station station) {
+        sections.removeSectionByStation(station);
+    }
 }
