@@ -133,4 +133,53 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("노선 맨 앞에 구간을 등록한다.")
+    @Test
+    void addSectionFist() {
+        // when
+        // 지하철_노선에_지하철역_등록_요청
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", stationAdd.getId().toString());
+        params.put("downStationId", stationUp.getId().toString());
+        params.put("distance", "4");
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParam("id", line.getId())
+                .when().post("/lines/{id}/sections")
+                .then().log().all()
+                .extract();
+
+        // then
+        // 지하철_노선에_지하철역_등록됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("노선 맨 뒤에 구간을 등록한다.")
+    @Test
+    void addSectionLast() {
+        // when
+        // 지하철_노선에_지하철역_등록_요청
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", stationDown.getId().toString());
+        params.put("downStationId", stationAdd.getId().toString());
+        params.put("distance", "4");
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParam("id", line.getId())
+                .when().post("/lines/{id}/sections")
+                .then().log().all()
+                .extract();
+
+        // then
+        // 지하철_노선에_지하철역_등록됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
 }

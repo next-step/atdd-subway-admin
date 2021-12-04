@@ -77,6 +77,12 @@ public class Sections {
         sectionList.addAll(sections.stream()
                 .filter(s -> s.isExistDownStation(section.getDownStationId()))
                 .collect(Collectors.toList()));
+        sectionList.addAll(sections.stream()
+                .filter(s -> s.isExistUpStation(section.getDownStationId()))
+                .collect(Collectors.toList()));
+        sectionList.addAll(sections.stream()
+                .filter(s -> s.isExistDownStation(section.getUpStationId()))
+                .collect(Collectors.toList()));
         return sectionList;
     }
 }
