@@ -80,22 +80,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	public static ExtractableResponse<Response> 지하철역_등록되어_있음(String stationName) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", stationName);
-		return RestAssured.given().log().all()
-			.body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/stations")
-			.then().log().all()
-			.extract();
+		return create(params);
 	}
 
 	private ExtractableResponse<Response> 지하철역_제거_요청(ExtractableResponse<Response> given) {
 		String uri = given.header("Location");
-		return RestAssured.given().log().all()
-			.when()
-			.delete(uri)
-			.then().log().all()
-			.extract();
+		return delete(uri);
 	}
 
 	private void 지하철역_제거됨(ExtractableResponse<Response> response) {
@@ -106,7 +96,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
-	private void 지하철역_조회_내용_포함됨(ExtractableResponse<Response> response, List<ExtractableResponse> givens) {
+	private void 지하철역_조회_내용_포함됨(ExtractableResponse<Response> response, List<ExtractableResponse<Response>> givens) {
 		List<Long> expectedLineIds = givens.stream()
 			.map(it -> Long.parseLong(it.header("Location").split("/")[2]))
 			.collect(Collectors.toList());
@@ -118,11 +108,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	}
 
 	private ExtractableResponse<Response> 지하철역_조회_요청() {
-		return RestAssured.given().log().all()
-			.when()
-			.get("/stations")
-			.then().log().all()
-			.extract();
+		return findAll();
 	}
 
 	private void 지하철역_생성_실패함(ExtractableResponse<Response> response) {
@@ -132,14 +118,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	private ExtractableResponse<Response> 지하철역_생성_요청(String stationName) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", stationName);
-		return RestAssured.given().log().all()
-			.body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/stations")
-			.then()
-			.log().all()
-			.extract();
+		return create(params);
 	}
 
 	private void 지하철역_생성_완료됨(ExtractableResponse<Response> response) {
@@ -147,5 +126,31 @@ public class StationAcceptanceTest extends AcceptanceTest {
 			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
 			() -> assertThat(response.header("Location")).isNotBlank()
 		);
+	}
+
+	private static ExtractableResponse<Response> create(Map<String, String> params) {
+		return RestAssured.given().log().all()
+			.body(params)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post("/stations")
+			.then().log().all()
+			.extract();
+	}
+
+	private ExtractableResponse<Response> findAll() {
+		return RestAssured.given().log().all()
+			.when()
+			.get("/stations")
+			.then().log().all()
+			.extract();
+	}
+
+	private static ExtractableResponse<Response> delete(String uri) {
+		return RestAssured.given().log().all()
+			.when()
+			.delete(uri)
+			.then().log().all()
+			.extract();
 	}
 }
