@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Stations {
-  private static final long ONE = 1;
+  private static final long VALID_INPUT_MATCH_COUNT = 1;
   private List<Station> stations = new ArrayList<>();
 
   protected Stations() {}
@@ -19,18 +19,26 @@ public class Stations {
 
   private void checkDuplicateStationExists(List<Station> stations) {
     for (Station station : stations) {
-      duplicaStationValidate(stations, station);
+      duplicateStationValidate(stations, station);
     }
   }
 
-  private void duplicaStationValidate(List<Station> stations, Station station) {
+  private void duplicateStationValidate(List<Station> stations, Station newStation) {
     long matchCount = stations.stream()
-      .filter(station1 -> station1.equals(station))
+      .filter(station -> station.equals(newStation))
       .count();
 
-    if (matchCount > ONE) {
-      throw new StationDuplicateException(station.getName());
+    if (matchCount > VALID_INPUT_MATCH_COUNT) {
+      throw new StationDuplicateException(newStation.getName());
     }
+  }
+
+  public List<Station> asList() {
+    return stations;
+  }
+
+  public boolean containAny(List<Station> stationList) {
+    return stationList.removeAll(stations);
   }
 
   public void addStation(Station station) {
@@ -63,9 +71,5 @@ public class Stations {
     return "Stations{" +
       "stations=" + stations +
       '}';
-  }
-
-  public List<Station> asList() {
-    return stations;
   }
 }

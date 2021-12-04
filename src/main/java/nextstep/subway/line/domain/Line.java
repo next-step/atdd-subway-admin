@@ -5,6 +5,7 @@ import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.Stations;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Line extends BaseEntity {
@@ -23,24 +24,27 @@ public class Line extends BaseEntity {
   protected Line() {
   }
 
+  public Line(String name, String color) {
+    this.name = name;
+    this.color = color;
+  }
+
   public Line(Long id, String name, String color) {
     this.id = id;
     this.name = name;
     this.color = color;
   }
 
-  public Line(String name, String color) {
-    this.name = name;
-    this.color = color;
-  }
-
   public static Line of(String name, String color, Station upStation, Station downStation, Distance distance) {
     Line line = new Line(name, color);
-    line.addSection(Section.of(line, upStation, downStation, distance));
+    Section section = Section.of(upStation, downStation, distance);
+    section.addLine(line);
+    line.sections.add(section);
     return line;
   }
 
   public void addSection(Section section) {
+    section.addLine(this);
     sections.add(section);
   }
 
@@ -63,5 +67,18 @@ public class Line extends BaseEntity {
 
   public Stations getStations() {
     return sections.getUpToDownStations();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Line line = (Line) o;
+    return Objects.equals(id, line.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);
   }
 }
