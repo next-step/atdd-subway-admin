@@ -39,14 +39,14 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    private Section(Line line, Station upStation, Station downStation, int distance) {
+    private Section(Line line, Station upStation, Station downStation, Distance distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = Distance.from(distance);
+        this.distance = distance;
     }
     
-    public static Section of(Line line, Station upStation, Station downStation, int distance) {
+    public static Section of(Line line, Station upStation, Station downStation, Distance distance) {
         return new Section(line, upStation, downStation, distance);
     }
 
@@ -73,15 +73,24 @@ public class Section extends BaseEntity {
     public boolean isSameDownStation(Station station) {
         return this.downStation.equals(station);
     }
+    
+    public boolean isContainStation(Station station) {
+        return isSameUpStation(station) || isSameDownStation(station);
+    }
 
     public void moveUpStationTo(Station station, Distance distance) {
         this.upStation = station;
-        this.distance = this.distance.move(distance);
+        this.distance = this.distance.minus(distance);
     }
 
     public void moveDownStationTo(Station station, Distance distance) {
         this.downStation = station;
-        this.distance = this.distance.move(distance);
+        this.distance = this.distance.minus(distance);
+    }
+    
+    public void combine(Section combineSection) {
+        this.downStation = combineSection.getDownStation();
+        this.distance = this.distance.plus(combineSection.getDistance());
     }
     
 

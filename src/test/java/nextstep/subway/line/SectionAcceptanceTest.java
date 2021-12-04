@@ -112,6 +112,62 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+    
+    @DisplayName("노선에 구간을 제거한다")
+    @Test
+    void 구간_제거() {
+        // given
+        StationResponse 서울대입구역 = 지하철역_등록되어_있음("서울대입구역");
+        StationResponse 낙성대역 = 지하철역_등록되어_있음("낙성대역");
+        LineResponse 이호선 = 지하철_노선_등록되어_있음(LineRequest.of("이호선", "bg-green-600", 서울대입구역.getId(), 낙성대역.getId(), 30));
+        
+        StationResponse 봉천역 = 지하철역_등록되어_있음("봉천역");
+        SectionRequest request = SectionRequest.of(봉천역.getId(), 서울대입구역.getId(), 20);
+        구간_추가_요청(이호선.getId(), request);
+
+        // when
+        ExtractableResponse<Response> response = 구간_제거_요청(이호선.getId(), 서울대입구역.getId());
+        
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+    
+    @DisplayName("구간이 하나인 노선은 지하철역을 제거할 수 없음")
+    @Test
+    void 구간_하나짜리_노선_지하철역_제거() {
+        // given
+        StationResponse 서울대입구역 = 지하철역_등록되어_있음("서울대입구역");
+        StationResponse 낙성대역 = 지하철역_등록되어_있음("낙성대역");
+        LineResponse 이호선 = 지하철_노선_등록되어_있음(LineRequest.of("이호선", "bg-green-600", 서울대입구역.getId(), 낙성대역.getId(), 30));
+
+        // when
+        ExtractableResponse<Response> response = 구간_제거_요청(이호선.getId(), 서울대입구역.getId());
+        
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+    
+    
+    @DisplayName("노선에 등록되어있지 않은 역은 제거할 수 없음")
+    @Test
+    void 미등록_지하철역_제거() {
+        // given
+        StationResponse 서울대입구역 = 지하철역_등록되어_있음("서울대입구역");
+        StationResponse 낙성대역 = 지하철역_등록되어_있음("낙성대역");
+        LineResponse 이호선 = 지하철_노선_등록되어_있음(LineRequest.of("이호선", "bg-green-600", 서울대입구역.getId(), 낙성대역.getId(), 30));
+        
+        StationResponse 봉천역 = 지하철역_등록되어_있음("봉천역");
+        SectionRequest request = SectionRequest.of(봉천역.getId(), 서울대입구역.getId(), 20);
+        구간_추가_요청(이호선.getId(), request);
+
+        // when
+        StationResponse 판교역 = 지하철역_등록되어_있음("판교역");
+        ExtractableResponse<Response> response = 구간_제거_요청(이호선.getId(), 판교역.getId());
+        
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
 
     private ExtractableResponse<Response> 구간_추가_요청(Long lineId, SectionRequest request) {
         return RestAssured
@@ -120,6 +176,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines/{id}/sections", lineId)
+                .then().log().all()
+                .extract();
+    }
+    
+    private ExtractableResponse<Response> 구간_제거_요청(Long lineId, Long stationId) {
+        return RestAssured
+                .given().log().all()
+                .queryParam("stationId", stationId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/{id}/sections", lineId)
                 .then().log().all()
                 .extract();
     }

@@ -26,18 +26,29 @@ public class DistanceTest {
         
         // when, then
         assertThrows(IllegalArgumentException.class, ()->{
-            distance.move(Distance.from(50));
+            distance.minus(Distance.from(50));
                 });
     }
     
-    @DisplayName("길이가 변경되는지 확인")
+    @DisplayName("길이가 짧아지는지 확인")
     @ParameterizedTest
     @CsvSource(value = { "30:20:10", "50:20:30" }, delimiter = ':')
-    void 길이_변경_확인(int oldDistance, int newDistance, int expected) {
+    void 길이_줄어듦_확인(int oldDistance, int newDistance, int expected) {
         // given
         Distance distance = Distance.from(oldDistance);
         
         // when, then
-        assertThat(distance.move(Distance.from(newDistance))).isEqualTo(Distance.from(expected));
+        assertThat(distance.minus(Distance.from(newDistance))).isEqualTo(Distance.from(expected));
+    }
+    
+    @DisplayName("길이가 길어지는지 확인")
+    @ParameterizedTest
+    @CsvSource(value = { "30:20:50", "50:20:70" }, delimiter = ':')
+    void 길이_늘어남_확인(int oldDistance, int combineDistance, int expected) {
+        // given
+        Distance distance = Distance.from(oldDistance);
+        
+        // when, then
+        assertThat(distance.plus(Distance.from(combineDistance))).isEqualTo(Distance.from(expected));
     }
 }

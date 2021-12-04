@@ -27,19 +27,16 @@ public class Distance {
     
     private void validateDistance(int distance) {
         if (distance <= 0) {
-            throw new IllegalArgumentException("구간의 길이는 0보다 커야합니다.");
+            throw new IllegalArgumentException(String.format("길이가 유효하지 않습니다.(%d)", distance));
         }
     }
     
-    private void checkShorter(Distance distance) {
-        if (this.distance <= distance.getDistance()) {
-            throw new IllegalArgumentException(String.format("길이가 맞지 않는 노선입니다.(%d)", this.distance));
-        }
-    }
-    
-    public Distance move(Distance distance) {
-        checkShorter(distance);
+    public Distance minus(Distance distance) {
         return Distance.from(this.distance - distance.getDistance());
+    }
+    
+    public Distance plus(Distance distance) {
+        return Distance.from(this.distance + distance.getDistance());
     }
 
     @Override

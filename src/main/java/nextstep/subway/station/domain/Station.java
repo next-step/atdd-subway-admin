@@ -41,6 +41,10 @@ public class Station extends BaseEntity {
     public void update(Station station) {
         this.name = station.getName();
     }
+    
+    public boolean isSameStation(Station station) {
+        return this.equals(station);
+    }
 
     @Override
     public boolean equals(Object o) {
