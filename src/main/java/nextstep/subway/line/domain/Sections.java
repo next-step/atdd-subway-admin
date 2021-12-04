@@ -5,8 +5,6 @@ import nextstep.subway.common.exception.InvalidDuplicatedSection;
 import nextstep.subway.common.exception.MinimumRemovableSectionSizeException;
 import nextstep.subway.common.exception.NotContainsStationException;
 import nextstep.subway.common.exception.NotFoundStationException;
-import nextstep.subway.section.domain.Distance;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;

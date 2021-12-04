@@ -4,8 +4,6 @@ import nextstep.subway.common.exception.EmptySectionException;
 import nextstep.subway.common.exception.InvalidDuplicatedSection;
 import nextstep.subway.common.exception.MinimumRemovableSectionSizeException;
 import nextstep.subway.common.exception.NotContainsStationException;
-import nextstep.subway.section.domain.Distance;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
