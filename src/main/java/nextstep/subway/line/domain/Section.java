@@ -45,6 +45,28 @@ public class Section {
         this.distance = distance;
     }
 
+    public void updateDownStation(Section section) {
+        if (section.getDistance() >= distance) {
+            throw new IllegalArgumentException("기존거리보다 큽니다.");
+        }
+        downStation = section.getUpStation();
+    }
+
+    public void updateUpStation(Section section) {
+        if (section.getDistance() >= distance) {
+            throw new IllegalArgumentException("기존거리보다 큽니다.");
+        }
+        upStation = section.getDownStation();
+    }
+
+    public boolean isEqualToDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    public boolean isEqualToUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
     public Long getId() {
         return id;
     }

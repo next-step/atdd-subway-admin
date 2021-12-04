@@ -3,8 +3,11 @@ package nextstep.subway.line.domain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -23,33 +26,64 @@ public class Sections {
     }
 
     public void add(Section section) {
-        if (sections.size() > 0) {
-            checkValidation(section);
+        if (!sections.isEmpty()) {
+            updateSection(section);
         }
         sections.add(section);
     }
 
-    private void checkValidation(Section section) {
-        boolean isUpStation = isExistUpStation(section.getUpStation());
-        boolean isDownStation = isExistDownStation(section.getDownStation());
-
-        if (isUpStation && isDownStation) {
-            throw new IllegalArgumentException("상행역과 하행역이 이미 등록되어 있습니다.");
+    private void updateSection(Section section) {
+        checkStationOfSection(section);
+        if (updateDownSection(section)) {
+            return;
         }
+        updateUpSection(section);
+    }
 
-        if (!isUpStation && !isDownStation) {
-            throw new IllegalArgumentException("상행역과 하행역 모두 존재하지 않습니다.");
+    private boolean updateDownSection(Section section) {
+        Optional<Section> target = sections.stream()
+            .filter(it -> it.isEqualToUpStation(section.getUpStation()))
+            .findAny();
+        target.ifPresent(it -> it.updateUpStation(section));
+        return target.isPresent();
+    }
+
+    private boolean updateUpSection(Section section) {
+        Optional<Section> target = sections.stream()
+            .filter(it -> it.isEqualToDownStation(section.getDownStation()))
+            .findAny();
+        target.ifPresent(it -> it.updateDownStation(section));
+        return target.isPresent();
+    }
+
+    private void checkStationOfSection(Section section) {
+        if (isNotContainsStation(section)) {
+            throw new IllegalArgumentException("상/하행역 정보가 등록되어 있지 않습니다.");
+        }
+        if (isAlreadyAdded(section)) {
+            throw new IllegalArgumentException("상/하행역 정보가 이미 등록되어 있습니다.");
         }
     }
 
-    private boolean isExistDownStation(Station downStation) {
-        return sections.stream()
-            .anyMatch(section -> section.getDownStation() == downStation);
+    private boolean isAlreadyAdded(Section section) {
+        Set<Station> stations = getStations();
+        return stations.contains(section.getUpStation())
+            && stations.contains(section.getDownStation());
     }
 
-    private boolean isExistUpStation(Station upStation) {
-        return sections.stream()
-            .anyMatch(section -> section.getUpStation() == upStation);
+    private boolean isNotContainsStation(Section section) {
+        Set<Station> stations = getStations();
+        return !stations.contains(section.getUpStation())
+            && !stations.contains(section.getDownStation());
+    }
+
+    private Set<Station> getStations() {
+        Set<Station> stations = new HashSet<>();
+        sections.forEach(it -> {
+            stations.add(it.getUpStation());
+            stations.add(it.getDownStation());
+        });
+        return stations;
     }
 
     public List<Station> getSortedStations() {
