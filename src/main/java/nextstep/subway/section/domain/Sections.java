@@ -13,7 +13,9 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    private static final int FIRST_INDEX = 0;
+
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section sectionToAdd) {
@@ -39,6 +41,21 @@ public class Sections {
                 .flatMap(Section::stations)
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public void removeSectionByStation(Station stationToRemove) {
+        List<Station> stations = getStations();
+        validateStationToRemove(stations, stationToRemove);
+
+        if (isIndexStation(FIRST_INDEX, stationToRemove, stations)) {
+            removeFirstSection(stationToRemove);
+        }
+
+        if (isIndexStation(stations.size() - 1, stationToRemove, stations)) {
+            removeLastSection(stationToRemove);
+        }
+
+        removeBetweenSection(stationToRemove);
     }
 
     private void validateSection(List<Station> stations, Section sectionToAdd) {
@@ -89,5 +106,39 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.getDownStation().equals(downStation))
                 .findFirst();
+    }
+
+    private void validateStationToRemove(List<Station> stations, Station stationToRemove) {
+        if (!stations.contains(stationToRemove)) {
+            // 에러 처리
+        }
+        if (sections.size() == 1) {
+            // 에러 처리
+        }
+    }
+
+    private boolean isIndexStation(int index, Station stationToRemove, List<Station> stations) {
+        return stations.get(index).equals(stationToRemove);
+    }
+
+    private void removeFirstSection(Station stationToRemove) {
+        findSectionByUpStation(stationToRemove).ifPresent(section ->
+                section.removeLine(section.getLine()));
+    }
+
+    private void removeLastSection(Station stationToRemove) {
+        findSectionByDownStation(stationToRemove).ifPresent(section ->
+                section.removeLine(section.getLine()));
+    }
+
+    private void removeBetweenSection(Station stationToRemove) {
+        Section upSection = findSectionByDownStation(stationToRemove).orElse(null);
+        Section downSection = findSectionByUpStation(stationToRemove).orElse(null);
+
+        if (upSection != null && downSection != null) {
+            upSection.update(upSection.getUpStation(), downSection.getDownStation(), downSection.getDistanceValue());
+        }
+
+        downSection.removeLine(downSection.getLine());
     }
 }
