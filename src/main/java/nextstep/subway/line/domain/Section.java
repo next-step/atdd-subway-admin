@@ -50,6 +50,7 @@ public class Section {
             throw new IllegalArgumentException("기존거리보다 큽니다.");
         }
         downStation = section.getUpStation();
+        distance -= section.distance;
     }
 
     public void updateUpStation(Section section) {
@@ -57,6 +58,7 @@ public class Section {
             throw new IllegalArgumentException("기존거리보다 큽니다.");
         }
         upStation = section.getDownStation();
+        distance -= section.distance;
     }
 
     public boolean isEqualToDownStation(Station station) {
