@@ -5,6 +5,9 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,24 +19,29 @@ import java.util.stream.Collectors;
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+        Optional<Station> upStation = stationRepository.findById(request.getUpStationId());
+        Optional<Station> downStation = stationRepository.findById(request.getDownStationId());
+        Section section = new Section(request.getDistance(), 1, upStation.orElseThrow(() -> new ElementNotFoundException()), downStation.orElseThrow(() -> new ElementNotFoundException()));
+        Line line = request.toLine();
+        line.addSection(section);
+        Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
     }
 
     public void updateLine(Long id, LineRequest request) {
         Optional<Line> optionalLine = lineRepository.findById(id);
-        if (!optionalLine.isPresent()) {
-            throw new ElementNotFoundException();
-        }
-        Line line = optionalLine.get();
-        line.update(request.toLine());
-        lineRepository.save(line);
+        optionalLine.ifPresent(line -> {
+            line.update(request.toLine());
+            lineRepository.save(line);
+        });
     }
 
     @Transactional(readOnly = true)
@@ -48,11 +56,7 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse findLineById(Long id) {
         Optional<Line> optionalLine = lineRepository.findById(id);
-        if (!optionalLine.isPresent()) {
-            throw new ElementNotFoundException();
-        }
-
-        return LineResponse.of(optionalLine.get());
+        return LineResponse.of(optionalLine.orElseThrow(() -> new ElementNotFoundException()));
     }
 
     public void deleteLineById(Long id) {
