@@ -148,6 +148,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_제거_요청_응답됨(response, Arrays.asList(newStationId, DEFAULT_UP_STATION_ID));
     }
 
+    @DisplayName("구간이 하나인 노선에서 역 제거")
+    @Test
+    void removeStationOneSection() {
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_제거_요청(DEFAULT_DOWN_STATION_ID);
+
+        // then
+        잘못된_요청_응답됨(response, "구간이 하나일 경우 역을 제거할 수 없습니다.");
+    }
+
+    @DisplayName("노선에 등록되지 않은 역 제거")
+    @Test
+    void removeStationNotExistSection() {
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_제거_요청(newStationId);
+
+        // then
+        잘못된_요청_응답됨(response, "구간에 등록되지 않은 역은 삭제할 수 없습니다.");
+    }
 
     private ExtractableResponse<Response> 지하철_구간_추가_요청(Long upStationId, Long downStationId, int distance) {
         SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
