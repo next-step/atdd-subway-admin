@@ -82,7 +82,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response = 지하철_구간_추가_요청(DEFAULT_UP_STATION_ID, newStationId, FIRST_SECTION_DISTANCE);
 
-        //then
+        // then
         잘못된_요청_응답됨(response, "구간 입력이 잘못되었습니다.");
     }
 
@@ -92,22 +92,36 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response = 지하철_구간_추가_요청(DEFAULT_UP_STATION_ID, DEFAULT_DOWN_STATION_ID, DISTANCE);
 
-        //then
+        // then
         잘못된_요청_응답됨(response, "구간 추가할 역이 모두 노선에 포함되어 있습니다.");
     }
 
     @DisplayName("상행역, 하행역 모두 등록 안된 경우")
     @Test
     void notExistSection() {
-        //given
+        // given
         Long anotherStationId = TestStationFactory.역_생성("잠실역").getId();
 
         // when
         ExtractableResponse<Response> response = 지하철_구간_추가_요청(newStationId, anotherStationId, DISTANCE);
 
-        //then
+        // then
         잘못된_요청_응답됨(response, "구간 추가할 역 중 노선에 포함되는 역이 없습니다.");
     }
+
+    @DisplayName("구간 사이 역 제거")
+    @Test
+    void removeStationBetweenSection() {
+        // given
+        지하철_구간_추가_요청(DEFAULT_UP_STATION_ID, newStationId, DISTANCE);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_제거_요청(newStationId);
+
+        // then
+        구간_제거_요청_응답됨(response, Arrays.asList(DEFAULT_UP_STATION_ID, DEFAULT_DOWN_STATION_ID));
+    }
+
 
     private ExtractableResponse<Response> 지하철_구간_추가_요청(Long upStationId, Long downStationId, int distance) {
         SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
@@ -115,23 +129,27 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return 요청(HttpMethod.POST, path, sectionRequest);
     }
 
-    private void 지하철_구간_생성됨(ExtractableResponse<Response> response, List<Long> requestedStationIds) {
-        List<Long> savedStationIds = 요청(HttpMethod.GET, "lines/" + DEFAULT_LINE_ID, null)
+    private void 지하철_구간_생성됨(ExtractableResponse<Response> response, List<Long> expectedStationIds) {
+        List<Long> foundStationIds = 노선_조회하여_역_ID_추출();
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> 조회된_역과_비교(expectedStationIds, foundStationIds)
+        );
+    }
+
+    private List<Long> 노선_조회하여_역_ID_추출() {
+        return 요청(HttpMethod.GET, "lines/" + DEFAULT_LINE_ID, null)
                 .body().as(LineResponse.class)
                 .getStations()
                 .stream()
                 .map(stationResponse -> stationResponse.getId())
                 .collect(Collectors.toList());
-
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> 저장된_역_비교(savedStationIds, requestedStationIds)
-        );
     }
 
-    private void 저장된_역_비교(List<Long> savedStationIds, List<Long> requestedStationIds) {
-        for (int i = 0; i < savedStationIds.size(); i++) {
-            assertThat(savedStationIds.get(i)).isEqualTo(requestedStationIds.get(i));
+    private void 조회된_역과_비교(List<Long> expectedStationIds, List<Long> responseStationIds) {
+        for (int i = 0; i < expectedStationIds.size(); i++) {
+            assertThat(expectedStationIds.get(i)).isEqualTo(responseStationIds.get(i));
         }
     }
 
@@ -139,6 +157,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
                 () -> assertThat(response.body().asString()).isEqualTo(expectedMessage)
+        );
+    }
+
+    private ExtractableResponse<Response> 지하철_구간_제거_요청(Long newStationId) {
+        String path = "lines/" + DEFAULT_LINE_ID + "/sections?stationId=" + newStationId;
+        return 요청(HttpMethod.DELETE, path, null);
+    }
+
+    private void 구간_제거_요청_응답됨(ExtractableResponse<Response> response, List<Long> expectedStationIds) {
+        List<Long> foundStationIds = 노선_조회하여_역_ID_추출();
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> 조회된_역과_비교(expectedStationIds, foundStationIds)
         );
     }
 }
