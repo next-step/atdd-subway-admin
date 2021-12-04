@@ -67,6 +67,12 @@ public class SectionsTest {
         stationOf(4L, "강남역"),
         stationOf(5L, "역삼역"),
         stationOf(1L, "선릉역"));
+
+    assertThat(secondSections.getSections().stream()
+      .filter(section -> section.getDownStation().getName().equals("선릉역"))
+      .findFirst()
+      .get().getDistance())
+      .isEqualTo(Distance.of(6));
   }
 
   @DisplayName("구간 생성 요청 상행 역과 기존에 하행역이 일치할 경우")
@@ -85,6 +91,13 @@ public class SectionsTest {
         stationOf(4L, "강남역"),
         stationOf(6L, "역삼역"),
         stationOf(1L, "선릉역"));
+
+    assertThat(secondSections.getSections().stream()
+      .filter(section -> section.getUpStation().getName().equals("강남역")
+        && section.getDownStation().getName().equals("역삼역"))
+      .findFirst()
+      .get().getDistance())
+      .isEqualTo(Distance.of(8));
   }
 
   @DisplayName("상행 종점이 추가되어 기존 상행 종점 앞에 구간 추가")
