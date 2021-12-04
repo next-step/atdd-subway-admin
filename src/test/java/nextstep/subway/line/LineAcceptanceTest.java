@@ -74,8 +74,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineResponse shinbundangLineResponse = 지하철_노선_등록되어_있음(shinbundangLineRequest);
         // 지하철_노선_등록되어_있음
         StationResponse seolleungStationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("선릉역"));
-        StationResponse samsungStationResponse4 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("삼성역"));
-        LineRequest line2Request = new LineRequest("2호선", "bg-green-600", seolleungStationResponse.getId(), samsungStationResponse4.getId(), 10);
+        StationResponse samsungStationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("삼성역"));
+        LineRequest line2Request = new LineRequest("2호선", "bg-green-600", seolleungStationResponse.getId(), samsungStationResponse.getId(), 10);
         LineResponse line2Response = 지하철_노선_등록되어_있음(line2Request);
 
         // when
@@ -183,7 +183,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         데이터_삭제완료됨(response);
     }
 
-    private LineResponse 지하철_노선_등록되어_있음(final LineRequest request) {
+    public LineResponse 지하철_노선_등록되어_있음(final LineRequest request) {
         ExtractableResponse<Response> response = 데이터_생성_요청(request, uri);
         return response.as(LineResponse.class);
     }
