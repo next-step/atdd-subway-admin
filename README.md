@@ -13,6 +13,7 @@
 <br>
 
 # 지하철 노선도 미션
+
 [ATDD 강의](https://edu.nextstep.camp/c/R89PYi5H) 실습을 위한 지하철 노선도 애플리케이션
 
 <br>
@@ -20,25 +21,34 @@
 ## 🚀 Getting Started
 
 ### Install
+
 #### npm 설치
+
 ```
 cd frontend
 npm install
 ```
+
 > `frontend` 디렉토리에서 수행해야 합니다.
 
 ### Usage
+
 #### webpack server 구동
+
 ```
 npm run dev
 ```
+
 #### application 구동
+
 ```
 ./gradlew bootRun
 ```
+
 <br>
 
 ## ✏️ Code Review Process
+
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
 <br>
@@ -54,6 +64,7 @@ npm run dev
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
 
 ## 1단계 기능 목록
+
 - [x] 기능 구현 전 인수 테스트 작성
 - [x] 노선 생성 구현
 - [x] 노선 목록 조회 구현
@@ -64,3 +75,12 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [x] line-station 다대일 연관관계 매핑
 - [x] List<LineResponse> 일급 컬렉션 리팩토링
 - [x] List<Station> 일급 컬렉션 리팩토링
+
+## 2단계 기능 목록
+
+- [x] 노선 생성시 구간 지정하는 인수 테스트 추가
+- [x] 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기
+    - 구간(Section)의 형태로 관리되어야 함
+- [x] 노선 조회 시 응답 결과에 역 목록 추가하는 인수 테스트 추가
+- [x] 노선 조회 시 응답 결과에 역 목록 추가하기
+    - 상행역 부터 하행역 순으로 정렬되어야 함
