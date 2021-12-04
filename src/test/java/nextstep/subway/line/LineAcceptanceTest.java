@@ -100,7 +100,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_조회_요청
-        Line line = createBlueResponse.as(Line.class);
+        LineResponse line = createBlueResponse.as(LineResponse.class);
         ExtractableResponse<Response> response = LineTestFixture.지하철_노선_조회(line.getId());
 
         // then
@@ -130,7 +130,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        Line line = createBlueResponse.as(Line.class);
+        LineResponse line = createBlueResponse.as(LineResponse.class);
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "3호선");
@@ -148,8 +148,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_수정됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getObject(".", Line.class)).isEqualTo(line);
-        assertThat(response.jsonPath().getObject(".", Line.class).getName()).isEqualTo("3호선");
+        assertThat(response.jsonPath().getObject(".", LineResponse.class).getName()).isEqualTo("3호선");
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -162,7 +161,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_제거_요청
-        Line line = createBlueResponse.as(Line.class);
+        LineResponse line = createBlueResponse.as(LineResponse.class);
 
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
