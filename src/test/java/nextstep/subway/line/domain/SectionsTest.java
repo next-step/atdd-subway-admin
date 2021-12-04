@@ -104,6 +104,20 @@ class SectionsTest {
         .hasMessageContaining("현재 입력된 역들이 노선에 존재하지 않습니다.");
     }
 
+    @DisplayName("구간을 삭제한다.")
+    @Test
+    void removeSection() {
+        //given
+        final Station 잠실역 = new Station("잠실역");
+        this.sections.addSection(호선2, 잠실역, 신사역, new Distance(5));
+
+        // when
+        this.sections.removeSection(호선2, 잠실역);
+
+        // then
+        assertThat(sections.getSections().size()).isEqualTo(1);
+    }
+
     @DisplayName("제거하려는 역이 없다면 예외를 발생시킨다.")
     @Test
     void removeSectionNoStationException() {
