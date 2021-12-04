@@ -14,23 +14,32 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineResponses;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 
 @Service
 @Transactional(readOnly = true)
 public class LineService {
 	public static final String EXCEPTION_MESSAGE_LINE_ALREADY_EXIST = "이미 존재하는 노선입니다.";
 	public static final String EXCEPTION_MESSAGE_NOT_FOUND_LINE = "존재하지 않는 노선입니다.";
+	public static final String EXCEPTION_MESSAGE_NOT_FOUND_STATION = "존재하지 않는 지하철 역입니다.";
 
 	private final LineRepository lineRepository;
+	private final StationRepository stationRepository;
 
-	public LineService(LineRepository lineRepository) {
+	public LineService(LineRepository lineRepository, StationRepository stationRepository) {
 		this.lineRepository = lineRepository;
+		this.stationRepository = stationRepository;
 	}
 
 	@Transactional
 	public LineResponse saveLine(LineRequest request) {
 		validateAlreadyExist(request);
-		Line persistLine = lineRepository.save(request.toLine());
+		Station upStation = stationRepository.findById(request.getUpStationId())
+			.orElseThrow(() -> new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_STATION));
+		Station downStation = stationRepository.findById(request.getDownStationId())
+			.orElseThrow(() -> new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_STATION));
+		Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
 		return LineResponse.of(persistLine);
 	}
 
@@ -55,7 +64,7 @@ public class LineService {
 	public void updateLine(Long id, LineRequest request) {
 		Line line = lineRepository.findById(id)
 			.orElseThrow(() -> new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_LINE));
-		line.update(new Line(request.getName(), request.getColor()));
+		line.update(new Line(request.getName(), request.getColor(), line.getSections()));
 	}
 
 	@Transactional
