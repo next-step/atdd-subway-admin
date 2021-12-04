@@ -17,6 +17,7 @@ import nextstep.subway.station.domain.Stations;
 
 @Embeddable
 public class Sections {
+    private static final int MIN_SIZE = 1;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
     private List<Section> sections = new ArrayList<>();
@@ -66,9 +67,7 @@ public class Sections {
         Optional<Section> optionalDownSection = findSectionByUpStation(station);
         Optional<Section> optionalUpSection = findSectionByDownStation(station);
 
-        if(!optionalDownSection.isPresent() && !optionalUpSection.isPresent()) {
-            throw new SubwayException(SubwayErrorCode.STATION_NOT_EXISTS);
-        }
+        validateDeleteStation(optionalUpSection.isPresent(), optionalDownSection.isPresent());
 
         if (optionalDownSection.isPresent()) {
             Section section = optionalDownSection.get();
@@ -78,6 +77,16 @@ public class Sections {
         if (optionalUpSection.isPresent()) {
             Section section = optionalUpSection.get();
             sections.remove(section);
+        }
+    }
+
+    private void validateDeleteStation(boolean containsUpStation, boolean containsDownStation) {
+        if (!containsUpStation && !containsDownStation) {
+            throw new SubwayException(SubwayErrorCode.STATION_NOT_EXISTS);
+        }
+
+        if (sections.size() <= MIN_SIZE) {
+            throw new SubwayException(SubwayErrorCode.CANNOT_DELETE_LAST_LINE);
         }
     }
 

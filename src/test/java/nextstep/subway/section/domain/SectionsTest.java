@@ -103,4 +103,14 @@ class SectionsTest {
             .isThrownBy(() -> sections.deleteStation(판교역))
             .withMessage("존재하지 않는 지하철 역 입니다.");
     }
+
+    @DisplayName("구간이 하나일 때 삭제 에러")
+    @Test
+    void deleteStation_errorWhenLineHasOnlyOneStation() {
+        Sections sections = Sections.from(Arrays.asList(강남_양재_구간));
+
+        assertThatExceptionOfType(SubwayException.class)
+            .isThrownBy(() -> sections.deleteStation(강남역))
+            .withMessage("구간이 하나인 노선에서 마지막 구간을 제거할 수 없습니다.");
+    }
 }

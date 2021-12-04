@@ -187,4 +187,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선에_구간_삭제_실패됨(response);
     }
+
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 수 없음")
+    @Test
+    void 구간이_하나인_노선에서_마지막_구간을_제거할_수_없음() {
+        // given
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선예_구간_삭제_요청(지하철_2호선_id, 양재역.getId());
+
+        // then
+        지하철_노선에_구간_삭제_실패됨(response);
+    }
 }
