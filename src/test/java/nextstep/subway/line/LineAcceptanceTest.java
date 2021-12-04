@@ -12,9 +12,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -114,7 +112,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		params.put("upStationId", String.valueOf(upStationId));
 		params.put("downStationId", String.valueOf(downStationId));
 		params.put("distance", String.valueOf(distance));
-		return create(params);
+		return LineTestFactory.create(params);
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_생성_요청(ExtractableResponse<Response> createResponse) {
@@ -128,7 +126,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		params.put("upStationId", String.valueOf(upStationId));
 		params.put("downStationId", String.valueOf(downStationId));
 		params.put("distance", String.valueOf(distance));
-		return create(params);
+		return LineTestFactory.create(params);
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_수정_요청(ExtractableResponse<Response> createResponse) {
@@ -136,15 +134,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		Map<String, String> params = new HashMap<>();
 		params.put("color", "bg-red-600");
 		params.put("name", lineName + "_updated");
-		return modify(extractUri(createResponse), params);
+		return LineTestFactory.modify(extractUri(createResponse), params);
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> createResponse) {
-		return findById(extractUri(createResponse));
+		return LineTestFactory.findById(extractUri(createResponse));
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_제거_요청(ExtractableResponse<Response> createResponse) {
-		return remove(extractUri(createResponse));
+		return LineTestFactory.remove(extractUri(createResponse));
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_등록되어_있음(String lineName) {
@@ -157,7 +155,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		params.put("upStationId", String.valueOf(upStationId));
 		params.put("downStationId", String.valueOf(downStationId));
 		params.put("distance", String.valueOf(distance));
-		return create(params);
+		return LineTestFactory.create(params);
 	}
 
 	private Long 지하철역_등록되어_있음(String name) {
@@ -188,7 +186,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
-		return findAll();
+		return LineTestFactory.findAll();
 	}
 
 	private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, List<ExtractableResponse<Response>> givens) {
@@ -217,57 +215,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	private String extractUri(ExtractableResponse<Response> response) {
 		return response.header("Location");
-	}
-
-	private ExtractableResponse<Response> create(Map<String, String> params) {
-		return RestAssured.given().log().all()
-			.body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/lines")
-			.then().log().all()
-			.extract();
-	}
-
-	private ExtractableResponse<Response> findAll() {
-		return RestAssured
-			.given().log().all()
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.get("/lines")
-			.then().log().all()
-			.extract();
-	}
-
-	private ExtractableResponse<Response> findById(String uri) {
-		return RestAssured
-			.given().log().all()
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.get(uri)
-			.then().log().all()
-			.extract();
-	}
-
-	private ExtractableResponse<Response> modify(String uri, Map<String, String> params) {
-		return RestAssured
-			.given().log().all()
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.body(params)
-			.when()
-			.put(uri)
-			.then().log().all()
-			.extract();
-	}
-
-	private ExtractableResponse<Response> remove(String uri) {
-		return RestAssured
-			.given().log().all()
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.delete(uri)
-			.then().log().all()
-			.extract();
 	}
 
 }
