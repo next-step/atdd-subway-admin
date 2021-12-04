@@ -104,7 +104,7 @@ class SectionsTest {
         .hasMessageContaining("현재 입력된 역들이 노선에 존재하지 않습니다.");
     }
 
-    @DisplayName("구간을 삭제한다.")
+    @DisplayName("구간 사이에 있는 역을 제거할 수 있다.")
     @Test
     void removeSection() {
         //given
