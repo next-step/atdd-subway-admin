@@ -122,6 +122,32 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_제거_요청_응답됨(response, Arrays.asList(DEFAULT_UP_STATION_ID, DEFAULT_DOWN_STATION_ID));
     }
 
+    @DisplayName("상행 종점역 제거")
+    @Test
+    void removeStationFirstSection() {
+        // given
+        지하철_구간_추가_요청(newStationId, DEFAULT_UP_STATION_ID, DISTANCE);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_제거_요청(newStationId);
+
+        // then
+        구간_제거_요청_응답됨(response, Arrays.asList(DEFAULT_UP_STATION_ID, DEFAULT_DOWN_STATION_ID));
+    }
+
+    @DisplayName("하행 종점역 제거")
+    @Test
+    void removeStationLastSection() {
+        // given
+        지하철_구간_추가_요청(newStationId, DEFAULT_UP_STATION_ID, DISTANCE);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_제거_요청(DEFAULT_DOWN_STATION_ID);
+
+        // then
+        구간_제거_요청_응답됨(response, Arrays.asList(newStationId, DEFAULT_UP_STATION_ID));
+    }
+
 
     private ExtractableResponse<Response> 지하철_구간_추가_요청(Long upStationId, Long downStationId, int distance) {
         SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
