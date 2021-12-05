@@ -23,11 +23,11 @@ public class Sections {
 	}
 
 	private Sections(List<Section> sections) {
-		this.sections = new ArrayList<>(sections);
+		this.sections.addAll(sections);
 	}
 
 	public static Sections of() {
-		return new Sections(new ArrayList<>());
+		return new Sections();
 	}
 
 	public static Sections of(List<Section> sections) {
