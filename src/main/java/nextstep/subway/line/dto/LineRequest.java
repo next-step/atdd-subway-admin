@@ -18,8 +18,8 @@ public class LineRequest {
         this.color = color;
     }
 
-    public Line toLine(Station upStation, Station downStation) {
-        return new Line(name, color, upStation, downStation);
+    public Line toLine(Station upStation, Station downStation, Integer distance) {
+        return new Line(name, color, upStation, downStation, distance);
     }
 
     public String getName() {

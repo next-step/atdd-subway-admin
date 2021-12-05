@@ -25,9 +25,9 @@ public class SectionsTest {
         Line 신분당선 = new Line("신분당선", "red");
 
         Sections 섹션 = new Sections();
-        Section 강남역_양재역 = new Section(신분당선, 강남역, 양재역);
-        Section 양재역_양재시민의숲 = new Section(신분당선, 양재역, 양재시민의숲);
-        Section 양재시민의숲_광교역 = new Section(신분당선, 양재시민의숲, 광교역);
+        Section 강남역_양재역 = new Section(신분당선, 강남역, 양재역, 10);
+        Section 양재역_양재시민의숲 = new Section(신분당선, 양재역, 양재시민의숲, 10);
+        Section 양재시민의숲_광교역 = new Section(신분당선, 양재시민의숲, 광교역, 10);
 
         섹션.addToSections(강남역_양재역);
         섹션.addToSections(양재역_양재시민의숲);

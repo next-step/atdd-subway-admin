@@ -1,8 +1,10 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
@@ -12,7 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Section {
+public class Section extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,14 +32,18 @@ public class Section {
     @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_down_section_to_station"))
     private Station downStation;
 
+    @Column(name = "distance")
+    private Integer distance;
+
     protected Section() {
 
     }
 
-    public Section(Line line, Station upStation, Station downStation) {
+    public Section(Line line, Station upStation, Station downStation, Integer distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
+        this.distance = distance;
     }
 
     public Boolean isSameNameWithUpStation(Section that) {
@@ -46,6 +52,17 @@ public class Section {
 
     public Boolean isSameNameWithDownStation(Section that) {
         return this.downStation.isSameName(that.downStation);
+    }
+
+    public Boolean isInteractiveWithStation(Section that) {
+        return this.upStation.isSameName(that.upStation) ||
+                this.upStation.isSameName(that.downStation) ||
+                this.downStation.isSameName(that.upStation) ||
+                this.downStation.isSameName(that.downStation);
+    }
+
+    public Boolean isLongerThanEqual(Section that) {
+        return this.distance <= that.distance;
     }
 
     public Long getId() {
