@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import nextstep.subway.exception.AppException;
+import nextstep.subway.exception.ErrorCode;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -21,10 +23,10 @@ public class Section {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	private Station upStation;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	private Station downStation;
 
 	@Column
@@ -63,7 +65,16 @@ public class Section {
 		return stations;
 	}
 
-	public void setLine(Line line) {
+	public void updateUpStation(Section frontSection) {
+		this.upStation = frontSection.downStation;
+		int different = this.distance - frontSection.distance;
+		if (different <= 0) {
+			throw new AppException(ErrorCode.WRONG_INPUT, "기존 구간 길이보다 크거나 같으면 안됩니다");
+		}
+		this.distance = different;
+	}
+
+	void setLine(Line line) {
 		this.line = line;
 	}
 

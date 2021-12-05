@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +20,7 @@ import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.TestFactory;
 
+@DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
 	private LineResponse 신분당선;
@@ -66,6 +68,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	}
 
 	private void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
+		List<StationResponse> stations = response.as(LineResponse.class).getStations();
+		assertThat(stations).containsExactly(강남역, 양재역, 광교역);
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 	}
 

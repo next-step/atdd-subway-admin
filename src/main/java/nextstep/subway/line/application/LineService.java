@@ -15,18 +15,15 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
 
 @Service
 @Transactional
 public class LineService {
 
 	private final LineRepository lineRepository;
-	private final StationRepository stations;
 
-	public LineService(LineRepository lineRepository, StationRepository stations) {
+	public LineService(LineRepository lineRepository) {
 		this.lineRepository = lineRepository;
-		this.stations = stations;
 	}
 
 	public LineResponse saveLine(LineRequest request) {
@@ -41,10 +38,12 @@ public class LineService {
 		}
 	}
 
+	@Transactional(readOnly = true)
 	public List<LineResponse> getLines() {
 		return LineResponse.ofList(lineRepository.findAll());
 	}
 
+	@Transactional(readOnly = true)
 	public LineResponse getLineById(Long id) {
 		Line line = getById(id);
 		return LineResponse.of(line);
@@ -67,13 +66,14 @@ public class LineService {
 	}
 
 	public LineResponse updateSections(Long id, SectionRequest sectionRequest) {
-		Station upStation = stations.findById(sectionRequest.getUpStationId()).get();
-		Station downStation = stations.findById(sectionRequest.getDownStationId()).get();
-		Section section = Section.of(null, upStation, downStation, sectionRequest.getDistance());
-		Line line = lineRepository.findById(id).get();
-		line.updateSections(section);
-		return LineResponse.of(line);
+		Station upStation = Station.of(sectionRequest.getUpStationId());
+		Station downStation = Station.of(sectionRequest.getDownStationId());
+		Section newSection = Section.of(null, upStation, downStation, sectionRequest.getDistance());
+		Line line = getById(id);
+		line.updateSections(newSection);
+		return LineResponse.of(lineRepository.save(line));
 	}
 
 }
+
 
