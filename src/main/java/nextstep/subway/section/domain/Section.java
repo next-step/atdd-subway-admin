@@ -6,6 +6,7 @@ import nextstep.subway.section.exception.IllegalDistanceError;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Optional;
 
 @Entity
 public class Section extends BaseEntity {
@@ -32,6 +33,10 @@ public class Section extends BaseEntity {
 
     public Section() {
 
+    }
+
+    public static Section mergeSections(Section sameUpStation, Section sameDownStation) {
+        return new Section(sameDownStation.upStation, sameUpStation.downStation, sameUpStation.distance + sameDownStation.distance);
     }
 
     public Station getUpStation() {
@@ -93,5 +98,9 @@ public class Section extends BaseEntity {
 
     public boolean hasSameUpStation(Section newSection) {
         return this.upStation == newSection.upStation;
+    }
+
+    public void setSameLine(Optional<Section> sameUpStation) {
+        this.line = sameUpStation.get().line;
     }
 }

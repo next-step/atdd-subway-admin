@@ -9,17 +9,14 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
     public static final int DIFFERENCE_SECTIONS_STATIONS_SIZE = 1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "line")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "line", orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public Sections(List<Section> sections) {
@@ -144,5 +141,33 @@ public class Sections {
     public void addAndSetLine(Section section, Line line) {
         sections.add(section);
         section.setLine(line);
+    }
+
+    public void removeStation(Station station) {
+        Optional<Section> sameUpStation = sections.stream().filter(section -> section.getUpStation().equals(station)).findFirst();
+        Optional<Section> sameDownStation = sections.stream().filter(section -> section.getDownStation().equals(station)).findFirst();
+
+        if (removeMiddleStation(sameUpStation, sameDownStation)) return;
+        removeEndStation(sameUpStation, sameDownStation);
+    }
+
+    private void removeEndStation(Optional<Section> sameUpStation, Optional<Section> sameDownStation) {
+        if (!sameUpStation.isPresent()) {
+           sections.remove(sameDownStation);
+            return;
+        }
+        sections.remove(sameUpStation);
+    }
+
+    private boolean removeMiddleStation(Optional<Section> sameUpStation, Optional<Section> sameDownStation) {
+        if (sameUpStation.isPresent() && sameDownStation.isPresent()) {
+            sections.remove(sameUpStation.get());
+            sections.remove(sameDownStation.get());
+            Section newSection = Section.mergeSections(sameUpStation.get(), sameDownStation.get());
+            sections.add(newSection);
+            newSection.setSameLine(sameUpStation);
+            return true;
+        }
+        return false;
     }
 }

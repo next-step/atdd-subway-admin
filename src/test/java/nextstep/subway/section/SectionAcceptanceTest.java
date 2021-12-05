@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 public class SectionAcceptanceTest extends AcceptanceTest {
     StationResponse 강남역;
@@ -37,6 +38,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines/" + id.toString() + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> requestSectionDelete(Long id, Long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .queryParam("stationId", stationId)
+                .delete("/lines/" + id.toString() + "/sections")
                 .then().log().all()
                 .extract();
     }
@@ -172,7 +183,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("새로운 구간의 길이가 기존 구간 사이 길이보다 크거나 같다")
     @Test
     void 새로운_구간의_길이가_기존_구간_사이_길이보다_크거나_같다() {
-        // when
+        // whe n
         // 지하철_노선에_구간_등록_요청
         createParams = new HashMap<>();
         createParams.put("upStationId", 강남역.getId() + "");
@@ -215,6 +226,32 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("노선의 구간을 제거한다")
+    @Test
+    void 노선의_구간을_제거한다() {
+        // given
+        // 지하철_노선에_구간_등록_요청
+        createParams = new HashMap<>();
+        createParams.put("upStationId", 판교역.getId() + "");
+        createParams.put("downStationId", 광교역.getId() + "");
+        createParams.put("distance", 7 + "");
+        ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
+
+        // when
+        // 지하철 노선에 구간 삭제 요청
+        ExtractableResponse<Response> deleteResponse = requestSectionDelete(신분당선.getId(), 판교역.getId());
+        ExtractableResponse<Response> lineResponse = requestReadURI("/lines/" + 신분당선.getId());
+
+        ExtractableResponse<Response> sectionsResponse = requestReadURI("/lines/" + 신분당선.getId() + "/sections");
+        List<Integer> sectionDistances = getSection(sectionsResponse);
+        List<String> stations = getStations(lineResponse);
+
+        // then 구간 삭제됨
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(sectionDistances).containsAll(Arrays.asList(10));
+        assertThat(stations).containsExactlyElementsOf(Arrays.asList("강남역", "광교역"));
     }
 
     private void assertResponseStatusAndLocation(ExtractableResponse<Response> response) {

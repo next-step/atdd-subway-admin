@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
@@ -65,6 +66,14 @@ public class LineService {
     }
 
     public void save(Line line) {
+        lineRepository.save(line);
+    }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        // 해당 line에서 stationid가 들어간 section들을 잡아내서, 끼인 역이면 삭제 후 연결해주고 끝 역이면 그냥 section 삭제만.
+        Line line = findByIdOrElseThrow(lineId);
+        Station station = stationService.findByIdOrElseThrow(stationId);
+        line.removeStation(station);
         lineRepository.save(line);
     }
 }
