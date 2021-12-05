@@ -70,18 +70,18 @@ public class Sections {
         return stations;
     }
 
-    private Section getSectionByUpStation(Station upStation) {
+    private Section getSectionByUpStation(Station station) {
         return sections.stream()
-                .filter(section -> section.getUpStation().equals(upStation))
+                .filter(station::isUpStation)
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException(String.format("%s (stationId: %s)", NOT_EXIST_STATION, upStation.getId())));
+                .orElseThrow(() -> new NoSuchElementException(String.format("%s (stationId: %s)", NOT_EXIST_STATION, station.getId())));
     }
 
-    private Section getSectionByDownStation(Station downStation) {
+    private Section getSectionByDownStation(Station station) {
         return sections.stream()
-                .filter(section -> section.getDownStation().equals(downStation))
+                .filter(station::isDownStation)
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException(String.format("%s (stationId: %s)", NOT_EXIST_STATION, downStation.getId())));
+                .orElseThrow(() -> new NoSuchElementException(String.format("%s (stationId: %s)", NOT_EXIST_STATION, station.getId())));
     }
 
     private boolean isInsertBetweenSection(Section section) {

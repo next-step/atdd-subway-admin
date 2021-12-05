@@ -37,12 +37,16 @@ public class Station extends BaseEntity {
 
     public boolean isUpStation(Section section) {
         Station upStation = section.getUpStation();
-        return this.equals(upStation);
+        return isEqual(upStation);
     }
 
     public boolean isDownStation(Section section) {
         Station downStation = section.getDownStation();
-        return this.equals(downStation);
+        return isEqual(downStation);
+    }
+
+    public boolean isEqual(Station station) {
+        return this.equals(station);
     }
 
     @Override
