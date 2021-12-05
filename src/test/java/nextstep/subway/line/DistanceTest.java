@@ -17,33 +17,32 @@ public class DistanceTest {
         distance = new Distance(10);
     }
 
-    @DisplayName("역과 역 사이에 새로운 역이 추가되면 구간 거리 뺄셈")
+    @DisplayName("역 간 거리는 0보다 커야한다.")
+    @Test
+    void greaterThanZero() {
+        assertThatThrownBy(() -> {
+            new Distance(0);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("역 간 거리는 0보다 커야합니다.");
+    }
+
+    @DisplayName("거리끼리는 뺄셈을 할 수 있다.")
     @Test
     void minus() {
         //when
-        distance.minus(3);
-        distance.minus(2);
+        Distance distance1 = distance.minus(3);
+        Distance distance2 = distance1.minus(2);
 
         //then
-        assertThat(distance.getDistance()).isEqualTo(5);
+        assertThat(distance2).isEqualTo(new Distance(5));
     }
 
-    @DisplayName("역과 역 사이에 새로운 역이 추가될 때, 기존 역 간 거리가 더 크면 true 반환")
+    @DisplayName("신규 역 간 거리가 더 크면 예외 발생")
     @Test
-    void isGreaterThan() {
-        //when
-        boolean result = distance.isGreaterThan(7);
-
-        //then
-        assertThat(result).isTrue();
-    }
-
-    @DisplayName("역과 역 사이에 새로운 역이 추가될 때, 기존 역 간 거리가 작거나 같을 경우 예외 발생")
-    @Test
-    void isGreaterThan_Exception() {
-        //when
+    void validateLargerThan() {
         assertThatThrownBy(() -> {
-            distance.isGreaterThan(11);
-        }).isInstanceOf(CannotUpdateSectionException.class).hasMessage("역과 역 사이의 거리보다 좁은 거리를 입력해주세요");
+            distance.validateLargerThan(12);
+        }).isInstanceOf(CannotUpdateSectionException.class)
+                .hasMessage("신규 역 간 거리가 기존 역 간 거리와 같거나 더 클 수 없습니다.");
     }
 }

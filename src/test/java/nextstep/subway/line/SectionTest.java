@@ -40,6 +40,6 @@ public class SectionTest {
     void updateUpStation_Exception() {
         assertThatThrownBy(() -> {
             신분당선_구간.updateUpStation(양재역, 10);
-        }).isInstanceOf(CannotUpdateSectionException.class).hasMessage("역과 역 사이의 거리보다 좁은 거리를 입력해주세요");
+        }).isInstanceOf(CannotUpdateSectionException.class).hasMessage("신규 역 간 거리가 기존 역 간 거리와 같거나 더 클 수 없습니다.");
     }
 }

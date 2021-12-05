@@ -52,17 +52,16 @@ public class Section {
         return downStation.equals(station);
     }
 
-    public void updateUpStation(Station downStation, int distance) {
-        if (this.distance.isGreaterThan(distance)) {
-            this.upStation = downStation;
-            this.distance.minus(distance);
-        }
+    public void updateUpStation(Station downStation, int newDistance) {
+        this.distance.validateLargerThan(newDistance);
+        this.upStation = downStation;
+        this.distance.minus(newDistance);
+
     }
 
-    public void updateDownStation(Station upStation, int distance) {
-        if (this.distance.isGreaterThan(distance)) {
-            this.downStation = upStation;
-            this.distance.minus(distance);
-        }
+    public void updateDownStation(Station upStation, int newDistance) {
+        this.distance.validateLargerThan(newDistance);
+        this.downStation = upStation;
+        this.distance.minus(newDistance);
     }
 }

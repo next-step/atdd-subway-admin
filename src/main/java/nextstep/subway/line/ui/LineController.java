@@ -57,7 +57,7 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
-    @ExceptionHandler({NotFoundException.class, CannotSaveException.class, CannotUpdateSectionException.class})
+    @ExceptionHandler({NotFoundException.class, CannotSaveException.class, CannotUpdateSectionException.class, IllegalArgumentException.class})
     public ResponseEntity handleRuntimeException(RuntimeException e) {
         return ResponseEntity.badRequest().build();
     }
