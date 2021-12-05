@@ -125,7 +125,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     // 검증 코드는 Line과 동일하므로 Class 분리하여 관리하기.
     private void 응답_코드_검증(ExtractableResponse<Response> response, int statusCode) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(statusCode);
     }
 
     private void 응답_헤더_정보_존재여부_검증(ExtractableResponse<Response> response) {

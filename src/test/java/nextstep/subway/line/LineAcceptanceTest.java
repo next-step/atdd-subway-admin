@@ -54,6 +54,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_생성_실패됨
         // INTERNAL_SERVER_ERROR : 500
+        System.out.println("status : " + response.statusCode());
         응답_코드_검증(response, HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
@@ -246,7 +247,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 응답_코드_검증(ExtractableResponse<Response> response, int statusCode) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        System.out.println("http status : " + response.statusCode());
+        System.out.println("int statuscode : " + statusCode);
+        assertThat(response.statusCode()).isEqualTo(statusCode);
     }
 
     private void 응답_헤더_정보_존재여부_검증(ExtractableResponse<Response> response) {
