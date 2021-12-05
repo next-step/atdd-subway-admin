@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -69,8 +70,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 	private void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
 		List<StationResponse> stations = response.as(LineResponse.class).getStations();
-		assertThat(stations).containsExactly(강남역, 양재역, 광교역);
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+		assertAll(
+			() -> assertThat(stations).containsExactly(강남역, 양재역, 광교역),
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value())
+		);
 	}
 
 	private ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(LineResponse line, Map<String, String> params) {
