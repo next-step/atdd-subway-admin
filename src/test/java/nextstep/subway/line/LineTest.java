@@ -10,7 +10,6 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.exception.AppException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.domain.Station;
@@ -63,19 +62,6 @@ public class LineTest {
 		// then
 		assertThat(line.getColor()).isEqualTo(newLine.getColor());
 		assertThat(line.getName()).isEqualTo(newLine.getName());
-	}
-
-	@Test
-	@DisplayName("다른 Line 이 주어지면 업데이트가 실패한다")
-	void updateTest2() {
-		// given
-		Line line = Line.of(1L, "신분당선", "red");
-		Line newLine = Line.of(2L, "1호선", "green");
-
-		// when, then
-		assertThatThrownBy(() -> line.update(newLine))
-			.isInstanceOf(AppException.class);
-
 	}
 
 	@Test
