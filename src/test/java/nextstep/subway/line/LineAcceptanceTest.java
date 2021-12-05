@@ -211,4 +211,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .when();
     }
+
+
+    public static Map<String, String> 지하철_노선_더미_데이터_신분상선(Long upStationId, Long downStationId, Integer distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "red");
+        params.put("upStationId", upStationId + "");
+        params.put("downStationId", downStationId + "");
+        params.put("distance", distance + "");
+        return params;
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(Map<String, String> params) {
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+    }
 }
