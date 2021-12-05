@@ -14,7 +14,6 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.line.dto.SectionRequest;
-import nextstep.subway.station.domain.Station;
 
 @Service
 @Transactional
@@ -66,9 +65,7 @@ public class LineService {
 	}
 
 	public LineResponse updateSections(Long id, SectionRequest sectionRequest) {
-		Station upStation = Station.of(sectionRequest.getUpStationId());
-		Station downStation = Station.of(sectionRequest.getDownStationId());
-		Section newSection = Section.of(null, upStation, downStation, sectionRequest.getDistance());
+		Section newSection = sectionRequest.toSection();
 		Line line = getById(id);
 		line.updateSections(newSection);
 		return LineResponse.of(lineRepository.save(line));
