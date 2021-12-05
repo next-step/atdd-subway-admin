@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.exception.DefaultException;
-import nextstep.subway.line.dto.SectionRequest;
-import nextstep.subway.line.exception.LineDuplicateException;
-import nextstep.subway.line.exception.NotFoundLineException;
 import nextstep.subway.exception.dto.ErrorMessage;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.exception.LineDuplicateException;
+import nextstep.subway.line.exception.NotFoundLineException;
 import nextstep.subway.station.exception.NotFoundStationException;
 
 @RestController
@@ -92,7 +92,7 @@ public class LineController {
 
     @ExceptionHandler
     public ResponseEntity<ErrorMessage> handleDefaultException(Exception e) {
-        return ResponseEntity.badRequest().body(ErrorMessage.of(DefaultException.UNEXPECTED_ERROR));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(ErrorMessage.of(DefaultException.UNEXPECTED_ERROR));
     }
-
 }

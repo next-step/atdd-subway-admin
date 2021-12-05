@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,9 +32,17 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         checkValidateLine(request);
 
-        Station upStation = stationRepository.findById(request.getUpStationId())
+        List<Station> stations =
+            stationRepository.findByIdIn(Arrays.asList(request.getUpStationId(), request.getDownStationId()));
+
+        Station upStation = stations.stream()
+            .filter(it -> it.isEqualId(request.getUpStationId()))
+            .findAny()
             .orElseThrow(NotFoundStationException::new);
-        Station downStation = stationRepository.findById(request.getDownStationId())
+
+        Station downStation = stations.stream()
+            .filter(it -> it.isEqualId(request.getDownStationId()))
+            .findAny()
             .orElseThrow(NotFoundStationException::new);
 
         Line saveLine = new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance());
@@ -81,9 +90,17 @@ public class LineService {
         Line line = lineRepository.findById(lineId)
             .orElseThrow(NotFoundLineException::new);
 
-        Station upStation = stationRepository.findById(request.getUpStationId())
+        List<Station> stations =
+            stationRepository.findByIdIn(Arrays.asList(request.getUpStationId(), request.getDownStationId()));
+
+        Station upStation = stations.stream()
+            .filter(it -> it.isEqualId(request.getUpStationId()))
+            .findAny()
             .orElseThrow(NotFoundStationException::new);
-        Station downStation = stationRepository.findById(request.getDownStationId())
+
+        Station downStation = stations.stream()
+            .filter(it -> it.isEqualId(request.getDownStationId()))
+            .findAny()
             .orElseThrow(NotFoundStationException::new);
 
         line.addSection(upStation, downStation, request.getDistance());
