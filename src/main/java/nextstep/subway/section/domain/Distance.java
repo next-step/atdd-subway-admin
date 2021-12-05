@@ -7,8 +7,6 @@ import javax.persistence.Embeddable;
 public class Distance {
 
     private static final int MIN_DISTANCE = 0;
-    private static final String TOO_LOW_DISTANCE = "거리는 0보다 커야 합니다.";
-    private static final String SHOULD_NEED_BIGGER_VALUE = "기존 구간보다 큰 수를 입력할 수 없습니다.";
 
     @Column
     private int distance;
@@ -17,19 +15,17 @@ public class Distance {
     }
 
     public Distance(final int distance) {
-        validate(distance, TOO_LOW_DISTANCE);
+        validate(distance);
         this.distance = distance;
     }
 
-    public void deduct(final int value) {
-        int result = this.distance - value;
-        validate(result, SHOULD_NEED_BIGGER_VALUE);
-        this.distance = result;
+    public Distance deduct(final Distance distance) {
+        return new Distance(this.distance - distance.getDistance());
     }
 
-    private void validate(final int distance, final String errorMessage) {
+    private void validate(final int distance) {
         if (MIN_DISTANCE >= distance) {
-            throw new IllegalArgumentException(errorMessage);
+            throw new IllegalArgumentException("입력한 구간의 길이가 옳바르지 않습니다.");
         }
     }
 

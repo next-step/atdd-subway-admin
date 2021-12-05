@@ -107,7 +107,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // 지하철_노선에_지하철역_등록_실패
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.asString()).contains("기존 구간보다 큰 수를 입력할 수 없습니다.")
+                () -> assertThat(response.asString()).contains("입력한 구간의 길이가 옳바르지 않습니다.")
         );
     }
 

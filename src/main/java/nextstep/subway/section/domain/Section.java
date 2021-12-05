@@ -93,12 +93,12 @@ public class Section extends BaseEntity {
     public void deductDistance(final Section section) {
         if (this.upStation.equals(section.getUpStation())) {
             this.upStation = section.getDownStation();
-            this.distance.deduct(section.getDistance().getDistance());
+            this.distance = this.distance.deduct(section.getDistance());
         }
 
         if (this.downStation.equals(section.getDownStation())) {
             this.downStation = section.getUpStation();
-            this.distance.deduct(section.getDistance().getDistance());
+            this.distance = this.distance.deduct(section.getDistance());
         }
     }
 
