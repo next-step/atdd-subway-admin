@@ -77,4 +77,8 @@ public class StationTestUtil {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
+    public static void 지하철역_제거됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
 }
