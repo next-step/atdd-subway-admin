@@ -48,6 +48,10 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
+    public void addToSections(Section section) {
+        this.sections.addToSections(section);
+    }
+
     public Long getId() {
         return id;
     }

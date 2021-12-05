@@ -31,6 +31,10 @@ public class Station extends BaseEntity {
         this.name = name;
     }
 
+    public Boolean isSameName(Station that) {
+        return this.name.equals(that.name);
+    }
+
     public Long getId() {
         return id;
     }

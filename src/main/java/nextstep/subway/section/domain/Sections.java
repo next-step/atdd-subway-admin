@@ -1,5 +1,7 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.exception.SubWayExceptionStatus;
+import nextstep.subway.exception.SubwayException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -26,7 +28,20 @@ public class Sections {
     }
 
     public void addToSections(Section section) {
+        validateDuplicateSection(section);
         this.sections.add(section);
+    }
+
+    private void validateDuplicateSection(Section section) {
+        if (isDuplicationSection(section)) {
+            throw new SubwayException(SubWayExceptionStatus.DUPLICATE_STATION);
+        }
+    }
+
+    private Boolean isDuplicationSection(Section section) {
+        return this.sections
+                .stream()
+                .anyMatch(i -> i.isSameNameWithUpStation(section) && i.isSameNameWithDownStation(section));
     }
 
     public List<Station> getStations() {

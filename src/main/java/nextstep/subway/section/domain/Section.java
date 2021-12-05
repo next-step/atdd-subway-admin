@@ -40,6 +40,18 @@ public class Section {
         this.downStation = downStation;
     }
 
+    public Boolean isSameNameWithUpStation(Section that) {
+        return this.upStation.isSameName(that.upStation);
+    }
+
+    public Boolean isSameNameWithDownStation(Section that) {
+        return this.downStation.isSameName(that.downStation);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
     public Line getLine() {
         return line;
     }

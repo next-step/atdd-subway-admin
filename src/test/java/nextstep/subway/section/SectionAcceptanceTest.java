@@ -11,10 +11,13 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -45,6 +48,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선에_지하철역_등록됨
+
     }
 
     @DisplayName("노선에 구간을 등록한다. - 새로운 역을 상행 종점으로 등록")
@@ -76,8 +80,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선에_지하철역_등록_요청
 
+
         // then
         // 지하철_노선에_지하철역_등록됨
+
     }
 
     @DisplayName("노선에 구간을 등록한다. - 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
@@ -86,9 +92,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선에_지하철역_등록_요청
-
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 광교역.getId(), 10);
         // then
         // 지하철_노선에_지하철역_등록됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("노선에 구간을 등록한다. - 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")

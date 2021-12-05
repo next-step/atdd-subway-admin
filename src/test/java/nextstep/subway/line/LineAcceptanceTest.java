@@ -117,7 +117,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_응답됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -228,7 +228,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/stations")
+                .post("/lines")
                 .then().log().all()
                 .extract();
     }
