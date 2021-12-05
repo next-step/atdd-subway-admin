@@ -31,14 +31,19 @@ public class SectionService {
     public void addSection(final Long lineId, final SectionRequest request) {
         final Line line = lineRepository.findById(lineId)
             .orElseThrow(NoSuchElementException::new);
+        final Section section = createSection(request);
+        line.addSection(section);
+    }
+
+    @Transactional
+    public Section createSection(final SectionRequest request) {
         final List<Station> stations = getStations(
             request.getUpStationId(),
             request.getDownStationId()
         );
         final Station upStation = getStationById(stations, request.getUpStationId());
         final Station downStation = getStationById(stations, request.getDownStationId());
-        final Section section = new Section(upStation, downStation, request.getDistance());
-        line.addSection(section);
+        return new Section(upStation, downStation, request.getDistance());
     }
 
     private List<Station> getStations(final Long upStationId, final Long downStationId) {
