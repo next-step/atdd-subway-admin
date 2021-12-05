@@ -120,18 +120,16 @@ public class Line extends BaseEntity {
 
     private boolean deleteFirstStation(Station station) {
         Section firstSection = sections.getFirstSection();
-        if (firstSection.getUpStation().equals(station)) {
-            sections.getSections().remove(firstSection);
-            return true;
+        if (station.isUpStation(firstSection)) {
+            return sections.removeSection(firstSection);
         }
         return false;
     }
 
     private boolean deleteLastStation(Station station) {
         Section lastSection = sections.getLastSection();
-        if (lastSection.getDownStation().equals(station)) {
-            sections.getSections().remove(lastSection);
-            return true;
+        if (station.isDownStation(lastSection)) {
+            return sections.removeSection(lastSection);
         }
         return false;
     }

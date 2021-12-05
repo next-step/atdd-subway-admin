@@ -165,6 +165,10 @@ public class Sections {
                 .orElseThrow(() -> new NoSuchElementException(String.format("상행역이 일치하는 기존 구간이 없습니다. (upStationId: %d)", station.getId())));
     }
 
+    public boolean removeSection(Section section) {
+        return sections.remove(section);
+    }
+
     private boolean hasMatchWithDownStation(Station station) {
         return sections.stream()
                 .anyMatch(section -> section.isEqualDownStation(station));
