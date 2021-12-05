@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationRequest;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
@@ -19,7 +19,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // given
-        Station 강남역 = 지하철역_정보("강남역");
+        StationRequest 강남역 = 지하철역_정보("강남역");
 
         // when
         ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성_요청(강남역);
@@ -32,7 +32,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Station 강남역 = 지하철역_정보("강남역");
+        StationRequest 강남역 = 지하철역_정보("강남역");
         ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성_요청(강남역);
 
         // when
@@ -46,8 +46,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        Station 강남역 = 지하철역_정보("강남역");
-        Station 역삼역 = 지하철역_정보("역삼역");
+        StationRequest 강남역 = 지하철역_정보("강남역");
+        StationRequest 역삼역 = 지하철역_정보("역삼역");
         ExtractableResponse<Response> 강남역_생성_응답 = 지하철역_생성_요청(강남역);
         ExtractableResponse<Response> 역삼역_생성_응답 = 지하철역_생성_요청(역삼역);
 
@@ -62,7 +62,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Station 강남역 = 지하철역_정보("강남역");
+        StationRequest 강남역 = 지하철역_정보("강남역");
         ExtractableResponse<Response> 강남역_생성_응답 = 지하철역_생성_요청(강남역);
         Long 강남역_생성_아이디 = 강남역_생성_응답.jsonPath().getLong("id");
 

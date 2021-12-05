@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.exception.DefaultException;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.line.exception.LineDuplicateException;
 import nextstep.subway.line.exception.NotFoundLineException;
 import nextstep.subway.exception.dto.ErrorMessage;
@@ -61,6 +62,14 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping(value = "/{lineId}/sections")
+    public ResponseEntity<LineResponse> addSection(
+        @PathVariable Long lineId,
+        @RequestBody SectionRequest sectionRequest) {
+        LineResponse lineResponse = lineService.addSections(lineId, sectionRequest);
+        return ResponseEntity.ok().body(lineResponse);
+    }
+
     @ExceptionHandler(LineDuplicateException.class)
     public ResponseEntity<ErrorMessage> handleLineDuplicateException(LineDuplicateException e) {
         return ResponseEntity.badRequest().body(ErrorMessage.of(e.getMessage()));
@@ -74,6 +83,11 @@ public class LineController {
     @ExceptionHandler(NotFoundStationException.class)
     public ResponseEntity<ErrorMessage> handleNotFoundStationException(NotFoundStationException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorMessage.of(e.getMessage()));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorMessage> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorMessage.of(e.getMessage()));
     }
 
     @ExceptionHandler

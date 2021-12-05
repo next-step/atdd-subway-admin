@@ -66,6 +66,13 @@ public class LineTestUtil {
             .then().log().all().extract();
     }
 
+    public static Long 지하철_노선_생성_및_아이디_반환(String name, String color,
+        Long upStationId, Long downStationId, int distance) {
+        LineRequest lineRequest = 지하철_노선_정보(name, color, upStationId, downStationId, distance);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
+        return response.jsonPath().getLong("id");
+    }
+
     public static void 지하철_노선_목록_포함됨(ExtractableResponse<Response> resultResponse,
         ExtractableResponse<Response> response1, ExtractableResponse<Response> response2) {
         List<Long> expectedLineIds = Arrays.asList(

@@ -12,7 +12,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 @DataJpaTest
-public class LIneTest {
+public class SectionsTest {
     @DisplayName("노선에 속한 구간 정보 정렬 확인")
     @Test
     void getSoredSections() {

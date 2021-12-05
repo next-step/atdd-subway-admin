@@ -10,6 +10,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.line.exception.LineDuplicateException;
 import nextstep.subway.line.exception.NotFoundLineException;
 import nextstep.subway.station.domain.Station;
@@ -76,4 +77,17 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
+    public LineResponse addSections(Long lineId, SectionRequest request) {
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(NotFoundLineException::new);
+
+        Station upStation = stationRepository.findById(request.getUpStationId())
+            .orElseThrow(NotFoundStationException::new);
+        Station downStation = stationRepository.findById(request.getDownStationId())
+            .orElseThrow(NotFoundStationException::new);
+
+        line.addSection(upStation, downStation, request.getDistance());
+
+        return LineResponse.of(line);
+    }
 }

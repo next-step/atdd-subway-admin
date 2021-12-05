@@ -3,8 +3,11 @@ package nextstep.subway.line.domain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -16,14 +19,74 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
+    public static final String ERROR_NOT_FOUND_STATIONS = "구간에서 상/하행역 정보를 찾을 수 없습니다.";
+    public static final String ERROR_ALREADY_ADDED_SECTION = "상/하행역 정보가 이미 등록되어 있습니다.";
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
     }
 
-    public void add(Section addSection) {
-        sections.add(addSection);
+    public void add(Section section) {
+        if (!sections.isEmpty()) {
+            updateSection(section);
+        }
+        sections.add(section);
+    }
+
+    private void updateSection(Section section) {
+        checkStationOfSection(section);
+        if (updateDownSection(section)) {
+            return;
+        }
+        updateUpSection(section);
+    }
+
+    private boolean updateDownSection(Section section) {
+        Optional<Section> target = sections.stream()
+            .filter(it -> it.isEqualToUpStation(section.getUpStation()))
+            .findAny();
+        target.ifPresent(it -> it.updateUpStation(section));
+        return target.isPresent();
+    }
+
+    private boolean updateUpSection(Section section) {
+        Optional<Section> target = sections.stream()
+            .filter(it -> it.isEqualToDownStation(section.getDownStation()))
+            .findAny();
+        target.ifPresent(it -> it.updateDownStation(section));
+        return target.isPresent();
+    }
+
+    private void checkStationOfSection(Section section) {
+        if (isNotContainsStation(section)) {
+            throw new IllegalArgumentException(ERROR_NOT_FOUND_STATIONS);
+        }
+        if (isAlreadyAdded(section)) {
+            throw new IllegalArgumentException(ERROR_ALREADY_ADDED_SECTION);
+        }
+    }
+
+    private boolean isAlreadyAdded(Section section) {
+        Set<Station> stations = getStations();
+        return stations.contains(section.getUpStation())
+            && stations.contains(section.getDownStation());
+    }
+
+    private boolean isNotContainsStation(Section section) {
+        Set<Station> stations = getStations();
+        return !stations.contains(section.getUpStation())
+            && !stations.contains(section.getDownStation());
+    }
+
+    private Set<Station> getStations() {
+        Set<Station> stations = new HashSet<>();
+        sections.forEach(it -> {
+            stations.add(it.getUpStation());
+            stations.add(it.getDownStation());
+        });
+        return stations;
     }
 
     public List<Station> getSortedStations() {
