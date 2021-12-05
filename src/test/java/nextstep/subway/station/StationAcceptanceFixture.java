@@ -22,7 +22,7 @@ public class StationAcceptanceFixture {
         return params;
     }
 
-    public static ExtractableResponse<Response> requestGetStations() {
+    public static ExtractableResponse<Response> 지하철역_목록을_조회한다() {
         return RestAssured.given().log().all()
                 .when()
                 .get("/stations")
@@ -30,7 +30,7 @@ public class StationAcceptanceFixture {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> requestCreateStations(String name) {
+    public static ExtractableResponse<Response> 지하철역_생성을_요청한다(String name) {
         Map<String, String> params = createParams(name);
 
         return RestAssured.given().log().all()
@@ -42,7 +42,7 @@ public class StationAcceptanceFixture {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> requestDeleteStations(String uri) {
+    public static ExtractableResponse<Response> 지하철역_삭제를_요청한다(String uri) {
         return RestAssured.given().log().all()
                 .when()
                 .delete(uri)

@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -25,18 +24,22 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+    public Line(String name, String color, Station upStation, Station downStation, Distance distance) {
         this.name = new LineName(name);
         this.color = new LineColor(color);
         sections.addToSections(this, upStation, downStation, distance);
     }
 
     public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
-        return new Line(name, color, upStation, downStation, distance);
+        return new Line(name, color, upStation, downStation, new Distance(distance));
     }
 
-    public void addSection(Station upStation, Station downStation, int distance) {
+    public void addSection(Station upStation, Station downStation, Distance distance) {
         sections.addSection(this, upStation, downStation, distance);
+    }
+
+    public void removeSection(Station station) {
+        sections.removeSection(station);
     }
 
     public void update(Line line) {

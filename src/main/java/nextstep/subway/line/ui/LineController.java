@@ -3,6 +3,7 @@ package nextstep.subway.line.ui;
 import nextstep.subway.common.exception.DuplicateEntityException;
 import nextstep.subway.common.exception.InvalidDuplicatedSection;
 import nextstep.subway.common.exception.InvalidEntityRequiredException;
+import nextstep.subway.common.exception.MinimumRemovableSectionSizeException;
 import nextstep.subway.common.exception.NegativeNumberDistanceException;
 import nextstep.subway.common.exception.NotContainsStationException;
 import nextstep.subway.common.exception.NotFoundEntityException;
@@ -10,7 +11,7 @@ import nextstep.subway.common.exception.NotFoundStationException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.line.dto.SectionRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
@@ -61,10 +63,17 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.addSection(lineId, sectionRequest));
     }
 
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity removeSection(@PathVariable Long lineId, @RequestParam Long stationId) {
+        lineService.removeSectionByStationId(lineId, stationId);
+        return ResponseEntity.noContent().build();
+    }
+
     @ExceptionHandler({
             NegativeNumberDistanceException.class, InvalidDuplicatedSection.class,
             NotContainsStationException.class, DuplicateEntityException.class,
-            InvalidEntityRequiredException.class, NotFoundEntityException.class, NotFoundStationException.class
+            InvalidEntityRequiredException.class, NotFoundEntityException.class,
+            NotFoundStationException.class, MinimumRemovableSectionSizeException.class
     })
     public ResponseEntity<LineResponse> handleInvalidInputException(RuntimeException e) {
         return ResponseEntity.badRequest().build();

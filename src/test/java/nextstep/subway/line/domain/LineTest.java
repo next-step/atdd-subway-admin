@@ -10,15 +10,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("노선 도메인 관련 기능")
 class LineTest {
-    private Station upStation;
-    private Station downStation;
+    private Station 강남역;
+    private Station 역삼역;
     private Line line;
 
     @BeforeEach
     void setUp() {
-        upStation = new Station("강남역");
-        downStation = new Station("역삼역");
-        line = Line.of("2호선", "green", upStation, downStation, 9);
+        강남역 = new Station("강남역");
+        역삼역 = new Station("역삼역");
+        line = Line.of("2호선", "green", 강남역, 역삼역, 9);
     }
 
     @DisplayName("노선을 생성한다.")
@@ -35,7 +35,7 @@ class LineTest {
     @Test
     void updateLine() {
         // when
-        final Line updateLine = new Line("3호선", "orange", upStation, downStation, 9);
+        final Line updateLine = Line.of("3호선", "orange", 강남역, 역삼역, 9);
         line.update(updateLine);
 
         // then

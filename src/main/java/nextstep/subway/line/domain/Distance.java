@@ -1,4 +1,4 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
 import nextstep.subway.common.exception.NegativeNumberDistanceException;
 
@@ -29,8 +29,9 @@ public class Distance {
         return distance;
     }
 
-    public void changeDistance(int distance) {
-        this.distance = distance;
+    public Distance addDistance(Distance otherDistance) {
+        validateDistance(this.distance + otherDistance.distance);
+        return new Distance(this.distance + otherDistance.distance);
     }
 
     public Distance subtractDistance(Distance otherDistance) {
