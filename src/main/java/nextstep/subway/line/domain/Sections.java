@@ -16,7 +16,7 @@ import nextstep.subway.station.domain.Station;
 public class Sections {
 
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-	private List<Section> sections;
+	private List<Section> sections = new ArrayList<>();
 
 	protected Sections() {
 	}
