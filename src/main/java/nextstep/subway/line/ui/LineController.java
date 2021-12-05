@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.exception.DefaultException;
@@ -64,10 +65,15 @@ public class LineController {
 
     @PostMapping(value = "/{lineId}/sections")
     public ResponseEntity<LineResponse> addSection(
-        @PathVariable Long lineId,
-        @RequestBody SectionRequest sectionRequest) {
+        @PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
         LineResponse lineResponse = lineService.addSections(lineId, sectionRequest);
         return ResponseEntity.ok().body(lineResponse);
+    }
+
+    @DeleteMapping(value = "/{lineId}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
+        lineService.deleteSection(lineId, stationId);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(LineDuplicateException.class)

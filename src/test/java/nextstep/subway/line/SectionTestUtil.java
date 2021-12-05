@@ -42,12 +42,12 @@ public class SectionTestUtil {
     }
 
     public static void 지하철_노선에_포함되지_않은_지하철역_삭제_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.jsonPath().getString("message")).isEqualTo("지하철역 정보가 존재하지 않습니다.");
+        assertThat(response.jsonPath().getString("message")).isEqualTo("지하철역이 노선에 포함되어 있지 않습니다.");
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     public static void 지하철_노선의_마지막_남은_구간_삭제_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.jsonPath().getString("message")).isEqualTo("더 이상 지하철역을 삭제할 수 없습니다.");
+        assertThat(response.jsonPath().getString("message")).isEqualTo("더 이상 삭제할 수 없습니다.");
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 

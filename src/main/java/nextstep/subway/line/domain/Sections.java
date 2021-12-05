@@ -19,8 +19,11 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
-    public static final String ERROR_NOT_FOUND_STATIONS = "구간에서 상/하행역 정보를 찾을 수 없습니다.";
-    public static final String ERROR_ALREADY_ADDED_SECTION = "상/하행역 정보가 이미 등록되어 있습니다.";
+    private static final String ERROR_NOT_FOUND_STATIONS = "구간에서 상/하행역 정보를 찾을 수 없습니다.";
+    private static final String ERROR_ALREADY_ADDED_SECTION = "상/하행역 정보가 이미 등록되어 있습니다.";
+    private static final String ERROR_CANNOT_DELETE = "더 이상 삭제할 수 없습니다.";
+    private static final String ERROR_NOT_CONTAINS_STATION = "지하철역이 노선에 포함되어 있지 않습니다.";
+    private static final int SECTIONS_MIN_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -33,6 +36,28 @@ public class Sections {
             updateSection(section);
         }
         sections.add(section);
+    }
+
+    public void delete(Station station) {
+        checkDeleteStation(station);
+    }
+
+    private void checkDeleteStation(Station station) {
+        if(isLastSection()){
+            throw new IllegalArgumentException(ERROR_CANNOT_DELETE);
+        }
+
+        if(isNotFoundInSection(station)){
+            throw new IllegalArgumentException(ERROR_NOT_CONTAINS_STATION);
+        }
+    }
+
+    private boolean isLastSection() {
+        return sections.size() <= SECTIONS_MIN_SIZE;
+    }
+
+    private boolean isNotFoundInSection(Station station) {
+        return !getStations().contains(station);
     }
 
     private void updateSection(Section section) {
