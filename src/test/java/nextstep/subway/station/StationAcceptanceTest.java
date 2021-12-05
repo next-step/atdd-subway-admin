@@ -17,6 +17,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.ui.StationController;
+import nextstep.subway.utils.TestFactory;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
@@ -78,12 +80,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	public static ExtractableResponse<Response> 지하철역_등록되어_있음(String stationName) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", stationName);
-		return StationTestFactory.create(params);
+		return TestFactory.create(StationController.BASE_URI, params);
 	}
 
 	private ExtractableResponse<Response> 지하철역_제거_요청(ExtractableResponse<Response> given) {
 		String uri = given.header("Location");
-		return StationTestFactory.delete(uri);
+		return TestFactory.delete(uri);
 	}
 
 	private void 지하철역_제거됨(ExtractableResponse<Response> response) {
@@ -106,7 +108,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	}
 
 	private ExtractableResponse<Response> 지하철역_조회_요청() {
-		return StationTestFactory.findAll();
+		return TestFactory.findAll(StationController.BASE_URI);
 	}
 
 	private void 지하철역_생성_실패함(ExtractableResponse<Response> response) {
@@ -116,7 +118,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	private ExtractableResponse<Response> 지하철역_생성_요청(String stationName) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", stationName);
-		return StationTestFactory.create(params);
+		return TestFactory.create(StationController.BASE_URI, params);
 	}
 
 	private void 지하철역_생성_완료됨(ExtractableResponse<Response> response) {

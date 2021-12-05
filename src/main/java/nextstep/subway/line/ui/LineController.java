@@ -19,8 +19,11 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
 
 @RestController
-@RequestMapping("/lines")
+@RequestMapping(LineController.BASE_URI)
 public class LineController {
+
+	public static final String BASE_URI = "/lines";
+
 	private final LineService lineService;
 
 	public LineController(final LineService lineService) {
