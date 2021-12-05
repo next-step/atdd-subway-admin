@@ -1,12 +1,13 @@
 package nextstep.subway.station.domain;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import nextstep.subway.common.BaseEntity;
-
-import javax.persistence.*;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.Section;
 
 @Entity
 public class Station extends BaseEntity {
@@ -15,9 +16,6 @@ public class Station extends BaseEntity {
     private Long id;
     @Column(unique = true)
     private String name;
-    // todo: 환승역 요구사항 있을 경우 Station:Line=다대다 로 변경
-    @ManyToOne
-    private Line line;
 
     public Station() {
     }
@@ -34,7 +32,7 @@ public class Station extends BaseEntity {
         return name;
     }
 
-    public void setLine(Line line) {
-        this.line = line;
+    public boolean isSameStation(Station station) {
+        return station.getId().equals(this.getId());
     }
 }

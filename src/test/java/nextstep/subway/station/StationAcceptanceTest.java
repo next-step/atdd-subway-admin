@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.response.ResponseBodyExtractionOptions;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +22,7 @@ import org.springframework.http.MediaType;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    private ExtractableResponse<Response> 지하철역_생성_요청(String name) {
+    private static ExtractableResponse<Response> 지하철역_생성_요청(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         return RestAssured.given().log().all()
@@ -31,6 +32,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .post("/stations")
             .then().log().all()
             .extract();
+    }
+
+    public static ResponseBodyExtractionOptions 지하철역_등록되어_있음(String name) {
+        return 지하철역_생성_요청(name);
     }
 
     @DisplayName("지하철역을 생성한다.")
@@ -78,7 +83,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(it -> it.getId())
+                .map(StationResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }

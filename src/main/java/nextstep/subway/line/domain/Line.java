@@ -1,7 +1,7 @@
 package nextstep.subway.line.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -12,8 +12,11 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.Stations;
+import org.springframework.data.repository.cdi.Eager;
 
 @Entity
 public class Line extends BaseEntity {
@@ -25,9 +28,7 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
     @Embedded
-    private Stations stations;
-    @Transient
-    private final List<Section> sections = new ArrayList<>();
+    private Sections sections;
 
     public Line() {
     }
@@ -40,7 +41,8 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        this.addSection(section);
+        this.sections = new Sections(section);
+        section.setLine(this);
     }
 
     public void update(Line line) {
@@ -60,18 +62,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Stations getStations() {
-        return stations;
-    }
-
-    public List<Section> getSections() {
+    public Sections getSections() {
         return sections;
-    }
-
-    public void addSection(Section section) {
-        // todo: sections sort
-        this.sections.add(section);
-        this.stations = Stations.generateStations(this.sections, this);
     }
 
 
