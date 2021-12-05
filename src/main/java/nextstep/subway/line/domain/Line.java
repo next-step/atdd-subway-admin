@@ -68,6 +68,11 @@ public class Line extends BaseEntity {
 		section.setLine(this);
 	}
 
+	public void updateSections(Section section) {
+		this.sections.update(section);
+		section.setLine(this);
+	}
+
 	public Long getId() {
 		return id;
 	}

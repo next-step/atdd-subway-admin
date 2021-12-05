@@ -68,6 +68,10 @@ public class Sections {
 			.orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "첫 상행선을 찾을 수 없습니다"));
 	}
 
+	public void update(Section section) {
+
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -84,4 +88,5 @@ public class Sections {
 	public int hashCode() {
 		return sections.hashCode();
 	}
+
 }

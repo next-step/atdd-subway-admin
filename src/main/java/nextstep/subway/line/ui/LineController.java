@@ -65,7 +65,7 @@ public class LineController {
 	@PostMapping("/{id}/sections")
 	public ResponseEntity<LineResponse> updateSections(@PathVariable("id") Long id,
 		@RequestBody SectionRequest sectionRequest) {
-		LineResponse line = lineService.updateSections(sectionRequest);
+		LineResponse line = lineService.updateSections(id, sectionRequest);
 		return ResponseEntity.created(URI.create(LineController.BASE_URI + "/" + id))
 			.body(line);
 	}

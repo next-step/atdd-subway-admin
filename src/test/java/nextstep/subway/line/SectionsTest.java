@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import static nextstep.subway.line.SectionTest.*;
 import static nextstep.subway.station.StationTest.*;
 import static org.assertj.core.api.Assertions.*;
 
@@ -10,6 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.Sections;
 import nextstep.subway.station.domain.Station;
@@ -84,6 +86,22 @@ public class SectionsTest {
 
 		// then
 		assertThat(stations).containsExactly(노포역, 서면역, 범내골역, 다대포해수욕장역);
+	}
+
+	@Test
+	@DisplayName("구간을 업데이트한다")
+	void updateSectionsTest() {
+		// given
+		Line line = Line.of(1L, "신분당선", "red");
+		line.addSection(SECTION_1);
+		line.addSection(SECTION_2);
+
+		// when
+		line.updateSections(SECTION_3);
+
+		// then
+		List<Station> stations = line.getOrderedStations();
+		assertThat(stations).containsExactly(노포역, 범어사역, 서면역, 범내골역, 다대포해수욕장역);
 	}
 
 }

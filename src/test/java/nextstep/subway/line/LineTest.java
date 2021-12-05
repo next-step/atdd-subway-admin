@@ -93,4 +93,5 @@ public class LineTest {
 		// then
 		assertThat(stations).containsExactly(SECTION_1.getUpStation(), SECTION_1.getDownStation());
 	}
+
 }

@@ -17,6 +17,7 @@ public class SectionTest {
 
 	public static final Section SECTION_1 = Section.of(1L, StationTest.노포역, StationTest.서면역, 10);
 	public static final Section SECTION_2 = Section.of(2L, StationTest.범내골역, StationTest.다대포해수욕장역, 20);
+	public static final Section SECTION_3 = Section.of(3L, StationTest.노포역, StationTest.범어사역, 20);
 
 	@Test
 	@DisplayName("생성한다")
