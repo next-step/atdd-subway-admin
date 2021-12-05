@@ -12,6 +12,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
+import nextstep.subway.line.dto.SectionRequest;
 
 @Service
 @Transactional
@@ -58,5 +59,9 @@ public class LineService {
 	public void deleteLineById(Long id) {
 		Line line = getById(id);
 		lineRepository.delete(line);
+	}
+
+	public LineResponse updateSections(SectionRequest sectionRequest) {
+		return new LineResponse();
 	}
 }
