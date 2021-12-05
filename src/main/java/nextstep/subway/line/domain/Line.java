@@ -80,8 +80,8 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
-	public List<Station> getStations() {
-		return sections.getStations();
+	public List<Station> getOrderedStations() {
+		return sections.getOrderedStations();
 	}
 
 	public Sections getSections() {

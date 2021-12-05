@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import static nextstep.subway.station.StationTest.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.Arrays;
@@ -9,8 +10,8 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.Sections;
-import nextstep.subway.station.StationTest;
 import nextstep.subway.station.domain.Station;
 
 public class SectionsTest {
@@ -62,7 +63,7 @@ public class SectionsTest {
 		Sections sections = Sections.of(Collections.singletonList(SectionTest.SECTION_1));
 
 		// when
-		List<Station> stations = sections.getStations();
+		List<Station> stations = sections.getOrderedStations();
 
 		// then
 		assertThat(stations.size()).isEqualTo(2);
@@ -72,14 +73,17 @@ public class SectionsTest {
 	@DisplayName("역 목록 정렬 테스트")
 	void getStationsSortTest() {
 		// given
-		Sections sections = Sections.of(Arrays.asList(SectionTest.SECTION_2, SectionTest.SECTION_1));
+		Section section1 = Section.of(1L, 노포역, 서면역, 2);
+		Section section2 = Section.of(2L, 서면역, 범내골역, 3);
+		Section section3 = Section.of(3L, 범내골역, 다대포해수욕장역, 10);
+
+		Sections sections = Sections.of(Arrays.asList(section1, section2, section3));
 
 		// when
-		List<Station> stations = sections.getStations();
+		List<Station> stations = sections.getOrderedStations();
 
 		// then
-		assertThat(stations).containsExactly(
-			StationTest.노포역, StationTest.서면역, StationTest.범내골역, StationTest.다대포해수욕장역);
+		assertThat(stations).containsExactly(노포역, 서면역, 범내골역, 다대포해수욕장역);
 	}
 
 }

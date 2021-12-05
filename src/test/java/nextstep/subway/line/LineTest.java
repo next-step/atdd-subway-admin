@@ -88,7 +88,7 @@ public class LineTest {
 		line.addSection(SECTION_1);
 
 		// when
-		List<Station> stations = line.getStations();
+		List<Station> stations = line.getOrderedStations();
 
 		// then
 		assertThat(stations).containsExactly(SECTION_1.getUpStation(), SECTION_1.getDownStation());
