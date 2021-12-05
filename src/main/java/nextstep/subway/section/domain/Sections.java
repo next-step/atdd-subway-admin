@@ -8,7 +8,6 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -20,7 +19,7 @@ public class Sections {
     }
 
     public Sections(final Section... sections) {
-        this.sections.addAll(Arrays.stream(sections).collect(Collectors.toList()));
+        this.sections.addAll(Arrays.asList(sections));
     }
 
     public void addSection(final Section section) {
