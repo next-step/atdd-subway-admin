@@ -74,6 +74,18 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
+    public void merge(final Section another) {
+        validateMiddleStation(another);
+        downStation = another.getDownStation();
+        distance += another.getDistance();
+    }
+
+    private void validateMiddleStation(final Section another) {
+        if (!downStation.equals(another.upStation)) {
+            throw new IllegalArgumentException("중간역이 다를 경우 구간을 합칠 수 없습니다.");
+        }
+    }
+
     public void adjustUpStation(final Section newSection) {
         validateNewSection(newSection);
         upStation = newSection.getDownStation();

@@ -136,4 +136,40 @@ public class SectionTest {
         final Station station3 = new Station(3L, "선릉역");
         assertThat(section.hasStation(station3)).isFalse();
     }
+
+    @Test
+    void merge() {
+        // given
+        final Station station1 = new Station(1L, "강남역");
+        final Station station2 = new Station(2L, "판교역");
+        final Station station3 = new Station(3L, "광교역");
+        final Section section1 = new Section(1L, station1, station2, 4);
+        final Section section2 = new Section(2L, station2, station3, 8);
+
+        // when
+        section1.merge(section2);
+
+        // then
+        assertAll(
+            () -> assertThat(section1.getUpStation()).isEqualTo(station1),
+            () -> assertThat(section1.getDownStation()).isEqualTo(station3),
+            () -> assertThat(section1.getDistance()).isEqualTo(12)
+        );
+    }
+
+    @Test
+    void merge_differentMiddleStation() {
+        // given
+        final Station station1 = new Station(1L, "강남역");
+        final Station station2 = new Station(2L, "역삼역");
+        final Station station3 = new Station(3L, "선릉역");
+        final Station station4 = new Station(4L, "삼성역");
+        final Section section1 = new Section(1L, station1, station2, 1);
+        final Section section2 = new Section(2L, station3, station4, 1);
+
+        // when, then
+        assertThatThrownBy(
+            () -> section1.merge(section2)
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
 }

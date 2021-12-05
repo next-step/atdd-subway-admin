@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
@@ -126,5 +127,36 @@ public class Sections {
 
     public int size() {
         return sections.size();
+    }
+
+    public void deleteStation(final Station station) {
+        validateStationIsRemovable(station);
+
+        final Optional<Section> maybeUpSection = sections.stream()
+            .filter(s -> Objects.equals(s.getDownStation(), station))
+            .findFirst();
+        final Optional<Section> maybeDownSection = sections.stream()
+            .filter(s -> Objects.equals(s.getUpStation(), station))
+            .findFirst();
+
+        if (maybeUpSection.isPresent() && maybeDownSection.isPresent()) {
+            final Section upSection = maybeUpSection.get();
+            final Section downSection = maybeDownSection.get();
+            upSection.merge(downSection);
+            sections.remove(downSection);
+            return;
+        }
+
+        maybeUpSection.ifPresent(s -> sections.remove(s));
+        maybeDownSection.ifPresent(s -> sections.remove(s));
+    }
+
+    private void validateStationIsRemovable(final Station station) {
+        if (sections.isEmpty() || !hasStation(station)) {
+            throw new IllegalArgumentException("노선에 등록되어있지 않은 역을 제거할 수 없습니다");
+        }
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException("구간이 하나인 노선에서 역을 제거할 수 없습니다.");
+        }
     }
 }

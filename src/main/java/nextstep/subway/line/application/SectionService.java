@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import javax.transaction.Transactional;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
@@ -12,6 +11,7 @@ import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SectionService {
@@ -61,5 +61,14 @@ public class SectionService {
             .filter(s -> Objects.equals(s.getId(), id))
             .findFirst()
             .orElseThrow(NoSuchElementException::new);
+    }
+
+    @Transactional
+    public void removeSectionByStationId(final Long lineId, final Long stationId) {
+        final Line line = lineRepository.findById(lineId)
+            .orElseThrow(NoSuchElementException::new);
+        final Station station = stationRepository.findById(stationId)
+            .orElseThrow(NoSuchElementException::new);
+        line.deleteSection(station);
     }
 }
