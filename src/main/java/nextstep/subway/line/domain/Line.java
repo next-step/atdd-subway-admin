@@ -7,6 +7,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.Stations;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -14,7 +15,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -75,8 +75,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getOrderedStations() {
-        List<Station> orderedStations = new ArrayList<>();
+    public Stations getOrderedStations() {
+        Stations orderedStations = new Stations();
         Section section = sections.getFirstSection();
         orderedStations.add(section.getUpStation());
         orderedStations.add(section.getDownStation());
@@ -109,7 +109,7 @@ public class Line extends BaseEntity {
         if (!hasDeletableSection()) {
             throw new NotAcceptableApiException(ErrorCode.CAN_NOT_DELETE_SECTION);
         }
-        if (!getOrderedStations().contains(station)) {
+        if (getOrderedStations().notContains(station)) {
             throw new NotAcceptableApiException(ErrorCode.NOT_REGISTERED_STATION_TO_LINE);
         }
     }

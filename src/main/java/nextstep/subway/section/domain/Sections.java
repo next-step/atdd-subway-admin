@@ -3,6 +3,7 @@ package nextstep.subway.section.domain;
 import nextstep.subway.common.ErrorCode;
 import nextstep.subway.exception.NotAcceptableApiException;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.Stations;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -10,11 +11,8 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -43,33 +41,33 @@ public class Sections {
     }
 
     public Section getFirstSection() {
-        List<Station> upStations = getUpStations();
-        List<Station> downStations = getDownStations();
+        Stations upStations = getUpStations();
+        Stations downStations = getDownStations();
 
         upStations.removeAll(downStations);
-        Station firstUpStation = upStations.get(0);
+        Station firstUpStation = upStations.getFirstStation();
         return getSectionByUpStation(firstUpStation);
     }
 
     public Section getLastSection() {
-        List<Station> upStations = getUpStations();
-        List<Station> downStations = getDownStations();
+        Stations upStations = getUpStations();
+        Stations downStations = getDownStations();
 
         downStations.removeAll(upStations);
-        Station lastDownStation = downStations.get(downStations.size() - 1);
+        Station lastDownStation = downStations.getLastStation();
         return getSectionByDownStation(lastDownStation);
     }
 
-    private List<Station> getUpStations() {
-        return sections.stream()
-                .map(Section::getUpStation)
-                .collect(Collectors.toList());
+    private Stations getUpStations() {
+        Stations stations = new Stations();
+        sections.forEach(section -> stations.add(section.getUpStation()));
+        return stations;
     }
 
-    private List<Station> getDownStations() {
-        return sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
+    private Stations getDownStations() {
+        Stations stations = new Stations();
+        sections.forEach(section -> stations.add(section.getDownStation()));
+        return stations;
     }
 
     private Section getSectionByUpStation(Station upStation) {
@@ -144,13 +142,13 @@ public class Sections {
                 .noneMatch(station -> getStations().contains(station));
     }
 
-    private List<Station> getStations() {
-        Set<Station> stations = new HashSet<>();
+    private Stations getStations() {
+        Stations stations = new Stations();
         sections.forEach(section -> {
             stations.add(section.getUpStation());
             stations.add(section.getDownStation());
         });
-        return new ArrayList<>(stations);
+        return stations;
     }
 
     private boolean hasMatchWithUpStation(Station station) {
