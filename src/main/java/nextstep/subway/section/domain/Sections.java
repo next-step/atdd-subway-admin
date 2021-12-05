@@ -34,46 +34,51 @@ public class Sections {
             return;
         }
 
-        validateDuplicateSection(section);
-        validateLengthSection(section);
-        this.sections.add(section);
+        Section interactiveSection = getInteractiveWithSection(section);
+
+        validateDuplicateSection(section, interactiveSection);
+        validateLengthSection(section, interactiveSection);
+
+        Section updatedSection = updateSection(section, interactiveSection);
+        this.sections.add(updatedSection);
     }
 
-    private void validateDuplicateSection(Section section) {
-        if (isDuplicationSection(section)) {
+    private Section updateSection(Section section, Section interactiveSection) {
+        return interactiveSection.updateSection(section);
+    }
+
+    private void validateDuplicateSection(Section section, Section interactiveSection) {
+        if (isDuplicationSection(section, interactiveSection)) {
             throw new SubwayException(SubWayExceptionStatus.DUPLICATE_STATION);
         }
     }
 
-    private void validateLengthSection(Section section) {
-        Section existingSection = getExistingStation(section);
-        if (isDistanceLongerThanEqual(section, existingSection)) {
+    private void validateLengthSection(Section section, Section interactiveSection) {
+        if (isDistanceLongerThanEqual(section, interactiveSection)) {
             throw new SubwayException(SubWayExceptionStatus.LONG_DISTANCE_SECTION);
         }
     }
 
     private Boolean isDistanceLongerThanEqual(Section section, Section existingSection) {
 
-        Station upStation = existingSection.getUpStation();
-        Station downStation = existingSection.getDownStation();
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
 
         Station firstStation = getFirstStation();
         Station lastStation = getLastStation();
 
-        if (upStation.isSameName(firstStation) || downStation.isSameName(lastStation)) {
+        if (upStation.isSameName(lastStation) || downStation.isSameName(firstStation)) {
             return Boolean.FALSE;
         }
 
         return existingSection.isLongerThanEqual(section);
     }
 
-    private Boolean isDuplicationSection(Section section) {
-        return this.sections
-                .stream()
-                .anyMatch(i -> i.isSameNameWithUpStation(section) && i.isSameNameWithDownStation(section));
+    private Boolean isDuplicationSection(Section section, Section interactiveSection) {
+        return section.isSameNameWithUpStation(interactiveSection) && section.isSameNameWithDownStation(interactiveSection);
     }
 
-    private Section getExistingStation(Section section) {
+    private Section getInteractiveWithSection(Section section) {
         return this.sections
                 .stream()
                 .filter(i -> i.isInteractiveWithStation(section))

@@ -35,6 +35,30 @@ public class Section extends BaseEntity {
     @Column(name = "distance")
     private Integer distance;
 
+    public Section updateSection(Section that) {
+
+
+        int calculatedDistance = this.distance - that.distance;
+
+        if (this.upStation.isSameName(that.upStation)) {
+
+            Section tempSection = new Section(this.line, this.upStation, this.downStation, this.distance);
+            this.downStation = that.downStation;
+            this.distance = that.distance;
+
+            that.downStation = tempSection.downStation;
+            that.upStation = this.downStation;
+            that.distance = calculatedDistance;
+        }
+
+        if (this.downStation.isSameName(that.downStation)) {
+            this.downStation = that.upStation;
+            this.distance = calculatedDistance;
+        }
+
+        return that;
+    }
+
     protected Section() {
 
     }
@@ -64,6 +88,7 @@ public class Section extends BaseEntity {
     public Boolean isLongerThanEqual(Section that) {
         return this.distance <= that.distance;
     }
+
 
     public Long getId() {
         return id;

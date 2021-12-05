@@ -52,19 +52,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> registerSectionResponse = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 상행역.getId(), 강남역.getId(), 10);
-        ExtractableResponse<Response> registerSectionResponse = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 정자역.getId(), 9);
+        ExtractableResponse<Response> registerSectionResponse1 = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 상행역.getId(), 강남역.getId(), 10);
+        ExtractableResponse<Response> registerSectionResponse2 = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 정자역.getId(), 7);
+        ExtractableResponse<Response> registerSectionResponse3 = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 미금역.getId(), 광교역.getId(), 2);
 
         // 지하철_노선에_조회
-        ExtractableResponse<Response> lineResponse =  LineAcceptanceTest.지하철_노선_조회(registerSectionResponse.header("Location"));
+        ExtractableResponse<Response> lineResponse =  LineAcceptanceTest.지하철_노선_조회(registerSectionResponse2.header("Location"));
 
         // then
         // 지하철_노선에_지하철역_등록됨
-        assertThat(registerSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(registerSectionResponse1.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(registerSectionResponse2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(registerSectionResponse3.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
         assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(0).getName()).isEqualTo(상행역.getName());
         assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(1).getName()).isEqualTo(강남역.getName());
-        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(2).getName()).isEqualTo(광교역.getName());
+        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(2).getName()).isEqualTo(정자역.getName());
+        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(3).getName()).isEqualTo(미금역.getName());
+        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(4).getName()).isEqualTo(광교역.getName());
 
     }
 
