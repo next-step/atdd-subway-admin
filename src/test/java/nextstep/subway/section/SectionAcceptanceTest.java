@@ -24,6 +24,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private StationResponse 강남역;
     private StationResponse 광교역;
+    private StationResponse 정자역;
+    private StationResponse 미금역;
     private LineResponse 신분당선;
 
     @BeforeEach
@@ -33,6 +35,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
         광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+        정자역 = StationAcceptanceTest.지하철역_등록되어_있음("정자역").as(StationResponse.class);
+        미금역 = StationAcceptanceTest.지하철역_등록되어_있음("미금역").as(StationResponse.class);
 
         Map<String, String> createParams = LineAcceptanceTest.지하철_노선_더미_데이터_신분상선(강남역.getId(), 광교역.getId(), 10);
         신분당선 = LineAcceptanceTest.지하철_노선_등록되어_있음(createParams).as(LineResponse.class);
@@ -44,6 +48,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선에_지하철역_등록_요청
+
+
 
 
         // then
@@ -104,9 +110,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선에_지하철역_등록_요청
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 정자역.getId(), 미금역.getId(), 10);
 
         // then
         // 지하철_노선에_지하철역_등록됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(Long lineId, Long upStationId, Long downStationId, Integer distance) {

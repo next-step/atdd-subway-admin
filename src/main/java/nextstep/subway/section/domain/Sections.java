@@ -29,12 +29,19 @@ public class Sections {
 
     public void addToSections(Section section) {
         validateDuplicateSection(section);
+        validateInterSection(section);
         this.sections.add(section);
     }
 
     private void validateDuplicateSection(Section section) {
         if (isDuplicationSection(section)) {
             throw new SubwayException(SubWayExceptionStatus.DUPLICATE_STATION);
+        }
+    }
+
+    private void validateInterSection(Section section) {
+        if (!isDuplicationSection(section)) {
+            throw new SubwayException(SubWayExceptionStatus.NO_INTERSECTION_STATION);
         }
     }
 
