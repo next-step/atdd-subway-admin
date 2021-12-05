@@ -1,9 +1,8 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.section.domain.Distance;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.Sections;
+import nextstep.subway.exception.InputDataErrorCode;
+import nextstep.subway.exception.InputDataErrorException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -38,8 +37,30 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        this.sections.updateSection(section);
+        this.sections.addSection(section);
         section.addLine(this);
+    }
+
+    public void removeStation(Station station) {
+        checkValidateStation(station);
+        this.sections.removeStation(station);
+    }
+
+   private void checkValidateStation(Station station) {
+        checkExistStationInLine(station);
+        checkLastOneSection();
+    }
+
+    private void checkLastOneSection() {
+        if (this.sections.hasLastOneSection()) {
+            throw new InputDataErrorException(InputDataErrorCode.THERE_IS_ONLY_ONE_SECTION_IN_LINE);
+        }
+    }
+
+    private void checkExistStationInLine(Station station) {
+        if(!this.sections.contains(station)){
+            throw new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_STATION_IN_LINE);
+        }
     }
 
     public void update(Line line) {
@@ -59,7 +80,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getStations(){
+    public List<Station> getStations() {
         return sections.getStations();
     }
 
@@ -68,7 +89,31 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getOrderedSections() {
-        return sections.getOrderedtStation();
+        return sections.getOrderedStation();
     }
 
+    public Station getFirstStation() {
+        return this.sections().findFirstStation();
+    }
+
+    public Station getLastStation() {
+        return this.sections().findLastStation();
+    }
+
+    public Section findSection(Station upStation, Station downStation) {
+        return this.getSections().stream()
+                .filter(it -> isSameSection(upStation, downStation, it))
+                .findFirst()
+                .orElseThrow(
+                        () -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_SECTION)
+                );
+    }
+
+    private boolean isSameSection(Station upStation, Station downStation, Section it) {
+        return it.getUpStation() == upStation && it.getDownStation() == downStation;
+    }
+
+    private Sections sections() {
+        return sections;
+    }
 }

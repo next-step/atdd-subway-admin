@@ -1,4 +1,4 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
 import nextstep.subway.exception.InputDataErrorCode;
 import nextstep.subway.exception.InputDataErrorException;
@@ -27,20 +27,16 @@ public class Distance {
         }
     }
 
-    public Distance minus(Distance distance) {
-        return new Distance(this.distance -= distance.distance);
+    public int minus(Distance distance) {
+        return this.distance - distance.distance;
+    }
+
+    public int sum(Distance distance) {
+        return this.distance + distance.distance;
     }
 
     public int getDistance() {
         return this.distance;
-    }
-
-    public boolean isSameDistance(Distance distance) {
-        return this.equals(distance);
-    }
-
-    public boolean isOverDistance(Distance distance) {
-        return this.distance > distance.getDistance();
     }
 
     @Override

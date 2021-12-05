@@ -1,7 +1,6 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -11,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-public class Section extends BaseEntity  {
+public class Section extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,7 +50,7 @@ public class Section extends BaseEntity  {
         return upStation;
     }
 
-    public List<Station> getStations(){
+    public List<Station> getStations() {
         return Collections.unmodifiableList(Arrays.asList(upStation, downStation));
     }
 
@@ -63,12 +62,16 @@ public class Section extends BaseEntity  {
         return id;
     }
 
-    public void addLine(Line line){
+    public void addLine(Line line) {
         this.line = line;
     }
 
     public void minusDistance(Distance distance) {
-        this.distance = this.distance.minus(distance);
+        this.distance = new Distance(this.distance.minus(distance));
+    }
+
+    public void sumDistance(Distance distance) {
+        this.distance = new Distance(this.distance.sum(distance));
     }
 
     public Line getLine() {
@@ -76,15 +79,24 @@ public class Section extends BaseEntity  {
     }
 
     public void addInnerSection(Section newSection) {
-        if(this.getUpStation() == newSection.getUpStation()){
+        if (this.getUpStation() == newSection.getUpStation()) {
             this.upStation = newSection.getDownStation();
             this.minusDistance(newSection.getDistance());
         }
 
-        if(this.getDownStation() == newSection.getDownStation()){
+        if (this.getDownStation() == newSection.getDownStation()) {
             this.downStation = newSection.getUpStation();
             this.minusDistance(newSection.getDistance());
         }
+    }
+
+    public void removeInnerSection(Section upSection, Section downSection) {
+        downSection.downStation = upSection.getDownStation();
+        downSection.sumDistance(upSection.getDistance());
+    }
+
+    public int getDistanceNumber() {
+        return this.distance.getDistance();
     }
 
     @Override
@@ -92,22 +104,12 @@ public class Section extends BaseEntity  {
         if (this == o) return true;
         if (!(o instanceof Section)) return false;
         Section section = (Section) o;
-        return Objects.equals(getId(), section.getId()) && Objects.equals(getUpStation(), section.getUpStation()) && Objects.equals(getDownStation(), section.getDownStation()) && Objects.equals(getLine(), section.getLine()) && Objects.equals(getDistance(), section.getDistance());
+        return Objects.equals(getUpStation(), section.getUpStation()) && Objects.equals(getDownStation(), section.getDownStation()) && Objects.equals(getLine(), section.getLine());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getUpStation(), getDownStation(), getLine(), getDistance());
+        return Objects.hash(getUpStation(), getDownStation(), getLine());
     }
 
-//    @Override
-//    public int compareTo(Section o) {
-//        if (this.getUpStation() == o.getDownStation()) {
-//            return 1;
-//        }
-//        if (this.getDownStation() == o.getUpStation()) {
-//            return -1;
-//        }
-//        return 0;
-//    }
 }

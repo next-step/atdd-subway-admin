@@ -1,8 +1,9 @@
-package nextstep.subway.line.dto;
+package nextstep.subway.line;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.station.StationAcceptanceTestRequest;
 import org.springframework.http.MediaType;
 
