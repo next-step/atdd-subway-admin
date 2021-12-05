@@ -10,6 +10,7 @@ import nextstep.subway.line.exception.NotValidStationException;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
+import nextstep.subway.section.exception.NotRemoveSectionException;
 import nextstep.subway.section.exception.NotValidDistanceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -70,6 +71,13 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections/" + sectionResponse.getId())).body(sectionResponse);
     }
 
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity removeSection(@PathVariable Long lineId,
+                                        @RequestParam Long stationId) {
+        lineService.removeSection(lineId, stationId);
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler(ExistDuplicatedNameException.class)
     public ResponseEntity<String> handleExistDuplicatedNameException(ExistDuplicatedNameException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -92,6 +100,11 @@ public class LineController {
 
     @ExceptionHandler(NotValidStationException.class)
     public ResponseEntity<String> handleNotValidStationException(NotValidStationException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(NotRemoveSectionException.class)
+    public ResponseEntity<String> handleNotRemoveSectionException(NotRemoveSectionException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 

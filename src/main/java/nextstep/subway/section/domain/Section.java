@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.stream.Stream;
 
 @Entity
 public class Section extends BaseEntity implements Comparable<Section> {
@@ -73,11 +74,25 @@ public class Section extends BaseEntity implements Comparable<Section> {
     public void update(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance.plus(distance);
+        this.distance.validateDistance(distance);
+        this.distance = new Distance(this.distance.getValue() + distance);
+    }
+
+    public Stream<Station> stations() {
+        return Stream.of(upStation, downStation);
     }
 
     private void isExistLine(Line line) {
         if (this.line != null && !this.line.equals(line)) {
+            line.removeSection(this);
+        }
+    }
+
+    public void removeLine(Line line) {
+        if (line.equals(this.line)) {
+            this.line = null;
+        }
+        if (line.isContainsSection(this)) {
             line.removeSection(this);
         }
     }

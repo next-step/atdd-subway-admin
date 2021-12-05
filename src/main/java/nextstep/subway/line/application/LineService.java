@@ -81,6 +81,13 @@ public class LineService {
         return section;
     }
 
+    @Transactional
+    public void removeSection(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        Station station = findStationById(stationId);
+        line.removeSectionByStation(station);
+    }
+
     private Line findLineById(Long lineId) {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new EntityNotFoundException("노선이 존재하지 않습니다."));
@@ -100,7 +107,7 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        return line.getSections().getStations()
+        return line.getStations()
                 .stream()
                 .map(station -> StationResponse.of(station))
                 .collect(Collectors.toList());
