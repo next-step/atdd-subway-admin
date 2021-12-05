@@ -3,7 +3,7 @@ package nextstep.subway.line.dto;
 import nextstep.subway.line.domain.Line;
 
 public class LineRequest {
-	
+
 	private String name;
 	private String color;
 	private Long upStationId;
@@ -22,7 +22,7 @@ public class LineRequest {
 	}
 
 	public Line toLine() {
-		return Line.of(0L, name, color, upStationId, downStationId, distance);
+		return Line.of(null, name, color, upStationId, downStationId, distance);
 	}
 
 	public String getName() {

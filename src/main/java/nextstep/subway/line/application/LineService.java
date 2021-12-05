@@ -46,7 +46,7 @@ public class LineService {
 
 	public LineResponse modify(Long id, LineUpdateRequest lineRequest) {
 		Line line = getById(id);
-		line.update(lineRequest.toLine(id));
+		line.update(lineRequest.toLine());
 		return LineResponse.of(line);
 	}
 

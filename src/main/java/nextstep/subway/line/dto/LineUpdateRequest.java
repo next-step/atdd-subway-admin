@@ -15,8 +15,8 @@ public class LineUpdateRequest {
 		this.name = name;
 	}
 
-	public Line toLine(Long id) {
-		return Line.of(id, name, color);
+	public Line toLine() {
+		return Line.of(null, name, color);
 	}
 
 	public String getName() {
