@@ -27,7 +27,9 @@ public class StationResponse {
     }
 
     public static List<StationResponse> ofList(List<Station> stations) {
-        return stations.stream().map(StationResponse::of).collect(Collectors.toList());
+        return stations.stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
     }
 
     public Long getId() {

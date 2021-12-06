@@ -48,13 +48,23 @@ public class LineService {
     }
 
     public LineResponse getLineById(Long id) {
-        return LineResponse.of(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        return LineResponse.of(lineRepository.findById(id)
+                .orElseThrow(IllegalArgumentException::new));
     }
 
     public LineResponse updateLine(LineRequest lineRequest, Long id) {
-        Line sourceLine = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line sourceLine = lineRepository.findById(id)
+                .orElseThrow(IllegalArgumentException::new);
         sourceLine.update(lineRequest.toLine());
         Line persistLine = lineRepository.save(sourceLine);
         return LineResponse.of(persistLine);
+    }
+
+    public Line findByIdOrElseThrow(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("해당 ID의 노선이 존재하지 않습니다"));
+    }
+
+    public void save(Line line) {
+        lineRepository.save(line);
     }
 }
