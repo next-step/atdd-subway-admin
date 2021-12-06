@@ -17,6 +17,7 @@ import nextstep.subway.station.domain.Station;
 public class Sections {
 
     private static final int SECTIONS_START_AT = 0;
+    private static final boolean SECTIONS_MERGED = true;
 
     @OneToMany(
         cascade = {CascadeType.PERSIST, CascadeType.MERGE},
@@ -131,22 +132,11 @@ public class Sections {
 
     public void deleteStation(final Station station) {
         validateStationIsRemovable(station);
-
-        final Optional<Section> maybeUpSection = sections.stream()
-            .filter(s -> Objects.equals(s.getDownStation(), station))
-            .findFirst();
-        final Optional<Section> maybeDownSection = sections.stream()
-            .filter(s -> Objects.equals(s.getUpStation(), station))
-            .findFirst();
-
-        if (maybeUpSection.isPresent() && maybeDownSection.isPresent()) {
-            final Section upSection = maybeUpSection.get();
-            final Section downSection = maybeDownSection.get();
-            upSection.merge(downSection);
-            sections.remove(downSection);
+        final Optional<Section> maybeUpSection = getUpSection(station);
+        final Optional<Section> maybeDownSection = getDownSection(station);
+        if (tryMergeTwoSections(maybeUpSection, maybeDownSection)) {
             return;
         }
-
         maybeUpSection.ifPresent(s -> sections.remove(s));
         maybeDownSection.ifPresent(s -> sections.remove(s));
     }
@@ -158,5 +148,31 @@ public class Sections {
         if (sections.size() == 1) {
             throw new IllegalArgumentException("구간이 하나인 노선에서 역을 제거할 수 없습니다.");
         }
+    }
+
+    private boolean tryMergeTwoSections(
+        final Optional<Section> maybeUpSection,
+        final Optional<Section> maybeDownSection
+    ) {
+        final Section upSection = maybeUpSection.orElse(null);
+        final Section downSection = maybeDownSection.orElse(null);
+        if (Objects.nonNull(upSection) && Objects.nonNull(downSection)) {
+            upSection.merge(downSection);
+            sections.remove(downSection);
+            return SECTIONS_MERGED;
+        }
+        return !SECTIONS_MERGED;
+    }
+
+    private Optional<Section> getUpSection(final Station middleStation) {
+        return sections.stream()
+            .filter(s -> Objects.equals(s.getDownStation(), middleStation))
+            .findFirst();
+    }
+
+    private Optional<Section> getDownSection(final Station middleStation) {
+        return sections.stream()
+            .filter(s -> Objects.equals(s.getUpStation(), middleStation))
+            .findFirst();
     }
 }
