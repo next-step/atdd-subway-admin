@@ -15,7 +15,7 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(targetEntity = Line.class, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = Line.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
     private Line line;
 
@@ -31,12 +31,6 @@ public class Section extends BaseEntity {
     private Distance distance;
 
     public Section() {
-    }
-
-    public Section(final Station upStation, final Station downStation, final Distance distance) {
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
     }
 
     public Section(final Line line, final Station upStation, final Station downStation, final Distance distance) {
