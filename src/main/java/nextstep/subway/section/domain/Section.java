@@ -75,7 +75,7 @@ public class Section extends BaseEntity {
             return false;
         }
 
-        long matchCount = new ArrayList<>(Arrays.asList(upStation, downStation))
+        long matchCount = Arrays.asList(upStation, downStation)
                 .stream()
                 .filter(station -> !(station.equals(section.getUpStation()) && station.equals(section.getDownStation()))
                         && (station.equals(section.getUpStation()) || station.equals(section.getDownStation())))
