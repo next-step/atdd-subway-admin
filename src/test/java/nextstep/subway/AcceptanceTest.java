@@ -13,9 +13,9 @@ import org.springframework.http.MediaType;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
 
-    public static final String LINE_ROOT_PATH = "/lines";
-    public static final String LINE_SECTIONS_PATH = "/sections";
-    public static final String STATION_ROOT_PATH = "/stations";
+    public static final String LINE_ROOT_PATH = "/lines/";
+    public static final String LINE_SECTIONS_PATH = "/sections/";
+    public static final String STATION_ROOT_PATH = "/stations/";
 
     @LocalServerPort
     int port;
