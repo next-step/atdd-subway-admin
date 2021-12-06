@@ -22,6 +22,10 @@ public class Distance {
     return new Distance(distance);
   }
 
+  public void add(Distance distance) {
+    this.distance += distance.distance;
+  }
+
   public Distance minus(Distance distance) {
     return of(this.distance - distance.distance);
   }

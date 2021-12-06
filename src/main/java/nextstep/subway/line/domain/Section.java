@@ -51,8 +51,16 @@ public class Section extends BaseEntity {
     distance = distance.minus(newSection.distance);
   }
 
+  public void updateDownStation(Station downStation) {
+    this.downStation = downStation;
+  }
+
   public boolean isMatch(Section section) {
     return upStation.equals(section.upStation) && downStation.equals(section.downStation);
+  }
+
+  public void addDistance(Distance distance) {
+    this.distance.add(distance);
   }
 
   public void addLine(Line line) {
