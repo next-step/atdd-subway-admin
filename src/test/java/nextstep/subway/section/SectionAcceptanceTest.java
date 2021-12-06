@@ -207,7 +207,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_구간_생성됨(long upStationId, long downStationId) {
         Section section = 지하철_구간_조회(upStationId, downStationId);
-        assertThat(section).isNotNull();
+        Assertions.assertAll(
+                () -> assertThat(section.getUpStation().getId()).isEqualTo(upStationId)
+                , () -> assertThat(section.getDownStation().getId()).isEqualTo(downStationId)
+        );
     }
 
     private Section 지하철_구간_조회(long upStationId, long downStationId) {
