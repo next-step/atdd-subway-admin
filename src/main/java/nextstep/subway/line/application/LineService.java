@@ -74,7 +74,7 @@ public class LineService {
 		Station downStation = getStationById(sectionRequest.getDownStationId());
 		Section newSection = sectionRequest.toSection(line, upStation, downStation);
 		line.updateSections(newSection);
-		return LineResponse.of(lineRepository.save(line));
+		return LineResponse.of(line);
 	}
 
 	public Station getStationById(Long stationId) {
