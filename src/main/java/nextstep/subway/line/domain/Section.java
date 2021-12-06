@@ -54,6 +54,12 @@ public class Section {
 		return new Section(id, upStation, downStation, distance);
 	}
 
+	public static Section of(Long id, Station upStation, Station downStation, int distance, Line line) {
+		Section section = new Section(id, upStation, downStation, distance);
+		section.line = line;
+		return section;
+	}
+
 	public static Section of(Long id) {
 		return new Section(id);
 	}

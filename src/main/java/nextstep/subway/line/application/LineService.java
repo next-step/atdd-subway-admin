@@ -65,8 +65,8 @@ public class LineService {
 	}
 
 	public LineResponse updateSections(Long id, SectionRequest sectionRequest) {
-		Section newSection = sectionRequest.toSection();
 		Line line = getById(id);
+		Section newSection = sectionRequest.toSection(line);
 		line.updateSections(newSection);
 		return LineResponse.of(lineRepository.save(line));
 	}
