@@ -37,8 +37,12 @@ public class Stations {
     return stations;
   }
 
-  public boolean containAny(List<Station> stationList) {
+  public boolean containsAny(List<Station> stationList) {
     return stationList.removeAll(stations);
+  }
+
+  public boolean contains(Station station) {
+    return stations.contains(station);
   }
 
   public void addStation(Station station) {

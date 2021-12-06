@@ -1,11 +1,13 @@
 package nextstep.subway.line;
 
+import nextstep.subway.common.ServiceException;
 import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.Stations;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -15,6 +17,7 @@ import java.util.Arrays;
 import static nextstep.subway.line.TestLineFactory.lineOf;
 import static nextstep.subway.line.TestLineFactory.stationOf;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class SectionsTest {
   @Test
@@ -44,7 +47,7 @@ public class SectionsTest {
 
     Section firstSection = new Section(1L, secondLine, gangnamStation, seonLeungStation, Distance.of(10));
     Section secondSection = new Section(2L, secondLine, kyodaeStation, gangnamStation, Distance.of(10));
-    Section thirdSection = new Section(2L, secondLine, seochoStation, kyodaeStation, Distance.of(10));
+    Section thirdSection = new Section(3L, secondLine, seochoStation, kyodaeStation, Distance.of(10));
 
     return new Sections(new ArrayList<>(Arrays.asList(firstSection, secondSection, thirdSection)));
   }
@@ -134,5 +137,77 @@ public class SectionsTest {
         stationOf(4L, "강남역"),
         stationOf(1L, "선릉역"),
         stationOf(40L, "삼성역"));
+  }
+
+  @DisplayName("종점 지하철 역이 제거될 경우")
+  @Test
+  void 종점_지하철_역이_제거될_경우() {
+    // given
+    Sections secondSections = 지하철_2호선_구간들_생성();
+
+    // when
+    secondSections.deleteByStation(stationOf(3L, "서초역"));
+
+    // then
+    assertThat(secondSections.getUpToDownStations().getStations())
+        .containsExactly(
+            stationOf(2L, "교대역"),
+            stationOf(4L, "강남역"),
+            stationOf(1L, "선릉역"));
+  }
+
+  @DisplayName("중간 지하철 역이 제거될 경우")
+  @Test
+  void 중간_지하철_역이_제거될_경우() {
+    // given
+    Sections secondSections = 지하철_2호선_구간들_생성();
+
+    // when
+    secondSections.deleteByStation(stationOf(2L, "교대역"));
+
+    // then
+    assertThat(secondSections.getUpToDownStations().getStations())
+        .containsExactly(
+            stationOf(3L, "서초역"),
+            stationOf(4L, "강남역"),
+            stationOf(1L, "선릉역"));
+
+    assertThat(secondSections.getSections().stream()
+        .filter(section -> section.getUpStation().equals(stationOf(3L, "서초역")))
+        .findFirst()
+        .get()
+        .getDistance()).isEqualTo(Distance.of(20));
+  }
+
+  @DisplayName("노선 구간에 등록되지 않은 지하철 역 제거할 경우")
+  @Test
+  void 등록되지_않은_지하철_역_제거할_경우() {
+    // given
+    Sections secondSections = 지하철_2호선_구간들_생성();
+
+    // when
+    Throwable thrown = ThrowableAssert
+        .catchThrowable(() -> secondSections.deleteByStation(stationOf(9L, "존재하지 않는 역")));
+
+    assertThat(thrown)
+        .isInstanceOf(ServiceException.class)
+        .hasMessage("노선에 등록되지 않은 역은 제거할 수 없습니다.");
+  }
+
+  @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 때")
+  @Test
+  void 구간이_하나인_노선에서_마지막_구간을_제거할_때() {
+    // given
+    Sections secondSections = 지하철_2호선_구간들_생성();
+    secondSections.deleteByStation(stationOf(3L, "서초역"));
+    secondSections.deleteByStation(stationOf(4L, "강남역"));
+
+    // when
+    Throwable thrown = ThrowableAssert
+        .catchThrowable(() -> secondSections.deleteByStation(stationOf(2L, "교대역")));
+
+    assertThat(thrown)
+        .isInstanceOf(ServiceException.class)
+        .hasMessage("구간이 하나 이하의 노선에서 마지막 구간을 제거할 수 없습니다.");
   }
 }

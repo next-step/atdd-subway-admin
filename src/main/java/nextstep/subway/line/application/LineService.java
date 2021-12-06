@@ -20,73 +20,81 @@ import java.util.List;
 @Service
 @Transactional
 public class LineService {
-    private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
+  private final LineRepository lineRepository;
+  private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
-        this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+  public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    this.lineRepository = lineRepository;
+    this.stationRepository = stationRepository;
+  }
+
+  public LineResponse saveLine(LineRequest request) {
+    checkDuplicateLine(request);
+
+    Station upStation = findStationById(request.getUpStationId());
+    Station downStation = findStationById(request.getDownStationId());
+
+    Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
+    return LineResponse.of(persistLine);
+  }
+
+  private Station findStationById(Long stationId) {
+    return stationRepository.findById(stationId)
+        .orElseThrow(StationNotFoundException::new);
+  }
+
+  private void checkDuplicateLine(LineRequest request) {
+    if (lineRepository.findByName(request.getName()).isPresent()) {
+      throw new LineDuplicateException(request.getName());
     }
+  }
 
-    public LineResponse saveLine(LineRequest request) {
-        checkDuplicateLine(request);
+  @Transactional(readOnly = true)
+  public List<LineResponse> findAllLines() {
+    List<Line> persistLines = lineRepository.findAll();
+    return LineResponse.ofList(persistLines);
+  }
 
-        Station upStation = findStationById(request.getUpStationId());
-        Station downStation = findStationById(request.getDownStationId());
+  @Transactional(readOnly = true)
+  public LineResponse findById(Long id) {
+    Line line = lineRepository.findById(id)
+        .orElseThrow(LineNotFoundException::new);
+    return LineResponse.of(line);
+  }
 
-        Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
-        return LineResponse.of(persistLine);
-    }
+  public void update(Long id, LineRequest lineRequest) {
+    Line line = lineRepository.findById(id)
+        .orElseThrow(LineNotFoundException::new);
+    line.update(lineRequest.toLine());
+  }
 
-    private Station findStationById(Long stationId) {
-        return stationRepository.findById(stationId)
-          .orElseThrow(StationNotFoundException::new);
-    }
+  public void delete(Long id) {
+    lineRepository.deleteById(id);
+  }
 
-    private void checkDuplicateLine(LineRequest request) {
-        if (lineRepository.findByName(request.getName()).isPresent()) {
-            throw new LineDuplicateException(request.getName());
-        }
-    }
+  public LineResponse saveSection(Long lineId, SectionRequest request) {
+    Line persistLine = findLine(lineId);
+    Station upStation = findStation(request.getUpStationId());
+    Station downStation = findStation(request.getDownStationId());
 
-    @Transactional(readOnly = true)
-    public List<LineResponse> findAllLines() {
-        List<Line> persistLines = lineRepository.findAll();
-        return LineResponse.ofList(persistLines);
-    }
+    persistLine.addSection(Section.of(upStation, downStation, Distance.of(request.getDistance())));
+    return LineResponse.of(persistLine);
+  }
 
-    @Transactional(readOnly = true)
-    public LineResponse findById(Long id) {
-        Line line = lineRepository.findById(id)
-          .orElseThrow(LineNotFoundException::new);
-        return LineResponse.of(line);
-    }
+  private Line findLine(Long lineId) {
+    return lineRepository.findById(lineId).orElseThrow(LineNotFoundException::new);
+  }
 
-    public void update(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id)
-          .orElseThrow(LineNotFoundException::new);
-        line.update(lineRequest.toLine());
-    }
+  private Station findStation(Long stationId) {
+    return stationRepository.findById(stationId)
+        .orElseThrow(StationNotFoundException::new);
+  }
 
-    public void delete(Long id) {
-        lineRepository.deleteById(id);
-    }
+  public LineResponse deleteStation(Long id, Long stationId) {
+    Line persistLine = findLine(id);
+    Station station = findStation(stationId);
+    persistLine.deleteStation(station);
 
-    public LineResponse saveSection(Long lineId, SectionRequest request) {
-        Line persistLine = findLine(lineId);
-        Station upStation = findStation(request.getUpStationId());
-        Station downStation = findStation(request.getDownStationId());
-
-        persistLine.addSection(Section.of(upStation, downStation, Distance.of(request.getDistance())));
-        return LineResponse.of(persistLine);
-    }
-
-    private Line findLine(Long lineId) {
-        return lineRepository.findById(lineId).orElseThrow(LineNotFoundException::new);
-    }
-
-    private Station findStation(Long stationId) {
-        return stationRepository.findById(stationId)
-          .orElseThrow(StationNotFoundException::new);
-    }
+    return LineResponse.of(persistLine);
+  }
 }
