@@ -19,17 +19,17 @@ public class Section {
     @ManyToOne
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
-    public Section() {
-
+    protected Section() {
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public Station getUpStation() {
@@ -40,5 +40,28 @@ public class Section {
         return downStation;
     }
 
+    public int getDistance() {
+        return distance.getDistance();
+    }
 
+    public boolean equalUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean equalDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    public void updateUpStation(Station downStation, int newDistance) {
+        this.distance.validateLargerThan(newDistance);
+        this.upStation = downStation;
+        this.distance.minus(newDistance);
+
+    }
+
+    public void updateDownStation(Station upStation, int newDistance) {
+        this.distance.validateLargerThan(newDistance);
+        this.downStation = upStation;
+        this.distance.minus(newDistance);
+    }
 }

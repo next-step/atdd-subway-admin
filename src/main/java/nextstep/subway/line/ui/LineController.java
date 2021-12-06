@@ -1,8 +1,12 @@
 package nextstep.subway.line.ui;
 
+import nextstep.subway.Exception.CannotSaveException;
+import nextstep.subway.Exception.CannotUpdateSectionException;
+import nextstep.subway.Exception.NotFoundException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +51,13 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(RuntimeException.class)
+    @PostMapping("/{id}/sections")
+    public ResponseEntity addLineSections(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
+        lineService.addLineSection(id, sectionRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @ExceptionHandler({NotFoundException.class, CannotSaveException.class, CannotUpdateSectionException.class, IllegalArgumentException.class})
     public ResponseEntity handleRuntimeException(RuntimeException e) {
         return ResponseEntity.badRequest().build();
     }

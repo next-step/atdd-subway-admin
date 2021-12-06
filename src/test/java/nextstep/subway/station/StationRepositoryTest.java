@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 @DirtiesContext
-public class StationTest {
+public class StationRepositoryTest {
     @Autowired
     StationRepository stationRepository;
 
