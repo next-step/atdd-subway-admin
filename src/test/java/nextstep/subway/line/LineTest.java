@@ -10,7 +10,6 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.exception.AppException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.domain.Station;
@@ -66,19 +65,6 @@ public class LineTest {
 	}
 
 	@Test
-	@DisplayName("다른 Line 이 주어지면 업데이트가 실패한다")
-	void updateTest2() {
-		// given
-		Line line = Line.of(1L, "신분당선", "red");
-		Line newLine = Line.of(2L, "1호선", "green");
-
-		// when, then
-		assertThatThrownBy(() -> line.update(newLine))
-			.isInstanceOf(AppException.class);
-
-	}
-
-	@Test
 	@DisplayName("Section 을 추가한다")
 	void addSectionTest() {
 		// given
@@ -102,9 +88,10 @@ public class LineTest {
 		line.addSection(SECTION_1);
 
 		// when
-		List<Station> stations = line.getStations();
+		List<Station> stations = line.getOrderedStations();
 
 		// then
 		assertThat(stations).containsExactly(SECTION_1.getUpStation(), SECTION_1.getDownStation());
 	}
+
 }

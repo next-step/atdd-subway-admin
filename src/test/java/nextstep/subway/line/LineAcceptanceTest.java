@@ -17,7 +17,9 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.ui.LineController;
 import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.utils.TestFactory;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -112,7 +114,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		params.put("upStationId", String.valueOf(upStationId));
 		params.put("downStationId", String.valueOf(downStationId));
 		params.put("distance", String.valueOf(distance));
-		return LineTestFactory.create(params);
+		return TestFactory.create(LineController.BASE_URI, params);
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_생성_요청(ExtractableResponse<Response> createResponse) {
@@ -126,7 +128,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		params.put("upStationId", String.valueOf(upStationId));
 		params.put("downStationId", String.valueOf(downStationId));
 		params.put("distance", String.valueOf(distance));
-		return LineTestFactory.create(params);
+		return TestFactory.create(LineController.BASE_URI, params);
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_수정_요청(ExtractableResponse<Response> createResponse) {
@@ -134,15 +136,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		Map<String, String> params = new HashMap<>();
 		params.put("color", "bg-red-600");
 		params.put("name", lineName + "_updated");
-		return LineTestFactory.modify(extractUri(createResponse), params);
+		return TestFactory.modify(extractUri(createResponse), params);
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> createResponse) {
-		return LineTestFactory.findById(extractUri(createResponse));
+		return TestFactory.findById(extractUri(createResponse));
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_제거_요청(ExtractableResponse<Response> createResponse) {
-		return LineTestFactory.remove(extractUri(createResponse));
+		return TestFactory.delete(extractUri(createResponse));
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_등록되어_있음(String lineName) {
@@ -155,7 +157,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		params.put("upStationId", String.valueOf(upStationId));
 		params.put("downStationId", String.valueOf(downStationId));
 		params.put("distance", String.valueOf(distance));
-		return LineTestFactory.create(params);
+		return TestFactory.create(LineController.BASE_URI, params);
 	}
 
 	private Long 지하철역_등록되어_있음(String name) {
@@ -186,7 +188,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
-		return LineTestFactory.findAll();
+		return TestFactory.findAll(LineController.BASE_URI);
 	}
 
 	private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, List<ExtractableResponse<Response>> givens) {

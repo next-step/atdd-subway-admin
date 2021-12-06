@@ -8,6 +8,8 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import nextstep.subway.exception.AppException;
+import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.StationTest;
 import nextstep.subway.station.domain.Station;
@@ -16,7 +18,8 @@ import nextstep.subway.station.domain.Station;
 public class SectionTest {
 
 	public static final Section SECTION_1 = Section.of(1L, StationTest.노포역, StationTest.서면역, 10);
-	public static final Section SECTION_2 = Section.of(2L, StationTest.범내골역, StationTest.다대포해수욕장역, 20);
+	public static final Section SECTION_2 = Section.of(2L, StationTest.부산진역, StationTest.다대포해수욕장역, 20);
+	public static final Section SECTION_3 = Section.of(3L, StationTest.서면역, StationTest.범내골역, 20);
 
 	@Test
 	@DisplayName("생성한다")
@@ -47,6 +50,39 @@ public class SectionTest {
 			() -> assertThat(stations.get(0)).isEqualTo(SECTION_1.getUpStation()),
 			() -> assertThat(stations.get(1)).isEqualTo(SECTION_1.getDownStation())
 		);
+	}
+
+	@Test
+	@DisplayName("앞에 다른 구간을 추가한다")
+	void addSectionBeforeTest() {
+		// given
+		Section section = Section.of(1L, StationTest.서면역, StationTest.부산진역, 10);
+		Section frontSection = Section.of(2L, StationTest.서면역, StationTest.범내골역, 2);
+
+		// when
+		section.updateUpStation(frontSection);
+
+		// then
+		assertAll(
+			() -> assertThat(section.getDistance()).isEqualTo(Distance.of(8)),
+			() -> assertThat(section.getUpStation()).isEqualTo(StationTest.범내골역),
+			() -> assertThat(section.getDownStation()).isEqualTo(StationTest.부산진역),
+			() -> assertThat(frontSection.getDistance()).isEqualTo(Distance.of(2)),
+			() -> assertThat(frontSection.getUpStation()).isEqualTo(StationTest.서면역),
+			() -> assertThat(frontSection.getDownStation()).isEqualTo(StationTest.범내골역)
+		);
+	}
+
+	@Test
+	@DisplayName("상행역 변경 시, 기존 길이보다 크거나 같으면 안된다")
+	void addSectionBeforeTest2() {
+		// given
+		Section section = Section.of(1L, StationTest.서면역, StationTest.부산진역, 10);
+		Section frontSection = Section.of(2L, StationTest.서면역, StationTest.범내골역, 10);
+
+		// when
+		assertThatThrownBy(() -> section.updateUpStation(frontSection))
+			.isInstanceOf(AppException.class);
 	}
 
 }

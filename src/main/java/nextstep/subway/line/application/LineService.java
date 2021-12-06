@@ -9,18 +9,24 @@ import nextstep.subway.exception.AppException;
 import nextstep.subway.exception.ErrorCode;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
+import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 
 @Service
 @Transactional
 public class LineService {
 
 	private final LineRepository lineRepository;
+	private final StationRepository stationRepository;
 
-	public LineService(LineRepository lineRepository) {
+	public LineService(LineRepository lineRepository, StationRepository stationRepository) {
 		this.lineRepository = lineRepository;
+		this.stationRepository = stationRepository;
 	}
 
 	public LineResponse saveLine(LineRequest request) {
@@ -35,10 +41,12 @@ public class LineService {
 		}
 	}
 
+	@Transactional(readOnly = true)
 	public List<LineResponse> getLines() {
 		return LineResponse.ofList(lineRepository.findAll());
 	}
 
+	@Transactional(readOnly = true)
 	public LineResponse getLineById(Long id) {
 		Line line = getById(id);
 		return LineResponse.of(line);
@@ -46,7 +54,7 @@ public class LineService {
 
 	public LineResponse modify(Long id, LineUpdateRequest lineRequest) {
 		Line line = getById(id);
-		line.update(lineRequest.toLine(id));
+		line.update(lineRequest.toLine());
 		return LineResponse.of(line);
 	}
 
@@ -59,4 +67,21 @@ public class LineService {
 		Line line = getById(id);
 		lineRepository.delete(line);
 	}
+
+	public LineResponse updateSections(Long id, SectionRequest sectionRequest) {
+		Line line = getById(id);
+		Station upStation = getStationById(sectionRequest.getUpStationId());
+		Station downStation = getStationById(sectionRequest.getDownStationId());
+		Section newSection = sectionRequest.toSection(line, upStation, downStation);
+		line.updateSections(newSection);
+		return LineResponse.of(line);
+	}
+
+	public Station getStationById(Long stationId) {
+		return stationRepository.findById(stationId)
+			.orElseThrow(() -> new AppException(ErrorCode.WRONG_INPUT, stationId + "는 존재하지 않습니다"));
+	}
+
 }
+
+

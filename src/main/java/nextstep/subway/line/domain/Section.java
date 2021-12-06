@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -28,7 +29,8 @@ public class Section {
 	private Station downStation;
 
 	@Column
-	private int distance;
+	@Embedded
+	private Distance distance;
 
 	@JoinColumn
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -41,7 +43,7 @@ public class Section {
 		this.id = id;
 		this.upStation = upStation;
 		this.downStation = downStation;
-		this.distance = distance;
+		this.distance = Distance.of(distance);
 	}
 
 	private Section(Long id) {
@@ -50,6 +52,12 @@ public class Section {
 
 	public static Section of(Long id, Station upStation, Station downStation, int distance) {
 		return new Section(id, upStation, downStation, distance);
+	}
+
+	public static Section of(Long id, Station upStation, Station downStation, int distance, Line line) {
+		Section section = new Section(id, upStation, downStation, distance);
+		section.line = line;
+		return section;
 	}
 
 	public static Section of(Long id) {
@@ -63,7 +71,12 @@ public class Section {
 		return stations;
 	}
 
-	public void setLine(Line line) {
+	public void updateUpStation(Section frontSection) {
+		this.upStation = frontSection.downStation;
+		this.distance = this.distance.minus(frontSection.distance);
+	}
+
+	void setLine(Line line) {
 		this.line = line;
 	}
 
@@ -79,7 +92,7 @@ public class Section {
 		return downStation;
 	}
 
-	public int getDistance() {
+	public Distance getDistance() {
 		return distance;
 	}
 

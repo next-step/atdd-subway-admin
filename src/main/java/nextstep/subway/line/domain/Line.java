@@ -12,8 +12,6 @@ import javax.persistence.Id;
 import org.apache.commons.lang3.StringUtils;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.exception.AppException;
-import nextstep.subway.exception.ErrorCode;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -47,19 +45,16 @@ public class Line extends BaseEntity {
 		return line;
 	}
 
-	public static Line of(long id, String name, String color, Long upStationId, Long downStationId, int distance) {
+	public static Line of(Long id, String name, String color, Long upStationId, Long downStationId, int distance) {
 		Station upStation = Station.of(upStationId);
 		Station downStation = Station.of(downStationId);
-		Section section = Section.of(0L, upStation, downStation, distance);
+		Section section = Section.of(null, upStation, downStation, distance);
 		Line line = new Line(id, name, color);
 		line.addSection(section);
 		return line;
 	}
 
 	public void update(Line line) {
-		if (!this.equals(line)) {
-			throw new AppException(ErrorCode.WRONG_INPUT, "업데이트할 Line 이 같지 않습니다");
-		}
 		if (StringUtils.isNotBlank(line.getName())) {
 			this.name = line.getName();
 		}
@@ -70,6 +65,11 @@ public class Line extends BaseEntity {
 
 	public void addSection(Section section) {
 		this.sections.add(section);
+		section.setLine(this);
+	}
+
+	public void updateSections(Section section) {
+		this.sections.update(section);
 		section.setLine(this);
 	}
 
@@ -85,8 +85,8 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
-	public List<Station> getStations() {
-		return sections.getStations();
+	public List<Station> getOrderedStations() {
+		return sections.getOrderedStations();
 	}
 
 	public Sections getSections() {
