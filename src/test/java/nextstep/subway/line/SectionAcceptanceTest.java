@@ -28,6 +28,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	private StationResponse 강남역;
 	private StationResponse 광교역;
 	private StationResponse 양재역;
+	private StationResponse 새상행역;
+	private StationResponse 새하행역;
 	private Map<String, String> createParams;
 
 	@BeforeEach
@@ -38,6 +40,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
 		광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
 		양재역 = StationAcceptanceTest.지하철역_등록되어_있음("양재역").as(StationResponse.class);
+		새상행역 = StationAcceptanceTest.지하철역_등록되어_있음("새상행역").as(StationResponse.class);
+		새하행역 = StationAcceptanceTest.지하철역_등록되어_있음("새하행역").as(StationResponse.class);
 
 		createParams = new HashMap<>();
 		createParams.put("name", "신분당선");
@@ -53,7 +57,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	}
 
 	@Test
-	@DisplayName("노선에 구간을 등록한다.")
+	@DisplayName("구간 사이에 구간을 추가한다")
 	void addSection() {
 		// given
 		Map<String, String> params = new HashMap<>();
@@ -66,6 +70,54 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		지하철_노선에_지하철역_등록됨(response);
+	}
+
+	@Test
+	@DisplayName("상행 종점에 새 구간을 추가한다")
+	void addSection2() {
+		// given
+		Map<String, String> params = new HashMap<>();
+		params.put("upStationId", 새상행역.getId() + "");
+		params.put("downStationId", 강남역.getId() + "");
+		params.put("distance", 1 + "");
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, params);
+
+		// then
+		지하철_노선에_상행종점이_등록됨(response);
+	}
+
+	@Test
+	@DisplayName("하행 종점에 새 구간을 추가한다")
+	void addSection3() {
+		// given
+		Map<String, String> params = new HashMap<>();
+		params.put("upStationId", 광교역.getId() + "");
+		params.put("downStationId", 새하행역.getId() + "");
+		params.put("distance", 1 + "");
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, params);
+
+		// then
+		지하철_노선에_하행종점이_등록됨(response);
+	}
+
+	private void 지하철_노선에_하행종점이_등록됨(ExtractableResponse<Response> response) {
+		List<StationResponse> stations = response.as(LineResponse.class).getStations();
+		assertAll(
+			() -> assertThat(stations).containsExactly(강남역, 광교역, 새하행역),
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value())
+		);
+	}
+
+	private void 지하철_노선에_상행종점이_등록됨(ExtractableResponse<Response> response) {
+		List<StationResponse> stations = response.as(LineResponse.class).getStations();
+		assertAll(
+			() -> assertThat(stations).containsExactly(새상행역, 강남역, 광교역),
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value())
+		);
 	}
 
 	private void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
