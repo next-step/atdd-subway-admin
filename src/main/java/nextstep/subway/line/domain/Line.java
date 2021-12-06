@@ -2,9 +2,11 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.common.domain.Name;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.LinkedList;
 import java.util.List;
 
 @Entity
@@ -21,8 +23,9 @@ public class Line extends BaseEntity {
     @Column
     private String color;
 
+    // TODO 일급컬렉션
     @OneToMany(mappedBy = "line")
-    private List<Station> stations;
+    private List<Station> stations = new LinkedList<Station>();
 
     public Line() {
     }
@@ -32,9 +35,21 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this.name = new Name(name);
+        this.color = color;
+        this.stations.add(upStation);
+        this.stations.add(downStation);
+    }
+
     public void update(Line line) {
         this.name = new Name(line.getName());
         this.color = line.getColor();
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        stations.add(upStation);
+        stations.add(downStation);
     }
 
     public Long getId() {
@@ -47,5 +62,9 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public List<Station> getSections() {
+        return this.stations;
     }
 }

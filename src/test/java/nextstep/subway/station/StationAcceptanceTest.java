@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.util.UrlConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 // @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)  --> 메소드 실행 전 새로운 context를 실행. 단, 실행시간에 대한 단점 존재
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    private static final String STATION_DEFAULT_URL = "/stations";
+
 
     private Map<String, String> params = new HashMap<>();
 
@@ -75,7 +76,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get(STATION_DEFAULT_URL)
+                .get(UrlConstants.STATION_DEFAULT_URL)
                 .then().log().all()
                 .extract();
 
@@ -118,7 +119,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post(STATION_DEFAULT_URL)
+                .post(UrlConstants.STATION_DEFAULT_URL)
                 .then().log().all()
                 .extract(); // extract가 객체로 반환해줌.
     }
