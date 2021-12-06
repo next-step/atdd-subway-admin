@@ -40,14 +40,55 @@ public class Sections {
 
     public void delete(Station station) {
         checkDeleteStation(station);
+
+        if (deleteDownSection(station)) {
+            return;
+        }
+        deleteUpSection(station);
+    }
+
+    private boolean deleteDownSection(Station station) {
+        Optional<Section> target = sections.stream()
+            .filter(it -> it.isEqualToUpStation(station))
+            .findAny();
+        target.ifPresent(it -> {
+            updateDownStationAndPlusDistance(it);
+            sections.remove(it);
+        });
+        return target.isPresent();
+    }
+
+    private void updateDownStationAndPlusDistance(Section section) {
+        sections.stream()
+            .filter(it -> it.isEqualToDownStation(section.getUpStation()))
+            .findAny()
+            .ifPresent(it -> it.updateDownStationAndPlusDistance(section));
+    }
+
+    private boolean deleteUpSection(Station station) {
+        Optional<Section> target = sections.stream()
+            .filter(it -> it.isEqualToDownStation(station))
+            .findAny();
+        target.ifPresent(it -> {
+            updateUpStationAndPlusDistance(it);
+            sections.remove(it);
+        });
+        return target.isPresent();
+    }
+
+    private void updateUpStationAndPlusDistance(Section section) {
+        sections.stream()
+            .filter(it -> it.isEqualToUpStation(section.getUpStation()))
+            .findAny()
+            .ifPresent(it -> it.updateUpStationAndPlusDistance(section));
     }
 
     private void checkDeleteStation(Station station) {
-        if(isLastSection()){
+        if (isLastSection()) {
             throw new IllegalArgumentException(ERROR_CANNOT_DELETE);
         }
 
-        if(isNotFoundInSection(station)){
+        if (isNotFoundInSection(station)) {
             throw new IllegalArgumentException(ERROR_NOT_CONTAINS_STATION);
         }
     }
@@ -72,7 +113,7 @@ public class Sections {
         Optional<Section> target = sections.stream()
             .filter(it -> it.isEqualToUpStation(section.getUpStation()))
             .findAny();
-        target.ifPresent(it -> it.updateUpStation(section));
+        target.ifPresent(it -> it.updateUpStationAndMinusDistance(section));
         return target.isPresent();
     }
 
@@ -80,7 +121,7 @@ public class Sections {
         Optional<Section> target = sections.stream()
             .filter(it -> it.isEqualToDownStation(section.getDownStation()))
             .findAny();
-        target.ifPresent(it -> it.updateDownStation(section));
+        target.ifPresent(it -> it.updateDownStationAndMinusDistance(section));
         return target.isPresent();
     }
 

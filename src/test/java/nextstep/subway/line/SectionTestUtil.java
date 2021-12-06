@@ -12,6 +12,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 public class SectionTestUtil {
 
@@ -35,6 +36,14 @@ public class SectionTestUtil {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().delete(LineTestUtil.LINES_PATH + "{lineId}/sections", lineId)
             .then().log().all().extract();
+    }
+
+    public static void 지하철_노선에_삭제된_지하철역이_포함되지_않음(ExtractableResponse<Response> response, Long stationId) {
+        boolean contains = response.jsonPath()
+            .getList("stations", StationResponse.class)
+            .stream()
+            .anyMatch(it -> it.getId().equals(stationId));
+        assertThat(contains).isFalse();
     }
 
     public static void 지하철_노선에_포함된_지하철역_삭제됨(ExtractableResponse<Response> response) {

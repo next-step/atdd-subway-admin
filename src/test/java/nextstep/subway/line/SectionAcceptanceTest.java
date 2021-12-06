@@ -20,7 +20,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteEndUpStation() {
         // given
         // 지하철_노선_등록_되어_있음
-        Long 상행종점_생성_아이디 = 지하철역_생성_및_아이디_반환("상행역");
+        Long 상행종점_생성_아이디 = 지하철역_생성_및_아이디_반환("상행종점");
         Long 중간역_생성_아이디 = 지하철역_생성_및_아이디_반환("중간역");
         Long 노선_생성_아이디 =
             지하철_노선_생성_및_아이디_반환("신분당선", "red", 상행종점_생성_아이디, 중간역_생성_아이디, 10);
@@ -34,6 +34,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_포함된_지하철역_삭제됨(노선_구간_삭제_응답);
+        ExtractableResponse<Response> 노선_조회_응답 = 지하철_노선_조회_요청(노선_생성_아이디);
+        지하철_노선에_삭제된_지하철역이_포함되지_않음(노선_조회_응답, 상행종점_생성_아이디);
     }
 
     @DisplayName("지하철 구간의 하행종점 삭제 요청")
@@ -41,7 +43,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteEndDownStation() {
         // given
         // 지하철_노선_등록_되어_있음
-        Long 상행종점_생성_아이디 = 지하철역_생성_및_아이디_반환("상행역");
+        Long 상행종점_생성_아이디 = 지하철역_생성_및_아이디_반환("상행종점");
         Long 중간역_생성_아이디 = 지하철역_생성_및_아이디_반환("중간역");
         Long 노선_생성_아이디 =
             지하철_노선_생성_및_아이디_반환("신분당선", "red", 상행종점_생성_아이디, 중간역_생성_아이디, 10);
@@ -55,6 +57,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_포함된_지하철역_삭제됨(노선_구간_삭제_응답);
+        ExtractableResponse<Response> 노선_조회_응답 = 지하철_노선_조회_요청(노선_생성_아이디);
+        지하철_노선에_삭제된_지하철역이_포함되지_않음(노선_조회_응답, 하행종점_생성_아이디);
     }
 
     @DisplayName("지하철 구간 사이의 역 삭제 요청")
@@ -62,7 +66,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteBetweenStation() {
         // given
         // 지하철_노선_등록_되어_있음
-        Long 상행종점_생성_아이디 = 지하철역_생성_및_아이디_반환("상행역");
+        Long 상행종점_생성_아이디 = 지하철역_생성_및_아이디_반환("상행종점");
         Long 중간역_생성_아이디 = 지하철역_생성_및_아이디_반환("중간역");
         Long 노선_생성_아이디 =
             지하철_노선_생성_및_아이디_반환("신분당선", "red", 상행종점_생성_아이디, 중간역_생성_아이디, 10);
@@ -76,6 +80,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_포함된_지하철역_삭제됨(노선_구간_삭제_응답);
+        ExtractableResponse<Response> 노선_조회_응답 = 지하철_노선_조회_요청(노선_생성_아이디);
+        지하철_노선에_삭제된_지하철역이_포함되지_않음(노선_조회_응답, 중간역_생성_아이디);
+
     }
 
     @DisplayName("노선에 등록되어 있지 않은 역을 제거할 경우")
@@ -83,7 +90,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void invalidDeleteNotFoundStation() {
         // given
         // 지하철_노선_등록_되어_있음
-        Long 상행종점_생성_아이디 = 지하철역_생성_및_아이디_반환("상행역");
+        Long 상행종점_생성_아이디 = 지하철역_생성_및_아이디_반환("상행종점");
         Long 중간역_생성_아이디 = 지하철역_생성_및_아이디_반환("중간역");
         Long 노선_생성_아이디 =
             지하철_노선_생성_및_아이디_반환("신분당선", "red", 상행종점_생성_아이디, 중간역_생성_아이디, 10);
@@ -91,7 +98,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 구간_요청_정보 = 구간_요청_등록_정보(중간역_생성_아이디, 하행종점_생성_아이디, 5);
         노선_구간_등록_요청(노선_생성_아이디, 구간_요청_정보);
         Long 노선에_없는_역_생성_아이디 = 지하철역_생성_및_아이디_반환("포함되지않은역");
-
 
         // when
         // 역_사이에_새로운_역_등록_요청

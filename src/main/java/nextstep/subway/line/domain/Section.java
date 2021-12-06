@@ -45,14 +45,24 @@ public class Section {
         this.distance = new Distance(distance);
     }
 
-    public void updateDownStation(Section section) {
+    public void updateDownStationAndMinusDistance(Section section) {
         downStation = section.getUpStation();
         distance = distance.minus(section.distance);
     }
 
-    public void updateUpStation(Section section) {
+    public void updateUpStationAndMinusDistance(Section section) {
         upStation = section.getDownStation();
         distance = distance.minus(section.distance);
+    }
+
+    public void updateDownStationAndPlusDistance(Section section) {
+        downStation = section.downStation;
+        distance = distance.plus(section.distance);
+    }
+
+    public void updateUpStationAndPlusDistance(Section section) {
+        upStation = section.upStation;
+        distance = distance.plus(section.distance);
     }
 
     public boolean isEqualToDownStation(Station station) {

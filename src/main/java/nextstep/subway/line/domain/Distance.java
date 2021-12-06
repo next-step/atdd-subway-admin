@@ -24,6 +24,10 @@ public class Distance {
         return new Distance(this.distance - target.distance);
     }
 
+    public Distance plus(Distance distance) {
+        return new Distance(this.distance + distance.distance);
+    }
+
     private boolean isSameOrFarther(Distance target) {
         return this.distance <= target.distance;
     }
