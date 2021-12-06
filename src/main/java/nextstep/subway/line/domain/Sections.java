@@ -35,8 +35,12 @@ public class Sections {
 		return new Sections(sections);
 	}
 
-	public void add(Section section) {
-		this.sections.add(section);
+	public void add(Section newSection) {
+		if (sections.isEmpty()) {
+			this.sections.add(newSection);
+			return;
+		}
+		update(newSection);
 	}
 
 	public boolean contains(Section section) {
