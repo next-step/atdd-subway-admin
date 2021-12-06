@@ -197,10 +197,7 @@ public class Sections {
 
   private void deleteEndPointSectionByStation(Station station) {
     if (isUpEndPointStation(station)) {
-      System.out.println("sections = " + sections);
-      System.out.println("upEndPoint() = " + upEndPoint());
       sections.removeIf(section -> section.equals(upEndPoint()));
-      System.out.println("sections = " + sections);
       return;
     }
 
