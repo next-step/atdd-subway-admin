@@ -14,15 +14,19 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 
 @Service
 @Transactional
 public class LineService {
 
 	private final LineRepository lineRepository;
+	private final StationRepository stationRepository;
 
-	public LineService(LineRepository lineRepository) {
+	public LineService(LineRepository lineRepository, StationRepository stationRepository) {
 		this.lineRepository = lineRepository;
+		this.stationRepository = stationRepository;
 	}
 
 	public LineResponse saveLine(LineRequest request) {
@@ -66,9 +70,16 @@ public class LineService {
 
 	public LineResponse updateSections(Long id, SectionRequest sectionRequest) {
 		Line line = getById(id);
-		Section newSection = sectionRequest.toSection(line);
+		Station upStation = getStationById(sectionRequest.getUpStationId());
+		Station downStation = getStationById(sectionRequest.getDownStationId());
+		Section newSection = sectionRequest.toSection(line, upStation, downStation);
 		line.updateSections(newSection);
 		return LineResponse.of(lineRepository.save(line));
+	}
+
+	public Station getStationById(Long stationId) {
+		return stationRepository.findById(stationId)
+			.orElseThrow(() -> new AppException(ErrorCode.WRONG_INPUT, stationId + "는 존재하지 않습니다"));
 	}
 
 }

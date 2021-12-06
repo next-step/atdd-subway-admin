@@ -13,9 +13,7 @@ public class SectionRequest {
 	private SectionRequest() {
 	}
 
-	public Section toSection(Line line) {
-		Station upStation = Station.of(upStationId);
-		Station downStation = Station.of(downStationId);
+	public Section toSection(Line line, Station upStation, Station downStation) {
 		return Section.of(null, upStation, downStation, distance, line);
 	}
 
