@@ -13,9 +13,9 @@ import org.springframework.http.MediaType;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
 
-    public static final String LINE_ROOT_PATH = "/lines/";
-    public static final String LINE_SECTIONS_PATH = "/sections/";
-    public static final String STATION_ROOT_PATH = "/stations/";
+    public static final String LINE_ROOT_PATH = "/lines";
+    public static final String LINE_SECTIONS_PATH = "/sections";
+    public static final String STATION_ROOT_PATH = "/stations";
 
     @LocalServerPort
     int port;
@@ -33,7 +33,7 @@ public class AcceptanceTest {
         databaseCleanup.execute();
     }
 
-    public <T> ExtractableResponse<Response> 생성_요청(String path, T requestBody) {
+    public static <T> ExtractableResponse<Response> 생성_요청(String path, T requestBody) {
         return RestAssured
                 .given().log().all()
                 .body(requestBody)
@@ -42,14 +42,14 @@ public class AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    public ExtractableResponse<Response> 조회_요청(String path) {
+    public static ExtractableResponse<Response> 조회_요청(String path) {
         return RestAssured
                 .given().log().all()
                 .when().get(path)
                 .then().log().all().extract();
     }
 
-    public <T> ExtractableResponse<Response> 수정_요청(String path, T requestBody) {
+    public static <T> ExtractableResponse<Response> 수정_요청(String path, T requestBody) {
         return RestAssured
                 .given().log().all()
                 .body(requestBody)
@@ -58,17 +58,9 @@ public class AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    public ExtractableResponse<Response> 삭제_요청(String path) {
+    public static ExtractableResponse<Response> 삭제_요청(String path) {
         return RestAssured
                 .given().log().all()
-                .when().delete(path)
-                .then().log().all().extract();
-    }
-
-    public ExtractableResponse<Response> 삭제_요청(String path, Long id) {
-        return RestAssured
-                .given().log().all()
-                .queryParam("stationId", id)
                 .when().delete(path)
                 .then().log().all().extract();
     }
