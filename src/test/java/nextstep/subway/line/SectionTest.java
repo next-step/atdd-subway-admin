@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import nextstep.subway.exception.AppException;
+import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.StationTest;
 import nextstep.subway.station.domain.Station;
@@ -63,10 +64,10 @@ public class SectionTest {
 
 		// then
 		assertAll(
-			() -> assertThat(section.getDistance()).isEqualTo(8),
+			() -> assertThat(section.getDistance()).isEqualTo(Distance.of(8)),
 			() -> assertThat(section.getUpStation()).isEqualTo(StationTest.범내골역),
 			() -> assertThat(section.getDownStation()).isEqualTo(StationTest.부산진역),
-			() -> assertThat(frontSection.getDistance()).isEqualTo(2),
+			() -> assertThat(frontSection.getDistance()).isEqualTo(Distance.of(2)),
 			() -> assertThat(frontSection.getUpStation()).isEqualTo(StationTest.서면역),
 			() -> assertThat(frontSection.getDownStation()).isEqualTo(StationTest.범내골역)
 		);

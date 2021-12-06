@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import nextstep.subway.exception.AppException;
+import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.Sections;
 import nextstep.subway.station.domain.Station;
@@ -104,7 +105,7 @@ public class SectionsTest {
 		// then
 		assertThat(sections.getOrderedStations())
 			.containsExactly(노포역, 서면역, 범내골역, 부산진역, 다대포해수욕장역);
-		assertThat(section2.getDistance()).isEqualTo(4);
+		assertThat(section2.getDistance()).isEqualTo(Distance.of(4));
 	}
 
 	@Test

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -12,8 +13,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import nextstep.subway.exception.AppException;
-import nextstep.subway.exception.ErrorCode;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -30,7 +29,8 @@ public class Section {
 	private Station downStation;
 
 	@Column
-	private int distance;
+	@Embedded
+	private Distance distance;
 
 	@JoinColumn
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -43,7 +43,7 @@ public class Section {
 		this.id = id;
 		this.upStation = upStation;
 		this.downStation = downStation;
-		this.distance = distance;
+		this.distance = Distance.of(distance);
 	}
 
 	private Section(Long id) {
@@ -73,11 +73,7 @@ public class Section {
 
 	public void updateUpStation(Section frontSection) {
 		this.upStation = frontSection.downStation;
-		int different = this.distance - frontSection.distance;
-		if (different <= 0) {
-			throw new AppException(ErrorCode.WRONG_INPUT, "기존 구간 길이보다 크거나 같으면 안됩니다");
-		}
-		this.distance = different;
+		this.distance = this.distance.minus(frontSection.distance);
 	}
 
 	void setLine(Line line) {
@@ -96,7 +92,7 @@ public class Section {
 		return downStation;
 	}
 
-	public int getDistance() {
+	public Distance getDistance() {
 		return distance;
 	}
 
