@@ -5,7 +5,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 @Entity
@@ -77,11 +76,15 @@ public class Section extends BaseEntity {
 
         long matchCount = Arrays.asList(upStation, downStation)
                 .stream()
-                .filter(station -> !(station.equals(section.getUpStation()) && station.equals(section.getDownStation()))
-                        && (station.equals(section.getUpStation()) || station.equals(section.getDownStation())))
+                .filter(station -> this.hasMatchedStation(station, section))
                 .count();
 
         return matchCount == 1;
+    }
+
+    private boolean hasMatchedStation(final Station station, final Section section) {
+        return !(station.equals(section.getUpStation()) && station.equals(section.getDownStation()))
+                && (station.equals(section.getUpStation()) || station.equals(section.getDownStation()));
     }
 
     public void deductDistance(final Section section) {
