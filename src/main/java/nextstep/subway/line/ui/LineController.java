@@ -23,6 +23,7 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.line.exception.LineDuplicateException;
 import nextstep.subway.line.exception.NotFoundLineException;
 import nextstep.subway.station.exception.NotFoundStationException;
@@ -64,10 +65,10 @@ public class LineController {
     }
 
     @PostMapping(value = "/{lineId}/sections")
-    public ResponseEntity<LineResponse> addSection(
+    public ResponseEntity<SectionResponse> addSection(
         @PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        LineResponse lineResponse = lineService.addSections(lineId, sectionRequest);
-        return ResponseEntity.ok().body(lineResponse);
+        SectionResponse sectionResponse = lineService.addSections(lineId, sectionRequest);
+        return ResponseEntity.ok().body(sectionResponse);
     }
 
     @DeleteMapping(value = "/{lineId}/sections", produces = MediaType.APPLICATION_JSON_VALUE)

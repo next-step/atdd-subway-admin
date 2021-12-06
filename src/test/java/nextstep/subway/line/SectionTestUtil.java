@@ -11,7 +11,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.SectionRequest;
-import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 public class SectionTestUtil {
@@ -66,19 +65,19 @@ public class SectionTestUtil {
     }
 
     public static void 새로운역_상행_종점으로_등록됨(ExtractableResponse<Response> response, Long stationId) {
-        List<Station> stations = response.jsonPath().getList("stations", Station.class);
+        List<StationResponse> stations = response.jsonPath().getList("stations", StationResponse.class);
         Long upStationId = stations.get(0).getId();
         assertThat(upStationId).isEqualTo(stationId);
     }
 
     public static void 새로운역_하행_종점으로_등록됨(ExtractableResponse<Response> response, Long stationId) {
-        List<Station> stations = response.jsonPath().getList("stations", Station.class);
+        List<StationResponse> stations = response.jsonPath().getList("stations", StationResponse.class);
         Long downStationId = stations.get(stations.size() - 1).getId();
         assertThat(downStationId).isEqualTo(stationId);
     }
 
     public static void 역_사이에_새로운_역_등록됨(ExtractableResponse<Response> response, Long stationId) {
-        List<Station> stations = response.jsonPath().getList("stations", Station.class);
+        List<StationResponse> stations = response.jsonPath().getList("stations", StationResponse.class);
         boolean isContains = stations.stream()
             .anyMatch(station -> stationId.equals(station.getId()));
         assertThat(isContains).isTrue();

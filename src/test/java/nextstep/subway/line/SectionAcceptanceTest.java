@@ -143,7 +143,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_지하철역_등록됨(노선_구간_등록_응답);
-        역_사이에_새로운_역_등록됨(노선_구간_등록_응답, 새로운역_생성_아이디);
+
+        ExtractableResponse<Response> 노선_조회_응답 = 지하철_노선_조회_요청(노선_생성_아이디);
+        역_사이에_새로운_역_등록됨(노선_조회_응답, 새로운역_생성_아이디);
     }
 
     @DisplayName("새로운 역을 상행 종점으로 등록 요청")
@@ -164,7 +166,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_지하철역_등록됨(노선_구간_등록_응답);
-        새로운역_상행_종점으로_등록됨(노선_구간_등록_응답, 새로운역_생성_아이디);
+
+        ExtractableResponse<Response> 노선_조회_응답 = 지하철_노선_조회_요청(노선_생성_아이디);
+        새로운역_상행_종점으로_등록됨(노선_조회_응답, 새로운역_생성_아이디);
     }
 
     @DisplayName("새로운 역을 하행 종점으로 등록 요청")
@@ -185,7 +189,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_지하철역_등록됨(노선_구간_등록_응답);
-        새로운역_하행_종점으로_등록됨(노선_구간_등록_응답, 새로운역_생성_아이디);
+
+        ExtractableResponse<Response> 노선_조회_응답 = 지하철_노선_조회_요청(노선_생성_아이디);
+        새로운역_하행_종점으로_등록됨(노선_조회_응답, 새로운역_생성_아이디);
 
     }
 
