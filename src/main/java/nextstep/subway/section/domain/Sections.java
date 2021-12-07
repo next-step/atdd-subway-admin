@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -40,6 +41,12 @@ public class Sections {
 
     private void adjustDistance(final Section addSection) {
         this.sections.forEach(section -> section.deductDistance(addSection));
+    }
+
+    public void setLine(final Line line) {
+        for (Section section : this.sections) {
+            section.setLine(line);
+        }
     }
 
     public void updateSection(final Station upStation, final Station downStation, final Distance distance) {
