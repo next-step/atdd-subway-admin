@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -17,7 +17,10 @@ import nextstep.subway.station.domain.Station;
 public class Sections {
 
     private static final int SECTIONS_START_AT = 0;
-    private static final boolean SECTIONS_MERGED = true;
+    private static final int BOTH_SECTIONS_EXIST = 2;
+    private static final int SINGLE_SECTION_INDEX = 0;
+    private static final int UP_SECTION_INDEX = 0;
+    private static final int DOWN_SECTION_INDEX = 1;
 
     @OneToMany(
         cascade = {CascadeType.PERSIST, CascadeType.MERGE},
@@ -132,13 +135,12 @@ public class Sections {
 
     public void deleteStation(final Station station) {
         validateStationIsRemovable(station);
-        final Optional<Section> maybeUpSection = getUpSection(station);
-        final Optional<Section> maybeDownSection = getDownSection(station);
-        if (tryMergeTwoSections(maybeUpSection, maybeDownSection)) {
+        final List<Section> upDownSections = getUpDownSection(station);
+        if (bothSectionsExist(upDownSections)) {
+            mergeUpDownSections(upDownSections);
             return;
         }
-        maybeUpSection.ifPresent(s -> sections.remove(s));
-        maybeDownSection.ifPresent(s -> sections.remove(s));
+        removeUpDownSection(upDownSections);
     }
 
     private void validateStationIsRemovable(final Station station) {
@@ -150,29 +152,29 @@ public class Sections {
         }
     }
 
-    private boolean tryMergeTwoSections(
-        final Optional<Section> maybeUpSection,
-        final Optional<Section> maybeDownSection
-    ) {
-        final Section upSection = maybeUpSection.orElse(null);
-        final Section downSection = maybeDownSection.orElse(null);
-        if (Objects.nonNull(upSection) && Objects.nonNull(downSection)) {
-            upSection.merge(downSection);
-            sections.remove(downSection);
-            return SECTIONS_MERGED;
-        }
-        return !SECTIONS_MERGED;
+    private List<Section> getUpDownSection(final Station middleStation) {
+        return Stream.concat(
+            sections.stream()
+                .filter(s -> Objects.equals(s.getDownStation(), middleStation)),
+            sections.stream()
+                .filter(s -> Objects.equals(s.getUpStation(), middleStation))
+        ).collect(Collectors.toList());
     }
 
-    private Optional<Section> getUpSection(final Station middleStation) {
-        return sections.stream()
-            .filter(s -> Objects.equals(s.getDownStation(), middleStation))
-            .findFirst();
+    private boolean bothSectionsExist(final List<Section> upDownSections) {
+        return upDownSections.size() == BOTH_SECTIONS_EXIST;
     }
 
-    private Optional<Section> getDownSection(final Station middleStation) {
-        return sections.stream()
-            .filter(s -> Objects.equals(s.getUpStation(), middleStation))
-            .findFirst();
+    private void mergeUpDownSections(final List<Section> upDownSections) {
+        final Section upSection = upDownSections.get(UP_SECTION_INDEX);
+        final Section downSection = upDownSections.get(DOWN_SECTION_INDEX);
+        upSection.merge(downSection);
+        sections.remove(downSection);
+    }
+
+    private void removeUpDownSection(final List<Section> upDownSections) {
+        sections.remove(
+            upDownSections.get(SINGLE_SECTION_INDEX)
+        );
     }
 }
