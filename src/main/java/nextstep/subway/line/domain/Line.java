@@ -40,7 +40,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Long> getStations() {
-        return sections.getStations();
+        return sections.getStationIds();
     }
 
     public Line update(Line line) {

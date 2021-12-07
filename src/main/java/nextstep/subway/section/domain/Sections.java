@@ -7,28 +7,24 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
-    List<Section> sections = new ArrayList<>();
+    private final List<Section> sections = new ArrayList<>();
 
-    public List<Long> getStations() {
-        List<Long> stations = new ArrayList<>();
-        if (Objects.isNull(sections) || sections.size() == 0) {
-            return stations;
-        }
+    public List<Long> getStationIds() {
+        List<Long> stationIds = new ArrayList<>();
 
         Collections.sort(sections);
-        stations.add(sections.get(0).getUpStationId());
-        stations.addAll(sections.stream()
+        stationIds.add(sections.get(0).getUpStationId());
+        stationIds.addAll(sections.stream()
                 .map(s -> s.getDownStationId())
                 .collect(Collectors.toList()));
 
-        return stations;
+        return stationIds;
     }
 
     public void addSection(Section section) {
@@ -70,19 +66,19 @@ public class Sections {
     }
 
     private List<Section> findSection(Section section) {
-        List<Section> sectionList = new ArrayList<>();
-        sectionList.addAll(sections.stream()
+        List<Section> sections = new ArrayList<>();
+        sections.addAll(this.sections.stream()
                 .filter(s -> s.isExistUpStation(section.getUpStationId()))
                 .collect(Collectors.toList()));
-        sectionList.addAll(sections.stream()
+        sections.addAll(this.sections.stream()
                 .filter(s -> s.isExistDownStation(section.getDownStationId()))
                 .collect(Collectors.toList()));
-        sectionList.addAll(sections.stream()
+        sections.addAll(this.sections.stream()
                 .filter(s -> s.isExistUpStation(section.getDownStationId()))
                 .collect(Collectors.toList()));
-        sectionList.addAll(sections.stream()
+        sections.addAll(this.sections.stream()
                 .filter(s -> s.isExistDownStation(section.getUpStationId()))
                 .collect(Collectors.toList()));
-        return sectionList;
+        return sections;
     }
 }

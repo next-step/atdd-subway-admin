@@ -64,10 +64,10 @@ public class Section extends BaseEntity implements Comparable<Section> {
 
     @Override
     public int compareTo(Section o) {
-        if (this.getUpStationId() == o.getDownStationId()) {
+        if (this.getUpStationId().equals(o.getDownStationId())) {
             return 1;
         }
-        if (this.getDownStationId() == o.getUpStationId()) {
+        if (this.getDownStationId().equals(o.getUpStationId())) {
             return -1;
         }
         return 0;

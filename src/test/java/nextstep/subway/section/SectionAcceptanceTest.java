@@ -1,6 +1,5 @@
 package nextstep.subway.section;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -12,10 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,19 +38,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSection() {
         // when
         // 지하철_노선에_지하철역_등록_요청
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", stationUp.getId().toString());
-        params.put("downStationId", stationAdd.getId().toString());
-        params.put("distance", "4");
-
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .pathParam("id", line.getId())
-                .when().post("/lines/{id}/sections")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = SectionTestFixture.지하철_노선에_지하철역_등록_요청(line.getId(), stationUp.getId(), stationAdd.getId(), 4);
 
         // then
         // 지하철_노선에_지하철역_등록됨
@@ -67,19 +50,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSectionIsSame() {
         // when
         // 지하철_노선에_지하철역_등록_요청
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", stationUp.getId().toString());
-        params.put("downStationId", stationDown.getId().toString());
-        params.put("distance", "5");
-
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .pathParam("id", line.getId())
-                .when().post("/lines/{id}/sections")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = SectionTestFixture.지하철_노선에_지하철역_등록_요청(line.getId(), stationUp.getId(), stationDown.getId(), 5);
 
         // then
         // 지하철_노선에_지하철역_등록됨
@@ -91,19 +62,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSectionNotExist() {
         // when
         // 지하철_노선에_지하철역_등록_요청
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", stationAdd.getId().toString());
-        params.put("downStationId", stationAdd2.getId().toString());
-        params.put("distance", "5");
-
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .pathParam("id", line.getId())
-                .when().post("/lines/{id}/sections")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = SectionTestFixture.지하철_노선에_지하철역_등록_요청(line.getId(), stationAdd.getId(), stationAdd2.getId(), 5);
 
         // then
         // 지하철_노선에_지하철역_등록됨
@@ -115,19 +74,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSectionBiggerDistance() {
         // when
         // 지하철_노선에_지하철역_등록_요청
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", stationUp.getId().toString());
-        params.put("downStationId", stationAdd.getId().toString());
-        params.put("distance", "10");
-
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .pathParam("id", line.getId())
-                .when().post("/lines/{id}/sections")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = SectionTestFixture.지하철_노선에_지하철역_등록_요청(line.getId(), stationUp.getId(), stationAdd.getId(), 10);
 
         // then
         // 지하철_노선에_지하철역_등록됨
@@ -139,19 +86,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSectionFist() {
         // when
         // 지하철_노선에_지하철역_등록_요청
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", stationAdd.getId().toString());
-        params.put("downStationId", stationUp.getId().toString());
-        params.put("distance", "4");
-
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .pathParam("id", line.getId())
-                .when().post("/lines/{id}/sections")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = SectionTestFixture.지하철_노선에_지하철역_등록_요청(line.getId(), stationAdd.getId(), stationUp.getId(), 4);
 
         // then
         // 지하철_노선에_지하철역_등록됨
@@ -163,19 +98,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSectionLast() {
         // when
         // 지하철_노선에_지하철역_등록_요청
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", stationDown.getId().toString());
-        params.put("downStationId", stationAdd.getId().toString());
-        params.put("distance", "4");
-
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .pathParam("id", line.getId())
-                .when().post("/lines/{id}/sections")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = SectionTestFixture.지하철_노선에_지하철역_등록_요청(line.getId(), stationDown.getId(), stationAdd.getId(), 4);
 
         // then
         // 지하철_노선에_지하철역_등록됨
