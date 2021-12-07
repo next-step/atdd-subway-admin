@@ -110,10 +110,10 @@ public class Section extends BaseEntity {
         }
 
         Section that = (Section) o;
-        if (this.line.equals(that.getLine()) &&
-            this.upStation.equals(that.getUpStation()) &&
-            this.downStation.equals(that.getDownStation()) &&
-            this.distance.equals(that.getDistance())) {
+        if (this.line == that.getLine() &&
+            this.upStation == that.getUpStation() &&
+            this.downStation == that.getDownStation() &&
+            this.distance == that.getDistance()) {
             return true;
         }
 

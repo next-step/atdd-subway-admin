@@ -38,7 +38,7 @@ public class Station extends BaseEntity {
         }
 
         Station that = (Station) o;
-        if (this.id.equals(that.getId()) && this.name.equals(that.getName())) {
+        if (this.id == that.getId() && this.name == that.getName()) {
             return true;
         }
 
