@@ -155,6 +155,16 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_순서_정렬됨(response2, Arrays.asList(강남역, 광교역));
     }
 
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 수 없음")
+    @Test
+    void removeLine_Exception() {
+        //when
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(신분당선, 강남역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> 지하철_노선에_지하철_구간_등록_요청(LineResponse lineResponse, StationResponse upStation, StationResponse downStation, int distance) {
         SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(), distance);
         return RestAssured

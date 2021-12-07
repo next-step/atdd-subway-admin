@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.Exception.CannotDeleteException;
 import nextstep.subway.Exception.CannotUpdateSectionException;
 import nextstep.subway.Exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
@@ -124,10 +125,14 @@ public class Sections {
     }
 
     void removeLineSection(Line line, Station station) {
+        if (sections.size() <= 1) {
+            throw new CannotDeleteException("구간이 하나인 노선에서 마지막 구간을 제거할 수 없습니다.");
+        }
+
         Section upStationSection = getUpStationSection(station);
         Section downStationSection = getDownStationSection(station);
 
-        if(upStationSection != null && downStationSection != null) {
+        if (upStationSection != null && downStationSection != null) {
             Station upStation = downStationSection.getUpStation();
             Station downStation = upStationSection.getDownStation();
             int newDistance = downStationSection.getDistance() + upStationSection.getDistance();
