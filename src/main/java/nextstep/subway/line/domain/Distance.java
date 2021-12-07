@@ -26,6 +26,10 @@ public class Distance {
         return distance;
     }
 
+    public void plus(Distance distance) {
+        this.distance = this.distance + distance.value();
+    }
+
     public void minus(Distance distance) {
         this.distance = this.distance - distance.value();
     }

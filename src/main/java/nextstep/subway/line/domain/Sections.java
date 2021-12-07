@@ -14,6 +14,10 @@ import java.util.stream.Stream;
 @Embeddable
 public class Sections {
 
+    public static final int REMOVE_SECTION_MIN_SIZE = 1;
+    public static final int NOT_BETWEEN_SECTION = 1;
+    public static final int BETWEEN_SECTION = 2;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -27,6 +31,13 @@ public class Sections {
             addSectionBetweenSections(addSection);
         }
         sections.add(addSection);
+    }
+
+    public void remove(Station removeStation) {
+        validateRemove();
+        List<Section> findSections = findSections(removeStation);
+        removeSectionNotBetweenSections(findSections);
+        removeSectionBetweenSections(findSections);
     }
 
     public List<Station> getOrderedStations() {
@@ -57,7 +68,7 @@ public class Sections {
     }
 
     private void validateExistsUpStationAndDownStation(Section addSection) {
-        if (isEqualsUpStation(addSection) && isEqualsDownStation(addSection)) {
+        if (isExistsStation(addSection.getUpStation()) && isExistsStation(addSection.getDownStation())) {
             throw new BadRequestException("이미 등록된 구간입니다.");
         }
     }
@@ -75,7 +86,35 @@ public class Sections {
                     .filter(section -> section.isDistanceGreaterThan(addSection))
                     .findFirst()
                     .orElseThrow(() -> new BadRequestException("기존 역 사이 길이 보다 크거나 같으면 등록을 할 수 없습니다."))
-                    .changeDownStationToAddSectionUpStation(addSection);
+                    .changeUpStationToAddSectionDownStation(addSection);
+        }
+    }
+
+    private void validateRemove() {
+        if (sections.size() == REMOVE_SECTION_MIN_SIZE) {
+            throw new BadRequestException("구간을 제거할 수 없습니다.");
+        }
+    }
+
+    private List<Section> findSections(Station removeStation) {
+        return getOrderedSections().stream()
+                .filter(section -> section.isEqualsUpStation(removeStation)
+                        || section.isEqualsDownStation(removeStation))
+                .collect(Collectors.toList());
+    }
+
+    private void removeSectionNotBetweenSections(List<Section> findSections) {
+        if (findSections.size() == NOT_BETWEEN_SECTION) {
+            sections.remove(findSections.get(0));
+        }
+    }
+
+    private void removeSectionBetweenSections(List<Section> findSections) {
+        if (findSections.size() == BETWEEN_SECTION) {
+            Section upSection = findSections.get(0);
+            Section downSection = findSections.get(1);
+            upSection.changeDownStationToRemoveSectionDownStation(downSection);
+            sections.remove(downSection);
         }
     }
 
@@ -84,9 +123,9 @@ public class Sections {
                 .anyMatch(section -> section.isEqualsUpStation(addSection.getUpStation()));
     }
 
-    private boolean isEqualsDownStation(Section addSection) {
-        return sections.stream()
-                .anyMatch(section -> section.isEqualsDownStation(addSection.getDownStation()));
+    private boolean isExistsStation(Station addStation) {
+        return makeStations().stream()
+                .anyMatch(station -> station.equals(addStation));
     }
 
     private boolean isNotExistsStation(Station addStation) {

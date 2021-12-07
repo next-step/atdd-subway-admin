@@ -209,4 +209,92 @@ class SectionsTest {
         Assertions.assertThat(actual.get(0)).isEqualTo(Section.of(신분당선, 강남역, 양재역, 10));
         Assertions.assertThat(actual.get(1)).isEqualTo(Section.of(신분당선, 양재역, 양재시민의숲, 10));
     }
+
+    @Test
+    @DisplayName("등록되어있던_구간의_중간역을_제거_한다. 강남역 - (10m) - 양재역 - (10m) - 양재시민의숲 => 강남역 - (20m) -양재시민의숲")
+    void 등록되어있던_구간의_중간역을_제거_한다() {
+        // given
+        Station 강남역 = Station.from("강남역");
+        Station 양재역 = Station.from("양재역");
+        Station 양재시민의숲 = Station.from("양재시민의숲");
+
+        Line 신분당선 = Line.of("신분당선", "red");
+
+        Sections sections = 신분당선.getSections();
+        sections.add(Section.of(신분당선, 강남역, 양재역, 10));
+        sections.add(Section.of(신분당선, 양재역, 양재시민의숲, 10));
+
+        // when
+        sections.remove(양재역);
+        List<Section> actual = sections.getOrderedSections();
+
+        // then
+        Assertions.assertThat(actual).hasSize(1);
+        Assertions.assertThat(actual.get(0)).isEqualTo(Section.of(신분당선, 강남역, 양재시민의숲, 20));
+    }
+
+    @Test
+    @DisplayName("등록되어있던_구간의_상행_종점역을_제거_한다. 강남역 - (10m) - 양재역 - (10m) - 양재시민의숲 => 양재역 - (10m) - 양재시민의숲")
+    void 등록되어있던_구간의_상행_종점역을_제거_한다() {
+        // given
+        Station 강남역 = Station.from("강남역");
+        Station 양재역 = Station.from("양재역");
+        Station 양재시민의숲 = Station.from("양재시민의숲");
+
+        Line 신분당선 = Line.of("신분당선", "red");
+
+        Sections sections = 신분당선.getSections();
+        sections.add(Section.of(신분당선, 강남역, 양재역, 10));
+        sections.add(Section.of(신분당선, 양재역, 양재시민의숲, 10));
+
+        // when
+        sections.remove(강남역);
+        List<Section> actual = sections.getOrderedSections();
+
+        // then
+        Assertions.assertThat(actual).hasSize(1);
+        Assertions.assertThat(actual.get(0)).isEqualTo(Section.of(신분당선, 양재역, 양재시민의숲, 10));
+    }
+
+    @Test
+    @DisplayName("등록되어있던_구간의_하행_종점역을_제거_한다. 강남역 - (10m) - 양재역 - (10m) - 양재시민의숲 => 강남역 - (10m) - 양재역")
+    void 등록되어있던_구간의_하행_종점역을_제거_한다() {
+        // given
+        Station 강남역 = Station.from("강남역");
+        Station 양재역 = Station.from("양재역");
+        Station 양재시민의숲 = Station.from("양재시민의숲");
+
+        Line 신분당선 = Line.of("신분당선", "red");
+
+        Sections sections = 신분당선.getSections();
+        sections.add(Section.of(신분당선, 강남역, 양재역, 10));
+        sections.add(Section.of(신분당선, 양재역, 양재시민의숲, 10));
+
+        // when
+        sections.remove(양재시민의숲);
+        List<Section> actual = sections.getOrderedSections();
+
+        // then
+        Assertions.assertThat(actual).hasSize(1);
+        Assertions.assertThat(actual.get(0)).isEqualTo(Section.of(신분당선, 강남역, 양재역, 10));
+    }
+
+    @Test
+    void 등록되어있는_구간이_하나일때는_구간을_제거할_수_없다() {
+        // given
+        Station 강남역 = Station.from("강남역");
+        Station 양재역 = Station.from("양재역");
+
+        Line 신분당선 = Line.of("신분당선", "red");
+
+        Sections sections = 신분당선.getSections();
+        sections.add(Section.of(신분당선, 강남역, 양재역, 10));
+
+        // when
+        ThrowableAssert.ThrowingCallable throwingCallable = () -> sections.remove(강남역);
+
+        // then
+        Assertions.assertThatExceptionOfType(BadRequestException.class)
+                .isThrownBy(throwingCallable);
+    }
 }

@@ -73,9 +73,14 @@ public class Section {
         return this.downStation.equals(station);
     }
 
-    public void changeDownStationToAddSectionUpStation(Section addSection) {
+    public void changeUpStationToAddSectionDownStation(Section addSection) {
         this.upStation = addSection.getDownStation();
         this.distance.minus(addSection.distance);
+    }
+
+    public void changeDownStationToRemoveSectionDownStation(Section removeSection) {
+        this.downStation = removeSection.getDownStation();
+        this.distance.plus(removeSection.distance);
     }
 
     private static void validateDuplicate(Station upStation, Station downStation) {
@@ -111,4 +116,5 @@ public class Section {
     public int hashCode() {
         return Objects.hash(getId(), getUpStation(), getDownStation(), getLine(), distance);
     }
+
 }
