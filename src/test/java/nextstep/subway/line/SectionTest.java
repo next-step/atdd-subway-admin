@@ -85,4 +85,22 @@ public class SectionTest {
 			.isInstanceOf(AppException.class);
 	}
 
+	@Test
+	@DisplayName("중간 역을 삭제하여 새 구간을 생성한다")
+	void removeStationBetweenTest() {
+		// given
+		Section frontSection = Section.of(1L, StationTest.노포역, StationTest.서면역, 10);
+		Section backwardSection = Section.of(2L, StationTest.서면역, StationTest.범내골역, 10);
+
+		// when
+		Section section = frontSection.removeStationBetween(backwardSection);
+
+		// then
+		assertAll(
+			() -> assertThat(section.getDistance()).isEqualTo(Distance.of(20)),
+			() -> assertThat(section.getUpStation()).isEqualTo(StationTest.노포역),
+			() -> assertThat(section.getDownStation()).isEqualTo(StationTest.범내골역)
+		);
+	}
+
 }

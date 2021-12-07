@@ -39,11 +39,11 @@ public class Section {
 	protected Section() {
 	}
 
-	private Section(Long id, Station upStation, Station downStation, int distance) {
+	private Section(Long id, Station upStation, Station downStation, Distance distance) {
 		this.id = id;
 		this.upStation = upStation;
 		this.downStation = downStation;
-		this.distance = Distance.of(distance);
+		this.distance = distance;
 	}
 
 	private Section(Long id) {
@@ -51,10 +51,16 @@ public class Section {
 	}
 
 	public static Section of(Long id, Station upStation, Station downStation, int distance) {
-		return new Section(id, upStation, downStation, distance);
+		return new Section(id, upStation, downStation, Distance.of(distance));
 	}
 
 	public static Section of(Long id, Station upStation, Station downStation, int distance, Line line) {
+		Section section = new Section(id, upStation, downStation, Distance.of(distance));
+		section.line = line;
+		return section;
+	}
+
+	public static Section of(Long id, Station upStation, Station downStation, Distance distance, Line line) {
 		Section section = new Section(id, upStation, downStation, distance);
 		section.line = line;
 		return section;
@@ -74,6 +80,12 @@ public class Section {
 	public void separateSection(Section frontSection) {
 		this.upStation = frontSection.downStation;
 		this.distance = this.distance.minus(frontSection.distance);
+	}
+
+	public Section removeStationBetween(Section other) {
+		Distance sum = this.distance.plus(other.distance);
+		return Section.of(null, upStation, other.downStation,
+			sum, this.line);
 	}
 
 	void setLine(Line line) {
