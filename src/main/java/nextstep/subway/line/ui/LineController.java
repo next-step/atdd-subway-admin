@@ -4,8 +4,12 @@ import java.net.URI;
 import java.util.List;
 import java.util.NoSuchElementException;
 import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.application.SectionService;
+import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +28,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class LineController {
 
     private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(final LineService lineService) {
+    public LineController(final LineService lineService, final SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping
@@ -57,6 +63,15 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity addSection(
+        @PathVariable Long lineId,
+        @RequestBody SectionRequest sectionRequest) {
+        Line line = lineService.fineById(lineId);
+        SectionResponse section = sectionService.createSection(sectionRequest, line);
+        return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections/" + section.getId())).body(section);
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
@@ -64,6 +79,11 @@ public class LineController {
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity handleNoSuchElementException(NoSuchElementException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity handleIllegalArgumentException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().build();
     }
 }

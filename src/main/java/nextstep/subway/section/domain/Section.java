@@ -1,4 +1,4 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.section.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,10 +9,19 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
-public class Section {
+@Entity
+public class Section extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @ManyToOne
     private Station upStation;
+    @ManyToOne
     private Station downStation;
     private int distance;
+    @ManyToOne
+    private Line line;
 
     public Section() {
     }
@@ -21,6 +30,10 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Station getUpStation() {
@@ -33,5 +46,25 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
     }
 }
