@@ -16,12 +16,12 @@ public class Section {
 	@JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
 	private Line line;
 
-	@OneToOne
-	@JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_up_station_to_section"))
+	@ManyToOne
+	@JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_to_up_station"))
 	private Station upStation;
 
-	@OneToOne
-	@JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_down_station_to_section"))
+	@ManyToOne
+	@JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_to_down_station"))
 	private Station downStation;
 
 	@Column

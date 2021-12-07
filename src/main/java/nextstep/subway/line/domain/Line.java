@@ -2,12 +2,10 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.common.domain.Name;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.LinkedList;
-import java.util.List;
 
 @Entity
 @Table(name = "line")
@@ -23,9 +21,8 @@ public class Line extends BaseEntity {
     @Column
     private String color;
 
-    // TODO 일급컬렉션
-    @OneToMany(mappedBy = "line")
-    private List<Station> stations = new LinkedList<Station>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -38,8 +35,7 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = new Name(name);
         this.color = color;
-        this.stations.add(upStation);
-        this.stations.add(downStation);
+        this.sections.addSection(this, upStation, downStation, distance);
     }
 
     public void update(Line line) {
@@ -47,9 +43,9 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-    public void addSection(Station upStation, Station downStation, int distance) {
-        stations.add(upStation);
-        stations.add(downStation);
+    public Line addSection(Station upStation, Station downStation, int distance) {
+        this.sections.addSection(this, upStation, downStation, distance);
+        return this;
     }
 
     public Long getId() {
@@ -64,7 +60,17 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getSections() {
-        return this.stations;
+    public Sections getSections() {
+        return this.sections;
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "id=" + id +
+                ", name=" + name +
+                ", color='" + color + '\'' +
+                ", sections=" + sections +
+                '}';
     }
 }

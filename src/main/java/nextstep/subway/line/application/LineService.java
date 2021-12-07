@@ -41,6 +41,7 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
+        Line line = lineRepository.findById(id).get();
         return LineResponse.of(lineRepository.findById(id)
                                         .orElseThrow(() -> new IllegalArgumentException(MessageConstants.NO_SUCH_LINE + id)));
     }

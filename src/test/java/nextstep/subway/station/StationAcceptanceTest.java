@@ -26,8 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 // @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)  --> 메소드 실행 전 새로운 context를 실행. 단, 실행시간에 대한 단점 존재
 public class StationAcceptanceTest extends AcceptanceTest {
 
-
-
     private Map<String, String> params = new HashMap<>();
 
     @BeforeEach

@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -32,7 +33,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철 역 생성 요청
         Long stationId1 = 지하철_역_아이디_가져오기(지하철_역_생성요청("사당역"));
         Long stationId2 = 지하철_역_아이디_가져오기(지하철_역_생성요청("신도림"));
-        int distance = 0;
+        int distance = 10;
 
         // 지하철_노선_생성_요청
         LineRequest defaultLine = 지하철_노선요청_객체_가져오기("2호선", "bg-green-600", stationId1, stationId2, distance);
@@ -51,7 +52,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철 역 생성 요청
         Long stationId1 = 지하철_역_아이디_가져오기(지하철_역_생성요청("사당역"));
         Long stationId2 = 지하철_역_아이디_가져오기(지하철_역_생성요청("신도림"));
-        int distance = 0;
+        int distance = 10;
 
         // 지하철_노선_등록되어_있음
         LineRequest defaultLine = 지하철_노선요청_객체_가져오기("2호선", "bg-green-600", stationId1, stationId2, distance);
@@ -64,7 +65,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_생성_실패됨
         // INTERNAL_SERVER_ERROR : 500
-        System.out.println("status : " + response.statusCode());
         응답_코드_검증(response, HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
@@ -77,14 +77,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long stationId2 = 지하철_역_아이디_가져오기(지하철_역_생성요청("신도림"));
         Long stationId3 = 지하철_역_아이디_가져오기(지하철_역_생성요청("강남역"));
         Long stationId4 = 지하철_역_아이디_가져오기(지하철_역_생성요청("판교역"));
-        int distance = 0;
+        int distance = 10;
 
         // 지하철_노선_등록되어_있음 : 2호선
         LineRequest defaultLine = 지하철_노선요청_객체_가져오기("2호선", "bg-green-600", stationId1, stationId2, distance);
         ExtractableResponse<Response> createLineResponse1 = 지하철_노선_생성요청(defaultLine);
 
         // 지하철_노선_등록되어_있음 : 신분당선
-        ExtractableResponse<Response> createLineResponse2 = 지하철_노선_생성요청(지하철_노선요청_객체_가져오기("신분당선", "bg-red-600", stationId3, stationId4, distance));
+        LineRequest newLine = 지하철_노선요청_객체_가져오기("신분당선", "bg-red-600", stationId3, stationId4, distance);
+        ExtractableResponse<Response> createLineResponse2 = 지하철_노선_생성요청(newLine);
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -110,7 +111,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철 역 생성 요청
         Long stationId1 = 지하철_역_아이디_가져오기(지하철_역_생성요청("사당역"));
         Long stationId2 = 지하철_역_아이디_가져오기(지하철_역_생성요청("신도림"));
-        int distance = 0;
+        int distance = 10;
 
         // 지하철_노선_등록되어_있음
         LineRequest defaultLine = 지하철_노선요청_객체_가져오기("2호선", "bg-green-600", stationId1, stationId2, distance);
@@ -135,7 +136,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철 역 생성 요청
         Long stationId1 = 지하철_역_아이디_가져오기(지하철_역_생성요청("사당역"));
         Long stationId2 = 지하철_역_아이디_가져오기(지하철_역_생성요청("신도림"));
-        int distance = 0;
+        int distance = 10;
 
         // 지하철_노선_등록되어_있음
         LineRequest defaultLine = 지하철_노선요청_객체_가져오기("2호선", "bg-green-600", stationId1, stationId2, distance);
@@ -170,7 +171,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철 역 생성 요청
         Long stationId1 = 지하철_역_아이디_가져오기(지하철_역_생성요청("사당역"));
         Long stationId2 = 지하철_역_아이디_가져오기(지하철_역_생성요청("신도림"));
-        int distance = 0;
+        int distance = 10;
 
         // 지하철_노선_등록되어_있음
         LineRequest defaultLine = 지하철_노선요청_객체_가져오기("2호선", "bg-green-600", stationId1, stationId2, distance);
@@ -296,8 +297,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     /* API 검증 */
     private void 응답_코드_검증(ExtractableResponse<Response> response, int statusCode) {
-        System.out.println("http status : " + response.statusCode());
-        System.out.println("int statuscode : " + statusCode);
         assertThat(response.statusCode()).isEqualTo(statusCode);
     }
 

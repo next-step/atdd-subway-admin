@@ -52,6 +52,6 @@ public class LineRequest {
     }
 
     public Line toLine(Station upStation, Station downStation) {
-        return new Line(this.name.printName(), this.color, upStation, downStation, this.distance);
+        return new Line(this.name.printName(), this.color, upStation, downStation, distance);
     }
 }
