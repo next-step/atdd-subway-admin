@@ -140,39 +140,20 @@ public class Sections {
 
 	public void removeStation(Station removeStation) {
 		validateRemoveStation(removeStation);
-		removeMiddleStation(removeStation);
-		removeFirstStation(removeStation);
-		removeLastStation(removeStation);
-	}
-
-	private void removeFirstStation(Station removeStation) {
 		Optional<Section> frontSectionOpt = findByDownStation(removeStation);
 		Optional<Section> backwardSectionOpt = findByUpStation(removeStation);
-		if (!frontSectionOpt.isPresent() || backwardSectionOpt.isPresent()) {
+		if (frontSectionOpt.isPresent() && backwardSectionOpt.isPresent()) {
+			removeMiddleStation(frontSectionOpt.get(), backwardSectionOpt.get());
 			return;
 		}
-		removeSection(frontSectionOpt.orElseThrow(() ->
-			new AppException(ErrorCode.INTERNAL_SERVER_ERROR, "")));
+		if (frontSectionOpt.isPresent()) {
+			removeSection(frontSectionOpt.get());
+			return;
+		}
+		backwardSectionOpt.ifPresent(this::removeSection);
 	}
 
-	private void removeLastStation(Station removeStation) {
-		Optional<Section> frontSectionOpt = findByDownStation(removeStation);
-		Optional<Section> backwardSectionOpt = findByUpStation(removeStation);
-		if (!backwardSectionOpt.isPresent() || frontSectionOpt.isPresent()) {
-			return;
-		}
-		removeSection(backwardSectionOpt.orElseThrow(() ->
-			new AppException(ErrorCode.INTERNAL_SERVER_ERROR, "")));
-	}
-
-	private void removeMiddleStation(Station removeStation) {
-		if (!existsUpAndDownStation(removeStation)) {
-			return;
-		}
-		Section frontSection = findByDownStation(removeStation)
-			.orElseThrow(() -> new AppException(ErrorCode.INTERNAL_SERVER_ERROR, ""));
-		Section backwardSection = findByUpStation(removeStation)
-			.orElseThrow(() -> new AppException(ErrorCode.INTERNAL_SERVER_ERROR, ""));
+	private void removeMiddleStation(Section frontSection, Section backwardSection) {
 		Section section = frontSection.removeStationBetween(backwardSection);
 		removeSections(frontSection, backwardSection);
 		add(section);
@@ -181,12 +162,6 @@ public class Sections {
 	private void removeSections(Section... removeSections) {
 		Arrays.stream(removeSections)
 			.forEach(s -> this.sections.remove(s));
-	}
-
-	private boolean existsUpAndDownStation(Station station) {
-		Optional<Section> frontSectionOpt = findByDownStation(station);
-		Optional<Section> backwardSectionOpt = findByUpStation(station);
-		return frontSectionOpt.isPresent() && backwardSectionOpt.isPresent();
 	}
 
 	private void validateRemoveStation(Station removeStation) {
