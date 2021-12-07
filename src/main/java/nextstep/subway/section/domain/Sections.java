@@ -43,10 +43,7 @@ public class Sections {
     }
 
     public void updateSection(final Station upStation, final Station downStation, final Distance distance) {
-        this.sections
-                .stream()
-                .filter(section -> section.getUpStation().equals(upStation) && section.getDownStation().equals(downStation))
-                .forEach(section -> section.update(upStation, downStation, distance));
+        this.sections.forEach(section -> section.update(upStation, downStation, distance));
     }
 
     public List<Section> getSections() {
