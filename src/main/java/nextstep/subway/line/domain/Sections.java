@@ -18,10 +18,6 @@ public class Sections {
     protected Sections() {
     }
 
-    public void add(Section section) {
-        this.sections.add(section);
-    }
-
     List<Station> getStationsInOrder() {
         List<Station> stations = new ArrayList<>();
 
@@ -37,7 +33,7 @@ public class Sections {
     }
 
     private Station findFirstStation() {
-        if(sections.isEmpty()) {
+        if (sections.isEmpty()) {
             throw new NotFoundException("지하철 구간이 등록되지 않았습니다.");
         }
 
@@ -74,6 +70,11 @@ public class Sections {
     }
 
     void addSection(Section section) {
+        if (this.sections.isEmpty()) {
+            this.sections.add(section);
+            return;
+        }
+
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
         int distance = section.getDistance();

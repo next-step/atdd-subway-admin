@@ -55,7 +55,7 @@ public class Section {
     public void updateUpStation(Station downStation, int newDistance) {
         this.distance.validateLargerThan(newDistance);
         this.upStation = downStation;
-        this.distance.minus(newDistance);
+        this.distance = this.distance.minus(newDistance);
 
     }
 
