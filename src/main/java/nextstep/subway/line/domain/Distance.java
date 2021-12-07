@@ -8,6 +8,7 @@ import nextstep.subway.exception.ErrorCode;
 @Embeddable
 public class Distance {
 
+	public static final int MINIMUM = 1;
 	private int distance;
 
 	protected Distance() {
@@ -23,7 +24,7 @@ public class Distance {
 	}
 
 	private static void validate(int distance) {
-		if (distance <= 0) {
+		if (distance < MINIMUM) {
 			throw new AppException(ErrorCode.WRONG_INPUT, "Distance 는 0보다 커야합니다");
 		}
 	}
