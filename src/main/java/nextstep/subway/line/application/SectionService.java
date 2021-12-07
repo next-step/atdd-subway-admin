@@ -1,6 +1,5 @@
 package nextstep.subway.line.application;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -8,8 +7,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,14 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class SectionService {
 
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
+    private final StationService stationService;
 
     public SectionService(
         final LineRepository lineRepository,
-        final StationRepository stationRepository
+        final StationService stationService
     ) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
     @Transactional
@@ -37,26 +36,16 @@ public class SectionService {
 
     @Transactional
     public Section createSection(final SectionRequest request) {
-        final List<Station> stations = getStations(
+        final List<Station> stations = stationService.getStationsByIdIn(
             request.getUpStationId(),
             request.getDownStationId()
         );
-        final Station upStation = getStationById(stations, request.getUpStationId());
-        final Station downStation = getStationById(stations, request.getDownStationId());
+        final Station upStation = pickStationById(stations, request.getUpStationId());
+        final Station downStation = pickStationById(stations, request.getDownStationId());
         return new Section(upStation, downStation, request.getDistance());
     }
 
-    private List<Station> getStations(final Long upStationId, final Long downStationId) {
-        final List<Station> stations = stationRepository.findAllById(
-            Arrays.asList(upStationId, downStationId)
-        );
-        if (stations.size() != 2) {
-            throw new NoSuchElementException();
-        }
-        return stations;
-    }
-
-    private Station getStationById(final List<Station> stations, final Long id) {
+    private Station pickStationById(final List<Station> stations, final Long id) {
         return stations.stream()
             .filter(s -> Objects.equals(s.getId(), id))
             .findFirst()
@@ -67,8 +56,7 @@ public class SectionService {
     public void removeSectionByStationId(final Long lineId, final Long stationId) {
         final Line line = lineRepository.findById(lineId)
             .orElseThrow(NoSuchElementException::new);
-        final Station station = stationRepository.findById(stationId)
-            .orElseThrow(NoSuchElementException::new);
+        final Station station = stationService.getStationById(stationId);
         line.deleteSection(station);
     }
 }
