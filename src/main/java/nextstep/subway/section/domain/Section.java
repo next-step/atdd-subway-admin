@@ -40,11 +40,9 @@ public class Section extends BaseEntity {
     }
 
     public void update(final Station upStation, final Station downStation, final Distance distance) {
-        if (this.getUpStation().equals(upStation) && this.getDownStation().equals(downStation)) {
-            this.upStation = upStation;
-            this.downStation = downStation;
-            this.distance = distance;
-        }
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
     }
 
     public Long getId() {
