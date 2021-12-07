@@ -27,33 +27,33 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private StationAcceptanceTest stationAcceptanceTest = new StationAcceptanceTest();
     private LineAcceptanceTest lineAcceptanceTest = new LineAcceptanceTest();
 
-    private Long gangnamStationId;
-    private Long yeoksamStationId;
-    private Long shinbundangLineId;
+    private Long 강남역Id;
+    private Long 역삼역Id;
+    private Long 신분당선Id;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
 
         // given
-        StationResponse gangnamStationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
-        StationResponse yeoksamStationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("역삼역"));
-        gangnamStationId = gangnamStationResponse.getId();
-        yeoksamStationId = yeoksamStationResponse.getId();
-        LineRequest shinbundangLineRequest = new LineRequest("신분당선", "bg-red-600", gangnamStationId, yeoksamStationId, 10);
-        LineResponse shinbundangLineResponse = lineAcceptanceTest.지하철_노선_등록되어_있음(shinbundangLineRequest);
-        shinbundangLineId = shinbundangLineResponse.getId();
+        StationResponse 강남역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
+        StationResponse 역삼역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("역삼역"));
+        강남역Id = 강남역.getId();
+        역삼역Id = 역삼역.getId();
+        LineRequest 신분당선_요청 = new LineRequest("신분당선", "bg-red-600", 강남역Id, 역삼역Id, 10);
+        LineResponse 신분당선 = lineAcceptanceTest.지하철_노선_등록되어_있음(신분당선_요청);
+        신분당선Id = 신분당선.getId();
     }
 
     @DisplayName("역 사이에 새로운 역을 등록할 경우")
     @Test
     void 역_사이에_새로운_역을_등록() {
-        StationResponse seolleungStationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("선릉역"));
-        SectionRequest sectionRequest = new SectionRequest(gangnamStationId, seolleungStationResponse.getId(), 4);
+        StationResponse 선릉역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("선릉역"));
+        SectionRequest sectionRequest = new SectionRequest(강남역Id, 선릉역.getId(), 4);
 
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = 데이터_생성_요청(sectionRequest, String.format(uri, shinbundangLineId));
+        ExtractableResponse<Response> response = 데이터_생성_요청(sectionRequest, String.format(uri, 신분당선Id));
         SectionResponse sectionResponse = response.as(SectionResponse.class);
 
         // then
@@ -64,12 +64,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
     @Test
     void 새로운_역을_상행_종점으로_등록할_경우() {
-        StationResponse seolleungStationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("선릉역"));
-        SectionRequest sectionRequest = new SectionRequest(seolleungStationResponse.getId(), gangnamStationId, 4);
+        StationResponse 선릉역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("선릉역"));
+        SectionRequest sectionRequest = new SectionRequest(선릉역.getId(), 강남역Id, 4);
 
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = 데이터_생성_요청(sectionRequest, String.format(uri, shinbundangLineId));
+        ExtractableResponse<Response> response = 데이터_생성_요청(sectionRequest, String.format(uri, 신분당선Id));
         SectionResponse sectionResponse = response.as(SectionResponse.class);
 
         // then
@@ -80,12 +80,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
     @Test
     void 새로운_역을_하행_종점으로_등록할_경우() {
-        StationResponse seolleungStationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("선릉역"));
-        SectionRequest sectionRequest = new SectionRequest(seolleungStationResponse.getId(), yeoksamStationId, 4);
+        StationResponse 선릉역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("선릉역"));
+        SectionRequest sectionRequest = new SectionRequest(선릉역.getId(), 역삼역Id, 4);
 
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = 데이터_생성_요청(sectionRequest, String.format(uri, shinbundangLineId));
+        ExtractableResponse<Response> response = 데이터_생성_요청(sectionRequest, String.format(uri, 신분당선Id));
         SectionResponse sectionResponse = response.as(SectionResponse.class);
 
         // then
@@ -96,12 +96,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음.")
     @Test
     void 역_사이에_새로운_역을_등록_실패() {
-        StationResponse seolleungStationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("선릉역"));
-        SectionRequest sectionRequest = new SectionRequest(gangnamStationId, seolleungStationResponse.getId(), 10);
+        StationResponse 선릉역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("선릉역"));
+        SectionRequest sectionRequest = new SectionRequest(강남역Id, 선릉역.getId(), 10);
 
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = 데이터_생성_요청(sectionRequest, String.format(uri, shinbundangLineId));
+        ExtractableResponse<Response> response = 데이터_생성_요청(sectionRequest, String.format(uri, 신분당선Id));
 
         // then
         // 지하철_노선에_지하철역_등록_실패
@@ -114,11 +114,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음.")
     @Test
     void 역_사이에_동일_역을_등록_실패() {
-        SectionRequest sectionRequest = new SectionRequest(gangnamStationId, yeoksamStationId, 4);
+        SectionRequest sectionRequest = new SectionRequest(강남역Id, 역삼역Id, 4);
 
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = 데이터_생성_요청(sectionRequest, String.format(uri, shinbundangLineId));
+        ExtractableResponse<Response> response = 데이터_생성_요청(sectionRequest, String.format(uri, 신분당선Id));
 
         // then
         // 지하철_노선에_지하철역_등록_실패
