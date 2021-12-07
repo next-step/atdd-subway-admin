@@ -3,6 +3,7 @@ package nextstep.subway.section.domain;
 import nextstep.subway.common.ErrorCode;
 import nextstep.subway.exception.NotAcceptableApiException;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.Stations;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -10,11 +11,8 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Set;
 
 @Embeddable
 public class Sections {
@@ -43,22 +41,47 @@ public class Sections {
     }
 
     public Section getFirstSection() {
-        List<Station> upStations = new ArrayList<>();
-        List<Station> downStations = new ArrayList<>();
-        for (Section section : sections) {
-            upStations.add(section.getUpStation());
-            downStations.add(section.getDownStation());
-        }
+        Stations upStations = getUpStations();
+        Stations downStations = getDownStations();
+
         upStations.removeAll(downStations);
-        Station firstUpStation = upStations.get(0);
+        Station firstUpStation = upStations.getFirstStation();
         return getSectionByUpStation(firstUpStation);
     }
 
-    private Section getSectionByUpStation(Station upStation) {
+    public Section getLastSection() {
+        Stations upStations = getUpStations();
+        Stations downStations = getDownStations();
+
+        downStations.removeAll(upStations);
+        Station lastDownStation = downStations.getLastStation();
+        return getSectionByDownStation(lastDownStation);
+    }
+
+    private Stations getUpStations() {
+        Stations stations = new Stations();
+        sections.forEach(section -> stations.add(section.getUpStation()));
+        return stations;
+    }
+
+    private Stations getDownStations() {
+        Stations stations = new Stations();
+        sections.forEach(section -> stations.add(section.getDownStation()));
+        return stations;
+    }
+
+    private Section getSectionByUpStation(Station station) {
         return sections.stream()
-                .filter(section -> Objects.equals(section.getUpStation().getId(), upStation.getId()))
+                .filter(station::isUpStation)
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException(String.format("%s (stationId: %s)", NOT_EXIST_STATION, upStation.getId())));
+                .orElseThrow(() -> new NoSuchElementException(String.format("%s (stationId: %s)", NOT_EXIST_STATION, station.getId())));
+    }
+
+    private Section getSectionByDownStation(Station station) {
+        return sections.stream()
+                .filter(station::isDownStation)
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException(String.format("%s (stationId: %s)", NOT_EXIST_STATION, station.getId())));
     }
 
     private boolean isInsertBetweenSection(Section section) {
@@ -119,13 +142,13 @@ public class Sections {
                 .noneMatch(station -> getStations().contains(station));
     }
 
-    private List<Station> getStations() {
-        Set<Station> stations = new HashSet<>();
+    private Stations getStations() {
+        Stations stations = new Stations();
         sections.forEach(section -> {
             stations.add(section.getUpStation());
             stations.add(section.getDownStation());
         });
-        return new ArrayList<>(stations);
+        return stations;
     }
 
     private boolean hasMatchWithUpStation(Station station) {
@@ -133,11 +156,15 @@ public class Sections {
                 .anyMatch(section -> section.isEqualUpStation(station));
     }
 
-    private Section getOldSectionByUpStation(Station station) {
+    public Section getOldSectionByUpStation(Station station) {
         return sections.stream()
                 .filter(section -> section.isEqualUpStation(station))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException(String.format("상행역이 일치하는 기존 구간이 없습니다. (upStationId: %d)", station.getId())));
+    }
+
+    public boolean removeSection(Section section) {
+        return sections.remove(section);
     }
 
     private boolean hasMatchWithDownStation(Station station) {
@@ -145,7 +172,7 @@ public class Sections {
                 .anyMatch(section -> section.isEqualDownStation(station));
     }
 
-    private Section getOldSectionByDownStation(Station station) {
+    public Section getOldSectionByDownStation(Station station) {
         return sections.stream()
                 .filter(section -> section.isEqualDownStation(station))
                 .findFirst()

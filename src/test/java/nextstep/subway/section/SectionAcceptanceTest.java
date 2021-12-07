@@ -23,7 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 import static nextstep.subway.line.LineAcceptanceTest.*;
 import static nextstep.subway.station.StationAcceptanceTest.지하철_역_생성_요청;
@@ -206,18 +206,23 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_구간_생성됨(long upStationId, long downStationId) {
-        Optional<Section> optionalSection = 지하철_구간_조회(upStationId, downStationId);
-        assertThat(optionalSection.get()).isNotNull();
+        Section section = 지하철_구간_조회(upStationId, downStationId);
+        Assertions.assertAll(
+                () -> assertThat(section.getUpStation().getId()).isEqualTo(upStationId)
+                , () -> assertThat(section.getDownStation().getId()).isEqualTo(downStationId)
+        );
     }
 
-    private Optional<Section> 지하철_구간_조회(long upStationId, long downStationId) {
+    private Section 지하철_구간_조회(long upStationId, long downStationId) {
         Station upStation = stationService.findStation(upStationId);
         Station downStation = stationService.findStation(downStationId);
 
-        return sectionRepository.findByUpStationAndDownStation(upStation, downStation);
+        return sectionRepository.findByUpStationAndDownStation(upStation, downStation)
+                .orElseThrow(() -> new NoSuchElementException(
+                        String.format("존재하지 않는 구간입니다. (upStationId: %d, downStationId: %d)", upStation.getId(), downStation.getId())));
     }
 
-    private ExtractableResponse<Response> 지하철_구간_추가_요청(long lineId, long upStationId, long downStationId, int distance) {
+    public static ExtractableResponse<Response> 지하철_구간_추가_요청(long lineId, long upStationId, long downStationId, int distance) {
         SectionRequest params = new SectionRequest(upStationId, downStationId, distance);
 
         return RestAssured.given().log().all()

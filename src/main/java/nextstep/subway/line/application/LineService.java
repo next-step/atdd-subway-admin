@@ -65,6 +65,12 @@ public class LineService {
         return line.addSection(upStation, downStation, sectionRequest.getDistance());
     }
 
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = findById(lineId);
+        Station station = stationService.findStation(stationId);
+        line.deleteStation(station);
+    }
+
     private Line findById(Long lineId) {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new NotFoundApiException(ErrorCode.NOT_FOUND_LINE_ID));

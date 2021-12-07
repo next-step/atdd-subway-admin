@@ -1,14 +1,13 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.Stations;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class LineResponse {
 
@@ -22,15 +21,13 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<Station> stations) {
+    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, Stations stations) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-        this.stations.addAll(stations.stream()
-                .map(StationResponse::of)
-                .collect(Collectors.toList()));
+        this.stations = stations.toResponse();
     }
 
     public static LineResponse of(Line line) {

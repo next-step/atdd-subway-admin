@@ -1,6 +1,7 @@
 package nextstep.subway.station.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,6 +33,20 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isUpStation(Section section) {
+        Station upStation = section.getUpStation();
+        return isEqual(upStation);
+    }
+
+    public boolean isDownStation(Section section) {
+        Station downStation = section.getDownStation();
+        return isEqual(downStation);
+    }
+
+    public boolean isEqual(Station station) {
+        return this.equals(station);
     }
 
     @Override
