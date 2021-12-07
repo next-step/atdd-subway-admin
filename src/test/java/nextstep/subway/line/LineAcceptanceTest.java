@@ -19,190 +19,162 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        ExtractableResponse<Response> response = When.지하철_노선_생성_요청("신분당선", "bg-red-600");
 
-        // when
-        // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
-        // then
-        // 지하철_노선_생성됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.jsonPath().get("name").toString()).isEqualTo("신분당선");
+        Then.지하철_노선_생성됨(response);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
-        // given
-        // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        Given.지하철_노선_등록되어_있음("신분당선", "bg-red-600");
 
-        // when
-        // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = When.지하철_노선_생성_요청("신분당선", "bg-red-600");
 
-        // then
-        // 지하철_노선_생성_실패됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        Then.지하철_노선_생성_실패됨(response);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
-        // given
-        // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-        // 지하철_노선_등록되어_있음
-        Map<String, String> params2 = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "bg-green-600");
-        RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params2)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        Given.지하철_노선_등록되어_있음("신분당선", "bg-red-600");
+        Given.지하철_노선_등록되어_있음("2호선", "bg-green-600");
 
-        // when
-        // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = When.지하철_노선_목록_조회_요청();
 
-        // then
-        // 지하철_노선_목록_응답됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        // 지하철_노선_목록_포함됨
-        assertThat(response.jsonPath().getList(".")).hasSize(2);
+        Then.지하철_노선_목록_응답됨(response);
+        Then.지하철_노선_목록_포함됨(response);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
-        // given
-        // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        Given.지하철_노선_등록되어_있음("신분당선", "bg-red-600");
 
-        // when
-        // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines/1")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = When.지하철_노선_조회_요청(1L);
 
-        // then
-        // 지하철_노선_응답됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().get("name").toString()).isEqualTo("신분당선");
+        Then.지하철_노선_응답됨(response);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
-        // given
-        // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-        Map<String, String> params2 = new HashMap<>();
-        params.put("name", "구분당선");
-        params.put("color", "bg-blue-600");
+        Given.지하철_노선_등록되어_있음("신분당선", "bg-red-600");
 
-        // when
-        // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params2)
-                .when()
-                .put("/lines/1")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = When.지하철_노선_수정_요청("구분당선", "bg-blue-600");
 
-        // then
-        // 지하철_노선_수정됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        Then.지하철_노선_수정됨(response);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
-        // given
-        // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        Given.지하철_노선_등록되어_있음("신분당선", "bg-red-600");
 
-        // when
-        // 지하철_노선_제거_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete("/lines/1")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = When.지하철_노선_제거_요청(1L);
 
-        // then
-        // 지하철_노선_삭제됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        Then.지하철_노선_삭제됨(response);
+    }
+
+    static class Given {
+        static void 지하철_노선_등록되어_있음(String name, String color) {
+            Map<String, String> params = new HashMap<>();
+            params.put("name", name);
+            params.put("color", color);
+
+            RestAssured.given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(params)
+                    .when()
+                    .post("/lines");
+        }
+    }
+
+    static class When {
+        static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
+            Map<String, String> params = new HashMap<>();
+            params.put("name", name);
+            params.put("color", color);
+
+            return RestAssured.given().log().all()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(params)
+                    .when()
+                    .post("/lines")
+                    .then().log().all()
+                    .extract();
+        }
+
+        static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
+            return RestAssured.given().log().all()
+                    .when()
+                    .get("/lines")
+                    .then().log().all()
+                    .extract();
+        }
+
+        static ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
+            return RestAssured.given().log().all()
+                    .when()
+                    .get("/lines/" + id)
+                    .then().log().all()
+                    .extract();
+        }
+
+        static ExtractableResponse<Response> 지하철_노선_수정_요청(String name, String color) {
+            Map<String, String> params = new HashMap<>();
+            params.put("name", name);
+            params.put("color", color);
+
+            return RestAssured.given().log().all()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(params)
+                    .when()
+                    .put("/lines/1")
+                    .then().log().all()
+                    .extract();
+        }
+
+        static ExtractableResponse<Response> 지하철_노선_제거_요청(Long id) {
+            return RestAssured.given().log().all()
+                    .when()
+                    .delete("/lines/" + id)
+                    .then().log().all()
+                    .extract();
+        }
+    }
+
+    static class Then {
+        static void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        }
+
+        static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
+
+        static void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
+            ok(response);
+        }
+
+        static void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response) {
+            assertThat(response.jsonPath().getList(".")).hasSize(2);
+        }
+
+        static void 지하철_노선_응답됨(ExtractableResponse<Response> response) {
+            ok(response);
+        }
+
+        static void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
+            ok(response);
+        }
+
+        static void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        }
+
+        private static void ok(ExtractableResponse<Response> response) {
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        }
     }
 }
