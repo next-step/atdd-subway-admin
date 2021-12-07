@@ -122,4 +122,19 @@ public class Sections {
     public List<Section> getSections() {
         return this.sections;
     }
+
+    void removeLineSection(Station station) {
+        Section sectionIncludeUpStation = sections.stream()
+                .filter(section -> section.equalUpStation(station))
+                .findFirst()
+                .orElse(null);
+
+        Section sectionIncludeDownStation = sections.stream()
+                .filter(section -> section.equalDownStation(station))
+                .findFirst()
+                .orElse(null);
+
+        sections.remove(sectionIncludeUpStation);
+        sections.remove(sectionIncludeDownStation);
+    }
 }

@@ -1,6 +1,5 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.Exception.CannotUpdateSectionException;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
@@ -60,5 +59,9 @@ public class Line extends BaseEntity {
 
     public List<Section> getSections() {
         return sections.getSections();
+    }
+
+    public void removeLineSection(Station station) {
+        sections.removeLineSection(station);
     }
 }

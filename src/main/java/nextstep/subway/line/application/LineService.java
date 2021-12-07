@@ -63,4 +63,10 @@ public class LineService {
         Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
         line.addLineSection(upStation, downStation, sectionRequest.getDistance());
     }
+
+    public void removeLineSection(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundException("요청 노선이 존재하지 않음 : " + lineId));
+        Station station = stationService.findStationById(stationId);
+        line.removeLineSection(station);
+    }
 }

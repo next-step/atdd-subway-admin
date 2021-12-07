@@ -15,7 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.line.LineAcceptanceTest.*;
@@ -113,6 +115,26 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록_안됨(response);
     }
 
+    @DisplayName("종점이 제거될 경우 다음으로 오던 역이 종점이 됨")
+    @Test
+    void removeLineSection() {
+        //given
+        지하철_노선에_지하철_구간_등록_요청(신분당선, 신사역, 강남역, 4);
+
+        //when
+        ExtractableResponse<Response> response1 = 지하철_구간_삭제_요청(신분당선, 신사역);
+
+        // then
+        지하철_구간_삭제_성공(response1);
+
+        //when
+        ExtractableResponse<Response> response2 = 지하철_노선_조회_요청(신분당선);
+
+        // then
+        지하철_노선에_지하철역_등록됨(response2);
+        지하철_노선에_지하철역_순서_정렬됨(response2, Arrays.asList(강남역, 광교역));
+    }
+
     private ExtractableResponse<Response> 지하철_노선에_지하철_구간_등록_요청(LineResponse lineResponse, StationResponse upStation, StationResponse downStation, int distance) {
         SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(), distance);
         return RestAssured
@@ -141,5 +163,17 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
         assertThat(result).isEqualTo(expectedStationsId);
+    }
+
+    private ExtractableResponse<Response> 지하철_구간_삭제_요청(LineResponse line, StationResponse station) {
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when().delete("/lines/{lineId}/sections?stationId={stationId}", line.getId(), station.getId())
+                .then().log().all().extract();
+        return response;
+    }
+
+    private void 지하철_구간_삭제_성공(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
