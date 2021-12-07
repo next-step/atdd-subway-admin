@@ -60,7 +60,7 @@ public class SectionTest {
 		Section frontSection = Section.of(2L, StationTest.서면역, StationTest.범내골역, 2);
 
 		// when
-		section.updateUpStation(frontSection);
+		section.separateSection(frontSection);
 
 		// then
 		assertAll(
@@ -81,7 +81,7 @@ public class SectionTest {
 		Section frontSection = Section.of(2L, StationTest.서면역, StationTest.범내골역, 10);
 
 		// when
-		assertThatThrownBy(() -> section.updateUpStation(frontSection))
+		assertThatThrownBy(() -> section.separateSection(frontSection))
 			.isInstanceOf(AppException.class);
 	}
 

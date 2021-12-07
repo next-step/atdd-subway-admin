@@ -78,7 +78,7 @@ public class Sections {
 		validateUpdate(newSection);
 		if (isMiddleSection(newSection)) {
 			Section targetSection = findByUpStation(newSection.getUpStation());
-			targetSection.updateUpStation(newSection);
+			targetSection.separateSection(newSection);
 		}
 		this.sections.add(newSection);
 	}

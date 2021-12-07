@@ -71,7 +71,7 @@ public class Section {
 		return stations;
 	}
 
-	public void updateUpStation(Section frontSection) {
+	public void separateSection(Section frontSection) {
 		this.upStation = frontSection.downStation;
 		this.distance = this.distance.minus(frontSection.distance);
 	}
