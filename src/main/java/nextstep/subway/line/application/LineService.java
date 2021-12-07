@@ -9,6 +9,8 @@ import nextstep.subway.line.dto.LineResponses;
 import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
+import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -44,10 +46,8 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) {
         validateDuplicatedLine(request.getName());
-        Line line = request.toLine(this.getNewSections(request));
-        line.getSections().getSections()
-                .stream()
-                .forEach(section -> section.setLine(line));
+        Section section = this.getNewSection(null, request.getUpStationId(), request.getDownStationId(), request.getDistance());
+        Line line = request.toLine(new Sections(section));
         Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
     }
@@ -59,13 +59,6 @@ public class LineService {
         }
     }
 
-    private Sections getNewSections(LineRequest request) {
-        Station upStation = this.findSection(request.getUpStationId());
-        Station downStation = this.findSection(request.getDownStationId());
-        Section section = new Section(upStation, downStation, new Distance(request.getDistance()));
-        return new Sections(section);
-    }
-
     public LineResponse updateLine(Long id, LineRequest request) {
         Line line = this.findById(id);
         Station upStation = this.findSection(request.getUpStationId());
@@ -75,9 +68,16 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    private Station findSection(Long sectionId) {
-        return stationRepository.findById(sectionId)
-                .orElseThrow(() -> new NoResultException("찾을 수 없는 구간입니다."));
+    public void deleteLine(Long id) {
+        lineRepository.deleteById(id);
+    }
+
+    public SectionResponse saveSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = this.findById(lineId);
+        Section section = this.getNewSection(line, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        line.getSections().addSection(section);
+        Line persistLine = lineRepository.save(line);
+        return SectionResponse.of(section);
     }
 
     private Line findById(Long id) {
@@ -85,8 +85,15 @@ public class LineService {
                 .orElseThrow(() -> new NoResultException("찾을 수 없는 노선입니다."));
     }
 
-    public void deleteLine(Long id) {
-        lineRepository.deleteById(id);
+    private Section getNewSection(final Line line,final Long upStationId, final Long downStationId, final int distance) {
+        Station upStation = this.findSection(upStationId);
+        Station downStation = this.findSection(downStationId);
+        return new Section(line, upStation, downStation, new Distance(distance));
+    }
+
+    private Station findSection(Long sectionId) {
+        return stationRepository.findById(sectionId)
+                .orElseThrow(() -> new NoResultException("찾을 수 없는 구간입니다."));
     }
 
 }

@@ -28,13 +28,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        StationResponse stationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
-        StationResponse stationResponse2 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("역삼역"));
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", stationResponse.getId(), stationResponse2.getId(), 10);
+        StationResponse 강남역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
+        StationResponse 역삼역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("역삼역"));
+        LineRequest 신분당선_요청 = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 데이터_생성_요청(lineRequest, uri);
+        ExtractableResponse<Response> response = 데이터_생성_요청(신분당선_요청, uri);
         LineResponse lineResponse = response.as(LineResponse.class);
 
         // then
@@ -46,17 +46,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
-        StationResponse stationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
-        StationResponse stationResponse2 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("역삼역"));
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", stationResponse.getId(), stationResponse2.getId(), 10);
+        StationResponse 강남역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
+        StationResponse 역삼역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("역삼역"));
+        LineRequest 신분당선_요청 = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
 
         // given
         // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음(lineRequest);
+        지하철_노선_등록되어_있음(신분당선_요청);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 데이터_생성_요청(lineRequest, uri);
+        ExtractableResponse<Response> response = 데이터_생성_요청(신분당선_요청, uri);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -68,15 +68,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        StationResponse stationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
-        StationResponse stationResponse2 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("역삼역"));
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", stationResponse.getId(), stationResponse2.getId(), 10);
-        LineResponse lineResponse = 지하철_노선_등록되어_있음(lineRequest);
+        StationResponse 강남역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
+        StationResponse 역삼역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("역삼역"));
+        LineRequest 신분당선_요청 = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
+        LineResponse 신분당선 = 지하철_노선_등록되어_있음(신분당선_요청);
         // 지하철_노선_등록되어_있음
-        StationResponse stationResponse3 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("선릉역"));
-        StationResponse stationResponse4 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("삼성역"));
-        LineRequest lineRequest2 = new LineRequest("2호선", "bg-green-600", stationResponse3.getId(), stationResponse4.getId(), 10);
-        LineResponse lineResponse2 = 지하철_노선_등록되어_있음(lineRequest2);
+        StationResponse 선릉역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("선릉역"));
+        StationResponse 삼성역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("삼성역"));
+        LineRequest 제2호선_요청 = new LineRequest("2호선", "bg-green-600", 선릉역.getId(), 삼성역.getId(), 10);
+        LineResponse 제2호선 = 지하철_노선_등록되어_있음(제2호선_요청);
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -87,7 +87,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         목록_응답됨(response);
         // 지하철_노선_목록_포함됨
         LineResponses lineResponses = response.as(LineResponses.class);
-        목록에_포함_검증(lineResponses, lineResponse, lineResponse2);
+        목록에_포함_검증(lineResponses, 신분당선, 제2호선);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -95,14 +95,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        StationResponse stationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
-        StationResponse stationResponse2 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("역삼역"));
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", stationResponse.getId(), stationResponse2.getId(), 10);
-        LineResponse lineResponse = 지하철_노선_등록되어_있음(lineRequest);
+        StationResponse 강남역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
+        StationResponse 역삼역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("역삼역"));
+        LineRequest 신분당선_요청 = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
+        LineResponse 신분당선 = 지하철_노선_등록되어_있음(신분당선_요청);
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineResponse.getId());
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선.getId());
 
         // then
         // 지하철_노선_응답됨
@@ -124,22 +124,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        StationResponse stationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
-        StationResponse stationResponse2 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("역삼역"));
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", stationResponse.getId(), stationResponse2.getId(), 10);
-        LineResponse lineResponse = 지하철_노선_등록되어_있음(lineRequest);
+        StationResponse 강남역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
+        StationResponse 역삼역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("역삼역"));
+        LineRequest 신분당선_요청 = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
+        LineResponse 신분당선 = 지하철_노선_등록되어_있음(신분당선_요청);
 
         // when
         // 지하철_노선_수정_요청
-        StationResponse stationResponse3 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("선릉역"));
-        StationResponse stationResponse4 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("삼성역"));
-        LineRequest updateLineRequest = new LineRequest("구분당선", "bg-blue-600", stationResponse3.getId(), stationResponse4.getId(), 10);
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(lineResponse.getId(), updateLineRequest);
-        LineResponse updatedLine = response.as(LineResponse.class);
+        StationResponse 선릉역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("선릉역"));
+        StationResponse 삼성역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("삼성역"));
+        LineRequest 구분당선_요청 = new LineRequest("구분당선", "bg-blue-600", 선릉역.getId(), 삼성역.getId(), 10);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(신분당선.getId(), 구분당선_요청);
+        LineResponse 구분당선 = response.as(LineResponse.class);
 
         // then
         // 지하철_노선_수정됨
-        지하철_노선_수정됨(lineResponse, updatedLine);
+        지하철_노선_수정됨(신분당선, 구분당선);
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, LineRequest lineRequest) {
@@ -156,10 +156,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_수정됨(LineResponse lineResponse, LineResponse updatedLine) {
         assertAll(
-                () -> assertThat(updatedLine.getId().equals(lineResponse.getId())).isTrue(),
-                () -> assertThat(updatedLine.getName().equals(lineResponse.getName())).isFalse(),
-                () -> assertThat(updatedLine.getColor().equals(lineResponse.getColor())).isFalse(),
-                () -> assertThat(updatedLine.getStations().equals(lineResponse.getStations())).isFalse()
+                () -> assertThat(updatedLine.getId()).isEqualTo(lineResponse.getId()),
+                () -> assertThat(updatedLine.getName()).isNotEqualTo(lineResponse.getName()),
+                () -> assertThat(updatedLine.getColor()).isNotEqualTo(lineResponse.getColor()),
+                () -> assertThat(updatedLine.getStations()).isNotEqualTo(lineResponse.getStations())
         );
     }
 
@@ -168,10 +168,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        StationResponse stationResponse = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
-        StationResponse stationResponse2 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("역삼역"));
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", stationResponse.getId(), stationResponse2.getId(), 10);
-        ExtractableResponse<Response> createResponse = 데이터_생성_요청(lineRequest, uri);
+        StationResponse 강남역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("강남역"));
+        StationResponse 역삼역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("역삼역"));
+        LineRequest 신분당선_요청 = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
+        ExtractableResponse<Response> createResponse = 데이터_생성_요청(신분당선_요청, uri);
 
         // when
         // 지하철_노선_제거_요청
@@ -183,7 +183,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         데이터_삭제완료됨(response);
     }
 
-    private LineResponse 지하철_노선_등록되어_있음(final LineRequest request) {
+    public LineResponse 지하철_노선_등록되어_있음(final LineRequest request) {
         ExtractableResponse<Response> response = 데이터_생성_요청(request, uri);
         return response.as(LineResponse.class);
     }

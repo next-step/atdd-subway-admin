@@ -46,11 +46,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        StationRequest stationRequest = new StationRequest("강남역");
-        StationResponse stationResponse = 지하철_역_등록되어_있음(stationRequest);
+        StationRequest 강남역_요청 = new StationRequest("강남역");
+        StationResponse 강남역 = 지하철_역_등록되어_있음(강남역_요청);
 
-        StationRequest stationRequest2 = new StationRequest("역삼역");
-        StationResponse stationResponse2 = 지하철_역_등록되어_있음(stationRequest2);
+        StationRequest 역삼역_요청 = new StationRequest("역삼역");
+        StationResponse 역삼역 = 지하철_역_등록되어_있음(역삼역_요청);
 
         // when
         ExtractableResponse<Response> response = 목록_조회_요청(uri);
@@ -58,7 +58,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         목록_응답됨(response);
         StationResponses stationResponses = response.as(StationResponses.class);
-        목록에_포함_검증(stationResponses, stationResponse, stationResponse2);
+        목록에_포함_검증(stationResponses, 강남역, 역삼역);
     }
 
     public StationResponse 지하철_역_등록되어_있음(final StationRequest request) {
