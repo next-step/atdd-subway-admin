@@ -33,18 +33,10 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         checkValidateLine(request);
 
-        List<Station> stations =
-            stationRepository.findByIdIn(Arrays.asList(request.getUpStationId(), request.getDownStationId()));
+        List<Station> stations = findByIdIn(Arrays.asList(request.getUpStationId(), request.getDownStationId()));
 
-        Station upStation = stations.stream()
-            .filter(it -> it.isEqualId(request.getUpStationId()))
-            .findAny()
-            .orElseThrow(NotFoundStationException::new);
-
-        Station downStation = stations.stream()
-            .filter(it -> it.isEqualId(request.getDownStationId()))
-            .findAny()
-            .orElseThrow(NotFoundStationException::new);
+        Station upStation = findEqualStation(stations, request.getUpStationId());
+        Station downStation = findEqualStation(stations, request.getDownStationId());
 
         Line saveLine = new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance());
         Line line = lineRepository.save(saveLine);
@@ -71,14 +63,12 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findId(Long id) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(NotFoundLineException::new);
+        Line line = findById(id);
         return LineResponse.of(line);
     }
 
     public LineResponse update(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(NotFoundLineException::new);
+        Line line = findById(id);
         line.update(lineRequest.toLine());
         return LineResponse.of(line);
     }
@@ -88,21 +78,12 @@ public class LineService {
     }
 
     public SectionResponse addSections(Long lineId, SectionRequest request) {
-        Line line = lineRepository.findById(lineId)
-            .orElseThrow(NotFoundLineException::new);
+        Line line = findById(lineId);
 
-        List<Station> stations =
-            stationRepository.findByIdIn(Arrays.asList(request.getUpStationId(), request.getDownStationId()));
+        List<Station> stations = findByIdIn(Arrays.asList(request.getUpStationId(), request.getDownStationId()));
 
-        Station upStation = stations.stream()
-            .filter(it -> it.isEqualId(request.getUpStationId()))
-            .findAny()
-            .orElseThrow(NotFoundStationException::new);
-
-        Station downStation = stations.stream()
-            .filter(it -> it.isEqualId(request.getDownStationId()))
-            .findAny()
-            .orElseThrow(NotFoundStationException::new);
+        Station upStation = findEqualStation(stations, request.getUpStationId());
+        Station downStation = findEqualStation(stations, request.getDownStationId());
 
         line.addSection(upStation, downStation, request.getDistance());
 
@@ -110,12 +91,27 @@ public class LineService {
     }
 
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId)
-            .orElseThrow(NotFoundLineException::new);
+        Line line = findById(lineId);
 
         Station station = stationRepository.findById(stationId)
             .orElseThrow(NotFoundStationException::new);
 
         line.deleteSection(station);
+    }
+
+    private Line findById(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(NotFoundLineException::new);
+    }
+
+    private List<Station> findByIdIn(List<Long> stationIds) {
+        return stationRepository.findByIdIn(stationIds);
+    }
+
+    private Station findEqualStation(List<Station> stations, Long stationId) {
+        return stations.stream()
+            .filter(it -> it.isEqualId(stationId))
+            .findAny()
+            .orElseThrow(NotFoundStationException::new);
     }
 }
