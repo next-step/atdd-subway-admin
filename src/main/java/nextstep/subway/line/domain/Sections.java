@@ -134,6 +134,17 @@ public class Sections {
 				new AppException(ErrorCode.INTERNAL_SERVER_ERROR, "상행역을 찾을 수 없습니다"));
 	}
 
+	public void removeStation(Station removeStation) {
+		// 예외처리한다
+
+		// 상행 종점을 삭제한다
+
+		// 하행 종점을 삭제한다
+
+		// 중간역을 삭제한다
+
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
