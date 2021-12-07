@@ -165,6 +165,16 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("노선에 등록되어있지 않은 역을 제거할 수 없음")
+    @Test
+    void removeLine_Exception2() {
+        //when
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(신분당선, 정자역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> 지하철_노선에_지하철_구간_등록_요청(LineResponse lineResponse, StationResponse upStation, StationResponse downStation, int distance) {
         SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(), distance);
         return RestAssured

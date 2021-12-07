@@ -125,6 +125,10 @@ public class Sections {
     }
 
     void removeLineSection(Line line, Station station) {
+        if (!line.getStations().contains(station)) {
+            throw new CannotDeleteException("노선에 등록되어있지 않은 역을 제거할 수 없음");
+        }
+
         if (sections.size() <= 1) {
             throw new CannotDeleteException("구간이 하나인 노선에서 마지막 구간을 제거할 수 없습니다.");
         }
