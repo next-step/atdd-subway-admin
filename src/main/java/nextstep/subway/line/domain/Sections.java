@@ -123,18 +123,34 @@ public class Sections {
         return this.sections;
     }
 
-    void removeLineSection(Station station) {
-        Section sectionIncludeUpStation = sections.stream()
-                .filter(section -> section.equalUpStation(station))
-                .findFirst()
-                .orElse(null);
+    void removeLineSection(Line line, Station station) {
+        Section upStationSection = getUpStationSection(station);
+        Section downStationSection = getDownStationSection(station);
 
-        Section sectionIncludeDownStation = sections.stream()
+        if(upStationSection != null && downStationSection != null) {
+            Station upStation = downStationSection.getUpStation();
+            Station downStation = upStationSection.getDownStation();
+            int newDistance = downStationSection.getDistance() + upStationSection.getDistance();
+            sections.add(new Section(line, upStation, downStation, newDistance));
+        }
+
+        sections.remove(upStationSection);
+        sections.remove(downStationSection);
+    }
+
+    private Section getDownStationSection(Station station) {
+        Section downStationSection = sections.stream()
                 .filter(section -> section.equalDownStation(station))
                 .findFirst()
                 .orElse(null);
+        return downStationSection;
+    }
 
-        sections.remove(sectionIncludeUpStation);
-        sections.remove(sectionIncludeDownStation);
+    private Section getUpStationSection(Station station) {
+        Section upStationSection = sections.stream()
+                .filter(section -> section.equalUpStation(station))
+                .findFirst()
+                .orElse(null);
+        return upStationSection;
     }
 }

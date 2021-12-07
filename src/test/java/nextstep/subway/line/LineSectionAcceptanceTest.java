@@ -135,6 +135,26 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_순서_정렬됨(response2, Arrays.asList(강남역, 광교역));
     }
 
+    @DisplayName("중간역이 제거될 경우 재배치를 함")
+    @Test
+    void removeLineSection2() {
+        //given
+        지하철_노선에_지하철_구간_등록_요청(신분당선, 강남역, 양재역, 4);
+
+        //when
+        ExtractableResponse<Response> response1 = 지하철_구간_삭제_요청(신분당선, 양재역);
+
+        // then
+        지하철_구간_삭제_성공(response1);
+
+        //when
+        ExtractableResponse<Response> response2 = 지하철_노선_조회_요청(신분당선);
+
+        // then
+        지하철_노선에_지하철역_등록됨(response2);
+        지하철_노선에_지하철역_순서_정렬됨(response2, Arrays.asList(강남역, 광교역));
+    }
+
     private ExtractableResponse<Response> 지하철_노선에_지하철_구간_등록_요청(LineResponse lineResponse, StationResponse upStation, StationResponse downStation, int distance) {
         SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(), distance);
         return RestAssured
