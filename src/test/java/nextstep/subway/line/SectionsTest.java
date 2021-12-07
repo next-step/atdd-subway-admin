@@ -18,10 +18,10 @@ public class SectionsTest {
     void getSoredSections() {
         //given
         Line line = new Line("신분당선", "red");
-        Station first = new Station("1번역");
-        Station second = new Station("2번역");
-        Station third = new Station("3번역");
-        Station fourth = new Station("4번역");
+        Station first = new Station(1L, "1번역");
+        Station second = new Station(2L, "2번역");
+        Station third = new Station(3L, "3번역");
+        Station fourth = new Station(4L, "4번역");
         line.addSection(third, fourth, 5);
         line.addSection(second, third, 5);
         line.addSection(first, second, 5);

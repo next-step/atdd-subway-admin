@@ -26,7 +26,7 @@ public class SectionTest {
         Station addDownStation = new Station("4번역");
         Section addSection = new Section(line, addUpStation, addDownStation, 3);
 
-        section.updateDownStationAndMinusDistance(addSection);
+        section.updateDownStation(addSection);
 
         // when
         Station changeStation = section.getDownStation();
@@ -48,7 +48,7 @@ public class SectionTest {
         Station addDownStation = new Station("4번역");
         Section addSection = new Section(line, addUpStation, addDownStation, 3);
 
-        section.updateUpStationAndMinusDistance(addSection);
+        section.updateUpStation(addSection);
 
         // when
         Station changeStation = section.getUpStation();

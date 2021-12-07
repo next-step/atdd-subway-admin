@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,46 +40,19 @@ public class Sections {
     public void delete(Station station) {
         checkDeleteStation(station);
 
-        if (deleteDownSection(station)) {
+        findSameUpStation(station).ifPresent(downSection -> {
+            findSameDownStation(downSection.getUpStation())
+                .ifPresent(upSection -> upSection.mergeDownStation(downSection));
+            sections.remove(downSection);
             return;
-        }
-        deleteUpSection(station);
-    }
-
-    private boolean deleteDownSection(Station station) {
-        Optional<Section> target = sections.stream()
-            .filter(it -> it.isEqualToUpStation(station))
-            .findAny();
-        target.ifPresent(it -> {
-            updateDownStationAndPlusDistance(it);
-            sections.remove(it);
         });
-        return target.isPresent();
-    }
 
-    private void updateDownStationAndPlusDistance(Section section) {
-        sections.stream()
-            .filter(it -> it.isEqualToDownStation(section.getUpStation()))
-            .findAny()
-            .ifPresent(it -> it.updateDownStationAndPlusDistance(section));
-    }
-
-    private boolean deleteUpSection(Station station) {
-        Optional<Section> target = sections.stream()
-            .filter(it -> it.isEqualToDownStation(station))
-            .findAny();
-        target.ifPresent(it -> {
-            updateUpStationAndPlusDistance(it);
-            sections.remove(it);
+        findSameDownStation(station).ifPresent(upSection -> {
+            findSameUpStation(upSection.getDownStation())
+                .ifPresent(downSection -> downSection.mergeUpStation(upSection));
+            sections.remove(upSection);
+            return;
         });
-        return target.isPresent();
-    }
-
-    private void updateUpStationAndPlusDistance(Section section) {
-        sections.stream()
-            .filter(it -> it.isEqualToUpStation(section.getUpStation()))
-            .findAny()
-            .ifPresent(it -> it.updateUpStationAndPlusDistance(section));
     }
 
     private void checkDeleteStation(Station station) {
@@ -103,26 +75,28 @@ public class Sections {
 
     private void updateSection(Section section) {
         checkStationOfSection(section);
-        if (updateDownSection(section)) {
+
+        findSameUpStation(section.getUpStation()).ifPresent(it -> {
+            it.updateUpStation(section);
             return;
-        }
-        updateUpSection(section);
+        });
+
+        findSameDownStation(section.getDownStation()).ifPresent(it -> {
+            it.updateDownStation(section);
+            return;
+        });
     }
 
-    private boolean updateDownSection(Section section) {
-        Optional<Section> target = sections.stream()
-            .filter(it -> it.isEqualToUpStation(section.getUpStation()))
+    private Optional<Section> findSameDownStation(Station station) {
+        return sections.stream()
+            .filter(it -> it.isEqualToDownStation(station))
             .findAny();
-        target.ifPresent(it -> it.updateUpStationAndMinusDistance(section));
-        return target.isPresent();
     }
 
-    private boolean updateUpSection(Section section) {
-        Optional<Section> target = sections.stream()
-            .filter(it -> it.isEqualToDownStation(section.getDownStation()))
+    private Optional<Section> findSameUpStation(Station station) {
+        return sections.stream()
+            .filter(it -> it.isEqualToUpStation(station))
             .findAny();
-        target.ifPresent(it -> it.updateDownStationAndMinusDistance(section));
-        return target.isPresent();
     }
 
     private void checkStationOfSection(Section section) {
@@ -177,7 +151,7 @@ public class Sections {
         while (upStations.contains(lastSection.getDownStation())) {
             Station finalDownStation = lastSection.getDownStation();
             lastSection = sections.stream()
-                .filter(section -> section.getUpStation() == finalDownStation)
+                .filter(section -> section.isEqualToUpStation(finalDownStation))
                 .findFirst()
                 .orElseThrow(SectionSortingException::new);
             stations.add(lastSection.getDownStation());
@@ -191,7 +165,7 @@ public class Sections {
         while (downStations.contains(firstSection.getUpStation())) {
             Station finalUpStation = firstSection.getUpStation();
             firstSection = sections.stream()
-                .filter(section -> section.getDownStation() == finalUpStation)
+                .filter(section -> section.isEqualToDownStation(finalUpStation))
                 .findFirst()
                 .orElseThrow(SectionSortingException::new);
         }
@@ -208,20 +182,5 @@ public class Sections {
         return sections.stream()
             .map(Section::getDownStation)
             .collect(Collectors.toList());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        Sections sections1 = (Sections)o;
-        return Objects.equals(sections, sections1.sections);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(sections);
     }
 }

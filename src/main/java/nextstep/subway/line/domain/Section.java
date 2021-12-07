@@ -1,7 +1,5 @@
 package nextstep.subway.line.domain;
 
-import java.util.Objects;
-
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
@@ -44,32 +42,32 @@ public class Section {
         this.distance = new Distance(distance);
     }
 
-    public void updateDownStationAndMinusDistance(Section section) {
+    public void updateDownStation(Section section) {
         downStation = section.getUpStation();
         distance = distance.minus(section.distance);
     }
 
-    public void updateUpStationAndMinusDistance(Section section) {
+    public void updateUpStation(Section section) {
         upStation = section.getDownStation();
         distance = distance.minus(section.distance);
     }
 
-    public void updateDownStationAndPlusDistance(Section section) {
+    public void mergeDownStation(Section section) {
         downStation = section.downStation;
         distance = distance.plus(section.distance);
     }
 
-    public void updateUpStationAndPlusDistance(Section section) {
+    public void mergeUpStation(Section section) {
         upStation = section.upStation;
         distance = distance.plus(section.distance);
     }
 
     public boolean isEqualToDownStation(Station station) {
-        return downStation.equals(station);
+        return downStation.isEqualTo(station);
     }
 
     public boolean isEqualToUpStation(Station station) {
-        return upStation.equals(station);
+        return upStation.isEqualTo(station);
     }
 
     public Long getId() {
@@ -92,20 +90,4 @@ public class Section {
         return distance;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        Section section = (Section)o;
-        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(line,
-            section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation,
-            section.downStation);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, line, upStation, downStation, distance);
-    }
 }
