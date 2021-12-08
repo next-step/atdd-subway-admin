@@ -64,4 +64,8 @@ public class Section {
         this.downStation = upStation;
         this.distance.minus(newDistance);
     }
+
+    public Distance sumDistance(Section otherSection) {
+        return this.distance.plus(otherSection.getDistance());
+    }
 }

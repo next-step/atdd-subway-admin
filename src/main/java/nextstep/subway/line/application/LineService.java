@@ -43,30 +43,34 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundException("요청 노선이 존재하지 않음 : " + id));
+        Line line = findLineById(id);
         return LineResponse.of(line);
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundException("요청 노선이 존재하지 않음 : " + id));
+        Line line = findLineById(id);
         line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
     }
 
     public void deleteLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundException("요청 노선이 존재하지 않음 : " + id));
+        Line line = findLineById(id);
         lineRepository.delete(line);
     }
 
     public void addLineSection(Long lineId, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundException("요청 노선이 존재하지 않음 : " + lineId));
+        Line line = findLineById(lineId);
         Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
         Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
         line.addLineSection(upStation, downStation, sectionRequest.getDistance());
     }
 
     public void removeLineSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundException("요청 노선이 존재하지 않음 : " + lineId));
+        Line line = findLineById(lineId);
         Station station = stationService.findStationById(stationId);
         line.removeLineSection(station);
+    }
+
+    private Line findLineById(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(() -> new NotFoundException("요청 노선이 존재하지 않음 : " + lineId));
     }
 }
