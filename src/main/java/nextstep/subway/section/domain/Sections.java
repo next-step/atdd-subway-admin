@@ -1,8 +1,9 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.line.domain.Line;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,8 +12,7 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "line_id")
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
     public List<Long> getStationIds() {
@@ -27,9 +27,10 @@ public class Sections {
         return stationIds;
     }
 
-    public void addSection(Section section) {
+    public void addSection(Line line, Section section) {
         if (sections.isEmpty()) {
             sections.add(section);
+            section.setLine(line);
             return;
         }
 
@@ -46,6 +47,7 @@ public class Sections {
         }
 
         sections.add(section);
+        section.setLine(line);
     }
 
     private void checkValidation(Section section) {
