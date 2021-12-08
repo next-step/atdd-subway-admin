@@ -39,7 +39,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Long> getStations() {
+    public List<Long> getStationIds() {
         return sections.getStationIds();
     }
 
