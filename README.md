@@ -89,4 +89,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 - [x] LineService.saveLine 중복 제거
 - [x] Line.update시 section을 제외한 나머지 파라미터로 업데이트
-- [x] LineAcceptanceTest에 한글 변수명을 사용하여 가독성 확보s
+- [x] LineAcceptanceTest에 한글 변수명을 사용하여 가독성 확보
+- [ ] 구간 추가 기능 Happy Path 인수 테스트 작성
+- [ ] 구간 추가 기능 Happy Path 구현
+- [ ] 구간 추가 기능 예외 케이스 처리 인수 테스트 작성
+- [ ] 구간 추가 기능 예외 케이스 구현
