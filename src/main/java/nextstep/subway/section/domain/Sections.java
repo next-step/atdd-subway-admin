@@ -1,7 +1,6 @@
 package nextstep.subway.section.domain;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -10,18 +9,17 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.Stations;
-import org.springframework.data.repository.cdi.Eager;
 
 @Embeddable
 public class Sections {
+
     @OneToMany(mappedBy = "line", fetch = FetchType.EAGER)
     private final List<Section> sections = new ArrayList<>();
 
     @Transient
-    private Stations stations;
+    private final Stations stations;
     @Transient
     private Station firstStation;
     @Transient
@@ -49,29 +47,63 @@ public class Sections {
         return sections.get(index);
     }
 
+    public boolean onlyLastSectionRemains() {
+        return sections.size() == 1;
+    }
+
     public void addSection(int index, Section section) {
         this.sections.add(index, section);
     }
 
+    public void addSection(Section section) {
+        this.sections.add(section);
+    }
+
+    public Sections getSortedSections() {
+        findFirstLastStation();
+        Sections sortedSections = new Sections();
+        Section firstSection = sections.stream()
+            .filter(section -> section.isUpStation(firstStation))
+            .findFirst().get();
+
+        addSectionAndFindNext(firstSection, sortedSections);
+        return sortedSections;
+    }
+
+    private void addSectionAndFindNext(Section section, Sections sortedSections) {
+        sortedSections.addSection(section);
+        if (section.isDownStation(lastStation)) {
+            return;
+        }
+        Section nextSection = this.sections.stream()
+            .filter(s -> s.isUpStation(section.getDownStation()))
+            .findFirst()
+            .get();
+        addSectionAndFindNext(nextSection, sortedSections);
+    }
+
     public List<Station> getSortedStations() {
         findFirstLastStation();
-        stations.addStation(firstStation);
-        findNextSection(firstStation);
+        addStationAndFindNext(firstStation);
         return stations.getStations();
     }
 
-    private void findNextSection(Station station) {
-        for (Section section: sections) {
-            if (station.isSameStation(section.getUpStation())) {
-                Station nextStation = section.getDownStation();
-                stations.addStation(nextStation);
-                if (nextStation.isSameStation(lastStation)) {
-                    return;
-                }
-                findNextSection(nextStation);
-            }
+    private void addStationAndFindNext(Station station) {
+        this.stations.addStation(station);
+
+        Station nextStation = this.sections.stream()
+            .filter(section -> section.isUpStation(station))
+            .map(Section::getDownStation)
+            .findFirst()
+            .get();
+
+        if (nextStation.isSameStation(lastStation)) {
+            this.stations.addStation(nextStation);
+            return;
         }
+        addStationAndFindNext(nextStation);
     }
+
 
     private void findFirstLastStation() {
         findFirstStation();
@@ -102,5 +134,36 @@ public class Sections {
 
         downStationIds.removeAll(upStationIds);
         this.lastStation = downStationIds.stream().findFirst().get();
+    }
+
+    public Optional<Section> getUpSectionOf(Station station) {
+        return sections.stream()
+            .filter(section -> section.isDownStation(station))
+            .findFirst();
+    }
+
+    public Optional<Section> getDownSectionOf(Station station) {
+        return sections.stream()
+            .filter(section -> section.isUpStation(station))
+            .findFirst();
+    }
+
+    public void removeSection(Section section) {
+        sections.remove(section);
+    }
+
+    public void mergeSections(Section upSection, Section downSection) {
+        addSection(sections.indexOf(upSection), getMergedSection(upSection, downSection));
+        removeSection(upSection);
+        removeSection(downSection);
+    }
+
+    public Section getMergedSection(Section upSection, Section downSection) {
+        Section mergedSection = new Section();
+        mergedSection.setLine(upSection.getLine());
+        mergedSection.setUpStation(upSection.getUpStation());
+        mergedSection.setDownStation(downSection.getDownStation());
+        mergedSection.setDistance(downSection.getDistance() + upSection.getDistance());
+        return mergedSection;
     }
 }

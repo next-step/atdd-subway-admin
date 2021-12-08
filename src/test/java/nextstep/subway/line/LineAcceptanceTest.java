@@ -88,6 +88,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_구간_조회_요청(String uri) {
+        return RestAssured
+            .given().log().all()
+            .when()
+            .get(uri)
+            .then().log().all()
+            .extract();
+    }
+
     private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
         return RestAssured
             .given().log().all()
