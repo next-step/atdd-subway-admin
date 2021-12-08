@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,8 +18,10 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
 
+	private static final int MINIMUM_SIZE = 1;
+
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-	private final List<Section> sections = new ArrayList<>();
+	private List<Section> sections = new ArrayList<>();
 
 	protected Sections() {
 	}
@@ -77,8 +80,10 @@ public class Sections {
 	public void update(Section newSection) {
 		validateUpdate(newSection);
 		if (isMiddleSection(newSection)) {
-			Section targetSection = findByUpStation(newSection.getUpStation());
-			targetSection.updateUpStation(newSection);
+			Section targetSection = findByUpStation(newSection.getUpStation()).orElseThrow(() ->
+				new AppException(ErrorCode.INTERNAL_SERVER_ERROR, "상행역을 찾을 수 없습니다"));
+
+			targetSection.separateSection(newSection);
 		}
 		this.sections.add(newSection);
 	}
@@ -126,12 +131,58 @@ public class Sections {
 		return stations.get(0).equals(station);
 	}
 
-	private Section findByUpStation(Station upStation) {
+	private Optional<Section> findByUpStation(Station upStation) {
 		return this.sections.stream()
 			.filter(section -> section.getUpStation().equals(upStation))
-			.findFirst()
-			.orElseThrow(() ->
-				new AppException(ErrorCode.INTERNAL_SERVER_ERROR, "상행역을 찾을 수 없습니다"));
+			.findFirst();
+
+	}
+
+	public void removeStation(Station removeStation) {
+		validateRemoveStation(removeStation);
+		Optional<Section> frontSectionOpt = findByDownStation(removeStation);
+		Optional<Section> backwardSectionOpt = findByUpStation(removeStation);
+		if (frontSectionOpt.isPresent() && backwardSectionOpt.isPresent()) {
+			removeMiddleStation(frontSectionOpt.get(), backwardSectionOpt.get());
+			return;
+		}
+		if (frontSectionOpt.isPresent()) {
+			removeSection(frontSectionOpt.get());
+			return;
+		}
+		backwardSectionOpt.ifPresent(this::removeSection);
+	}
+
+	private void removeMiddleStation(Section frontSection, Section backwardSection) {
+		Section section = frontSection.removeStationBetween(backwardSection);
+		removeSections(frontSection, backwardSection);
+		add(section);
+	}
+
+	private void removeSections(Section... removeSections) {
+		Arrays.stream(removeSections)
+			.forEach(s -> this.sections.remove(s));
+	}
+
+	private void validateRemoveStation(Station removeStation) {
+		Optional<Section> frontSectionOpt = findByDownStation(removeStation);
+		Optional<Section> backwardSectionOpt = findByUpStation(removeStation);
+		if (!frontSectionOpt.isPresent() && !backwardSectionOpt.isPresent()) {
+			throw new AppException(ErrorCode.WRONG_INPUT, "삭제하려는 역이 존재하지 않습니다");
+		}
+		if (this.sections.size() <= MINIMUM_SIZE) {
+			throw new AppException(ErrorCode.WRONG_INPUT, "구간이 하나일 경우 삭제가 안됩니다");
+		}
+	}
+
+	private void removeSection(Section section) {
+		this.sections.remove(section);
+	}
+
+	private Optional<Section> findByDownStation(Station downStation) {
+		return this.sections.stream()
+			.filter(section -> section.getDownStation().equals(downStation))
+			.findFirst();
 	}
 
 	@Override

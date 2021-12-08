@@ -82,6 +82,11 @@ public class LineService {
 			.orElseThrow(() -> new AppException(ErrorCode.WRONG_INPUT, stationId + "는 존재하지 않습니다"));
 	}
 
+	public void removeSectionByStationId(Long lineId, Long stationId) {
+		Line line = getById(lineId);
+		Station removeStation = getStationById(stationId);
+		line.removeSection(removeStation);
+	}
 }
 
 

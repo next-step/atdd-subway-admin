@@ -178,4 +178,78 @@ public class SectionsTest {
 			.isInstanceOf(AppException.class);
 	}
 
+	@Test
+	@DisplayName("상행종점을 삭제한다")
+	void removeStationTest1() {
+		// given
+		Section section1 = Section.of(1L, 노포역, 서면역, 10);
+		Section section2 = Section.of(2L, 서면역, 부산진역, 5);
+		Sections sections = Sections.of(Arrays.asList(section1, section2));
+
+		// when
+		sections.removeStation(노포역);
+
+		// then
+		assertThat(sections.getOrderedStations())
+			.containsExactly(서면역, 부산진역);
+	}
+
+	@Test
+	@DisplayName("하행종점을 삭제한다")
+	void removeStationTest2() {
+		// given
+		Section section1 = Section.of(1L, 노포역, 서면역, 10);
+		Section section2 = Section.of(2L, 서면역, 부산진역, 5);
+		Sections sections = Sections.of(Arrays.asList(section1, section2));
+
+		// when
+		sections.removeStation(부산진역);
+
+		// then
+		assertThat(sections.getOrderedStations())
+			.containsExactly(노포역, 서면역);
+	}
+
+	@Test
+	@DisplayName("중간 역을 삭제한다")
+	void removeStationsTest3() {
+		// given
+		Section section1 = Section.of(1L, 노포역, 서면역, 10);
+		Section section2 = Section.of(2L, 서면역, 부산진역, 5);
+		Section section3 = Section.of(3L, 부산진역, 다대포해수욕장역, 10);
+		Sections sections = Sections.of(Arrays.asList(section1, section2, section3));
+
+		// when
+		sections.removeStation(서면역);
+
+		// then
+		assertThat(sections.getOrderedStations())
+			.containsExactly(노포역, 부산진역, 다대포해수욕장역);
+	}
+
+	@Test
+	@DisplayName("해당 역이 없을 경우 삭제 안됨")
+	void removeStationValidateTest1() {
+		// given
+		Section section1 = Section.of(1L, 노포역, 서면역, 10);
+		Sections sections = Sections.of(Collections.singletonList(section1));
+
+		// when, then
+		assertThatThrownBy(() -> sections.removeStation(다대포해수욕장역))
+			.isInstanceOf(AppException.class);
+
+	}
+
+	@Test
+	@DisplayName("구간이 하나일 경우 삭제 안됨")
+	void removeStationValidateTest2() {
+		// given
+		Section section1 = Section.of(1L, 노포역, 서면역, 10);
+		Sections sections = Sections.of(Collections.singletonList(section1));
+
+		// when, then
+		assertThatThrownBy(() -> sections.removeStation(노포역))
+			.isInstanceOf(AppException.class);
+	}
+
 }

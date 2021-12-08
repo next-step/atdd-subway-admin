@@ -47,4 +47,18 @@ public class DistanceTest {
 		assertThatThrownBy(() -> Distance.of(given))
 			.isInstanceOf(AppException.class);
 	}
+
+	@Test
+	@DisplayName("두 거리의 합를 구한다")
+	public void plusTest() {
+		// given
+		Distance distance1 = Distance.of(1);
+		Distance distance2 = Distance.of(2);
+
+		// when
+		Distance result = distance1.plus(distance2);
+
+		// then
+		assertThat(result).isEqualTo(Distance.of(3));
+	}
 }
