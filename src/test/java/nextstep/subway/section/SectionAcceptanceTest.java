@@ -43,6 +43,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(1L, 3L, 2L);
     }
 
     @DisplayName("노선에 등록하려는 구간이 이미 등록되어 있다.")
@@ -91,7 +92,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(3L, 1L, 2L);
     }
+
 
     @DisplayName("노선 맨 뒤에 구간을 등록한다.")
     @Test
@@ -103,6 +106,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(1L, 2L, 3L);
     }
 
 }
