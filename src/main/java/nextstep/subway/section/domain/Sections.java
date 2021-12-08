@@ -17,7 +17,7 @@ public class Sections {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "line_id")
-    List<Section> sections;
+    private List<Section> sections;
 
     public Sections() {
 		this.sections = new LinkedList<Section>();
