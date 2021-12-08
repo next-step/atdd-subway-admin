@@ -66,11 +66,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(registerSectionResponse3.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(0).getName()).isEqualTo(상행역.getName());
-        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(1).getName()).isEqualTo(강남역.getName());
-        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(2).getName()).isEqualTo(정자역.getName());
-        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(3).getName()).isEqualTo(미금역.getName());
-        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(4).getName()).isEqualTo(광교역.getName());
+        라인에_역들이_순서대로_나오는지_확인(lineResponse, 상행역.getName(), 강남역.getName(), 정자역.getName(), 미금역.getName(), 광교역.getName());
 
     }
 
@@ -166,5 +162,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .post("/lines/" + lineId + "/sections")
                 .then().log().all()
                 .extract();
+    }
+
+    private void 라인에_역들이_순서대로_나오는지_확인(ExtractableResponse<Response> lineResponse, String... 역이름) {
+        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(0).getName()).isEqualTo(역이름[0]);
+        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(1).getName()).isEqualTo(역이름[1]);
+        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(2).getName()).isEqualTo(역이름[2]);
+        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(3).getName()).isEqualTo(역이름[3]);
+        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(4).getName()).isEqualTo(역이름[4]);
     }
 }
