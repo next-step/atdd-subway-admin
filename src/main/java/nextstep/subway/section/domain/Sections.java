@@ -43,14 +43,21 @@ public class Sections {
     }
 
     private Section updateExistingSection(Section section) {
-        Section existingSection = this.sections.stream()
+        List<Section> existingSection = this.sections.stream()
                 .filter(i -> i.isInteractiveStation(section))
-                .findFirst()
-                .orElseThrow(() -> new SubwayException(SubWayExceptionStatus.NO_INTERSECTION_STATION));
+                .collect(Collectors.toList());
+
+        validateExistingSection(existingSection);
 
         Section persistSection = section.updateNewSection();
-        existingSection.updateExistingSection(section);
+        existingSection.forEach(i -> i.updateExistingSection(section));
         return persistSection;
+    }
+
+    private void validateExistingSection(List<Section> existingSections) {
+        if (CollectionUtils.isEmpty(existingSections)) {
+            throw new SubwayException(SubWayExceptionStatus.NO_INTERSECTION_STATION);
+        }
     }
 
     private void validateDuplicateSection(Section section) {

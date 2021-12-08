@@ -62,6 +62,7 @@ public class Section extends BaseEntity {
     }
 
     public void updateExistingSection(Section newSection) {
+
         if (this.upStation.equals(newSection.upStation)) {
             this.upStation = newSection.downStation;
             this.distance -= newSection.distance;
@@ -101,5 +102,9 @@ public class Section extends BaseEntity {
 
     public int getDistance() {
         return distance;
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
     }
 }

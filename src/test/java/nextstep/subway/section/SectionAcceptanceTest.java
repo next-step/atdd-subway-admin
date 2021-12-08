@@ -14,8 +14,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,6 +26,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private StationResponse 상행역;
     private StationResponse 강남역;
+    private StationResponse 양재역;
     private StationResponse 정자역;
     private StationResponse 미금역;
     private StationResponse 광교역;
@@ -37,6 +40,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         상행역 = StationAcceptanceTest.지하철역_등록되어_있음("상행역").as(StationResponse.class);
         강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
+        양재역 = StationAcceptanceTest.지하철역_등록되어_있음("양재역").as(StationResponse.class);
         정자역 = StationAcceptanceTest.지하철역_등록되어_있음("정자역").as(StationResponse.class);
         미금역 = StationAcceptanceTest.지하철역_등록되어_있음("미금역").as(StationResponse.class);
         광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
@@ -55,18 +59,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> registerSectionResponse1 = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 상행역.getId(), 강남역.getId(), 10);
         ExtractableResponse<Response> registerSectionResponse2 = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 정자역.getId(), 7);
         ExtractableResponse<Response> registerSectionResponse3 = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 미금역.getId(), 광교역.getId(), 2);
+        ExtractableResponse<Response> registerSectionResponse4 = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 양재역.getId(), 2);
 
         // 지하철_노선에_조회
-        ExtractableResponse<Response> lineResponse =  LineAcceptanceTest.지하철_노선_조회(registerSectionResponse2.header("Location"));
+        ExtractableResponse<Response> lineResponse = LineAcceptanceTest.지하철_노선_조회(registerSectionResponse2.header("Location"));
 
         // then
         // 지하철_노선에_지하철역_등록됨
-        assertThat(registerSectionResponse1.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(registerSectionResponse2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(registerSectionResponse3.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Stream.of(registerSectionResponse1, registerSectionResponse2, registerSectionResponse3, registerSectionResponse4)
+                .forEach(i -> 상태코드_확인(i, HttpStatus.CREATED.value()));
 
         assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        라인에_역들이_순서대로_나오는지_확인(lineResponse, 상행역.getName(), 강남역.getName(), 정자역.getName(), 미금역.getName(), 광교역.getName());
+        라인에_역들이_순서대로_나오는지_확인(lineResponse, 상행역.getName(), 강남역.getName(), 양재역.getName(), 정자역.getName(), 미금역.getName(), 광교역.getName());
 
     }
 
@@ -79,7 +83,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> registerSectionResponse = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 상행역.getId(), 강남역.getId(), 10);
 
         // 지하철_노선에_조회
-        ExtractableResponse<Response> lineResponse =  LineAcceptanceTest.지하철_노선_조회(registerSectionResponse.header("Location"));
+        ExtractableResponse<Response> lineResponse = LineAcceptanceTest.지하철_노선_조회(registerSectionResponse.header("Location"));
 
         // then
         // 지하철_노선에_지하철역_등록됨
@@ -99,7 +103,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> registerSectionResponse = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 광교역.getId(), 하행역.getId(), 10);
 
         // 지하철_노선에_조회
-        ExtractableResponse<Response> lineResponse =  LineAcceptanceTest.지하철_노선_조회(registerSectionResponse.header("Location"));
+        ExtractableResponse<Response> lineResponse = LineAcceptanceTest.지하철_노선_조회(registerSectionResponse.header("Location"));
 
         // then
         // 지하철_노선에_지하철역_등록됨
@@ -165,10 +169,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private void 라인에_역들이_순서대로_나오는지_확인(ExtractableResponse<Response> lineResponse, String... 역이름) {
-        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(0).getName()).isEqualTo(역이름[0]);
-        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(1).getName()).isEqualTo(역이름[1]);
-        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(2).getName()).isEqualTo(역이름[2]);
-        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(3).getName()).isEqualTo(역이름[3]);
-        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(4).getName()).isEqualTo(역이름[4]);
+        for (int i = 0; i < 역이름.length; i++) {
+            assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(i).getName()).isEqualTo(역이름[i]);
+        }
+    }
+
+    private void 상태코드_확인(ExtractableResponse<Response> response, int httpStatusValue) {
+        assertThat(response.statusCode()).isEqualTo(httpStatusValue);
     }
 }
