@@ -12,6 +12,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("구간 관련 기능")
@@ -109,4 +112,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(1L, 2L, 3L);
     }
 
+    @DisplayName("역 ID로 첫번째 구간을 삭제한다.")
+    @Test
+    void deleteFirstSectionByStationId() {
+        ExtractableResponse<Response> response = SectionTestFixture.지하철_노선에_지하철역_등록_요청(line.getId(), stationDown.getId(), stationAdd.getId(), 4);
+
+        // when
+        Map<String, String> params = new HashMap<>();
+        ExtractableResponse<Response> deleteResponse = SectionTestFixture.역_ID로_구간_삭제_요청(line.getId(), stationUp.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+
+        ExtractableResponse<Response> lineResponse = LineTestFixture.지하철_노선_조회(line.getId());
+        assertThat(lineResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(2L, 3L);
+    }
 }

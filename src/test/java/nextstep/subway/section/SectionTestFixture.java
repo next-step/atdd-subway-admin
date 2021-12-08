@@ -24,4 +24,14 @@ public class SectionTestFixture {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> 역_ID로_구간_삭제_요청(Long lineId, Long stationId) {
+        return RestAssured
+                .given().log().all()
+                .pathParam("id", lineId)
+                .queryParam("stationId", stationId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/{id}/sections")
+                .then().log().all().extract();
+    }
 }
