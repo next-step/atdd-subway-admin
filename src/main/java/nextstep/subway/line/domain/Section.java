@@ -1,10 +1,7 @@
 package nextstep.subway.line.domain;
 
-import java.util.Objects;
-
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,15 +17,15 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
     private Line line;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_to_up_station_id"))
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_to_down_station_id"))
     private Station downStation;
 
@@ -55,12 +52,22 @@ public class Section {
         distance = distance.minus(section.distance);
     }
 
+    public void mergeDownStation(Section section) {
+        downStation = section.downStation;
+        distance = distance.plus(section.distance);
+    }
+
+    public void mergeUpStation(Section section) {
+        upStation = section.upStation;
+        distance = distance.plus(section.distance);
+    }
+
     public boolean isEqualToDownStation(Station station) {
-        return downStation.equals(station);
+        return downStation.isEqualTo(station);
     }
 
     public boolean isEqualToUpStation(Station station) {
-        return upStation.equals(station);
+        return upStation.isEqualTo(station);
     }
 
     public Long getId() {
@@ -83,20 +90,4 @@ public class Section {
         return distance;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        Section section = (Section)o;
-        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(line,
-            section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation,
-            section.downStation);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, line, upStation, downStation, distance);
-    }
 }

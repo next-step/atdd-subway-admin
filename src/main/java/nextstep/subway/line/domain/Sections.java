@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,8 +18,11 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
-    public static final String ERROR_NOT_FOUND_STATIONS = "구간에서 상/하행역 정보를 찾을 수 없습니다.";
-    public static final String ERROR_ALREADY_ADDED_SECTION = "상/하행역 정보가 이미 등록되어 있습니다.";
+    private static final String ERROR_NOT_FOUND_STATIONS = "구간에서 상/하행역 정보를 찾을 수 없습니다.";
+    private static final String ERROR_ALREADY_ADDED_SECTION = "상/하행역 정보가 이미 등록되어 있습니다.";
+    private static final String ERROR_CANNOT_DELETE = "더 이상 삭제할 수 없습니다.";
+    private static final String ERROR_NOT_CONTAINS_STATION = "지하철역이 노선에 포함되어 있지 않습니다.";
+    private static final int SECTIONS_MIN_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -35,28 +37,66 @@ public class Sections {
         sections.add(section);
     }
 
+    public void delete(Station station) {
+        checkDeleteStation(station);
+
+        findSameUpStation(station).ifPresent(downSection -> {
+            findSameDownStation(downSection.getUpStation())
+                .ifPresent(upSection -> upSection.mergeDownStation(downSection));
+            sections.remove(downSection);
+            return;
+        });
+
+        findSameDownStation(station).ifPresent(upSection -> {
+            findSameUpStation(upSection.getDownStation())
+                .ifPresent(downSection -> downSection.mergeUpStation(upSection));
+            sections.remove(upSection);
+            return;
+        });
+    }
+
+    private void checkDeleteStation(Station station) {
+        if (isLastSection()) {
+            throw new IllegalArgumentException(ERROR_CANNOT_DELETE);
+        }
+
+        if (isNotFoundInSection(station)) {
+            throw new IllegalArgumentException(ERROR_NOT_CONTAINS_STATION);
+        }
+    }
+
+    private boolean isLastSection() {
+        return sections.size() <= SECTIONS_MIN_SIZE;
+    }
+
+    private boolean isNotFoundInSection(Station station) {
+        return !getStations().contains(station);
+    }
+
     private void updateSection(Section section) {
         checkStationOfSection(section);
-        if (updateDownSection(section)) {
+
+        findSameUpStation(section.getUpStation()).ifPresent(it -> {
+            it.updateUpStation(section);
             return;
-        }
-        updateUpSection(section);
+        });
+
+        findSameDownStation(section.getDownStation()).ifPresent(it -> {
+            it.updateDownStation(section);
+            return;
+        });
     }
 
-    private boolean updateDownSection(Section section) {
-        Optional<Section> target = sections.stream()
-            .filter(it -> it.isEqualToUpStation(section.getUpStation()))
+    private Optional<Section> findSameDownStation(Station station) {
+        return sections.stream()
+            .filter(it -> it.isEqualToDownStation(station))
             .findAny();
-        target.ifPresent(it -> it.updateUpStation(section));
-        return target.isPresent();
     }
 
-    private boolean updateUpSection(Section section) {
-        Optional<Section> target = sections.stream()
-            .filter(it -> it.isEqualToDownStation(section.getDownStation()))
+    private Optional<Section> findSameUpStation(Station station) {
+        return sections.stream()
+            .filter(it -> it.isEqualToUpStation(station))
             .findAny();
-        target.ifPresent(it -> it.updateDownStation(section));
-        return target.isPresent();
     }
 
     private void checkStationOfSection(Section section) {
@@ -111,7 +151,7 @@ public class Sections {
         while (upStations.contains(lastSection.getDownStation())) {
             Station finalDownStation = lastSection.getDownStation();
             lastSection = sections.stream()
-                .filter(section -> section.getUpStation() == finalDownStation)
+                .filter(section -> section.isEqualToUpStation(finalDownStation))
                 .findFirst()
                 .orElseThrow(SectionSortingException::new);
             stations.add(lastSection.getDownStation());
@@ -125,7 +165,7 @@ public class Sections {
         while (downStations.contains(firstSection.getUpStation())) {
             Station finalUpStation = firstSection.getUpStation();
             firstSection = sections.stream()
-                .filter(section -> section.getDownStation() == finalUpStation)
+                .filter(section -> section.isEqualToDownStation(finalUpStation))
                 .findFirst()
                 .orElseThrow(SectionSortingException::new);
         }
@@ -142,20 +182,5 @@ public class Sections {
         return sections.stream()
             .map(Section::getDownStation)
             .collect(Collectors.toList());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        Sections sections1 = (Sections)o;
-        return Objects.equals(sections, sections1.sections);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(sections);
     }
 }

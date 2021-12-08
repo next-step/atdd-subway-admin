@@ -14,16 +14,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.exception.DefaultException;
-import nextstep.subway.line.dto.SectionRequest;
-import nextstep.subway.line.exception.LineDuplicateException;
-import nextstep.subway.line.exception.NotFoundLineException;
 import nextstep.subway.exception.dto.ErrorMessage;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.dto.SectionResponse;
+import nextstep.subway.line.exception.LineDuplicateException;
+import nextstep.subway.line.exception.NotFoundLineException;
 import nextstep.subway.station.exception.NotFoundStationException;
 
 @RestController
@@ -63,11 +65,16 @@ public class LineController {
     }
 
     @PostMapping(value = "/{lineId}/sections")
-    public ResponseEntity<LineResponse> addSection(
-        @PathVariable Long lineId,
-        @RequestBody SectionRequest sectionRequest) {
-        LineResponse lineResponse = lineService.addSections(lineId, sectionRequest);
-        return ResponseEntity.ok().body(lineResponse);
+    public ResponseEntity<SectionResponse> addSection(
+        @PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        SectionResponse sectionResponse = lineService.addSections(lineId, sectionRequest);
+        return ResponseEntity.ok().body(sectionResponse);
+    }
+
+    @DeleteMapping(value = "/{lineId}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
+        lineService.deleteSection(lineId, stationId);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(LineDuplicateException.class)
@@ -92,7 +99,7 @@ public class LineController {
 
     @ExceptionHandler
     public ResponseEntity<ErrorMessage> handleDefaultException(Exception e) {
-        return ResponseEntity.badRequest().body(ErrorMessage.of(DefaultException.UNEXPECTED_ERROR));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(ErrorMessage.of(DefaultException.UNEXPECTED_ERROR));
     }
-
 }

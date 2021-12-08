@@ -1,11 +1,9 @@
 package nextstep.subway.station;
 
 import static nextstep.subway.station.StationTestUtil.*;
-import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -67,9 +65,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
         Long 강남역_생성_아이디 = 강남역_생성_응답.jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> response = 지하철역_제거_요청(강남역_생성_아이디);
+        ExtractableResponse<Response> 강남역_삭제_응답 = 지하철역_제거_요청(강남역_생성_아이디);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        지하철역_제거됨(강남역_삭제_응답);
     }
+
 }
