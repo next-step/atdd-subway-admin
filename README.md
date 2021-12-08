@@ -87,6 +87,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ## 3단계 기능 목록
 
-- [ ] LineService.saveLine 중복 제거
+- [x] LineService.saveLine 중복 제거
 - [ ] Line.update시 section을 제외한 나머지 파라미터로 업데이트
 - [ ] 테스트 코드에 한글 변수명을 사용하여 가독성 확보
