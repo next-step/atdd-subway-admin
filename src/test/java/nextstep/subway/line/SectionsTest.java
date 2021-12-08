@@ -325,4 +325,99 @@ public class SectionsTest {
         // then
         assertThat(stationsInOrder).isEmpty();
     }
+
+    @Test
+    void deleteStation_firstStation() {
+        // given
+        final Station station1 = new Station(1L, "강남역");
+        final Station station2 = new Station(2L, "판교역");
+        final Station station3 = new Station(3L, "광교역");
+        final Section section1 = new Section(1L, station1, station2, 4);
+        final Section section2 = new Section(1L, station2, station3, 8);
+        final Sections sections = new Sections(Arrays.asList(section1, section2));
+        assertThat(sections.size()).isEqualTo(2);
+
+        // when
+        sections.deleteStation(station1);
+
+        // then
+        assertThat(sections.size()).isEqualTo(1);
+    }
+
+    @Test
+    void deleteStation_lastStation() {
+        // given
+        final Station station1 = new Station(1L, "강남역");
+        final Station station2 = new Station(2L, "판교역");
+        final Station station3 = new Station(3L, "광교역");
+        final Section section1 = new Section(1L, station1, station2, 4);
+        final Section section2 = new Section(1L, station2, station3, 8);
+        final Sections sections = new Sections(Arrays.asList(section1, section2));
+        assertThat(sections.size()).isEqualTo(2);
+
+        // when
+        sections.deleteStation(station3);
+
+        // then
+        assertThat(sections.size()).isEqualTo(1);
+    }
+
+    @Test
+    void deleteStation_inBetween() {
+        // given
+        final Station station1 = new Station(1L, "강남역");
+        final Station station2 = new Station(2L, "판교역");
+        final Station station3 = new Station(3L, "광교역");
+        final Section section1 = new Section(1L, station1, station2, 4);
+        final Section section2 = new Section(1L, station2, station3, 8);
+        final Sections sections = new Sections(Arrays.asList(section1, section2));
+        assertThat(sections.size()).isEqualTo(2);
+
+        // when
+        sections.deleteStation(station2);
+
+        // then
+        assertThat(sections.size()).isEqualTo(1);
+    }
+
+    @Test
+    void deleteStation_emptyLine() {
+        // given
+        final Sections sections = new Sections(Collections.emptyList());
+        final Station unknownStation = new Station(1L, "광교역");
+
+        // when, then
+        assertThatThrownBy(
+            () -> sections.deleteStation(unknownStation)
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void deleteStation_oneSection() {
+        // given
+        final Station station1 = new Station(1L, "강남역");
+        final Station station2 = new Station(2L, "판교역");
+        final Section section = new Section(1L, station1, station2, 4);
+        final Sections sections = new Sections(Arrays.asList(section));
+
+        // when, then
+        assertThatThrownBy(
+            () -> sections.deleteStation(station1)
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void deleteStation_unknownStation() {
+        // given
+        final Station station1 = new Station(1L, "강남역");
+        final Station station2 = new Station(2L, "판교역");
+        final Section section = new Section(1L, station1, station2, 4);
+        final Sections sections = new Sections(Arrays.asList(section));
+        final Station unknownStation = new Station(3L, "광교역");
+
+        // when, then
+        assertThatThrownBy(
+            () -> sections.deleteStation(unknownStation)
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
 }

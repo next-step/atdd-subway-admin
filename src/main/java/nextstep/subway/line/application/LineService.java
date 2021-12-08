@@ -1,64 +1,46 @@
 package nextstep.subway.line.application;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.line.dto.SectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class LineService {
 
+    private final SectionService sectionService;
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
 
-    public LineService(final LineRepository lineRepository,
-        final StationRepository stationRepository) {
+    public LineService(
+        final SectionService sectionService,
+        final LineRepository lineRepository
+    ) {
+        this.sectionService = sectionService;
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
     }
 
     @Transactional
     public LineResponse saveLine(final LineRequest request) {
         checkLineNameIsUnique(request.getName());
         final Line persistLine = lineRepository.save(request.toLine());
-        final List<Station> stations = getStations(
-            request.getUpStationId(),
-            request.getDownStationId()
+        sectionService.addSection(
+            persistLine.getId(),
+            new SectionRequest(
+                request.getUpStationId(),
+                request.getDownStationId(),
+                request.getDistance()
+            )
         );
-        final Station upStation = getStationById(stations, request.getUpStationId());
-        final Station downStation = getStationById(stations, request.getDownStationId());
-        final Section section = new Section(upStation, downStation, request.getDistance());
-        persistLine.addSection(section);
         return LineResponse.of(persistLine);
     }
 
-    private List<Station> getStations(final Long upStationId, final Long downStationId) {
-        final List<Station> stations = stationRepository.findAllById(
-            Arrays.asList(upStationId, downStationId)
-        );
-        if (stations.size() != 2) {
-            throw new NoSuchElementException();
-        }
-        return stations;
-    }
-
-    private Station getStationById(final List<Station> stations, final Long id) {
-        return stations.stream()
-            .filter(s -> Objects.equals(s.getId(), id))
-            .findFirst()
-            .orElseThrow(NoSuchElementException::new);
-    }
-
+    @Transactional(readOnly = true)
     public List<LineResponse> findLines() {
         final List<Line> lines = lineRepository.findAll();
         return lines.stream()
@@ -66,6 +48,7 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLineById(final Long id) {
         final Line line = getLineById(id);
         return LineResponse.of(line);

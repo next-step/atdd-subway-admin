@@ -100,6 +100,24 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("노선에서 구간을 제거한다.")
+    @Test
+    void deleteSection_inBetween() {
+        // given
+        final StationResponse 판교역 = StationAcceptanceTest.지하철역_등록되어_있음("판교역")
+            .as(StationResponse.class);
+        지하철_노선에_지하철역_등록_요청(new SectionRequest(강남역.getId(), 판교역.getId(), 4));
+
+        // when
+        final ExtractableResponse<Response> response = 지하철_노선에_지하철역_제거_요청(
+            신분당선.getId(),
+            판교역.getId()
+        );
+
+        // then
+        지하철_노선에_지하철역_제거됨(response);
+    }
+
     private ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(final SectionRequest request) {
         return RestAssured.given().log().all()
             .body(request)
@@ -110,8 +128,22 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
+    private ExtractableResponse<Response> 지하철_노선에_지하철역_제거_요청(
+        final Long lineId,
+        final Long stationId
+    ) {
+        return RestAssured.given().log().all()
+            .when()
+            .delete("/lines/" + lineId + "/sections?stationId=" + stationId)
+            .then().log().all()
+            .extract();
+    }
+
     private void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철_노선에_지하철역_제거됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }
