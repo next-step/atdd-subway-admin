@@ -29,10 +29,6 @@ public class Sections {
 		sections.add(section);
 	}
 
-	public void add(Sections sectionGroup) {
-		sections.addAll(sectionGroup.sections);
-	}
-
 	public List<Station> getStationsList() {
 		Map<Station, Station> map = new HashMap<>();
 		sections.forEach(section -> map.put(section.getUpStation(), section.getDownStation()));

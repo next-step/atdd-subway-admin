@@ -1,10 +1,7 @@
 package nextstep.subway.line.dto;
 
-import java.util.Collections;
-
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 public class LineRequest {
@@ -47,8 +44,8 @@ public class LineRequest {
 
 	public Line toLine(Station station1, Station station2) {
 		Section section = new Section(station1, station2, distance);
-		Sections sections = new Sections(Collections.singletonList(section));
-		Line line = new Line(name, color, sections);
+		Line line = new Line(name, color);
+		line.addSection(section);
 		section.toLine(line);
 		return line;
 	}

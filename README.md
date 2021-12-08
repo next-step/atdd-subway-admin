@@ -80,13 +80,13 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 - [x] 노선 생성시 구간 지정하는 인수 테스트 추가
 - [x] 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기
-  - 구간(Section)의 형태로 관리되어야 함
+    - 구간(Section)의 형태로 관리되어야 함
 - [x] 노선 조회 시 응답 결과에 역 목록 추가하는 인수 테스트 추가
 - [x] 노선 조회 시 응답 결과에 역 목록 추가하기
-  - 상행역 부터 하행역 순으로 정렬되어야 함
+    - 상행역 부터 하행역 순으로 정렬되어야 함
 
 ## 3단계 기능 목록
 
 - [x] LineService.saveLine 중복 제거
-- [ ] Line.update시 section을 제외한 나머지 파라미터로 업데이트
+- [x] Line.update시 section을 제외한 나머지 파라미터로 업데이트
 - [ ] 테스트 코드에 한글 변수명을 사용하여 가독성 확보
