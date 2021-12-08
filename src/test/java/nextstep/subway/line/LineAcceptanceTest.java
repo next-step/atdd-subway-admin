@@ -26,14 +26,14 @@ import nextstep.subway.station.domain.StationRepository;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-	public static final String COLOR1 = "bg-red-600";
-	public static final String NAME1 = "신분당선";
-	public static final String COLOR2 = "bg-blue-600";
-	public static final String NAME2 = "구분당선";
+	public static final String COLOR_BG_RED_600 = "bg-red-600";
+	public static final String NAME_SINBUNDANG = "신분당선";
+	public static final String COLOR_BG_BLUE_600 = "bg-blue-600";
+	public static final String NAME_GUBUNDANG = "구분당선";
 	public static final String LOCATION_HEADER_NAME = "Location";
-	public static final Station STATION1 = new Station("삼성역");
-	public static final Station STATION2 = new Station("역삼역");
-	public static final Station STATION3 = new Station("선릉역");
+	public static final Station 삼성역 = new Station("삼성역");
+	public static final Station 역삼역 = new Station("역삼역");
+	public static final Station 선릉역 = new Station("선릉역");
 
 	@Autowired
 	private StationRepository stationRepository;
@@ -47,7 +47,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		// when
 		Section section = new Section(station1, station2, 5);
-		LineRequest params = new LineRequest(NAME1, COLOR1, section.getUpStation().getId(),
+		LineRequest params = new LineRequest(NAME_SINBUNDANG, COLOR_BG_RED_600, section.getUpStation().getId(),
 			section.getDownStation().getId(), section.getDistance());
 		ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
@@ -69,7 +69,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// when
 		Station station3 = 지하철역_생성되어_있음3();
 		Section section2 = new Section(station2, station3, 7);
-		LineRequest params = new LineRequest(NAME1, COLOR1, section2.getUpStation().getId(),
+		LineRequest params = new LineRequest(NAME_SINBUNDANG, COLOR_BG_RED_600, section2.getUpStation().getId(),
 			section2.getDownStation().getId(), section2.getDistance());
 		ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
@@ -109,7 +109,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		// then
 		응답_검증(response, HttpStatus.OK);
-		지하철_노선_포함_검증(response, NAME1, COLOR1);
+		지하철_노선_포함_검증(response, NAME_SINBUNDANG, COLOR_BG_RED_600);
 		지하철역_노선에_포함_검증(response);
 	}
 
@@ -184,7 +184,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_등록되어_있음(Section section) {
-		LineRequest params = new LineRequest(NAME1, COLOR1, section.getUpStation().getId(),
+		LineRequest params = new LineRequest(NAME_SINBUNDANG, COLOR_BG_RED_600, section.getUpStation().getId(),
 			section.getDownStation().getId(), section.getDistance());
 		return 지하철_노선_생성_요청(params);
 	}
@@ -194,7 +194,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_등록되어_있음2(Section section) {
-		LineRequest params = new LineRequest(NAME2, COLOR2, section.getUpStation().getId(),
+		LineRequest params = new LineRequest(NAME_GUBUNDANG, COLOR_BG_BLUE_600, section.getUpStation().getId(),
 			section.getDownStation().getId(), section.getDistance());
 		return 지하철_노선_생성_요청(params);
 
@@ -222,8 +222,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id) {
 		Map<String, String> params = new HashMap<>();
-		params.put("color", COLOR2);
-		params.put("name", NAME2);
+		params.put("color", COLOR_BG_BLUE_600);
+		params.put("name", NAME_GUBUNDANG);
 
 		return RestAssured.given().log().all()
 			.body(params)
@@ -248,19 +248,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	}
 
 	private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response) {
-		assertThat(response.jsonPath().getList("name")).contains(NAME1, NAME2);
-		assertThat(response.jsonPath().getList("color")).contains(COLOR1, COLOR2);
+		assertThat(response.jsonPath().getList("name")).contains(NAME_SINBUNDANG, NAME_GUBUNDANG);
+		assertThat(response.jsonPath().getList("color")).contains(COLOR_BG_RED_600, COLOR_BG_BLUE_600);
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_수정_검증(Long id) {
 		ExtractableResponse<Response> response = 지하철_노선_조회_요청(id);
-		지하철_노선_포함_검증(response, NAME2, COLOR2);
+		지하철_노선_포함_검증(response, NAME_GUBUNDANG, COLOR_BG_BLUE_600);
 		return response;
 	}
 
 	private void 지하철_노선_생성_검증(String url) {
 		ExtractableResponse<Response> response = 지하철_노선_조회_요청(url);
-		지하철_노선_포함_검증(response, NAME1, COLOR1);
+		지하철_노선_포함_검증(response, NAME_SINBUNDANG, COLOR_BG_RED_600);
 		지하철역_노선에_포함_검증(response);
 	}
 
@@ -269,20 +269,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	}
 
 	private Station 지하철역_생성되어_있음1() {
-		return stationRepository.save(STATION1);
+		return stationRepository.save(삼성역);
 	}
 
 	private Station 지하철역_생성되어_있음2() {
-		return stationRepository.save(STATION2);
+		return stationRepository.save(역삼역);
 	}
 
 	private Station 지하철역_생성되어_있음3() {
-		return stationRepository.save(STATION3);
+		return stationRepository.save(선릉역);
 	}
 
 	private void 지하철역_노선_목록에_포함_검증(ExtractableResponse<Response> response) {
 		response.jsonPath().getList("stations").forEach(stations -> {
-			System.out.println(((List<Object>)stations).size());
 			assertThat(((List<Object>)stations).size()).isGreaterThan(0);
 		});
 	}
