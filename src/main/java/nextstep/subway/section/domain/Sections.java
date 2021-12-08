@@ -15,31 +15,27 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
 
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "line_id")
-	List<Section> sections;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "line_id")
+    List<Section> sections;
 
-	public Sections() {
+    public Sections() {
 		this.sections = new LinkedList<Section>();
 	}
 
-	public void addSection(Line line, Station upStation, Station downStation, int distance) {
-		sections.add(new Section(line, upStation, downStation, distance));
-	}
+    public void addSection(Line line, Station upStation, Station downStation, int distance) {
+        sections.add(new Section(line, upStation, downStation, distance));
+    }
 
-	public List<StationResponse> getStations() {
-		List<Station> stations = this.sections.stream()
-												.map(Section::getUpStation)
-												.collect(Collectors.toList());
-		List<Station> downStations = this.sections.stream()
-												.map(Section::getDownStation)
-												.collect(Collectors.toList());
+    public List<StationResponse> getStations() {
+        List<Station> stations = this.sections.stream().map(Section::getUpStation).collect(Collectors.toList());
+        List<Station> downStations = this.sections.stream().map(Section::getDownStation).collect(Collectors.toList());
 
-		int count = downStations.size();
-		stations.add(downStations.get(count-1));
-		return stations.stream()
-						.map(StationResponse::of)
-						.collect(Collectors.toList());
-	}
+        int count = downStations.size();
+        stations.add(downStations.get(count-1));
+        return stations.stream()
+		        .map(StationResponse::of)
+		        .collect(Collectors.toList());
+    }
 
 }

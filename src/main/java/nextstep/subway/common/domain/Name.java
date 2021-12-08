@@ -6,16 +6,16 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Name {
 
-	@Column(unique = true)
-	private String name;
+    @Column(unique = true)
+    private String name;
 
-	protected Name() {}
+    protected Name() {}
 
-	public Name(String name) {
+    public Name(String name) {
 		this.name = name;
 	}
 
-	public String printName() {
+    public String printName() {
 		return this.name;
 	}
 
