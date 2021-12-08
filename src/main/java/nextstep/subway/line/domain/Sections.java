@@ -81,9 +81,10 @@ public class Sections {
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
         int distance = section.getDistance();
-
-        boolean existUpStation = isExisted(upStation);
-        boolean existDownStation = isExisted(downStation);
+        
+        List<Station> stationsInOrder = getStationsInOrder();
+        boolean existUpStation = stationsInOrder.stream().anyMatch(it -> it.equals(upStation));
+        boolean existDownStation = stationsInOrder.stream().anyMatch(it -> it.equals(downStation));
 
         validStation(existUpStation, existDownStation);
         if (existUpStation) {
@@ -93,10 +94,6 @@ public class Sections {
             updateDownStation(upStation, downStation, distance);
         }
         sections.add(section);
-    }
-
-    private boolean isExisted(Station station) {
-        return getStationsInOrder().stream().anyMatch(it -> it.equals(station));
     }
 
     private void validStation(boolean existUpStation, boolean existDownStation) {

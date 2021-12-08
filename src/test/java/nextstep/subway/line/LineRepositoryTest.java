@@ -66,15 +66,14 @@ public class LineRepositoryTest {
     void 수정() {
         //given
         Line line = lineRepository.save(new Line("신분당선", "bg-red-600", 강남역, 광교역, 10));
-        Line expected = lineRepository.save(new Line("분당선", "bg-yellow-200", 왕십리역, 수원역, 20));
 
         //when
-        line.update(expected);
+        line.update("분당선", "bg-yellow-200");
         Line result = lineRepository.findById(line.getId()).orElseThrow(() -> new NotFoundException("데이터 없음" + line.getId()));
 
         //then
-        assertThat(result.getName()).isEqualTo(expected.getName());
-        assertThat(result.getColor()).isEqualTo(expected.getColor());
+        assertThat(result.getName()).isEqualTo("분당선");
+        assertThat(result.getColor()).isEqualTo("bg-yellow-200");
     }
 
 

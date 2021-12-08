@@ -39,8 +39,4 @@ public class LineRequest {
     public int getDistance() {
         return distance;
     }
-
-    public Line toLine() {
-        return new Line(name, color);
-    }
 }

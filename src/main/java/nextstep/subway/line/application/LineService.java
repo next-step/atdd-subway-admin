@@ -49,7 +49,7 @@ public class LineService {
 
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = findLineById(id);
-        line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
+        line.update(lineRequest.getName(), lineRequest.getColor());
     }
 
     public void deleteLine(Long id) {
