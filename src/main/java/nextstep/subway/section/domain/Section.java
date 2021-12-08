@@ -58,8 +58,4 @@ public class Section {
 		return this.downStation;
 	}
 
-    public int getDistnace() {
-		return this.distnace;
-	}
-
 }
