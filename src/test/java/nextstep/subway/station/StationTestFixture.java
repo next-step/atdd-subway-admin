@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StationTestFixture {
-    public static ExtractableResponse<Response> 지하철역_등록(String name){
+    public static ExtractableResponse<Response> 지하철역_등록(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
@@ -22,7 +22,7 @@ public class StationTestFixture {
                 .extract();
     }
 
-    public static Long 지하철역_ID(ExtractableResponse<Response> response){
+    public static Long 지하철역_ID(ExtractableResponse<Response> response) {
         return Long.parseLong(response.header("Location").split("/")[2]);
     }
 }

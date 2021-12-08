@@ -2,17 +2,13 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.station.domain.Station;
-import org.hibernate.annotations.DynamicUpdate;
+import nextstep.subway.section.domain.Sections;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Entity
-@DynamicUpdate
 public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,8 +16,8 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
-    @OneToMany(mappedBy = "line", cascade = CascadeType.REMOVE)
-    private List<Section> sections;
+    @Embedded
+    private final Sections sections = new Sections();
 
     public Line() {
     }
@@ -29,17 +25,6 @@ public class Line extends BaseEntity {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.sections = new ArrayList<>();
-    }
-
-    public Line update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
-        return this;
-    }
-
-    public void addSection(Section section) {
-        section.ofLine(this);
     }
 
     public Long getId() {
@@ -54,8 +39,18 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public List<Long> getStations() {
+        return sections.getStationIds();
+    }
+
+    public Line update(Line line) {
+        this.name = line.getName();
+        this.color = line.getColor();
+        return this;
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
     }
 
     @Override
@@ -69,19 +64,5 @@ public class Line extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
-        stations.add(sections.stream()
-                .findFirst()
-                .map(section -> section.getUpStation())
-                .get());
-
-        stations.addAll(sections.stream()
-                .map(section -> section.getDownStation())
-                .collect(Collectors.toList()));
-
-        return stations;
     }
 }

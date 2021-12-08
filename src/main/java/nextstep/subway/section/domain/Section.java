@@ -1,46 +1,75 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.station.domain.Station;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
-public class Section extends BaseEntity {
+public class Section extends BaseEntity implements Comparable<Section> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private int distance;
-    @ManyToOne
-    private Station upStation;
-    @ManyToOne
-    private Station downStation;
-    @ManyToOne
-    private Line line;
+    private Long upStationId;
+    private Long downStationId;
 
-    protected Section() {
+    public Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
-        this.upStation = upStation;
-        this.downStation = downStation;
+    public Section(Long upStationId, Long downStationId, int distance) {
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
         this.distance = distance;
     }
 
-    public void ofLine(Line line) {
-        if (this.line != null) {
-            this.line.getSections().remove(this);
+    public int getDistance() {
+        return distance;
+    }
+
+    public Long getUpStationId() {
+        return upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
+    }
+
+    public void reMeasurement(int distance) {
+        if (this.distance <= distance) {
+            throw new IllegalArgumentException("등록하려는 구간의 길이가 너무 큽니다.");
         }
-        this.line = line;
-        line.getSections().add(this);
+        this.distance = this.distance - distance;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public boolean isExistUpStation(Long stationId) {
+        return upStationId.equals(stationId);
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public boolean isExistDownStation(Long stationId) {
+        return downStationId.equals(stationId);
+    }
+
+    public void updateUpStation(Section section) {
+        this.upStationId = section.getDownStationId();
+        reMeasurement(section.getDistance());
+    }
+
+    public void updateDownStation(Section section) {
+        this.downStationId = section.getUpStationId();
+        reMeasurement(section.getDistance());
+    }
+
+    @Override
+    public int compareTo(Section o) {
+        if (this.getUpStationId().equals(o.getDownStationId())) {
+            return 1;
+        }
+        if (this.getDownStationId().equals(o.getUpStationId())) {
+            return -1;
+        }
+        return 0;
     }
 }
