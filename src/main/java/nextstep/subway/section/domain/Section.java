@@ -25,6 +25,12 @@ public class Section extends BaseEntity implements Comparable<Section> {
         this.distance = distance;
     }
 
+    public static Section mergeSection(Section sectionByDownStationId, Section sectionByUpStationId) {
+        Section mergeSection = new Section(sectionByDownStationId.getUpStationId(), sectionByUpStationId.getDownStationId(), sectionByUpStationId.getDistance() + sectionByDownStationId.getDistance());
+        mergeSection.setLine(sectionByUpStationId.getLine());
+        return mergeSection;
+    }
+
     public int getDistance() {
         return distance;
     }

@@ -80,4 +80,9 @@ public class LineService {
         line.addSection(section);
         return getLine(id);
     }
+
+    public void deleteSection(Long id, Long stationId) {
+        Line line = lineRepository.findById(id).orElseThrow(NotFoundException::new);
+        line.removeSection(stationId);
+    }
 }

@@ -8,6 +8,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -67,6 +68,10 @@ public class Sections {
         return findSection(section).isEmpty();
     }
 
+    private boolean isLastSection() {
+        return this.sections.size() == 1;
+    }
+
     private List<Section> findSection(Section section) {
         List<Section> sections = new ArrayList<>();
         sections.addAll(this.sections.stream()
@@ -82,5 +87,31 @@ public class Sections {
                 .filter(s -> s.isExistDownStation(section.getUpStationId()))
                 .collect(Collectors.toList()));
         return sections;
+    }
+
+    public void removeSection(Long stationId) {
+        if (isLastSection()) {
+            throw new IllegalArgumentException("구간이 하나밖에 존재하지 않아 삭제할 수 없습니다.");
+        }
+
+        Optional<Section> findSectionByDownStationId = sections.stream()
+                .filter(s -> s.getDownStationId().equals(stationId))
+                .findFirst();
+
+        Optional<Section> findSectionByUpStationId = sections.stream()
+                .filter(s -> s.getUpStationId().equals(stationId))
+                .findFirst();
+
+        if (findSectionByDownStationId.isEmpty() && findSectionByUpStationId.isEmpty()) {
+            throw new IllegalArgumentException("구간에 존재하지 않는 역이므로 삭제할 수 없습니다.");
+        }
+
+        findSectionByDownStationId.ifPresent(s -> sections.remove(s));
+        findSectionByUpStationId.ifPresent(s -> sections.remove(s));
+
+        if (findSectionByDownStationId.isPresent() && findSectionByUpStationId.isPresent()) {
+            Section mergeSection = Section.mergeSection(findSectionByDownStationId.get(), findSectionByUpStationId.get());
+            sections.add(mergeSection);
+        }
     }
 }

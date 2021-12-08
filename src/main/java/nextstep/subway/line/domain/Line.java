@@ -69,4 +69,8 @@ public class Line extends BaseEntity {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    public void removeSection(Long stationId) {
+        this.sections.removeSection(stationId);
+    }
 }
