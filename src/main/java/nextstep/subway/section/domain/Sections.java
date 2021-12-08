@@ -10,6 +10,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,9 +21,9 @@ import static java.util.stream.Collectors.toMap;
 @Embeddable
 public class Sections {
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
-    private List<Section> sections = new ArrayList<>();
+    private List<Section> sections = new LinkedList<>();
 
     public Sections() {
     }
@@ -34,56 +35,44 @@ public class Sections {
             return;
         }
 
-        Section interactiveSection = getInteractiveWithSection(section);
+        validateDuplicateSection(section);
+        validateDistanceSection(section);
 
-        validateDuplicateSection(section, interactiveSection);
-        validateLengthSection(section, interactiveSection);
-
-        Section updatedSection = updateSection(section, interactiveSection);
-        this.sections.add(updatedSection);
+        Section persistSection = updateExistingSection(section);
+        this.sections.add(persistSection);
     }
 
-    private Section updateSection(Section section, Section interactiveSection) {
-        return interactiveSection.updateSection(section);
+    private Section updateExistingSection(Section section) {
+        Section existingSection = this.sections.stream()
+                .filter(i -> i.isInteractiveStation(section))
+                .findFirst()
+                .orElseThrow(() -> new SubwayException(SubWayExceptionStatus.NO_INTERSECTION_STATION));
+
+        Section persistSection = section.updateNewSection();
+        existingSection.updateExistingSection(section);
+        return persistSection;
     }
 
-    private void validateDuplicateSection(Section section, Section interactiveSection) {
-        if (isDuplicationSection(section, interactiveSection)) {
+    private void validateDuplicateSection(Section section) {
+        if (isDuplicationSection(section)) {
             throw new SubwayException(SubWayExceptionStatus.DUPLICATE_STATION);
         }
     }
 
-    private void validateLengthSection(Section section, Section interactiveSection) {
-        if (isDistanceLongerThanEqual(section, interactiveSection)) {
+    private Boolean isDuplicationSection(Section section) {
+        return this.sections.stream().anyMatch(i -> i.isDuplicateSection(section));
+    }
+
+    private void validateDistanceSection(Section section) {
+        if (isDistanceLongerThanEqual(section)) {
             throw new SubwayException(SubWayExceptionStatus.LONG_DISTANCE_SECTION);
         }
     }
 
-    private Boolean isDistanceLongerThanEqual(Section section, Section existingSection) {
-
-        Station upStation = section.getUpStation();
-        Station downStation = section.getDownStation();
-
-        Station firstStation = getFirstStation();
-        Station lastStation = getLastStation();
-
-        if (upStation.isSameName(lastStation) || downStation.isSameName(firstStation)) {
-            return Boolean.FALSE;
-        }
-
-        return existingSection.isLongerThanEqual(section);
-    }
-
-    private Boolean isDuplicationSection(Section section, Section interactiveSection) {
-        return section.isSameNameWithUpStation(interactiveSection) && section.isSameNameWithDownStation(interactiveSection);
-    }
-
-    private Section getInteractiveWithSection(Section section) {
-        return this.sections
-                .stream()
-                .filter(i -> i.isInteractiveWithStation(section))
-                .findFirst()
-                .orElseThrow(() -> new SubwayException(SubWayExceptionStatus.NO_INTERSECTION_STATION));
+    private Boolean isDistanceLongerThanEqual(Section section) {
+        return this.sections.stream()
+                .filter(i -> i.getUpStation().equals(section.getUpStation()) || i.getDownStation().equals(section.getDownStation()))
+                .anyMatch(i -> i.isLongerThanEqual(section));
     }
 
     public List<Station> getStations() {
@@ -107,17 +96,6 @@ public class Sections {
 
         return upStreamStations.stream()
                 .filter(upStreamStation -> !downStreamStations.contains(upStreamStation))
-                .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
-    }
-
-    private Station getLastStation() {
-
-        List<Station> upStreamStations = getUpstreamStations();
-        List<Station> downStreamStations = getDownStreamStation();
-
-        return downStreamStations.stream()
-                .filter(downStreamStation -> !upStreamStations.contains(downStreamStation))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }

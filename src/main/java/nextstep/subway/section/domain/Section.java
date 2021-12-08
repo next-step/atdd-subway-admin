@@ -33,62 +33,55 @@ public class Section extends BaseEntity {
     private Station downStation;
 
     @Column(name = "distance")
-    private Integer distance;
-
-    public Section updateSection(Section that) {
-
-
-        int calculatedDistance = this.distance - that.distance;
-
-        if (this.upStation.isSameName(that.upStation)) {
-
-            Section tempSection = new Section(this.line, this.upStation, this.downStation, this.distance);
-            this.downStation = that.downStation;
-            this.distance = that.distance;
-
-            that.downStation = tempSection.downStation;
-            that.upStation = this.downStation;
-            that.distance = calculatedDistance;
-        }
-
-        if (this.downStation.isSameName(that.downStation)) {
-            this.downStation = that.upStation;
-            this.distance = calculatedDistance;
-        }
-
-        return that;
-    }
+    private int distance;
 
     protected Section() {
 
     }
 
-    public Section(Line line, Station upStation, Station downStation, Integer distance) {
+    public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
-    public Boolean isSameNameWithUpStation(Section that) {
-        return this.upStation.isSameName(that.upStation);
+    public boolean isDuplicateSection(Section that) {
+        return this.upStation.equals(that.upStation) && this.downStation.equals(that.downStation);
     }
 
-    public Boolean isSameNameWithDownStation(Section that) {
-        return this.downStation.isSameName(that.downStation);
-    }
-
-    public Boolean isInteractiveWithStation(Section that) {
-        return this.upStation.isSameName(that.upStation) ||
-                this.upStation.isSameName(that.downStation) ||
-                this.downStation.isSameName(that.upStation) ||
-                this.downStation.isSameName(that.downStation);
+    public Boolean isInteractiveStation(Section that) {
+        return this.upStation.equals(that.upStation) ||
+                this.upStation.equals(that.downStation) ||
+                this.downStation.equals(that.upStation) ||
+                this.downStation.equals(that.downStation);
     }
 
     public Boolean isLongerThanEqual(Section that) {
         return this.distance <= that.distance;
     }
 
+    public void updateExistingSection(Section newSection) {
+        if (this.upStation.equals(newSection.upStation)) {
+            this.upStation = newSection.downStation;
+            this.distance -= newSection.distance;
+            return;
+        }
+
+        if (this.downStation.equals(newSection.downStation)) {
+            this.downStation = newSection.upStation;
+            this.distance -= newSection.distance;
+        }
+    }
+
+    public Section updateNewSection() {
+        return new Section(
+                this.line,
+                this.upStation,
+                this.downStation,
+                this.distance
+        );
+    }
 
     public Long getId() {
         return id;
@@ -104,5 +97,9 @@ public class Section extends BaseEntity {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }

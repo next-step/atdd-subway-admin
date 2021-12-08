@@ -27,11 +27,15 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
+        Station upStation = findStation(request.getUpStationId());
+        Station downStation = findStation(request.getDownStationId());
 
-        Station persistUpStation = findStation(request.getUpStationId());
-        Station persistDownStation = findStation(request.getDownStationId());
+        Line line = request.toLine();
+        Section section = request.toSection(line, upStation, downStation);
+        line.addToSections(section);
 
-        Line persistLine = lineRepository.save(request.toLine(persistUpStation, persistDownStation, request.getDistance()));
+        Line persistLine = lineRepository.save(line);
+
         return LineResponse.of(persistLine);
     }
 
@@ -50,12 +54,7 @@ public class LineService {
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-
-        Station upStation = findStation(lineRequest.getUpStationId());
-        Station downStation = findStation(lineRequest.getDownStationId());
-
-        line.update(lineRequest.toLine(upStation, downStation, lineRequest.getDistance()));
-
+        line.update(lineRequest.toLine());
         return LineResponse.of(line);
     }
 
@@ -72,7 +71,7 @@ public class LineService {
         Station persistUpStation = findStation(sectionRequest.getUpStationId());
         Station persistDownStation = findStation(sectionRequest.getDownStationId());
 
-        Section section = sectionRequest.toSection(line, persistUpStation, persistDownStation, sectionRequest.getDistance());
+        Section section = sectionRequest.toSection(line, persistUpStation, persistDownStation);
         line.addToSections(section);
 
         return LineResponse.of(line);

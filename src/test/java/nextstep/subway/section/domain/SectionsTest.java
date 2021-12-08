@@ -6,7 +6,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 public class SectionsTest {
@@ -42,5 +45,4 @@ public class SectionsTest {
         Assertions.assertThat(stations.get(2)).isEqualTo(양재시민의숲);
         Assertions.assertThat(stations.get(3)).isEqualTo(광교역);
     }
-
 }
