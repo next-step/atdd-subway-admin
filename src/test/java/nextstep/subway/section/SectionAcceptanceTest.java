@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 public class SectionAcceptanceTest extends AcceptanceTest {
     StationResponse 강남역;
@@ -37,6 +38,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines/" + id.toString() + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> requestSectionDelete(Long id, Long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .queryParam("stationId", stationId)
+                .delete("/lines/" + id.toString() + "/sections")
                 .then().log().all()
                 .extract();
     }
@@ -65,10 +76,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 노선에_구간을_등록한다() {
         // when
         // 지하철_노선에_구간_등록_요청
-        createParams = new HashMap<>();
-        createParams.put("downStationId", 강남역.getId() + "");
-        createParams.put("upStationId", 판교역.getId() + "");
-        createParams.put("distance", 8 + "");
+        setSectionCreateParams("downStationId", 강남역, "upStationId", 판교역, 8);
 
         ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
 
@@ -82,10 +90,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 역_사이에_상행역이_동일한_새로운_역을_등록한다() {
         // when
         // 지하철_노선에_구간_등록_요청
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 강남역.getId() + "");
-        createParams.put("downStationId", 판교역.getId() + "");
-        createParams.put("distance", 8 + "");
+        setSectionCreateParams("upStationId", 강남역, "downStationId", 판교역, 8);
 
         ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
 
@@ -105,10 +110,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 역_사이에_하행역이_동일한_새로운_역을_등록한다() {
         // when
         // 지하철_노선에_구간_등록_요청
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 판교역.getId() + "");
-        createParams.put("downStationId", 광교역.getId() + "");
-        createParams.put("distance", 7 + "");
+        setSectionCreateParams("upStationId", 판교역, "downStationId", 광교역, 7);
 
         ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
         ExtractableResponse<Response> lineResponse = requestReadURI("/lines/" + 신분당선.getId());
@@ -128,10 +130,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 새로운_역을_상행_종점으로_등록한다() {
         // when
         // 지하철_노선에_구간_등록_요청
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 양재역.getId() + "");
-        createParams.put("downStationId", 강남역.getId() + "");
-        createParams.put("distance", 7 + "");
+        setSectionCreateParams("upStationId", 양재역, "downStationId", 강남역, 7);
 
         ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
         ExtractableResponse<Response> lineResponse = requestReadURI("/lines/" + 신분당선.getId());
@@ -151,10 +150,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 새로운_역을_하행_종점으로_등록한다() {
         // when
         // 지하철_노선에_구간_등록_요청
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 광교역.getId() + "");
-        createParams.put("downStationId", 양재역.getId() + "");
-        createParams.put("distance", 7 + "");
+        setSectionCreateParams("upStationId", 광교역, "downStationId", 양재역, 7);
 
         ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
         ExtractableResponse<Response> lineResponse = requestReadURI("/lines/" + 신분당선.getId());
@@ -172,12 +168,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("새로운 구간의 길이가 기존 구간 사이 길이보다 크거나 같다")
     @Test
     void 새로운_구간의_길이가_기존_구간_사이_길이보다_크거나_같다() {
-        // when
+        // whe n
         // 지하철_노선에_구간_등록_요청
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 강남역.getId() + "");
-        createParams.put("downStationId", 판교역.getId() + "");
-        createParams.put("distance", 10 + "");
+        setSectionCreateParams("upStationId", 강남역, "downStationId", 판교역, 10);
 
         ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
 
@@ -190,10 +183,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 새로운_구간의_상행하행역_모두_기존에_존재한다() {
         // when
         // 지하철_노선에_구간_등록_요청
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 강남역.getId() + "");
-        createParams.put("downStationId", 광교역.getId() + "");
-        createParams.put("distance", 8 + "");
+        setSectionCreateParams("upStationId", 강남역, "downStationId", 광교역, 8);
 
         ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
 
@@ -206,15 +196,95 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 새로운_구간의_상행하행역_모두_기존에_부재한다() {
         // when
         // 지하철_노선에_구간_등록_요청
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 판교역.getId() + "");
-        createParams.put("downStationId", 양재역.getId() + "");
-        createParams.put("distance", 8 + "");
+        setSectionCreateParams("upStationId", 판교역, "downStationId", 양재역, 8);
 
         ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("가운데 구간을 제거한다")
+    @Test
+    void 가운데_구간을_제거한다() {
+        // given
+        // 지하철_노선에_구간_등록_요청
+        setSectionCreateParams("upStationId", 판교역, "downStationId", 광교역, 7);
+        ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
+
+        // when
+        // 지하철 노선에 구간 삭제 요청
+        ExtractableResponse<Response> deleteResponse = requestSectionDelete(신분당선.getId(), 판교역.getId());
+        ExtractableResponse<Response> lineResponse = requestReadURI("/lines/" + 신분당선.getId());
+
+        ExtractableResponse<Response> sectionsResponse = requestReadURI("/lines/" + 신분당선.getId() + "/sections");
+        List<Integer> sectionDistances = getSection(sectionsResponse);
+        List<String> stations = getStations(lineResponse);
+
+        // then 구간 삭제됨
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(sectionDistances).containsAll(Arrays.asList(10));
+        assertThat(stations).containsExactlyElementsOf(Arrays.asList("강남역", "광교역"));
+    }
+
+    @DisplayName("상행 종점을 제거한다")
+    @Test
+    void 상행_종점을_제거한다() {
+        // given
+        // 지하철_노선에_구간_등록_요청
+        setSectionCreateParams("upStationId", 판교역, "downStationId", 광교역, 7);
+        ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
+
+        // when
+        // 지하철 노선에 구간 삭제 요청
+        ExtractableResponse<Response> deleteResponse = requestSectionDelete(신분당선.getId(), 강남역.getId());
+        ExtractableResponse<Response> lineResponse = requestReadURI("/lines/" + 신분당선.getId());
+
+        ExtractableResponse<Response> sectionsResponse = requestReadURI("/lines/" + 신분당선.getId() + "/sections");
+        List<Integer> sectionDistances = getSection(sectionsResponse);
+        List<String> stations = getStations(lineResponse);
+
+        // then 구간 삭제됨
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(sectionDistances).containsAll(Arrays.asList(7));
+        assertThat(stations).containsExactlyElementsOf(Arrays.asList("판교역", "광교역"));
+    }
+
+    @DisplayName("하행 종점을 제거한다")
+    @Test
+    void 하행_종점을_제거한다() {
+        // given
+        // 지하철_노선에_구간_등록_요청
+        setSectionCreateParams("upStationId", 판교역, "downStationId", 광교역, 7);
+        ExtractableResponse<Response> response = requestSectionCreation(신분당선.getId(), createParams);
+
+        // when
+        // 지하철 노선에 구간 삭제 요청
+        ExtractableResponse<Response> deleteResponse = requestSectionDelete(신분당선.getId(), 강남역.getId());
+        ExtractableResponse<Response> lineResponse = requestReadURI("/lines/" + 신분당선.getId());
+
+        ExtractableResponse<Response> sectionsResponse = requestReadURI("/lines/" + 신분당선.getId() + "/sections");
+        List<Integer> sectionDistances = getSection(sectionsResponse);
+        List<String> stations = getStations(lineResponse);
+
+        // then 구간 삭제됨
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(sectionDistances).containsAll(Arrays.asList(7));
+        assertThat(stations).containsExactlyElementsOf(Arrays.asList("판교역", "광교역"));
+    }
+
+    @DisplayName("유일한 구간을 제거한다")
+    @Test
+    void 유일한_구간을_제거한다() {
+        // when
+        // 지하철 노선에 구간 삭제 요청
+        ExtractableResponse<Response> deleteResponse = requestSectionDelete(신분당선.getId(), 강남역.getId());
+        ExtractableResponse<Response> lineResponse = requestReadURI("/lines/" + 신분당선.getId());
+
+        ExtractableResponse<Response> sectionsResponse = requestReadURI("/lines/" + 신분당선.getId() + "/sections");
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     private void assertResponseStatusAndLocation(ExtractableResponse<Response> response) {
@@ -240,5 +310,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return response.jsonPath().getList("stations", StationResponse.class).stream()
                 .map(StationResponse::getName)
                 .collect(Collectors.toList());
+    }
+
+    private void setSectionCreateParams(String upStationId, StationResponse 판교역, String downStationId, StationResponse 광교역, int i) {
+        createParams = new HashMap<>();
+        createParams.put(upStationId, 판교역.getId() + "");
+        createParams.put(downStationId, 광교역.getId() + "");
+        createParams.put("distance", i + "");
     }
 }

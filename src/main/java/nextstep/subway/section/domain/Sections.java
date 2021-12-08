@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.dto.SectionResponse;
+import nextstep.subway.section.exception.DeleteOnlySectionException;
 import nextstep.subway.section.exception.ExistsSectionException;
 import nextstep.subway.section.exception.NotExisitsSectionException;
 import nextstep.subway.station.domain.Station;
@@ -9,6 +10,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +21,8 @@ import java.util.stream.Stream;
 @Embeddable
 public class Sections {
     public static final int DIFFERENCE_SECTIONS_STATIONS_SIZE = 1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "line")
+    public static final int CANNOT_DELETE_SIZE = 1;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "line", orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public Sections(List<Section> sections) {
@@ -144,5 +147,40 @@ public class Sections {
     public void addAndSetLine(Section section, Line line) {
         sections.add(section);
         section.setLine(line);
+    }
+
+    public void removeStation(Station station) {
+        validateOnlySection();
+        Optional<Section> sameUpStation = sections.stream().filter(section -> section.getUpStation().equals(station)).findFirst();
+        Optional<Section> sameDownStation = sections.stream().filter(section -> section.getDownStation().equals(station)).findFirst();
+
+        if (removeMiddleStation(sameUpStation, sameDownStation)) return;
+        removeEndStation(sameUpStation, sameDownStation);
+    }
+
+    private void validateOnlySection() {
+        if (sections.size() == CANNOT_DELETE_SIZE) {
+            throw new DeleteOnlySectionException();
+        }
+    }
+
+    private void removeEndStation(Optional<Section> sameUpStation, Optional<Section> sameDownStation) {
+        if (!sameUpStation.isPresent()) {
+           sections.remove(sameDownStation.get());
+            return;
+        }
+        sections.remove(sameUpStation.get());
+    }
+
+    private boolean removeMiddleStation(Optional<Section> sameUpStation, Optional<Section> sameDownStation) {
+        if (sameUpStation.isPresent() && sameDownStation.isPresent()) {
+            sections.remove(sameUpStation.get());
+            sections.remove(sameDownStation.get());
+            Section newSection = Section.mergeSections(sameUpStation.get(), sameDownStation.get());
+            sections.add(newSection);
+            newSection.setSameLine(sameUpStation);
+            return true;
+        }
+        return false;
     }
 }
