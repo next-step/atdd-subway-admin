@@ -56,9 +56,12 @@ public class Section {
         );
     }
 
-    public Section sumBySection(Section section) {
-        int distance = this.distance + section.getDistance();
-        return Section.create(this.line, this.upStation, section.getDownStation(), distance);
+    public Section addBySection(Section otherSection) {
+        int distance = this.distance + otherSection.getDistance();
+        if(this.downStation.equals(otherSection.getUpStation())) {
+            return Section.create(this.line, this.upStation, otherSection.getDownStation(), distance);
+        }
+        return Section.create(this.line, otherSection.upStation, this.getDownStation(), distance);
     }
 
     public boolean matchStation(Station station) {
@@ -87,6 +90,10 @@ public class Section {
 
     public boolean matchDownStation(Station station) {
         return this.downStation.equals(station);
+    }
+
+    public boolean matchAnyStation(Station station) {
+        return this.matchUpStation(station) || this.matchDownStation(station);
     }
 
     public boolean isGreaterOrEqualDistance(Section section) {
