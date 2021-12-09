@@ -62,6 +62,6 @@ public class LineService {
     @Transactional(readOnly = true)
     public Line fineById(Long id) {
         return lineRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("해당 id의 정류장이 존재하지 않습니다. id = " + id));
+            .orElseThrow(() -> new NoSuchElementException("해당 id의 노선이 존재하지 않습니다. id = " + id));
     }
 }

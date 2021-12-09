@@ -67,4 +67,22 @@ public class Section extends BaseEntity {
     public void setLine(Line line) {
         this.line = line;
     }
+
+    public boolean isUpStation(Station station) {
+        return station.isSameStation(this.upStation);
+    }
+
+    public boolean isDownStation(Station station) {
+        return station.isSameStation(this.downStation);
+    }
+
+    public void updateDownStation(Station newStation, Section newSection) {
+        downStation = newStation;
+        distance = distance - newSection.distance;
+    }
+
+    public void updateUpStation(Station newStation, Section newSection) {
+        upStation = newStation;
+        distance = distance - newSection.distance;
+    }
 }
