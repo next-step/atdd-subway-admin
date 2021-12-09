@@ -26,6 +26,16 @@ public class Sections {
 	}
 
 	public void add(Section section) {
+		sections.stream()
+			.filter(it -> it.getUpStation().equals(section.getUpStation()))
+			.findFirst()
+			.ifPresent(it -> it.setUpStation(section.getDownStation()));
+
+		sections.stream()
+			.filter(section1 -> section1.getDownStation().equals(section.getDownStation()))
+			.findFirst()
+			.ifPresent(value -> value.setDownStation(section.getUpStation()));
+
 		sections.add(section);
 	}
 

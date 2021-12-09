@@ -11,6 +11,7 @@ import nextstep.subway.common.exception.ResourceAlreadyExistException;
 import nextstep.subway.common.exception.ResourceNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.dto.AddSectionRequest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineResponses;
@@ -77,5 +78,14 @@ public class LineService {
 		} catch (EmptyResultDataAccessException e) {
 			throw new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_LINE, e);
 		}
+	}
+
+	@Transactional
+	public void addSection(Long id, AddSectionRequest addSectionRequest) {
+		Line line = lineRepository.findById(id)
+			.orElseThrow(() -> new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_LINE));
+		Station upStation = getStation(addSectionRequest.upStationId);
+		Station downStation = getStation(addSectionRequest.downStationId);
+		line.addSection(upStation, downStation, addSectionRequest.distance);
 	}
 }
