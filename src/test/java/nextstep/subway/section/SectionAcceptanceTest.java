@@ -61,7 +61,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철역_순서_검증(lineResponse, Arrays.asList(upStation, downStation, underDownStation));
 	}
 
-	@DisplayName("지하철 노선 구간 중간에 역을 추가한다.")
+	@DisplayName("지하철 노선 구간 상행역 아래에 역을 추가한다. (A-C 구간에 A-B를 추가)")
 	@Test
 	void addSection3() {
 		Station upStation = StationAcceptanceTest.지하철역_생성되어_있음_삼성역();
@@ -72,6 +72,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		LineAcceptanceTest.지하철_노선_등록되어_있음(section);
 		Long lineId = 1L;
 		AddSectionRequest sectionRequest = new AddSectionRequest(upStation.getId(), betweenStation.getId(), 3);
+
+		ExtractableResponse<Response> response = 구간_추가_요청(lineId, sectionRequest);
+
+		응답_검증(response, HttpStatus.OK);
+		ExtractableResponse<Response> lineResponse = LineAcceptanceTest.지하철_노선_조회_요청(lineId);
+		지하철역_순서_검증(lineResponse, Arrays.asList(upStation, betweenStation, downStation));
+	}
+
+	@DisplayName("지하철 노선 구간 하행역 위에 역을 추가한다. (A-C 구간에 B-C를 추가)")
+	@Test
+	void addSection4() {
+		Station upStation = StationAcceptanceTest.지하철역_생성되어_있음_삼성역();
+		Station downStation = StationAcceptanceTest.지하철역_생성되어_있음_역삼역();
+		Station betweenStation = StationAcceptanceTest.지하철역_생성되어_있음_선릉역();
+		Section section = new Section(upStation, downStation, 5);
+
+		LineAcceptanceTest.지하철_노선_등록되어_있음(section);
+		Long lineId = 1L;
+		AddSectionRequest sectionRequest = new AddSectionRequest(betweenStation.getId(), downStation.getId(), 3);
 
 		ExtractableResponse<Response> response = 구간_추가_요청(lineId, sectionRequest);
 
