@@ -99,25 +99,4 @@ public class Section extends BaseEntity {
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (!(o instanceof Section) || o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Section that = (Section) o;
-        if (this.line == that.getLine() &&
-            this.upStation == that.getUpStation() &&
-            this.downStation == that.getDownStation() &&
-            this.distance == that.getDistance()) {
-            return true;
-        }
-
-        return false;
-    }
-
 }
