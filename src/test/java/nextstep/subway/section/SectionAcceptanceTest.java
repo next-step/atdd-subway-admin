@@ -128,4 +128,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @DisplayName("노선의 구간을 제거하는 기능.")
+    @Test
+    void 노선의_구간을_제거() {
+        // given
+        StationResponse 선릉역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("선릉역"));
+        SectionRequest sectionRequest = new SectionRequest(강남역Id, 선릉역.getId(), 4);
+        ExtractableResponse<Response> createResponse = 데이터_생성_요청(sectionRequest, String.format(uri, 신분당선Id));
+        SectionResponse sectionResponse = createResponse.as(SectionResponse.class);
+
+        // when
+        String deleteUri = String.format("/lines/%s/sections?stationId=%s", 신분당선Id, 선릉역.getId());
+        ExtractableResponse<Response> response = 데이터_제거_요청(deleteUri);
+
+        // then
+        데이터_삭제완료됨(response);
+    }
+
 }
