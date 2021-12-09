@@ -94,4 +94,17 @@ public class LineController {
         return ResponseEntity.created(URI.create(String.format("/lines/%s/sections", lineId))).body(section);
     }
 
+    /**
+     * 구간 삭제
+     *
+     * @param lineId
+     * @param stationId
+     * @return
+     */
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity<HttpStatus> removeLineStation(@PathVariable Long lineId, @RequestParam Long stationId) {
+        lineService.removeSectionByStationId(lineId, stationId);
+        return ResponseEntity.noContent().build();
+    }
+
 }

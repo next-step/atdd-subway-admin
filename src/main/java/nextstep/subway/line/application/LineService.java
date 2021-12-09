@@ -61,8 +61,8 @@ public class LineService {
 
     public LineResponse updateLine(Long id, LineRequest request) {
         Line line = this.findById(id);
-        Station upStation = this.findSection(request.getUpStationId());
-        Station downStation = this.findSection(request.getDownStationId());
+        Station upStation = this.findStation(request.getUpStationId());
+        Station downStation = this.findStation(request.getDownStationId());
         line.update(request.getName(), request.getColor(), upStation, downStation, new Distance(request.getDistance()));
         Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
@@ -80,18 +80,25 @@ public class LineService {
         return SectionResponse.of(section);
     }
 
-    private Line findById(Long id) {
+    private Section getNewSection(final Line line,final Long upStationId, final Long downStationId, final int distance) {
+        Station upStation = this.findStation(upStationId);
+        Station downStation = this.findStation(downStationId);
+        return new Section(line, upStation, downStation, new Distance(distance));
+    }
+
+    public void removeSectionByStationId(final Long lineId, final Long stationId) {
+        Line line = this.findById(lineId);
+        Station station = this.findStation(stationId);
+        line.deleteStation(station);
+        lineRepository.save(line);
+    }
+
+    private Line findById(final Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NoResultException("찾을 수 없는 노선입니다."));
     }
 
-    private Section getNewSection(final Line line,final Long upStationId, final Long downStationId, final int distance) {
-        Station upStation = this.findSection(upStationId);
-        Station downStation = this.findSection(downStationId);
-        return new Section(line, upStation, downStation, new Distance(distance));
-    }
-
-    private Station findSection(Long sectionId) {
+    private Station findStation(final Long sectionId) {
         return stationRepository.findById(sectionId)
                 .orElseThrow(() -> new NoResultException("찾을 수 없는 구간입니다."));
     }
