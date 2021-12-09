@@ -37,6 +37,17 @@ public class DistanceTest {
         assertThat(distance2).isEqualTo(new Distance(5));
     }
 
+    @DisplayName("거리끼리는 덧셈을 할 수 있다.")
+    @Test
+    void plus() {
+        //when
+        Distance distance1 = distance.plus(3);
+        Distance distance2 = distance1.plus(2);
+
+        //then
+        assertThat(distance2).isEqualTo(new Distance(15));
+    }
+
     @DisplayName("신규 역 간 거리가 더 크면 예외 발생")
     @Test
     void validateLargerThan() {

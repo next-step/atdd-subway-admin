@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import nextstep.subway.Exception.CannotUpdateSectionException;
+import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.domain.Station;
@@ -15,14 +16,20 @@ public class SectionTest {
     private Station 강남역;
     private Station 양재역;
     private Station 광교역;
+    private Station 일산역;
+    private Station 가락시장역;
     private Section 신분당선_구간;
+    private Section 삼호선_구간;
 
     @BeforeEach
     void setUp() {
         강남역 = new Station("강남역");
         양재역 = new Station("양재역");
         광교역 = new Station("광교역");
+        일산역 = new Station("일산역");
+        가락시장역 = new Station("가락시장역");
         신분당선_구간 = new Line("신분당선", "bg-red-600", 강남역, 광교역, 10).getSections().get(0);
+        삼호선_구간 = new Line("삼호선", "bg-orange-600", 일산역, 가락시장역, 10).getSections().get(0);
     }
 
     @DisplayName("지하철역이 기존 역 사이에 들어가면 거리가 줄어드는지 확인")
@@ -41,5 +48,14 @@ public class SectionTest {
         assertThatThrownBy(() -> {
             신분당선_구간.updateUpStation(양재역, 10);
         }).isInstanceOf(CannotUpdateSectionException.class).hasMessage("신규 역 간 거리가 기존 역 간 거리와 같거나 더 클 수 없습니다.");
+    }
+
+    @DisplayName("구간의 거리를 합한다.")
+    @Test
+    void sumDistance() {
+        //when
+        Distance distance = 신분당선_구간.sumDistance(삼호선_구간);
+
+        assertThat(distance.getDistance()).isEqualTo(20);
     }
 }

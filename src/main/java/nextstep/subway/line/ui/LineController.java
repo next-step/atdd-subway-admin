@@ -1,5 +1,6 @@
 package nextstep.subway.line.ui;
 
+import nextstep.subway.Exception.CannotDeleteException;
 import nextstep.subway.Exception.CannotSaveException;
 import nextstep.subway.Exception.CannotUpdateSectionException;
 import nextstep.subway.Exception.NotFoundException;
@@ -57,7 +58,13 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
-    @ExceptionHandler({NotFoundException.class, CannotSaveException.class, CannotUpdateSectionException.class, IllegalArgumentException.class})
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity removeLineSections(@PathVariable Long lineId, @RequestParam Long stationId) {
+        lineService.removeLineSection(lineId, stationId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler({NotFoundException.class, CannotSaveException.class, CannotUpdateSectionException.class, IllegalArgumentException.class, CannotDeleteException.class})
     public ResponseEntity handleRuntimeException(RuntimeException e) {
         return ResponseEntity.badRequest().build();
     }

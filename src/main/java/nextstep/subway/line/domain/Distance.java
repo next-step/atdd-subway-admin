@@ -26,7 +26,11 @@ public class Distance {
     }
 
     public Distance minus(int distance) {
-        return new Distance(this.distance -= distance);
+        return new Distance(this.distance - distance);
+    }
+
+    public Distance plus(int otherSectionDistance) {
+        return new Distance(this.distance + otherSectionDistance);
     }
 
     public int getDistance() {

@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.Exception.CannotDeleteException;
 import nextstep.subway.Exception.CannotUpdateSectionException;
 import nextstep.subway.Exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
@@ -9,17 +10,15 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
+    public static final int MINIMUM_SIZE_OF_SECTIONS = 1;
     @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
-    }
-
-    public void add(Section section) {
-        this.sections.add(section);
     }
 
     List<Station> getStationsInOrder() {
@@ -37,7 +36,7 @@ public class Sections {
     }
 
     private Station findFirstStation() {
-        if(sections.isEmpty()) {
+        if (sections.isEmpty()) {
             throw new NotFoundException("지하철 구간이 등록되지 않았습니다.");
         }
 
@@ -74,12 +73,18 @@ public class Sections {
     }
 
     void addSection(Section section) {
+        if (this.sections.isEmpty()) {
+            this.sections.add(section);
+            return;
+        }
+
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
         int distance = section.getDistance();
-
-        boolean existUpStation = isExisted(upStation);
-        boolean existDownStation = isExisted(downStation);
+        
+        List<Station> stationsInOrder = getStationsInOrder();
+        boolean existUpStation = stationsInOrder.stream().anyMatch(it -> it.equals(upStation));
+        boolean existDownStation = stationsInOrder.stream().anyMatch(it -> it.equals(downStation));
 
         validStation(existUpStation, existDownStation);
         if (existUpStation) {
@@ -89,10 +94,6 @@ public class Sections {
             updateDownStation(upStation, downStation, distance);
         }
         sections.add(section);
-    }
-
-    private boolean isExisted(Station station) {
-        return getStationsInOrder().stream().anyMatch(it -> it.equals(station));
     }
 
     private void validStation(boolean existUpStation, boolean existDownStation) {
@@ -118,7 +119,45 @@ public class Sections {
                 .ifPresent(it -> it.updateUpStation(downStation, distance));
     }
 
-    public List<Section> getSections() {
+    List<Section> getSections() {
         return this.sections;
+    }
+
+    void removeLineSection(Line line, Station station) {
+        if (!getStationsInOrder().contains(station)) {
+            throw new CannotDeleteException("노선에 등록되어있지 않은 역을 제거할 수 없습니다.");
+        }
+
+        if (sections.size() <= MINIMUM_SIZE_OF_SECTIONS) {
+            throw new CannotDeleteException("구간이 하나인 노선에서 마지막 구간을 제거할 수 없습니다.");
+        }
+
+        Optional<Section> upStationSection = getUpStationSection(station);
+        Optional<Section> downStationSection = getDownStationSection(station);
+
+        if (upStationSection.isPresent() && downStationSection.isPresent()) {
+            createSection(line, upStationSection.get(), downStationSection.get());
+        }
+        upStationSection.ifPresent(it -> sections.remove(it));
+        downStationSection.ifPresent(it -> sections.remove(it));
+    }
+
+    private void createSection(Line line, Section upStationSection, Section downStationSection) {
+        Station upStation = downStationSection.getUpStation();
+        Station downStation = upStationSection.getDownStation();
+        Distance newDistance = downStationSection.sumDistance(upStationSection);
+        sections.add(new Section(line, upStation, downStation, newDistance.getDistance()));
+    }
+
+    private Optional<Section> getDownStationSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.equalDownStation(station))
+                .findFirst();
+    }
+
+    private Optional<Section> getUpStationSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.equalUpStation(station))
+                .findFirst();
     }
 }
