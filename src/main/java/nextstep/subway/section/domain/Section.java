@@ -99,4 +99,21 @@ public class Section extends BaseEntity {
         }
     }
 
+    public boolean hasStation(final Station station) {
+        return this.hasUpStation(station) || this.hasDownStation(station);
+    }
+
+    public boolean hasUpStation(final Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean hasDownStation(final Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public void merge(final Section mergeSection) {
+        this.downStation = mergeSection.getDownStation();
+        this.distance = this.distance.add(mergeSection.getDistance());
+    }
+
 }
