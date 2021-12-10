@@ -90,21 +90,10 @@ public class Sections {
     }
 
     public void removeSection(Long stationId) {
-        if (isLastSection()) {
-            throw new IllegalArgumentException("구간이 하나밖에 존재하지 않아 삭제할 수 없습니다.");
-        }
+        validateRemoveSection(stationId);
 
-        Optional<Section> findSectionByDownStationId = sections.stream()
-                .filter(s -> s.getDownStationId().equals(stationId))
-                .findFirst();
-
-        Optional<Section> findSectionByUpStationId = sections.stream()
-                .filter(s -> s.getUpStationId().equals(stationId))
-                .findFirst();
-
-        if (findSectionByDownStationId.isEmpty() && findSectionByUpStationId.isEmpty()) {
-            throw new IllegalArgumentException("구간에 존재하지 않는 역이므로 삭제할 수 없습니다.");
-        }
+        Optional<Section> findSectionByDownStationId = getSectionByDownStationId(stationId);
+        Optional<Section> findSectionByUpStationId = getSectionByUpStationId(stationId);
 
         findSectionByDownStationId.ifPresent(s -> sections.remove(s));
         findSectionByUpStationId.ifPresent(s -> sections.remove(s));
@@ -113,5 +102,27 @@ public class Sections {
             Section mergeSection = Section.mergeSection(findSectionByDownStationId.get(), findSectionByUpStationId.get());
             sections.add(mergeSection);
         }
+    }
+
+    private void validateRemoveSection(Long stationId) {
+        if (isLastSection()) {
+            throw new IllegalArgumentException("구간이 하나밖에 존재하지 않아 삭제할 수 없습니다.");
+        }
+
+        if (getSectionByDownStationId(stationId).isEmpty() && getSectionByUpStationId(stationId).isEmpty()) {
+            throw new IllegalArgumentException("구간에 존재하지 않는 역이므로 삭제할 수 없습니다.");
+        }
+    }
+
+    private Optional<Section> getSectionByUpStationId(Long stationId) {
+        return sections.stream()
+                .filter(s -> s.getUpStationId().equals(stationId))
+                .findFirst();
+    }
+
+    private Optional<Section> getSectionByDownStationId(Long stationId) {
+        return sections.stream()
+                .filter(s -> s.getDownStationId().equals(stationId))
+                .findFirst();
     }
 }
