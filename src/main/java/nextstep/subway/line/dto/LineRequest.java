@@ -11,7 +11,7 @@ public class LineRequest {
 	private Long downStationId;
 	private int distance;
 
-	public LineRequest() {
+	protected LineRequest() {
 	}
 
 	public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
