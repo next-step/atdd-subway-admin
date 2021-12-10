@@ -28,6 +28,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	public static final Station 삼성역 = new Station("삼성역");
 	public static final Station 역삼역 = new Station("역삼역");
 	public static final Station 선릉역 = new Station("선릉역");
+	public static final Station 강남역 = new Station("강남역");
 
 	@Autowired
 	private static StationRepository stationRepository;
@@ -161,6 +162,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
 	public static Station 지하철역_생성되어_있음_선릉역() {
 		StationResponse stationResponse = 지하철역_생성_요청(선릉역.getName()).as(StationResponse.class);
+		return Station.from(stationResponse);
+	}
+
+	public static Station 지하철역_생성되어_있음_강남역() {
+		StationResponse stationResponse = 지하철역_생성_요청(강남역.getName()).as(StationResponse.class);
 		return Station.from(stationResponse);
 	}
 
