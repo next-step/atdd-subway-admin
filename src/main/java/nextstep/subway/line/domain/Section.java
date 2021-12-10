@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import java.util.Objects;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
@@ -11,13 +12,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.common.exception.BadParameterException;
 import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Section extends BaseEntity {
-	public static final String EXCEPTION_MESSAGE_TOO_FAR_DISTANCE = "추가하려는 구간의 길이가 기존에 존재하는 길이와 같거나 깁니다.";
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -34,13 +32,16 @@ public class Section extends BaseEntity {
 	@JoinColumn(foreignKey = @ForeignKey(name = "fk_section_to_line"), nullable = false)
 	private Line line;
 
+	@Embedded
+	private Distance distance;
+
 	protected Section() {
 	}
 
 	public Section(Station upStation, Station downStation, int distance) {
 		this.upStation = upStation;
 		this.downStation = downStation;
-		this.distance = distance;
+		this.distance = new Distance(distance);
 	}
 
 	public void toLine(Line line) {
@@ -49,8 +50,6 @@ public class Section extends BaseEntity {
 			line.addSection(this);
 		}
 	}
-
-	private int distance;
 
 	public Long getId() {
 		return id;
@@ -64,7 +63,7 @@ public class Section extends BaseEntity {
 		return downStation;
 	}
 
-	public int getDistance() {
+	public Distance getDistance() {
 		return distance;
 	}
 
@@ -99,20 +98,13 @@ public class Section extends BaseEntity {
 			'}';
 	}
 
-	public void minus(int distance) {
-		if (this.distance <= distance) {
-			throw new BadParameterException(EXCEPTION_MESSAGE_TOO_FAR_DISTANCE);
-		}
-		this.distance -= distance;
-	}
-
 	public void updateByUpSection(Section section) {
-		this.minus(section.distance);
+		distance.minus(section.distance);
 		this.upStation = section.getDownStation();
 	}
 
 	public void updateByDownSection(Section section) {
-		this.minus(section.distance);
+		distance.minus(section.distance);
 		this.downStation = section.getUpStation();
 	}
 }

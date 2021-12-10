@@ -22,7 +22,7 @@ public class SectionTest {
 		section.updateByUpSection(upSection);
 
 		assertThat(section.getUpStation()).isEqualTo(upSection.getDownStation());
-		assertThat(section.getDistance()).isEqualTo(3);
+		assertThat(section.getDistance().get()).isEqualTo(3);
 	}
 
 	@Test
@@ -37,7 +37,7 @@ public class SectionTest {
 		section.updateByDownSection(downSection);
 
 		assertThat(section.getDownStation()).isEqualTo(downSection.getUpStation());
-		assertThat(section.getDistance()).isEqualTo(2);
+		assertThat(section.getDistance().get()).isEqualTo(2);
 	}
 
 	@Test
