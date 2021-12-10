@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.util.UrlConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,8 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 // @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)  --> 메소드 실행 전 새로운 context를 실행. 단, 실행시간에 대한 단점 존재
 public class StationAcceptanceTest extends AcceptanceTest {
-
-    private static final String STATION_DEFAULT_URL = "/stations";
 
     private Map<String, String> params = new HashMap<>();
 
@@ -75,7 +74,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get(STATION_DEFAULT_URL)
+                .get(UrlConstants.STATION_DEFAULT_URL)
                 .then().log().all()
                 .extract();
 
@@ -118,14 +117,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post(STATION_DEFAULT_URL)
+                .post(UrlConstants.STATION_DEFAULT_URL)
                 .then().log().all()
                 .extract(); // extract가 객체로 반환해줌.
     }
 
     // 검증 코드는 Line과 동일하므로 Class 분리하여 관리하기.
     private void 응답_코드_검증(ExtractableResponse<Response> response, int statusCode) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(statusCode);
     }
 
     private void 응답_헤더_정보_존재여부_검증(ExtractableResponse<Response> response) {
