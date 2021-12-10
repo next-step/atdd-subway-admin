@@ -11,11 +11,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.common.exception.BadParameterException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Section extends BaseEntity {
+	public static final String EXCEPTION_MESSAGE_TOO_FAR_DISTANCE = "추가하려는 구간의 길이가 기존에 존재하는 길이와 같거나 깁니다.";
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -97,11 +100,20 @@ public class Section extends BaseEntity {
 			'}';
 	}
 
-	public void setUpStation(Station station) {
-		this.upStation = station;
+	public void minus(int distance) {
+		if (this.distance <= distance) {
+			throw new BadParameterException(EXCEPTION_MESSAGE_TOO_FAR_DISTANCE);
+		}
+		this.distance -= distance;
 	}
 
-	public void setDownStation(Station downStation) {
-		this.downStation = downStation;
+	public void updateByUpSection(Section section) {
+		this.minus(section.distance);
+		this.upStation = section.getDownStation();
+	}
+
+	public void updateByDownSection(Section section) {
+		this.minus(section.distance);
+		this.downStation = section.getUpStation();
 	}
 }
