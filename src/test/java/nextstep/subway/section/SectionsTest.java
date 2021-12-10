@@ -8,8 +8,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import nextstep.subway.common.exception.BadParameterException;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.Sections;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 public class SectionsTest {

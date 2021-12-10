@@ -1,4 +1,4 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
 import java.util.Objects;
 
@@ -12,7 +12,6 @@ import javax.persistence.ManyToOne;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.common.exception.BadParameterException;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 @Entity
