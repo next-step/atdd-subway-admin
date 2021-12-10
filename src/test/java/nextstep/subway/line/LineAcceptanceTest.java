@@ -38,7 +38,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// when
 		Section section = new Section(station1, station2, 5);
 		LineRequest params = new LineRequest(NAME_SINBUNDANG, COLOR_BG_RED_600, section.getUpStation().getId(),
-			section.getDownStation().getId(), section.getDistance());
+			section.getDownStation().getId(), section.getDistance().get());
 		ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
 		// then
@@ -60,7 +60,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		Station station3 = StationAcceptanceTest.지하철역_생성되어_있음_선릉역();
 		Section section2 = new Section(station2, station3, 7);
 		LineRequest params = new LineRequest(NAME_SINBUNDANG, COLOR_BG_RED_600, section2.getUpStation().getId(),
-			section2.getDownStation().getId(), section2.getDistance());
+			section2.getDownStation().getId(), section2.getDistance().get());
 		ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
 		// then
@@ -175,7 +175,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(Section section) {
 		LineRequest params = new LineRequest(NAME_SINBUNDANG, COLOR_BG_RED_600, section.getUpStation().getId(),
-			section.getDownStation().getId(), section.getDistance());
+			section.getDownStation().getId(), section.getDistance().get());
 		return 지하철_노선_생성_요청(params);
 	}
 
@@ -185,7 +185,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	private ExtractableResponse<Response> 지하철_노선_등록되어_있음2(Section section) {
 		LineRequest params = new LineRequest(NAME_GUBUNDANG, COLOR_BG_BLUE_600, section.getUpStation().getId(),
-			section.getDownStation().getId(), section.getDistance());
+			section.getDownStation().getId(), section.getDistance().get());
 		return 지하철_노선_생성_요청(params);
 
 	}
