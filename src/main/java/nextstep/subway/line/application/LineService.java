@@ -35,7 +35,7 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
-        Section section = sectionRepository.save(request.toSectionRequest().toSection());
+        Section section = sectionRepository.save(request.toSection());
         persistLine.addSection(section);
 
         return getLine(persistLine.getId());
@@ -50,14 +50,14 @@ public class LineService {
         Line line = lineRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
 
-        Map<Long, Station> stationMap = stationRepository.findAllById(line.getStations()).stream()
+        Map<Long, Station> stationMap = stationRepository.findAllById(line.getStationIds()).stream()
                 .collect(Collectors.toMap(s -> s.getId(), Function.identity()));
 
         return LineResponse.of(line, sortStationResponse(line, stationMap));
     }
 
     private List<StationResponse> sortStationResponse(Line line, Map<Long, Station> stationMap) {
-        return line.getStations().stream()
+        return line.getStationIds().stream()
                 .map(s -> StationResponse.of(stationMap.get(s)))
                 .collect(Collectors.toList());
 
@@ -79,5 +79,10 @@ public class LineService {
         Section section = sectionRepository.save(sectionRequest.toSection());
         line.addSection(section);
         return getLine(id);
+    }
+
+    public void deleteSection(Long id, Long stationId) {
+        Line line = lineRepository.findById(id).orElseThrow(NotFoundException::new);
+        line.removeSection(stationId);
     }
 }

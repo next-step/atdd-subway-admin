@@ -1,11 +1,9 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.domain.Line;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Section extends BaseEntity implements Comparable<Section> {
@@ -15,6 +13,8 @@ public class Section extends BaseEntity implements Comparable<Section> {
     private int distance;
     private Long upStationId;
     private Long downStationId;
+    @ManyToOne
+    private Line line;
 
     public Section() {
     }
@@ -23,6 +23,12 @@ public class Section extends BaseEntity implements Comparable<Section> {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public static Section mergeSection(Section sectionByDownStationId, Section sectionByUpStationId) {
+        Section mergeSection = new Section(sectionByDownStationId.getUpStationId(), sectionByUpStationId.getDownStationId(), sectionByUpStationId.getDistance() + sectionByDownStationId.getDistance());
+        mergeSection.setLine(sectionByUpStationId.getLine());
+        return mergeSection;
     }
 
     public int getDistance() {
@@ -35,6 +41,14 @@ public class Section extends BaseEntity implements Comparable<Section> {
 
     public Long getDownStationId() {
         return downStationId;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
     }
 
     public void reMeasurement(int distance) {

@@ -1,18 +1,19 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.line.domain.Line;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "line_id")
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
     public List<Long> getStationIds() {
@@ -27,9 +28,10 @@ public class Sections {
         return stationIds;
     }
 
-    public void addSection(Section section) {
+    public void addSection(Line line, Section section) {
         if (sections.isEmpty()) {
             sections.add(section);
+            section.setLine(line);
             return;
         }
 
@@ -46,6 +48,7 @@ public class Sections {
         }
 
         sections.add(section);
+        section.setLine(line);
     }
 
     private void checkValidation(Section section) {
@@ -65,6 +68,10 @@ public class Sections {
         return findSection(section).isEmpty();
     }
 
+    private boolean isLastSection() {
+        return this.sections.size() == 1;
+    }
+
     private List<Section> findSection(Section section) {
         List<Section> sections = new ArrayList<>();
         sections.addAll(this.sections.stream()
@@ -80,5 +87,42 @@ public class Sections {
                 .filter(s -> s.isExistDownStation(section.getUpStationId()))
                 .collect(Collectors.toList()));
         return sections;
+    }
+
+    public void removeSection(Long stationId) {
+        validateRemoveSection(stationId);
+
+        Optional<Section> findSectionByDownStationId = getSectionByDownStationId(stationId);
+        Optional<Section> findSectionByUpStationId = getSectionByUpStationId(stationId);
+
+        findSectionByDownStationId.ifPresent(s -> sections.remove(s));
+        findSectionByUpStationId.ifPresent(s -> sections.remove(s));
+
+        if (findSectionByDownStationId.isPresent() && findSectionByUpStationId.isPresent()) {
+            Section mergeSection = Section.mergeSection(findSectionByDownStationId.get(), findSectionByUpStationId.get());
+            sections.add(mergeSection);
+        }
+    }
+
+    private void validateRemoveSection(Long stationId) {
+        if (isLastSection()) {
+            throw new IllegalArgumentException("구간이 하나밖에 존재하지 않아 삭제할 수 없습니다.");
+        }
+
+        if (getSectionByDownStationId(stationId).isEmpty() && getSectionByUpStationId(stationId).isEmpty()) {
+            throw new IllegalArgumentException("구간에 존재하지 않는 역이므로 삭제할 수 없습니다.");
+        }
+    }
+
+    private Optional<Section> getSectionByUpStationId(Long stationId) {
+        return sections.stream()
+                .filter(s -> s.getUpStationId().equals(stationId))
+                .findFirst();
+    }
+
+    private Optional<Section> getSectionByDownStationId(Long stationId) {
+        return sections.stream()
+                .filter(s -> s.getDownStationId().equals(stationId))
+                .findFirst();
     }
 }
