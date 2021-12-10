@@ -13,7 +13,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SectionsAcceptanceTest extends AcceptanceTest {
+// Section 단위테스트
+public class SectionsTest extends AcceptanceTest {
 
     @Test
     @DisplayName("지하철 역을 상행선에서 하행선 순서로 조회한다.")

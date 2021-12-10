@@ -33,9 +33,7 @@ public class Sections {
 
         int count = downStations.size();
         stations.add(downStations.get(count-1));
-        return stations.stream()
-		        .map(StationResponse::of)
-		        .collect(Collectors.toList());
+        return stations.stream().map(StationResponse::of).collect(Collectors.toList());
     }
 
 }
