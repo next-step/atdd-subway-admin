@@ -1,15 +1,18 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.exception.SubWayExceptionStatus;
+import nextstep.subway.exception.SubwayException;
 import nextstep.subway.station.domain.Station;
+import org.springframework.util.CollectionUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
@@ -18,15 +21,65 @@ import static java.util.stream.Collectors.toMap;
 @Embeddable
 public class Sections {
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
-    private List<Section> sections = new ArrayList<>();
+    private List<Section> sections = new LinkedList<>();
 
     public Sections() {
     }
 
     public void addToSections(Section section) {
-        this.sections.add(section);
+
+        if (CollectionUtils.isEmpty(this.sections)) {
+            this.sections.add(section);
+            return;
+        }
+
+        validateDuplicateSection(section);
+        validateDistanceSection(section);
+
+        Section persistSection = updateExistingSection(section);
+        this.sections.add(persistSection);
+    }
+
+    private Section updateExistingSection(Section section) {
+        List<Section> existingSection = this.sections.stream()
+                .filter(i -> i.isInteractiveStation(section))
+                .collect(Collectors.toList());
+
+        validateExistingSection(existingSection);
+
+        Section persistSection = section.updateNewSection();
+        existingSection.forEach(i -> i.updateExistingSection(section));
+        return persistSection;
+    }
+
+    private void validateExistingSection(List<Section> existingSections) {
+        if (CollectionUtils.isEmpty(existingSections)) {
+            throw new SubwayException(SubWayExceptionStatus.NO_INTERSECTION_STATION);
+        }
+    }
+
+    private void validateDuplicateSection(Section section) {
+        if (isDuplicationSection(section)) {
+            throw new SubwayException(SubWayExceptionStatus.DUPLICATE_STATION);
+        }
+    }
+
+    private Boolean isDuplicationSection(Section section) {
+        return this.sections.stream().anyMatch(i -> i.isDuplicateSection(section));
+    }
+
+    private void validateDistanceSection(Section section) {
+        if (isDistanceLongerThanEqual(section)) {
+            throw new SubwayException(SubWayExceptionStatus.LONG_DISTANCE_SECTION);
+        }
+    }
+
+    private Boolean isDistanceLongerThanEqual(Section section) {
+        return this.sections.stream()
+                .filter(i -> i.getUpStation().equals(section.getUpStation()) || i.getDownStation().equals(section.getDownStation()))
+                .anyMatch(i -> i.isLongerThanEqual(section));
     }
 
     public List<Station> getStations() {
@@ -44,13 +97,22 @@ public class Sections {
     }
 
     private Station getFirstStation() {
-        List<Station> upStreamStations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
-        List<Station> downStreamStations = sections.stream().map(Section::getDownStation).collect(Collectors.toList());
+
+        List<Station> upStreamStations = getUpstreamStations();
+        List<Station> downStreamStations = getDownStreamStation();
 
         return upStreamStations.stream()
                 .filter(upStreamStation -> !downStreamStations.contains(upStreamStation))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private List<Station> getUpstreamStations() {
+        return this.sections.stream().map(Section::getUpStation).collect(Collectors.toList());
+    }
+
+    private List<Station> getDownStreamStation() {
+        return this.sections.stream().map(Section::getDownStation).collect(Collectors.toList());
     }
 
     private Map<Station, Station> doCacheWithUpStations() {

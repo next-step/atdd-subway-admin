@@ -36,6 +36,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
+
         List<StationResponse> stationResponses = line.getStations()
                 .stream()
                 .map(StationResponse::of)

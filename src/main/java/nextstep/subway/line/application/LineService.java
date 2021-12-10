@@ -4,6 +4,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -25,11 +27,15 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
+        Station upStation = findStation(request.getUpStationId());
+        Station downStation = findStation(request.getDownStationId());
 
-        Station persistUpStation = findStation(request.getUpStationId());
-        Station persistDownStation = findStation(request.getDownStationId());
+        Line line = request.toLine();
+        Section section = request.toSection(line, upStation, downStation);
+        line.addToSections(section);
 
-        Line persistLine = lineRepository.save(request.toLine(persistUpStation, persistDownStation));
+        Line persistLine = lineRepository.save(line);
+
         return LineResponse.of(persistLine);
     }
 
@@ -48,12 +54,7 @@ public class LineService {
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-
-        Station upStation = findStation(lineRequest.getUpStationId());
-        Station downStation = findStation(lineRequest.getDownStationId());
-
-        line.update(lineRequest.toLine(upStation, downStation));
-
+        line.update(lineRequest.toLine());
         return LineResponse.of(line);
     }
 
@@ -61,6 +62,19 @@ public class LineService {
         Line persistLine = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
         lineRepository.delete(persistLine);
         return Boolean.TRUE;
+    }
+
+    public LineResponse saveSectionToLine(Long lineId, SectionRequest sectionRequest) {
+
+        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+
+        Station persistUpStation = findStation(sectionRequest.getUpStationId());
+        Station persistDownStation = findStation(sectionRequest.getDownStationId());
+
+        Section section = sectionRequest.toSection(line, persistUpStation, persistDownStation);
+        line.addToSections(section);
+
+        return LineResponse.of(line);
     }
 
     private Station findStation(Long stationId) {
