@@ -2,10 +2,13 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -51,5 +54,18 @@ public class Line extends BaseEntity {
     public void addSection(Section section) {
         section.setLine(this);
         sections.add(section);
+    }
+
+    public List<StationResponse> getStationResponses() {
+        List<StationResponse> stationResponses = new ArrayList<>();
+        getSortedSections().forEach(section -> {
+            stationResponses.add(StationResponse.of(section.getUpStation()));
+            stationResponses.add(StationResponse.of(section.getDownStation()));
+        });
+        return stationResponses;
+    }
+
+    private List<Section> getSortedSections() {
+        return sections.stream().sorted(Comparator.comparingInt(Section::getOrderId)).collect(Collectors.toList());
     }
 }

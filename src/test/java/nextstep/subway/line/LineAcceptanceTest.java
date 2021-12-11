@@ -7,7 +7,6 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -24,20 +23,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private static StationAcceptanceTest stationAcceptanceTest;
-
-    @BeforeAll
-    static void beforeAll() {
-        stationAcceptanceTest = new StationAcceptanceTest();
-    }
-
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given
         // 지하철_역_등록되어_있음
-        ExtractableResponse<Response> gangnamStation = stationAcceptanceTest.createStation("강남역");
-        ExtractableResponse<Response> gwanggyoStation = stationAcceptanceTest.createStation("광교역");
+        ExtractableResponse<Response> gangnamStation = StationAcceptanceTest.createStation("강남역");
+        ExtractableResponse<Response> gwanggyoStation = StationAcceptanceTest.createStation("광교역");
 
         // when
         // 지하철_노선_생성_요청
@@ -56,8 +48,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> gangnamStation = stationAcceptanceTest.createStation("강남역");
-        ExtractableResponse<Response> gwanggyoStation = stationAcceptanceTest.createStation("광교역");
+        ExtractableResponse<Response> gangnamStation = StationAcceptanceTest.createStation("강남역");
+        ExtractableResponse<Response> gwanggyoStation = StationAcceptanceTest.createStation("광교역");
         Long gangnamStationId = Long.parseLong(getUri(gangnamStation).split("/")[2]);
         Long gwanggyoStationId = Long.parseLong(getUri(gwanggyoStation).split("/")[2]);
         createLine(new LineRequest("신분당선", "bg-red-600", gangnamStationId, gwanggyoStationId, 10));
@@ -76,15 +68,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 신분당선_지하철_역_등록되어_있음
-        ExtractableResponse<Response> gangnamStation = stationAcceptanceTest.createStation("강남역");
-        ExtractableResponse<Response> gwanggyoStation = stationAcceptanceTest.createStation("광교역");
+        ExtractableResponse<Response> gangnamStation = StationAcceptanceTest.createStation("강남역");
+        ExtractableResponse<Response> gwanggyoStation = StationAcceptanceTest.createStation("광교역");
         // 신분당선_노선_등록되어_있음
         Long gangnamStationId = Long.parseLong(getUri(gangnamStation).split("/")[2]);
         Long gwanggyoStationId = Long.parseLong(getUri(gwanggyoStation).split("/")[2]);
         ExtractableResponse<Response> shinbundangLine = createLine(new LineRequest("신분당선", "bg-red-600", gangnamStationId, gwanggyoStationId, 10));
         // 1호선_지하철_역_등록되어_있음
-        ExtractableResponse<Response> soyosanStation = stationAcceptanceTest.createStation("소요산역");
-        ExtractableResponse<Response> incheonStation = stationAcceptanceTest.createStation("인천역");
+        ExtractableResponse<Response> soyosanStation = StationAcceptanceTest.createStation("소요산역");
+        ExtractableResponse<Response> incheonStation = StationAcceptanceTest.createStation("인천역");
         // 1호선_노선_등록되어_있음
         Long soyosanStationId = Long.parseLong(getUri(soyosanStation).split("/")[2]);
         Long incheonStationId = Long.parseLong(getUri(incheonStation).split("/")[2]);
@@ -115,8 +107,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_역_등록되어_있음
-        ExtractableResponse<Response> gangnamStation = stationAcceptanceTest.createStation("강남역");
-        ExtractableResponse<Response> gwanggyoStation = stationAcceptanceTest.createStation("광교역");
+        ExtractableResponse<Response> gangnamStation = StationAcceptanceTest.createStation("강남역");
+        ExtractableResponse<Response> gwanggyoStation = StationAcceptanceTest.createStation("광교역");
         // 지하철_노선_등록되어_있음
         Long gangnamStationId = Long.parseLong(getUri(gangnamStation).split("/")[2]);
         Long gwanggyoStationId = Long.parseLong(getUri(gwanggyoStation).split("/")[2]);
@@ -150,8 +142,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> gangnamStation = stationAcceptanceTest.createStation("강남역");
-        ExtractableResponse<Response> gwanggyoStation = stationAcceptanceTest.createStation("광교역");
+        ExtractableResponse<Response> gangnamStation = StationAcceptanceTest.createStation("강남역");
+        ExtractableResponse<Response> gwanggyoStation = StationAcceptanceTest.createStation("광교역");
         Long gangnamStationId = Long.parseLong(getUri(gangnamStation).split("/")[2]);
         Long gwanggyoStationId = Long.parseLong(getUri(gwanggyoStation).split("/")[2]);
         ExtractableResponse<Response> createResponse = createLine(new LineRequest("신분당선", "bg-red-600", gangnamStationId, gwanggyoStationId, 10));
@@ -179,8 +171,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> gangnamStation = stationAcceptanceTest.createStation("강남역");
-        ExtractableResponse<Response> gwanggyoStation = stationAcceptanceTest.createStation("광교역");
+        ExtractableResponse<Response> gangnamStation = StationAcceptanceTest.createStation("강남역");
+        ExtractableResponse<Response> gwanggyoStation = StationAcceptanceTest.createStation("광교역");
         Long gangnamStationId = Long.parseLong(getUri(gangnamStation).split("/")[2]);
         Long gwanggyoStationId = Long.parseLong(getUri(gwanggyoStation).split("/")[2]);
         ExtractableResponse<Response> createResponse = createLine(new LineRequest("신분당선", "bg-red-600", gangnamStationId, gwanggyoStationId, 10));

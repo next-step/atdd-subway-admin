@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.common.consts.OrderIdConst;
 import nextstep.subway.common.exception.ElementNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -29,7 +30,12 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Optional<Station> upStation = stationRepository.findById(request.getUpStationId());
         Optional<Station> downStation = stationRepository.findById(request.getDownStationId());
-        Section section = new Section(request.getDistance(), 1, upStation.orElseThrow(() -> new ElementNotFoundException()), downStation.orElseThrow(() -> new ElementNotFoundException()));
+
+        if (!upStation.isPresent() || !downStation.isPresent()) {
+            throw new ElementNotFoundException();
+        }
+
+        Section section = new Section(request.getDistance(), OrderIdConst.INITIAL_ORDER_ID, upStation.get(), downStation.get());
         Line line = request.toLine();
         line.addSection(section);
         Line persistLine = lineRepository.save(line);
@@ -38,10 +44,9 @@ public class LineService {
 
     public void updateLine(Long id, LineRequest request) {
         Optional<Line> optionalLine = lineRepository.findById(id);
-        optionalLine.ifPresent(line -> {
-            line.update(request.toLine());
-            lineRepository.save(line);
-        });
+        Line line = optionalLine.orElseThrow(() -> new ElementNotFoundException());
+        line.update(request.toLine());
+        lineRepository.save(line);
     }
 
     @Transactional(readOnly = true)
@@ -49,14 +54,15 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(line -> LineResponse.of(line))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLineById(Long id) {
         Optional<Line> optionalLine = lineRepository.findById(id);
-        return LineResponse.of(optionalLine.orElseThrow(() -> new ElementNotFoundException()));
+        return optionalLine.map(LineResponse::of)
+                .orElseThrow(() -> new ElementNotFoundException());
     }
 
     public void deleteLineById(Long id) {

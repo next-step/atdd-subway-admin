@@ -8,24 +8,22 @@ import javax.persistence.*;
 
 @Entity
 public class Section extends BaseEntity {
-    @EmbeddedId
-    private SectionPK id = new SectionPK();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private int distance;
     private int orderId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("lineId")
-    @JoinColumn(name = "lineId", insertable = false, updatable = false)
+    @JoinColumn(name = "lineId")
     private Line line;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("upStationId")
-    @JoinColumn(name = "upStationId", insertable = false, updatable = false)
+    @JoinColumn(name = "upStationId")
     private Station upStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("downStationId")
-    @JoinColumn(name = "downStationId", insertable = false, updatable = false)
+    @JoinColumn(name = "downStationId")
     private Station downStation;
 
     public Section() {
@@ -38,7 +36,7 @@ public class Section extends BaseEntity {
         this.downStation = downStation;
     }
 
-    public SectionPK getId() {
+    public Long getId() {
         return id;
     }
 

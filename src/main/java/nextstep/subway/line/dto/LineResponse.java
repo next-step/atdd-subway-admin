@@ -1,13 +1,9 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class LineResponse {
@@ -32,14 +28,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        List<StationResponse> stations = new ArrayList<>();
-        line.getSections().stream().sorted(Comparator.comparingInt(Section::getOrderId)).forEach(section -> {
-            Station upStation = section.getUpStation();
-            stations.add(new StationResponse(upStation.getId(), upStation.getName(), upStation.getCreatedDate(), upStation.getModifiedDate()));
-            Station downStation = section.getDownStation();
-            stations.add(new StationResponse(downStation.getId(), downStation.getName(), downStation.getCreatedDate(), downStation.getModifiedDate()));
-        });
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate(), stations);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate(), line.getStationResponses());
     }
 
     public Long getId() {

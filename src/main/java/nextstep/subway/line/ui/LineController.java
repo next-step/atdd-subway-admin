@@ -48,8 +48,13 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler({ DataIntegrityViolationException.class, ElementNotFoundException.class })
-    public ResponseEntity handleIllegalArgsException(Exception e) {
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(ElementNotFoundException.class)
+    public ResponseEntity handleElementNotFoundException(ElementNotFoundException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
