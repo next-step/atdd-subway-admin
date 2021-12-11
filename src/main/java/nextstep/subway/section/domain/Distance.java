@@ -19,14 +19,18 @@ public class Distance {
         this.distance = distance;
     }
 
-    public Distance deduct(final Distance distance) {
-        return new Distance(this.distance - distance.getDistance());
-    }
-
     private void validate(final int distance) {
         if (MIN_DISTANCE >= distance) {
             throw new IllegalArgumentException("입력한 구간의 길이가 옳바르지 않습니다.");
         }
+    }
+
+    public Distance deduct(final Distance distance) {
+        return new Distance(this.distance - distance.getDistance());
+    }
+
+    public Distance add(final Distance distance) {
+        return new Distance(this.distance + distance.getDistance());
     }
 
     public int getDistance() {

@@ -14,7 +14,7 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(targetEntity = Line.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = Line.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
     private Line line;
 
@@ -40,11 +40,9 @@ public class Section extends BaseEntity {
     }
 
     public void update(final Station upStation, final Station downStation, final Distance distance) {
-        if (this.getUpStation().equals(upStation) && this.getDownStation().equals(downStation)) {
-            this.upStation = upStation;
-            this.downStation = downStation;
-            this.distance = distance;
-        }
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
     }
 
     public Long getId() {
@@ -101,25 +99,21 @@ public class Section extends BaseEntity {
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
+    public boolean hasStation(final Station station) {
+        return this.hasUpStation(station) || this.hasDownStation(station);
+    }
 
-        if (!(o instanceof Section) || o == null || getClass() != o.getClass()) {
-            return false;
-        }
+    public boolean hasUpStation(final Station station) {
+        return this.upStation.equals(station);
+    }
 
-        Section that = (Section) o;
-        if (this.line == that.getLine() &&
-            this.upStation == that.getUpStation() &&
-            this.downStation == that.getDownStation() &&
-            this.distance == that.getDistance()) {
-            return true;
-        }
+    public boolean hasDownStation(final Station station) {
+        return this.downStation.equals(station);
+    }
 
-        return false;
+    public void merge(final Section mergeSection) {
+        this.downStation = mergeSection.getDownStation();
+        this.distance = this.distance.add(mergeSection.getDistance());
     }
 
 }

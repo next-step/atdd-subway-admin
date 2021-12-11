@@ -128,4 +128,62 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @DisplayName("노선의 구간을 제거하는 기능.")
+    @Test
+    void 노선의_구간을_제거_성공() {
+        // given
+        StationResponse 선릉역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("선릉역"));
+        SectionRequest sectionRequest = new SectionRequest(강남역Id, 선릉역.getId(), 4);
+        ExtractableResponse<Response> createResponse = 데이터_생성_요청(sectionRequest, String.format(uri, 신분당선Id));
+        SectionResponse sectionResponse = createResponse.as(SectionResponse.class);
+
+        // when
+        String deleteUri = String.format("/lines/%s/sections?stationId=%s", 신분당선Id, 선릉역.getId());
+        ExtractableResponse<Response> response = 데이터_제거_요청(deleteUri);
+
+        // then
+        데이터_삭제완료됨(response);
+    }
+
+    @DisplayName("노선의 마지막 구간을 제거 실패")
+    @Test
+    void 노선의_마지막_구간을_제거_실패() {
+        // given
+        StationResponse 선릉역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("선릉역"));
+        SectionRequest sectionRequest = new SectionRequest(강남역Id, 선릉역.getId(), 4);
+        ExtractableResponse<Response> createResponse = 데이터_생성_요청(sectionRequest, String.format(uri, 신분당선Id));
+        SectionResponse sectionResponse = createResponse.as(SectionResponse.class);
+
+        // when
+        String deleteUri = String.format("/lines/%s/sections?stationId=%s", 신분당선Id, 강남역Id);
+        ExtractableResponse<Response> response = 데이터_제거_요청(deleteUri);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.asString()).contains("삭제할 수 없는 역입니다.")
+        );
+    }
+
+    @DisplayName("노선의 미등록 역을 구간에서 제거 실패")
+    @Test
+    void 노선의_미등록_역을_구간에서_제거_실패() {
+        // given
+        StationResponse 선릉역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("선릉역"));
+        StationResponse 삼성역 = stationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("삼성역"));
+        SectionRequest sectionRequest = new SectionRequest(강남역Id, 선릉역.getId(), 4);
+        ExtractableResponse<Response> createResponse = 데이터_생성_요청(sectionRequest, String.format(uri, 신분당선Id));
+        SectionResponse sectionResponse = createResponse.as(SectionResponse.class);
+
+        // when
+        String deleteUri = String.format("/lines/%s/sections?stationId=%s", 신분당선Id, 삼성역.getId());
+        ExtractableResponse<Response> response = 데이터_제거_요청(deleteUri);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.asString()).contains("삭제할 수 없는 역입니다.")
+        );
+    }
+
 }
