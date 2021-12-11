@@ -11,6 +11,7 @@ import nextstep.subway.common.exception.ResourceAlreadyExistException;
 import nextstep.subway.common.exception.ResourceNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.dto.AddSectionRequest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineResponses;
@@ -35,12 +36,15 @@ public class LineService {
 	@Transactional
 	public LineResponse saveLine(LineRequest request) {
 		validateAlreadyExist(request);
-		Station upStation = stationRepository.findById(request.getUpStationId())
-			.orElseThrow(() -> new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_STATION));
-		Station downStation = stationRepository.findById(request.getDownStationId())
-			.orElseThrow(() -> new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_STATION));
+		Station upStation = getStation(request.getUpStationId());
+		Station downStation = getStation(request.getDownStationId());
 		Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
 		return LineResponse.of(persistLine);
+	}
+
+	private Station getStation(Long id) {
+		return stationRepository.findById(id)
+			.orElseThrow(() -> new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_STATION));
 	}
 
 	public LineResponses findLineList() {
@@ -64,7 +68,7 @@ public class LineService {
 	public void updateLine(Long id, LineRequest request) {
 		Line line = lineRepository.findById(id)
 			.orElseThrow(() -> new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_LINE));
-		line.update(new Line(request.getName(), request.getColor(), line.getSections()));
+		line.update(new Line(request.getName(), request.getColor()));
 	}
 
 	@Transactional
@@ -74,5 +78,14 @@ public class LineService {
 		} catch (EmptyResultDataAccessException e) {
 			throw new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_LINE, e);
 		}
+	}
+
+	@Transactional
+	public void addSection(Long id, AddSectionRequest addSectionRequest) {
+		Line line = lineRepository.findById(id)
+			.orElseThrow(() -> new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_LINE));
+		Station upStation = getStation(addSectionRequest.upStationId);
+		Station downStation = getStation(addSectionRequest.downStationId);
+		line.addSection(upStation, downStation, addSectionRequest.distance);
 	}
 }

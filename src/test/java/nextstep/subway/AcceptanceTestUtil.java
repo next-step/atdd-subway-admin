@@ -11,4 +11,8 @@ public class AcceptanceTestUtil {
 	public static void 응답_검증(ExtractableResponse<Response> response, HttpStatus status) {
 		assertThat(response.statusCode()).isEqualTo(status.value());
 	}
+
+	public static void 응답_메세지_검증(ExtractableResponse<Response> response, String message) {
+		assertThat(response.asString()).isEqualTo(message);
+	}
 }

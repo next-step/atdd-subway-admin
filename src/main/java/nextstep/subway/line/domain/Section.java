@@ -1,7 +1,8 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
 import java.util.Objects;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
@@ -11,7 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -32,13 +32,16 @@ public class Section extends BaseEntity {
 	@JoinColumn(foreignKey = @ForeignKey(name = "fk_section_to_line"), nullable = false)
 	private Line line;
 
+	@Embedded
+	private Distance distance;
+
 	protected Section() {
 	}
 
 	public Section(Station upStation, Station downStation, int distance) {
 		this.upStation = upStation;
 		this.downStation = downStation;
-		this.distance = distance;
+		this.distance = new Distance(distance);
 	}
 
 	public void toLine(Line line) {
@@ -47,8 +50,6 @@ public class Section extends BaseEntity {
 			line.addSection(this);
 		}
 	}
-
-	private int distance;
 
 	public Long getId() {
 		return id;
@@ -62,7 +63,7 @@ public class Section extends BaseEntity {
 		return downStation;
 	}
 
-	public int getDistance() {
+	public Distance getDistance() {
 		return distance;
 	}
 
@@ -95,5 +96,15 @@ public class Section extends BaseEntity {
 			", line=" + line +
 			", distance=" + distance +
 			'}';
+	}
+
+	public void updateByUpSection(Section section) {
+		distance.minus(section.distance);
+		this.upStation = section.getDownStation();
+	}
+
+	public void updateByDownSection(Section section) {
+		distance.minus(section.distance);
+		this.downStation = section.getUpStation();
 	}
 }
