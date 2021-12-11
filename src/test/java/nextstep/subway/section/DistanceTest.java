@@ -19,6 +19,7 @@ public class DistanceTest {
 	}
 
 	@Test
+	@DisplayName("minus 할 때 기존 값과 같거나 큰 수를 빼면 예외")
 	void minus_greaterThanOrEqualValue_exception() {
 		Distance distance = new Distance(5);
 
