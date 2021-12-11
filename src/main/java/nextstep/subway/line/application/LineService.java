@@ -90,7 +90,6 @@ public class LineService {
         Line line = this.findById(lineId);
         Station station = this.findStation(stationId);
         line.deleteStation(station);
-        lineRepository.save(line);
     }
 
     private Line findById(final Long id) {
