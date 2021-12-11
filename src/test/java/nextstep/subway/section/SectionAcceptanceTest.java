@@ -10,6 +10,7 @@ import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -151,6 +152,81 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("노선에 구간을 삭제한다 - 구간이 하나인 노선에서 마지막 구간을 제거할 때")
+    @Test
+    void deleteSectionException_구간이_하나인_노선에서_마지막_구간을_제거할_때() {
+
+        // 지하철 구간 삭제
+        ExtractableResponse<Response> lineResponse = 지하철역_구간_삭제("lines/" + 신분당선.getId() + "/sections?stationId=" + 강남역.getId());
+
+        // then
+        // 지하철 삭제할 수 없음
+        assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("노선에 구간을 삭제한다 - 종점이 제거될 경우 다음으로 오던 역이 종점이 됨")
+    @Test
+    void deleteSection_종점이_제거될_경우_다음으로_오던_역이_종점이_됨() {
+        // when
+        // 지하철_노선에_지하철역_등록_요청
+        지하철_노선에_지하철역_등록_요청(신분당선.getId(), 상행역.getId(), 강남역.getId(), 10);
+
+        // 지하철 구간 삭제
+        ExtractableResponse<Response> deleteSection = 지하철역_구간_삭제("lines/" + 신분당선.getId() + "/sections?stationId=" + 상행역.getId());
+
+        // 지하철 구간 삭제 완료
+        assertThat(deleteSection.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // 지하철 노선 조회
+        ExtractableResponse<Response> lineResponse = LineAcceptanceTest.지하철_노선_조회("lines/" + 신분당선.getId());
+
+        // then
+        assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(0).getName()).isEqualTo(강남역.getName());
+    }
+
+    @DisplayName("노선에 구간을 삭제한다.")
+    @Test
+    void deleteSection() {
+
+        // when
+        // 지하철_노선에_지하철역_등록_요청
+        ExtractableResponse<Response> registerSectionResponse1 = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 상행역.getId(), 강남역.getId(), 10);
+        ExtractableResponse<Response> registerSectionResponse2 = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 정자역.getId(), 7);
+        ExtractableResponse<Response> registerSectionResponse3 = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 미금역.getId(), 광교역.getId(), 2);
+        ExtractableResponse<Response> registerSectionResponse4 = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 양재역.getId(), 2);
+
+        // then
+        // 지하철_노선에_지하철역_등록됨
+        Stream.of(registerSectionResponse1, registerSectionResponse2, registerSectionResponse3, registerSectionResponse4)
+                .forEach(i -> 상태코드_확인(i, HttpStatus.CREATED.value()));
+
+        ExtractableResponse<Response> lineResponse = LineAcceptanceTest.지하철_노선_조회("lines/" + 신분당선.getId());
+        라인에_역들이_순서대로_나오는지_확인(lineResponse, 상행역.getName(), 강남역.getName(), 양재역.getName(), 정자역.getName(), 미금역.getName(), 광교역.getName());
+
+        // 지하철 구간 삭제
+        ExtractableResponse<Response> deleteSection = 지하철역_구간_삭제("lines/" + 신분당선.getId() + "/sections?stationId=" + 강남역.getId());
+
+        // 지하철 구간 삭제 완료
+        assertThat(deleteSection.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // 삭제된 지하철 노선 조회
+        ExtractableResponse<Response> deletedLineResponse = LineAcceptanceTest.지하철_노선_조회("lines/" + 신분당선.getId());
+
+        // then
+        assertThat(deletedLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        라인에_역들이_순서대로_나오는지_확인(deletedLineResponse, 상행역.getName(), 양재역.getName(), 정자역.getName(), 미금역.getName(), 광교역.getName());
+    }
+
+    public static ExtractableResponse<Response> 지하철역_구간_삭제(String uri) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+    }
+
 
     public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(Long lineId, Long upStationId, Long downStationId, Integer distance) {
 

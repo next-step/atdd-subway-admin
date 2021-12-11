@@ -32,7 +32,7 @@ public class LineService {
 
         Line line = request.toLine();
         Section section = request.toSection(line, upStation, downStation);
-        line.addToSections(section);
+        line.addSection(section);
 
         Line persistLine = lineRepository.save(line);
 
@@ -72,12 +72,19 @@ public class LineService {
         Station persistDownStation = findStation(sectionRequest.getDownStationId());
 
         Section section = sectionRequest.toSection(line, persistUpStation, persistDownStation);
-        line.addToSections(section);
+        line.addSection(section);
 
         return LineResponse.of(line);
     }
 
     private Station findStation(Long stationId) {
         return stationRepository.findById(stationId).orElseThrow(IllegalArgumentException::new);
+    }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+
+        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Station station = findStation(stationId);
+        line.deleteSection(station);
     }
 }
