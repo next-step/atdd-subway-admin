@@ -138,6 +138,40 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("중간역이 제거될 경우")
+    @Test
+    void 중간역이_제거될_경우() {
+        StationResponse 신규역 = 지하철_역_생성_요청(신규역_생성_파라미터("신규역")).as(StationResponse.class);
+        SectionRequest 섹션_요청_파라미터 = SectionRequest.of(강남역.getId(), 신규역.getId(), 2);
+
+        지하철_노선에_지하철역_등록_요청(섹션_요청_파라미터, 신분당선.getId());
+
+        // when
+        ExtractableResponse<Response> response = 지하철_역_삭제_요청(신분당선.getId(), 신규역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거하는 경우")
+    void 구간이_하나인_노선에서_마지막_구간을_제거하는_경우() {
+        //when
+        ExtractableResponse<Response> response = 지하철_역_삭제_요청(신분당선.getId(), 강남역.getId());
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("없는 구간은 제거하는 경우")
+    void 없는_구간은_제거하는_경우() {
+        //when
+        ExtractableResponse<Response> response = 지하철_역_삭제_요청(신분당선.getId(), 100L);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 
     private void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -153,4 +187,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
     }
+
+    private ExtractableResponse<Response> 지하철_역_삭제_요청(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .queryParam("stationId", stationId)
+                .when()
+                .delete("/lines/"+lineId+"/sections")
+                .then().log().all()
+                .extract();
+    }
 }
+
