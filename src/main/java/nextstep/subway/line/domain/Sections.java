@@ -22,6 +22,8 @@ public class Sections {
 	public static final String EXCEPTION_MESSAGE_SECTION_EXACTLY_EQUAL = "상행역과 하행역이 모두 노선 구간으로 등록되어 있습니다.";
 	public static final String EXCEPTION_MESSAGE_SECTION_NOT_INCLUDE = "등록하려는 구간의 상행역과 하행역이 현재 노선 구간에 포함되어 있지 않습니다.";
 	public static final String EXCEPTION_MESSAGE_HAS_ONLY_ONE_SECTION = "구간이 하나만 존재하는 노선입니다.";
+	public static final String EXCEPTION_MESSAGE_WRONG_SECTION_INFO = "잘못된 구간 정보입니다.";
+	public static final String EXCEPTION_MESSAGE_NOT_EXIST_SECTION = "존재하지 않는 구간입니다.";
 
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
@@ -104,7 +106,7 @@ public class Sections {
 		return upStations.stream()
 			.filter(upStation -> !downStations.contains(upStation))
 			.findFirst()
-			.orElseThrow(() -> new IllegalArgumentException("잘못된 구간 정보입니다."));
+			.orElseThrow(() -> new IllegalArgumentException(EXCEPTION_MESSAGE_WRONG_SECTION_INFO));
 	}
 
 	private Station findLastStation(List<Section> sections) {
@@ -113,7 +115,7 @@ public class Sections {
 		return downStations.stream()
 			.filter(downStation -> !upStations.contains(downStation))
 			.findFirst()
-			.orElseThrow(() -> new IllegalArgumentException("잘못된 구간 정보입니다."));
+			.orElseThrow(() -> new IllegalArgumentException(EXCEPTION_MESSAGE_WRONG_SECTION_INFO));
 	}
 
 	private List<Station> getUpStations(List<Section> sections) {
@@ -147,7 +149,7 @@ public class Sections {
 		}
 
 		if (sectionsConnected.size() == 0) {
-			throw new ResourceNotFoundException("존재하지 않는 구간입니다.");
+			throw new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_EXIST_SECTION);
 		}
 	}
 
