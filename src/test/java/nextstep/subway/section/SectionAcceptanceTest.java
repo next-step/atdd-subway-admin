@@ -4,7 +4,9 @@ import static nextstep.subway.AcceptanceTestUtil.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -174,6 +176,120 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		응답_검증(response, HttpStatus.BAD_REQUEST);
 		응답_메세지_검증(response, "등록하려는 구간의 상행역과 하행역이 현재 노선 구간에 포함되어 있지 않습니다.");
+	}
+
+	@DisplayName("2개의 구간이 등록된 노선에서 상행 종점 구간을 삭제한다.")
+	@Test
+	void deleteSection_success1() {
+		//given
+		StationResponse 삼성역 = StationAcceptanceTest.지하철역_생성되어_있음_삼성역();
+		StationResponse 선릉역 = StationAcceptanceTest.지하철역_생성되어_있음_선릉역();
+		StationResponse 역삼역 = StationAcceptanceTest.지하철역_생성되어_있음_역삼역();
+
+		Station upStation = new Station(삼성역.getId(), 삼성역.getName());
+		Station midStation = new Station(선릉역.getId(), 선릉역.getName());
+		Station downStation = new Station(역삼역.getId(), 역삼역.getName());
+		Section 삼성_선릉_구간 = new Section(upStation, midStation, 5);
+		Section 선릉_역삼_구간 = new Section(midStation, downStation, 5);
+
+		ExtractableResponse<Response> createdLineResponse = LineAcceptanceTest.지하철_노선_등록되어_있음(삼성_선릉_구간);
+		Long lineId = getLineIdFromCreatedLineResponse(createdLineResponse);
+		AddSectionRequest addSectionRequest = new AddSectionRequest(선릉_역삼_구간.getUpStation().getId(),
+			선릉_역삼_구간.getDownStation().getId(), 선릉_역삼_구간.getDistance().get());
+
+		구간_추가_요청(lineId, addSectionRequest);
+		LineAcceptanceTest.지하철_노선_조회_요청(lineId);
+
+		// when
+		Map<String, Long> params = new HashMap<>();
+		params.put("stationId", upStation.getId());
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+			.params(params)
+			.when()
+			.delete("/lines/" + lineId + "/sections")
+			.then().log().all()
+			.extract();
+
+		// then
+		응답_검증(response, HttpStatus.OK);
+		ExtractableResponse<Response> lineResponse = LineAcceptanceTest.지하철_노선_조회_요청(lineId);
+		지하철역_순서_검증(lineResponse, Arrays.asList(midStation, downStation));
+	}
+
+	@DisplayName("2개의 구간이 등록된 노선에서 중간 구간을 삭제한다.")
+	@Test
+	void deleteSection_success2() {
+		//given
+		StationResponse 삼성역 = StationAcceptanceTest.지하철역_생성되어_있음_삼성역();
+		StationResponse 선릉역 = StationAcceptanceTest.지하철역_생성되어_있음_선릉역();
+		StationResponse 역삼역 = StationAcceptanceTest.지하철역_생성되어_있음_역삼역();
+
+		Station upStation = new Station(삼성역.getId(), 삼성역.getName());
+		Station midStation = new Station(선릉역.getId(), 선릉역.getName());
+		Station downStation = new Station(역삼역.getId(), 역삼역.getName());
+		Section 삼성_선릉_구간 = new Section(upStation, midStation, 5);
+		Section 선릉_역삼_구간 = new Section(midStation, downStation, 5);
+
+		ExtractableResponse<Response> createdLineResponse = LineAcceptanceTest.지하철_노선_등록되어_있음(삼성_선릉_구간);
+		Long lineId = getLineIdFromCreatedLineResponse(createdLineResponse);
+		AddSectionRequest addSectionRequest = new AddSectionRequest(선릉_역삼_구간.getUpStation().getId(),
+			선릉_역삼_구간.getDownStation().getId(), 선릉_역삼_구간.getDistance().get());
+
+		구간_추가_요청(lineId, addSectionRequest);
+		LineAcceptanceTest.지하철_노선_조회_요청(lineId);
+
+		// when
+		Map<String, Long> params = new HashMap<>();
+		params.put("stationId", midStation.getId());
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+			.params(params)
+			.when()
+			.delete("/lines/" + lineId + "/sections")
+			.then().log().all()
+			.extract();
+
+		// then
+		응답_검증(response, HttpStatus.OK);
+		ExtractableResponse<Response> lineResponse = LineAcceptanceTest.지하철_노선_조회_요청(lineId);
+		지하철역_순서_검증(lineResponse, Arrays.asList(upStation, downStation));
+	}
+
+	@DisplayName("2개의 구간이 등록된 노선에서 하행 종점 구간을 삭제한다.")
+	@Test
+	void deleteSection_success3() {
+		//given
+		StationResponse 삼성역 = StationAcceptanceTest.지하철역_생성되어_있음_삼성역();
+		StationResponse 선릉역 = StationAcceptanceTest.지하철역_생성되어_있음_선릉역();
+		StationResponse 역삼역 = StationAcceptanceTest.지하철역_생성되어_있음_역삼역();
+
+		Station upStation = new Station(삼성역.getId(), 삼성역.getName());
+		Station midStation = new Station(선릉역.getId(), 선릉역.getName());
+		Station downStation = new Station(역삼역.getId(), 역삼역.getName());
+		Section 삼성_선릉_구간 = new Section(upStation, midStation, 5);
+		Section 선릉_역삼_구간 = new Section(midStation, downStation, 5);
+
+		ExtractableResponse<Response> createdLineResponse = LineAcceptanceTest.지하철_노선_등록되어_있음(삼성_선릉_구간);
+		Long lineId = getLineIdFromCreatedLineResponse(createdLineResponse);
+		AddSectionRequest addSectionRequest = new AddSectionRequest(선릉_역삼_구간.getUpStation().getId(),
+			선릉_역삼_구간.getDownStation().getId(), 선릉_역삼_구간.getDistance().get());
+
+		구간_추가_요청(lineId, addSectionRequest);
+		LineAcceptanceTest.지하철_노선_조회_요청(lineId);
+
+		// when
+		Map<String, Long> params = new HashMap<>();
+		params.put("stationId", downStation.getId());
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+			.params(params)
+			.when()
+			.delete("/lines/" + lineId + "/sections")
+			.then().log().all()
+			.extract();
+
+		// then
+		응답_검증(response, HttpStatus.OK);
+		ExtractableResponse<Response> lineResponse = LineAcceptanceTest.지하철_노선_조회_요청(lineId);
+		지하철역_순서_검증(lineResponse, Arrays.asList(midStation, downStation));
 	}
 
 	private void 지하철역_순서_검증(ExtractableResponse<Response> lineResponse, List<Station> expected) {

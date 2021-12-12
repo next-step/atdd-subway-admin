@@ -106,7 +106,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     2. 중간 부분을 제거
     3. 하행 끝 부분을 제거
 
-    - [ ] 인수 테스트 추가
+    - [x] 인수 테스트 추가
     - [ ] 유닛 테스트 추가 및 기능 구현
 - 구간 삭제 시 예외 케이스를 고려하기
     - [ ] 유닛 테스트 추가
