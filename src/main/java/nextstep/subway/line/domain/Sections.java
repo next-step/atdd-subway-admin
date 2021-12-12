@@ -142,18 +142,21 @@ public class Sections {
 	public void deleteSectionByStationId(Long stationId) {
 		List<Section> sectionsConnected = findSections(stationId);
 		if (sectionsConnected.size() == 2) {
-			Station upStation = findFirstStation(sectionsConnected);
-			Station downStation = findLastStation(sectionsConnected);
-			Integer newDistance = sectionsConnected.stream()
-				.map(section -> section.getDistance().get())
-				.reduce(0, Integer::sum);
-			sections.add(new Section(upStation, downStation, newDistance));
+			addSectionComposedFirstAndLastStation(sectionsConnected);
 		}
 
 		for (Section section : sectionsConnected) {
 			sections.remove(section);
 		}
+	}
 
+	private void addSectionComposedFirstAndLastStation(List<Section> sections) {
+		Station upStation = findFirstStation(sections);
+		Station downStation = findLastStation(sections);
+		Integer newDistance = sections.stream()
+			.map(section -> section.getDistance().get())
+			.reduce(0, Integer::sum);
+		this.sections.add(new Section(upStation, downStation, newDistance));
 	}
 
 	private List<Section> findSections(Long stationId) {
