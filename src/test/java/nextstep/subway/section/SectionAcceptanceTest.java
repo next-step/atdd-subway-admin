@@ -71,7 +71,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .forEach(i -> 상태코드_확인(i, HttpStatus.CREATED.value()));
 
         assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        라인에_역들이_순서대로_나오는지_확인(lineResponse, 상행역.getName(), 강남역.getName(), 양재역.getName(), 정자역.getName(), 미금역.getName(), 광교역.getName());
+        라인에_역들이_순서대로_나오는지_확인(신분당선.getId(), 상행역.getName(), 강남역.getName(), 양재역.getName(), 정자역.getName(), 미금역.getName(), 광교역.getName());
 
     }
 
@@ -90,9 +90,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // 지하철_노선에_지하철역_등록됨
         assertThat(registerSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(0).getName()).isEqualTo(상행역.getName());
-        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(1).getName()).isEqualTo(강남역.getName());
-        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(2).getName()).isEqualTo(광교역.getName());
+
+        지하철_노선_역_인덱스_확인(lineResponse, 0, 상행역.getName());
+        지하철_노선_역_인덱스_확인(lineResponse, 1, 강남역.getName());
+        지하철_노선_역_인덱스_확인(lineResponse, 2, 광교역.getName());
     }
 
     @DisplayName("노선에 구간을 등록한다. - 새로운 역을 하행 종점으로 등록할 경우")
@@ -109,10 +110,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선에_지하철역_등록됨
         assertThat(registerSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(0).getName()).isEqualTo(강남역.getName());
-        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(1).getName()).isEqualTo(광교역.getName());
-        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(2).getName()).isEqualTo(하행역.getName());
+
+        지하철_노선_역_인덱스_확인(lineResponse, 0, 강남역.getName());
+        지하철_노선_역_인덱스_확인(lineResponse, 1, 광교역.getName());
+        지하철_노선_역_인덱스_확인(lineResponse, 2, 하행역.getName());
     }
 
     @DisplayName("노선에 구간을 등록한다. - 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
@@ -158,11 +159,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteSectionException_구간이_하나인_노선에서_마지막_구간을_제거할_때() {
 
         // 지하철 구간 삭제
-        ExtractableResponse<Response> lineResponse = 지하철역_구간_삭제("lines/" + 신분당선.getId() + "/sections?stationId=" + 강남역.getId());
+        ExtractableResponse<Response> lineResponse = 지하철역_구간_삭제(신분당선.getId(), 강남역.getId());
 
         // then
         // 지하철 삭제할 수 없음
         assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(lineResponse.asString()).isEqualTo("하나의 구간은 삭제할 수 없음");
     }
 
     @DisplayName("노선에 구간을 삭제한다 - 종점이 제거될 경우 다음으로 오던 역이 종점이 됨")
@@ -170,20 +172,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteSection_종점이_제거될_경우_다음으로_오던_역이_종점이_됨() {
         // when
         // 지하철_노선에_지하철역_등록_요청
-        지하철_노선에_지하철역_등록_요청(신분당선.getId(), 상행역.getId(), 강남역.getId(), 10);
+        ExtractableResponse<Response> registerLineResponse = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 상행역.getId(), 강남역.getId(), 10);
 
         // 지하철 구간 삭제
-        ExtractableResponse<Response> deleteSection = 지하철역_구간_삭제("lines/" + 신분당선.getId() + "/sections?stationId=" + 상행역.getId());
+        ExtractableResponse<Response> deleteSection = 지하철역_구간_삭제(신분당선.getId(), 상행역.getId());
 
         // 지하철 구간 삭제 완료
         assertThat(deleteSection.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // 지하철 노선 조회
-        ExtractableResponse<Response> lineResponse = LineAcceptanceTest.지하철_노선_조회("lines/" + 신분당선.getId());
+        ExtractableResponse<Response> lineResponse = LineAcceptanceTest.지하철_노선_조회(registerLineResponse.header("Location"));
 
         // then
-        assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(0).getName()).isEqualTo(강남역.getName());
+        지하철_노선_역_인덱스_확인(lineResponse, 0, 강남역.getName());
     }
 
     @DisplayName("노선에 구간을 삭제한다.")
@@ -192,37 +193,23 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> registerSectionResponse1 = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 상행역.getId(), 강남역.getId(), 10);
-        ExtractableResponse<Response> registerSectionResponse2 = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 정자역.getId(), 7);
-        ExtractableResponse<Response> registerSectionResponse3 = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 미금역.getId(), 광교역.getId(), 2);
-        ExtractableResponse<Response> registerSectionResponse4 = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 양재역.getId(), 2);
+        지하철_노선에_지하철역_등록_요청(신분당선.getId(), 상행역.getId(), 강남역.getId(), 10);
+        지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 정자역.getId(), 7);
+        지하철_노선에_지하철역_등록_요청(신분당선.getId(), 미금역.getId(), 광교역.getId(), 2);
+        지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 양재역.getId(), 2);
 
         // then
-        // 지하철_노선에_지하철역_등록됨
-        Stream.of(registerSectionResponse1, registerSectionResponse2, registerSectionResponse3, registerSectionResponse4)
-                .forEach(i -> 상태코드_확인(i, HttpStatus.CREATED.value()));
-
-        ExtractableResponse<Response> lineResponse = LineAcceptanceTest.지하철_노선_조회("lines/" + 신분당선.getId());
-        라인에_역들이_순서대로_나오는지_확인(lineResponse, 상행역.getName(), 강남역.getName(), 양재역.getName(), 정자역.getName(), 미금역.getName(), 광교역.getName());
-
-        // 지하철 구간 삭제
-        ExtractableResponse<Response> deleteSection = 지하철역_구간_삭제("lines/" + 신분당선.getId() + "/sections?stationId=" + 강남역.getId());
-
-        // 지하철 구간 삭제 완료
-        assertThat(deleteSection.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        // 삭제된 지하철 노선 조회
-        ExtractableResponse<Response> deletedLineResponse = LineAcceptanceTest.지하철_노선_조회("lines/" + 신분당선.getId());
+        // 지하철역 구간 삭제
+        지하철역_구간_삭제(신분당선.getId(), 강남역.getId());
 
         // then
-        assertThat(deletedLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        라인에_역들이_순서대로_나오는지_확인(deletedLineResponse, 상행역.getName(), 양재역.getName(), 정자역.getName(), 미금역.getName(), 광교역.getName());
+        라인에_역들이_순서대로_나오는지_확인(신분당선.getId(), 상행역.getName(), 양재역.getName(), 정자역.getName(), 미금역.getName(), 광교역.getName());
     }
 
-    public static ExtractableResponse<Response> 지하철역_구간_삭제(String uri) {
+    public static ExtractableResponse<Response> 지하철역_구간_삭제(Long lineId, Long stationId) {
         return RestAssured.given().log().all()
                 .when()
-                .delete(uri)
+                .delete("/lines/" + lineId + "/sections?stationId=" + stationId)
                 .then().log().all()
                 .extract();
     }
@@ -244,7 +231,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private void 라인에_역들이_순서대로_나오는지_확인(ExtractableResponse<Response> lineResponse, String... 역이름) {
+    private void 라인에_역들이_순서대로_나오는지_확인(Long 노선, String... 역이름) {
+
+        ExtractableResponse<Response> lineResponse = LineAcceptanceTest.지하철_노선_조회("lines/" + 노선);
         for (int i = 0; i < 역이름.length; i++) {
             assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(i).getName()).isEqualTo(역이름[i]);
         }
@@ -252,5 +241,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private void 상태코드_확인(ExtractableResponse<Response> response, int httpStatusValue) {
         assertThat(response.statusCode()).isEqualTo(httpStatusValue);
+    }
+
+    private void 지하철_노선_역_인덱스_확인(ExtractableResponse<Response> lineResponse, int index, String stationName) {
+        assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineResponse.jsonPath().getList("stations", StationResponse.class).get(index).getName()).isEqualTo(stationName);
     }
 }

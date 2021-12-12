@@ -119,7 +119,12 @@ public class Section extends BaseEntity {
     }
 
     public void setLine(Line line) {
+        if (this.line != null) {
+            this.line.getSections().remove(this);
+        }
+
         this.line = line;
+        line.getSections().add(this);
     }
 
     @Override

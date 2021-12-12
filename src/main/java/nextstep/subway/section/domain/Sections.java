@@ -165,4 +165,8 @@ public class Sections {
         return this.sections.stream()
                 .collect(toMap(Section::getUpStation, Section::getDownStation));
     }
+
+    public List<Section> getSections() {
+        return sections;
+    }
 }
