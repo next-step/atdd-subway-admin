@@ -94,3 +94,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [x] 구간 추가 기능 Happy Path 구현
 - [x] 구간 추가 기능 예외 케이스 처리 인수 테스트 작성
 - [x] 구간 추가 기능 예외 케이스 구현
+
+## 4단계 기능 목록
+
+- [x] LineController.addSection 반환형 제네릭 Void로 변경
+- [ ] 도메인이 dto에 의존하지 않도록 Station.from 제거
