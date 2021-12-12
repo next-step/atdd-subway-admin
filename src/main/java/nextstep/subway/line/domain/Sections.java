@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -28,6 +29,10 @@ public class Sections {
 
 	public Sections(List<Section> sections) {
 		this.sections = sections;
+	}
+
+	public List<Section> get() {
+		return sections;
 	}
 
 	public void add(Section section) {
@@ -92,21 +97,75 @@ public class Sections {
 	}
 
 	private Station findFirstStation() {
-		List<Station> upStations = sections.stream()
-			.map(Section::getUpStation)
-			.collect(Collectors.toList());
-		List<Station> downStations = sections.stream()
-			.map(Section::getDownStation)
-			.collect(Collectors.toList());
-
+		List<Station> upStations = getUpStations();
+		List<Station> downStations = getDownStations();
 		return upStations.stream()
 			.filter(upStation -> !downStations.contains(upStation))
 			.findFirst()
 			.orElseThrow(() -> new IllegalArgumentException("잘못된 구간 정보입니다."));
 	}
 
+	private Station findFirstStation(List<Section> sections) {
+		List<Station> upStations = getUpStations();
+		List<Station> downStations = getDownStations();
+		return upStations.stream()
+			.filter(upStation -> !downStations.contains(upStation))
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("잘못된 구간 정보입니다."));
+	}
+
+	private Station findLastStation(List<Section> sections) {
+		List<Station> upStations = getUpStations();
+		List<Station> downStations = getDownStations();
+		return downStations.stream()
+			.filter(downStation -> !upStations.contains(downStation))
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("잘못된 구간 정보입니다."));
+	}
+
+	private List<Station> getUpStations() {
+		return sections.stream()
+			.map(Section::getUpStation)
+			.collect(Collectors.toList());
+	}
+
+	private List<Station> getDownStations() {
+		return sections.stream()
+			.map(Section::getDownStation)
+			.collect(Collectors.toList());
+	}
+
 	public boolean contains(Section section) {
 		return sections.contains(section);
+	}
+
+	public void deleteSectionByStationId(Long stationId) {
+		List<Section> sectionsConnected = findSections(stationId);
+		if (sectionsConnected.size() == 2) {
+			Station upStation = findFirstStation(sectionsConnected);
+			Station downStation = findLastStation(sectionsConnected);
+			Integer newDistance = sectionsConnected.stream()
+				.map(section -> section.getDistance().get())
+				.reduce(0, Integer::sum);
+			sections.add(new Section(upStation, downStation, newDistance));
+		}
+
+		for (Section section : sectionsConnected) {
+			sections.remove(section);
+		}
+
+	}
+
+	private List<Section> findSections(Long stationId) {
+		return sections.stream()
+			.filter(getSectionPredicate(stationId))
+			.collect(Collectors.toList());
+	}
+
+	private Predicate<Section> getSectionPredicate(Long stationId) {
+		return section -> section.getUpStation().getId().equals(stationId) || section.getDownStation()
+			.getId()
+			.equals(stationId);
 	}
 
 	@Override

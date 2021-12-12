@@ -88,4 +88,12 @@ public class LineService {
 		Station downStation = getStation(addSectionRequest.downStationId);
 		line.addSection(upStation, downStation, addSectionRequest.distance);
 	}
+
+	@Transactional
+	public void removeSectionByStationId(Long id, Long stationId) {
+		Line line = lineRepository.findById(id)
+			.orElseThrow(() -> new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_LINE));
+		line.getSections().deleteSectionByStationId(stationId);
+	}
+
 }
