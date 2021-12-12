@@ -1,6 +1,8 @@
 package nextstep.subway.exception.controller;
 
 import nextstep.subway.exception.DuplicateLineNameException;
+import nextstep.subway.exception.NotFoundSectionException;
+import nextstep.subway.exception.NotFoundStationException;
 import nextstep.subway.exception.dto.ErrorResponse;
 import nextstep.subway.exception.NotFoundLineException;
 import org.springframework.http.HttpStatus;
@@ -21,8 +23,19 @@ public class LineControllerAdvice {
         return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
     }
 
+    @ExceptionHandler(NotFoundStationException.class)
+    public ResponseEntity<ErrorResponse> notFoundStationException(NotFoundStationException e) {
+        return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+    }
+
+    @ExceptionHandler(NotFoundSectionException.class)
+    public ResponseEntity<ErrorResponse> notFoundSectionException(NotFoundSectionException e) {
+        return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+    }
+
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ErrorResponse> illegalException(IllegalStateException e) {
         return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
     }
 }
+
