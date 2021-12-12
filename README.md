@@ -99,3 +99,15 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 - [x] LineController.addSection 반환형 제네릭 Void로 변경
 - [x] 도메인이 dto에 의존하지 않도록 Station.from 제거
+- 노선의 구간을 제거하는 기능(Happy Path) 구현하기
+    - 역 3개로 이루어진 구간 2개 제공
+
+    1. 상행 끝부분을 제거
+    2. 중간 부분을 제거
+    3. 하행 끝 부분을 제거
+
+    - [ ] 인수 테스트 추가
+    - [ ] 유닛 테스트 추가 및 기능 구현
+- 구간 삭제 시 예외 케이스를 고려하기
+    - [ ] 유닛 테스트 추가
+        - 구간이 하나인 노선에서 구간을 제거할 경우
