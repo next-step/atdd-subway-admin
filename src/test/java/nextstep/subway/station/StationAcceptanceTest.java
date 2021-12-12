@@ -150,24 +150,20 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 
-	public static Station 지하철역_생성되어_있음_삼성역() {
-		StationResponse stationResponse = 지하철역_생성_요청(삼성역.getName()).as(StationResponse.class);
-		return Station.from(stationResponse);
+	public static StationResponse 지하철역_생성되어_있음_삼성역() {
+		return 지하철역_생성_요청(삼성역.getName()).as(StationResponse.class);
 	}
 
-	public static Station 지하철역_생성되어_있음_역삼역() {
-		StationResponse stationResponse = 지하철역_생성_요청(역삼역.getName()).as(StationResponse.class);
-		return Station.from(stationResponse);
+	public static StationResponse 지하철역_생성되어_있음_역삼역() {
+		return 지하철역_생성_요청(역삼역.getName()).as(StationResponse.class);
 	}
 
-	public static Station 지하철역_생성되어_있음_선릉역() {
-		StationResponse stationResponse = 지하철역_생성_요청(선릉역.getName()).as(StationResponse.class);
-		return Station.from(stationResponse);
+	public static StationResponse 지하철역_생성되어_있음_선릉역() {
+		return 지하철역_생성_요청(선릉역.getName()).as(StationResponse.class);
 	}
 
-	public static Station 지하철역_생성되어_있음_강남역() {
-		StationResponse stationResponse = 지하철역_생성_요청(강남역.getName()).as(StationResponse.class);
-		return Station.from(stationResponse);
+	public static StationResponse 지하철역_생성되어_있음_강남역() {
+		return 지하철역_생성_요청(강남역.getName()).as(StationResponse.class);
 	}
 
 	public static void 지하철역_노선에_포함_검증(ExtractableResponse<Response> response) {

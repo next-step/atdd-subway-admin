@@ -98,4 +98,4 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ## 4단계 기능 목록
 
 - [x] LineController.addSection 반환형 제네릭 Void로 변경
-- [ ] 도메인이 dto에 의존하지 않도록 Station.from 제거
+- [x] 도메인이 dto에 의존하지 않도록 Station.from 제거
