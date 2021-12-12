@@ -201,14 +201,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		LineAcceptanceTest.지하철_노선_조회_요청(lineId);
 
 		// when
-		Map<String, Long> params = new HashMap<>();
-		params.put("stationId", upStation.getId());
-		ExtractableResponse<Response> response = RestAssured.given().log().all()
-			.params(params)
-			.when()
-			.delete("/lines/" + lineId + "/sections")
-			.then().log().all()
-			.extract();
+		ExtractableResponse<Response> response = 지하철_구간_삭제_요청(upStation.getId(), lineId);
 
 		// then
 		응답_검증(response, HttpStatus.OK);
@@ -239,14 +232,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		LineAcceptanceTest.지하철_노선_조회_요청(lineId);
 
 		// when
-		Map<String, Long> params = new HashMap<>();
-		params.put("stationId", midStation.getId());
-		ExtractableResponse<Response> response = RestAssured.given().log().all()
-			.params(params)
-			.when()
-			.delete("/lines/" + lineId + "/sections")
-			.then().log().all()
-			.extract();
+		ExtractableResponse<Response> response = 지하철_구간_삭제_요청(midStation.getId(), lineId);
 
 		// then
 		응답_검증(response, HttpStatus.OK);
@@ -277,19 +263,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		LineAcceptanceTest.지하철_노선_조회_요청(lineId);
 
 		// when
-		Map<String, Long> params = new HashMap<>();
-		params.put("stationId", downStation.getId());
-		ExtractableResponse<Response> response = RestAssured.given().log().all()
-			.params(params)
-			.when()
-			.delete("/lines/" + lineId + "/sections")
-			.then().log().all()
-			.extract();
+		ExtractableResponse<Response> response = 지하철_구간_삭제_요청(downStation.getId(), lineId);
 
 		// then
 		응답_검증(response, HttpStatus.OK);
 		ExtractableResponse<Response> lineResponse = LineAcceptanceTest.지하철_노선_조회_요청(lineId);
-		지하철역_순서_검증(lineResponse, Arrays.asList(midStation, downStation));
+		지하철역_순서_검증(lineResponse, Arrays.asList(upStation, midStation));
 	}
 
 	private void 지하철역_순서_검증(ExtractableResponse<Response> lineResponse, List<Station> expected) {
@@ -307,6 +286,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when()
 			.post(url)
+			.then().log().all()
+			.extract();
+	}
+
+	private ExtractableResponse<Response> 지하철_구간_삭제_요청(Long stationId, Long lineId) {
+		Map<String, Long> params = new HashMap<>();
+		params.put("stationId", stationId);
+		return RestAssured.given().log().all()
+			.params(params)
+			.when()
+			.delete("/lines/" + lineId + "/sections")
 			.then().log().all()
 			.extract();
 	}

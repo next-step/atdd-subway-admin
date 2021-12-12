@@ -21,7 +21,7 @@ public class Sections {
 	public static final String EXCEPTION_MESSAGE_SECTION_EXACTLY_EQUAL = "상행역과 하행역이 모두 노선 구간으로 등록되어 있습니다.";
 	public static final String EXCEPTION_MESSAGE_SECTION_NOT_INCLUDE = "등록하려는 구간의 상행역과 하행역이 현재 노선 구간에 포함되어 있지 않습니다.";
 
-	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
 
 	public Sections() {
@@ -132,12 +132,11 @@ public class Sections {
 
 	public void deleteSectionByStationId(Long stationId) {
 		List<Section> sectionsConnected = findSections(stationId);
-		if (sectionsConnected.size() == 2) {
-			addSectionComposedFirstAndLastStation(sectionsConnected);
-		}
-
 		for (Section section : sectionsConnected) {
 			sections.remove(section);
+		}
+		if (sectionsConnected.size() == 2) {
+			addSectionComposedFirstAndLastStation(sectionsConnected);
 		}
 	}
 
@@ -147,7 +146,9 @@ public class Sections {
 		Integer newDistance = sections.stream()
 			.map(section -> section.getDistance().get())
 			.reduce(0, Integer::sum);
-		this.sections.add(new Section(upStation, downStation, newDistance));
+		Section section = new Section(upStation, downStation, newDistance);
+		section.toLine(sections.get(0).getLine());
+		this.sections.add(section);
 	}
 
 	private List<Section> findSections(Long stationId) {
