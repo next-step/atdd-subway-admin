@@ -66,8 +66,7 @@ public class LineService {
 
 	@Transactional
 	public void updateLine(Long id, LineRequest request) {
-		Line line = lineRepository.findById(id)
-			.orElseThrow(() -> new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_LINE));
+		Line line = findLineById(id);
 		line.update(new Line(request.getName(), request.getColor()));
 	}
 
@@ -82,8 +81,7 @@ public class LineService {
 
 	@Transactional
 	public void addSection(Long id, AddSectionRequest addSectionRequest) {
-		Line line = lineRepository.findById(id)
-			.orElseThrow(() -> new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_LINE));
+		Line line = findLineById(id);
 		Station upStation = getStation(addSectionRequest.upStationId);
 		Station downStation = getStation(addSectionRequest.downStationId);
 		line.addSection(upStation, downStation, addSectionRequest.distance);
@@ -91,9 +89,12 @@ public class LineService {
 
 	@Transactional
 	public void deleteSectionByStationId(Long id, Long stationId) {
-		Line line = lineRepository.findById(id)
-			.orElseThrow(() -> new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_LINE));
+		Line line = findLineById(id);
 		line.getSections().deleteSectionByStationId(stationId);
 	}
 
+	private Line findLineById(Long id) {
+		return lineRepository.findById(id)
+			.orElseThrow(() -> new ResourceNotFoundException(EXCEPTION_MESSAGE_NOT_FOUND_LINE));
+	}
 }
