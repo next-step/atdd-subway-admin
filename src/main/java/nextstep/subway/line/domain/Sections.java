@@ -87,7 +87,7 @@ public class Sections {
 		sections.forEach(section -> map.put(section.getUpStation(), section.getDownStation()));
 
 		List<Station> stations = new ArrayList<>();
-		Station station = findFirstStation();
+		Station station = findFirstStation(sections);
 		while (map.get(station) != null) {
 			stations.add(station);
 			station = map.get(station);
@@ -96,18 +96,9 @@ public class Sections {
 		return stations;
 	}
 
-	private Station findFirstStation() {
-		List<Station> upStations = getUpStations();
-		List<Station> downStations = getDownStations();
-		return upStations.stream()
-			.filter(upStation -> !downStations.contains(upStation))
-			.findFirst()
-			.orElseThrow(() -> new IllegalArgumentException("잘못된 구간 정보입니다."));
-	}
-
 	private Station findFirstStation(List<Section> sections) {
-		List<Station> upStations = getUpStations();
-		List<Station> downStations = getDownStations();
+		List<Station> upStations = getUpStations(sections);
+		List<Station> downStations = getDownStations(sections);
 		return upStations.stream()
 			.filter(upStation -> !downStations.contains(upStation))
 			.findFirst()
@@ -115,21 +106,21 @@ public class Sections {
 	}
 
 	private Station findLastStation(List<Section> sections) {
-		List<Station> upStations = getUpStations();
-		List<Station> downStations = getDownStations();
+		List<Station> upStations = getUpStations(sections);
+		List<Station> downStations = getDownStations(sections);
 		return downStations.stream()
 			.filter(downStation -> !upStations.contains(downStation))
 			.findFirst()
 			.orElseThrow(() -> new IllegalArgumentException("잘못된 구간 정보입니다."));
 	}
 
-	private List<Station> getUpStations() {
+	private List<Station> getUpStations(List<Section> sections) {
 		return sections.stream()
 			.map(Section::getUpStation)
 			.collect(Collectors.toList());
 	}
 
-	private List<Station> getDownStations() {
+	private List<Station> getDownStations(List<Section> sections) {
 		return sections.stream()
 			.map(Section::getDownStation)
 			.collect(Collectors.toList());
