@@ -14,12 +14,14 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.common.exception.BadParameterException;
+import nextstep.subway.common.exception.ResourceNotFoundException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
 	public static final String EXCEPTION_MESSAGE_SECTION_EXACTLY_EQUAL = "상행역과 하행역이 모두 노선 구간으로 등록되어 있습니다.";
 	public static final String EXCEPTION_MESSAGE_SECTION_NOT_INCLUDE = "등록하려는 구간의 상행역과 하행역이 현재 노선 구간에 포함되어 있지 않습니다.";
+	public static final String EXCEPTION_MESSAGE_HAS_ONLY_ONE_SECTION = "구간이 하나만 존재하는 노선입니다.";
 
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
@@ -132,23 +134,34 @@ public class Sections {
 
 	public void deleteSectionByStationId(Long stationId) {
 		List<Section> sectionsConnected = findSections(stationId);
+		validateOnDeleteSection(sectionsConnected);
 		for (Section section : sectionsConnected) {
 			sections.remove(section);
 		}
-		if (sectionsConnected.size() == 2) {
-			addSectionComposedFirstAndLastStation(sectionsConnected);
+		addSectionComposedFirstAndLastStation(sectionsConnected);
+	}
+
+	private void validateOnDeleteSection(List<Section> sectionsConnected) {
+		if (sections.size() == 1) {
+			throw new BadParameterException(EXCEPTION_MESSAGE_HAS_ONLY_ONE_SECTION);
+		}
+
+		if (sectionsConnected.size() == 0) {
+			throw new ResourceNotFoundException("존재하지 않는 구간입니다.");
 		}
 	}
 
-	private void addSectionComposedFirstAndLastStation(List<Section> sections) {
-		Station upStation = findFirstStation(sections);
-		Station downStation = findLastStation(sections);
-		Integer newDistance = sections.stream()
-			.map(section -> section.getDistance().get())
-			.reduce(0, Integer::sum);
-		Section section = new Section(upStation, downStation, newDistance);
-		section.toLine(sections.get(0).getLine());
-		this.sections.add(section);
+	private void addSectionComposedFirstAndLastStation(List<Section> sectionsConnected) {
+		if (sectionsConnected.size() == 2) {
+			Station upStation = findFirstStation(sectionsConnected);
+			Station downStation = findLastStation(sectionsConnected);
+			Integer newDistance = sectionsConnected.stream()
+				.map(section -> section.getDistance().get())
+				.reduce(0, Integer::sum);
+			Section section = new Section(upStation, downStation, newDistance);
+			section.toLine(sectionsConnected.get(0).getLine());
+			this.sections.add(section);
+		}
 	}
 
 	private List<Section> findSections(Long stationId) {

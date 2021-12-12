@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import nextstep.subway.common.exception.BadParameterException;
+import nextstep.subway.common.exception.ResourceNotFoundException;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.Sections;
 import nextstep.subway.station.StationAcceptanceTest;
@@ -167,5 +168,37 @@ public class SectionsTest {
 		actual.deleteSectionByStationId(역삼역.getId());
 
 		assertThat(expected).isEqualTo(actual);
+	}
+
+	@Test
+	@DisplayName("구간이 하나인 노선에서 구간을 제거할 경우 예외")
+	void deleteSectionByStationId_hasOnlyOneSectionLine_exception() {
+		Station 삼성역 = stationRepository.save(new Station(StationAcceptanceTest.삼성역.getName()));
+		Station 선릉역 = stationRepository.save(new Station(StationAcceptanceTest.선릉역.getName()));
+		Section section1 = new Section(삼성역, 선릉역, 5);
+		Sections sections = new Sections();
+		sections.add(section1);
+
+		assertThatThrownBy(() -> sections.deleteSectionByStationId(삼성역.getId()))
+			.isInstanceOf(BadParameterException.class)
+			.hasMessage("구간이 하나만 존재하는 노선입니다.");
+	}
+
+	@Test
+	@DisplayName("노선에 존재하지 않는 구간을 삭제하려 하는 경우 예외")
+	void deleteSectionByStationId_hasNotSection_exception() {
+		Station 삼성역 = stationRepository.save(new Station(StationAcceptanceTest.삼성역.getName()));
+		Station 선릉역 = stationRepository.save(new Station(StationAcceptanceTest.선릉역.getName()));
+		Station 역삼역 = stationRepository.save(new Station(StationAcceptanceTest.역삼역.getName()));
+		Station 강남역 = stationRepository.save(new Station(StationAcceptanceTest.강남역.getName()));
+		Section section1 = new Section(삼성역, 선릉역, 5);
+		Section section2 = new Section(선릉역, 역삼역, 5);
+		Sections sections = new Sections();
+		sections.add(section1);
+		sections.add(section2);
+
+		assertThatThrownBy(() -> sections.deleteSectionByStationId(강남역.getId()))
+			.isInstanceOf(ResourceNotFoundException.class)
+			.hasMessage("존재하지 않는 구간입니다.");
 	}
 }
