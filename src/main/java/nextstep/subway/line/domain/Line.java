@@ -5,7 +5,6 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -56,5 +55,8 @@ public class Line extends BaseEntity {
     public List<Station> getStations() {
         return sections.getStations();
     }
-}
 
+    public void removeSection(Station station) {
+        sections.remove(station);
+    }
+}

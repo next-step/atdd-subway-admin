@@ -93,4 +93,14 @@ public class LineService {
 
         line.addSection(Section.of(upStation, downStation, sectionRequest.getDistance()));
     }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(
+                () -> new NotFoundLineException(String.format("존재하지 않는 노선입니다.[lineId: %s]", lineId))
+        );
+
+        Station station = findStationById(stationId);
+
+        line.removeSection(station);
+    }
 }

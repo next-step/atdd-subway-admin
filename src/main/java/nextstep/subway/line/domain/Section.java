@@ -7,6 +7,8 @@ import javax.persistence.*;
 @Entity
 public class Section {
 
+    public static final Section EMPTY= new Section();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -50,5 +52,13 @@ public class Section {
     public Distance getDistance() {
         return distance;
     }
-}
 
+    public void updateDownStationToDown(Section afterSection) {
+        this.downStation = afterSection.downStation;
+        this.distance.addDistance(afterSection.distance);
+    }
+
+    public boolean isGreaterThan(Distance distance) {
+        return this.distance.getDistance() > distance.getDistance();
+    }
+}

@@ -5,8 +5,8 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Distance {
 
-    private static final int MINIUM_DISTANCE = 0;
-    private static final String ERR_MSG_WORNG_DISTANCE = "두 역 사이의 거리가 0보다 같거나 작을수 없습니다.";
+    private static final int MINIUM_DISTANCE= 0;
+    private static final String ERR_MSG_WORNG_DISTANCE= "두 역 사이의 거리가 0보다 같거나 작을수 없습니다.";
 
     private int distance;
 
@@ -36,4 +36,9 @@ public class Distance {
         }
         return gap;
     }
+
+    public void addDistance(Distance distance) {
+        this.distance += distance.getDistance();
+    }
 }
+

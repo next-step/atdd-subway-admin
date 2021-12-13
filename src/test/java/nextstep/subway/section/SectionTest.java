@@ -24,7 +24,7 @@ public class SectionTest {
         Section newSection = Section.of(station1, station3, 3);
         line.addSection(newSection);
 
-        assertThat(line.getOrderedStations()).contains(station1, station3, station2);
+        assertThat(line.getStations()).contains(station1, station3, station2);
 
     }
 
