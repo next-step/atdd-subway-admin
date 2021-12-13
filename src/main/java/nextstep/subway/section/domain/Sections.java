@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.exception.SubWayExceptionStatus;
 import nextstep.subway.exception.SubwayException;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import org.springframework.util.CollectionUtils;
 
@@ -28,7 +29,7 @@ public class Sections {
     public Sections() {
     }
 
-    public void addToSections(Section section) {
+    public void addSection(Section section) {
 
         if (CollectionUtils.isEmpty(this.sections)) {
             this.sections.add(section);
@@ -40,6 +41,36 @@ public class Sections {
 
         Section persistSection = updateExistingSection(section);
         this.sections.add(persistSection);
+    }
+
+    public void deleteSection(Line line, Station station) {
+
+        validateDeleteCondition();
+
+        List<Section> existingSection = this.sections.stream()
+                .filter(i -> i.isContainStation(station))
+                .collect(Collectors.toList());
+
+        if (existingSection.size() == 1) {
+            Section deleteSection = existingSection.get(0);
+            this.sections.remove(deleteSection);
+        }
+
+        if (existingSection.size() == 2) {
+            deleteMiddleSection(line, station, existingSection);
+        }
+    }
+
+    private void deleteMiddleSection(Line line, Station station, List<Section> existingSection) {
+
+        Section before = existingSection.stream().filter(i -> i.getDownStation().equals(station)).findFirst().orElseThrow(IllegalArgumentException::new);
+        Section after = existingSection.stream().filter(i -> i.getUpStation().equals(station)).findFirst().orElseThrow(IllegalArgumentException::new);
+
+        Section mergedSection = Section.mergeExistingSection(line, before, after);
+        this.sections.remove(before);
+        this.sections.remove(after);
+        this.sections.add(mergedSection);
+
     }
 
     private Section updateExistingSection(Section section) {
@@ -78,8 +109,23 @@ public class Sections {
 
     private Boolean isDistanceLongerThanEqual(Section section) {
         return this.sections.stream()
-                .filter(i -> i.getUpStation().equals(section.getUpStation()) || i.getDownStation().equals(section.getDownStation()))
+                .filter(i -> isInsertableSection(i, section))
                 .anyMatch(i -> i.isLongerThanEqual(section));
+    }
+
+    private boolean isInsertableSection(Section existingSection, Section newSection) {
+        return existingSection.getUpStation().equals(newSection.getUpStation()) ||
+                existingSection.getDownStation().equals(newSection.getDownStation());
+    }
+
+    private void validateDeleteCondition() {
+        if (isOneSection()) {
+            throw new SubwayException(SubWayExceptionStatus.CANNOT_DELETE_SECTION);
+        }
+    }
+
+    private boolean isOneSection() {
+        return this.sections.size() == 1;
     }
 
     public List<Station> getStations() {
@@ -118,5 +164,9 @@ public class Sections {
     private Map<Station, Station> doCacheWithUpStations() {
         return this.sections.stream()
                 .collect(toMap(Section::getUpStation, Section::getDownStation));
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }

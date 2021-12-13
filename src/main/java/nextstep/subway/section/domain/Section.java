@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.util.Objects;
 
 @Entity
 public class Section extends BaseEntity {
@@ -57,6 +58,10 @@ public class Section extends BaseEntity {
                 this.downStation.equals(that.downStation);
     }
 
+    public Boolean isContainStation(Station station) {
+        return this.upStation.equals(station) || this.downStation.equals(station);
+    }
+
     public Boolean isLongerThanEqual(Section that) {
         return this.distance <= that.distance;
     }
@@ -84,6 +89,15 @@ public class Section extends BaseEntity {
         );
     }
 
+    public static Section mergeExistingSection(Line line, Section beforeSection, Section afterSection) {
+        return new Section(
+                line,
+                beforeSection.upStation,
+                afterSection.downStation,
+                beforeSection.distance + afterSection.distance
+        );
+    }
+
     public Long getId() {
         return id;
     }
@@ -105,6 +119,24 @@ public class Section extends BaseEntity {
     }
 
     public void setLine(Line line) {
+        if (this.line != null) {
+            this.line.getSections().remove(this);
+        }
+
         this.line = line;
+        line.getSections().add(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return id.equals(section.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
