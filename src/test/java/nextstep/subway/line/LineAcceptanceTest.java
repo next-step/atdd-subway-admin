@@ -19,6 +19,7 @@ import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -32,33 +33,39 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLine() {
 		// given
-		Station station1 = StationAcceptanceTest.지하철역_생성되어_있음_삼성역();
-		Station station2 = StationAcceptanceTest.지하철역_생성되어_있음_역삼역();
+		StationResponse 삼성역 = StationAcceptanceTest.지하철역_생성되어_있음_삼성역();
+		StationResponse 선릉역 = StationAcceptanceTest.지하철역_생성되어_있음_선릉역();
+		Station upStation = new Station(삼성역.getId(), 삼성역.getName());
+		Station downStation = new Station(선릉역.getId(), 선릉역.getName());
 
 		// when
-		Section section = new Section(station1, station2, 5);
+		Section section = new Section(upStation, downStation, 5);
 		LineRequest params = new LineRequest(NAME_SINBUNDANG, COLOR_BG_RED_600, section.getUpStation().getId(),
 			section.getDownStation().getId(), section.getDistance().get());
-		ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
+		ExtractableResponse<Response> createdLineResponse = 지하철_노선_생성_요청(params);
+		Long lineId = getLineIdFromCreatedLineResponse(createdLineResponse);
 
 		// then
-		응답_검증(response, HttpStatus.CREATED);
-		지하철_노선_생성_헤더_검증(response);
-		지하철_노선_생성_검증(response.header(LOCATION_HEADER_NAME));
+		응답_검증(createdLineResponse, HttpStatus.CREATED);
+		지하철_노선_생성_헤더_검증(createdLineResponse);
+		지하철_노선_생성_검증(lineId);
 	}
 
 	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
 	@Test
 	void createLine2() {
 		// given
-		Station station1 = StationAcceptanceTest.지하철역_생성되어_있음_삼성역();
-		Station station2 = StationAcceptanceTest.지하철역_생성되어_있음_역삼역();
-		Section section1 = new Section(station1, station2, 5);
+		StationResponse 삼성역 = StationAcceptanceTest.지하철역_생성되어_있음_삼성역();
+		StationResponse 선릉역 = StationAcceptanceTest.지하철역_생성되어_있음_선릉역();
+		Station upStation = new Station(삼성역.getId(), 삼성역.getName());
+		Station downStation = new Station(선릉역.getId(), 선릉역.getName());
+		Section section1 = new Section(upStation, downStation, 5);
 		지하철_노선_등록되어_있음(section1);
 
 		// when
-		Station station3 = StationAcceptanceTest.지하철역_생성되어_있음_선릉역();
-		Section section2 = new Section(station2, station3, 7);
+		StationResponse 역삼역 = StationAcceptanceTest.지하철역_생성되어_있음_역삼역();
+		Station underDownStation = new Station(역삼역.getId(), 역삼역.getName());
+		Section section2 = new Section(downStation, underDownStation, 3);
 		LineRequest params = new LineRequest(NAME_SINBUNDANG, COLOR_BG_RED_600, section2.getUpStation().getId(),
 			section2.getDownStation().getId(), section2.getDistance().get());
 		ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
@@ -71,11 +78,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLines() {
 		// given
-		Station station1 = StationAcceptanceTest.지하철역_생성되어_있음_삼성역();
-		Station station2 = StationAcceptanceTest.지하철역_생성되어_있음_역삼역();
-		Station station3 = StationAcceptanceTest.지하철역_생성되어_있음_선릉역();
-		지하철_노선_등록되어_있음(new Section(station1, station2, 5));
-		지하철_노선_등록되어_있음2(new Section(station2, station3, 7));
+		StationResponse 삼성역 = StationAcceptanceTest.지하철역_생성되어_있음_삼성역();
+		StationResponse 선릉역 = StationAcceptanceTest.지하철역_생성되어_있음_선릉역();
+		StationResponse 역삼역 = StationAcceptanceTest.지하철역_생성되어_있음_역삼역();
+		Station upStation = new Station(삼성역.getId(), 삼성역.getName());
+		Station downStation = new Station(선릉역.getId(), 선릉역.getName());
+		Station underDownStation = new Station(역삼역.getId(), 역삼역.getName());
+		지하철_노선_등록되어_있음(new Section(upStation, downStation, 5));
+		지하철_노선_등록되어_있음2(new Section(downStation, underDownStation, 7));
 
 		// when
 		ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -90,12 +100,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLine() {
 		// given
-		Station station1 = StationAcceptanceTest.지하철역_생성되어_있음_삼성역();
-		Station station2 = StationAcceptanceTest.지하철역_생성되어_있음_역삼역();
-		지하철_노선_등록되어_있음(new Section(station1, station2, 5));
+		StationResponse 삼성역 = StationAcceptanceTest.지하철역_생성되어_있음_삼성역();
+		StationResponse 선릉역 = StationAcceptanceTest.지하철역_생성되어_있음_선릉역();
+		Station upStation = new Station(삼성역.getId(), 삼성역.getName());
+		Station downStation = new Station(선릉역.getId(), 선릉역.getName());
+		Section section = new Section(upStation, downStation, 5);
+		ExtractableResponse<Response> createdLineResponse = LineAcceptanceTest.지하철_노선_등록되어_있음(section);
+		Long lineId = getLineIdFromCreatedLineResponse(createdLineResponse);
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선_조회_요청(1L);
+		ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineId);
 
 		// then
 		응답_검증(response, HttpStatus.OK);
@@ -107,10 +121,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void updateLine() {
 		// given
-		Station station1 = StationAcceptanceTest.지하철역_생성되어_있음_삼성역();
-		Station station2 = StationAcceptanceTest.지하철역_생성되어_있음_역삼역();
-		지하철_노선_등록되어_있음(new Section(station1, station2, 5));
-		Long lineId = 1L;
+		StationResponse 삼성역 = StationAcceptanceTest.지하철역_생성되어_있음_삼성역();
+		StationResponse 선릉역 = StationAcceptanceTest.지하철역_생성되어_있음_선릉역();
+		Station upStation = new Station(삼성역.getId(), 삼성역.getName());
+		Station downStation = new Station(선릉역.getId(), 선릉역.getName());
+		Section section = new Section(upStation, downStation, 5);
+		ExtractableResponse<Response> createdLineResponse = LineAcceptanceTest.지하철_노선_등록되어_있음(section);
+		Long lineId = getLineIdFromCreatedLineResponse(createdLineResponse);
 
 		// when
 		ExtractableResponse<Response> response = 지하철_노선_수정_요청(lineId);
@@ -124,17 +141,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deleteLine() {
 		// given
-		Station station1 = StationAcceptanceTest.지하철역_생성되어_있음_삼성역();
-		Station station2 = StationAcceptanceTest.지하철역_생성되어_있음_역삼역();
-		지하철_노선_등록되어_있음(new Section(station1, station2, 5));
-		Long id = 1L;
+		StationResponse 삼성역 = StationAcceptanceTest.지하철역_생성되어_있음_삼성역();
+		StationResponse 선릉역 = StationAcceptanceTest.지하철역_생성되어_있음_선릉역();
+		Station upStation = new Station(삼성역.getId(), 삼성역.getName());
+		Station downStation = new Station(선릉역.getId(), 선릉역.getName());
+		Section section = new Section(upStation, downStation, 5);
+		ExtractableResponse<Response> createdLineResponse = LineAcceptanceTest.지하철_노선_등록되어_있음(section);
+		Long lineId = getLineIdFromCreatedLineResponse(createdLineResponse);
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선_제거_요청(id);
+		ExtractableResponse<Response> response = 지하철_노선_제거_요청(lineId);
 
 		// then
 		응답_검증(response, HttpStatus.NO_CONTENT);
-		지하철_노선_삭제_검증(id);
+		지하철_노선_삭제_검증(lineId);
 	}
 
 	@DisplayName("지하철 노선이 추가되지 않은 상태에서 노선을 제거한다.")
@@ -198,16 +218,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.extract();
 	}
 
-	private static ExtractableResponse<Response> 지하철_노선_조회_요청(String url) {
+	public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
 		return RestAssured.given().log().all()
 			.when()
-			.get(url)
+			.get("/lines/" + id)
 			.then().log().all()
 			.extract();
-	}
-
-	public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
-		return 지하철_노선_조회_요청("/lines/" + id);
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id) {
@@ -248,8 +264,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return response;
 	}
 
-	private void 지하철_노선_생성_검증(String url) {
-		ExtractableResponse<Response> response = 지하철_노선_조회_요청(url);
+	private void 지하철_노선_생성_검증(Long id) {
+		ExtractableResponse<Response> response = 지하철_노선_조회_요청(id);
 		지하철_노선_포함_검증(response, NAME_SINBUNDANG, COLOR_BG_RED_600);
 		StationAcceptanceTest.지하철역_노선에_포함_검증(response);
 	}

@@ -25,12 +25,4 @@ public class BaseEntity {
 	public LocalDateTime getModifiedDate() {
 		return modifiedDate;
 	}
-
-	public void setCreatedDate(LocalDateTime createdDate) {
-		this.createdDate = createdDate;
-	}
-
-	public void setModifiedDate(LocalDateTime modifiedDate) {
-		this.modifiedDate = modifiedDate;
-	}
 }

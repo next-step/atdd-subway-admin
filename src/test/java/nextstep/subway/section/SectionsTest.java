@@ -6,13 +6,22 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import nextstep.subway.common.exception.BadParameterException;
+import nextstep.subway.common.exception.ResourceNotFoundException;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.Sections;
+import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 
+@DataJpaTest
 public class SectionsTest {
+	@Autowired
+	private StationRepository stationRepository;
+
 	@Test
 	void getStations() {
 		Station station1 = new Station("삼성역");
@@ -99,5 +108,97 @@ public class SectionsTest {
 			sections.add(section3);
 		}).isInstanceOf(BadParameterException.class)
 			.hasMessage("추가하려는 구간의 길이가 기존에 존재하는 길이와 같거나 깁니다.");
+	}
+
+	@Test
+	@DisplayName("3개의 역에서 상행 종점을 삭제")
+	void deleteSectionByStationId_success1() {
+		Station 삼성역 = stationRepository.save(new Station(StationAcceptanceTest.삼성역.getName()));
+		Station 선릉역 = stationRepository.save(new Station(StationAcceptanceTest.선릉역.getName()));
+		Station 역삼역 = stationRepository.save(new Station(StationAcceptanceTest.역삼역.getName()));
+		Section section1 = new Section(삼성역, 선릉역, 5);
+		Section section2 = new Section(선릉역, 역삼역, 5);
+		Sections expected = new Sections();
+		expected.add(section2);
+		Sections actual = new Sections();
+		actual.add(section1);
+		actual.add(section2);
+
+		actual.deleteSectionByStationId(삼성역.getId());
+
+		assertThat(expected).isEqualTo(actual);
+	}
+
+	@Test
+	@DisplayName("3개의 역에서 중간 역을 삭제")
+	void deleteSectionByStationId_success2() {
+		Station 삼성역 = stationRepository.save(new Station(StationAcceptanceTest.삼성역.getName()));
+		Station 선릉역 = stationRepository.save(new Station(StationAcceptanceTest.선릉역.getName()));
+		Station 역삼역 = stationRepository.save(new Station(StationAcceptanceTest.역삼역.getName()));
+
+		Section section1 = new Section(삼성역, 선릉역, 5);
+		Section section2 = new Section(선릉역, 역삼역, 5);
+		Section section3 = new Section(삼성역, 역삼역, 10);
+		Sections expected = new Sections();
+		expected.add(section3);
+
+		Sections actual = new Sections();
+		actual.add(section1);
+		actual.add(section2);
+
+		actual.deleteSectionByStationId(선릉역.getId());
+
+		assertThat(expected).isEqualTo(actual);
+	}
+
+	@Test
+	@DisplayName("3개의 역에서 하행 종점을 삭제")
+	void deleteSectionByStationId_success3() {
+		Station 삼성역 = stationRepository.save(new Station(StationAcceptanceTest.삼성역.getName()));
+		Station 선릉역 = stationRepository.save(new Station(StationAcceptanceTest.선릉역.getName()));
+		Station 역삼역 = stationRepository.save(new Station(StationAcceptanceTest.역삼역.getName()));
+		Section section1 = new Section(삼성역, 선릉역, 5);
+		Section section2 = new Section(선릉역, 역삼역, 5);
+		Sections expected = new Sections();
+		expected.add(section1);
+		Sections actual = new Sections();
+		actual.add(section1);
+		actual.add(section2);
+
+		actual.deleteSectionByStationId(역삼역.getId());
+
+		assertThat(expected).isEqualTo(actual);
+	}
+
+	@Test
+	@DisplayName("구간이 하나인 노선에서 구간을 제거할 경우 예외")
+	void deleteSectionByStationId_hasOnlyOneSectionLine_exception() {
+		Station 삼성역 = stationRepository.save(new Station(StationAcceptanceTest.삼성역.getName()));
+		Station 선릉역 = stationRepository.save(new Station(StationAcceptanceTest.선릉역.getName()));
+		Section section1 = new Section(삼성역, 선릉역, 5);
+		Sections sections = new Sections();
+		sections.add(section1);
+
+		assertThatThrownBy(() -> sections.deleteSectionByStationId(삼성역.getId()))
+			.isInstanceOf(BadParameterException.class)
+			.hasMessage("구간이 하나만 존재하는 노선입니다.");
+	}
+
+	@Test
+	@DisplayName("노선에 존재하지 않는 구간을 삭제하려 하는 경우 예외")
+	void deleteSectionByStationId_hasNotSection_exception() {
+		Station 삼성역 = stationRepository.save(new Station(StationAcceptanceTest.삼성역.getName()));
+		Station 선릉역 = stationRepository.save(new Station(StationAcceptanceTest.선릉역.getName()));
+		Station 역삼역 = stationRepository.save(new Station(StationAcceptanceTest.역삼역.getName()));
+		Station 강남역 = stationRepository.save(new Station(StationAcceptanceTest.강남역.getName()));
+		Section section1 = new Section(삼성역, 선릉역, 5);
+		Section section2 = new Section(선릉역, 역삼역, 5);
+		Sections sections = new Sections();
+		sections.add(section1);
+		sections.add(section2);
+
+		assertThatThrownBy(() -> sections.deleteSectionByStationId(강남역.getId()))
+			.isInstanceOf(ResourceNotFoundException.class)
+			.hasMessage("존재하지 않는 구간입니다.");
 	}
 }

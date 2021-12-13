@@ -46,7 +46,7 @@ public class Section extends BaseEntity {
 
 	public void toLine(Line line) {
 		this.line = line;
-		if (!line.getSections().contains(this)) {
+		if (line != null && !line.getSections().contains(this)) {
 			line.addSection(this);
 		}
 	}

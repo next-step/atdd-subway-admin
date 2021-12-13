@@ -9,7 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.station.dto.StationResponse;
 
 @Entity
 public class Station extends BaseEntity {
@@ -26,20 +25,17 @@ public class Station extends BaseEntity {
 		this.name = name;
 	}
 
+	public Station(Long id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+
 	public Long getId() {
 		return id;
 	}
 
 	public String getName() {
 		return name;
-	}
-
-	public static Station from(StationResponse stationResponse) {
-		Station station = new Station(stationResponse.getName());
-		station.id = stationResponse.getId();
-		station.setCreatedDate(stationResponse.getCreatedDate());
-		station.setModifiedDate(stationResponse.getModifiedDate());
-		return station;
 	}
 
 	@Override
