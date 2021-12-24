@@ -60,28 +60,48 @@ public class Section {
 		return downStation;
 	}
 
-	public void setUpStation(Station upStation) {
-		this.upStation = upStation;
-	}
-
-	public void setDownStation(Station downStation) {
-		this.downStation = downStation;
-	}
-
 	public boolean isSameUpstation(Section section) {
 		return upStation.equals(section.upStation);
+	}
+
+	public boolean isSameUpstation(Station station) {
+		return upStation.equals(station);
 	}
 
 	public boolean isSameDownStation(Section section) {
 		return downStation.equals(section.downStation);
 	}
 
+	public boolean isSameDownStation(Station station) {
+		return downStation.equals(station);
+	}
+
 	public boolean isSameStation(Section section) {
 		return isSameUpstation(section) && isSameDownStation(section);
 	}
 
+	public boolean isSameStation(Station station) {
+		return isSameUpstation(station) || isSameDownStation(station);
+	}
+
 	public int diffDistance(Section section) {
 		return distance - section.distance;
+	}
+
+	public int addDistance(Section section) {
+		return distance + section.distance;
+	}
+
+	public void update(Section section) {
+		if (isSameUpstation(section)) {
+			this.upStation = section.downStation;
+			this.distance = this.distance - section.distance;
+		}
+
+		if (isSameDownStation(section)) {
+			this.downStation = section.upStation;
+			this.distance = this.distance - section.distance;
+		}
 	}
 
 	@Override

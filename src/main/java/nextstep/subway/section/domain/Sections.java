@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -29,15 +30,35 @@ public class Sections {
 			.filter(it -> it.isSameUpstation(section) || it.isSameDownStation(section))
 			.findFirst();
 
-		targetSection
-			.filter(it -> it.isSameUpstation(section))
-			.ifPresent(it -> it.setUpStation(section.getDownStation()));
-
-		targetSection
-			.filter(it -> it.isSameDownStation(section))
-			.ifPresent(it -> it.setDownStation(section.getUpStation()));
+		targetSection.ifPresent(it -> it.update(section));
 
 		sections.add(section);
+	}
+
+	public void removeSection(Station station) {
+		checkValidation(station);
+
+		final Map<Boolean, List<Section>> overlapped = sections.stream()
+			.filter(section -> section.isSameStation(station))
+			.collect(Collectors.partitioningBy(section -> section.isSameUpstation(station)));
+
+		final Section downSection = overlapped.get(false).get(0);
+		final Section upSection = overlapped.get(true).get(0);
+
+		sections.remove(downSection);
+		sections.remove(upSection);
+		sections.add(
+			Section.of(downSection.getUpStation(), upSection.getDownStation(), upSection.addDistance(downSection)));
+	}
+
+	private void checkValidation(Station station) {
+		if (!sections.stream().anyMatch(it -> it.isSameStation(station))) {
+			throw new IllegalArgumentException("존재하지 않는 역입니다.");
+		}
+
+		if (sections.size() == 1) {
+			throw new IllegalArgumentException("마지막 구간 입니다.");
+		}
 	}
 
 	private void checkValidation(Section section) {

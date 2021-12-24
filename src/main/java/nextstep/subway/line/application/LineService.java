@@ -54,4 +54,10 @@ public class LineService {
 		line.addSection(Section.of(upStation, downStation, sectionRequest.getDistance()));
 		return LineResponse.of(line);
 	}
+
+	public void removeSectionByStationId(Long lineId, Long stationId) {
+		final Line line = lineRepository.findById(lineId).get();
+		final Station station = stationService.findById(stationId);
+		line.removeSection(station);
+	}
 }

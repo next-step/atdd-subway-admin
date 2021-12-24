@@ -33,14 +33,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		강남역 = 지하철역_생성("강남역").as(StationResponse.class);
 		광교역 = 지하철역_생성("광교역").as(StationResponse.class);
 
+		HashMap createParams = 라인_요청_파라미터();
+
+		신분당선 = 라인_생성(createParams).as(LineResponse.class);
+	}
+
+	private HashMap 라인_요청_파라미터() {
 		HashMap createParams = new HashMap<>();
 		createParams.put("name", "신분당선");
 		createParams.put("color", "bg-red-600");
 		createParams.put("upStationId", 강남역.getId());
 		createParams.put("downStationId", 광교역.getId());
 		createParams.put("distance", 10);
-
-		신분당선 = 라인_생성(createParams).as(LineResponse.class);
+		return createParams;
 	}
 
 	@DisplayName("노선에 구간을 등록한다.")
@@ -61,6 +66,33 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// then
 		// 지하철_노선에_구간_등록됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+	}
+
+	@Test
+	@DisplayName("노선에 구간을 삭제한다.")
+	void 구간삭제_성공() {
+		// given
+		final StationResponse 판교역 = 지하철역_생성("판교역").as(StationResponse.class);
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("upStationId", 판교역.getId());
+		params.put("downStationId", 광교역.getId());
+		params.put("distance", 5);
+
+		지하철_구간_등록_요청(params);
+
+		// when
+		// 지하철_노선에_구간_삭제_요청
+		final ExtractableResponse<Response> response = RestAssured.given().log().all()
+			.queryParam("stationId", 판교역.getId())
+			.when()
+			.delete("/lines/{lineId}/sections", 신분당선.getId())
+			.then().log().all()
+			.extract();
+
+		// then
+		// 지하철_노선에_구간_삭제됨
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
 	private ExtractableResponse<Response> 지하철_구간_등록_요청(Map<String, Object> params) {
