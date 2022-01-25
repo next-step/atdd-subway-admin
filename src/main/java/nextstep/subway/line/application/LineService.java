@@ -34,6 +34,14 @@ public class LineService {
         }
     }
 
+    public LineResponse update(LineRequest request, Long id) {
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new LineNotFoundException(id + " : 존재하지 않는 라인입니다."));
+        checkName(request.getName());
+        line.update(request.toLine());
+        return LineResponse.of(line);
+    }
+
     public List<LineResponse> getLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()

@@ -109,12 +109,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createdLine = createLine("2호선", "green");
 
         // when
         // 지하철_노선_수정_요청
+        ExtractableResponse<Response> response = updateLine("1호선", "navy",
+            getIdWithResponse(createdLine));
 
         // then
         // 지하철_노선_수정됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -144,11 +148,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
+
     private ExtractableResponse<Response> getLine(String path) {
         return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .get("/lines" + path)
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> updateLine(String name, String color, Long id) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
+        return RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines/" + id)
             .then().log().all()
             .extract();
     }
