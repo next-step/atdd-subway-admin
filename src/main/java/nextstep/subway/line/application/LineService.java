@@ -4,6 +4,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.exception.NameDuplicateException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +27,7 @@ public class LineService {
     private void checkName(String name) {
         Line existingLine = lineRepository.findByName(name);
         if (existingLine != null) {
-            throw new IllegalArgumentException("이미 존재하는 이름입니다. : " + name);
+            throw new NameDuplicateException("이미 존재하는 이름입니다. : " + name);
         }
     }
 }
