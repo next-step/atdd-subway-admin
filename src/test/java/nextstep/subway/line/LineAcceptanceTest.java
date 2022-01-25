@@ -92,6 +92,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @DisplayName("존재하지 않는 지하철 노선을 조회한다.")
+    @Test
+    void getLine2() {
+        // when
+        // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = getLine("/1");
+
+        // then
+        // 지하철_노선_응답_실패
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
