@@ -35,8 +35,7 @@ public class LineService {
     }
 
     public LineResponse update(LineRequest request, Long id) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new LineNotFoundException(id + " : 존재하지 않는 라인입니다."));
+        Line line = line(id);
         checkName(request.getName());
         line.update(request.toLine());
         return LineResponse.of(line);
@@ -50,14 +49,17 @@ public class LineService {
     }
 
     public LineResponse getLine(Long id) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new LineNotFoundException(id + " : 존재하지 않는 라인입니다."));
+        Line line = line(id);
         return LineResponse.of(line);
     }
 
     public void delete(Long id) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new LineNotFoundException(id + " : 존재하지 않는 라인입니다."));
+        Line line = line(id);
         lineRepository.delete(line);
+    }
+
+    private Line line(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(() -> new LineNotFoundException(id + " : 존재하지 않는 라인입니다."));
     }
 }
