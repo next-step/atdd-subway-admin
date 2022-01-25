@@ -1,9 +1,12 @@
 package nextstep.subway.line.application;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.line.exception.NameDuplicateException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,5 +32,18 @@ public class LineService {
         if (existingLine != null) {
             throw new NameDuplicateException("이미 존재하는 이름입니다. : " + name);
         }
+    }
+
+    public List<LineResponse> getLines() {
+        List<Line> lines = lineRepository.findAll();
+        return lines.stream()
+            .map(line -> LineResponse.of(line))
+            .collect(Collectors.toList());
+    }
+
+    public LineResponse getLine(Long id) {
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new LineNotFoundException(id + " : 존재하지 않는 라인입니다."));
+        return LineResponse.of(line);
     }
 }

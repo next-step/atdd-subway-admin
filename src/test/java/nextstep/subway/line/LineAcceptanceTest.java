@@ -3,9 +3,14 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -53,8 +58,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        createLine("1호선", "navy");
-        createLine("2호선", "green");
+        ExtractableResponse<Response> firstLine = createLine("1호선", "navy");
+        ExtractableResponse<Response> secondLine = createLine("2호선", "green");
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -62,8 +67,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_목록_응답됨
-        // 지하철_노선_목록_포함됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        // 지하철_노선_목록_포함됨
+        List<Long> expectIds = Arrays.asList(firstLine, secondLine).stream()
+            .map(this::getIdWithResponse)
+            .collect(Collectors.toList());
+        List<Long> resultIds = getIdsWithResponse(response);
+        assertThat(checkIdsEquals(expectIds, resultIds)).isTrue();
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -126,10 +136,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .post("/lines" + path)
+            .get("/lines" + path)
             .then().log().all()
             .extract();
     }
 
+    private List<Long> getIdsWithResponse(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(".", LineResponse.class).stream()
+            .map(l -> l.getId())
+            .collect(Collectors.toList());
+    }
+
+    private Long getIdWithResponse(ExtractableResponse<Response> response) {
+        return response.jsonPath().getObject(".", LineResponse.class).getId();
+    }
+
+    private boolean checkIdsEquals(List<Long> expected, List<Long> result) {
+        for (int i = 0; i < expected.size(); i++) {
+            if (expected.get(i) != result.get(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 }
