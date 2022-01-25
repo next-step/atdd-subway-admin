@@ -135,7 +135,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             getIdWithResponse(secondLine));
 
         // then
-        // 지하철_노선_수정됨
+        // 지하철_노선_수정_실패
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -144,12 +144,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createdLine = createLine("2호선", "green");
 
         // when
         // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = deleteLine(getIdWithResponse(createdLine));
 
         // then
         // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선을 제거한다.")
+    @Test
+    void deleteLine2() {
+        // when
+        // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = deleteLine(1L);
+
+        // then
+        // 지하철_노선_삭제_실패
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> createLine(String name, String color) {
@@ -186,6 +201,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .put("/lines/" + id)
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> deleteLine(Long id) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .delete("/lines/" + id)
             .then().log().all()
             .extract();
     }

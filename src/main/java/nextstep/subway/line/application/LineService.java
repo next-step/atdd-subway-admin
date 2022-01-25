@@ -54,4 +54,10 @@ public class LineService {
             .orElseThrow(() -> new LineNotFoundException(id + " : 존재하지 않는 라인입니다."));
         return LineResponse.of(line);
     }
+
+    public void delete(Long id) {
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new LineNotFoundException(id + " : 존재하지 않는 라인입니다."));
+        lineRepository.delete(line);
+    }
 }
