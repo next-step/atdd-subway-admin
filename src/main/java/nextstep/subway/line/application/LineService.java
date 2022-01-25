@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class LineService {
+
     private LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
@@ -17,7 +18,15 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
+        checkName(request.getName());
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
+    }
+
+    private void checkName(String name) {
+        Line existingLine = lineRepository.findByName(name);
+        if (existingLine != null) {
+            throw new IllegalArgumentException("이미 존재하는 이름입니다. : " + name);
+        }
     }
 }
