@@ -53,13 +53,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
+        createLine("1호선", "navy");
+        createLine("2호선", "green");
 
         // when
         // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response = getLine("");
 
         // then
         // 지하철_노선_목록_응답됨
         // 지하철_노선_목록_포함됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -67,12 +71,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        createLine("2호선", "green");
 
         // when
         // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = getLine("/1");
 
         // then
         // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -106,8 +113,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("name", name);
         params.put("color", color);
 
-        // when
-        // 지하철_노선_생성_요청
         return RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -116,4 +121,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
     }
+
+    private ExtractableResponse<Response> getLine(String path) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines" + path)
+            .then().log().all()
+            .extract();
+    }
+
+
 }
