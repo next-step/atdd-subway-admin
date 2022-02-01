@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.utils.CommonMethod;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
+
+    private static final String URL = "/stations";
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -44,7 +47,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         createStation(name);
 
         // when
-        ExtractableResponse<Response> response = updateStation(name);
+        ExtractableResponse<Response> response = createStation(name);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -87,43 +90,26 @@ public class StationAcceptanceTest extends AcceptanceTest {
     public static ExtractableResponse<Response> createStation(String name) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
-        return RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract();
+        return CommonMethod.create(params, URL);
     }
 
     private ExtractableResponse<Response> updateStation(String name) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
-        return RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then()
-            .log().all()
-            .extract();
+        return CommonMethod.update(params, URL);
     }
 
     private ExtractableResponse<Response> getStations() {
-        return RestAssured.given().log().all()
-            .when()
-            .get("/stations")
-            .then().log().all()
-            .extract();
+        return CommonMethod.get(URL);
     }
 
-    private List<Long> getIdsWithResponse(ExtractableResponse<Response> response){
+    private List<Long> getIdsWithResponse(ExtractableResponse<Response> response) {
         return response.jsonPath().getList(".", StationResponse.class).stream()
             .map(it -> it.getId())
             .collect(Collectors.toList());
     }
 
-    private Long getIdWithResponse(ExtractableResponse<Response> response){
+    private Long getIdWithResponse(ExtractableResponse<Response> response) {
         return response.jsonPath().getObject(".", StationResponse.class).getId();
     }
 
