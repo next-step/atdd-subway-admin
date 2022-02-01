@@ -22,21 +22,20 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        checkName(request.getName());
+        checkExistsByName(request.getName());
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
     }
 
-    private void checkName(String name) {
-        Line existingLine = lineRepository.findByName(name);
-        if (existingLine != null) {
+    private void checkExistsByName(String name) {
+        if (lineRepository.existsByName(name)) {
             throw new NameDuplicateException("이미 존재하는 이름입니다. : " + name);
         }
     }
 
     public LineResponse update(LineRequest request, Long id) {
         Line line = line(id);
-        checkName(request.getName());
+        checkExistsByName(request.getName());
         line.update(request.toLine());
         return LineResponse.of(line);
     }
@@ -44,7 +43,7 @@ public class LineService {
     public List<LineResponse> getLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
-            .map(line -> LineResponse.of(line))
+            .map(LineResponse::of)
             .collect(Collectors.toList());
     }
 

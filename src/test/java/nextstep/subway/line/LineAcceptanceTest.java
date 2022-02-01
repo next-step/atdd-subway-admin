@@ -3,12 +3,12 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.common.exception.ErrorResponse;
 import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +20,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    private static final String NAME_DUPLICATE_EXCEPTION = "이미 존재하는 이름입니다. : ";
+    private static final String LINE_NOT_FOUND_EXCEPTION = " : 존재하지 않는 라인입니다.";
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -40,15 +43,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        createLine("2호선", "green");
+        String name = "2호선";
+        createLine(name, "green");
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = createLine("2호선", "green");
+        ExtractableResponse<Response> response = createLine(name, "green");
 
         // then
         // 지하철_노선_생성_실패됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(getError(response).getMessage()).isEqualTo(NAME_DUPLICATE_EXCEPTION + name);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -57,22 +62,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> firstLine = createLine("1호선", "navy");
-        ExtractableResponse<Response> secondLine = createLine("2호선", "green");
+        Long firstLine = getIdWithResponse(createLine("1호선", "navy"));
+        Long secondLine = getIdWithResponse(createLine("2호선", "green"));
 
         // when
         // 지하철_노선_목록_조회_요청
         ExtractableResponse<Response> response = getLine("");
+        List<Long> resultIds = getIdsWithResponse(response);
 
         // then
         // 지하철_노선_목록_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_목록_포함됨
-        List<Long> expectIds = Arrays.asList(firstLine, secondLine).stream()
-            .map(this::getIdWithResponse)
-            .collect(Collectors.toList());
-        List<Long> resultIds = getIdsWithResponse(response);
-        assertThat(checkIdsEquals(expectIds, resultIds)).isTrue();
+        assertThat(resultIds).containsExactly(firstLine, secondLine);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -80,15 +82,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        createLine("2호선", "green");
+        String name = "2호선";
+        Long id = getIdWithResponse(createLine(name, "green"));
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = getLine("/1");
+        ExtractableResponse<Response> response = getLine("/" + id);
 
         // then
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(getResponse(response).getName()).isEqualTo(name);
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 조회한다.")
@@ -96,11 +100,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine2() {
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = getLine("/1");
+        Long id = 1l;
+        ExtractableResponse<Response> response = getLine("/" + id);
 
         // then
         // 지하철_노선_응답_실패
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(getError(response).getMessage()).isEqualTo(id + LINE_NOT_FOUND_EXCEPTION);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -112,12 +118,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = updateLine("1호선", "navy",
+        String name = "1호선";
+        ExtractableResponse<Response> response = updateLine(name, "navy",
             getIdWithResponse(createdLine));
 
         // then
         // 지하철_노선_수정됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(getResponse(response).getName()).isEqualTo(name);
     }
 
     @DisplayName("이미 존재하는 이름으로 지하철 노선을 수정한다.")
@@ -125,17 +133,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> firstLine = createLine("1호선", "navy");
+        String name = "1호선";
+        ExtractableResponse<Response> firstLine = createLine(name, "navy");
         ExtractableResponse<Response> secondLine = createLine("2호선", "green");
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = updateLine("1호선", "navy",
+        ExtractableResponse<Response> response = updateLine(name, "navy",
             getIdWithResponse(secondLine));
 
         // then
         // 지하철_노선_수정_실패
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(getError(response).getMessage()).isEqualTo(NAME_DUPLICATE_EXCEPTION + name);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -151,7 +161,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 제거한다.")
@@ -159,11 +169,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine2() {
         // when
         // 지하철_노선_제거_요청
-        ExtractableResponse<Response> response = deleteLine(1L);
+        Long id = 1L;
+        ExtractableResponse<Response> response = deleteLine(id);
 
         // then
         // 지하철_노선_삭제_실패
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(getError(response).getMessage()).isEqualTo(id + LINE_NOT_FOUND_EXCEPTION);
     }
 
     private ExtractableResponse<Response> createLine(String name, String color) {
@@ -223,13 +235,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return response.jsonPath().getObject(".", LineResponse.class).getId();
     }
 
-    private boolean checkIdsEquals(List<Long> expected, List<Long> result) {
-        for (int i = 0; i < expected.size(); i++) {
-            if (expected.get(i) != result.get(i)) {
-                return false;
-            }
-        }
-        return true;
+    private LineResponse getResponse(ExtractableResponse<Response> response) {
+        return response.jsonPath().getObject(".", LineResponse.class);
     }
 
+    private ErrorResponse getError(ExtractableResponse<Response> response) {
+        return response.response().jsonPath().getObject(".", ErrorResponse.class);
+    }
 }
