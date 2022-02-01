@@ -4,10 +4,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.SectionRepository;
+import nextstep.subway.line.domain.Sections;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.line.exception.NameDuplicateException;
+import nextstep.subway.station.StationNotFoundException;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,13 +22,17 @@ public class LineService {
 
     private LineRepository lineRepository;
 
+    private StationRepository stationRepository;
+
     public LineService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
         checkExistsByName(request.getName());
-        Line persistLine = lineRepository.save(request.toLine());
+        Station upStation = station(request.getUpStationId());
+        Station downStation = station(request.getDownStationId());
+        Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
 
@@ -31,6 +40,11 @@ public class LineService {
         if (lineRepository.existsByName(name)) {
             throw new NameDuplicateException("이미 존재하는 이름입니다. : " + name);
         }
+    }
+
+    private Station station(Long id) {
+        return stationRepository.findById(id)
+            .orElseThrow(() -> new StationNotFoundException(id + " : 존재하지 않는 역입니다."));
     }
 
     public LineResponse update(LineRequest request, Long id) {
