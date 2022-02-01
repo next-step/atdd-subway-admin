@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
 
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
     public Sections() {
@@ -19,15 +22,14 @@ public class Sections {
         this.sections = sections;
     }
 
-    public void addSections(Line line, Station upStation, Station downStation, int distance) {
-        this.sections.add(new Section(line, upStation, downStation, distance));
+    public void addSections(Section section) {
+        sections.add(section);
     }
 
     public List<Section> orderedSections() {
         List<Section> orderedSections = new ArrayList();
         Section now = findFirstSection(sections.get(0));
         orderedSections.add(now);
-
         while (orderedSections.size() != sections.size()) {
             Section next = findDownSection(now);
             orderedSections.add(next);
@@ -44,11 +46,17 @@ public class Sections {
     }
 
     private Section findUpSection(Section now) {
-        return sections.stream().filter(section -> section.isUp(now)).findFirst().orElse(now);
+        return sections.stream()
+            .filter(section -> section.isUp(now))
+            .findFirst()
+            .orElse(now);
     }
 
     private Section findDownSection(Section now) {
-        return sections.stream().filter(section -> section.isDown(now)).findFirst().orElse(now);
+        return sections.stream()
+            .filter(section -> section.isDown(now))
+            .findFirst()
+            .orElse(now);
     }
 
     private boolean isFirstSection(Section now) {

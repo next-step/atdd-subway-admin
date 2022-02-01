@@ -32,13 +32,21 @@ public class Line extends BaseEntity {
 
     public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
         Line line = new Line(name, color);
-        line.sections.addSections(line, upStation, downStation, distance);
+        line.addSections(upStation, downStation, distance);
         return line;
+    }
+
+    public void addSections(Station upStation, Station downStation, int distance) {
+        this.sections.addSections(Section.of(this, upStation, downStation, distance));
     }
 
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public List<Station> stations() {
+        return this.sections.stations();
     }
 
     public Long getId() {
