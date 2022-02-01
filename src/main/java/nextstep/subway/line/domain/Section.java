@@ -27,6 +27,14 @@ public class Section {
         this.distance = distance;
     }
 
+    public boolean isUp(Section section) {
+        return this.downStation.equals(section.getUpStation());
+    }
+
+    public boolean isDown(Section section) {
+        return this.upStation.equals(section.getDownStation());
+    }
+
     public Long getId() {
         return id;
     }
