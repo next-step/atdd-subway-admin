@@ -8,6 +8,9 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.line.exception.NameDuplicateException;
+import nextstep.subway.station.StationNotFoundException;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,26 +20,36 @@ public class LineService {
 
     private LineRepository lineRepository;
 
-    public LineService(LineRepository lineRepository) {
+    private StationRepository stationRepository;
+
+    public LineService(LineRepository lineRepository,
+        StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
-        checkName(request.getName());
-        Line persistLine = lineRepository.save(request.toLine());
+        checkExistsByName(request.getName());
+        Station upStation = station(request.getUpStationId());
+        Station downStation = station(request.getDownStationId());
+        Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
 
-    private void checkName(String name) {
-        Line existingLine = lineRepository.findByName(name);
-        if (existingLine != null) {
+    private void checkExistsByName(String name) {
+        if (lineRepository.existsByName(name)) {
             throw new NameDuplicateException("이미 존재하는 이름입니다. : " + name);
         }
     }
 
+    private Station station(Long id) {
+        return stationRepository.findById(id)
+            .orElseThrow(() -> new StationNotFoundException(id + " : 존재하지 않는 역입니다."));
+    }
+
     public LineResponse update(LineRequest request, Long id) {
         Line line = line(id);
-        checkName(request.getName());
+        checkExistsByName(request.getName());
         line.update(request.toLine());
         return LineResponse.of(line);
     }
@@ -44,7 +57,7 @@ public class LineService {
     public List<LineResponse> getLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
-            .map(line -> LineResponse.of(line))
+            .map(LineResponse::of)
             .collect(Collectors.toList());
     }
 
