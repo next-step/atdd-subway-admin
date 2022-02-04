@@ -6,6 +6,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.line.exception.NameDuplicateException;
 import nextstep.subway.station.StationNotFoundException;
@@ -74,5 +75,9 @@ public class LineService {
     private Line line(Long id) {
         return lineRepository.findById(id)
             .orElseThrow(() -> new LineNotFoundException(id + " : 존재하지 않는 라인입니다."));
+    }
+
+    public void addSection(SectionRequest sectionRequest, Long id) {
+
     }
 }
