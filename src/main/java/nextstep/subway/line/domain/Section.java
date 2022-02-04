@@ -8,6 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import nextstep.subway.line.exception.SectionAlreadyExistInTheLineException;
+import nextstep.subway.line.exception.SectionDistanceExceededException;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -51,6 +53,51 @@ public class Section {
 
     public boolean isDown(Section section) {
         return this.upStation.equals(section.getDownStation());
+    }
+
+    public void addInnerSection(Section section) {
+        if (hasEqualUpStation(section)) {
+            addUpwardInnerSection(section);
+        }
+        if (hasEqualDownStation(section)) {
+            addDownWardInnerSection(section);
+        }
+    }
+
+    private void addUpwardInnerSection(Section section) {
+        checkInnerDistance(section.getDistance());
+        this.distance -= section.getDistance();
+        this.upStation = section.getDownStation();
+    }
+
+    private void addDownWardInnerSection(Section section) {
+        checkInnerDistance(section.getDistance());
+        this.distance -= section.getDistance();
+        this.downStation = section.getUpStation();
+    }
+
+    private boolean hasEqualStations(Section section) {
+        return hasEqualUpStation(section) && hasEqualDownStation(section);
+    }
+
+    private boolean hasEqualUpStation(Section section) {
+        return this.upStation.equals(section.getUpStation());
+    }
+
+    private boolean hasEqualDownStation(Section section) {
+        return this.downStation.equals(section.getDownStation());
+    }
+
+    public void checkStationsDuplicate(Section section) {
+        if (hasEqualStations(section)) {
+            throw new SectionAlreadyExistInTheLineException("등록하려는 구간이 이미 노선에 존재합니다.");
+        }
+    }
+
+    private void checkInnerDistance(int distance) {
+        if (this.distance <= distance) {
+            throw new SectionDistanceExceededException("역 사이에 추가하려는 구간의 거리는 원래 구간 거리보다 작아야 합니다.");
+        }
     }
 
     public Long getId() {

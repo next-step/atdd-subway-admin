@@ -34,7 +34,8 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateLine(@RequestBody LineRequest lineRequest, @PathVariable("id") Long id) {
+    public ResponseEntity updateLine(@RequestBody LineRequest lineRequest,
+        @PathVariable("id") Long id) {
         LineResponse line = lineService.update(lineRequest, id);
         return ResponseEntity.ok().body(line);
     }
@@ -60,6 +61,6 @@ public class LineController {
     @PostMapping("/{id}/sections")
     public ResponseEntity addSection(@RequestBody SectionRequest sectionRequest, @PathVariable("id") Long id) {
         lineService.addSection(sectionRequest, id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }

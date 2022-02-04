@@ -77,7 +77,10 @@ public class LineService {
             .orElseThrow(() -> new LineNotFoundException(id + " : 존재하지 않는 라인입니다."));
     }
 
-    public void addSection(SectionRequest sectionRequest, Long id) {
-
+    public void addSection(SectionRequest request, Long id) {
+        Line line = line(id);
+        Station upStation = station(request.getUpStationId());
+        Station downStation = station(request.getDownStationId());
+        line.addSection(request.of(line, upStation, downStation));
     }
 }
