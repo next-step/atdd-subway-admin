@@ -1,12 +1,14 @@
 package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.line.exception.StationsNotExistInTheLine;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -18,12 +20,37 @@ public class Sections {
     public Sections() {
     }
 
-    public Sections(List<Section> sections) {
+    private Sections(List<Section> sections) {
         this.sections = sections;
     }
 
-    public void addSections(Section section) {
+    public static Sections of(Section... sections) {
+        return new Sections(new ArrayList<>(Arrays.asList(sections)));
+    }
+
+    public void addSection(Section section) {
+        checkSection(section);
+        sections.stream()
+            .forEach(s -> s.addInnerSection(section));
         sections.add(section);
+    }
+
+    private void checkSection(Section section) {
+        checkStationsDuplicate(section);
+        checkStationExist(section);
+    }
+
+    private void checkStationsDuplicate(Section section) {
+        sections.stream()
+            .forEach(s -> s.checkStationsDuplicate(section));
+    }
+
+    private void checkStationExist(Section section) {
+        List<Station> stations = stations();
+        if (!stations.contains(section.getUpStation()) &&
+            !stations.contains(section.getDownStation())) {
+            throw new StationsNotExistInTheLine("상행역과 하행역 둘중 하나는 노선에 존재해야 합니다.");
+        }
     }
 
     public List<Section> orderedSections() {

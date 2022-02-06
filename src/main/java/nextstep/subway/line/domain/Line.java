@@ -37,7 +37,11 @@ public class Line extends BaseEntity {
     }
 
     public void addSections(Station upStation, Station downStation, int distance) {
-        this.sections.addSections(Section.of(this, upStation, downStation, distance));
+        this.sections = Sections.of(Section.of(this, upStation, downStation, distance));
+    }
+
+    public void addSection(Section section){
+        this.sections.addSection(section);
     }
 
     public void update(Line line) {

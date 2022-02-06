@@ -212,7 +212,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .isEqualTo(id + LINE_NOT_FOUND_EXCEPTION);
     }
 
-    private ExtractableResponse<Response> createLine(String name, String color, long upStationId, long downStationId, int distance) {
+    public static ExtractableResponse<Response> createLine(String name, String color, long upStationId, long downStationId, int distance) {
         Map<String, Object> params = body(name, color, upStationId, downStationId, distance);
         return CommonMethod.create(params, URL);
     }
@@ -245,7 +245,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return response.jsonPath().getObject(".", LineResponse.class);
     }
 
-    private Map<String, Object> body(String name, String color, long upStationId,
+    private static Map<String, Object> body(String name, String color, long upStationId,
         long downStationId, int distance) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
