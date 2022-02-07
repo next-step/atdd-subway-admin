@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.List;
 import nextstep.subway.line.exception.SectionAlreadyExistInTheLineException;
 import nextstep.subway.line.exception.SectionDistanceExceededException;
+import nextstep.subway.line.exception.SectionEmptyException;
+import nextstep.subway.line.exception.SectionNotFoundException;
 import nextstep.subway.line.exception.StationsNotExistInTheLine;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationTest;
@@ -19,6 +21,8 @@ class SectionsTest {
     private static final String SECTION_DISTANCE_EXCEEDED_EXCEPTION = "역 사이에 추가하려는 구간의 거리는 원래 구간 거리보다 작아야 합니다.";
     private static final String SECTION_ALREADY_EXIST_IN_THE_LINE_EXCEPTION = "등록하려는 구간이 이미 노선에 존재합니다.";
     private static final String STATIONS_NOT_EXIST_IN_THE_LINE_EXCEPTION = "상행역과 하행역 둘중 하나는 노선에 존재해야 합니다.";
+    private static final String SECTION_NOT_FOUND_EXCEPTION = "노선에 역이 포함되지 않습니다.";
+    private static final String SECTION_EMPTY_EXCEPTION = "노선은 두개의 역을 포함한 구간이 하나 이상 존재해야 합니다.";
 
 
     @DisplayName("구간을 생성한다.")
@@ -139,5 +143,79 @@ class SectionsTest {
 
     }
 
+    @DisplayName("노선 사이의 역을 제거한다.")
+    @Test
+    void delete_station_in_the_middle() {
+        //given
+        int expectedDistance =
+            SectionTest.SECTION_1.getDistance() + SectionTest.SECTION_2.getDistance();
+
+        //when
+        SECTIONS.deleteStation(StationTest.STATION_4);
+        Section section = SECTIONS.getSections().get(0);
+
+        //then
+        assertThat(SECTIONS.getSections().size()).isEqualTo(1);
+        assertThat(section.getUpStation()).isEqualTo(SectionTest.SECTION_1.getUpStation());
+        assertThat(section.getDownStation()).isEqualTo(SectionTest.SECTION_2.getDownStation());
+        assertThat(section.getDistance()).isEqualTo(expectedDistance);
+    }
+
+    @DisplayName("상행 종점을 제거한다.")
+    @Test
+    void delete_first_Station() {
+        //given
+        Station expectedFirstStation = StationTest.STATION_4;
+
+        //when
+        SECTIONS.deleteStation(StationTest.STATION_2);
+        Station firstStation = SECTIONS.orderedSections().get(0).getUpStation();
+
+        //then
+        assertThat(SECTIONS.getSections().size()).isEqualTo(1);
+        assertThat(firstStation).isEqualTo(expectedFirstStation);
+    }
+
+    @DisplayName("하행 종점을 제거한다.")
+    @Test
+    void delete_last_Station() {
+        //given
+        Station expectedLastStation = StationTest.STATION_4;
+
+        //when
+        SECTIONS.deleteStation(StationTest.STATION_3);
+        Station lastStation = SECTIONS.orderedSections().get(SECTIONS.getSections().size() - 1)
+            .getDownStation();
+
+        //then
+        assertThat(SECTIONS.getSections().size()).isEqualTo(1);
+        assertThat(lastStation).isEqualTo(expectedLastStation);
+    }
+
+    @DisplayName("노선안에 존재하지 않는 역은 삭제할 수 없다.")
+    @Test
+    void delete_station_not_in_the_line_is_invalid() {
+        //given
+
+        //when
+        assertThatThrownBy(() -> SECTIONS.deleteStation(StationTest.STATION_5))
+            .isInstanceOf(SectionNotFoundException.class)
+            .hasMessage(SECTION_NOT_FOUND_EXCEPTION);
+
+        //then
+
+    }
+
+    @DisplayName("구간이 하나인 노선의 역을 삭제할 수 없다.")
+    @Test
+    void delete_station_with_one_section_line_is_invalid() {
+        //given
+        Sections sections = Sections.of(SectionTest.SECTION_2);
+
+        //when
+        assertThatThrownBy(() -> sections.deleteStation(StationTest.STATION_4))
+            .isInstanceOf(SectionEmptyException.class)
+            .hasMessage(SECTION_EMPTY_EXCEPTION);
+    }
 
 }
