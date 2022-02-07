@@ -145,6 +145,77 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
 
+    @DisplayName("노선 안에 존재하는 역을 삭제한다.")
+    @Test
+    void remove_station() {
+        // given
+        //지하철_사이_역_추가_등록  
+        Long stationId = stationId("신촌역");
+        addSection(startStationID, stationId, 4);
+
+        // when
+        // 지하철_노선의_지하철역_삭제_요청
+        ExtractableResponse<Response> response = CommonMethod
+            .delete(URL + "/" + lineId + "/sections?stationId" + stationId );
+
+        // then
+        // 지하철_노선의_지하철역_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("노선 상행 종점을 삭제한다.")
+    @Test
+    void remove_first_station() {
+        // given
+        // 지하철_상행_종점_등록
+        Long firstStationId = stationId("까치산역");
+        addSection(firstStationId, startStationID, 5);
+
+        // when
+        // 지하철_노선의_지하철역_삭제_요청
+        ExtractableResponse<Response> response = CommonMethod
+            .delete(URL + "/" + lineId + "/sections?stationId" + firstStationId );
+
+        // then
+        // 지하철_노선의_지하철역_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("노선 하행 종점을 삭제한다.")
+    @Test
+    void remove_last_station() {
+        // given
+        // 지하철_하행_종점_등록
+        Long lastStationId = stationId("신설동역");
+        addSection(endStationId, lastStationId, 7);
+
+        // when
+        // 지하철_노선의_지하철역_삭제_요청
+        ExtractableResponse<Response> response = CommonMethod
+            .delete(URL + "/" + lineId + "/sections?stationId" + lastStationId );
+
+        // then
+        // 지하철_노선의_지하철역_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("역이 두개만 존재하는 노선은 역을 삭제할 수 없다.")
+    @Test
+    void remove_station_in_the_line_with_two_stations_is_invalid() {
+        // given
+        Long id = 1L;
+
+        // when
+        // 지하철_노선의_지하철역_삭제_요청
+        ExtractableResponse<Response> response = CommonMethod
+            .delete(URL + "/" + lineId + "/sections?stationId" + id );
+
+        // then
+        // 지하철_노선의_지하철역_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+
     private ExtractableResponse<Response> addSection(Long upStationId, Long downStationId,
         int distance) {
         Map<String, Object> params = body(upStationId, downStationId, distance);
