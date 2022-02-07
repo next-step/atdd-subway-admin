@@ -33,17 +33,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void stationAndLineSetUp() {
-        startStationID = StationAcceptanceTest
-            .createStation("신도림역")
-            .jsonPath()
-            .getObject(".", StationResponse.class)
-            .getId();
-
-        endStationId = StationAcceptanceTest
-            .createStation("잠실역")
-            .jsonPath()
-            .getObject(".", StationResponse.class)
-            .getId();
+        startStationID = stationId("신도림역");
+        endStationId = stationId("잠실역");
         originalDistance = 10;
         lineId = getIdWithResponse(LineAcceptanceTest
             .createLine("2호선",
@@ -59,11 +50,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void add_station_to_line() {
         // given
         // 지하철_노선에_추가할_중간역을_등록
-        Long middleStationId = StationAcceptanceTest
-            .createStation("신촌역")
-            .jsonPath()
-            .getObject(".", StationResponse.class)
-            .getId();
+        Long middleStationId = stationId("신촌역");
+
         // when
         // 지하철_노선에_지하철역_등록_요청
         ExtractableResponse<Response> response = addSection(startStationID, middleStationId, 4);
@@ -78,11 +66,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void add_first_station_to_line() {
         // given
         // 지하철_노선에_추가할_상행_종점을_등록
-        Long firstStationId = StationAcceptanceTest
-            .createStation("까치산역")
-            .jsonPath()
-            .getObject(".", StationResponse.class)
-            .getId();
+        Long firstStationId = stationId("까치산역");
 
         // when
         // 지하철_노선에_지하철역_등록_요청
@@ -98,11 +82,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void add_final_station_to_line() {
         // given
         // 지하철_노선에_추가할_하행_종점을_등록
-        Long lastStationId = StationAcceptanceTest
-            .createStation("신설동역")
-            .jsonPath()
-            .getObject(".", StationResponse.class)
-            .getId();
+        Long lastStationId = stationId("신설동역");
 
         // when
         // 지하철_노선에_지하철역_등록_요청
@@ -119,11 +99,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void section_with_equal_to_or_greater_than_original_distance_is_invalid(int distance) {
         // given
         // 지하철_노선에_추가할_역_등록
-        Long middleStationId = StationAcceptanceTest
-            .createStation("신촌역")
-            .jsonPath()
-            .getObject(".", StationResponse.class)
-            .getId();
+        Long middleStationId = stationId("신촌역");
 
         // when
         // 지하철_노선에_지하철역_등록_요청
@@ -155,16 +131,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void section_with_stations_not_in_the_line_is_invalid() {
         // given
         // 지하철_노선에_없는역_등록
-        Long firstStationId = StationAcceptanceTest
-            .createStation("까치산역")
-            .jsonPath()
-            .getObject(".", StationResponse.class)
-            .getId();
-        Long lastStationId = StationAcceptanceTest
-            .createStation("신설동역")
-            .jsonPath()
-            .getObject(".", StationResponse.class)
-            .getId();
+        Long firstStationId = stationId("까치산역");
+        Long lastStationId = stationId("신설동역");
         // when
         // 지하철_노선에_지하철역_등록_요청
         ExtractableResponse<Response> response = addSection(firstStationId, lastStationId, 10);
@@ -193,6 +161,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private Long getIdWithResponse(ExtractableResponse<Response> response) {
         return response.jsonPath().getObject(".", LineResponse.class).getId();
+    }
+
+    private Long stationId(String name) {
+        return StationAcceptanceTest
+            .createStation(name)
+            .jsonPath()
+            .getObject(".", StationResponse.class)
+            .getId();
     }
 
 }
