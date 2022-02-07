@@ -149,7 +149,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void remove_station() {
         // given
-        //지하철_사이_역_추가_등록  
+        //지하철_사이_역_추가_등록
         Long stationId = stationId("신촌역");
         addSection(startStationID, stationId, 4);
 

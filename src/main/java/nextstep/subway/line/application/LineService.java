@@ -83,4 +83,8 @@ public class LineService {
         Station downStation = station(request.getDownStationId());
         line.addSection(request.of(line, upStation, downStation));
     }
+
+    public void deleteStation(Long id, Long stationId) {
+        
+    }
 }
