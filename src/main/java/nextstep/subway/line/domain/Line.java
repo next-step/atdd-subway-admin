@@ -40,8 +40,12 @@ public class Line extends BaseEntity {
         this.sections = Sections.of(Section.of(this, upStation, downStation, distance));
     }
 
-    public void addSection(Section section){
+    public void addSection(Section section) {
         this.sections.addSection(section);
+    }
+
+    public void deleteStation(Station station) {
+        this.sections.deleteStation(station);
     }
 
     public void update(Line line) {

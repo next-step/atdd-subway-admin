@@ -85,6 +85,8 @@ public class LineService {
     }
 
     public void deleteStation(Long id, Long stationId) {
-        
+        Line line = line(id);
+        Station station = station(stationId);
+        line.deleteStation(station);
     }
 }
