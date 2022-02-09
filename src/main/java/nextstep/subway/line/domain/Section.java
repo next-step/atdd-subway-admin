@@ -100,6 +100,23 @@ public class Section {
         }
     }
 
+    public boolean hasStation(Station station) {
+        return isUpSection(station) || isDownSection(station);
+    }
+
+    public boolean isUpSection(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public boolean isDownSection(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public void mergeSection(Section section) {
+        this.downStation = section.getDownStation();
+        this.distance += section.getDistance();
+    }
+
     public Long getId() {
         return id;
     }

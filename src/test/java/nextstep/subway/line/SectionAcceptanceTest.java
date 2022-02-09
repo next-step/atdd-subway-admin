@@ -23,6 +23,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private static final String SECTION_DISTANCE_EXCEEDED_EXCEPTION = "역 사이에 추가하려는 구간의 거리는 원래 구간 거리보다 작아야 합니다.";
     private static final String SECTION_ALREADY_EXIST_IN_THE_LINE_EXCEPTION = "등록하려는 구간이 이미 노선에 존재합니다.";
     private static final String STATIONS_NOT_EXIST_IN_THE_LINE_EXCEPTION = "상행역과 하행역 둘중 하나는 노선에 존재해야 합니다.";
+    private static final String SECTION_NOT_FOUND_EXCEPTION = "노선에 역이 포함되지 않습니다.";
+    private static final String SECTION_EMPTY_EXCEPTION = "노선은 두개의 역을 포함한 구간이 하나 이상 존재해야 합니다.";
 
     private static final String URL = "/lines";
 
@@ -33,17 +35,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void stationAndLineSetUp() {
-        startStationID = StationAcceptanceTest
-            .createStation("신도림역")
-            .jsonPath()
-            .getObject(".", StationResponse.class)
-            .getId();
-
-        endStationId = StationAcceptanceTest
-            .createStation("잠실역")
-            .jsonPath()
-            .getObject(".", StationResponse.class)
-            .getId();
+        startStationID = stationId("신도림역");
+        endStationId = stationId("잠실역");
         originalDistance = 10;
         lineId = getIdWithResponse(LineAcceptanceTest
             .createLine("2호선",
@@ -59,11 +52,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void add_station_to_line() {
         // given
         // 지하철_노선에_추가할_중간역을_등록
-        Long middleStationId = StationAcceptanceTest
-            .createStation("신촌역")
-            .jsonPath()
-            .getObject(".", StationResponse.class)
-            .getId();
+        Long middleStationId = stationId("신촌역");
+
         // when
         // 지하철_노선에_지하철역_등록_요청
         ExtractableResponse<Response> response = addSection(startStationID, middleStationId, 4);
@@ -78,11 +68,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void add_first_station_to_line() {
         // given
         // 지하철_노선에_추가할_상행_종점을_등록
-        Long firstStationId = StationAcceptanceTest
-            .createStation("까치산역")
-            .jsonPath()
-            .getObject(".", StationResponse.class)
-            .getId();
+        Long firstStationId = stationId("까치산역");
 
         // when
         // 지하철_노선에_지하철역_등록_요청
@@ -98,11 +84,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void add_final_station_to_line() {
         // given
         // 지하철_노선에_추가할_하행_종점을_등록
-        Long lastStationId = StationAcceptanceTest
-            .createStation("신설동역")
-            .jsonPath()
-            .getObject(".", StationResponse.class)
-            .getId();
+        Long lastStationId = stationId("신설동역");
 
         // when
         // 지하철_노선에_지하철역_등록_요청
@@ -119,21 +101,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void section_with_equal_to_or_greater_than_original_distance_is_invalid(int distance) {
         // given
         // 지하철_노선에_추가할_역_등록
-        Long middleStationId = StationAcceptanceTest
-            .createStation("신촌역")
-            .jsonPath()
-            .getObject(".", StationResponse.class)
-            .getId();
+        Long middleStationId = stationId("신촌역");
 
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = addSection(middleStationId, endStationId, distance);
+        ExtractableResponse<Response> response = addSection(middleStationId, endStationId,
+            distance);
 
         // then
         // 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(CommonMethod.getError(response).getMessage()).isEqualTo(
-            SECTION_DISTANCE_EXCEEDED_EXCEPTION);
+        assertThat(CommonMethod.getError(response).getMessage())
+            .isEqualTo(SECTION_DISTANCE_EXCEEDED_EXCEPTION);
     }
 
     @DisplayName("이미 노선에 등록된 상행역과 하행역으로 이루어진 구간은 노선에 추가될 수 없다.")
@@ -146,8 +125,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(CommonMethod.getError(response).getMessage()).isEqualTo(
-            SECTION_ALREADY_EXIST_IN_THE_LINE_EXCEPTION);
+        assertThat(CommonMethod.getError(response).getMessage())
+            .isEqualTo(SECTION_ALREADY_EXIST_IN_THE_LINE_EXCEPTION);
     }
 
     @DisplayName("상행역과 하행역 모두 노선에 없는 역으로 이루어진 구간은 노선에 추가될 수 없다.")
@@ -155,16 +134,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void section_with_stations_not_in_the_line_is_invalid() {
         // given
         // 지하철_노선에_없는역_등록
-        Long firstStationId = StationAcceptanceTest
-            .createStation("까치산역")
-            .jsonPath()
-            .getObject(".", StationResponse.class)
-            .getId();
-        Long lastStationId = StationAcceptanceTest
-            .createStation("신설동역")
-            .jsonPath()
-            .getObject(".", StationResponse.class)
-            .getId();
+        Long firstStationId = stationId("까치산역");
+        Long lastStationId = stationId("신설동역");
         // when
         // 지하철_노선에_지하철역_등록_요청
         ExtractableResponse<Response> response = addSection(firstStationId, lastStationId, 10);
@@ -172,8 +143,97 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(CommonMethod.getError(response).getMessage()).isEqualTo(
-            STATIONS_NOT_EXIST_IN_THE_LINE_EXCEPTION);
+        assertThat(CommonMethod.getError(response).getMessage())
+            .isEqualTo(STATIONS_NOT_EXIST_IN_THE_LINE_EXCEPTION);
+    }
+
+
+    @DisplayName("노선 안에 존재하는 역을 삭제한다.")
+    @Test
+    void remove_station() {
+        // given
+        //지하철_사이_역_추가_등록
+        Long stationId = stationId("신촌역");
+        addSection(startStationID, stationId, 4);
+
+        // when
+        // 지하철_노선의_지하철역_삭제_요청
+        ExtractableResponse<Response> response = CommonMethod
+            .delete(URL + "/" + lineId + "/sections?stationId=" + stationId);
+
+        // then
+        // 지하철_노선의_지하철역_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("노선 상행 종점을 삭제한다.")
+    @Test
+    void remove_first_station() {
+        // given
+        // 지하철_상행_종점_등록
+        Long firstStationId = stationId("까치산역");
+        addSection(firstStationId, startStationID, 5);
+
+        // when
+        // 지하철_노선의_지하철역_삭제_요청
+        ExtractableResponse<Response> response = CommonMethod
+            .delete(URL + "/" + lineId + "/sections?stationId=" + firstStationId);
+
+        // then
+        // 지하철_노선의_지하철역_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("노선 하행 종점을 삭제한다.")
+    @Test
+    void remove_last_station() {
+        // given
+        // 지하철_하행_종점_등록
+        Long lastStationId = stationId("신설동역");
+        addSection(endStationId, lastStationId, 7);
+
+        // when
+        // 지하철_노선의_지하철역_삭제_요청
+        ExtractableResponse<Response> response = CommonMethod
+            .delete(URL + "/" + lineId + "/sections?stationId=" + lastStationId);
+
+        // then
+        // 지하철_노선의_지하철역_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("역이 두개만 존재하는 노선은 역을 삭제할 수 없다.")
+    @Test
+    void remove_station_in_the_line_with_two_stations_is_invalid() {
+        // when
+        // 지하철_노선의_지하철역_삭제_요청
+        ExtractableResponse<Response> response = CommonMethod
+            .delete(URL + "/" + lineId + "/sections?stationId=" + startStationID);
+
+        // then
+        // 지하철_노선의_지하철역_삭제_실패
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(CommonMethod.getError(response).getMessage())
+            .isEqualTo(SECTION_EMPTY_EXCEPTION);
+    }
+
+    @DisplayName("노선에 존재하지 않는 역을 삭제할 수 없다.")
+    @Test
+    void remove_station_not_in_the_line_is_invalid() {
+        // given
+        // 지하철_역_생성
+        Long stationId = stationId("신설동역");
+
+        // when
+        // 지하철_노선의_지하철역_삭제_요청
+        ExtractableResponse<Response> response = CommonMethod
+            .delete(URL + "/" + lineId + "/sections?stationId=" + stationId);
+
+        // then
+        // 지하철_노선의_지하철역_삭제_실패
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(CommonMethod.getError(response).getMessage())
+            .isEqualTo(SECTION_NOT_FOUND_EXCEPTION);
     }
 
 
@@ -193,6 +253,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private Long getIdWithResponse(ExtractableResponse<Response> response) {
         return response.jsonPath().getObject(".", LineResponse.class).getId();
+    }
+
+    private Long stationId(String name) {
+        return StationAcceptanceTest
+            .createStation(name)
+            .jsonPath()
+            .getObject(".", StationResponse.class)
+            .getId();
     }
 
 }
