@@ -73,6 +73,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_생성_실패됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isNotEqualTo(HttpStatus.CREATED.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -174,8 +175,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_수정_요청
         //params.get("name")
         Map<String, String> updateParams = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "green darken-2");
+        updateParams.put("name", "2호선");
+        updateParams.put("color", "green darken-2");
         ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
                 .body(updateParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
