@@ -5,6 +5,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -21,12 +23,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private static final String LINE_DEFAULT_URI = "/lines";
     private static final String LINE_ID_URI = "/lines/1";
 
+    @BeforeEach
+    void setting() {
+        StationAcceptanceTest.지하철_역_생성(StationAcceptanceTest.지하철_역_제공("강남역"));
+        StationAcceptanceTest.지하철_역_생성(StationAcceptanceTest.지하철_역_제공("역삼역"));
+        StationAcceptanceTest.지하철_역_생성(StationAcceptanceTest.지하철_역_제공("교대역"));
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         //given
-        Map<String, String> params = 지하철_노선_제공("2호선", "green darken-1");
+        Map<String, String> params = 지하철_노선_종점_제공("2호선", "green darken-1", "1", "2", "10");
 
         // when
         // 지하철_노선_생성_요청
@@ -43,7 +51,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = 지하철_노선_제공("2호선", "green darken-1");
+        Map<String, String> params = 지하철_노선_종점_제공("2호선", "green darken-1", "1", "2", "10");
         지하철_노선_생성(params);
 
         // when
@@ -60,11 +68,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params1 = 지하철_노선_제공("2호선", "green darken-1");
+        Map<String, String> params1 = 지하철_노선_종점_제공("2호선", "green darken-1", "1", "2", "10");
         ExtractableResponse<Response> createResponse1 = 지하철_노선_생성(params1);
 
         // 지하철_노선_등록되어_있음
-        Map<String, String> params2 = 지하철_노선_제공("신분당선", "red darken-1");
+        Map<String, String> params2 = 지하철_노선_종점_제공("신분당선", "red darken-1", "2", "3", "10");
         ExtractableResponse<Response> createResponse2 = 지하철_노선_생성(params2);
 
         // when
@@ -86,7 +94,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = 지하철_노선_제공("2호선", "green darken-1");
+        Map<String, String> params = 지하철_노선_종점_제공("2호선", "green darken-1", "1", "2", "10");
         지하철_노선_생성(params);
 
         // when
@@ -104,7 +112,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = 지하철_노선_제공("2호선", "green darken-1");
+        Map<String, String> params = 지하철_노선_종점_제공("2호선", "green darken-1", "1", "2", "10");
         지하철_노선_생성(params);
 
         // when
@@ -124,7 +132,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = 지하철_노선_제공("2호선", "green darken-1");
+        Map<String, String> params = 지하철_노선_종점_제공("2호선", "green darken-1", "1", "2", "10");
         지하철_노선_생성(params);
 
         // when
@@ -141,6 +149,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
+        return params;
+    }
+
+    static Map<String, String> 지하철_노선_종점_제공(String name, String color, String upStationId, String downStationId, String distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
         return params;
     }
 

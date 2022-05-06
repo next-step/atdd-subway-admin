@@ -82,13 +82,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
 
-    static Map<String, String> 지하철_역_제공(String name) {
+    public static Map<String, String> 지하철_역_제공(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         return params;
     }
 
-    static ExtractableResponse<Response> 지하철_역_생성(Map<String, String> params) {
+    public static ExtractableResponse<Response> 지하철_역_생성(Map<String, String> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
