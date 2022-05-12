@@ -152,7 +152,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return params;
     }
 
-    static Map<String, String> 지하철_노선_종점_제공(String name, String color, String upStationId, String downStationId, String distance) {
+    public static Map<String, String> 지하철_노선_종점_제공(String name, String color, String upStationId, String downStationId, String distance) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
@@ -162,7 +162,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return params;
     }
 
-    static ExtractableResponse<Response> 지하철_노선_생성(Map<String, String> params) {
+    public static ExtractableResponse<Response> 지하철_노선_생성(Map<String, String> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -198,15 +198,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    static void 지하철_노선_일치_성공(ExtractableResponse<Response> response, String name) {
+    public static void 지하철_노선_일치_성공(ExtractableResponse<Response> response, String name) {
         assertThat(response.jsonPath().get("name").toString()).isEqualTo(name);
     }
 
-    static void 지하철_노선_생성_성공(ExtractableResponse<Response> response) {
+    public static void 지하철_노선_생성_성공(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-    static void 지하철_노선_생성_실패(ExtractableResponse<Response> response) {
+    public static void 지하철_노선_생성_실패(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.statusCode()).isNotEqualTo(HttpStatus.CREATED.value());
     }
