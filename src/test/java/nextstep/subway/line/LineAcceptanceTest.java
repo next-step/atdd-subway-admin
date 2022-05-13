@@ -22,41 +22,32 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private static final String LINE_DEFAULT_URI = "/lines";
     private static final String LINE_ID_URI = "/lines/1";
+    private ExtractableResponse<Response> line1, line2;
 
     @BeforeEach
     void setting() {
-        StationAcceptanceTest.지하철_역_생성(StationAcceptanceTest.지하철_역_제공("강남역"));
-        StationAcceptanceTest.지하철_역_생성(StationAcceptanceTest.지하철_역_제공("역삼역"));
-        StationAcceptanceTest.지하철_역_생성(StationAcceptanceTest.지하철_역_제공("교대역"));
+        StationAcceptanceTest.지하철_역("강남역");
+        StationAcceptanceTest.지하철_역("역삼역");
+        StationAcceptanceTest.지하철_역("교대역");
+
+        line1 = 지하철_노선("2호선", "green darken-1", "1", "2", "10");
+        line2 = 지하철_노선("신분당선", "red darken-1", "2", "3", "10");
     }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        //given
-        Map<String, String> params = 지하철_노선_종점_제공("2호선", "green darken-1", "1", "2", "10");
-
-        // when
-        // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 지하철_노선_생성(params);
-
-        // then
-        // 지하철_노선_생성됨
-        지하철_노선_생성_성공(response);
-        지하철_노선_일치_성공(response, "2호선");
+        지하철_노선_생성_성공(line1);
+        지하철_노선_일치_성공(line1, "2호선");
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
-        // given
-        // 지하철_노선_등록되어_있음
-        Map<String, String> params = 지하철_노선_종점_제공("2호선", "green darken-1", "1", "2", "10");
-        지하철_노선_생성(params);
-
         // when
-        // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 지하철_노선_생성(params);
+        // 지하철_노선_중복_생성_요청
+        Map<String, String> duplicateLine = 지하철_노선_종점_제공("2호선", "green darken-1", "1", "2", "10");
+        ExtractableResponse<Response> response = 지하철_노선_생성(duplicateLine);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -66,15 +57,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
-        // given
-        // 지하철_노선_등록되어_있음
-        Map<String, String> params1 = 지하철_노선_종점_제공("2호선", "green darken-1", "1", "2", "10");
-        ExtractableResponse<Response> createResponse1 = 지하철_노선_생성(params1);
-
-        // 지하철_노선_등록되어_있음
-        Map<String, String> params2 = 지하철_노선_종점_제공("신분당선", "red darken-1", "2", "3", "10");
-        ExtractableResponse<Response> createResponse2 = 지하철_노선_생성(params2);
-
         // when
         // 지하철_노선_목록_조회_요청
         ExtractableResponse<Response> response = 지하철_노선_조회(LINE_DEFAULT_URI);
@@ -82,7 +64,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_목록_응답됨
         지하철_노선_응답_성공(response);
-        List<Long> expectedLineIds = 지하철_노선_목록_예상(new ArrayList<>(Arrays.asList(createResponse1, createResponse2)));
+        List<Long> expectedLineIds = 지하철_노선_목록_예상(new ArrayList<>(Arrays.asList(line1, line2)));
         List<Long> resultLineIds = 지하철_노선_목록_응답(response);
         // 지하철_노선_목록_포함됨
         지하철_노선_목록_일치_성공(resultLineIds, expectedLineIds);
@@ -92,11 +74,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
-        // given
-        // 지하철_노선_등록되어_있음
-        Map<String, String> params = 지하철_노선_종점_제공("2호선", "green darken-1", "1", "2", "10");
-        지하철_노선_생성(params);
-
         // when
         // 지하철_노선_조회_요청
         ExtractableResponse<Response> response = 지하철_노선_조회(LINE_ID_URI);
@@ -110,31 +87,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
-        // given
-        // 지하철_노선_등록되어_있음
-        Map<String, String> params = 지하철_노선_종점_제공("2호선", "green darken-1", "1", "2", "10");
-        지하철_노선_생성(params);
-
         // when
         // 지하철_노선_수정_요청
-        //params.get("name")
-        Map<String, String> updateParams = 지하철_노선_제공("신분당선", "green darken-1");
+        Map<String, String> updateParams = 지하철_노선_제공("3호선", "green darken-1");
         ExtractableResponse<Response> updateResponse = 지하철_노선_수정(LINE_ID_URI, updateParams);
 
         // then
         // 지하철_노선_수정됨
         지하철_노선_응답_성공(updateResponse);
-        지하철_노선_일치_성공(updateResponse, "신분당선");
+        지하철_노선_일치_성공(updateResponse, "3호선");
     }
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
-        // given
-        // 지하철_노선_등록되어_있음
-        Map<String, String> params = 지하철_노선_종점_제공("2호선", "green darken-1", "1", "2", "10");
-        지하철_노선_생성(params);
-
         // when
         // 지하철_노선_제거_요청
         ExtractableResponse<Response> response = 지하철_노선_삭제(LINE_ID_URI);
@@ -144,8 +110,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제_성공(response);
     }
 
+    public static ExtractableResponse<Response> 지하철_노선(String name, String color, String upStationId, String downStationId, String distance) {
+        return 지하철_노선_생성(지하철_노선_종점_제공(name, color, upStationId, downStationId, distance));
+    }
 
-    static Map<String, String> 지하철_노선_제공(String name, String color) {
+
+        static Map<String, String> 지하철_노선_제공(String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);

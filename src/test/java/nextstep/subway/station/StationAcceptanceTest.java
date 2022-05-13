@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -19,28 +20,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StationAcceptanceTest extends AcceptanceTest {
 
     private static final String STATION_DEFAULT_URI = "/stations";
+    private ExtractableResponse<Response> 강남역, 역삼역;
+
+    @BeforeEach
+    void setting() {
+        강남역 = 지하철_역("강남역");
+        역삼역 = 지하철_역("역삼역");
+    }
 
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        // given
-        Map<String, String> params = 지하철_역_제공("강남역");
-
-        // when
-        ExtractableResponse<Response> response = 지하철_역_생성(params);
-
-        // then
-        지하철_역_생성_성공(response);
+        지하철_역_생성_성공(강남역);
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
     void createStationWithDuplicateName() {
-        // given
-        Map<String, String> sameParams = 지하철_역_제공("강남역");
-        지하철_역_생성(sameParams);
-
         // when
+        Map<String, String> sameParams = 지하철_역_제공("강남역");
         ExtractableResponse<Response> response = 지하철_역_생성(sameParams);
 
         // then
@@ -50,19 +48,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역 목록을 조회한다.")
     @Test
     void getStations() {
-        /// given
-        Map<String, String> params1 = 지하철_역_제공("강남역");
-        ExtractableResponse<Response> createResponse1 = 지하철_역_생성(params1);
-
-        Map<String, String> params2 = 지하철_역_제공("역삼역");
-        ExtractableResponse<Response> createResponse2 = 지하철_역_생성(params2);
-
         // when
         ExtractableResponse<Response> response = 지하철_역_조회();
 
         // then
         지하철_역_응답_성공(response);
-        List<Long> expectedLineIds = 지하철_역_목록_예상(new ArrayList<>(Arrays.asList(createResponse1, createResponse2)));
+        List<Long> expectedLineIds = 지하철_역_목록_예상(new ArrayList<>(Arrays.asList(강남역, 역삼역)));
         List<Long> resultLineIds = 지하철_역_목록_응답(response);
         지하철_역_목록_일치_성공(resultLineIds, expectedLineIds);
     }
@@ -70,17 +61,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
-        // given
-        Map<String, String> params = 지하철_역_제공("강남역");
-        ExtractableResponse<Response> createResponse = 지하철_역_생성(params);
-
         // when
-        ExtractableResponse<Response> response = 지하철_역_삭제(createResponse);
+        ExtractableResponse<Response> response = 지하철_역_삭제(강남역);
 
         // then
         지하철_역_삭제_성공(response);
     }
 
+    public static ExtractableResponse<Response> 지하철_역(String name) {
+        return 지하철_역_생성(지하철_역_제공(name));
+    }
 
     public static Map<String, String> 지하철_역_제공(String name) {
         Map<String, String> params = new HashMap<>();

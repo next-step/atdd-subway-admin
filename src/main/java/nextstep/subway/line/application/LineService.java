@@ -32,12 +32,6 @@ public class LineService {
         line.addSection(section);
         Line persistLine = lineRepository.save(line);
 
-        /*
-        Line persistLine = lineRepository.save(request.toLine());
-
-        Section section = request.toSection(persistLine);
-        persistLine.addSection(section);
-         */
         List<StationResponse> stations = stationService.getStationsFromSection(section);
 
         return LineResponse.of(persistLine, stations);
