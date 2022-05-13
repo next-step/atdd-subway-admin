@@ -2,9 +2,11 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.Section;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
@@ -19,10 +21,12 @@ import java.util.stream.Collectors;
 @Transactional
 public class LineService {
     private LineRepository lineRepository;
+    private SectionRepository sectionRepository;
     private StationService stationService;
 
-    public LineService(LineRepository lineRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, SectionRepository sectionRepository, StationService stationService) {
         this.lineRepository = lineRepository;
+        this.sectionRepository = sectionRepository;
         this.stationService = stationService;
     }
 
@@ -67,10 +71,18 @@ public class LineService {
 
     public List<StationResponse> getStations(Line line) {
         List<StationResponse> stations = new ArrayList<>();
-        line.getSections().stream()
+        line.getSections().getSections().stream()
                 .map(stationService::getStationsFromSection)
                 .forEach(stations::addAll);
         return stations;
     }
 
+    public LineResponse addSection(Long id, SectionRequest request) {
+        Line line = lineRepository.findById(id).get();
+        Section section = sectionRepository.save(request.toSection(line));
+        line.addSection(section);
+
+        List<StationResponse> stations = stationService.getStationsFromSection(section);
+        return LineResponse.of(line, stations);
+    }
 }

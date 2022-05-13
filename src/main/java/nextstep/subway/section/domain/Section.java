@@ -1,4 +1,6 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.section.domain;
+
+import nextstep.subway.line.domain.Line;
 
 import javax.persistence.*;
 
@@ -38,6 +40,26 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public boolean validateDistance(Section section) {
+        return this.distance > section.distance;
+    }
+
+    public boolean validateAddSection(Section section) {
+        Long newUpStationId = section.getUpStationId();
+        Long newDownStationId = section.getDownStationId();
+
+        if (upStationId == newUpStationId && downStationId == newDownStationId) {
+            return false;
+        }
+        if (upStationId != newUpStationId && downStationId != newDownStationId) {
+            return false;
+        }
+        if (upStationId == newUpStationId || downStationId == newDownStationId) {
+            return validateDistance(section);
+        }
+        return true;
     }
 }
 

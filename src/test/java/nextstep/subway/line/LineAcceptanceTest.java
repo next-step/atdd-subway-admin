@@ -115,7 +115,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
 
-        static Map<String, String> 지하철_노선_제공(String name, String color) {
+    static Map<String, String> 지하철_노선_제공(String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
