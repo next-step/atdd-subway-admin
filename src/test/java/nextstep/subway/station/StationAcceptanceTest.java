@@ -4,13 +4,16 @@ import com.jayway.jsonpath.JsonPath;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,11 +29,15 @@ public class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
+    @Autowired
+    private StationRepository stationRepository;
+
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        stationRepository.deleteAll();
     }
 
     /**
@@ -40,7 +47,7 @@ public class StationAcceptanceTest {
      */
     @DisplayName("지하철역을 생성한다.")
     @Test
-    void createStation() {
+    public void createStation() {
         // when
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
@@ -72,7 +79,7 @@ public class StationAcceptanceTest {
      */
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
-    void createStationWithDuplicateName() {
+    public void createStationWithDuplicateName() {
         // given
         String stationName = "강남역";
         createStation(stationName);
@@ -100,7 +107,7 @@ public class StationAcceptanceTest {
      */
     @DisplayName("지하철역을 조회한다.")
     @Test
-    void getStations() {
+    public void getStations() {
         //given
         createStation("강남역");
         createStation("교대역");
@@ -112,7 +119,7 @@ public class StationAcceptanceTest {
             .extract();
 
         //then
-        List<String> names = JsonPath.parse(response.body()).read("$.[*].name");
+        List<String> names = response.jsonPath().getList("name", String.class);
         assertAll(
             () -> assertEquals(HttpStatus.OK.value(), response.statusCode()),
             () -> assertThat(names).containsExactly("강남역", "교대역")
@@ -126,18 +133,27 @@ public class StationAcceptanceTest {
      */
     @DisplayName("지하철역을 제거한다.")
     @Test
-    void deleteStation() {
+    public void deleteStation() {
         //given
         Long id = createStation("강남역");
 
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
             .when().delete("/stations/{id}", id)
             .then().log().all()
             .extract();
 
         //then
-        assertEquals(HttpStatus.NO_CONTENT.value(), response.statusCode());
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract();
+
+        List<String> names = response.body().jsonPath().getList("name", String.class);
+        assertAll(
+                () -> assertEquals(HttpStatus.OK.value(), response.statusCode()),
+                () -> assertThat(names).doesNotContain("강남역")
+        );
     }
 
     private Long createStation(String name) {
