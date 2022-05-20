@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -80,6 +81,20 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        callCreateStation("강남역");
+        callCreateStation("잠실역");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                                                            .when().get("/stations")
+                                                            .then().log().all()
+                                                            .extract();
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("name")).containsExactly("강남역", "잠실역")
+        );
     }
 
     /**
