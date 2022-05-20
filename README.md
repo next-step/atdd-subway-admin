@@ -60,5 +60,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ### 기능 목록 도출
 
 **1단계 - 지하철역 인수 테스트**
+- [X] 지하철역 도메인 리팩토링
 - [ ] 지하철역 목록 조회 인수 테스트 작성 
 - [ ] 지하철역 삭제 인수 테스트 작성
