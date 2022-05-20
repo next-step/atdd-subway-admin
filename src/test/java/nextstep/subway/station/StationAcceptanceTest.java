@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
-import org.assertj.core.api.AbstractIntegerAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,8 +47,7 @@ public class StationAcceptanceTest {
         assertStatusCode(response, HttpStatus.CREATED);
 
         // then
-        List<String> stationNames = callGetStations().extract()
-                                                     .jsonPath().getList("name", String.class);
+        List<String> stationNames = toStationNames(callGetStations().extract());
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -89,7 +87,7 @@ public class StationAcceptanceTest {
         // then
         assertAll(
                 () -> assertStatusCode(response, HttpStatus.OK),
-                () -> assertThat(response.jsonPath().getList("name", String.class)).containsExactly("강남역", "잠실역")
+                () -> assertThat(toStationNames(response)).containsAnyOf( "강남역", "잠실역")
         );
     }
 
@@ -115,11 +113,8 @@ public class StationAcceptanceTest {
         assertStatusCode(response, HttpStatus.NO_CONTENT);
 
         // then
-        ExtractableResponse<Response> extract = callGetStations().extract();
-        assertAll(
-                () -> assertStatusCode(extract, HttpStatus.OK),
-                () -> assertThat(extract.jsonPath().getList("name", String.class)).doesNotContain("강남역")
-        );
+        List<String> stationNames = toStationNames(callGetStations().extract());
+        assertThat(stationNames).doesNotContain("강남역");
     }
 
     private static ValidatableResponse callCreateStation(String name) {
@@ -141,5 +136,9 @@ public class StationAcceptanceTest {
 
     private static void assertStatusCode(ExtractableResponse<Response> response, HttpStatus badRequest) {
         assertThat(response.statusCode()).isEqualTo(badRequest.value());
+    }
+
+    private static List<String> toStationNames(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList("name", String.class);
     }
 }
