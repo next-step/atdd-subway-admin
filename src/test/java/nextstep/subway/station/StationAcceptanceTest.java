@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -101,6 +103,47 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given & when
+        Station 판교역 = Station.from("판교역");
+        Station 강남역 = Station.from("강남역");
+
+        ExtractableResponse<Response> responseBy판교역 =
+            RestAssured.given().log().all()
+                .body(판교역)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract();
+
+        ExtractableResponse<Response> responseBy강남역 =
+            RestAssured.given().log().all()
+                .body(강남역)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(responseBy판교역.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(responseBy강남역.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // when
+        ExtractableResponse<Response> response =
+            RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract();
+
+        List<String> stationNames = response.jsonPath().getList("name", String.class);
+
+
+        // then
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(stationNames).contains(강남역.getName()),
+            () -> assertThat(stationNames).contains(판교역.getName()),
+            () -> assertThat(stationNames).hasSize(2)
+        );
     }
 
     /**

@@ -28,7 +28,7 @@ public class Station extends BaseEntity {
         return id;
     }
 
-    public StationName getName() {
-        return this.stationName;
+    public String getName() {
+        return this.stationName.getName();
     }
 }

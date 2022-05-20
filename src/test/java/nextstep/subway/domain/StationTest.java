@@ -18,7 +18,7 @@ class StationTest {
         Station station = Station.from(name);
 
         // then
-        assertEquals(StationName.from(name), station.getName());
+        assertEquals(StationName.from(name).getName(), station.getName());
     }
 
     @DisplayName("지하철 역 명이 null 이나 빈 문자열일 수 없다.")
