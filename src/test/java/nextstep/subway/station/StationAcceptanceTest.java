@@ -91,6 +91,7 @@ public class StationAcceptanceTest {
                                                             .then().log().all()
                                                             .extract();
 
+        // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.jsonPath().getList("name")).containsExactly("강남역", "잠실역")
@@ -105,6 +106,28 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        long id = callCreateStation("강남역").extract()
+                                                    .jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                                                            .when().delete("/stations/{id}", id)
+                                                            .then().log().all()
+                                                            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        // then
+        ExtractableResponse<Response> extract = RestAssured.given().log().all()
+                                                           .when().get("/stations")
+                                                           .then().log().all()
+                                                           .extract();
+        assertAll(
+                () -> assertThat(extract.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(extract.jsonPath().getList("name", String.class)).doesNotContain("강남역")
+        );
     }
 
     private static ValidatableResponse callCreateStation(String name) {
