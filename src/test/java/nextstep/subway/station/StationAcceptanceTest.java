@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
+import org.assertj.core.api.AbstractIntegerAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = callCreateStation("강남역").extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertStatusCode(response, HttpStatus.CREATED);
 
         // then
         List<String> stationNames = callGetStations().extract()
@@ -67,7 +68,7 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = callCreateStation("강남역").extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertStatusCode(response, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -87,7 +88,7 @@ public class StationAcceptanceTest {
 
         // then
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertStatusCode(response, HttpStatus.OK),
                 () -> assertThat(response.jsonPath().getList("name", String.class)).containsExactly("강남역", "잠실역")
         );
     }
@@ -111,12 +112,12 @@ public class StationAcceptanceTest {
                                                             .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertStatusCode(response, HttpStatus.NO_CONTENT);
 
         // then
         ExtractableResponse<Response> extract = callGetStations().extract();
         assertAll(
-                () -> assertThat(extract.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertStatusCode(extract, HttpStatus.OK),
                 () -> assertThat(extract.jsonPath().getList("name", String.class)).doesNotContain("강남역")
         );
     }
@@ -136,5 +137,9 @@ public class StationAcceptanceTest {
         return RestAssured.given().log().all()
                           .when().get("/stations")
                           .then().log().all();
+    }
+
+    private static void assertStatusCode(ExtractableResponse<Response> response, HttpStatus badRequest) {
+        assertThat(response.statusCode()).isEqualTo(badRequest.value());
     }
 }
