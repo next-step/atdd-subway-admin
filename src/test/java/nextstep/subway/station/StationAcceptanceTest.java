@@ -125,5 +125,16 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        StationHelper.createStation("강남역");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when().delete("/stations/1")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
