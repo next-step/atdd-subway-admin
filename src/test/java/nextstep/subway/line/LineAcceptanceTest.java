@@ -1,8 +1,20 @@
 package nextstep.subway.line;
 
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철노선 관련 기능")
 public class LineAcceptanceTest extends BaseAcceptanceTest {
@@ -14,6 +26,21 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철노선 생성")
     @Test
     void createLine() {
+        long upStationId = toStationId(callCreateStation("강남역"));
+        long downStationId = toStationId(callCreateStation("판교역"));
+
+        ExtractableResponse<Response> response = callCreateLine("신분당선", "bg-red-600", upStationId,
+                                                                downStationId, 10L);
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> {
+                    List<String> lineNames = callGetLines().body()
+                                                           .jsonPath()
+                                                           .getList("name", String.class);
+                    assertThat(lineNames).containsAnyOf("신분당선");
+                }
+        );
     }
 
     /**
@@ -54,5 +81,45 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철노선 삭제")
     @Test
     void deleteLine() {
+    }
+
+    private ExtractableResponse<Response> callCreateStation(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private long toStationId(ExtractableResponse<Response> response) {
+        return response.body().jsonPath().getLong("id");
+    }
+
+    private ExtractableResponse<Response> callCreateLine(String name, String color, long upStationId,
+                                                         long downStationId, long distance) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> callGetLines() {
+        return RestAssured.given().log().all()
+                .when().get("/lines")
+                .then().log().all()
+                .extract();
     }
 }
