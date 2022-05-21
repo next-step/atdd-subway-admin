@@ -101,6 +101,20 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        StationHelper.createStation("강남역");
+        StationHelper.createStation("역삼역");
+
+        // when
+        List<String> stationNames =
+                RestAssured.given().log().all()
+                        .when().get("/stations")
+                        .then().log().all()
+                        .extract().jsonPath().getList("name", String.class);
+
+        // then
+        assertThat(stationNames).contains("강남역", "역삼역");
+        assertThat(stationNames).hasSize(2);
     }
 
     /**
