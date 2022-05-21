@@ -5,9 +5,12 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -19,12 +22,16 @@ import java.util.Map;
 import org.springframework.test.context.jdbc.Sql;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class StationAcceptanceTest {
     @LocalServerPort
     int port;
+
+    @Autowired
+    private StationRepository stationRepository;
 
     @BeforeEach
     public void setUp() {
@@ -104,6 +111,21 @@ class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+
+        stationRepository.save(new Station("신림역"));
+        stationRepository.save(new Station("서울역"));
+
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                        .accept(ContentType.JSON)
+                        .when().get("/stations")
+                        .then().log().all()
+                        .extract();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("id")).contains(1, 2),
+                () -> assertThat(response.jsonPath().getList("name")).contains("신림역", "서울역")
+        );
     }
 
     /**
