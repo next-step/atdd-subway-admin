@@ -136,5 +136,28 @@ class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+
+        Station deleteStation = stationRepository.save(new Station("신림역"));
+        stationRepository.save(new Station("서울역"));
+
+        RestAssured.given().log().all()
+                .accept(ContentType.JSON)
+                .when().delete("/stations/{id}", deleteStation.getId())
+                .then().log().all();
+
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                        .accept(ContentType.JSON)
+                        .when().get("/stations")
+                        .then().log().all()
+                        .extract();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("id")).doesNotContain(1),
+                () -> assertThat(response.jsonPath().getList("name")).doesNotContain("신림역"),
+
+                () -> assertThat(response.jsonPath().getList("id")).contains(2),
+                () -> assertThat(response.jsonPath().getList("name")).contains("서울역")
+        );
     }
 }
