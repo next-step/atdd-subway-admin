@@ -27,4 +27,12 @@ public class Section {
 
     protected Section() {
     }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
 }

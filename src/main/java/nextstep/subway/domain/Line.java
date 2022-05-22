@@ -3,6 +3,8 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 
@@ -33,5 +35,15 @@ public class Line extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public List<Station> getStations() {
+        return sections.stream()
+                       .flatMap(s -> Stream.of(s.getUpStation(), s.getDownStation()))
+                       .collect(Collectors.toList());
     }
 }

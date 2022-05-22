@@ -1,5 +1,6 @@
 package nextstep.subway.application;
 
+import nextstep.subway.domain.NotFoundStationException;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
@@ -36,5 +37,10 @@ public class StationService {
     @Transactional
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
+    }
+
+    public Station findById(Long stationId) {
+        return stationRepository.findById(stationId)
+                                .orElseThrow(() -> new NotFoundStationException(stationId));
     }
 }
