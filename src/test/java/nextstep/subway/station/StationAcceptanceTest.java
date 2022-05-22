@@ -137,9 +137,9 @@ class StationAcceptanceTest {
         );
     }
 
-    private List<ExtractableResponse<Response>> requestCreateStations(List<Map<String, String>> stationsParams) {
+    private List<ExtractableResponse<Response>> requestCreateStations(List<Map<String, String>> stationsParamsBundle) {
         List<ExtractableResponse<Response>> responses = new ArrayList<>();
-        for (Map<String, String> stationParams : stationsParams) {
+        for (Map<String, String> stationParams : stationsParamsBundle) {
             responses.add(requestCreateStation(stationParams));
         }
         return responses;
