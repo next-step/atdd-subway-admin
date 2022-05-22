@@ -6,6 +6,7 @@ import nextstep.subway.domain.NotFoundLineException;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.NewLineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.UpdateLineRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ public class LineService {
         this.stationService = stationService;
     }
 
+    @Transactional
     public LineResponse saveLine(NewLineRequest request) {
         Station upStation = stationService.findById(request.getUpStationId());
         Station downStation = stationService.findById(request.getUpStationId());
@@ -43,5 +45,12 @@ public class LineService {
         return repository.findById(id)
                          .map(LineResponse::new)
                          .orElseThrow(() -> new NotFoundLineException(id));
+    }
+
+    @Transactional
+    public void updateLine(UpdateLineRequest request) {
+        Line line = repository.findById(request.getId())
+                              .orElseThrow(() -> new NotFoundLineException(request.getId()));
+        line.update(request.getName(), request.getColor());
     }
 }

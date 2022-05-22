@@ -29,6 +29,17 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
+    public List<Station> getStations() {
+        return sections.stream()
+                       .flatMap(s -> Stream.of(s.getUpStation(), s.getDownStation()))
+                       .collect(Collectors.toList());
+    }
+
+    public void update(String name, String color) {
+        this.name = requireNonNull(name, "이름이 비었습니다");
+        this.color = requireNonNull(color, "색상이 비었습니다");
+    }
+
     public Long getId() {
         return id;
     }
@@ -39,11 +50,5 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    public List<Station> getStations() {
-        return sections.stream()
-                       .flatMap(s -> Stream.of(s.getUpStation(), s.getDownStation()))
-                       .collect(Collectors.toList());
     }
 }
