@@ -6,9 +6,14 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AssertUtils;
 import nextstep.subway.BaseAcceptanceTest;
+import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.SectionRepository;
+import nextstep.subway.domain.StationRepository;
 import nextstep.subway.station.StationRestAssured;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -21,6 +26,15 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철노선 관련 기능")
 public class LineAcceptanceTest extends BaseAcceptanceTest {
+
+    @BeforeEach
+    void setup(@Autowired LineRepository lineRepository,
+               @Autowired SectionRepository sectionRepository,
+               @Autowired StationRepository stationRepository) {
+        lineRepository.deleteAll();
+        sectionRepository.deleteAll();
+        stationRepository.deleteAll();
+    }
 
     /**
      * When 지하철 노선을 생성하면
@@ -81,6 +95,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
                                               downStationId, 10L));
 
         ExtractableResponse<Response> response = callGetLine(lineId);
+
         assertAll(
                 () -> AssertUtils.assertStatusCode(response, HttpStatus.OK),
                 () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo("신분당선")
