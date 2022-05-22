@@ -47,6 +47,18 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철노선 목록 조회")
     @Test
     void getLines() {
+        long 강남역_id = toStationId(StationRestAssured.createStation("강남역"));
+        long 청량리역_id = toStationId(StationRestAssured.createStation("청량리역"));
+        long 정자역_id = toStationId(StationRestAssured.createStation("정자역"));
+        callCreateLine("신분당선", "bg-red-600", 강남역_id, 정자역_id, 10L);
+        callCreateLine("분당선", "bg-yellow-600", 청량리역_id, 정자역_id, 10L);
+
+        final ExtractableResponse<Response> response = callGetLines();
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(toLineNames(response)).containsAnyOf("신분당선", "분당선")
+        );
     }
 
     /**
