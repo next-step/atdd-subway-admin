@@ -11,6 +11,8 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long lineId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Station upStation;
 
@@ -21,11 +23,16 @@ public class Section extends BaseEntity {
 
     public Section(Station upStation, Station downStation, Long distance) {
         this.upStation = requireNonNull(upStation, "상행 지하철역이 비었습니다");
-        this.downStation = requireNonNull(downStation, "상행 지하철역이 비었습니다");
+        this.downStation = requireNonNull(downStation, "하행 지하철역이 비었습니다");
         this.distance = requireNonNull(distance, "구간 길이가 비었습니다");
     }
 
     protected Section() {
+    }
+
+    public void setLine(Line line) {
+        requireNonNull(line, "지하철 노선이 비었습니다");
+        this.lineId = line.getId();
     }
 
     public Station getUpStation() {

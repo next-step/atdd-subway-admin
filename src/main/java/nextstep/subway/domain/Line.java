@@ -1,10 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 
@@ -17,22 +14,25 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(cascade =  CascadeType.ALL)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line(String name, String color, Station upStation, Station downStation, Long distance) {
         this.name = requireNonNull(name, "이름이 비었습니다");
         this.color = requireNonNull(color, "색상이 비었습니다");
-        this.sections.add(new Section(upStation, downStation, distance));
+        addSection(new Section(upStation, downStation, distance));
     }
 
     protected Line() {
     }
 
+    private void addSection(Section section) {
+        sections.add(section);
+        section.setLine(this);
+    }
+
     public List<Station> getStations() {
-        return sections.stream()
-                       .flatMap(s -> Stream.of(s.getUpStation(), s.getDownStation()))
-                       .collect(Collectors.toList());
+        return sections.getStations();
     }
 
     public void update(String name, String color) {
