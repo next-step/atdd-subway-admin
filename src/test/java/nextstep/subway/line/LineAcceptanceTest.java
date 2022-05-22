@@ -58,7 +58,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         callCreateLine("신분당선", "bg-red-600", 강남역_id, 정자역_id, 10L);
         callCreateLine("분당선", "bg-yellow-600", 청량리역_id, 정자역_id, 10L);
 
-        final ExtractableResponse<Response> response = callGetLines();
+        ExtractableResponse<Response> response = callGetLines();
 
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
@@ -99,7 +99,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         long lineId = toLineId(callCreateLine("신분당선", "bg-red-600", upStationId,
                                               downStationId, 10L));
 
-        final ExtractableResponse<Response> response = callUpdateLine(lineId, "아무개선", "bg-blue-600");
+        ExtractableResponse<Response> response = callUpdateLine(lineId, "아무개선", "bg-blue-600");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         ExtractableResponse<Response> getLineResponse = callGetLine(lineId);
@@ -118,6 +118,18 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철노선 삭제")
     @Test
     void deleteLine() {
+        long upStationId = toStationId(StationRestAssured.createStation("강남역"));
+        long downStationId = toStationId(StationRestAssured.createStation("판교역"));
+        long lineId = toLineId(callCreateLine("신분당선", "bg-red-600", upStationId,
+                                              downStationId, 10L));
+
+        callDeleteLine(lineId);
+
+        ExtractableResponse<Response> response = callGetLines();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(toLineNames(response)).doesNotContain("신분당선")
+        );
     }
 
     private ExtractableResponse<Response> callCreateLine(String name, String color, long upStationId,
@@ -160,6 +172,13 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/lines/{id}", lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> callDeleteLine(long lineId) {
+        return RestAssured.given().log().all()
+                .when().delete("/lines/{id}", lineId)
                 .then().log().all()
                 .extract();
     }
