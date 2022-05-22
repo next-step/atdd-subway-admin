@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.ArrayList;
 import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -88,7 +89,9 @@ class StationAcceptanceTest {
         Map<String, String> params2 = new HashMap<>();
         params1.put("name", "강남역");
         params2.put("name", "서울역");
-        requestCreateStations(Arrays.asList(params1, params2));
+        for (ExtractableResponse<Response> response : requestCreateStations(Arrays.asList(params1, params2))){
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        }
 
         //when
         ExtractableResponse<Response> response = requestGetStations();
@@ -115,7 +118,9 @@ class StationAcceptanceTest {
         Map<String, String> params2 = new HashMap<>();
         params1.put("name", "신림역");
         params2.put("name", "서울역");
-        requestCreateStations(Arrays.asList(params1, params2));
+        for (ExtractableResponse<Response> response : requestCreateStations(Arrays.asList(params1, params2))){
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        }
 
         //when
         assertThat(requestDeleteStation(1L).statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -132,10 +137,12 @@ class StationAcceptanceTest {
         );
     }
 
-    private void requestCreateStations(List<Map<String, String>> stationsParams) {
+    private List<ExtractableResponse<Response>> requestCreateStations(List<Map<String, String>> stationsParams) {
+        List<ExtractableResponse<Response>> responses = new ArrayList<>();
         for (Map<String, String> stationParams : stationsParams) {
-            requestCreateStation(stationParams);
+            responses.add(requestCreateStation(stationParams));
         }
+        return responses;
     }
 
     private ExtractableResponse<Response> requestCreateStation(Map<String, String> stationParams) {
