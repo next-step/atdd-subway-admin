@@ -38,7 +38,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         assertAll(
                 () -> AssertUtils.assertStatusCode(response, HttpStatus.CREATED),
                 () -> {
-                    String locationHeaderValue = String.format("lines/%d", toLineId(response));
+                    String locationHeaderValue = String.format("/lines/%d", toLineId(response));
                     assertThat(response.header("Location")).isEqualTo(locationHeaderValue);
                 },
                 () -> assertThat(toLineNames(callGetLines())).containsAnyOf("신분당선")
