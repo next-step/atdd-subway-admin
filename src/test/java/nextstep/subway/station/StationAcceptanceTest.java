@@ -4,13 +4,10 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import io.restassured.response.ValidatableResponse;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -19,7 +16,6 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.test.context.jdbc.Sql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -29,9 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class StationAcceptanceTest {
     @LocalServerPort
     int port;
-
-    @Autowired
-    private StationRepository stationRepository;
 
     @BeforeEach
     public void setUp() {
@@ -51,14 +44,7 @@ class StationAcceptanceTest {
         // when
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = requestCreateStation(params);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -83,21 +69,10 @@ class StationAcceptanceTest {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
+        requestCreateStation(params);
 
         // when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = requestCreateStation(params);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -112,19 +87,21 @@ class StationAcceptanceTest {
     @Test
     void getStations() {
 
-        stationRepository.save(new Station("신림역"));
-        stationRepository.save(new Station("서울역"));
+        //given
+        Map<String, String> params1 = new HashMap<>();
+        Map<String, String> params2 = new HashMap<>();
+        params1.put("name", "강남역");
+        params2.put("name", "서울역");
+        requestCreateStations(Arrays.asList(params1, params2));
 
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .accept(ContentType.JSON)
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract();
+        //when
+        ExtractableResponse<Response> response = requestGetStations();
+
+        //then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.jsonPath().getList("id")).contains(1, 2),
-                () -> assertThat(response.jsonPath().getList("name")).contains("신림역", "서울역")
+                () -> assertThat(response.jsonPath().getList("name")).contains("강남역", "서울역")
         );
     }
 
@@ -137,20 +114,18 @@ class StationAcceptanceTest {
     @Test
     void deleteStation() {
 
-        Station deleteStation = stationRepository.save(new Station("신림역"));
-        stationRepository.save(new Station("서울역"));
+        //given
+        Map<String, String> params1 = new HashMap<>();
+        Map<String, String> params2 = new HashMap<>();
+        params1.put("name", "신림역");
+        params2.put("name", "서울역");
+        requestCreateStations(Arrays.asList(params1, params2));
 
-        RestAssured.given().log().all()
-                .accept(ContentType.JSON)
-                .when().delete("/stations/{id}", deleteStation.getId())
-                .then().log().all();
+        //when
+        requestDeleteStation(1L);
 
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .accept(ContentType.JSON)
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract();
+        //then
+        ExtractableResponse<Response> response = requestGetStations();
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.jsonPath().getList("id")).doesNotContain(1),
@@ -159,5 +134,35 @@ class StationAcceptanceTest {
                 () -> assertThat(response.jsonPath().getList("id")).contains(2),
                 () -> assertThat(response.jsonPath().getList("name")).contains("서울역")
         );
+    }
+
+    private void requestCreateStations(List<Map<String, String>> stationsParams) {
+        for (Map<String, String> stationParams : stationsParams) {
+            requestCreateStation(stationParams);
+        }
+    }
+
+    private ExtractableResponse<Response> requestCreateStation(Map<String, String> stationParams) {
+        return RestAssured.given().log().all()
+                .body(stationParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> requestGetStations() {
+        return RestAssured.given().log().all()
+                .accept(ContentType.JSON)
+                .when().get("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private void requestDeleteStation(long stationId) {
+        RestAssured.given().log().all()
+                .accept(ContentType.JSON)
+                .when().delete("/stations/{id}", stationId)
+                .then().log().all();
     }
 }
