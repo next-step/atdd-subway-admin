@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LineController {
 
-    @PostMapping
+    @PostMapping("/lines")
     public ResponseEntity<NewLineRequest> createLine(@RequestBody NewLineRequest request) {
         return ResponseEntity.created(null).body(null);
     }
