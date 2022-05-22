@@ -44,18 +44,14 @@ class StationAcceptanceTest {
         // when
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
-        ExtractableResponse<Response> response = requestCreateStation(params);
+        ExtractableResponse<Response> createResponse = requestCreateStation(params);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
-        assertThat(stationNames).containsAnyOf("강남역");
+        ExtractableResponse<Response> response = requestGetStations();
+        assertThat(response.jsonPath().getList("name")).containsAnyOf("강남역");
     }
 
     /**
@@ -69,7 +65,7 @@ class StationAcceptanceTest {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
-        requestCreateStation(params);
+        assertThat(requestCreateStation(params).statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
         ExtractableResponse<Response> response = requestCreateStation(params);
@@ -122,7 +118,7 @@ class StationAcceptanceTest {
         requestCreateStations(Arrays.asList(params1, params2));
 
         //when
-        requestDeleteStation(1L);
+        assertThat(requestDeleteStation(1L).statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         //then
         ExtractableResponse<Response> response = requestGetStations();
@@ -146,6 +142,7 @@ class StationAcceptanceTest {
         return RestAssured.given().log().all()
                 .body(stationParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all()
                 .extract();
@@ -153,16 +150,17 @@ class StationAcceptanceTest {
 
     private ExtractableResponse<Response> requestGetStations() {
         return RestAssured.given().log().all()
-                .accept(ContentType.JSON)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/stations")
                 .then().log().all()
                 .extract();
     }
 
-    private void requestDeleteStation(long stationId) {
-        RestAssured.given().log().all()
+    private ExtractableResponse<Response> requestDeleteStation(long stationId) {
+       return RestAssured.given().log().all()
                 .accept(ContentType.JSON)
                 .when().delete("/stations/{id}", stationId)
-                .then().log().all();
+                .then().log().all()
+                .extract();
     }
 }
