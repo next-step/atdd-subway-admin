@@ -122,6 +122,26 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     }
 
     /**
+     * When 존재하지 않는 지하철 노선을 조회하면
+     * Then 지하철 노선 조회가 안된다.
+     */
+    @DisplayName("존재하지 않는 지하철노선을 조회한다.")
+    @Test
+    void getLineWithNotFound() {
+        long upStationId = toStationId(StationRestAssured.createStation("강남역"));
+        long downStationId = toStationId(StationRestAssured.createStation("판교역"));
+        long lineId = toLineId(callCreateLine("신분당선", "bg-red-600", upStationId,
+                downStationId, 10L));
+
+        ExtractableResponse<Response> response = callGetLine(lineId);
+
+        assertAll(
+                () -> AssertUtils.assertStatusCode(response, HttpStatus.OK),
+                () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo("신분당선")
+        );
+    }
+
+    /**
      * Given 지하철 노선을 생성하고
      * When 생성한 지하철 노선을 수정하면
      * Then 해당 지하철 노선 정보는 수정된다
