@@ -5,7 +5,7 @@ import javax.persistence.*;
 import static java.util.Objects.requireNonNull;
 
 @Entity
-public class Section {
+public class Section extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
