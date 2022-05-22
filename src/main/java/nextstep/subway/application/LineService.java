@@ -4,7 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.NewLineRequest;
-import nextstep.subway.dto.NewLineResponse;
+import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,11 +20,11 @@ public class LineService {
         this.stationService = stationService;
     }
 
-    public NewLineResponse saveLine(NewLineRequest request) {
+    public LineResponse saveLine(NewLineRequest request) {
         Station upStation = stationService.findById(request.getUpStationId());
         Station downStation = stationService.findById(request.getUpStationId());
-        final Line savedLine = repository.save(new Line(request.getName(), request.getColor(), upStation, downStation,
-                                                        request.getDistance()));
-        return new NewLineResponse(savedLine);
+        Line savedLine = repository.save(new Line(request.getName(), request.getColor(), upStation, downStation,
+                                                  request.getDistance()));
+        return new LineResponse(savedLine);
     }
 }

@@ -5,14 +5,14 @@ import nextstep.subway.domain.Line;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class NewLineResponse {
+public class LineResponse {
 
     private Long id;
     private String name;
     private String color;
     private List<StationResponse> stations;
 
-    public NewLineResponse(Line line) {
+    public LineResponse(Line line) {
         this.id = line.getId();
         this.name = line.getName();
         this.color = line.getColor();
@@ -26,7 +26,7 @@ public class NewLineResponse {
                    .collect(Collectors.toList());
     }
 
-    protected NewLineResponse() {
+    protected LineResponse() {
     }
 
     public Long getId() {
