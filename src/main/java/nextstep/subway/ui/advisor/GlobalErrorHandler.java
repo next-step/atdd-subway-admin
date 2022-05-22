@@ -15,7 +15,7 @@ public class GlobalErrorHandler {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity notFoundException() {
+    public ResponseEntity handleNotFoundException() {
         return ResponseEntity.badRequest().build();
     }
 }

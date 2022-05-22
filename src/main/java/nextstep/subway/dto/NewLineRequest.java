@@ -1,6 +1,5 @@
 package nextstep.subway.dto;
 
-
 public class NewLineRequest {
 
     private String name;

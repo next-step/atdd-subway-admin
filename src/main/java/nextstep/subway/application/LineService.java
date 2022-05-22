@@ -58,5 +58,4 @@ public class LineService {
     public void deleteLine(Long id) {
         repository.deleteById(id);
     }
-
 }
