@@ -53,4 +53,10 @@ public class LineService {
                               .orElseThrow(() -> new NotFoundLineException(request.getId()));
         line.update(request.getName(), request.getColor());
     }
+
+    @Transactional
+    public void deleteLine(Long id) {
+        repository.deleteById(id);
+    }
+
 }
