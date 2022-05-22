@@ -69,6 +69,17 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철노선 조회")
     @Test
     void getLine() {
+        long upStationId = toStationId(StationRestAssured.createStation("강남역"));
+        long downStationId = toStationId(StationRestAssured.createStation("판교역"));
+        ExtractableResponse<Response> response = callCreateLine("신분당선", "bg-red-600", upStationId,
+                downStationId, 10L);
+        long lineId = response.body().jsonPath().getLong("id");
+
+        ExtractableResponse<Response> response1 = callGetLine(lineId);
+        assertAll(
+                () -> assertThat(response1.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response1.body().jsonPath().getString("name")).isEqualTo("신분당선")
+        );
     }
 
     /**
@@ -111,6 +122,13 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     private ExtractableResponse<Response> callGetLines() {
         return RestAssured.given().log().all()
                 .when().get("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> callGetLine(long lineId) {
+        return RestAssured.given().log().all()
+                .when().get("/lines/{id}", lineId)
                 .then().log().all()
                 .extract();
     }
