@@ -21,7 +21,7 @@ class StationNameTest {
     @DisplayName("지하철 역은 null 혹은 빈문자일 수 없다.")
     @ParameterizedTest
     @NullAndEmptySource
-    void generate02(String name){
+    void generate02(String name) {
         // given & when & then
         assertThatIllegalArgumentException()
             .isThrownBy(() -> StationName.from(name))
