@@ -60,6 +60,25 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     }
 
     /**
+     * Given 지하철 노선을 생성하고
+     * When 기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성하면
+     * Then 지하철 노선 생성이 안된다
+     */
+    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
+    @Test
+    void createLineWithDuplicateName() {
+        long upStationId = toStationId(StationRestAssured.createStation("강남역"));
+        long downStationId = toStationId(StationRestAssured.createStation("판교역"));
+        callCreateLine("신분당선", "bg-red-600", upStationId,
+                       downStationId, 10L);
+
+        ExtractableResponse<Response> response = callCreateLine("신분당선", "bg-red-600", upStationId,
+                                                                downStationId, 10L);
+
+        AssertUtils.assertStatusCode(response, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
      * Given 2개의 지하철 노선을 생성하고
      * When 지하철 노선 목록을 조회하면
      * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
