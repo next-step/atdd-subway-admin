@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
@@ -93,6 +94,20 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철노선 수정")
     @Test
     void updateLine() {
+        long upStationId = toStationId(StationRestAssured.createStation("강남역"));
+        long downStationId = toStationId(StationRestAssured.createStation("판교역"));
+        long lineId = toLineId(callCreateLine("신분당선", "bg-red-600", upStationId,
+                                              downStationId, 10L));
+
+        final ExtractableResponse<Response> response = callUpdateLine(lineId, "아무개선", "bg-blue-600");
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> getLineResponse = callGetLine(lineId);
+        JsonPath jsonPath = getLineResponse.body().jsonPath();
+        assertAll(
+                () -> assertThat(jsonPath.getString("name")).isEqualTo("아무개선"),
+                () -> assertThat(jsonPath.getString("color")).isEqualTo("bg-blue-600")
+        );
     }
 
     /**
@@ -132,6 +147,19 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     private ExtractableResponse<Response> callGetLine(long lineId) {
         return RestAssured.given().log().all()
                 .when().get("/lines/{id}", lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> callUpdateLine(long lineId, String updateName, String updateColor) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", updateName);
+        params.put("color", updateColor);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/{id}", lineId)
                 .then().log().all()
                 .extract();
     }
