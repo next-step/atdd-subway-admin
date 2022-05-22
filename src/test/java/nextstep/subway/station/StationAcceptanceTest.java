@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
+import nextstep.subway.AssertUtils;
 import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +43,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> response = StationRestAssured.createStation("강남역");
 
         // then
-        assertStatusCode(response, HttpStatus.CREATED);
+        AssertUtils.assertStatusCode(response, HttpStatus.CREATED);
 
         // then
         List<String> stationNames = toStationNames(callGetStations().extract());
@@ -64,7 +65,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> response = StationRestAssured.createStation("강남역");
 
         // then
-        assertStatusCode(response, HttpStatus.BAD_REQUEST);
+        AssertUtils.assertStatusCode(response, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -84,7 +85,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         assertAll(
-                () -> assertStatusCode(response, HttpStatus.OK),
+                () -> AssertUtils.assertStatusCode(response, HttpStatus.OK),
                 () -> assertThat(toStationNames(response)).containsAnyOf( "강남역", "잠실역")
         );
     }
@@ -108,7 +109,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
                                                             .extract();
 
         // then
-        assertStatusCode(response, HttpStatus.NO_CONTENT);
+        AssertUtils.assertStatusCode(response, HttpStatus.NO_CONTENT);
 
         // then
         List<String> stationNames = toStationNames(callGetStations().extract());
@@ -119,10 +120,6 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         return RestAssured.given().log().all()
                           .when().get("/stations")
                           .then().log().all();
-    }
-
-    private static void assertStatusCode(ExtractableResponse<Response> response, HttpStatus httpStatus) {
-        assertThat(response.statusCode()).isEqualTo(httpStatus.value());
     }
 
     private static List<String> toStationNames(ExtractableResponse<Response> response) {

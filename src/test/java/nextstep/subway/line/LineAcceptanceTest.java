@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.AssertUtils;
 import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.station.StationRestAssured;
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +36,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
                                                                 downStationId, 10L);
 
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> AssertUtils.assertStatusCode(response, HttpStatus.CREATED),
                 () -> {
                     String locationHeaderValue = String.format("lines/%d", toLineId(response));
                     assertThat(response.header("Location")).isEqualTo(locationHeaderValue);
@@ -61,7 +62,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> response = callGetLines();
 
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> AssertUtils.assertStatusCode(response, HttpStatus.OK),
                 () -> assertThat(toLineNames(response)).containsAnyOf("신분당선", "분당선")
         );
     }
@@ -81,7 +82,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
         ExtractableResponse<Response> response = callGetLine(lineId);
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> AssertUtils.assertStatusCode(response, HttpStatus.OK),
                 () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo("신분당선")
         );
     }
@@ -101,7 +102,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
         ExtractableResponse<Response> response = callUpdateLine(lineId, "아무개선", "bg-blue-600");
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        AssertUtils.assertStatusCode(response, HttpStatus.OK);
         ExtractableResponse<Response> getLineResponse = callGetLine(lineId);
         JsonPath jsonPath = getLineResponse.body().jsonPath();
         assertAll(
@@ -127,7 +128,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
         ExtractableResponse<Response> response = callGetLines();
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> AssertUtils.assertStatusCode(response, HttpStatus.OK),
                 () -> assertThat(toLineNames(response)).doesNotContain("신분당선")
         );
     }
@@ -184,15 +185,11 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     }
 
     private long toStationId(ExtractableResponse<Response> response) {
-        return toId(response);
+        return AssertUtils.toId(response);
     }
 
     private long toLineId(ExtractableResponse<Response> response) {
-        return toId(response);
-    }
-
-    private long toId(ExtractableResponse<Response> response) {
-        return response.body().jsonPath().getLong("id");
+        return AssertUtils.toId(response);
     }
 
     private List<String> toLineNames(ExtractableResponse<Response> response) {
