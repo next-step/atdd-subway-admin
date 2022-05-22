@@ -39,7 +39,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = callCreateStation("강남역").extract();
+        ExtractableResponse<Response> response = StationRestAssured.createStation("강남역");
 
         // then
         assertStatusCode(response, HttpStatus.CREATED);
@@ -58,10 +58,10 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        callCreateStation("강남역");
+        StationRestAssured.createStation("강남역");
 
         // when
-        ExtractableResponse<Response> response = callCreateStation("강남역").extract();
+        ExtractableResponse<Response> response = StationRestAssured.createStation("강남역");
 
         // then
         assertStatusCode(response, HttpStatus.BAD_REQUEST);
@@ -76,8 +76,8 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void getStations() {
         // given
-        callCreateStation("강남역");
-        callCreateStation("잠실역");
+        StationRestAssured.createStation("강남역");
+        StationRestAssured.createStation("잠실역");
 
         // when
         ExtractableResponse<Response> response = callGetStations().extract();
@@ -98,8 +98,8 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        long id = callCreateStation("강남역").extract()
-                                                    .jsonPath().getLong("id");
+        long id = StationRestAssured.createStation("강남역")
+                                    .jsonPath().getLong("id");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -113,17 +113,6 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         // then
         List<String> stationNames = toStationNames(callGetStations().extract());
         assertThat(stationNames).doesNotContain("강남역");
-    }
-
-    private static ValidatableResponse callCreateStation(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        return RestAssured.given().log().all()
-                          .body(params)
-                          .contentType(MediaType.APPLICATION_JSON_VALUE)
-                          .when().post("/stations")
-                          .then().log().all();
     }
 
     private static ValidatableResponse callGetStations() {

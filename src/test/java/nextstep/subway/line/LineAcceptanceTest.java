@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
+import nextstep.subway.station.StationRestAssured;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -26,20 +27,15 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철노선 생성")
     @Test
     void createLine() {
-        long upStationId = toStationId(callCreateStation("강남역"));
-        long downStationId = toStationId(callCreateStation("판교역"));
+        long upStationId = toStationId(StationRestAssured.createStation("강남역"));
+        long downStationId = toStationId(StationRestAssured.createStation("판교역"));
 
         ExtractableResponse<Response> response = callCreateLine("신분당선", "bg-red-600", upStationId,
                                                                 downStationId, 10L);
 
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> {
-                    List<String> lineNames = callGetLines().body()
-                                                           .jsonPath()
-                                                           .getList("name", String.class);
-                    assertThat(lineNames).containsAnyOf("신분당선");
-                }
+                () -> assertThat(toLineNames(callGetLines())).containsAnyOf("신분당선")
         );
     }
 
@@ -83,22 +79,6 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     void deleteLine() {
     }
 
-    private ExtractableResponse<Response> callCreateStation(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private long toStationId(ExtractableResponse<Response> response) {
-        return response.body().jsonPath().getLong("id");
-    }
-
     private ExtractableResponse<Response> callCreateLine(String name, String color, long upStationId,
                                                          long downStationId, long distance) {
         Map<String, Object> params = new HashMap<>();
@@ -121,5 +101,15 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
                 .when().get("/lines")
                 .then().log().all()
                 .extract();
+    }
+
+    private long toStationId(ExtractableResponse<Response> response) {
+        return response.body().jsonPath().getLong("id");
+    }
+
+    private List<String> toLineNames(ExtractableResponse<Response> response) {
+        return response.body()
+                       .jsonPath()
+                       .getList("name", String.class);
     }
 }
