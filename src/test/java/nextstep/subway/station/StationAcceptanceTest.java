@@ -11,13 +11,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import nextstep.subway.BaseAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철역 관련 기능")
-public class StationAcceptanceTest extends BaseAcceptanceTest{
+public class StationAcceptanceTest extends BaseAcceptanceTest {
 
     /**
      * When 지하철역을 생성하면
@@ -26,7 +27,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest{
      */
     @DisplayName("지하철역을 생성한다.")
     @Test
-    public void 역_생성_요청() {
+    public void createStation() {
         //given
         String 생성_요청_역_이름 = "강남역";
 
@@ -98,7 +99,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest{
 
         //then
         ExtractableResponse<Response> 역_조회_응답 = 역_조회_요청();
-        역_불포함_확인(역_조회_응답, 강남역);
+        이름_불포함_확인(역_조회_응답, 강남역);
     }
 
     private ExtractableResponse<Response> 역_생성_요청(String name) {
@@ -111,10 +112,6 @@ public class StationAcceptanceTest extends BaseAcceptanceTest{
             .when().post("/stations")
             .then().log().all()
             .extract();
-    }
-
-    private void 생성됨_확인(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     private void 역_포함_확인(ExtractableResponse<Response> response, String... stationNames) {
@@ -144,11 +141,4 @@ public class StationAcceptanceTest extends BaseAcceptanceTest{
             .extract();
     }
 
-    private void 역_불포함_확인(ExtractableResponse<Response> response, String... stationNames) {
-        List<String> responseNames = response.body().jsonPath().getList("name", String.class);
-        assertAll(
-            () -> assertEquals(HttpStatus.OK.value(), response.statusCode()),
-            () -> assertThat(responseNames).doesNotContain(stationNames)
-        );
-    }
 }
