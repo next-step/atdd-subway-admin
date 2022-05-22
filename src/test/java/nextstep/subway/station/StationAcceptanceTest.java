@@ -89,7 +89,7 @@ class StationAcceptanceTest {
         Map<String, String> params2 = new HashMap<>();
         params1.put("name", "강남역");
         params2.put("name", "서울역");
-        for (ExtractableResponse<Response> response : requestCreateStations(Arrays.asList(params1, params2))){
+        for (ExtractableResponse<Response> response : requestCreateStations(Arrays.asList(params1, params2))) {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         }
 
@@ -118,7 +118,7 @@ class StationAcceptanceTest {
         Map<String, String> params2 = new HashMap<>();
         params1.put("name", "신림역");
         params2.put("name", "서울역");
-        for (ExtractableResponse<Response> response : requestCreateStations(Arrays.asList(params1, params2))){
+        for (ExtractableResponse<Response> response : requestCreateStations(Arrays.asList(params1, params2))) {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         }
 
@@ -164,7 +164,7 @@ class StationAcceptanceTest {
     }
 
     private ExtractableResponse<Response> requestDeleteStation(long stationId) {
-       return RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .accept(ContentType.JSON)
                 .when().delete("/stations/{id}", stationId)
                 .then().log().all()
