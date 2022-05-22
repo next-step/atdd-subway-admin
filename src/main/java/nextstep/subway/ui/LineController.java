@@ -23,6 +23,6 @@ public class LineController {
     @PostMapping("/lines")
     public ResponseEntity<NewLineResponse> createLine(@RequestBody NewLineRequest request) throws URISyntaxException {
         NewLineResponse response = lineService.saveLine(request);
-        return ResponseEntity.created(new URI("/lines/" + response.getId())).body(response);
+        return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
 }
