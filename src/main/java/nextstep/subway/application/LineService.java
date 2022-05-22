@@ -2,6 +2,7 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.NotFoundLineException;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.NewLineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -36,5 +37,11 @@ public class LineService {
                          .stream()
                          .map(LineResponse::new)
                          .collect(Collectors.toList());
+    }
+
+    public LineResponse findLine(Long id) {
+        return repository.findById(id)
+                         .map(LineResponse::new)
+                         .orElseThrow(() -> new NotFoundLineException(id));
     }
 }
