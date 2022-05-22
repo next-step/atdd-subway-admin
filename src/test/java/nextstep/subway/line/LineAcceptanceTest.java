@@ -35,6 +35,10 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> {
+                    String locationHeaderValue = String.format("lines/%d", toLineId(response));
+                    assertThat(response.header("Location")).isEqualTo(locationHeaderValue);
+                },
                 () -> assertThat(toLineNames(callGetLines())).containsAnyOf("신분당선")
         );
     }
@@ -71,14 +75,13 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     void getLine() {
         long upStationId = toStationId(StationRestAssured.createStation("강남역"));
         long downStationId = toStationId(StationRestAssured.createStation("판교역"));
-        ExtractableResponse<Response> response = callCreateLine("신분당선", "bg-red-600", upStationId,
-                downStationId, 10L);
-        long lineId = response.body().jsonPath().getLong("id");
+        long lineId = toLineId(callCreateLine("신분당선", "bg-red-600", upStationId,
+                                              downStationId, 10L));
 
-        ExtractableResponse<Response> response1 = callGetLine(lineId);
+        ExtractableResponse<Response> response = callGetLine(lineId);
         assertAll(
-                () -> assertThat(response1.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(response1.body().jsonPath().getString("name")).isEqualTo("신분당선")
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo("신분당선")
         );
     }
 
@@ -134,6 +137,14 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     }
 
     private long toStationId(ExtractableResponse<Response> response) {
+        return toId(response);
+    }
+
+    private long toLineId(ExtractableResponse<Response> response) {
+        return toId(response);
+    }
+
+    private long toId(ExtractableResponse<Response> response) {
         return response.body().jsonPath().getLong("id");
     }
 
