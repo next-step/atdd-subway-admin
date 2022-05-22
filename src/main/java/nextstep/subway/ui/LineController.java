@@ -30,6 +30,6 @@ public class LineController {
 
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> showLines() {
-        return ResponseEntity.ok().body(null);
+        return ResponseEntity.ok().body(lineService.findAllLines());
     }
 }
