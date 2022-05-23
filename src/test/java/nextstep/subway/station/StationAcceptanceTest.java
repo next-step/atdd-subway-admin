@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -133,7 +134,36 @@ class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        ExtractableResponse<Response> saveResponse = 지하철역_생성("대림역");
 
+        // then
+        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // given
+        long 대림역_ID = saveResponse.body().jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> deleteResponse =
+            RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/stations/" + 대림역_ID)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        // when
+        List<String> stationNames =
+            RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
+
+        // then
+        assertFalse(stationNames.contains("대림역"));
+        assertThat(stationNames.size()).isEqualTo(0);
     }
 
     /**
