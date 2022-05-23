@@ -106,7 +106,17 @@ class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "강남역");
+        ExtractableResponse<Response> createResponse = requestCreateStation(params);
+        long id = createResponse.jsonPath().getLong("id");
 
+        // when
+        ExtractableResponse<Response> deleteResponse = requestDeleteStation(id);
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     ExtractableResponse<Response> requestShowStations() {
@@ -121,6 +131,13 @@ class StationAcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    ExtractableResponse<Response> requestDeleteStation(long id) {
+        return RestAssured.given().log().all()
+                .when().delete("/stations/" + id)
                 .then().log().all()
                 .extract();
     }
