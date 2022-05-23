@@ -1,21 +1,18 @@
 package nextstep.subway.station;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static nextstep.subway.StationTestHelper.역_생성_실패;
+import static nextstep.subway.StationTestHelper.역_생성_요청;
+import static nextstep.subway.StationTestHelper.역_제거_요청;
+import static nextstep.subway.StationTestHelper.역_조회_요청;
+import static nextstep.subway.StationTestHelper.역_포함_확인;
+import static nextstep.subway.TestHelper.생성됨_확인;
+import static nextstep.subway.TestHelper.이름_불포함_확인;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import nextstep.subway.BaseAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends BaseAcceptanceTest {
@@ -100,45 +97,6 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         //then
         ExtractableResponse<Response> 역_조회_응답 = 역_조회_요청();
         이름_불포함_확인(역_조회_응답, 강남역);
-    }
-
-    private ExtractableResponse<Response> 역_생성_요청(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        return RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/stations")
-            .then().log().all()
-            .extract();
-    }
-
-    private void 역_포함_확인(ExtractableResponse<Response> response, String... stationNames) {
-        List<String> responseNames = response.jsonPath().getList("name", String.class);
-        assertAll(
-            () -> assertEquals(HttpStatus.OK.value(), response.statusCode()),
-            () -> assertThat(responseNames).containsAll(Arrays.asList(stationNames))
-        );
-
-    }
-
-    private ExtractableResponse<Response> 역_조회_요청() {
-        return RestAssured.given().log().all()
-            .when().get("/stations")
-            .then().log().all()
-            .extract();
-    }
-
-    private void 역_생성_실패(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    private void 역_제거_요청(Long id) {
-        RestAssured.given().log().all()
-            .when().delete("/stations/{id}", id)
-            .then().log().all()
-            .extract();
     }
 
 }

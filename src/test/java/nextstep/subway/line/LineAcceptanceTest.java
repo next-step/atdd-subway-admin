@@ -1,20 +1,21 @@
 package nextstep.subway.line;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static nextstep.subway.LineTestHelper.노선_목록_요청;
+import static nextstep.subway.LineTestHelper.노선_목록_확인;
+import static nextstep.subway.LineTestHelper.노선_삭제_요청;
+import static nextstep.subway.LineTestHelper.노선_생성_요청;
+import static nextstep.subway.LineTestHelper.노선_수정_요청;
+import static nextstep.subway.LineTestHelper.노선_조회_요청;
+import static nextstep.subway.LineTestHelper.노선_조회_확인;
+import static nextstep.subway.TestHelper.getId;
+import static nextstep.subway.TestHelper.삭제됨_확인;
+import static nextstep.subway.TestHelper.생성됨_확인;
+import static nextstep.subway.TestHelper.이름_불포함_확인;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import io.restassured.response.ResponseBodyExtractionOptions;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import nextstep.subway.BaseAcceptanceTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 public class LineAcceptanceTest extends BaseAcceptanceTest {
 
@@ -28,7 +29,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
         // when
         ExtractableResponse<Response> 노선_생성_응답
-            = 노선_생성_요청(신분당선, "bg-red-600", 1, 2, 10);
+            = 노선_생성_요청(신분당선, "bg-red-600", 10, "강남역", "역삼역");
         생성됨_확인(노선_생성_응답);
 
         //then
@@ -43,9 +44,9 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     public void getLines() {
         // given
         String 신분당선 = "신분당선";
-        노선_생성_요청(신분당선, "bg-red-600", 1, 2, 10);
+        노선_생성_요청(신분당선, "bg-red-600", 10, "강남역", "역삼역");
         String 분당선 = "분당선";
-        노선_생성_요청(분당선, "bg-green-600", 1, 3, 20);
+        노선_생성_요청(분당선, "bg-green-600", 20, "서초역", "삼성역");
 
         // when
         ExtractableResponse<Response> 노선_목록 = 노선_목록_요청();
@@ -65,18 +66,16 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         // given
         String 신분당선 = "신분당선";
         String color = "bg-red-600";
-        long upStationId = 1;
-        long downStationId = 2;
         int distance = 10;
         ExtractableResponse<Response> 노선_생성_응답
-            = 노선_생성_요청(신분당선, color, upStationId, downStationId, distance);
+            = 노선_생성_요청(신분당선, color, distance, "강남역", "역삼역");
         Long id = getId(노선_생성_응답);
 
         // when
         ExtractableResponse<Response> 노선_조회_응답 = 노선_조회_요청(id);
 
         // then
-        노선_조회_확인(신분당선, color, upStationId, downStationId, distance, 노선_조회_응답);
+        노선_조회_확인(신분당선, color, distance, 노선_조회_응답);
     }
 
     /**
@@ -88,20 +87,19 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     public void updateLine() {
         // given
         ExtractableResponse<Response> 노선_생성_응답
-            = 노선_생성_요청("신분당선", "bg-red-600", 1, 2, 10);
+            = 노선_생성_요청("신분당선", "bg-red-600", 10, "강남역", "역삼역");
         Long id = getId(노선_생성_응답);
 
-        // when
         String 분당선 = "분당선";
         String color = "bg-green-600";
-        long upStationId = 2;
-        long downStationId = 3;
         int distance = 20;
-        노선_수정_요청(id, 분당선, color, upStationId, downStationId, distance);
+
+        // when
+        노선_수정_요청(id, 분당선, color, distance);
 
         // then
         ExtractableResponse<Response> 노선_조회_응답 = 노선_조회_요청(id);
-        노선_조회_확인(분당선, color, upStationId, downStationId, distance, 노선_조회_응답);
+        노선_조회_확인(분당선, color, distance, 노선_조회_응답);
     }
 
     /**
@@ -112,8 +110,9 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     public void removeLine() {
         // given
+        String 신분당선 = "신분당선";
         ExtractableResponse<Response> 생성_응답
-            = 노선_생성_요청("신분당선", "bg-red-600", 1, 2, 10);
+            = 노선_생성_요청(신분당선, "bg-red-600", 10, "강남역", "역삼역");
         Long id = getId(생성_응답);
 
         // when
@@ -122,92 +121,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         ExtractableResponse<Response> 노선_목록_응답 = 노선_목록_요청();
-        이름_불포함_확인(노선_목록_응답);
-    }
-
-    private ExtractableResponse<Response> 노선_생성_요청(String name, String color, long upStationId, long downStationId,
-        int distance) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", distance);
-
-        return RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/lines")
-            .then().log().all()
-            .extract();
-    }
-
-    private ExtractableResponse<Response> 노선_목록_요청() {
-        return RestAssured.given().log().all()
-            .when().get("/lines")
-            .then().log().all()
-            .extract();
-    }
-
-    private void 노선_목록_확인(ExtractableResponse<Response> response, String... lineNames) {
-        List<String> requestLineNames = response.body().jsonPath().getList("name", String.class);
-        assertAll(
-            () -> assertEquals(HttpStatus.OK.value(), response.statusCode()),
-            () -> assertThat(lineNames).containsAll(requestLineNames)
-        );
-    }
-
-    private ExtractableResponse<Response> 노선_조회_요청(Long id) {
-        return RestAssured.given().log().all()
-            .when().get("/lines/{id}", id)
-            .then().log().all()
-            .extract();
-    }
-
-    private long getId(ExtractableResponse<Response> 노선_생성_응답) {
-        return 노선_생성_응답.body().jsonPath().getLong("id");
-    }
-
-    private void 노선_조회_확인(String 신분당선, String color, long upStationId, long downStationId, int distance,
-        ExtractableResponse<Response> 노선_조회_응답) {
-
-        ResponseBodyExtractionOptions body = 노선_조회_응답.body();
-        assertAll(
-            () -> assertEquals(HttpStatus.OK.value(), 노선_조회_응답.statusCode()),
-            () -> assertThat(body.jsonPath().getLong("id")).isNotNull(),
-            () -> assertEquals(신분당선, upStationId, body.jsonPath().getString("name")),
-            () -> assertEquals(color, upStationId, body.jsonPath().getString("color")),
-            () -> assertEquals(upStationId, upStationId, body.jsonPath().getLong("upStationId")),
-            () -> assertEquals(downStationId, upStationId, body.jsonPath().getLong("downStationId")),
-            () -> assertEquals(distance, upStationId, body.jsonPath().getLong("distance"))
-        );
-    }
-
-    private ExtractableResponse<Response> 노선_수정_요청(Long id, String name, String color, long upStationId,
-        long downStationId, int distance) {
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", distance);
-
-        return RestAssured.given().log().all()
-            .when().put("/lines/{id}", id)
-            .then().log().all()
-            .extract();
-    }
-
-    private ExtractableResponse<Response> 노선_삭제_요청(Long id) {
-        return RestAssured.given().log().all()
-            .when().delete()
-            .then().log().all()
-            .extract();
-    }
-
-    private void 삭제됨_확인(ExtractableResponse<Response> 삭제_응답) {
-        assertEquals(HttpStatus.NO_CONTENT.value(), 삭제_응답.statusCode());
+        이름_불포함_확인(노선_목록_응답, 신분당선);
     }
 
 }
