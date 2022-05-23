@@ -28,7 +28,7 @@ public class Line extends BaseEntity {
 
     private void addSection(Section section) {
         sections.add(section);
-        section.setLine(this);
+        section.bindLine(this);
     }
 
     public List<Station> getStations() {

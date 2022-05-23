@@ -30,7 +30,7 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    public void setLine(Line line) {
+    public void bindLine(Line line) {
         requireNonNull(line, "지하철 노선이 비었습니다");
         this.lineId = line.getId();
     }
