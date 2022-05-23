@@ -114,9 +114,7 @@ class StationAcceptanceTest {
         ExtractableResponse<Response> result = 지하철역_조회();
         assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        List<String> stationNames = result
-            .jsonPath()
-            .getList("name", String.class);
+        List<String> stationNames = convertToStationNames(result);
 
         assertThat(stationNames.size()).isEqualTo(2);
         assertThat(stationNames).containsAnyOf("대림역", "역삼역");
@@ -149,9 +147,7 @@ class StationAcceptanceTest {
 
         // when
         ExtractableResponse<Response> result = 지하철역_조회();
-        List<String> stationNames = result
-            .jsonPath()
-            .getList("name", String.class);
+        List<String> stationNames = convertToStationNames(result);
 
         // then
         assertFalse(stationNames.contains("대림역"));
@@ -182,5 +178,9 @@ class StationAcceptanceTest {
             .when().get("/stations")
             .then().log().all()
             .extract();
+    }
+
+    private List<String> convertToStationNames(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList("name", String.class);
     }
 }
