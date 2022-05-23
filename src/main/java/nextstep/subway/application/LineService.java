@@ -47,6 +47,11 @@ public class LineService {
                          .orElseThrow(() -> new NotFoundLineException(id));
     }
 
+    public Line findById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new NotFoundLineException(id));
+    }
+
     @Transactional
     public void updateLine(UpdateLineRequest request) {
         Line line = repository.findById(request.getId())

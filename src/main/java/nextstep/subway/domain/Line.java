@@ -26,7 +26,7 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    private void addSection(Section section) {
+    public void addSection(Section section) {
         sections.add(section);
         section.bindLine(this);
     }
