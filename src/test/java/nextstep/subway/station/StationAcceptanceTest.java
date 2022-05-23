@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
+    public static final String STATION_NAME = "강남역";
     @LocalServerPort
     int port;
 
@@ -41,7 +42,7 @@ public class StationAcceptanceTest {
         // when
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
-                        .body(createStationRequestMap("강남역"))
+                        .body(createStationRequestMap(STATION_NAME))
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when().post("/stations")
                         .then().log().all()
@@ -53,7 +54,7 @@ public class StationAcceptanceTest {
         // then
         List<String> stationNames = getStationNames();
 
-        assertThat(stationNames).containsAnyOf("강남역");
+        assertThat(stationNames).containsAnyOf(STATION_NAME);
     }
 
     /**
@@ -65,12 +66,12 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        createTestStation("강남역");
+        createTestStation(STATION_NAME);
 
         // when
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
-                        .body(createStationRequestMap("강남역"))
+                        .body(createStationRequestMap(STATION_NAME))
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when().post("/stations")
                         .then().log().all()
@@ -89,14 +90,15 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        createTestStation("강남역");
-        createTestStation("역삼역");
+        String stationName1 = "역삼역";
+        createTestStation(STATION_NAME);
+        createTestStation(stationName1);
 
         // when
         List<String> stationNames  = getStationNames();
 
         // then
-        assertThat(stationNames).containsExactly("강남역", "역삼역");
+        assertThat(stationNames).containsExactly(STATION_NAME, stationName1);
     }
 
     /**
@@ -108,7 +110,7 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Long id = createTestStation("강남역");
+        Long id = createTestStation(STATION_NAME);
 
         // when
         RestAssured.given().log().all()
