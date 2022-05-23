@@ -111,11 +111,7 @@ class StationAcceptanceTest {
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        ExtractableResponse<Response> result = RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract();
-
+        ExtractableResponse<Response> result = 지하철역_조회();
         assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         List<String> stationNames = result
@@ -136,11 +132,8 @@ class StationAcceptanceTest {
     void deleteStation() {
         // given
         ExtractableResponse<Response> saveResponse = 지하철역_생성("대림역");
-
-        // then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        // given
         long 대림역_ID = saveResponse.body().jsonPath().getLong("id");
 
         // when
@@ -155,11 +148,10 @@ class StationAcceptanceTest {
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         // when
-        List<String> stationNames =
-            RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract().jsonPath().getList("name", String.class);
+        ExtractableResponse<Response> result = 지하철역_조회();
+        List<String> stationNames = result
+            .jsonPath()
+            .getList("name", String.class);
 
         // then
         assertFalse(stationNames.contains("대림역"));
@@ -180,5 +172,15 @@ class StationAcceptanceTest {
                 .when().post("/stations")
                 .then().log().all()
                 .extract();
+    }
+
+    /**
+     * 지하철역 목록을 조회한다
+     */
+    ExtractableResponse<Response> 지하철역_조회() {
+        return RestAssured.given().log().all()
+            .when().get("/stations")
+            .then().log().all()
+            .extract();
     }
 }
