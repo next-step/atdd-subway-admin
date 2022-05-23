@@ -1,8 +1,12 @@
 package nextstep.subway.station;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,23 +15,21 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
+class StationAcceptanceTest {
     @LocalServerPort
     int port;
+
+    private Map<String, String> 강남역, 선릉역;
 
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        강남역 = StationParameterMaker.생성("강남역");
+        선릉역 = StationParameterMaker.생성("선릉역");
     }
 
     /**
@@ -39,12 +41,9 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
-                        .body(params)
+                        .body(강남역)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when().post("/stations")
                         .then().log().all()
@@ -71,11 +70,8 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
         RestAssured.given().log().all()
-                .body(params)
+                .body(강남역)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all();
@@ -83,7 +79,7 @@ public class StationAcceptanceTest {
         // when
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
-                        .body(params)
+                        .body(강남역)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when().post("/stations")
                         .then().log().all()
@@ -104,9 +100,7 @@ public class StationAcceptanceTest {
     }
 
     /**
-     * Given 지하철역을 생성하고
-     * When 그 지하철역을 삭제하면
-     * Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
+     * Given 지하철역을 생성하고 When 그 지하철역을 삭제하면 Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
      */
     @DisplayName("지하철역을 제거한다.")
     @Test
