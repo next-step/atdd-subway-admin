@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -69,10 +68,6 @@ public class StationAcceptanceTest {
         지하철역_생성_실패_확인(강남역_생성_응답);
     }
 
-    private void 지하철역_생성_실패_확인(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
     /**
      * Given 2개의 지하철역을 생성하고
      * When 지하철역 목록을 조회하면
@@ -100,6 +95,28 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        //given
+        ExtractableResponse<Response> 강남역_생성_응답 = 지하철역_생성_요청("강남역");
+
+        //when
+        long 생성역_id = 생성역_id_추출(강남역_생성_응답);
+        지하철역_삭체_요청(생성역_id);
+
+        //then
+        List<String> 지하철역_이름_목록 = 지하철역_이름_목록을_구한다();
+        역이름_불포함_확인(지하철역_이름_목록, "강남역");
+    }
+
+    private long 생성역_id_추출(ExtractableResponse<Response> response) {
+        return response.jsonPath().getLong("id");
+    }
+
+    private void 지하철역_삭체_요청(Long id) {
+        RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/stations/{id}", id)
+                .then().log().all()
+                .extract();
     }
 
     private ExtractableResponse<Response> 지하철역_생성_요청(String name) {
@@ -126,7 +143,11 @@ public class StationAcceptanceTest {
         assertThat(stationNames).containsAll(Arrays.asList(stationName));
     }
 
-    private List<String> 생성된_지하철역_이름_목록을_구한다() {
+    private void 역이름_불포함_확인(List<String> stationNames, String stationName) {
+        assertThat(stationNames).doesNotContain(stationName);
+    }
+
+    private List<String> 지하철역_이름_목록을_구한다() {
         return 지하철역_조회_요청().jsonPath().getList("name", String.class);
     }
 
