@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -39,32 +40,15 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
+        ExtractableResponse<Response> 강남역_생성_응답 = 지하철역_생성_요청("강남역");
 
         // then
-        지하철역_생성_성공_확인(response);
+        지하철역_생성_성공_확인(강남역_생성_응답);
 
         // then
         List<String> stationNames = 생성된_지하철역_이름_목록을_구한다();
         생성한_역이름_검색_확인(stationNames, "강남역");
     }
-
-    private void 생성한_역이름_검색_확인(List<String> stationNames, String stationName) {
-        assertThat(stationNames).containsAnyOf(stationName);
-    }
-
-    private List<String> 생성된_지하철역_이름_목록을_구한다() {
-        return 지하철역_조회_요청().jsonPath().getList("name", String.class);
-    }
-
-    private ExtractableResponse<Response> 지하철역_조회_요청() {
-        return RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-
 
     /**
      * Given 지하철역을 생성하고
@@ -96,7 +80,22 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        ExtractableResponse<Response> 강남역_생성_응답 = 지하철역_생성_요청("강남역");
+        ExtractableResponse<Response> 잠실역_생성_응답 = 지하철역_생성_요청("잠실역");
+        assertAll(
+                () -> 지하철역_생성_성공_확인(강남역_생성_응답),
+                () -> 지하철역_생성_성공_확인(잠실역_생성_응답)
+        );
 
+        // when
+        List<String> 생성된_지하철역_이름_목록 = 생성된_지하철역_이름_목록을_구한다();
+
+        // then
+        assertAll(
+                () -> 생성한_역이름_검색_확인(생성된_지하철역_이름_목록, "강남역"),
+                () -> 생성한_역이름_검색_확인(생성된_지하철역_이름_목록, "잠실역")
+        );
     }
 
     /**
@@ -123,5 +122,20 @@ public class StationAcceptanceTest {
 
     private void 지하철역_생성_성공_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private void 생성한_역이름_검색_확인(List<String> stationNames, String stationName) {
+        assertThat(stationNames).containsAnyOf(stationName);
+    }
+
+    private List<String> 생성된_지하철역_이름_목록을_구한다() {
+        return 지하철역_조회_요청().jsonPath().getList("name", String.class);
+    }
+
+    private ExtractableResponse<Response> 지하철역_조회_요청() {
+        return RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract();
     }
 }
