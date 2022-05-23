@@ -65,7 +65,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - 지하철 역 생성하기
     - When. 지하철역을 생성하면
     - Then. 지하철역이 생성된다.
-    - Then. 지하철역 목록 조회 시 생성한 역을 찾을 수 있다.
   - 중복된 지하철역 생성하기
     - Given. 지하철역을 생성하고
     - When. 기존에 존재하는 지하철역 이름으로 지하철역을 생성하면
@@ -79,4 +78,3 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - 지하철역을 제거한다.
         - Given. 지하철역을 생성하고
         - When. 그 지하철역을 삭제하면
-        - Then. 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다. 
