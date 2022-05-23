@@ -56,3 +56,4 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 # 미션별 요구사항 및 기능 목록
 
 - [1단계 - 지하철역 인수 테스트 작성](./docs/step1.md)
+- [2단계 - 지하철 노선 기능](./docs/step2.md)
