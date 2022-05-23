@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
+class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
@@ -101,6 +101,28 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given, when
+        ExtractableResponse<Response> response = 지하철역_생성("대림역");
+        ExtractableResponse<Response> response2 = 지하철역_생성("역삼역");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        ExtractableResponse<Response> result = RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract();
+
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<String> stationNames = result
+            .jsonPath()
+            .getList("name", String.class);
+
+        assertThat(stationNames.size()).isEqualTo(2);
+        assertThat(stationNames).containsAnyOf("대림역", "역삼역");
     }
 
     /**
@@ -111,5 +133,22 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+
+    }
+
+    /**
+     * 전달받은 지하철역 목록을 저장한다
+     * @param names 지하철역 이름 목록
+     */
+    ExtractableResponse<Response> 지하철역_생성(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract();
     }
 }
