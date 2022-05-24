@@ -17,7 +17,7 @@ public class Line extends BaseEntity{
     @Column(unique = true)
     private String name;
     private String color;
-    private boolean deleted;
+    private boolean deleted = false;
 
     @Embedded
     private Stations stations;
@@ -25,4 +25,24 @@ public class Line extends BaseEntity{
     protected Line(){
     }
 
+    public Line(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
+    public void update(String name, String color) {
+
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
 }
