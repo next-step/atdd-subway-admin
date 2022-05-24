@@ -79,13 +79,14 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        createStations("여의나루역", "안국역");
+        createStations("여의나루역");
+        createStations("안국역");
 
         // when
         List<String> stationNames = fetchStationsByPath("name", String.class);
 
         // then
-        assertThat(stationNames).containsAnyOf("여의나루역", "안국역");
+        assertThat(stationNames).containsExactly("여의나루역", "안국역");
     }
 
     /**
@@ -108,11 +109,9 @@ public class StationAcceptanceTest {
         assertThat(stationNames).doesNotContain("여의나루역");
     }
 
-    private ExtractableResponse<Response> createStations(String... names) {
+    private ExtractableResponse<Response> createStations(String name) {
         Map<String, String> params = new HashMap<>();
-        for (String name : names) {
-            params.put("name", name);
-        }
+        params.put("name", name);
 
         return RestAssured.given().log().all()
                 .body(params)
