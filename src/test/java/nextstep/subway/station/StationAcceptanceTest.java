@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
+import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,8 +46,7 @@ public class StationAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames = 지하철역_조회()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = 리스트로_추출(지하철역_조회(), String.class, "name");
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -91,6 +91,21 @@ public class StationAcceptanceTest {
      */
     @Test
     void 지하철역을_조회한다() {
+        // given
+        지하철역_생성("강남역");
+        지하철역_생성("잠실역");
+
+        // when
+        List<StationResponse> stationResponses = 리스트로_추출(지하철역_조회(), StationResponse.class, ".");
+
+        // then
+        assertThat(stationResponses).hasSize(2);
+    }
+
+    private <T> List<T> 리스트로_추출(ValidatableResponse validatableResponse, Class<T> classType, String path) {
+        return validatableResponse.extract()
+                .jsonPath()
+                .getList(path, classType);
     }
 
     /**
