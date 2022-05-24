@@ -20,6 +20,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
+
+    public static final String ENDPOINT = "/stations";
+
     @LocalServerPort
     int port;
 
@@ -39,26 +42,13 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = createStations("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = fetchStationsByPath("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -71,23 +61,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
+        createStations("강남역");
 
         // when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = createStations("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -101,6 +78,15 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        createStations("여의나루역");
+        createStations("안국역");
+
+        // when
+        List<String> stationNames = fetchStationsByPath("name", String.class);
+
+        // then
+        assertThat(stationNames).containsExactly("여의나루역", "안국역");
     }
 
     /**
@@ -111,5 +97,40 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        createStations("여의나루역");
+
+        // when
+        Long stationId = fetchStationsByPath("id", Long.class).get(0);
+        deleteStation(stationId);
+
+        // then
+        List<String> stationNames = fetchStationsByPath("name", String.class);
+        assertThat(stationNames).doesNotContain("여의나루역");
+    }
+
+    private ExtractableResponse<Response> createStations(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(ENDPOINT)
+                .then().log().all()
+                .extract();
+    }
+
+    private <T> List<T> fetchStationsByPath(String path, Class<T> genericType) {
+        return RestAssured.given().log().all()
+                .when().get(ENDPOINT)
+                .then().log().all()
+                .extract().jsonPath().getList(path, genericType);
+    }
+
+    private void deleteStation(Long stationId) {
+        RestAssured.given().log().all()
+                .when().delete(ENDPOINT + "/" + stationId)
+                .then().log().all();
     }
 }
