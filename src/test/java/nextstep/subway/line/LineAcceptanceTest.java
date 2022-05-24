@@ -17,9 +17,12 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @DisplayName("지하철 노선 인수 테스트")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class LineAcceptanceTest {
 
     @LocalServerPort
@@ -27,9 +30,7 @@ class LineAcceptanceTest {
 
     @BeforeEach
     public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
+        RestAssured.port = port;
     }
 
     /**
@@ -63,7 +64,7 @@ class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철_노선_생성("2호선", "red");
+        지하철_노선_생성("3호선", "red");
         지하철_노선_생성("1호선", "blue");
 
         // when
@@ -83,7 +84,7 @@ class LineAcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> saveResponse = 지하철_노선_생성("2호선", "red");
+        ExtractableResponse<Response> saveResponse = 지하철_노선_생성("신분당선", "black");
         Long 지하철_노선_ID = saveResponse.as(LineResponse.class).getId();
 
         // when
