@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
@@ -30,5 +31,14 @@ public class Sections {
 
     public boolean contains(Section section) {
         return this.sections.contains(section);
+    }
+
+    public List<Station> getStations() {
+        List<Station> result = new ArrayList<>();
+        for (Section section : this.sections) {
+            result.add(section.getUpStation());
+            result.add(section.getDownStation());
+        }
+        return result;
     }
 }

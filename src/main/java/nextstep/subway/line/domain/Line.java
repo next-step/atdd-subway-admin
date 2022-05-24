@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import java.util.List;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,6 +10,7 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.constants.LineExceptionMessage;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line extends BaseEntity {
@@ -51,5 +53,13 @@ public class Line extends BaseEntity {
         if (this.sections.contains(section)) {
             throw new IllegalStateException(LineExceptionMessage.ALREADY_ADDED_SECTION);
         }
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public List<Station> getStations() {
+        return this.sections.getStations();
     }
 }

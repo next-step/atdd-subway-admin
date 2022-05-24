@@ -1,12 +1,15 @@
 package nextstep.subway.line.domain;
 
 import java.util.Objects;
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import nextstep.subway.constants.LineExceptionMessage;
 import nextstep.subway.utils.StringUtils;
 
 @Embeddable
 public class LineName {
+
+    @Column
     private String name;
 
     protected LineName() {}
@@ -26,6 +29,10 @@ public class LineName {
         }
     }
 
+    public String getValue() {
+        return this.name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -42,4 +49,5 @@ public class LineName {
     public int hashCode() {
         return Objects.hash(name);
     }
+
 }
