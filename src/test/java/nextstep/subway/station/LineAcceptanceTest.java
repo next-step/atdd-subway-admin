@@ -140,6 +140,29 @@ class LineAcceptanceTest {
         assertThat(requestGetLine(1L).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     * */
+    @DisplayName("지하철 노선을 업데이트한다.")
+    @Test
+    void updateLine(){
+        //given
+        requestCreateLine(LINE_PARAMS_BUNDLES.get(SHIN_BUN_DANG_LINE));
+
+        //when
+        Map<String, Object> lineParams = LINE_PARAMS_BUNDLES.get(SHIN_BUN_DANG_LINE);
+        lineParams.put("name" , "분당선");
+        lineParams.put("color" , "bg-yellow-600");
+        ExtractableResponse<Response> response = requestUpdateLine(1L,lineParams);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(requestGetLine(1L).jsonPath().getString("name")).contains("분당선");
+        assertThat(requestGetLine(1L).jsonPath().getString("color")).contains("bg-yellow-600");
+    }
+
 
     private List<ExtractableResponse<Response>> requestCreateLines(List<Map<String, Object>> stationsParamsBundle) {
         List<ExtractableResponse<Response>> responses = new ArrayList<>();
@@ -179,6 +202,16 @@ class LineAcceptanceTest {
         return RestAssured.given().log().all()
                 .accept(ContentType.JSON)
                 .when().delete("/stations/{id}", lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    static ExtractableResponse<Response> requestUpdateLine(long lineId, Map<String,Object> lineParams) {
+        return RestAssured.given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(lineParams)
+                .when().put("/stations/{id}", lineId)
                 .then().log().all()
                 .extract();
     }
