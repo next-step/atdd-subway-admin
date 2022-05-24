@@ -1,22 +1,24 @@
 package nextstep.subway.station;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+
 import java.util.Arrays;
+
+import nextstep.subway.SubwayTestFactory;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -40,26 +42,11 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
-
+        ExtractableResponse<Response> response = SubwayTestFactory.generateStationToResponse("강남역");
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = SubwayTestFactory.findStations("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -72,24 +59,9 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
-
+        SubwayTestFactory.generateStation("강남역");
         // when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
-
+        ExtractableResponse<Response> response = SubwayTestFactory.generateStationToResponse("강남역");
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -103,30 +75,10 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         //given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "공덕역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
-        
-        params.put("name", "애오개역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
-
+        SubwayTestFactory.generateStation("공덕역");
+        SubwayTestFactory.generateStation("애오개역");
         //when
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
-
+        List<String> stationNames = SubwayTestFactory.findStations("name", String.class);
         //then
         assertThat(stationNames).containsAll(Arrays.asList("공덕역", "애오개역"));
     }
@@ -140,30 +92,12 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         //given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "공덕역");
-
-        Long id = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract().jsonPath().getObject("id", Long.class);
-
+        Long id = SubwayTestFactory.generateStationToResponse("공덕역")
+                        .jsonPath().getObject("id", Long.class);
         //when
-        RestAssured.given().pathParam("id", id)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .log().all()
-                .when().delete("/stations/{id}")
-                .then().log().all();
-
+        SubwayTestFactory.deleteStationById(id);
         //then
-        List<String> names = RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract().jsonPath().getList("name", String.class);
-
+        List<String> names = SubwayTestFactory.findStations("name", String.class);
         assertThat(names).doesNotContain("공덕역");
-
     }
 }
