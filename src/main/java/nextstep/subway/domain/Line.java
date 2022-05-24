@@ -21,7 +21,7 @@ public class Line extends BaseEntity{
     private boolean deleted = false;
 
     @Embedded
-    private Stations stations;
+    private Stations stations = new Stations();
 
     protected Line(){
     }
@@ -62,5 +62,9 @@ public class Line extends BaseEntity{
 
     public Stations getStations() {
         return stations;
+    }
+
+    public void addStation(Station station) {
+        stations.addStaion(station);
     }
 }

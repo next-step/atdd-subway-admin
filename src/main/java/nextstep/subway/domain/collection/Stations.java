@@ -1,5 +1,6 @@
 package nextstep.subway.domain.collection;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -13,9 +14,20 @@ public class Stations {
 
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
     @JoinColumn(name = "line_id",foreignKey = @ForeignKey(name = "fk_line_to_stations"))
-    private List<Station> stations;
+    private List<Station> stations = new ArrayList<>();
+
+    public Stations(){
+    }
+
+    public Stations(List<Station> stations) {
+        this.stations = stations;
+    }
 
     public List<Station> getStations() {
         return stations;
+    }
+
+    public void addStaion(Station pangyo) {
+        stations.add(pangyo);
     }
 }
