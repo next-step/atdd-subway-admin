@@ -20,6 +20,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
+
+    public static final String ENDPOINT = "/stations";
+
     @LocalServerPort
     int port;
 
@@ -100,7 +103,7 @@ public class StationAcceptanceTest {
         Long stationId = fetchStationsByPath("id", Long.class).get(0);
         RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/stations" + "/" + stationId)
+                .when().delete(ENDPOINT + "/" + stationId)
                 .then().log().all();
 
         // then
@@ -117,14 +120,14 @@ public class StationAcceptanceTest {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
+                .when().post(ENDPOINT)
                 .then().log().all()
                 .extract();
     }
 
     private <T> List<T> fetchStationsByPath(String path, Class<T> genericType) {
         return RestAssured.given().log().all()
-                .when().get("/stations")
+                .when().get(ENDPOINT)
                 .then().log().all()
                 .extract().jsonPath().getList(path, genericType);
     }
