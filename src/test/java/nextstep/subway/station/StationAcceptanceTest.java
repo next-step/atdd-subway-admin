@@ -20,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
-    public static final String STATION_NAME = "강남역";
     @LocalServerPort
     int port;
 
@@ -40,13 +39,7 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(createStationRequestMap(STATION_NAME))
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = createTestStation("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -54,7 +47,7 @@ public class StationAcceptanceTest {
         // then
         List<String> stationNames = getStationNames();
 
-        assertThat(stationNames).containsAnyOf(STATION_NAME);
+        assertThat(stationNames).containsAnyOf("강남역");
     }
 
     /**
@@ -66,16 +59,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        createTestStation(STATION_NAME);
+        createTestStation("강남역");
 
         // when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(createStationRequestMap(STATION_NAME))
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = createTestStation("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -90,15 +77,14 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        String stationName1 = "역삼역";
-        createTestStation(STATION_NAME);
-        createTestStation(stationName1);
+        createTestStation("강남역");
+        createTestStation("역삼역");
 
         // when
         List<String> stationNames  = getStationNames();
 
         // then
-        assertThat(stationNames).containsExactly(STATION_NAME, stationName1);
+        assertThat(stationNames).containsExactly("강남역", "역삼역");
     }
 
     /**
@@ -110,12 +96,11 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Long id = createTestStation(STATION_NAME);
+        Long id = createTestStation("강남역")
+                .jsonPath().getObject("id", Long.class);
 
         // when
-        RestAssured.given().log().all()
-                .when().delete("/stations/{id}", id)
-                .then().log().all();
+        deleteTestStation(id);
 
         // then
         List<String> stationNames = getStationNames();
@@ -130,7 +115,7 @@ public class StationAcceptanceTest {
                 .extract().jsonPath().getList("name", String.class);
     }
 
-    private Long createTestStation(String name) {
+    private ExtractableResponse<Response> createTestStation(String name) {
         Map<String, String> params = createStationRequestMap(name);
 
         return RestAssured.given().log().all()
@@ -138,13 +123,19 @@ public class StationAcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all()
-                .extract().jsonPath().getObject("id", Long.class);
+                .extract();
     }
 
     private Map<String, String> createStationRequestMap(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         return params;
+    }
+
+    private void deleteTestStation(Long id) {
+        RestAssured.given().log().all()
+                .when().delete("/stations/{id}", id)
+                .then().log().all();
     }
 
 }
