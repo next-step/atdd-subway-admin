@@ -41,26 +41,13 @@ class LineAcceptanceTest {
     @Test
     void createStation() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "yellow");
-
-        ExtractableResponse<Response> saveResponse =
-            RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> saveResponse = 지하철_노선_생성("2호선", "yellow");
 
         // then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
-            .when().get("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> getResponse = 지하철_노선_목록_조회();
 
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(convertToFiledName(getResponse, "name")).containsAnyOf("2호선");
@@ -80,7 +67,7 @@ class LineAcceptanceTest {
         지하철_노선_생성("1호선", "blue");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_조회();
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -108,7 +95,7 @@ class LineAcceptanceTest {
     /**
      * 지하철 노선 목록을 조회한다
      */
-    private ExtractableResponse<Response> 지하철_노선_조회() {
+    private ExtractableResponse<Response> 지하철_노선_목록_조회() {
         return RestAssured.given().log().all()
             .when().get("/lines")
             .then().log().all()
