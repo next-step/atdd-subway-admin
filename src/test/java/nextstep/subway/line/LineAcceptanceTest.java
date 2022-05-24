@@ -19,17 +19,24 @@ import org.junit.jupiter.api.Test;
 
 public class LineAcceptanceTest extends BaseAcceptanceTest {
 
+    private static final String 신분당선 = "신분당선";
+    private static final String 분당선 = "분당선";
+    private static final String RED_COLOR = "bg-red-600";
+    private static final String GREEN_COLOR = "bg-green-600";
+    private static final String 강남역 = "강남역";
+    private static final String 역삼역 = "역삼역";
+    private static final String 서초역 = "서초역";
+    private static final String 삼성역 = "삼성역";
+    private static final int DISTANCE_10 = 10;
+    private static final int DISTANCE_20 = 20;
+
     /**
      * When 지하철 노선을 생성하면 Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
      */
     @Test
     public void createLine() {
-        // given
-        String 신분당선 = "신분당선";
-
         // when
-        ExtractableResponse<Response> 노선_생성_응답
-            = 노선_생성_요청(신분당선, "bg-red-600", 10, "강남역", "역삼역");
+        ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(신분당선, RED_COLOR, DISTANCE_10, 강남역, 역삼역);
         생성됨_확인(노선_생성_응답);
 
         //then
@@ -43,10 +50,8 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     public void getLines() {
         // given
-        String 신분당선 = "신분당선";
-        노선_생성_요청(신분당선, "bg-red-600", 10, "강남역", "역삼역");
-        String 분당선 = "분당선";
-        노선_생성_요청(분당선, "bg-green-600", 20, "서초역", "삼성역");
+        노선_생성_요청(신분당선, RED_COLOR, DISTANCE_10, 강남역, 역삼역);
+        노선_생성_요청(분당선, GREEN_COLOR, DISTANCE_20, 서초역, 삼성역);
 
         // when
         ExtractableResponse<Response> 노선_목록 = 노선_목록_요청();
@@ -64,18 +69,16 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     public void getLine() {
         // given
-        String 신분당선 = "신분당선";
-        String color = "bg-red-600";
         int distance = 10;
         ExtractableResponse<Response> 노선_생성_응답
-            = 노선_생성_요청(신분당선, color, distance, "강남역", "역삼역");
+            = 노선_생성_요청(신분당선, RED_COLOR, distance, 강남역, 역삼역);
         Long id = getId(노선_생성_응답);
 
         // when
         ExtractableResponse<Response> 노선_조회_응답 = 노선_조회_요청(id);
 
         // then
-        노선_조회_확인(신분당선, color, distance, 노선_조회_응답);
+        노선_조회_확인(신분당선, RED_COLOR, distance, 노선_조회_응답);
     }
 
     /**
@@ -86,20 +89,15 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     public void updateLine() {
         // given
-        ExtractableResponse<Response> 노선_생성_응답
-            = 노선_생성_요청("신분당선", "bg-red-600", 10, "강남역", "역삼역");
+        ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(신분당선, RED_COLOR, DISTANCE_10, 강남역, 역삼역);
         Long id = getId(노선_생성_응답);
 
-        String 분당선 = "분당선";
-        String color = "bg-green-600";
-        int distance = 20;
-
         // when
-        노선_수정_요청(id, 분당선, color, distance);
+        노선_수정_요청(id, 분당선, GREEN_COLOR, DISTANCE_20);
 
         // then
         ExtractableResponse<Response> 노선_조회_응답 = 노선_조회_요청(id);
-        노선_조회_확인(분당선, color, distance, 노선_조회_응답);
+        노선_조회_확인(분당선, GREEN_COLOR, DISTANCE_20, 노선_조회_응답);
     }
 
     /**
@@ -110,9 +108,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     public void removeLine() {
         // given
-        String 신분당선 = "신분당선";
-        ExtractableResponse<Response> 생성_응답
-            = 노선_생성_요청(신분당선, "bg-red-600", 10, "강남역", "역삼역");
+        ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(신분당선, RED_COLOR, DISTANCE_10, 강남역, 역삼역);
         Long id = getId(생성_응답);
 
         // when
