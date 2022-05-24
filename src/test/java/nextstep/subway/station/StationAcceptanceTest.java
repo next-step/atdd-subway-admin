@@ -68,32 +68,48 @@ class StationAcceptanceTest {
         List<ExtractableResponse<Response>> createResponses = requestCreateStations(stationParamsBundles);
 
         // then
-        for (ExtractableResponse<Response> createResponse : createResponses) {
-            assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        }
+        지하철역들이_생성되었는지_검증(createResponses);
 
         // when
         ExtractableResponse<Response> createResponse = requestCreateStation(stationParamsBundles.get(GANG_NAM_STATION));
 
         // then
-        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        존재하는_지하철역인_경우_오류_검증(createResponse);
 
         // when
         ExtractableResponse<Response> getAllResponse = requestGetStations();
         assertThat(getAllResponse.jsonPath().getList("name")).contains("강남역");
 
         //then
-        assertAll(
-                () -> assertThat(getAllResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(getAllResponse.jsonPath().getList("id")).contains(1, 2),
-                () -> assertThat(getAllResponse.jsonPath().getList("name")).contains("강남역", "서울역")
-        );
+        지하철역_목록_조회_검증(getAllResponse);
 
         //when
         assertThat(requestDeleteStation(1L).statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         //then
         ExtractableResponse<Response> response = requestGetStations();
+        지하철역이_삭제_되었는지_검증(response);
+    }
+
+    private void 존재하는_지하철역인_경우_오류_검증(ExtractableResponse<Response> createResponse) {
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 지하철역들이_생성되었는지_검증(List<ExtractableResponse<Response>> createResponses) {
+        for (ExtractableResponse<Response> createResponse : createResponses) {
+            assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        }
+    }
+
+    private void 지하철역_목록_조회_검증(ExtractableResponse<Response> getAllResponse) {
+        assertAll(
+                () -> assertThat(getAllResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(getAllResponse.jsonPath().getList("id")).contains(1, 2),
+                () -> assertThat(getAllResponse.jsonPath().getList("name")).contains("강남역", "서울역")
+        );
+    }
+
+    private void 지하철역이_삭제_되었는지_검증(ExtractableResponse<Response> response) {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.jsonPath().getList("id")).doesNotContain(1),
