@@ -101,10 +101,7 @@ public class StationAcceptanceTest {
 
         // when
         Long stationId = fetchStationsByPath("id", Long.class).get(0);
-        RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete(ENDPOINT + "/" + stationId)
-                .then().log().all();
+        deleteStation(stationId);
 
         // then
         List<String> stationNames = fetchStationsByPath("name", String.class);
@@ -130,5 +127,11 @@ public class StationAcceptanceTest {
                 .when().get(ENDPOINT)
                 .then().log().all()
                 .extract().jsonPath().getList(path, genericType);
+    }
+
+    private void deleteStation(Long stationId) {
+        RestAssured.given().log().all()
+                .when().delete(ENDPOINT + "/" + stationId)
+                .then().log().all();
     }
 }
