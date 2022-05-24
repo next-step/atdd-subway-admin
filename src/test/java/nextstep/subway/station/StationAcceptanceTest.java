@@ -45,11 +45,7 @@ public class StationAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = fetchStationsByPath("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -83,11 +79,7 @@ public class StationAcceptanceTest {
         createStations("여의나루역", "안국역");
 
         // when
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = fetchStationsByPath("name", String.class);
 
         // then
         assertThat(stationNames).containsAnyOf("여의나루역", "안국역");
@@ -105,25 +97,14 @@ public class StationAcceptanceTest {
         createStations("여의나루역");
 
         // when
-        Long stationId =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract()
-                        .jsonPath().getList("id", Long.class).get(0);
-
+        Long stationId = fetchStationsByPath("id", Long.class).get(0);
         RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/stations" + "/" + stationId)
                 .then().log().all();
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
-
+        List<String> stationNames = fetchStationsByPath("name", String.class);
         assertThat(stationNames).doesNotContain("여의나루역");
     }
 
@@ -139,5 +120,12 @@ public class StationAcceptanceTest {
                 .when().post("/stations")
                 .then().log().all()
                 .extract();
+    }
+
+    private <T> List<T> fetchStationsByPath(String path, Class<T> genericType) {
+        return RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract().jsonPath().getList(path, genericType);
     }
 }
