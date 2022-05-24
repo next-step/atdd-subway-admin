@@ -80,4 +80,25 @@ public class Section {
     public Distance getDistance() {
         return this.distance;
     }
+
+    public void registerLine(Line line) {
+        this.line = line;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(id, section.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
