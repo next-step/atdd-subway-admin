@@ -45,7 +45,7 @@ public class StationAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames = findStationNames();
+        List<String> stationNames = findStations().jsonPath().getList("name");
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -125,13 +125,6 @@ public class StationAcceptanceTest {
                 .when().delete("/stations/{id}", id)
                 .then().log().all()
                 .extract();
-    }
-
-    private List<String> findStationNames() {
-        return RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
     }
 
     private ExtractableResponse<Response> findStations() {
