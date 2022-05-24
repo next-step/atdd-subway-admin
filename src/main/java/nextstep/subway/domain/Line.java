@@ -51,4 +51,12 @@ public class Line extends BaseEntity{
     public String getColor() {
         return color;
     }
+
+    public void delete() {
+        this.deleted = true;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
 }

@@ -34,4 +34,20 @@ class LineTest {
         assertThat(actual.getName()).isEqualTo("분당선");
         assertThat(actual.getColor()).isEqualTo("bg-yellow-600");
     }
+
+    @DisplayName("노선 정보를 업데이트 한다.")
+    @Test
+    void delete(){
+        //given
+        Line line = lineRepository.save(SIN_BOUN_DANG_LINE);
+
+        //when
+        line.delete();
+        entityManager.flush();
+        entityManager.clear();
+
+        //then
+        Line actual = lineRepository.findById(line.getId()).get();
+        assertThat(actual.isDeleted()).isTrue();
+    }
 }
