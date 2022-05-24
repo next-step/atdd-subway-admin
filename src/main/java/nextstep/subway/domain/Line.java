@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import nextstep.subway.domain.collection.Stations;
+import org.apache.commons.lang3.StringUtils;
 
 @Entity
 public class Line extends BaseEntity{
@@ -31,7 +32,12 @@ public class Line extends BaseEntity{
     }
 
     public void update(String name, String color) {
-
+        if(StringUtils.isNoneEmpty(name)){
+            this.name = name;
+        }
+        if(StringUtils.isNoneEmpty(color)){
+            this.color = color;
+        }
     }
 
     public Long getId() {

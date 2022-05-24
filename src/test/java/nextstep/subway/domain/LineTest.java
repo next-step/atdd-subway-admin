@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +26,7 @@ class LineTest {
 
         //when
         line.update("분당선","bg-yellow-600");
+        entityManager.flush();
         entityManager.clear();
 
         //then
