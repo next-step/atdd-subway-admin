@@ -20,6 +20,6 @@ public class LineResponsesDTO {
     }
 
     public List<LineResponseDTO> getLineResponses() {
-        return null;
+        return lineResponsesDTO;
     }
 }

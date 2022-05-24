@@ -1,5 +1,6 @@
 package nextstep.subway.application;
 
+import java.util.List;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -36,6 +37,7 @@ public class LineService {
 
     @Transactional
     public LineResponsesDTO findAll(){
-        return null;
+        List<Line> lines = lineRepository.findAll();
+        return LineResponsesDTO.of(lines);
     }
 }
