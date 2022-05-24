@@ -1,11 +1,17 @@
 package nextstep.subway.line.domain;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import nextstep.subway.constants.LineExceptionMessage;
+import nextstep.subway.section.domain.Distance;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -42,5 +48,37 @@ class LineTest {
         // given & when & then
         assertThatIllegalArgumentException().isThrownBy(() -> Line.of("신분당선", color))
             .withMessageContaining(LineExceptionMessage.LINE_COLOR_IS_NOT_NULL);
+    }
+
+    @DisplayName("지하철 노선에 Section을 추가할 수 있다.")
+    @Test
+    void generate04() {
+        // given
+        Line 신분당선 = Line.of("신분당선", "RED");
+        Station 강남역 = Station.of(1L, "강남역");
+        Station 판교역 = Station.of(2L, "판교역");
+        Distance distance = Distance.from(10);
+        Section 강남역_판교역_구간 = Section.of(강남역, 판교역, distance);
+
+        // when & then
+        assertThatNoException().isThrownBy(() -> 신분당선.addSection(강남역_판교역_구간));
+    }
+
+    @DisplayName("지하철 노선에 동일한 Section을 추가할 수 없다.")
+    @Test
+    void generate05() {
+        // given
+        Line 신분당선 = Line.of("신분당선", "RED");
+        Station 강남역 = Station.of(1L, "강남역");
+        Station 판교역 = Station.of(2L, "판교역");
+        Distance distance = Distance.from(10);
+        Section 강남역_판교역_구간 = Section.of(강남역, 판교역, distance);
+
+        // when
+        신분당선.addSection(강남역_판교역_구간);
+
+        // when & then
+        assertThatIllegalStateException().isThrownBy(() -> 신분당선.addSection(강남역_판교역_구간))
+            .withMessageContaining(LineExceptionMessage.ALREADY_ADDED_SECTION);
     }
 }
