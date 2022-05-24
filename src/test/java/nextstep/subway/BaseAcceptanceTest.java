@@ -1,7 +1,6 @@
-package nextstep.subway.station;
+package nextstep.subway;
 
 import io.restassured.RestAssured;
-import nextstep.subway.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +23,5 @@ public class BaseAcceptanceTest {
         }
         databaseCleanup.execute();
     }
-
-
 
 }
