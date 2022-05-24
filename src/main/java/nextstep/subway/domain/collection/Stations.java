@@ -15,4 +15,7 @@ public class Stations {
     @JoinColumn(name = "line_id",foreignKey = @ForeignKey(name = "fk_line_to_stations"))
     private List<Station> stations;
 
+    public List<Station> getStations() {
+        return stations;
+    }
 }

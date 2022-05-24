@@ -59,4 +59,8 @@ public class Line extends BaseEntity{
     public boolean isDeleted() {
         return deleted;
     }
+
+    public Stations getStations() {
+        return stations;
+    }
 }
