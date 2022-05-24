@@ -121,6 +121,25 @@ class LineAcceptanceTest {
         assertThat(response.jsonPath().getString("name")).contains("신분당선");
     }
 
+   /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     * */
+    @DisplayName("지하철 노선을 삭제한다.")
+    @Test
+    void deleteLine(){
+        //given
+        requestCreateLine(LINE_PARAMS_BUNDLES.get(SHIN_BUN_DANG_LINE));
+
+        //when
+        ExtractableResponse<Response> response = requestDeleteLine(1L);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(requestGetLine(1L).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
 
     private List<ExtractableResponse<Response>> requestCreateLines(List<Map<String, Object>> stationsParamsBundle) {
         List<ExtractableResponse<Response>> responses = new ArrayList<>();
@@ -152,6 +171,14 @@ class LineAcceptanceTest {
         return RestAssured.given().log().all()
                 .accept(ContentType.JSON)
                 .when().delete("/lines/{id}", lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    static ExtractableResponse<Response> requestDeleteLine(long lineId) {
+        return RestAssured.given().log().all()
+                .accept(ContentType.JSON)
+                .when().delete("/stations/{id}", lineId)
                 .then().log().all()
                 .extract();
     }
