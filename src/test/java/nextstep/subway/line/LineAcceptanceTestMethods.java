@@ -11,8 +11,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
 import java.util.stream.Collectors;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.HttpStatus;
 
 public class LineAcceptanceTestMethods {

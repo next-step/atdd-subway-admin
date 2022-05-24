@@ -13,7 +13,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.dto.StationRequest;
+import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

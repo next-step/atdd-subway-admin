@@ -3,8 +3,8 @@ package nextstep.subway.domain;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import nextstep.subway.domain.station.Station;
-import nextstep.subway.domain.station.StationName;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationName;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
