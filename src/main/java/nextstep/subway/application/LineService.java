@@ -1,6 +1,7 @@
 package nextstep.subway.application;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -32,5 +33,12 @@ public class LineService {
         return lines.stream()
             .map(LineResponse::of)
             .collect(Collectors.toList());
+    }
+
+    public LineResponse findLine(Long id) {
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("지하철 노선을 찾을 수 없습니다."));
+
+        return LineResponse.of(line);
     }
 }
