@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,21 +39,18 @@ public class StationAcceptanceTest {
     @Test
     void 지하철역을_생성한다() {
         // when
-        ExtractableResponse<Response> response = 지하철역_생성("강남역");
+        ExtractableResponse<Response> response = 지하철역_생성("강남역").extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
+        List<String> stationNames = 지하철역_조회()
                         .extract().jsonPath().getList("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
-    private ExtractableResponse<Response> 지하철역_생성(String stationName) {
+    private ValidatableResponse 지하철역_생성(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
@@ -60,8 +58,13 @@ public class StationAcceptanceTest {
                         .body(params)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+                        .then().log().all();
+    }
+
+    private ValidatableResponse 지하철역_조회() {
+        return RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all();
     }
 
     /**
@@ -72,17 +75,10 @@ public class StationAcceptanceTest {
     @Test
     void 기존에_존재하는_지하철역_이름으로_지하철역을_생성한다() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
+        지하철역_생성("강남역");
 
         // when
-        ExtractableResponse<Response> response = 지하철역_생성("강남역");
+        ExtractableResponse<Response> response = 지하철역_생성("강남역").extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
