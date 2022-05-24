@@ -6,7 +6,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,8 +27,14 @@ class StationAcceptanceTest {
 
     private static final int GANG_NAM_STATION = 0;
     private static final int SEOUL_STATION = 1;
-
-    static List<Map<String, Object>> stationParamsBundles;
+    public static final List<Map<String, Object>> STATION_PARAMS_BUNDLES;
+    static {
+        Map<String, Object> params1 = new HashMap<>();
+        Map<String, Object> params2 = new HashMap<>();
+        params1.put("name", "강남역");
+        params2.put("name", "서울역");
+        STATION_PARAMS_BUNDLES = Arrays.asList(params1, params2);
+    }
 
     @LocalServerPort
     int port;
@@ -39,16 +44,6 @@ class StationAcceptanceTest {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
-    }
-
-    @BeforeAll
-    static void setUpParams() {
-        Map<String, Object> params1 = new HashMap<>();
-        Map<String, Object> params2 = new HashMap<>();
-        params1.put("name", "강남역");
-        params2.put("name", "서울역");
-
-        stationParamsBundles = Arrays.asList(params1, params2);
     }
 
     /**
@@ -65,13 +60,13 @@ class StationAcceptanceTest {
     @Test
     void manageStations(){
         // when
-        List<ExtractableResponse<Response>> createResponses = requestCreateStations(stationParamsBundles);
+        List<ExtractableResponse<Response>> createResponses = requestCreateStations(STATION_PARAMS_BUNDLES);
 
         // then
         지하철역들이_생성되었는지_검증(createResponses);
 
         // when
-        ExtractableResponse<Response> createResponse = requestCreateStation(stationParamsBundles.get(GANG_NAM_STATION));
+        ExtractableResponse<Response> createResponse = requestCreateStation(STATION_PARAMS_BUNDLES.get(GANG_NAM_STATION));
 
         // then
         존재하는_지하철역인_경우_오류_검증(createResponse);
