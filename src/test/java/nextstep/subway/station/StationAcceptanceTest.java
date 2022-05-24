@@ -121,13 +121,14 @@ public class StationAcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        // when
         List<String> stationNames =
                 RestAssured.given().log().all()
                         .when().get("/stations")
                         .then().log().all()
                         .extract().jsonPath().getList("name", String.class);
-        // when
 
+        // then
         assertThat(stationNames).containsAnyOf("강남역", "삼성역");
     }
 
@@ -139,5 +140,32 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "강남역");
+        ExtractableResponse<Response> createResponse =
+                RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract();
+        Integer createdStationId = createResponse.body().jsonPath().get("id");
+
+        // when
+        ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
+                .pathParam("id", createdStationId)
+                .when().delete("/stations" + "/{id}")
+                .then().log().all()
+                .extract();
+        List<String> stationIds =
+                RestAssured.given().log().all()
+                        .when().get("/stations")
+                        .then().log().all()
+                        .extract().jsonPath().getList("id", String.class);
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(stationIds).doesNotContain(createdStationId.toString());
     }
 }
