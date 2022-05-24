@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class StationAcceptanceTest extends AcceptanceTest {
+    private final static String API_URL_STATIONS = "/stations";
     @LocalServerPort
     int port;
 
@@ -36,13 +37,13 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = sendPost(Maps.newHashMap("name", "강남역"), "stations");
+        ExtractableResponse<Response> response = registerStation("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames = sendGet("/stations").jsonPath().getList("name", String.class);
+        List<String> stationNames = findStationNames();
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -55,10 +56,10 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        sendPost(Maps.newHashMap("name", "강남역"), "/stations");
+        registerStation("강남역");
 
         // when
-        ExtractableResponse<Response> response = sendPost(Maps.newHashMap("name", "강남역"), "/stations");
+        ExtractableResponse<Response> response = registerStation("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -73,11 +74,11 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         // given
-        sendPost(Maps.newHashMap("name", "방배역"), "stations");
-        sendPost(Maps.newHashMap("name", "서초역"), "stations");
+        registerStation("방배역");
+        registerStation("서초역");
 
         // when
-        List<String> stationNames = sendGet("/stations").jsonPath().getList("name", String.class);
+        List<String> stationNames = findStationNames();
 
         // then
         assertThat(stationNames).containsExactly("방배역", "서초역");
@@ -93,13 +94,25 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        String stationId = sendPost(Maps.newHashMap("name", "사당역"), "/stations").jsonPath().getString("id");
+        String stationId = registerStation("사당역").jsonPath().getString("id");
 
         // when
-        sendDelete("/stations/{id}", stationId);
-        List<String> stationNames = sendGet("/stations").jsonPath().getList("name", String.class);
+        removeStation(stationId);
+        List<String> stationNames = findStationNames();
 
         // then
-        assertThat(stationNames).isNotEmpty().doesNotContain("사당역");
+        assertThat(stationNames.isEmpty() || !stationNames.contains("사당역")).isTrue();
+    }
+
+    private ExtractableResponse<Response> registerStation(String stationName) {
+        return sendPost(Maps.newHashMap("name", stationName), API_URL_STATIONS);
+    }
+
+    private List<String> findStationNames() {
+        return sendGet(API_URL_STATIONS).jsonPath().getList("name", String.class);
+    }
+
+    private ExtractableResponse<Response> removeStation(String stationId) {
+        return sendDelete(API_URL_STATIONS + "/{id}", stationId);
     }
 }
