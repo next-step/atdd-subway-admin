@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AssertUtils;
 import nextstep.subway.BaseAcceptanceTest;
+import nextstep.subway.dto.LineResponse;
 import nextstep.subway.line.LineRestAssured;
 import nextstep.subway.station.StationRestAssured;
 import org.junit.jupiter.api.DisplayName;
@@ -16,10 +17,10 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 @DisplayName("지하철 구간 관련 기능")
@@ -43,21 +44,21 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
                     callAddSection(신분당선_id, 양재시민의숲역_id, 청계산입구역_id, 5);
 
                     ExtractableResponse<Response> response = LineRestAssured.callGetLines();
-                    assertThat(toLineNames(response)).containsExactly("양재시민의숲역", "청계산입구역", "판교역");
+                    assertThat(toStationNames(response)).containsExactly("양재시민의숲역", "청계산입구역", "판교역");
                 }),
                 dynamicTest("새로운 역을 상행 종점으로 등록", () -> {
                     callAddSection(신분당선_id, 양재역_id, 양재시민의숲역_id, 5);
 
                     ExtractableResponse<Response> response = LineRestAssured.callGetLines();
-                    assertThat(toLineNames(response)).containsExactly("양재역", "양재시민의숲역", "청계산입구역",
-                                                                      "판교역");
+                    assertThat(toStationNames(response)).containsExactly("양재역", "양재시민의숲역", "청계산입구역",
+                                                                         "판교역");
                 }),
                 dynamicTest("새로운 역을 하행 종점으로 등록", () -> {
                     callAddSection(신분당선_id, 판교역_id, 미금역_id, 5);
 
                     ExtractableResponse<Response> response = LineRestAssured.callGetLines();
-                    assertThat(toLineNames(response)).containsExactly("양재역", "양재시민의숲역", "청계산입구역",
-                                                                      "판교역", "미금역");
+                    assertThat(toStationNames(response)).containsExactly("양재역", "양재시민의숲역", "청계산입구역",
+                                                                         "판교역", "미금역");
                 }),
                 // 예외 케이스
                 dynamicTest("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음", () -> {
@@ -101,9 +102,13 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         return AssertUtils.toId(response);
     }
 
-    private List<String> toLineNames(ExtractableResponse<Response> response) {
+    private List<String> toStationNames(ExtractableResponse<Response> response) {
         return response.body()
                 .jsonPath()
-                .getList("name", String.class);
+                .getList(".", LineResponse.class)
+                .stream()
+                .flatMap(lineResponse -> lineResponse.getStations().stream())
+                .map(stationResponse -> stationResponse.getName())
+                .collect(Collectors.toList());
     }
 }
