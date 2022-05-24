@@ -56,7 +56,6 @@ class LineTest {
     @DisplayName("노선에 지하철역을 추가한다.")
     @Test
     void addStation(){
-
         //given
         Station pangyo = new Station("판교");
         Station jeongja = new Station("정자");

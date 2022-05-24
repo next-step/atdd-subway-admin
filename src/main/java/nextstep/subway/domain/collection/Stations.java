@@ -2,6 +2,7 @@ package nextstep.subway.domain.collection;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.ForeignKey;
@@ -29,5 +30,22 @@ public class Stations {
 
     public void addStaion(Station pangyo) {
         stations.add(pangyo);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Stations stations = (Stations) o;
+        return this.stations.containsAll(stations.stations);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(stations);
     }
 }
