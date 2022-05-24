@@ -168,4 +168,4 @@ https://github.com/next-step/atdd-subway-map/blob/boorownie/src/main/java/nextst
 ## 기능 구현 목록
 
 - [x] 지하철 구간 추가 인수 테스트
-- [ ] 지하철 구간 추가 구현
+- [x] 지하철 구간 추가 구현
