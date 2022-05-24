@@ -61,6 +61,7 @@ class LineAcceptanceTest {
      * When 지하철 노선 목록을 조회하면
      * Then 생성한 노선을 찾을 수 있다.
      * */
+    @DisplayName("지하철 노선을 생성하여 조회 시 있는지 확인한다.")
     @Test
     void createLines(){
 
@@ -79,6 +80,34 @@ class LineAcceptanceTest {
         assertThat(getResponse.jsonPath().getList("stations.name")).contains("신분당선");
     }
 
+    /**
+     * Given 2개의 지하철 노선을 생성하고
+     * When 지하철 노선 목록을 조회하면
+     * Then 지하철 노선 목록 조회시 2개의 노선을 조회할 수 있다.
+     * */
+    @DisplayName("지하철 노선 2개를 생성하고 목록 조회 시 있는지 확인한다.")
+    @Test
+    void showLines() {
+
+        //given
+        requestCreateLines(LINE_PARAMS_BUNDLES);
+
+        //when
+        ExtractableResponse<Response> response = requestGetLines();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("name")).contains("신분당선","2호선");
+
+    }
+
+    private List<ExtractableResponse<Response>> requestCreateLines(List<Map<String, Object>> stationsParamsBundle) {
+        List<ExtractableResponse<Response>> responses = new ArrayList<>();
+        for (Map<String, Object> stationParams : stationsParamsBundle) {
+            responses.add(requestCreateLine(stationParams));
+        }
+        return responses;
+    }
 
     private ExtractableResponse<Response> requestCreateLine(Map<String, Object> lineParams) {
         return RestAssured.given().log().all()
