@@ -110,7 +110,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [X]  지하철 노선 도메인 테스트 코드 작성
 - [X]  지하철 구간 도메인 개발
 - [X]  지하철 구간 도메인 테스트 코드 작성
-- [ ]  지하철 노선과 지하철 구간의 연관관계 매핑
+- [X]  지하철 노선과 지하철 구간의 연관관계 매핑
 - [X]  지하철 구간과 지하철 역의 연관관계 매핑
 
 **지하철 노선 기능에 대한 인수 테스트 API 구현**
