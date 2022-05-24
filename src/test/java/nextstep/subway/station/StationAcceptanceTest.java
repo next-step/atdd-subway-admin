@@ -6,6 +6,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.ArrayList;
 import java.util.Arrays;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,12 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class StationAcceptanceTest {
+
+    private static final int GANG_NAM_STATION = 0;
+    private static final int SEOUL_STATION = 1;
+
+    static List<Map<String, Object>> stationParamsBundles;
+
     @LocalServerPort
     int port;
 
@@ -32,6 +39,16 @@ class StationAcceptanceTest {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+    }
+
+    @BeforeAll
+    static void setUpParams() {
+        Map<String, Object> params1 = new HashMap<>();
+        Map<String, Object> params2 = new HashMap<>();
+        params1.put("name", "강남역");
+        params2.put("name", "서울역");
+
+        stationParamsBundles = Arrays.asList(params1, params2);
     }
 
     /**
@@ -48,18 +65,15 @@ class StationAcceptanceTest {
     @Test
     void manageStations(){
         // when
-        Map<String, String> params1 = new HashMap<>();
-        Map<String, String> params2 = new HashMap<>();
-        params1.put("name", "강남역");
-        params2.put("name", "서울역");
+        List<ExtractableResponse<Response>> createResponses = requestCreateStations(stationParamsBundles);
 
         // then
-        for (ExtractableResponse<Response> createResponse : requestCreateStations(Arrays.asList(params1, params2))) {
+        for (ExtractableResponse<Response> createResponse : createResponses) {
             assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         }
 
         // when
-        ExtractableResponse<Response> createResponse = requestCreateStation(params1);
+        ExtractableResponse<Response> createResponse = requestCreateStation(stationParamsBundles.get(GANG_NAM_STATION));
 
         // then
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -90,15 +104,15 @@ class StationAcceptanceTest {
         );
     }
 
-    private List<ExtractableResponse<Response>> requestCreateStations(List<Map<String, String>> stationsParamsBundle) {
+    static List<ExtractableResponse<Response>> requestCreateStations(List<Map<String, Object>> stationsParamsBundle) {
         List<ExtractableResponse<Response>> responses = new ArrayList<>();
-        for (Map<String, String> stationParams : stationsParamsBundle) {
+        for (Map<String, Object> stationParams : stationsParamsBundle) {
             responses.add(requestCreateStation(stationParams));
         }
         return responses;
     }
 
-    private ExtractableResponse<Response> requestCreateStation(Map<String, String> stationParams) {
+    static ExtractableResponse<Response> requestCreateStation(Map<String, Object> stationParams) {
         return RestAssured.given().log().all()
                 .body(stationParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -108,7 +122,7 @@ class StationAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> requestGetStations() {
+    static ExtractableResponse<Response> requestGetStations() {
         return RestAssured.given().log().all()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/stations")
@@ -116,7 +130,7 @@ class StationAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> requestDeleteStation(long stationId) {
+    static ExtractableResponse<Response> requestDeleteStation(long stationId) {
         return RestAssured.given().log().all()
                 .accept(ContentType.JSON)
                 .when().delete("/stations/{id}", stationId)
