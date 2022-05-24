@@ -7,14 +7,21 @@ public class Station extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
-    private String name;
+    @Embedded
+    private StationName stationName;
 
-    public Station() {
-    }
+    protected Station() {}
 
     public Station(String name) {
-        this.name = name;
+        this.stationName = StationName.from(name);
+    }
+
+    public Station(StationName stationName) {
+        this.stationName = stationName;
+    }
+
+    public static Station from(String name) {
+        return new Station(StationName.from(name));
     }
 
     public Long getId() {
@@ -22,6 +29,6 @@ public class Station extends BaseEntity {
     }
 
     public String getName() {
-        return name;
+        return this.stationName.getName();
     }
 }
