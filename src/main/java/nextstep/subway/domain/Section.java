@@ -19,12 +19,13 @@ public class Section extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Station downStation;
 
-    private Long distance;
+    @Embedded
+    private Distance distance;
 
     public Section(Station upStation, Station downStation, Long distance) {
         this.upStation = requireNonNull(upStation, "상행 지하철역이 비었습니다");
         this.downStation = requireNonNull(downStation, "하행 지하철역이 비었습니다");
-        this.distance = requireNonNull(distance, "구간 길이가 비었습니다");
+        this.distance = new Distance(distance);
     }
 
     protected Section() {
