@@ -75,6 +75,16 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        createStation("강남역");
+        createStation("역삼역");
+
+        // then
+        List<String> stationsNames = findStations().jsonPath().getList("name");
+
+        // then
+
+        assertThat(stationsNames).contains("강남역", "역삼역");
     }
 
     /**
@@ -85,28 +95,49 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        createStation("강남역");
+
+        // when
+        ExtractableResponse<Response> response = deleteStation(1L);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.valueOf(204).value());
+
+        // then
+        List<Long> stationIds = findStations().jsonPath().getList("id");
+        assertThat(stationIds).doesNotContain(1L);
     }
 
     private ExtractableResponse<Response> createStation(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
-        return response;
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> deleteStation(Long id) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/stations/{id}", id)
+                .then().log().all()
+                .extract();
     }
 
     private List<String> findStationNames() {
-        List<String> stationNames =
-                RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                         .when().get("/stations")
                         .then().log().all()
                         .extract().jsonPath().getList("name", String.class);
-        return stationNames;
+    }
+
+    private ExtractableResponse<Response> findStations() {
+        return RestAssured.given().log().all()
+                        .when().get("/stations")
+                        .then().log().all()
+                        .extract();
     }
 }
