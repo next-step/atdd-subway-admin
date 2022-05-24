@@ -6,6 +6,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequestDTO;
 import nextstep.subway.dto.LineResponseDTO;
+import nextstep.subway.dto.LineResponsesDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,4 +34,8 @@ public class LineService {
         return  LineResponseDTO.of(savedLine);
     }
 
+    @Transactional
+    public LineResponsesDTO findAll(){
+        return null;
+    }
 }

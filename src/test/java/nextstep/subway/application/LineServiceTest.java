@@ -3,10 +3,13 @@ package nextstep.subway.application;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequestDTO;
 import nextstep.subway.dto.LineResponseDTO;
+import nextstep.subway.dto.LineResponsesDTO;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +23,8 @@ class LineServiceTest {
 
     @Autowired
     private LineService lineService;
+    @Autowired
+    private LineRepository lineRepository;
     @Autowired
     private StationRepository stationRepository;
 
@@ -43,5 +48,19 @@ class LineServiceTest {
         assertThat(stations.get(0).getName()).isEqualTo(pangyo.getName());
         assertThat(stations.get(1).getId()).isEqualTo(jeongja.getId());
         assertThat(stations.get(1).getName()).isEqualTo(jeongja.getName());
+    }
+
+    @DisplayName("노선 전체 목록을 조회한다.")
+    @Test
+    void findAll() {
+        //given
+        lineRepository.save(new Line("신분당선", "bg-red-600"));
+        lineRepository.save(new Line("분당선", "bg-yellow-600"));
+
+        //when
+        LineResponsesDTO lineResponsesDTO = lineService.findAll();
+
+        //then
+        assertThat(lineResponsesDTO.getLineResponses()).hasSize(2);
     }
 }
