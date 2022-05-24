@@ -40,17 +40,19 @@ public class StationAcceptanceTest {
     @Test
     void 지하철역을_생성한다() {
         // when
-        ExtractableResponse<Response> response = 지하철역_생성("강남역").extract();
+        ExtractableResponse<Response> response = 지하철역_생성("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames = 리스트로_추출(지하철역_조회(), String.class, "name");
+        List<String> stationNames = 지하철역_조회()
+                .jsonPath()
+                .getList( "name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
-    private ValidatableResponse 지하철역_생성(String stationName) {
+    private ExtractableResponse<Response> 지하철역_생성(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
@@ -58,13 +60,15 @@ public class StationAcceptanceTest {
                         .body(params)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when().post("/stations")
-                        .then().log().all();
+                        .then().log().all()
+                        .extract();
     }
 
-    private ValidatableResponse 지하철역_조회() {
+    private ExtractableResponse<Response> 지하철역_조회() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
-                .then().log().all();
+                .then().log().all()
+                .extract();
     }
 
     /**
@@ -78,7 +82,7 @@ public class StationAcceptanceTest {
         지하철역_생성("강남역");
 
         // when
-        ExtractableResponse<Response> response = 지하철역_생성("강남역").extract();
+        ExtractableResponse<Response> response = 지하철역_생성("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -96,16 +100,12 @@ public class StationAcceptanceTest {
         지하철역_생성("잠실역");
 
         // when
-        List<StationResponse> stationResponses = 리스트로_추출(지하철역_조회(), StationResponse.class, ".");
+        List<StationResponse> stationResponses = 지하철역_조회()
+                .jsonPath()
+                .getList(".", StationResponse.class);
 
         // then
         assertThat(stationResponses).hasSize(2);
-    }
-
-    private <T> List<T> 리스트로_추출(ValidatableResponse validatableResponse, Class<T> classType, String path) {
-        return validatableResponse.extract()
-                .jsonPath()
-                .getList(path, classType);
     }
 
     /**
@@ -115,5 +115,24 @@ public class StationAcceptanceTest {
      */
     @Test
     void 지하철역을_제거한다() {
+        // given
+        Long stationId = 지하철역_생성("강남역")
+                .body().jsonPath().getLong("id");
+
+        // when
+        지하철역_제거(stationId);
+
+        // then
+        List<String> stationNames = 지하철역_조회()
+                .jsonPath()
+                .getList( "name", String.class);
+        assertThat(stationNames).containsAnyOf("강남역");
+    }
+
+    private ValidatableResponse 지하철역_제거(Long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/stations" + stationId)
+                .then().log().all();
     }
 }
