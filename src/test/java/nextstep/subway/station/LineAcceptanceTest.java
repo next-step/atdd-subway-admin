@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.ArrayList;
@@ -85,7 +86,7 @@ class LineAcceptanceTest {
      * When 지하철 노선 목록을 조회하면
      * Then 지하철 노선 목록 조회시 2개의 노선을 조회할 수 있다.
      * */
-    @DisplayName("지하철 노선 2개를 생성하고 목록 조회 시 있는지 확인한다.")
+    @DisplayName("생성된 지하철 노선들이 목록 조회 시 있는지 확인한다.")
     @Test
     void showLines() {
 
@@ -100,6 +101,26 @@ class LineAcceptanceTest {
         assertThat(response.jsonPath().getList("name")).contains("신분당선","2호선");
 
     }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     * */
+    @DisplayName("지하철 노선을 개별 조회한다.")
+    @Test
+    void showLine(){
+        //given
+        requestCreateLine(LINE_PARAMS_BUNDLES.get(SHIN_BUN_DANG_LINE));
+
+        //when
+        ExtractableResponse<Response> response = requestGetLine(1L);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getString("name")).contains("신분당선");
+    }
+
 
     private List<ExtractableResponse<Response>> requestCreateLines(List<Map<String, Object>> stationsParamsBundle) {
         List<ExtractableResponse<Response>> responses = new ArrayList<>();
@@ -123,6 +144,14 @@ class LineAcceptanceTest {
         return RestAssured.given().log().all()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> requestGetLine(long lineId) {
+        return RestAssured.given().log().all()
+                .accept(ContentType.JSON)
+                .when().delete("/lines/{id}", lineId)
                 .then().log().all()
                 .extract();
     }
