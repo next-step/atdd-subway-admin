@@ -38,10 +38,10 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        // when
+        // given
         ExtractableResponse<Response> response = createStation("강남역");
 
-        // then
+        // when
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
@@ -79,11 +79,10 @@ public class StationAcceptanceTest {
         createStation("강남역");
         createStation("역삼역");
 
-        // then
+        // when
         List<String> stationsNames = findStations().jsonPath().getList("name");
 
         // then
-
         assertThat(stationsNames).contains("강남역", "역삼역");
     }
 
