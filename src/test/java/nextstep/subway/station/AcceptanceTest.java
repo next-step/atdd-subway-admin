@@ -24,6 +24,16 @@ public abstract class AcceptanceTest {
                 .extract();
     }
 
+    protected ExtractableResponse<Response> sendPut(Map<String, String> bodyParams, String path,
+                                                     Object... pathParams) {
+        return RestAssured.given().log().all()
+                .body(bodyParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put(path, pathParams)
+                .then().log().all()
+                .extract();
+    }
+
     protected ExtractableResponse<Response> sendDelete(String path, Object... pathParams) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
