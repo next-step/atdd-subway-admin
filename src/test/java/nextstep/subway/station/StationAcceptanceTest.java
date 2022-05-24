@@ -16,10 +16,11 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
+class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
@@ -101,6 +102,22 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given, when
+        ExtractableResponse<Response> response = 지하철역_생성("대림역");
+        ExtractableResponse<Response> response2 = 지하철역_생성("역삼역");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        ExtractableResponse<Response> result = 지하철역_조회();
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<String> stationNames = convertToStationNames(result);
+
+        assertThat(stationNames.size()).isEqualTo(2);
+        assertThat(stationNames).containsAnyOf("대림역", "역삼역");
     }
 
     /**
@@ -111,5 +128,59 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        ExtractableResponse<Response> saveResponse = 지하철역_생성("대림역");
+        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        long 대림역_ID = saveResponse.body().jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> deleteResponse =
+            RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/stations/" + 대림역_ID)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        // when
+        ExtractableResponse<Response> result = 지하철역_조회();
+        List<String> stationNames = convertToStationNames(result);
+
+        // then
+        assertFalse(stationNames.contains("대림역"));
+        assertThat(stationNames.size()).isEqualTo(0);
+    }
+
+    /**
+     * 전달받은 지하철역 목록을 저장한다
+     * @param names 지하철역 이름 목록
+     */
+    ExtractableResponse<Response> 지하철역_생성(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    /**
+     * 지하철역 목록을 조회한다
+     */
+    ExtractableResponse<Response> 지하철역_조회() {
+        return RestAssured.given().log().all()
+            .when().get("/stations")
+            .then().log().all()
+            .extract();
+    }
+
+    private List<String> convertToStationNames(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList("name", String.class);
     }
 }
