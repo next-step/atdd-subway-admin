@@ -26,7 +26,6 @@ class LineServiceTest {
     @DisplayName("연결된 지하철역이 있는 노선을 생성한다.")
     @Test
     void saveLine(){
-
         //given
         Station pangyo = stationRepository.save(new Station("판교"));
         Station jeongja = stationRepository.save(new Station("정자"));
