@@ -37,7 +37,7 @@ class LineTest {
         assertThat(actual.getColor()).isEqualTo("bg-yellow-600");
     }
 
-    @DisplayName("노선 정보를 업데이트 한다.")
+    @DisplayName("노선을 삭제 한다.")
     @Test
     void delete(){
         //given
