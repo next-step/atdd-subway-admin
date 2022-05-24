@@ -115,7 +115,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 **지하철 노선 기능에 대한 인수 테스트 API 구현**
 
-- [ ]  지하철 노선 생성 API
+- [X]  지하철 노선 생성 API
 - [ ]  지하철 노선 전체 조회 API
 - [ ]  지하철 노선 단일 조회 API
 - [ ]  지하철 노선 수정 API
