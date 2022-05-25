@@ -6,7 +6,7 @@ import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import nextstep.subway.AssertUtils;
 import nextstep.subway.BaseAcceptanceTest;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.station.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
