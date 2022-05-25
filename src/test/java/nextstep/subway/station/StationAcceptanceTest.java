@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -19,10 +20,12 @@ import org.springframework.http.MediaType;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public
 class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
+    public static final Gson GSON = new Gson();
     private StationRequest 강남역, 선릉역;
 
     @BeforeEach
@@ -37,8 +40,8 @@ class StationAcceptanceTest {
     /**
      * When 지하철역을 생성하면 Then 지하철역이 생성된다 Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
      */
-    @DisplayName("지하철역을 생성한다.")
     @Test
+    @DisplayName("지하철역을 생성한다.")
     void createStation() {
         // when
         ExtractableResponse<Response> 생성된_강남역 = 지하철역_생성(강남역);
@@ -51,10 +54,12 @@ class StationAcceptanceTest {
     }
 
     /**
-     * Given 지하철역을 생성하고 When 기존에 존재하는 지하철역 이름으로 지하철역을 생성하면 Then 지하철역 생성이 안된다
+     * Given 지하철역을 생성하고
+     * When 기존에 존재하는 지하철역 이름으로 지하철역을 생성하면
+     * Then 지하철역 생성이 안된다
      */
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
+    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     void createStationWithDuplicateName() {
         // given
         지하철역_생성(강남역);
@@ -67,10 +72,12 @@ class StationAcceptanceTest {
     }
 
     /**
-     * Given 2개의 지하철역을 생성하고 When 지하철역 목록을 조회하면 Then 2개의 지하철역을 응답 받는다
+     * Given 2개의 지하철역을 생성하고
+     * When 지하철역 목록을 조회하면
+     * Then 2개의 지하철역을 응답 받는다
      */
-    @DisplayName("지하철역을 조회한다.")
     @Test
+    @DisplayName("지하철역을 조회한다.")
     void getStations() {
         // given
         Arrays.asList(선릉역, 강남역).forEach(지하철역 -> 지하철역_생성(지하철역));
@@ -86,10 +93,12 @@ class StationAcceptanceTest {
     }
 
     /**
-     * Given 지하철역을 생성하고 When 그 지하철역을 삭제하면 Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
+     * Given 지하철역을 생성하고
+     * When 그 지하철역을 삭제하면
+     * Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
      */
-    @DisplayName("지하철역을 제거한다.")
     @Test
+    @DisplayName("지하철역을 제거한다.")
     void deleteStation() {
         // given
         ExtractableResponse<Response> 생성된_강남역 = 지하철역_생성(강남역);
@@ -109,7 +118,7 @@ class StationAcceptanceTest {
 
     public static ExtractableResponse<Response> 지하철역_생성(StationRequest 역이름) {
         return RestAssured.given().log().all()
-                .body(역이름.toString())
+                .body(GSON.toJson(역이름))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all()
