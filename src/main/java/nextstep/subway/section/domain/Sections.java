@@ -10,7 +10,7 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections;
 
     protected Sections() {}

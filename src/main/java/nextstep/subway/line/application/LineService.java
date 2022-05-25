@@ -60,6 +60,11 @@ public class LineService {
         line.update(lineRequest.toLine());
     }
 
+    @Transactional
+    public void deleteLine(Long lineId) {
+        lineRepository.deleteById(lineId);
+    }
+
     private List<StationResponse> generateStationResponse(Line line) {
         return line.getStations().stream()
             .map(StationResponse::of)
