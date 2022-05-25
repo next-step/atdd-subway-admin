@@ -1,6 +1,10 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 public class Station extends BaseEntity {
@@ -10,7 +14,7 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    public Station() {
+    protected Station() {
     }
 
     public Station(String name) {
