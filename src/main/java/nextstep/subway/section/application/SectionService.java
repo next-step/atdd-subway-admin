@@ -35,4 +35,11 @@ public class SectionService {
         line.addSection(section);
         sectionRepository.save(section);
     }
+
+    @Transactional
+    public void removeSection(Long lineId, Long stationId) {
+        Line line = lineService.findById(lineId);
+        Station station = stationService.findById(stationId);
+        line.removeSection(station);
+    }
 }
