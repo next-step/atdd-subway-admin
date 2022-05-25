@@ -26,6 +26,10 @@ public class Distance implements Comparable<Distance> {
         this.distance = result;
     }
 
+    public void plus(Distance distance) {
+        this.distance += distance.distance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

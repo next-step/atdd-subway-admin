@@ -72,6 +72,19 @@ public class Section extends BaseEntity {
         this.downStation = section.upStation;
     }
 
+    public boolean matchesUpStation(Station other) {
+        return this.upStation.equals(other);
+    }
+
+    public boolean matchesDownStation(Station other) {
+        return this.downStation.equals(other);
+    }
+
+    public void merge(Section section) {
+        this.downStation = section.downStation;
+        this.distance.plus(section.distance);
+    }
+
     public Station getUpStation() {
         return upStation;
     }
