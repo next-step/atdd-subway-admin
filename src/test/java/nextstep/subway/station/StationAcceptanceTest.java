@@ -147,8 +147,10 @@ class StationAcceptanceTest {
     }
 
     void 지하철역_삭제(String location) {
-        RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().delete(location)
-                .then().log().all();
+                .then().log().all()
+                .extract();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
