@@ -36,6 +36,7 @@ public class Line extends BaseEntity {
     }
 
     public void removeSection(Station station) {
+        sections.remove(station);
     }
 
     public List<Station> getStations() {
