@@ -45,11 +45,11 @@ public class StationAcceptanceTest {
 
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+                           .body(params)
+                           .contentType(MediaType.APPLICATION_JSON_VALUE)
+                           .when().post("/stations")
+                           .then().log().all()
+                           .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -57,9 +57,9 @@ public class StationAcceptanceTest {
         // then
         List<String> stationNames =
                 RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+                           .when().get("/stations")
+                           .then().log().all()
+                           .extract().jsonPath().getList("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -76,19 +76,19 @@ public class StationAcceptanceTest {
         params.put("name", "강남역");
 
         RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
+                   .body(params)
+                   .contentType(MediaType.APPLICATION_JSON_VALUE)
+                   .when().post("/stations")
+                   .then().log().all();
 
         // when
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+                           .body(params)
+                           .contentType(MediaType.APPLICATION_JSON_VALUE)
+                           .when().post("/stations")
+                           .then().log().all()
+                           .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -118,7 +118,6 @@ public class StationAcceptanceTest {
                                .then().log().all()
                                .extract();
 
-            // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         }
 
@@ -141,5 +140,36 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "강남역");
+
+        ExtractableResponse<Response> created =
+                RestAssured.given().log().all()
+                           .body(params)
+                           .contentType(MediaType.APPLICATION_JSON_VALUE)
+                           .when().post("/stations")
+                           .then().log().all()
+                           .extract();
+
+        assertThat(created.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // when
+        ExtractableResponse<Response> deleted =
+                RestAssured.given().log().all()
+                           .when().delete("/stations/{id}", created.jsonPath().getLong("id"))
+                           .then().log().all()
+                           .extract();
+
+        assertThat(deleted.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        // then
+        List<String> stationNames =
+                RestAssured.given().log().all()
+                           .when().get("/stations")
+                           .then().log().all()
+                           .extract().jsonPath().getList("name", String.class);
+
+        assertThat(stationNames.contains("강남역")).isFalse();
     }
 }
