@@ -27,7 +27,6 @@ class StationAcceptanceTest {
 
     public static final String STATION_PATH = "/stations";
     private static final int GANG_NAM_STATION = 0;
-    private static final int SEOUL_STATION = 1;
     public static final List<Map<String, Object>> STATION_PARAMS_BUNDLES;
     static {
         Map<String, Object> params1 = new HashMap<>();

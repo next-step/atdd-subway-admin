@@ -26,7 +26,6 @@ class LineAcceptanceTest {
 
     private static final String LINE_PATH = "/lines";
     private static final int SHIN_BUN_DANG_LINE = 0;
-    private static final int SECOND_LINE = 1;
     private static final List<Map<String, Object>> LINE_PARAMS_BUNDLES;
 
     static {
@@ -72,13 +71,22 @@ class LineAcceptanceTest {
         ExtractableResponse<Response> createResponse = requestCreate(LINE_PATH,LINE_PARAMS_BUNDLES.get(SHIN_BUN_DANG_LINE));
 
         //then
-        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(createResponse.jsonPath().getList("stations.name")).contains("서울역","강남역");
-        
+        노선_생성_및_지하철역들이_노선에_연결되었는지_검증(createResponse);
+
         //when
         ExtractableResponse<Response> getResponse = requestGetAll(LINE_PATH);
         
         //then
+        목록_조회에서_생성한_노선이_있는지_검증(getResponse);
+    }
+
+
+    private void 노선_생성_및_지하철역들이_노선에_연결되었는지_검증(ExtractableResponse<Response> createResponse) {
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(createResponse.jsonPath().getList("stations.name")).contains("서울역","강남역");
+    }
+
+    private void 목록_조회에서_생성한_노선이_있는지_검증(ExtractableResponse<Response> getResponse) {
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(getResponse.jsonPath().getList("name")).contains("신분당선");
     }
@@ -99,9 +107,13 @@ class LineAcceptanceTest {
         ExtractableResponse<Response> response = requestGetAll(LINE_PATH);
 
         //then
+        노선_목록_조회_검증(response);
+
+    }
+
+    private void 노선_목록_조회_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("name")).contains("신분당선","2호선");
-
     }
 
     /**
@@ -119,11 +131,15 @@ class LineAcceptanceTest {
         ExtractableResponse<Response> response = requestGetById(LINE_PATH,1L);
 
         //then
+        노선_개별_조회_검증(response);
+    }
+
+    private void 노선_개별_조회_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getString("name")).contains("신분당선");
     }
 
-   /**
+    /**
      * Given 지하철 노선을 생성하고
      * When 생성한 지하철 노선을 삭제하면
      * Then 해당 지하철 노선 정보는 삭제된다
@@ -138,6 +154,10 @@ class LineAcceptanceTest {
         ExtractableResponse<Response> response = requestDeleteById(LINE_PATH,1L);
 
         //then
+        삭제된_노선_조회시_오류_응답_검증(response);
+    }
+
+    private void 삭제된_노선_조회시_오류_응답_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         assertThat(requestGetById(LINE_PATH,1L).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -160,6 +180,10 @@ class LineAcceptanceTest {
         ExtractableResponse<Response> response = requestUpdateById(LINE_PATH,1L,lineParams);
 
         //then
+        업데이트한_노선_정보가_변경되었는지_검증(response);
+    }
+
+    private void 업데이트한_노선_정보가_변경되었는지_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         ExtractableResponse<Response> getResponse = requestGetById(LINE_PATH,1L);
         assertThat(getResponse.jsonPath().getString("name")).contains("분당선");
