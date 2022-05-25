@@ -1,8 +1,10 @@
 package nextstep.subway.domain;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Entity
@@ -10,6 +12,8 @@ public class Station extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank
     @Column(unique = true)
     private String name;
 
@@ -17,7 +21,6 @@ public class Station extends BaseEntity {
     }
 
     public Station(String name) {
-        validation(name);
         this.name = name;
     }
 
@@ -27,12 +30,6 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
-    }
-
-    private void validation(String name) {
-        if (Objects.isNull(name) || name.isEmpty()) {
-            throw new DataIntegrityViolationException("invalid name");
-        }
     }
 
     @Override

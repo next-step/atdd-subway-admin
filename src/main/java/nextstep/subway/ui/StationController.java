@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolationException;
 import java.net.URI;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class StationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ExceptionHandler(value = {DataIntegrityViolationException.class, ConstraintViolationException.class})
     public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }
