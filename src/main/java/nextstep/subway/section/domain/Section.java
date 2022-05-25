@@ -85,6 +85,10 @@ public class Section {
         this.line = line;
     }
 
+    public Line getLine() {
+        return this.line;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

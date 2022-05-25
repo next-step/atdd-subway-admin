@@ -38,6 +38,13 @@ public class LineService {
         return LineResponse.of(savedLine, generateStationResponse(savedLine));
     }
 
+    public List<LineResponse> findLines() {
+        List<Line> lines = lineRepository.findAll();
+        return lines.stream()
+            .map(line -> LineResponse.of(line, generateStationResponse(line)))
+            .collect(Collectors.toList());
+    }
+
     private List<StationResponse> generateStationResponse(Line line) {
         return line.getStations().stream()
             .map(StationResponse::of)

@@ -2,13 +2,15 @@ package nextstep.subway.section.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line")
+    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private List<Section> sections;
 
     protected Sections() {}
