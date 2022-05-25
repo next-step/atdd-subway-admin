@@ -37,7 +37,7 @@ public class StationAcceptanceTest {
      */
     @DisplayName("지하철역을 생성한다.")
     @Test
-    void createStation() {
+    public void createStation() {
         // when
         ExtractableResponse<Response> response = createStation("강남역");
 

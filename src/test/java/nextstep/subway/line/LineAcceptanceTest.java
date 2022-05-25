@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Station;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,11 +43,14 @@ public class LineAcceptanceTest {
     @Test
     void 지하철노선_생성() {
         // when
+        ExtractableResponse<Response> upStation = stationAcceptanceTest.createStation("강남역");
+        ExtractableResponse<Response> downStation = stationAcceptanceTest.createStation("역삼역");
+
         Map<String, Object> param = new HashMap<>();
         param.put("name", "신분당선");
         param.put("color", "bg-red-600");
-        param.put("upStationId", 1);
-        param.put("downStationId", 2);
+        param.put("upStationId", upStation.jsonPath().get("id"));
+        param.put("downStationId", downStation.jsonPath().get("id"));
         param.put("distance", 10);
 
         ExtractableResponse<Response> response =
