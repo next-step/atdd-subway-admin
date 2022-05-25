@@ -8,6 +8,7 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -96,6 +97,28 @@ class LineAcceptanceTest {
     }
 
     /**
+     * given 지하철 노선을 생성하고
+     * when 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        ExtractableResponse<Response> saveResponse = 지하철_노선_생성("신분당선", "black");
+
+        // when
+        LineRequest lineRequest = LineRequest.of("8호선", "skyblue");
+        Long 지하철_노선_ID = saveResponse.as(LineResponse.class).getId();
+        ExtractableResponse<Response> updateResponse = 지하철_노선_수정(지하철_노선_ID, lineRequest);
+
+        // then
+        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(convertToFiledName(updateResponse, "name")).isEqualTo("8호선");
+        assertThat(convertToFiledName(updateResponse, "color")).isEqualTo("skyblue");
+    }
+
+    /**
      * 전달받은 지하철역 목록을 저장한다
      * @param name 노선 이름
      * @param color 노선 색상
@@ -129,6 +152,18 @@ class LineAcceptanceTest {
     private ExtractableResponse<Response> 지하철_노선_목록_조회() {
         return RestAssured.given().log().all()
             .when().get("/lines")
+            .then().log().all()
+            .extract();
+    }
+
+    /**
+     * 지하철 노선을 수정한다
+     */
+    private ExtractableResponse<Response> 지하철_노선_수정(Long id, LineRequest lineRequest) {
+        return RestAssured.given().log().all()
+            .body(lineRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().put("/lines/" + id)
             .then().log().all()
             .extract();
     }
