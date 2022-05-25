@@ -73,22 +73,22 @@ public class LineAcceptanceTest {
     @Test
     void 지하철노선_목록_조회() {
         // given
-        stationAcceptanceTest.createStation("지하철역");
-        stationAcceptanceTest.createStation("새로운지하철역");
-        stationAcceptanceTest.createStation("또다른지하철역");
+        ExtractableResponse<Response> station1 = stationAcceptanceTest.createStation("지하철역");
+        ExtractableResponse<Response> station2 = stationAcceptanceTest.createStation("새로운지하철역");
+        ExtractableResponse<Response> station3 = stationAcceptanceTest.createStation("또다른지하철역");
 
         Map<String, Object> line1 = new HashMap<>();
         line1.put("name", "신분당선");
         line1.put("color", "bg-red-600");
-        line1.put("upStationId", 1);
-        line1.put("downStationId", 2);
+        line1.put("upStationId", station1.jsonPath().get("id"));
+        line1.put("downStationId", station2.jsonPath().get("id"));
         line1.put("distance", 10);
 
         Map<String, Object> line2 = new HashMap<>();
         line2.put("name", "분당선");
         line2.put("color", "bg-green-600");
-        line2.put("upStationId", 1);
-        line2.put("downStationId", 3);
+        line2.put("upStationId", station1.jsonPath().get("id"));
+        line2.put("downStationId", station3.jsonPath().get("id"));
         line2.put("distance", 10);
 
         RestAssured.given().log().all()

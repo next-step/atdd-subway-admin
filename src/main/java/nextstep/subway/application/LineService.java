@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,17 +26,35 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Line persistLine = lineRepository.save(lineRequest.toLine());
-        List<StationResponse> stationsResponse = toStationsResponse(lineRequest);
+        List<StationResponse> stationsResponse = toStationsResponse(Arrays.asList(lineRequest.getUpStationId(), lineRequest.getDownStationId()));
+        Line persistLine = lineRepository.save(lineRequest.toLine(new Station(stationsResponse.get(0)), new Station(stationsResponse.get(1))));
 
         return LineResponse.of(persistLine, stationsResponse);
     }
 
-    private List<StationResponse> toStationsResponse(LineRequest lineRequest) {
+    public List<LineResponse> findAllLines() {
+        List<Line> lines = lineRepository.findAll();
+
+        Station station = lines.get(0).getUpStation();
+
+        List<StationResponse> test = toStationsResponse(Arrays.asList(lines.get(0).getUpStation().getId(), lines.get(0).getDownStation().getId()));
+        List<StationResponse> test2 = toStationsResponse(Arrays.asList(lines.get(1).getUpStation().getId(), lines.get(1).getDownStation().getId()));
+
+        List<LineResponse> result =
+        lines.stream()
+                .map(line -> LineResponse.of(line, toStationsResponse(Arrays.asList(line.getUpStation().getId(), line.getDownStation().getId()))))
+                .collect(Collectors.toList());
+
+        return lines.stream()
+                .map(line -> LineResponse.of(line, toStationsResponse(Arrays.asList(line.getUpStation().getId(), line.getDownStation().getId()))))
+                .collect(Collectors.toList());
+    }
+
+    private List<StationResponse> toStationsResponse(List<Long> stationIds) {
         List<Station> stations = new ArrayList<>();
-        stations.add(stationRepository.findById(lineRequest.getUpStationId()).get());
-        stations.add(stationRepository.findById(lineRequest.getDownStationId()).get());
+        stationIds.forEach(stationId -> stations.add(stationRepository.findById(stationId).get()));
 
         return stations.stream().map(StationResponse::of).collect(Collectors.toList());
     }
+
 }

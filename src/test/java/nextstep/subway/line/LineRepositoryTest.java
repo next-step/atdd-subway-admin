@@ -2,6 +2,8 @@ package nextstep.subway.line;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -14,15 +16,23 @@ class LineRepositoryTest {
     @Autowired
     private LineRepository lineRepository;
 
+    @Autowired
+    private StationRepository stationRepository;
+
     @Test
     void 지하철_노선_저장() {
-        Line line = new Line("신분당선", "bg-red-600");
+        Station upStation = stationRepository.save(new Station("강남역"));
+        Station downStation = stationRepository.save(new Station("역삼역"));
+
+        Line line = new Line("신분당선", "bg-red-600", upStation, downStation);
         Line result = lineRepository.save(line);
 
         assertAll(
                 () -> assertThat(result.getId()).isNotNull(),
                 () -> assertThat(result.getName()).isEqualTo(line.getName()),
-                () -> assertThat(result.getColor()).isEqualTo(line.getColor())
+                () -> assertThat(result.getColor()).isEqualTo(line.getColor()),
+                () -> assertThat(result.getUpStation()).isEqualTo(line.getUpStation()),
+                () -> assertThat(result.getDownStation()).isEqualTo(line.getDownStation())
         );
     }
 
