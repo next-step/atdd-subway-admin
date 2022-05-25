@@ -53,11 +53,6 @@ npm run dev
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
 
-## 기능 요구사항
-### 지하철역 인수 테스트를 완성하세요.
-- [ ] 지하철역 목록 조회 인수 테스트 작성하기
-- [ ] 지하철역 삭제 인수 테스트 작성하기
-
 ## 프로그래밍 요구사항
 * 인수 테스트의 재사용성과 가독성, 그리고 빠른 테스트 의도 파악을 위해 인수 테스트를 리팩터링 하세요.
 
@@ -71,4 +66,9 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ### JsonPath
 - Json 문서를 읽어오는 DSL
 - JsonPath를 사용하면 Response Dto 객체로 받을 필요 없이 필요한 값만 추출하여 검증에 사용할 수 있음
+
+## 기능 요구사항
+### 지하철역 인수 테스트를 완성
+- [ ] 지하철역 목록 조회 인수 테스트 작성
+- [ ] 지하철역 삭제 인수 테스트 작성
 
