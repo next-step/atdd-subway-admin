@@ -43,10 +43,6 @@ public class StationAcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        // then
-        List<String> stationNames = findStations().jsonPath().getList("name");
-        assertThat(stationNames).containsAnyOf("강남역");
     }
 
     /**
