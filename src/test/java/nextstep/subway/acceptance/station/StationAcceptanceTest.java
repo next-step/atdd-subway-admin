@@ -1,4 +1,4 @@
-package nextstep.subway.station;
+package nextstep.subway.acceptance.station;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -8,29 +8,14 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.subway.acceptance.base.BaseAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql("/sql/truncate.sql")
-class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-    }
-
+class StationAcceptanceTest extends BaseAcceptanceTest {
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다
