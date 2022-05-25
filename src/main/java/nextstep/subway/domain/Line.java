@@ -10,7 +10,7 @@ import nextstep.subway.domain.collection.Stations;
 import org.apache.commons.lang3.StringUtils;
 
 @Entity
-public class Line extends BaseEntity{
+public class Line extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +23,7 @@ public class Line extends BaseEntity{
     @Embedded
     private Stations stations = new Stations();
 
-    protected Line(){
+    protected Line() {
     }
 
     public Line(String name, String color) {
@@ -32,10 +32,10 @@ public class Line extends BaseEntity{
     }
 
     public void update(String name, String color) {
-        if(StringUtils.isNoneEmpty(name)){
+        if (StringUtils.isNoneEmpty(name)) {
             this.name = name;
         }
-        if(StringUtils.isNoneEmpty(color)){
+        if (StringUtils.isNoneEmpty(color)) {
             this.color = color;
         }
     }

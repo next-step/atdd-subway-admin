@@ -13,7 +13,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 @DataJpaTest
 class LineTest {
 
-    private static final Line SIN_BOUN_DANG_LINE = new Line("신분당선","bg-red-600");
+    private static final Line SIN_BOUN_DANG_LINE = new Line("신분당선", "bg-red-600");
 
     @Autowired
     private LineRepository lineRepository;
@@ -22,12 +22,12 @@ class LineTest {
 
     @DisplayName("노선 정보를 업데이트 한다.")
     @Test
-    void update(){
+    void update() {
         //given
         Line line = lineRepository.save(SIN_BOUN_DANG_LINE);
 
         //when
-        line.update("분당선","bg-yellow-600");
+        line.update("분당선", "bg-yellow-600");
         entityManager.flush();
         entityManager.clear();
 
@@ -39,7 +39,7 @@ class LineTest {
 
     @DisplayName("노선을 삭제 한다.")
     @Test
-    void delete(){
+    void delete() {
         //given
         Line line = lineRepository.save(SIN_BOUN_DANG_LINE);
 
@@ -55,7 +55,7 @@ class LineTest {
 
     @DisplayName("노선에 지하철역을 추가한다.")
     @Test
-    void addStation(){
+    void addStation() {
         //given
         Station pangyo = new Station("판교");
         Station jeongja = new Station("정자");
@@ -69,6 +69,6 @@ class LineTest {
 
         //then
         Line actual = lineRepository.findById(line.getId()).get();
-        assertThat(actual.getStations()).isEqualTo(new Stations(Arrays.asList(pangyo,jeongja)));
+        assertThat(actual.getStations()).isEqualTo(new Stations(Arrays.asList(pangyo, jeongja)));
     }
 }

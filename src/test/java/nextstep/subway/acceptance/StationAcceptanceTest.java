@@ -1,10 +1,10 @@
 package nextstep.subway.acceptance;
+
 import static nextstep.subway.test.RequestUtils.*;
+
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.ArrayList;
 import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +27,7 @@ class StationAcceptanceTest {
     public static final String STATION_PATH = "/stations";
     private static final int GANG_NAM_STATION = 0;
     public static final List<Map<String, Object>> STATION_PARAMS_BUNDLES;
+
     static {
         Map<String, Object> params1 = new HashMap<>();
         Map<String, Object> params2 = new HashMap<>();
@@ -58,15 +58,16 @@ class StationAcceptanceTest {
      * */
     @DisplayName("지하철역을 관리한다.")
     @Test
-    void manageStations(){
+    void manageStations() {
         // when
-        List<ExtractableResponse<Response>> createResponses = requestCreateBundle(STATION_PATH,STATION_PARAMS_BUNDLES);
+        List<ExtractableResponse<Response>> createResponses = requestCreateBundle(STATION_PATH, STATION_PARAMS_BUNDLES);
 
         // then
         지하철역들이_생성되었는지_검증(createResponses);
 
         // when
-        ExtractableResponse<Response> createResponse = requestCreate(STATION_PATH,STATION_PARAMS_BUNDLES.get(GANG_NAM_STATION));
+        ExtractableResponse<Response> createResponse = requestCreate(STATION_PATH,
+                STATION_PARAMS_BUNDLES.get(GANG_NAM_STATION));
 
         // then
         존재하는_지하철역인_경우_오류_응답_인지_검증(createResponse);
@@ -78,8 +79,8 @@ class StationAcceptanceTest {
         지하철역_목록_조회_검증(getAllResponse);
 
         //when
-        ExtractableResponse<Response> deleteResponse = requestDeleteById(STATION_PATH,1L);
-        HTTP_응답_상태코드_검증(deleteResponse,HttpStatus.NO_CONTENT);
+        ExtractableResponse<Response> deleteResponse = requestDeleteById(STATION_PATH, 1L);
+        HTTP_응답_상태코드_검증(deleteResponse, HttpStatus.NO_CONTENT);
 
         //then
         ExtractableResponse<Response> response = requestGetAll(STATION_PATH);
@@ -97,7 +98,7 @@ class StationAcceptanceTest {
         }
     }
 
-    private void HTTP_응답_상태코드_검증(ExtractableResponse<Response> response,HttpStatus httpStatus) {
+    private void HTTP_응답_상태코드_검증(ExtractableResponse<Response> response, HttpStatus httpStatus) {
         assertThat(response.statusCode()).isEqualTo(httpStatus.value());
     }
 

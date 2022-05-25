@@ -18,7 +18,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 @DataJpaTest
-@Import({LineService.class,StationService.class})
+@Import({LineService.class, StationService.class})
 class LineServiceTest {
 
     @Autowired
@@ -30,11 +30,11 @@ class LineServiceTest {
 
     @DisplayName("연결된 지하철역이 있는 노선을 생성한다.")
     @Test
-    void saveLine(){
+    void saveLine() {
         //given
         Station pangyo = stationRepository.save(new Station("판교"));
         Station jeongja = stationRepository.save(new Station("정자"));
-        LineRequestDTO lineRequestDTO = new LineRequestDTO("신분당선","bg-red-600",1L,2L,10L);
+        LineRequestDTO lineRequestDTO = new LineRequestDTO("신분당선", "bg-red-600", 1L, 2L, 10L);
 
         //when
         LineResponseDTO lineResponseDTO = lineService.saveLine(lineRequestDTO);

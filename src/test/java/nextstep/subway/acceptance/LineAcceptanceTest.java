@@ -19,7 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
-@Sql(scripts = "/drop_test_table.sql",executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "/drop_test_table.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LineAcceptanceTest {
@@ -49,12 +49,12 @@ class LineAcceptanceTest {
     int port;
 
     @BeforeEach
-     void setUp() {
+    void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
         // 지하철역 2개 생성
-        requestCreateBundle(StationAcceptanceTest.STATION_PATH,StationAcceptanceTest.STATION_PARAMS_BUNDLES);
+        requestCreateBundle(StationAcceptanceTest.STATION_PATH, StationAcceptanceTest.STATION_PARAMS_BUNDLES);
     }
 
     /**
@@ -65,17 +65,18 @@ class LineAcceptanceTest {
      * */
     @DisplayName("지하철 노선을 생성하여 조회 시 있는지 확인한다.")
     @Test
-    void createLines(){
+    void createLines() {
 
         //when
-        ExtractableResponse<Response> createResponse = requestCreate(LINE_PATH,LINE_PARAMS_BUNDLES.get(SHIN_BUN_DANG_LINE));
+        ExtractableResponse<Response> createResponse = requestCreate(LINE_PATH,
+                LINE_PARAMS_BUNDLES.get(SHIN_BUN_DANG_LINE));
 
         //then
         노선_생성_및_지하철역들이_노선에_연결되었는지_검증(createResponse);
 
         //when
         ExtractableResponse<Response> getResponse = requestGetAll(LINE_PATH);
-        
+
         //then
         목록_조회에서_생성한_노선이_있는지_검증(getResponse);
     }
@@ -83,7 +84,7 @@ class LineAcceptanceTest {
 
     private void 노선_생성_및_지하철역들이_노선에_연결되었는지_검증(ExtractableResponse<Response> createResponse) {
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(createResponse.jsonPath().getList("stations.name")).contains("서울역","강남역");
+        assertThat(createResponse.jsonPath().getList("stations.name")).contains("서울역", "강남역");
     }
 
     private void 목록_조회에서_생성한_노선이_있는지_검증(ExtractableResponse<Response> getResponse) {
@@ -101,7 +102,7 @@ class LineAcceptanceTest {
     void showLines() {
 
         //given
-        requestCreateBundle(LINE_PATH,LINE_PARAMS_BUNDLES);
+        requestCreateBundle(LINE_PATH, LINE_PARAMS_BUNDLES);
 
         //when
         ExtractableResponse<Response> response = requestGetAll(LINE_PATH);
@@ -113,7 +114,7 @@ class LineAcceptanceTest {
 
     private void 노선_목록_조회_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("name")).contains("신분당선","2호선");
+        assertThat(response.jsonPath().getList("name")).contains("신분당선", "2호선");
     }
 
     /**
@@ -123,12 +124,12 @@ class LineAcceptanceTest {
      * */
     @DisplayName("지하철 노선을 개별 조회한다.")
     @Test
-    void showLine(){
+    void showLine() {
         //given
-        requestCreate(LINE_PATH,LINE_PARAMS_BUNDLES.get(SHIN_BUN_DANG_LINE));
+        requestCreate(LINE_PATH, LINE_PARAMS_BUNDLES.get(SHIN_BUN_DANG_LINE));
 
         //when
-        ExtractableResponse<Response> response = requestGetById(LINE_PATH,1L);
+        ExtractableResponse<Response> response = requestGetById(LINE_PATH, 1L);
 
         //then
         노선_개별_조회_검증(response);
@@ -146,12 +147,12 @@ class LineAcceptanceTest {
      * */
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
-    void deleteLine(){
+    void deleteLine() {
         //given
-        requestCreate(LINE_PATH,LINE_PARAMS_BUNDLES.get(SHIN_BUN_DANG_LINE));
+        requestCreate(LINE_PATH, LINE_PARAMS_BUNDLES.get(SHIN_BUN_DANG_LINE));
 
         //when
-        ExtractableResponse<Response> response = requestDeleteById(LINE_PATH,1L);
+        ExtractableResponse<Response> response = requestDeleteById(LINE_PATH, 1L);
 
         //then
         삭제된_노선_조회시_오류_응답_검증(response);
@@ -159,7 +160,7 @@ class LineAcceptanceTest {
 
     private void 삭제된_노선_조회시_오류_응답_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        assertThat(requestGetById(LINE_PATH,1L).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(requestGetById(LINE_PATH, 1L).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -169,15 +170,15 @@ class LineAcceptanceTest {
      * */
     @DisplayName("지하철 노선을 업데이트한다.")
     @Test
-    void updateLine(){
+    void updateLine() {
         //given
-        requestCreate(LINE_PATH,LINE_PARAMS_BUNDLES.get(SHIN_BUN_DANG_LINE));
+        requestCreate(LINE_PATH, LINE_PARAMS_BUNDLES.get(SHIN_BUN_DANG_LINE));
 
         //when
         Map<String, Object> lineParams = LINE_PARAMS_BUNDLES.get(SHIN_BUN_DANG_LINE);
-        lineParams.put("name" , "분당선");
-        lineParams.put("color" , "bg-yellow-600");
-        ExtractableResponse<Response> response = requestUpdateById(LINE_PATH,1L,lineParams);
+        lineParams.put("name", "분당선");
+        lineParams.put("color", "bg-yellow-600");
+        ExtractableResponse<Response> response = requestUpdateById(LINE_PATH, 1L, lineParams);
 
         //then
         업데이트한_노선_정보가_변경되었는지_검증(response);
@@ -185,7 +186,7 @@ class LineAcceptanceTest {
 
     private void 업데이트한_노선_정보가_변경되었는지_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        ExtractableResponse<Response> getResponse = requestGetById(LINE_PATH,1L);
+        ExtractableResponse<Response> getResponse = requestGetById(LINE_PATH, 1L);
         assertThat(getResponse.jsonPath().getString("name")).contains("분당선");
         assertThat(getResponse.jsonPath().getString("color")).contains("bg-yellow-600");
     }

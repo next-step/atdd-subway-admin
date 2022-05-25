@@ -11,7 +11,8 @@ public class StationResponseDTO {
     private LocalDateTime modifiedDate;
 
     public static StationResponseDTO of(Station station) {
-        return new StationResponseDTO(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate());
+        return new StationResponseDTO(station.getId(), station.getName(), station.getCreatedDate(),
+                station.getModifiedDate());
     }
 
     public StationResponseDTO() {

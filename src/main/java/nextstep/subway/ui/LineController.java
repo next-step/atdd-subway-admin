@@ -28,31 +28,31 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponseDTO> createLines(@RequestBody LineRequestDTO lineRequestDTO){
+    public ResponseEntity<LineResponseDTO> createLines(@RequestBody LineRequestDTO lineRequestDTO) {
         LineResponseDTO lineResponseDTO = lineService.saveLine(lineRequestDTO);
-        return ResponseEntity.created(URI.create(LINES_PATH+lineResponseDTO.getId())).body(lineResponseDTO);
+        return ResponseEntity.created(URI.create(LINES_PATH + lineResponseDTO.getId())).body(lineResponseDTO);
     }
 
     @GetMapping("/lines")
-    public ResponseEntity<List<LineResponseDTO>> showLines(){
+    public ResponseEntity<List<LineResponseDTO>> showLines() {
         LineResponsesDTO lineResponsesDTO = lineService.findAll();
         return ResponseEntity.ok(lineResponsesDTO.getLineResponses());
     }
 
     @GetMapping("/lines/{id}")
-    public ResponseEntity<LineResponseDTO> showLine(@PathVariable Long id){
+    public ResponseEntity<LineResponseDTO> showLine(@PathVariable Long id) {
         LineResponseDTO lineResponsesDTO = lineService.findOne(id);
         return ResponseEntity.ok(lineResponsesDTO);
     }
 
     @PutMapping("/lines/{id}")
-    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequestDTO lineRequestDTO){
-        lineService.updateLineInfo(id,lineRequestDTO);
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequestDTO lineRequestDTO) {
+        lineService.updateLineInfo(id, lineRequestDTO);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")
-    public ResponseEntity<Void> deleteLine(@PathVariable Long id){
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }

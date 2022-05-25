@@ -13,7 +13,7 @@ public class LineResponsesDTO {
 
     public static LineResponsesDTO of(List<Line> lines) {
         List<LineResponseDTO> lineResponsesDTO = new ArrayList<>();
-        for (Line line : lines){
+        for (Line line : lines) {
             lineResponsesDTO.add(LineResponseDTO.of(line));
         }
         return new LineResponsesDTO(lineResponsesDTO);

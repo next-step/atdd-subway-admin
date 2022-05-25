@@ -14,10 +14,10 @@ import nextstep.subway.domain.Station;
 public class Stations {
 
     @OneToMany(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "line_id",foreignKey = @ForeignKey(name = "fk_line_to_stations"))
+    @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_line_to_stations"))
     private List<Station> stations = new ArrayList<>();
 
-    public Stations(){
+    public Stations() {
     }
 
     public Stations(List<Station> stations) {

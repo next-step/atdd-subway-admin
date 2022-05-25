@@ -13,12 +13,12 @@ public class LineResponseDTO {
     private final List<StationResponseDTO> stations;
 
 
-    public static LineResponseDTO of(Line line){
+    public static LineResponseDTO of(Line line) {
         List<StationResponseDTO> stations = new ArrayList<>();
-        for (Station station : line.getStations().getStations()){
+        for (Station station : line.getStations().getStations()) {
             stations.add(StationResponseDTO.of(station));
         }
-        return new LineResponseDTO(line.getId(),line.getName(),line.getColor(),stations);
+        return new LineResponseDTO(line.getId(), line.getName(), line.getColor(), stations);
     }
 
     private LineResponseDTO(Long id, String name, String color, List<StationResponseDTO> stations) {
@@ -27,6 +27,7 @@ public class LineResponseDTO {
         this.color = color;
         this.stations = stations;
     }
+
     public Long getId() {
         return id;
     }

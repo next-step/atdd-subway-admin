@@ -23,7 +23,7 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponseDTO saveLine(LineRequestDTO lineRequestDTO){
+    public LineResponseDTO saveLine(LineRequestDTO lineRequestDTO) {
         Line line = lineRequestDTO.toLine();
         Station upStation = stationRepository.findById(lineRequestDTO.getUpStationId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 상단 ID가 해당하는 지하철역이 없습니다."));
@@ -32,31 +32,31 @@ public class LineService {
         line.addStation(upStation);
         line.addStation(downStation);
         Line savedLine = lineRepository.save(line);
-        return  LineResponseDTO.of(savedLine);
+        return LineResponseDTO.of(savedLine);
     }
 
     @Transactional
-    public LineResponsesDTO findAll(){
+    public LineResponsesDTO findAll() {
         List<Line> lines = lineRepository.findAllByDeletedFalse();
         return LineResponsesDTO.of(lines);
     }
 
     @Transactional
-    public LineResponseDTO findOne(Long lineId){
+    public LineResponseDTO findOne(Long lineId) {
         Line line = getLine(lineId);
         return LineResponseDTO.of(line);
     }
 
     @Transactional
-    public void deleteLine(Long lineId){
+    public void deleteLine(Long lineId) {
         Line line = getLine(lineId);
         line.delete();
     }
 
     @Transactional
-    public void updateLineInfo(Long id, LineRequestDTO lineRequestDTO){
+    public void updateLineInfo(Long id, LineRequestDTO lineRequestDTO) {
         Line line = getLine(id);
-        line.update(lineRequestDTO.getName(),lineRequestDTO.getColor());
+        line.update(lineRequestDTO.getName(), lineRequestDTO.getColor());
     }
 
     private Line getLine(Long lineId) {
