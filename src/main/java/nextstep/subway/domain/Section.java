@@ -53,21 +53,20 @@ public class Section extends BaseEntity {
         }
         if (this.downStation.equals(section.downStation) && !this.upStation.equals(section.upStation)) {
             relocateDownStation(section);
-            return;
         }
     }
 
     private void relocateUpStation(Section section) {
+        distance.minus(section.distance);
         Station tempStation = this.downStation;
         this.downStation = section.downStation;
         section.upStation = this.downStation;
         section.downStation = tempStation;
-        distance.minus(section.distance);
     }
 
     private void relocateDownStation(Section section) {
-        this.downStation = section.upStation;
         distance.minus(section.distance);
+        this.downStation = section.upStation;
     }
 
     public Station getUpStation() {
@@ -76,5 +75,13 @@ public class Section extends BaseEntity {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public Distance getDistance() {
+        return distance;
+    }
+
+    public Long getLineId() {
+        return lineId;
     }
 }
