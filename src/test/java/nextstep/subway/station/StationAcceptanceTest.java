@@ -101,6 +101,35 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        //Given 2개의 지하철역을 생성하고
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "인천역");
+
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all();
+
+        params = new HashMap<>();
+        params.put("name", "강남역");
+
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all();
+
+        //When 지하철역 목록을 조회하면
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().get("/stations")
+                        .then().log().all()
+                        .extract();
+
+        //Then 2개의 지하철역을 응답 받는다
+        assertThat(response.jsonPath().getList("name")).containsExactly("인천역","강남역");
     }
 
     /**
