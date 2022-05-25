@@ -36,8 +36,8 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
         return Stream.of(
                 dynamicTest("지하철노선 생성", () -> {
-                    ExtractableResponse<Response> response = callCreateLine("신분당선", "bg-red-600", 강남역_id,
-                                                                            정자역_id, 10L);
+                    ExtractableResponse<Response> response =
+                            LineRestAssured.callCreateLine("신분당선", "bg-red-600", 강남역_id, 정자역_id, 10L);
                     lineId = toLineId(response);
 
                     assertAll(
@@ -46,19 +46,19 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
                                 String locationHeaderValue = String.format("/lines/%d", lineId);
                                 assertThat(response.header("Location")).isEqualTo(locationHeaderValue);
                             },
-                            () -> assertThat(toLineNames(callGetLines())).containsAnyOf("신분당선")
+                            () -> assertThat(toLineNames(LineRestAssured.callGetLines())).containsAnyOf("신분당선")
                     );
                 }),
                 dynamicTest("중복되는 지하철노선 생성", () -> {
-                    ExtractableResponse<Response> response = callCreateLine("신분당선", "bg-red-600", 강남역_id,
-                                                                            정자역_id, 10L);
+                    ExtractableResponse<Response> response =
+                            LineRestAssured.callCreateLine("신분당선", "bg-red-600", 강남역_id, 정자역_id, 10L);
 
                     AssertUtils.assertStatusCode(response, HttpStatus.BAD_REQUEST);
                 }),
                 dynamicTest("지하철노선 목록 조회", () -> {
-                    callCreateLine("분당선", "bg-yellow-600", 청량리역_id, 정자역_id, 10L);
+                    LineRestAssured.callCreateLine("분당선", "bg-yellow-600", 청량리역_id, 정자역_id, 10L);
 
-                    ExtractableResponse<Response> response = callGetLines();
+                    ExtractableResponse<Response> response = LineRestAssured.callGetLines();
 
                     assertAll(
                             () -> AssertUtils.assertStatusCode(response, HttpStatus.OK),
@@ -92,37 +92,13 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
                 dynamicTest("지하철노선 삭제", () -> {
                     callDeleteLine(lineId);
 
-                    ExtractableResponse<Response> response = callGetLines();
+                    ExtractableResponse<Response> response = LineRestAssured.callGetLines();
                     assertAll(
                             () -> AssertUtils.assertStatusCode(response, HttpStatus.OK),
                             () -> assertThat(toLineNames(response)).doesNotContain("신분당선")
                     );
                 })
         );
-    }
-
-    private ExtractableResponse<Response> callCreateLine(String name, String color, long upStationId,
-                                                         long downStationId, long distance) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", distance);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> callGetLines() {
-        return RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract();
     }
 
     private ExtractableResponse<Response> callGetLine(long lineId) {
