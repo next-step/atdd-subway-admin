@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,7 +18,17 @@ public class Line extends BaseEntity {
     private String color;
 
     @OneToMany(mappedBy = "line")
-    private List<Section> Sections;
+    private List<Section> Sections = new ArrayList<>();
+
+    protected Line() {
+
+    }
+
+    public Line(String name, String color) {
+        this.id = null;
+        this.name = name;
+        this.color = color;
+    }
 
     public Long getId() {
         return id;

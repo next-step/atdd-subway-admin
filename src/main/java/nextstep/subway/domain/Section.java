@@ -24,6 +24,18 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "LINE_ID")
     private Line line;
 
+    protected Section() {
+
+    }
+
+    public Section(int distance, Station upStation, Station downStation, Line line) {
+        this.id = null;
+        this.distance = distance;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.line = line;
+    }
+
     public Long getId() {
         return id;
     }
