@@ -3,7 +3,7 @@ package nextstep.subway.line.domain;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
-import nextstep.subway.constants.LineExceptionMessage;
+import nextstep.subway.line.domain.exception.LineExceptionMessage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -25,6 +25,6 @@ class LineColorTest {
     void generate02(String color) {
         // given & when & then
         assertThatIllegalArgumentException().isThrownBy(() -> LineColor.from(color))
-            .withMessageContaining(LineExceptionMessage.LINE_COLOR_IS_NOT_NULL);
+            .withMessageContaining(LineExceptionMessage.LINE_COLOR_IS_NOT_NULL.getMessage());
     }
 }

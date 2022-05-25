@@ -1,6 +1,9 @@
 package nextstep.subway.section.domain;
 
-import static nextstep.subway.constants.SectionExceptionMessage.*;
+import static nextstep.subway.section.domain.exception.StationExceptionMessage.CANNOT_EQUALS_UP_STATION_WITH_DOWN_STATION;
+import static nextstep.subway.section.domain.exception.StationExceptionMessage.DISTANCE_IS_NOT_NULL;
+import static nextstep.subway.section.domain.exception.StationExceptionMessage.DOWN_STATION_IS_NOT_NULL;
+import static nextstep.subway.section.domain.exception.StationExceptionMessage.UP_STATION_IS_NOT_NULL;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,7 +46,7 @@ class SectionTest {
     void generate02() {
         // given & when & then
         assertThatIllegalArgumentException().isThrownBy(() -> Section.of(null, 강남역, distance))
-            .withMessageContaining(UP_STATION_IS_NOT_NULL);
+            .withMessageContaining(UP_STATION_IS_NOT_NULL.getMessage());
     }
 
     @DisplayName("지하철 구간 생성 시 하행역 없이 생성될 수 없다.")
@@ -51,7 +54,7 @@ class SectionTest {
     void generate03() {
         // given & when & then
         assertThatIllegalArgumentException().isThrownBy(() -> Section.of(판교역, null, distance))
-            .withMessageContaining(DOWN_STATION_IS_NOT_NULL);
+            .withMessageContaining(DOWN_STATION_IS_NOT_NULL.getMessage());
     }
 
     @DisplayName("지하철 구간 생성 시 구간 없이 생성될 수 없다.")
@@ -59,7 +62,7 @@ class SectionTest {
     void generate04() {
         // given & when & then
         assertThatIllegalArgumentException().isThrownBy(() -> Section.of(판교역, 강남역, null))
-            .withMessageContaining(DISTANCE_IS_NOT_NULL);
+            .withMessageContaining(DISTANCE_IS_NOT_NULL.getMessage());
     }
 
     @DisplayName("지하철 구간 생성 시 상, 하행 구간이 같을 수 없다.")
@@ -67,6 +70,6 @@ class SectionTest {
     void generate05() {
         // given & when & then
         assertThatIllegalArgumentException().isThrownBy(() -> Section.of(판교역, 판교역, distance))
-            .withMessageContaining(CANNOT_EQUALS_UP_STATION_WITH_DOWN_STATION);
+            .withMessageContaining(CANNOT_EQUALS_UP_STATION_WITH_DOWN_STATION.getMessage());
     }
 }

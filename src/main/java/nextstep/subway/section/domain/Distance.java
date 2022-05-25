@@ -1,6 +1,6 @@
 package nextstep.subway.section.domain;
 
-import static nextstep.subway.constants.SectionExceptionMessage.DISTANCE_IS_MUST_BE_GREATER_THAN_1;
+import static nextstep.subway.section.domain.exception.StationExceptionMessage.*;
 
 import java.util.Objects;
 import javax.persistence.Embeddable;
@@ -23,7 +23,7 @@ public class Distance {
 
     private static void validateDistance(int distance) {
         if (distance < 1) {
-            throw new IllegalArgumentException(DISTANCE_IS_MUST_BE_GREATER_THAN_1);
+            throw new IllegalArgumentException(DISTANCE_IS_MUST_BE_GREATER_THAN_1.getMessage());
         }
     }
 

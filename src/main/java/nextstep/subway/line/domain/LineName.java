@@ -1,9 +1,10 @@
 package nextstep.subway.line.domain;
 
+import static nextstep.subway.line.domain.exception.LineExceptionMessage.LINE_NAME_IS_NOT_NULL;
+
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import nextstep.subway.constants.LineExceptionMessage;
 import nextstep.subway.utils.StringUtils;
 
 @Embeddable
@@ -25,7 +26,7 @@ public class LineName {
 
     private static void validateLineName(String name) {
         if (StringUtils.isEmpty(name)) {
-            throw new IllegalArgumentException(LineExceptionMessage.LINE_NAME_IS_NOT_NULL);
+            throw new IllegalArgumentException(LINE_NAME_IS_NOT_NULL.getMessage());
         }
     }
 

@@ -1,10 +1,9 @@
 package nextstep.subway.section.domain;
 
-import static nextstep.subway.constants.SectionExceptionMessage.*;
+import static nextstep.subway.section.domain.exception.StationExceptionMessage.DISTANCE_IS_MUST_BE_GREATER_THAN_1;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
-import nextstep.subway.constants.SectionExceptionMessage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -25,6 +24,6 @@ class DistanceTest {
     void generate02(int distance) {
         // given & when & then
         assertThatIllegalArgumentException().isThrownBy(() -> Distance.from(distance))
-            .withMessageContaining(DISTANCE_IS_MUST_BE_GREATER_THAN_1);
+            .withMessageContaining(DISTANCE_IS_MUST_BE_GREATER_THAN_1.getMessage());
     }
 }

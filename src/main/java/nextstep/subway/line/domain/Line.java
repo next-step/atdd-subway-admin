@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import static nextstep.subway.line.domain.exception.LineExceptionMessage.ALREADY_ADDED_SECTION;
+
 import java.util.List;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -7,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.constants.LineExceptionMessage;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
@@ -51,7 +52,7 @@ public class Line extends BaseEntity {
 
     private void validateSections(Section section) {
         if (this.sections.contains(section)) {
-            throw new IllegalStateException(LineExceptionMessage.ALREADY_ADDED_SECTION);
+            throw new IllegalStateException(ALREADY_ADDED_SECTION.getMessage());
         }
     }
 

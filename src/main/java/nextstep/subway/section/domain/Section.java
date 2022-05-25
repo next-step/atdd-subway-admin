@@ -1,6 +1,9 @@
 package nextstep.subway.section.domain;
 
-import static nextstep.subway.constants.SectionExceptionMessage.*;
+import static nextstep.subway.section.domain.exception.StationExceptionMessage.CANNOT_EQUALS_UP_STATION_WITH_DOWN_STATION;
+import static nextstep.subway.section.domain.exception.StationExceptionMessage.DISTANCE_IS_NOT_NULL;
+import static nextstep.subway.section.domain.exception.StationExceptionMessage.DOWN_STATION_IS_NOT_NULL;
+import static nextstep.subway.section.domain.exception.StationExceptionMessage.UP_STATION_IS_NOT_NULL;
 
 import java.util.Objects;
 import javax.persistence.Embedded;
@@ -53,19 +56,19 @@ public class Section {
 
     private static void validateSection(Station upStation, Station downStation, Distance distance) {
         if (Objects.isNull(upStation)) {
-            throw new IllegalArgumentException(UP_STATION_IS_NOT_NULL);
+            throw new IllegalArgumentException(UP_STATION_IS_NOT_NULL.getMessage());
         }
 
         if (Objects.isNull(downStation)) {
-            throw new IllegalArgumentException(DOWN_STATION_IS_NOT_NULL);
+            throw new IllegalArgumentException(DOWN_STATION_IS_NOT_NULL.getMessage());
         }
 
         if (Objects.isNull(distance)) {
-            throw new IllegalArgumentException(DISTANCE_IS_NOT_NULL);
+            throw new IllegalArgumentException(DISTANCE_IS_NOT_NULL.getMessage());
         }
 
         if(upStation.equals(downStation)) {
-            throw new IllegalArgumentException(CANNOT_EQUALS_UP_STATION_WITH_DOWN_STATION);
+            throw new IllegalArgumentException(CANNOT_EQUALS_UP_STATION_WITH_DOWN_STATION.getMessage());
         }
     }
 

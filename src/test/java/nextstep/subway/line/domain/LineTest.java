@@ -1,12 +1,13 @@
 package nextstep.subway.line.domain;
 
+import static nextstep.subway.line.domain.exception.LineExceptionMessage.*;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import nextstep.subway.constants.LineExceptionMessage;
+import nextstep.subway.line.domain.exception.LineExceptionMessage;
 import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
@@ -38,7 +39,7 @@ class LineTest {
     void generate02(String name) {
         // given & when & then
         assertThatIllegalArgumentException().isThrownBy(() -> Line.of(name, "RED"))
-            .withMessageContaining(LineExceptionMessage.LINE_NAME_IS_NOT_NULL);
+            .withMessageContaining(LINE_NAME_IS_NOT_NULL.getMessage());
     }
 
     @DisplayName("지하철 노선 생성 시 노선 색상이 공란일 수 없다.")
@@ -47,7 +48,7 @@ class LineTest {
     void generate03(String color) {
         // given & when & then
         assertThatIllegalArgumentException().isThrownBy(() -> Line.of("신분당선", color))
-            .withMessageContaining(LineExceptionMessage.LINE_COLOR_IS_NOT_NULL);
+            .withMessageContaining(LINE_COLOR_IS_NOT_NULL.getMessage());
     }
 
     @DisplayName("지하철 노선에 Section을 추가할 수 있다.")
@@ -79,6 +80,6 @@ class LineTest {
 
         // when & then
         assertThatIllegalStateException().isThrownBy(() -> 신분당선.addSection(강남역_판교역_구간))
-            .withMessageContaining(LineExceptionMessage.ALREADY_ADDED_SECTION);
+            .withMessageContaining(ALREADY_ADDED_SECTION.getMessage());
     }
 }

@@ -1,9 +1,10 @@
 package nextstep.subway.line.domain;
 
+import static nextstep.subway.line.domain.exception.LineExceptionMessage.LINE_COLOR_IS_NOT_NULL;
+
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import nextstep.subway.constants.LineExceptionMessage;
 import nextstep.subway.utils.StringUtils;
 
 @Embeddable
@@ -24,7 +25,7 @@ public class LineColor {
 
     private static void validateLineColor(String color) {
         if (StringUtils.isEmpty(color)) {
-            throw new IllegalArgumentException(LineExceptionMessage.LINE_COLOR_IS_NOT_NULL);
+            throw new IllegalArgumentException(LINE_COLOR_IS_NOT_NULL.getMessage());
         }
     }
 
