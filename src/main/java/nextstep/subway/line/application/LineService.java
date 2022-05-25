@@ -1,11 +1,8 @@
 package nextstep.subway.line.application;
 
-import static nextstep.subway.constants.StationErrorException.*;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
-import nextstep.subway.constants.StationErrorException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -21,6 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class LineService {
+
+    public static final String NOT_FOUND_LINE = "지하철노선을 찾을 수 없습니다. (lineId = %s)";
+    public static final String NOT_FOUND_STATION = "지하철역을 찾을 수 없습니다. (stationId = %s)";
+
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
@@ -43,6 +44,12 @@ public class LineService {
         return lines.stream()
             .map(line -> LineResponse.of(line, generateStationResponse(line)))
             .collect(Collectors.toList());
+    }
+
+    public LineResponse findLineById(Long lineId) {
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(() -> new NoSuchElementException(String.format(NOT_FOUND_LINE, lineId)));
+        return LineResponse.of(line, generateStationResponse(line));
     }
 
     private List<StationResponse> generateStationResponse(Line line) {
