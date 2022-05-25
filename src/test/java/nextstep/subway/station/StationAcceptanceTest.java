@@ -1,6 +1,7 @@
 package nextstep.subway.station;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -38,28 +39,17 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = 지하철역을_생성_한다("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = 전체_지하철역을_조회한다();
+
         assertThat(stationNames).containsAnyOf("강남역");
     }
+
 
     /**
      * Given 지하철역을 생성하고
@@ -70,23 +60,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
+        지하철역을_생성_한다("강남역");
 
         // when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        final ExtractableResponse<Response> response = 지하철역을_생성_한다("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -101,34 +78,18 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         //Given 2개의 지하철역을 생성하고
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "인천역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
-
-        params = new HashMap<>();
-        params.put("name", "강남역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
+        지하철역을_생성_한다("인천역");
+        지하철역을_생성_한다("강남역");
 
         //When 지하철역 목록을 조회하면
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract();
+        List<String> stationNames = 전체_지하철역을_조회한다();
 
         //Then 2개의 지하철역을 응답 받는다
-        assertThat(response.jsonPath().getList("name")).containsExactly("인천역","강남역");
+        assertAll(
+            () -> assertThat(stationNames).hasSize(2),
+            () -> assertThat(stationNames).containsExactly("인천역", "강남역")
+        );
+
     }
 
     /**
@@ -140,29 +101,41 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         //Given 지하철역을 생성하고
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "인천역");
+        final ExtractableResponse<Response> postResponse = 지하철역을_생성_한다("인천역");
 
-        ExtractableResponse<Response> postResponse = RestAssured.given().log().all()
+        //When 그 지하철역을 삭제하면
+        지하철역을_삭제한다(postResponse.jsonPath().get("id"));
+
+        //Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다.
+        assertThat(전체_지하철역을_조회한다()).isNotIn("인천역");
+    }
+
+    private void 지하철역을_삭제한다(Integer id) {
+        RestAssured.given().log().all()
+                .pathParam("id", id)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/stations/{id}")
+                .then().log().all();
+    }
+
+
+    private List<String> 전체_지하철역을_조회한다() {
+        return RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
+    }
+
+    private ExtractableResponse<Response> 지하철역을_생성_한다(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
-                .then().log().all().extract();
-
-        //When 그 지하철역을 삭제하면
-        RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/stations/"+ postResponse.jsonPath().getString("id"))
-                .then().log().all();
-
-        //Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다.
-        final boolean stationExist = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/stations/")
-                .then().log().all().extract()
-                .jsonPath()
-                .getBoolean("name=='인천역'");
-
-        assertThat(stationExist).isFalse();
+                .then().log().all()
+                .extract();
     }
+
 }
