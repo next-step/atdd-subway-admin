@@ -2,6 +2,7 @@ package nextstep.subway.accept;
 
 import static nextstep.subway.accept.StationAcceptanceTest.GSON;
 import static nextstep.subway.accept.StationAcceptanceTest.강남역;
+import static nextstep.subway.accept.StationAcceptanceTest.서초역;
 import static nextstep.subway.accept.StationAcceptanceTest.양재역;
 import static nextstep.subway.accept.StationAcceptanceTest.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,10 +41,13 @@ class LineAcceptanceTest {
     }
 
     private void saveStationsAndSettingLines() {
-        StationResponse 생성된_강남역 = 지하철역_생성(강남역);
-        StationResponse 생성된_양재역 = 지하철역_생성(양재역);
+        final StationResponse 생성된_강남역 = 지하철역_생성(강남역);
+        final StationResponse 생성된_양재역 = 지하철역_생성(양재역);
+        final StationResponse 생성된_서초역 = 지하철역_생성(서초역);
 
         신분당선 = new LineRequest("신분당선", "bg-red-600", 생성된_강남역.getId(), 생성된_양재역.getId(), 10L);
+        이호선 = new LineRequest("이호선", "bg-yellow-600", 생성된_강남역.getId(), 생성된_서초역.getId(), 5L);
+
     }
 
     /**
@@ -73,8 +77,8 @@ class LineAcceptanceTest {
     @DisplayName("여러개 노선 생성시 여러개 노선이 검색이 가능하다.")
     void 여러개_노선_생성후_노선_목록에서_해당노선들_조회가능() {
         // given
-        LineResponse 생성된_신분당선 = 노선_생성(신분당선);
-        LineResponse 생성된_이호선 = 노선_생성(이호선);
+        final LineResponse 생성된_신분당선 = 노선_생성(신분당선);
+        final LineResponse 생성된_이호선 = 노선_생성(이호선);
 
         // when
         final List<LineResponse> 조회한_노선목록 = 노선_목록();
@@ -82,7 +86,8 @@ class LineAcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(조회한_노선목록).hasSize(2),
-                () -> assertThat(조회한_노선목록).contains(생성된_신분당선, 생성된_이호선)
+                () -> verifyEqualsLineResponseFields(조회한_노선목록.get(0), 생성된_신분당선),
+                () -> verifyEqualsLineResponseFields(조회한_노선목록.get(1), 생성된_이호선)
         );
     }
 
