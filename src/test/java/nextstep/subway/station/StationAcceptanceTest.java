@@ -1,6 +1,7 @@
 package nextstep.subway.station;
 
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -101,6 +102,33 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "강남역");
+
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all();
+
+        params = new HashMap<>();
+        params.put("name", "잠실역");
+
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all();
+
+        // when
+        final int numberOfStations = RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract().jsonPath().getList("$").size();
+
+        // then
+        assertThat(numberOfStations).isEqualTo(2);
     }
 
     /**
