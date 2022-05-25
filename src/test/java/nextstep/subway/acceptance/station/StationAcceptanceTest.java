@@ -28,13 +28,13 @@ class StationAcceptanceTest extends BaseAcceptanceTest {
         // when
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
-        ExtractableResponse<Response> createResponse = requestCreateStation(params);
+        ExtractableResponse<Response> createResponse = 지하철역_생성_요청(params);
 
         // then
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
-        ExtractableResponse<Response> showResponse = requestShowStations();
+        ExtractableResponse<Response> showResponse = 지하철역들_조회_요청();
         List<String> stationNames = showResponse.jsonPath().getList("name", String.class);
 
         // then
@@ -52,10 +52,10 @@ class StationAcceptanceTest extends BaseAcceptanceTest {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
-        requestCreateStation(params);
+        지하철역_생성_요청(params);
 
         // when
-        ExtractableResponse<Response> response = requestCreateStation(params);
+        ExtractableResponse<Response> response = 지하철역_생성_요청(params);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -72,13 +72,13 @@ class StationAcceptanceTest extends BaseAcceptanceTest {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
-        requestCreateStation(params);
+        지하철역_생성_요청(params);
 
         params.put("name", "강동역");
-        requestCreateStation(params);
+        지하철역_생성_요청(params);
 
         // when
-        ExtractableResponse<Response> showResponse = requestShowStations();
+        ExtractableResponse<Response> showResponse = 지하철역들_조회_요청();
         List<String> stationNames = showResponse.jsonPath().getList("name", String.class);
 
         // then
@@ -96,24 +96,17 @@ class StationAcceptanceTest extends BaseAcceptanceTest {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
-        ExtractableResponse<Response> createResponse = requestCreateStation(params);
+        ExtractableResponse<Response> createResponse = 지하철역_생성_요청(params);
         long id = createResponse.jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> deleteResponse = requestDeleteStation(id);
+        ExtractableResponse<Response> deleteResponse = 지하철역_제거_요청(id);
 
         // then
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    ExtractableResponse<Response> requestShowStations() {
-        return RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    ExtractableResponse<Response> requestCreateStation(Map<String, String> params) {
+    ExtractableResponse<Response> 지하철역_생성_요청(Map<String, String> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -122,7 +115,14 @@ class StationAcceptanceTest extends BaseAcceptanceTest {
                 .extract();
     }
 
-    ExtractableResponse<Response> requestDeleteStation(long id) {
+    ExtractableResponse<Response> 지하철역들_조회_요청() {
+        return RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    ExtractableResponse<Response> 지하철역_제거_요청(long id) {
         return RestAssured.given().log().all()
                 .when().delete("/stations/" + id)
                 .then().log().all()
