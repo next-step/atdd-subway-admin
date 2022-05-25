@@ -37,7 +37,7 @@ public class LineService {
 
     @Transactional
     public LineResponsesDTO findAll(){
-        List<Line> lines = lineRepository.findAll();
+        List<Line> lines = lineRepository.findAllByDeletedFalse();
         return LineResponsesDTO.of(lines);
     }
 }
