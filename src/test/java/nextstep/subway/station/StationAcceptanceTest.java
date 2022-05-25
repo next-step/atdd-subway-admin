@@ -11,6 +11,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,6 +102,35 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        List<String> names = Arrays.asList("강남역", "서울역");
+
+        for (String name : names) {
+            // when
+            Map<String, String> params = new HashMap<>();
+            params.put("name", name);
+
+            ExtractableResponse<Response> response =
+                    RestAssured.given().log().all()
+                               .body(params)
+                               .contentType(MediaType.APPLICATION_JSON_VALUE)
+                               .when().post("/stations")
+                               .then().log().all()
+                               .extract();
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        }
+
+        // then
+        List<String> stationNames =
+                RestAssured.given().log().all()
+                           .when().get("/stations")
+                           .then().log().all()
+                           .extract().jsonPath().getList("name", String.class);
+
+        assertThat(stationNames).containsExactly("강남역", "서울역");
+        assertThat(stationNames).hasSize(names.size());
     }
 
     /**
