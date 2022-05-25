@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import nextstep.subway.dto.LineUpdateRequest;
 
@@ -12,7 +13,7 @@ import nextstep.subway.dto.LineUpdateRequest;
 public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
     private String name;
@@ -21,26 +22,32 @@ public class Line extends BaseEntity {
 
     private int distance;
 
-    @OneToOne(mappedBy = "upLine")
+    @OneToOne
+    @JoinColumn(name = "id")
     private Station upStation;
 
-    @OneToOne(mappedBy = "downLine")
+    @OneToOne
+    @JoinColumn(name = "id")
     private Station downStation;
 
     protected Line() {
     }
 
-    public Line(long id, String name, String color, int distance) {
+    public Line(Long id, String name, String color, int distance) {
+        this(id, name, color, distance, null, null);
+    }
+
+    public Line(String name, String color, int distance) {
+        this(null, name, color, distance, null, null);
+    }
+
+    public Line(Long id, String name, String color, int distance, Station upStation, Station downStation) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.distance = distance;
-    }
-
-    public Line(String name, String color, int distance) {
-        this.name = name;
-        this.color = color;
-        this.distance = distance;
+        this.upStation = upStation;
+        this.downStation = downStation;
     }
 
     public void updateLine(LineUpdateRequest lineUpdateRequest) {
@@ -80,13 +87,11 @@ public class Line extends BaseEntity {
         return downStation != null;
     }
 
-    public void resetLines() {
-        if (upStation != null) {
-            upStation.setUpLine(null);
-        }
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
 
-        if (downStation != null) {
-            downStation.setDownLine(null);
-        }
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
     }
 }

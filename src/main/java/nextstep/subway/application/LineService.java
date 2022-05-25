@@ -56,8 +56,18 @@ public class LineService {
     @Transactional
     public void deleteLineById(Long id) {
         Optional<Line> line = lineRepository.findById(id);
-        line.get().resetLines();
+        resetStations(line.get());
         lineRepository.deleteById(id);
+    }
+
+    private void resetStations(Line line) {
+        if (line.hasUpStation()) {
+            line.getUpStation().clearDownLine();
+        }
+
+        if (line.hasDownStation()) {
+            line.getDownStation().clearUpLine();
+        }
     }
 
     private void addLines(LineCreateRequest lineCreateRequest, Line persistLine) {
@@ -68,14 +78,14 @@ public class LineService {
     private void addUpLine(Line line, Long stationId) {
         if (stationId != null) {
             Station station = getStation(stationId);
-            station.setDownLine(line);
+            line.setDownStation(station);
         }
     }
 
     private void addDownLine(Line line, Long stationId) {
         if (stationId != null) {
             Station station = getStation(stationId);
-            station.setUpLine(line);
+            line.setUpStation(station);
         }
     }
 

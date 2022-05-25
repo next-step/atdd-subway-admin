@@ -5,7 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 @Entity
@@ -17,14 +16,10 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    private String color;
-
-    @OneToOne
-    @JoinColumn(name = "id")
+    @OneToOne(mappedBy = "downStation")
     private Line upLine;
 
-    @OneToOne
-    @JoinColumn(name = "id")
+    @OneToOne(mappedBy = "upStation")
     private Line downLine;
 
     private Integer distance;
@@ -34,6 +29,12 @@ public class Station extends BaseEntity {
 
     public Station(String name) {
         this.name = name;
+    }
+
+    public Station(String name, Line upLine, Line downLine) {
+        this.name = name;
+        this.upLine = upLine;
+        this.downLine = downLine;
     }
 
     public Long getId() {
@@ -48,11 +49,11 @@ public class Station extends BaseEntity {
         return distance;
     }
 
-    public void setUpLine(Line upLine) {
-        this.upLine = upLine;
+    public void clearDownLine() {
+        this.downLine = null;
     }
 
-    public void setDownLine(Line downLine) {
-        this.downLine = downLine;
+    public void clearUpLine() {
+        this.upLine = null;
     }
 }
