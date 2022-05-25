@@ -119,6 +119,25 @@ class LineAcceptanceTest {
     }
 
     /**
+     * given 지하철 노선을 생성하고
+     * when 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철 노선을 삭제한다.")
+    @Test
+    void deleteLine() {
+        // given
+        ExtractableResponse<Response> saveResponse = 지하철_노선_생성("신분당선", "black");
+
+        // when
+        Long 지하철_노선_ID = toId(saveResponse);
+        ExtractableResponse<Response> deleteResponse = 지하철_노선_삭제(지하철_노선_ID);
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    /**
      * 전달받은 지하철역 목록을 저장한다
      * @param name 노선 이름
      * @param color 노선 색상
@@ -164,6 +183,16 @@ class LineAcceptanceTest {
             .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().put("/lines/" + id)
+            .then().log().all()
+            .extract();
+    }
+
+    /**
+     * 지하철 노선을 삭제한다
+     */
+    private ExtractableResponse<Response> 지하철_노선_삭제(Long id) {
+        return RestAssured.given().log().all()
+            .when().delete("/lines/" + id)
             .then().log().all()
             .extract();
     }
