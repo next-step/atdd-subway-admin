@@ -39,18 +39,9 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        ExtractableResponse<Response> response = 지하철역_생성("강남역");
 
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
-
-        // then
+        //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
@@ -71,23 +62,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
+        지하철역_생성("강남역");
 
         // when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = 지하철역_생성("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -102,23 +80,8 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         //given
-        Map<String, String> station1 = new HashMap<>();
-        station1.put("name", "강남역");
-
-        RestAssured.given().log().all()
-                .body(station1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
-
-        Map<String, String> station2 = new HashMap<>();
-        station2.put("name", "서초역");
-
-        RestAssured.given().log().all()
-                .body(station2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
+        지하철역_생성("강남역");
+        지하철역_생성("서초역");
 
         //when
         ExtractableResponse<Response> response =
@@ -143,16 +106,8 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         //given
-        Map<String, String> station = new HashMap<>();
-        station.put("name", "강남역");
-
-        String location = RestAssured.given().log().all()
-                .body(station)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract()
-                .header("location");
+        ExtractableResponse<Response> response = 지하철역_생성("강남역");
+        String location = response.header("location");
 
         //when
         RestAssured.given().log().all()
@@ -169,5 +124,19 @@ public class StationAcceptanceTest {
                 .getList("name", String.class);
 
         assertThat(names).isEmpty();
+    }
+
+    ExtractableResponse<Response> 지하철역_생성(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract();
+
+        return response;
     }
 }
