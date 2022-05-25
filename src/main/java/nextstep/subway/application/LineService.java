@@ -53,6 +53,12 @@ public class LineService {
         line.delete();
     }
 
+    @Transactional
+    public void updateLineInfo(Long id, LineRequestDTO lineRequestDTO){
+        Line line = getLine(id);
+        line.update(lineRequestDTO.getName(),lineRequestDTO.getColor());
+    }
+
     private Line getLine(Long lineId) {
         return lineRepository.findByIdAndDeletedFalse(lineId)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] ID에 해당하는 노선이 없습니다."));
