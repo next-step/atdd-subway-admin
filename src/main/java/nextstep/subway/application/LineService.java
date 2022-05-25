@@ -29,7 +29,7 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineCreateRequest lineCreateRequest) {
         Line persistLine = lineRepository.save(lineCreateRequest.toLine());
-        addLines(lineCreateRequest, persistLine);
+        addStations(persistLine, lineCreateRequest);
         return LineResponse.of(persistLine);
     }
 
@@ -56,36 +56,26 @@ public class LineService {
     @Transactional
     public void deleteLineById(Long id) {
         Optional<Line> line = lineRepository.findById(id);
-        resetStations(line.get());
+        line.get().clearStations();
         lineRepository.deleteById(id);
     }
 
-    private void resetStations(Line line) {
-        if (line.hasUpStation()) {
-            line.getUpStation().clearDownLine();
-        }
-
-        if (line.hasDownStation()) {
-            line.getDownStation().clearUpLine();
-        }
+    private void addStations(Line persistLine, LineCreateRequest lineCreateRequest) {
+        addUpLine(persistLine, lineCreateRequest);
+        addDownLine(persistLine, lineCreateRequest);
     }
 
-    private void addLines(LineCreateRequest lineCreateRequest, Line persistLine) {
-        addUpLine(persistLine, lineCreateRequest.getUpStationId());
-        addDownLine(persistLine, lineCreateRequest.getDownStationId());
-    }
-
-    private void addUpLine(Line line, Long stationId) {
-        if (stationId != null) {
-            Station station = getStation(stationId);
-            line.setDownStation(station);
-        }
-    }
-
-    private void addDownLine(Line line, Long stationId) {
-        if (stationId != null) {
-            Station station = getStation(stationId);
+    private void addUpLine(Line line, LineCreateRequest lineCreateRequest) {
+        if (lineCreateRequest.hasUpStationsId()) {
+            Station station = getStation(lineCreateRequest.getUpStationId());
             line.setUpStation(station);
+        }
+    }
+
+    private void addDownLine(Line line, LineCreateRequest lineCreateRequest) {
+        if (lineCreateRequest.hasDownStationsId()) {
+            Station station = getStation(lineCreateRequest.getDownStationId());
+            line.setDownStation(station);
         }
     }
 

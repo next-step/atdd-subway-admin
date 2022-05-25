@@ -1,11 +1,14 @@
 package nextstep.subway.domain;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Station extends BaseEntity {
@@ -16,11 +19,11 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    @OneToOne(mappedBy = "downStation")
-    private Line upLine;
+    @OneToMany(mappedBy = "upStation", fetch = FetchType.LAZY)
+    private List<Line> upLines = new ArrayList<>();
 
-    @OneToOne(mappedBy = "upStation")
-    private Line downLine;
+    @OneToMany(mappedBy = "downStation", fetch = FetchType.LAZY)
+    private List<Line> downLines = new ArrayList<>();
 
     private Integer distance;
 
@@ -29,12 +32,6 @@ public class Station extends BaseEntity {
 
     public Station(String name) {
         this.name = name;
-    }
-
-    public Station(String name, Line upLine, Line downLine) {
-        this.name = name;
-        this.upLine = upLine;
-        this.downLine = downLine;
     }
 
     public Long getId() {
@@ -49,11 +46,26 @@ public class Station extends BaseEntity {
         return distance;
     }
 
-    public void clearDownLine() {
-        this.downLine = null;
+    public List<Line> getUpLines() {
+        return upLines;
     }
 
-    public void clearUpLine() {
-        this.upLine = null;
+    public List<Line> getDownLines() {
+        return downLines;
+    }
+
+    public List<Line> getAllLines() {
+        List<Line> lines = new ArrayList<>();
+        lines.addAll(upLines);
+        lines.addAll(downLines);
+        return lines;
+    }
+
+    public void addUpLine(Line line) {
+        upLines.add(line);
+    }
+
+    public void downLine(Line line) {
+        downLines.add(line);
     }
 }

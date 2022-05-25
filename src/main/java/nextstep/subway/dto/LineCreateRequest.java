@@ -33,6 +33,14 @@ public class LineCreateRequest {
         return downStationId;
     }
 
+    public boolean hasUpStationsId() {
+        return upStationId != null;
+    }
+
+    public boolean hasDownStationsId() {
+        return downStationId != null;
+    }
+
     public Integer getDistance() {
         return distance;
     }

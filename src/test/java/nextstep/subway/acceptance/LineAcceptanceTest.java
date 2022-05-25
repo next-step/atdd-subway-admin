@@ -14,9 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.jdbc.Sql;
 
-@Sql("classpath:testdb/truncate.sql")
 @DisplayName("지하철노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LineAcceptanceTest extends AcceptanceTest {
@@ -32,7 +30,11 @@ class LineAcceptanceTest extends AcceptanceTest {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+
+        List<String> lineIds = findLines().jsonPath().getList("id", String.class);
+        lineIds.forEach(lineId -> removeLine(lineId));
     }
+
 
     /**
      * When 지하철 노선을 생성하면

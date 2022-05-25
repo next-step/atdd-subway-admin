@@ -2,11 +2,12 @@ package nextstep.subway.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import nextstep.subway.dto.LineUpdateRequest;
 
 @Entity
@@ -22,12 +23,12 @@ public class Line extends BaseEntity {
 
     private int distance;
 
-    @OneToOne
-    @JoinColumn(name = "id")
+    @ManyToOne
+    @JoinColumn(name = "upstation_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_line_up_station"))
     private Station upStation;
 
-    @OneToOne
-    @JoinColumn(name = "id")
+    @ManyToOne
+    @JoinColumn(name = "downstation_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_line_down_station"))
     private Station downStation;
 
     protected Line() {
@@ -39,6 +40,10 @@ public class Line extends BaseEntity {
 
     public Line(String name, String color, int distance) {
         this(null, name, color, distance, null, null);
+    }
+
+    public Line(String name, String color, int distance, Station upStation, Station downStation) {
+        this(null, name, color, distance, upStation, downStation);
     }
 
     public Line(Long id, String name, String color, int distance, Station upStation, Station downStation) {
@@ -93,5 +98,10 @@ public class Line extends BaseEntity {
 
     public void setDownStation(Station downStation) {
         this.downStation = downStation;
+    }
+
+    public void clearStations() {
+        upStation = null;
+        downStation = null;
     }
 }

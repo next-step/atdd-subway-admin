@@ -1,2 +1,2 @@
-truncate table line;
-truncate table station;
+-- truncate table station;
+-- truncate table line;
