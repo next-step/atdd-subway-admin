@@ -8,30 +8,38 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import nextstep.subway.db.DataInitializer;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @DisplayName("지하철 노선 인수 테스트")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class LineAcceptanceTest {
 
     @LocalServerPort
     int port;
 
+    @Autowired
+    DataInitializer dataInitializer;
+
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         RestAssured.port = port;
+    }
+
+    @AfterEach
+    void cleanUp() {
+        dataInitializer.execute("line");
     }
 
     /**
