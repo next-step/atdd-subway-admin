@@ -1,6 +1,9 @@
-package nextstep.subway.line;
+package nextstep.subway.accept;
 
-import static nextstep.subway.station.StationAcceptanceTest.GSON;
+import static nextstep.subway.accept.StationAcceptanceTest.GSON;
+import static nextstep.subway.accept.StationAcceptanceTest.강남역;
+import static nextstep.subway.accept.StationAcceptanceTest.양재역;
+import static nextstep.subway.accept.StationAcceptanceTest.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -10,6 +13,8 @@ import io.restassured.response.Response;
 import java.util.List;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.StationResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +31,21 @@ class LineAcceptanceTest {
 
     private LineRequest 신분당선, 이호선, 구분당선;
 
+    @BeforeEach
+    public void setUp() {
+        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
+            RestAssured.port = port;
+        }
+        saveStationsAndSettingLines();
+    }
+
+    private void saveStationsAndSettingLines() {
+        StationResponse 생성된_강남역 = 지하철역_생성(강남역);
+        StationResponse 생성된_양재역 = 지하철역_생성(양재역);
+
+        신분당선 = new LineRequest("신분당선", "bg-red-600", 생성된_강남역.getId(), 생성된_양재역.getId(), 10L);
+    }
+
     /**
      * When 지하철 노선을 생성하면
      * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
@@ -37,7 +57,11 @@ class LineAcceptanceTest {
         LineResponse 생성된_신분당선 = 노선_생성(신분당선);
 
         // then
-        assertThat(노선_목록()).contains(생성된_신분당선);
+        List<LineResponse> 노선_목록 = 노선_목록();
+        assertAll(
+                () -> assertThat(노선_목록).hasSize(1),
+                () -> verifyEqualsLineResponseFields(노선_목록.get(0), 생성된_신분당선)
+        );
     }
 
     /**
@@ -153,5 +177,16 @@ class LineAcceptanceTest {
                 .when().delete("/lines/" + 노선아이디)
                 .then().log().all()
                 .extract();
+    }
+
+    private void verifyEqualsLineResponseFields(LineResponse lr1, LineResponse lr2) {
+        assertAll(
+                () -> assertThat(lr1.getId()).isEqualTo(lr2.getId()),
+                () -> assertThat(lr1.getColor()).isEqualTo(lr2.getColor()),
+                () -> assertThat(lr1.getName()).isEqualTo(lr2.getName()),
+                () -> assertThat(lr1.getStations()).isEqualTo(lr2.getStations()),
+                () -> assertThat(lr1.getCreatedDate()).isEqualTo(lr2.getCreatedDate()),
+                () -> assertThat(lr1.getModifiedDate()).isEqualTo(lr2.getModifiedDate())
+        );
     }
 }

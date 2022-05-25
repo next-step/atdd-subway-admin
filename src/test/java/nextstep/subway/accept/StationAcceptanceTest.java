@@ -1,4 +1,4 @@
-package nextstep.subway.station;
+package nextstep.subway.accept;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -10,6 +10,7 @@ import io.restassured.response.Response;
 import java.util.Arrays;
 import java.util.List;
 import nextstep.subway.dto.StationRequest;
+import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,15 +27,14 @@ class StationAcceptanceTest {
     int port;
 
     public static final Gson GSON = new Gson();
-    private StationRequest 강남역, 선릉역;
+    public static final StationRequest 강남역 = new StationRequest("강남역");
+    public static final StationRequest 양재역 = new StationRequest("양재역");
 
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
-        강남역 = new StationRequest("강남역");
-        선릉역 = new StationRequest("선릉역");
     }
 
     /**
@@ -44,10 +44,10 @@ class StationAcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     void createStation() {
         // when
-        ExtractableResponse<Response> 생성된_강남역 = 지하철역_생성(강남역);
+        ExtractableResponse<Response> 생성된_강남역_응답 = 지하철역_생성_응답(강남역);
 
         // then
-        assertThat(생성된_강남역.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(생성된_강남역_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
         assertThat(지하철역_목록()).containsAnyOf("강남역");
@@ -65,10 +65,10 @@ class StationAcceptanceTest {
         지하철역_생성(강남역);
 
         // when
-        ExtractableResponse<Response> 생성_실패된_강남역 = 지하철역_생성(강남역);
+        ExtractableResponse<Response> 생성_실패된_강남역_응답 = 지하철역_생성_응답(강남역);
 
         // then
-        assertThat(생성_실패된_강남역.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(생성_실패된_강남역_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -80,7 +80,7 @@ class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     void getStations() {
         // given
-        Arrays.asList(선릉역, 강남역).forEach(지하철역 -> 지하철역_생성(지하철역));
+        Arrays.asList(양재역, 강남역).forEach(지하철역 -> 지하철역_생성(지하철역));
 
         // when
         final List<String> 역목록 = 지하철역_목록();
@@ -101,28 +101,38 @@ class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     void deleteStation() {
         // given
-        ExtractableResponse<Response> 생성된_강남역 = 지하철역_생성(강남역);
+         StationResponse 생성된_강남역 = 지하철역_생성(강남역);
 
         // when
-        지하철역_삭제(생성된_강남역);
+        지하철역_삭제(생성된_강남역.getId());
 
         // then
         assertThat(지하철역_목록()).doesNotContain("강남역");
     }
 
-    public static void 지하철역_삭제(ExtractableResponse<Response> response) {
+    public static void 지하철역_삭제(Long 역아이디) {
         RestAssured.given().log().all()
-                .when().delete("/stations/" + response.body().jsonPath().get("id"))
+                .when().delete("/stations/" + 역아이디)
                 .then().log().all();
     }
 
-    public static ExtractableResponse<Response> 지하철역_생성(StationRequest 역이름) {
+    public static ExtractableResponse<Response> 지하철역_생성_응답(StationRequest 역이름) {
         return RestAssured.given().log().all()
                 .body(GSON.toJson(역이름))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all()
                 .extract();
+    }
+
+    public static StationResponse 지하철역_생성(StationRequest 역이름) {
+        return RestAssured.given().log().all()
+                .body(GSON.toJson(역이름))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract().jsonPath()
+                .getObject("", StationResponse.class);
     }
 
     public static List<String> 지하철역_목록() {
