@@ -5,16 +5,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.assertj.core.util.Maps;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 
+@Sql("classpath:testdb/truncate.sql")
 @DisplayName("지하철노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LineAcceptanceTest extends AcceptanceTest {
@@ -97,7 +99,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         String lineId = registerLine("2호선").jsonPath().getString("id");
 
         // when
-        ExtractableResponse<Response> response = modifyLine(lineId, Maps.newHashMap("color", newColor));
+        modifyLine(lineId, newColor);
 
         // then
         String actual = findLine(lineId).jsonPath().getString("color");
@@ -124,7 +126,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> registerLine(String lineName) {
-        return sendPost(Maps.newHashMap("name", lineName), API_URL_LINES);
+        Map<String, Object> lineMap = new HashMap<>();
+        lineMap.put("name", lineName);
+        lineMap.put("color", "red");
+        lineMap.put("distance", 2);
+        return sendPost(lineMap, API_URL_LINES);
     }
 
     private ExtractableResponse<Response> findLines() {
@@ -135,8 +141,11 @@ class LineAcceptanceTest extends AcceptanceTest {
         return sendGet(API_URL_LINES + "/{id}", lineId);
     }
 
-    private ExtractableResponse<Response> modifyLine(String lineId, Map<String, String> bodyParams) {
-        return sendPut(bodyParams, API_URL_LINES + "/{id}", lineId);
+    private ExtractableResponse<Response> modifyLine(String lineId, String color) {
+        Map<String, Object> lineMap = new HashMap<>();
+        lineMap.put("name", "redred");
+        lineMap.put("color", color);
+        return sendPut(lineMap, API_URL_LINES + "/{id}", lineId);
     }
 
     private ExtractableResponse<Response> removeLine(String lineId) {

@@ -14,7 +14,7 @@ public abstract class AcceptanceTest {
                 .extract();
     }
 
-    protected ExtractableResponse<Response> sendPost(Map<String, String> bodyParams, String path,
+    protected ExtractableResponse<Response> sendPost(Map<String, Object> bodyParams, String path,
                                                      Object... pathParams) {
         return RestAssured.given().log().all()
                 .body(bodyParams)
@@ -24,8 +24,8 @@ public abstract class AcceptanceTest {
                 .extract();
     }
 
-    protected ExtractableResponse<Response> sendPut(Map<String, String> bodyParams, String path,
-                                                     Object... pathParams) {
+    protected ExtractableResponse<Response> sendPut(Map<String, Object> bodyParams, String path,
+                                                    Object... pathParams) {
         return RestAssured.given().log().all()
                 .body(bodyParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
