@@ -42,7 +42,7 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = createStations("강남역");
+        ExtractableResponse<Response> response = createStation("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -61,10 +61,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        createStations("강남역");
+        createStation("강남역");
 
         // when
-        ExtractableResponse<Response> response = createStations("강남역");
+        ExtractableResponse<Response> response = createStation("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -79,8 +79,8 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        createStations("여의나루역");
-        createStations("안국역");
+        createStation("여의나루역");
+        createStation("안국역");
 
         // when
         List<String> stationNames = fetchStationsByPath("name", String.class);
@@ -98,7 +98,7 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        createStations("여의나루역");
+        createStation("여의나루역");
 
         // when
         Long stationId = fetchStationsByPath("id", Long.class).get(0);
@@ -109,7 +109,7 @@ public class StationAcceptanceTest {
         assertThat(stationNames).doesNotContain("여의나루역");
     }
 
-    private ExtractableResponse<Response> createStations(String name) {
+    private ExtractableResponse<Response> createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
