@@ -1,5 +1,5 @@
 package nextstep.subway.acceptance;
-
+import static nextstep.subway.test.RequestUtils.*;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class StationAcceptanceTest {
 
+    public static final String STATION_PATH = "/stations";
     private static final int GANG_NAM_STATION = 0;
     private static final int SEOUL_STATION = 1;
     public static final List<Map<String, Object>> STATION_PARAMS_BUNDLES;
@@ -60,29 +61,29 @@ class StationAcceptanceTest {
     @Test
     void manageStations(){
         // when
-        List<ExtractableResponse<Response>> createResponses = requestCreateStations(STATION_PARAMS_BUNDLES);
+        List<ExtractableResponse<Response>> createResponses = requestCreateBundle(STATION_PATH,STATION_PARAMS_BUNDLES);
 
         // then
         지하철역들이_생성되었는지_검증(createResponses);
 
         // when
-        ExtractableResponse<Response> createResponse = requestCreateStation(STATION_PARAMS_BUNDLES.get(GANG_NAM_STATION));
+        ExtractableResponse<Response> createResponse = requestCreate(STATION_PATH,STATION_PARAMS_BUNDLES.get(GANG_NAM_STATION));
 
         // then
         존재하는_지하철역인_경우_오류_응답_인지_검증(createResponse);
 
         // when
-        ExtractableResponse<Response> getAllResponse = requestGetStations();
+        ExtractableResponse<Response> getAllResponse = requestGetAll(STATION_PATH);
 
         //then
         지하철역_목록_조회_검증(getAllResponse);
 
         //when
-        ExtractableResponse<Response> deleteResponse = requestDeleteStation(1L);
+        ExtractableResponse<Response> deleteResponse = requestDeleteById(STATION_PATH,1L);
         HTTP_응답_상태코드_검증(deleteResponse,HttpStatus.NO_CONTENT);
 
         //then
-        ExtractableResponse<Response> response = requestGetStations();
+        ExtractableResponse<Response> response = requestGetAll(STATION_PATH);
         지하철역이_삭제_되었는지_검증(response);
     }
 
@@ -118,39 +119,5 @@ class StationAcceptanceTest {
                 () -> assertThat(response.jsonPath().getList("id")).contains(2),
                 () -> assertThat(response.jsonPath().getList("name")).contains("서울역")
         );
-    }
-
-    static List<ExtractableResponse<Response>> requestCreateStations(List<Map<String, Object>> stationsParamsBundle) {
-        List<ExtractableResponse<Response>> responses = new ArrayList<>();
-        for (Map<String, Object> stationParams : stationsParamsBundle) {
-            responses.add(requestCreateStation(stationParams));
-        }
-        return responses;
-    }
-
-    static ExtractableResponse<Response> requestCreateStation(Map<String, Object> stationParams) {
-        return RestAssured.given().log().all()
-                .body(stationParams)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    static ExtractableResponse<Response> requestGetStations() {
-        return RestAssured.given().log().all()
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    static ExtractableResponse<Response> requestDeleteStation(long stationId) {
-        return RestAssured.given().log().all()
-                .accept(ContentType.JSON)
-                .when().delete("/stations/{id}", stationId)
-                .then().log().all()
-                .extract();
     }
 }
