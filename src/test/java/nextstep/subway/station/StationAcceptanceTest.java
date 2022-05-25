@@ -13,9 +13,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.function.*;
 import java.util.stream.Stream;
 
+import static nextstep.subway.station.RequestStationMode.CREATE;
+import static nextstep.subway.station.RequestStationMode.SEARCH_ALL;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
@@ -39,14 +41,17 @@ public class StationAcceptanceTest {
      */
     @DisplayName("지하철역을 생성한다.")
     @Test
-    void requestCreateStation() {
+    void request() {
         // when
-        String[] result = Stream.of("강남역")
-                .map(stationName -> requestCreateStation(INVALID_KEY, stationName, HttpStatus.CREATED).getName())
+        final String creatStationName = "강남역";
+
+        String[] result = Stream.of(creatStationName)
+                .map(stationName -> request(()->makeBody(INVALID_KEY, stationName), CREATE, HttpStatus.CREATED)
+                        .as(Station.class).getName())
                 .toArray(String[]::new);
 
         //Then
-        assertThat(result).contains("강남역");
+        assertThat(result).contains(creatStationName);
     }
 
     /**
@@ -60,16 +65,16 @@ public class StationAcceptanceTest {
         // given
         final String creatStationName = "강남역";
         //when
-        Stream.of(creatStationName).forEach(stationName -> requestCreateStation(INVALID_KEY, stationName, HttpStatus.CREATED));
+        Stream.of(creatStationName).forEach(stationName -> request(()->makeBody(INVALID_KEY, stationName), CREATE, HttpStatus.CREATED));
         //Then
-        Stream.of(creatStationName).forEach(stationName -> requestCreateStation(INVALID_KEY, stationName, HttpStatus.BAD_REQUEST));
+        Stream.of(creatStationName).forEach(stationName -> request(()->makeBody(INVALID_KEY, stationName), CREATE, HttpStatus.BAD_REQUEST));
 
     }
 
     /**
-    * When 잘못된 Key 값을 전달하면
-    * Then 400 Bad Request 를 전달 받는다.
-    */
+     * When 잘못된 Key 값을 전달하면
+     * Then 400 Bad Request 를 전달 받는다.
+     */
     @DisplayName("잘못된 입력 값을 전달 하면 Bad Request 를 받는다")
     @Test
     void invalidParameter() {
@@ -77,11 +82,11 @@ public class StationAcceptanceTest {
         final String creatStationName = "강남역";
 
         //Then
-        Stream.of(creatStationName).forEach(stationName -> requestCreateStation("bad", stationName, HttpStatus.BAD_REQUEST));
-        Stream.of("").forEach(stationName -> requestCreateStation(INVALID_KEY, stationName, HttpStatus.BAD_REQUEST));
+        Stream.of(creatStationName).forEach(stationName -> request(()->makeBody("bad", stationName), CREATE, HttpStatus.BAD_REQUEST));
+        Stream.of("").forEach(stationName -> request(()->makeBody(INVALID_KEY, stationName), CREATE, HttpStatus.BAD_REQUEST));
     }
 
-     /**
+    /**
      * Given 2개의 지하철역을 생성하고
      * When 지하철역 목록을 조회하면
      * Then 2개의 지하철역을 응답 받는다
@@ -91,17 +96,12 @@ public class StationAcceptanceTest {
     void getStations() {
         // given
         Station[] createdStation = Stream.of("지하철역이름", "새로운지하철역이름", "또다른지하철역이름")
-                .map(stationName -> requestCreateStation(INVALID_KEY, stationName, HttpStatus.CREATED))
+                .map(stationName -> request(() -> makeBody(INVALID_KEY, stationName), CREATE, HttpStatus.CREATED).as(Station.class))
                 .distinct()
                 .toArray(Station[]::new);
 
         // when
-        Station[] stations = RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract().as(Station[].class);
-
-
+        Station[] stations = request(HashMap::new, SEARCH_ALL, HttpStatus.OK).as(Station[].class);
         //then
         assertThat(stations).containsExactly(createdStation);
     }
@@ -116,18 +116,23 @@ public class StationAcceptanceTest {
     void deleteStation() {
     }
 
-    private Station requestCreateStation(final String key, final String stationName, final HttpStatus httpStatus) {
-        Map<String, String> params = new HashMap<>();
-        params.put(key, stationName);
+    private Map<String, String> makeBody(final String key, final String value) {
+        HashMap<String, String> input = new HashMap<>();
+        input.put(key, value);
+        return input;
+    }
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all().extract();
+    private ExtractableResponse<Response> request(Supplier<Map<String,String>> supplier, RequestStationMode mode, final HttpStatus expectedStatus) {
 
-        assertThat(HttpStatus.valueOf(response.statusCode())).isEqualTo(httpStatus);
+        ExtractableResponse<Response> response = mode.function.apply(
+                RestAssured.given().log().all()
+                        .body(supplier.get())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when()
+        ).then().log().all().extract();
 
-        return httpStatus == HttpStatus.CREATED ? response.as(Station.class) : new Station();
+
+        assertThat(HttpStatus.valueOf(response.statusCode())).isEqualTo(expectedStatus);
+        return response;
     }
 }
