@@ -3,11 +3,13 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.dto.LineResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
@@ -20,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
 
+    public static final String ENDPOINT = "/lines";
     @LocalServerPort
     int port;
 
@@ -38,7 +41,9 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        createLine("분당선", "노란색");
+        ExtractableResponse<Response> response = createLine("분당선", "노란색");
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
         List<String> lineNames = fetchLinesByPath("name", String.class);
@@ -66,6 +71,26 @@ public class LineAcceptanceTest {
         assertThat(lineNames).containsExactly("분당선", "3호선");
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("지하철 노선 하나의 정보를 조회한다.")
+    @Test
+    void showLine() {
+        // when
+        ExtractableResponse<Response> response = createLine("분당선", "노란색");
+        Long lineId = response.body().jsonPath().getLong("id");
+
+        // when
+        LineResponse line = getLine(lineId);
+
+        // then
+        assertThat(line.getName()).isEqualTo("분당선");
+        assertThat(line.getColor()).isEqualTo("노란색");
+    }
+
     private ExtractableResponse<Response> createLine(String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
@@ -74,15 +99,22 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
+                .when().post(ENDPOINT)
                 .then().log().all()
                 .extract();
     }
 
     private <T> List<T> fetchLinesByPath(String path, Class<T> genericType) {
         return RestAssured.given().log().all()
-                .when().get("/lines")
+                .when().get(ENDPOINT)
                 .then().log().all()
                 .extract().jsonPath().getList(path, genericType);
+    }
+
+    private LineResponse getLine(Long lineId) {
+        return RestAssured.given().log().all()
+                .when().get(ENDPOINT + "/" + lineId)
+                .then().log().all()
+                .extract().jsonPath().getObject("", LineResponse.class);
     }
 }
