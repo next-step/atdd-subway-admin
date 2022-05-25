@@ -117,7 +117,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 - [X]  지하철 노선 생성 API
 - [X]  지하철 노선 전체 조회 API
-- [ ]  지하철 노선 단일 조회 API
+- [X]  지하철 노선 단일 조회 API
 - [ ]  지하철 노선 수정 API
 - [ ]  지하철 노선 삭제 API
  
