@@ -1,7 +1,5 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.section.domain;
 
-import nextstep.subway.section.domain.CanNotConnectSectionException;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -23,7 +21,7 @@ public class Sections {
         this.sections = requireNonNull(sections, "sections");
     }
 
-    protected Sections() {
+    public Sections() {
     }
 
     public void add(Section other) {
@@ -61,11 +59,11 @@ public class Sections {
 
     private Station findUpStationOfHeadSection() {
         Set<Station> upStations = sections.stream()
-                            .map(Section::getUpStation)
-                                           .collect(Collectors.toSet());
+                                          .map(Section::getUpStation)
+                                          .collect(Collectors.toSet());
         Set<Station> downStations = sections.stream()
-                                             .map(Section::getDownStation)
-                                             .collect(Collectors.toSet());
+                                            .map(Section::getDownStation)
+                                            .collect(Collectors.toSet());
         return upStations.stream()
                          .filter(upStation -> !downStations.contains(upStation))
                          .findFirst()

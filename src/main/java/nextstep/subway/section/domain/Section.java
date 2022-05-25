@@ -35,6 +35,10 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
+    public void bindLine(Long lineId) {
+        this.lineId = lineId;
+    }
+
     public boolean isConnectable(Section other) {
         boolean upConnected = isConnectable(this.upStation, other);
         boolean downConnected = isConnectable(this.downStation, other);
