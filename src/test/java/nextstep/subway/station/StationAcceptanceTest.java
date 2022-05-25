@@ -8,7 +8,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import nextstep.subway.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,15 +23,15 @@ class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
-    private Map<String, String> 강남역, 선릉역;
+    private StationRequest 강남역, 선릉역;
 
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
-        강남역 = StationParameterMaker.생성("강남역");
-        선릉역 = StationParameterMaker.생성("선릉역");
+        강남역 = new StationRequest("강남역");
+        선릉역 = new StationRequest("선릉역");
     }
 
     /**
@@ -107,9 +107,9 @@ class StationAcceptanceTest {
                 .then().log().all();
     }
 
-    private ExtractableResponse<Response> 지하철역_생성(Map<String, String> 역이름) {
+    private ExtractableResponse<Response> 지하철역_생성(StationRequest 역이름) {
         return RestAssured.given().log().all()
-                .body(역이름)
+                .body(역이름.toString())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all()
