@@ -4,16 +4,16 @@ import nextstep.subway.domain.Line;
 
 public class LineRequestDTO {
 
-    private String name;
-    private String color;
-    private Long upStaionId;
-    private Long downStationId;
-    private Long distance;
+    private final String name;
+    private final String color;
+    private final Long upStationId;
+    private final Long downStationId;
+    private final Long distance;
 
-    public LineRequestDTO(String name, String color, Long upStaionId, Long downStationId, Long distance) {
+    public LineRequestDTO(String name, String color, Long upStationId, Long downStationId, Long distance) {
         this.name = name;
         this.color = color;
-        this.upStaionId = upStaionId;
+        this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
     }
@@ -26,8 +26,8 @@ public class LineRequestDTO {
         return color;
     }
 
-    public Long getUpStaionId() {
-        return upStaionId;
+    public Long getUpStationId() {
+        return upStationId;
     }
 
     public Long getDownStationId() {

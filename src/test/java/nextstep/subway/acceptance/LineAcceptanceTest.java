@@ -78,7 +78,7 @@ class LineAcceptanceTest {
         
         //then
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(getResponse.jsonPath().getList("stations.name")).contains("신분당선");
+        assertThat(getResponse.jsonPath().getList("name")).contains("신분당선");
     }
 
     /**

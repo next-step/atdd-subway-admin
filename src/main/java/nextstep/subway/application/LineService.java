@@ -25,10 +25,10 @@ public class LineService {
     @Transactional
     public LineResponseDTO saveLine(LineRequestDTO lineRequestDTO){
         Line line = lineRequestDTO.toLine();
-        Station upStation = stationRepository.findById(lineRequestDTO.getUpStaionId())
-                .orElseThrow(() -> new IllegalArgumentException(""));
+        Station upStation = stationRepository.findById(lineRequestDTO.getUpStationId())
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 상단 ID가 해당하는 지하철역이 없습니다."));
         Station downStation = stationRepository.findById(lineRequestDTO.getDownStationId())
-                .orElseThrow(() -> new IllegalArgumentException(""));
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 하단 ID에 해당하는 지하철역이 없습니다."));
         line.addStation(upStation);
         line.addStation(downStation);
         Line savedLine = lineRepository.save(line);
