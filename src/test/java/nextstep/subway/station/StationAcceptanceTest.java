@@ -96,16 +96,12 @@ class StationAcceptanceTest {
     void deleteStation() {
         //given
         ExtractableResponse<Response> response = 지하철역_생성("강남역");
-        String location = response.header("location");
 
         //when
-        RestAssured.given().log().all()
-                .when().delete(location)
-                .then().log().all();
+        지하철역_제거(response.header("location"));
 
         //then
         List<String> stationNames = 지하철역_조회();
-
         assertThat(stationNames).isEmpty();
     }
 
@@ -133,5 +129,11 @@ class StationAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         return response.jsonPath().getList("name", String.class);
+    }
+
+    void 지하철역_제거(String location) {
+        RestAssured.given().log().all()
+                .when().delete(location)
+                .then().log().all();
     }
 }
