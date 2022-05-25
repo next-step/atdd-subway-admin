@@ -9,6 +9,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,9 +40,17 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public LineResponse findLine(Long id) {
+        return LineResponse.of(
+                lineRepository.findById(id)
+                        .orElseThrow(() -> new NotFoundException("라인 정보가 존재하지 않습니다."))
+        );
+    }
+
     private Station findStationById(Long id) {
         Optional<Station> optionalStation = stationRepository.findById(id);
         return optionalStation
-                .orElseThrow(() -> new IllegalArgumentException("역 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException("역 정보가 존재하지 않습니다."));
     }
 }

@@ -54,10 +54,10 @@ class LineAcceptanceTest {
     @DisplayName("노선 생성하면 해당 노선이 검색이 가능하다.")
     void 노선_생성하면_노선_목록에서_조회가능() {
         // when
-        LineResponse 생성된_신분당선 = 노선_생성(신분당선);
+        final LineResponse 생성된_신분당선 = 노선_생성(신분당선);
 
         // then
-        List<LineResponse> 노선_목록 = 노선_목록();
+        final List<LineResponse> 노선_목록 = 노선_목록();
         assertAll(
                 () -> assertThat(노선_목록).hasSize(1),
                 () -> verifyEqualsLineResponseFields(노선_목록.get(0), 생성된_신분당선)
@@ -95,13 +95,13 @@ class LineAcceptanceTest {
     @DisplayName("노선 생성 후 조회시 해당 노선에 대한 정보를 받는다.")
     void 노선_조회시_해당_노선정보_응답() {
         // given
-        LineResponse 생성된_신분당선 = 노선_생성(신분당선);
+        final LineResponse 생성된_신분당선 = 노선_생성(신분당선);
 
         // when
-        LineResponse 조회한_신분당선 = 노선_조회(1L);
+        final LineResponse 조회한_신분당선 = 노선_조회(생성된_신분당선.getId());
 
         // then
-        assertThat(조회한_신분당선).isEqualTo(생성된_신분당선);
+        verifyEqualsLineResponseFields(조회한_신분당선, 생성된_신분당선);
     }
 
     /**
