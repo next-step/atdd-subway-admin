@@ -102,7 +102,7 @@ public class StationAcceptanceTest {
         assertThat(stationIds).doesNotContain(1L);
     }
 
-    private ExtractableResponse<Response> createStation(String stationName) {
+    public ExtractableResponse<Response> createStation(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
