@@ -35,11 +35,6 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    public void bindLine(Line line) {
-        requireNonNull(line, "지하철 노선이 비었습니다");
-        this.lineId = line.getId();
-    }
-
     public boolean isConnectable(Section other) {
         boolean upConnected = isConnectable(this.upStation, other);
         boolean downConnected = isConnectable(this.downStation, other);
