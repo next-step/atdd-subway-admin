@@ -1,6 +1,6 @@
-package nextstep.subway.station.domain;
+package nextstep.subway.station.exception;
 
-import nextstep.subway.core.domain.NotFoundException;
+import nextstep.subway.core.exception.NotFoundException;
 
 public class NotFoundStationException extends NotFoundException {
 

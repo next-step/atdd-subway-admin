@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.section.exception.CanNotConnectSectionException;
 import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 import java.util.ArrayList;

@@ -1,5 +1,7 @@
 package nextstep.subway.station.domain;
 
+import nextstep.subway.station.exception.InvalidDistanceException;
+
 import javax.persistence.*;
 import java.util.Objects;
 import static java.util.Objects.requireNonNull;

@@ -1,6 +1,6 @@
 package nextstep.subway.core.ui.advisor;
 
-import nextstep.subway.core.domain.NotFoundException;
+import nextstep.subway.core.exception.NotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

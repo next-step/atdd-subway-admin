@@ -2,7 +2,7 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.NotFoundLineException;
+import nextstep.subway.line.exception.NotFoundLineException;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.NewLineRequest;
 import nextstep.subway.line.dto.UpdateLineRequest;

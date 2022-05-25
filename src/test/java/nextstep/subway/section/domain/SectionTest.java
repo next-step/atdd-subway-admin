@@ -2,7 +2,7 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.SectionUtils;
 import nextstep.subway.station.domain.Distance;
-import nextstep.subway.station.domain.InvalidDistanceException;
+import nextstep.subway.station.exception.InvalidDistanceException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

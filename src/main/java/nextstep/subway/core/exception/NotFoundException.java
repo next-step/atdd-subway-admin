@@ -1,4 +1,4 @@
-package nextstep.subway.core.domain;
+package nextstep.subway.core.exception;
 
 public class NotFoundException extends RuntimeException {
 
