@@ -79,5 +79,5 @@ public ResponseEntity removeLineStation(
 
 ## 기능 구현 목록
 
-- [ ] 지하철 구간 제거 인수 테스트
+- [x] 지하철 구간 제거 인수 테스트
 - [ ] 지하철 구간 제거 구현
