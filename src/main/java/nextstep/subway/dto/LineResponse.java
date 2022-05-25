@@ -1,9 +1,11 @@
 package nextstep.subway.dto;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Station;
 
 public class LineResponse implements Serializable {
 
@@ -20,12 +22,10 @@ public class LineResponse implements Serializable {
         this.name = line.getName();
         this.color = line.getColor();
 
-        nextstep.subway.domain.Station upStation = line.getUpStation();
-        nextstep.subway.domain.Station downStation = line.getDownStation();
-        this.stations = Arrays.asList(
-            new StationResponse(upStation.getId(), upStation.getName()),
-            new StationResponse(downStation.getId(), downStation.getName())
-        );
+        Set<Station> stations = line.getSections().getStations();
+        this.stations = stations.stream()
+            .map(station -> new StationResponse(station.getId(), station.getName()))
+            .collect(Collectors.toList());
     }
 
     public Long getId() {
