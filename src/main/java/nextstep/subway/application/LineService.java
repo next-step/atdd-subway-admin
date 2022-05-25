@@ -40,4 +40,18 @@ public class LineService {
         List<Line> lines = lineRepository.findAllByDeletedFalse();
         return LineResponsesDTO.of(lines);
     }
+
+    @Transactional
+    public LineResponseDTO findOne(Long lineId){
+        Line line = lineRepository.findByIdAndDeletedFalse(lineId)
+                .orElseThrow(()->new IllegalArgumentException("[ERROR] ID에 해당하는 노선이 없습니다."));
+        return LineResponseDTO.of(line);
+    }
+
+    @Transactional
+    public void deleteLine(Long lineId){
+        Line line = lineRepository.findByIdAndDeletedFalse(lineId)
+                .orElseThrow(()->new IllegalArgumentException("[ERROR] ID에 해당하는 노선이 없습니다."));
+        line.delete();
+    }
 }

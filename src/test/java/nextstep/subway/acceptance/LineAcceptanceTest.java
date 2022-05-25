@@ -193,7 +193,7 @@ class LineAcceptanceTest {
     private ExtractableResponse<Response> requestGetLine(long lineId) {
         return RestAssured.given().log().all()
                 .accept(ContentType.JSON)
-                .when().delete("/lines/{id}", lineId)
+                .when().get("/lines/{id}", lineId)
                 .then().log().all()
                 .extract();
     }
@@ -201,7 +201,7 @@ class LineAcceptanceTest {
     static ExtractableResponse<Response> requestDeleteLine(long lineId) {
         return RestAssured.given().log().all()
                 .accept(ContentType.JSON)
-                .when().delete("/stations/{id}", lineId)
+                .when().delete("/lines/{id}", lineId)
                 .then().log().all()
                 .extract();
     }
@@ -211,7 +211,7 @@ class LineAcceptanceTest {
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(lineParams)
-                .when().put("/stations/{id}", lineId)
+                .when().put("/lines/{id}", lineId)
                 .then().log().all()
                 .extract();
     }

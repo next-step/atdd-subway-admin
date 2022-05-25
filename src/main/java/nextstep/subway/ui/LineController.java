@@ -39,14 +39,21 @@ public class LineController {
         return ResponseEntity.ok(lineResponsesDTO.getLineResponses());
     }
 
+    @GetMapping("/lines/{id}")
+    public ResponseEntity<LineResponseDTO> showLine(@PathVariable Long id){
+        LineResponseDTO lineResponsesDTO = lineService.findOne(id);
+        return ResponseEntity.ok(lineResponsesDTO);
+    }
+
     @PutMapping("/lines/{id}")
     public ResponseEntity updateLine(@PathVariable Long id){
         return ResponseEntity.badRequest().build();
     }
 
     @DeleteMapping("/lines/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id){
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id){
+        lineService.deleteLine(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

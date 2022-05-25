@@ -7,10 +7,10 @@ import nextstep.subway.domain.Station;
 
 public class LineResponseDTO {
 
-    private Long id;
-    private String name;
-    private String color;
-    private List<StationResponse> stations;
+    private final Long id;
+    private final String name;
+    private final String color;
+    private final List<StationResponse> stations;
 
 
     public static LineResponseDTO of(Line line){
