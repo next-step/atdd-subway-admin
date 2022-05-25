@@ -13,11 +13,11 @@ public class Section extends BaseEntity {
     private int distance;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "STATION_ID")
+    @JoinColumn(name = "UP_STATION_ID")
     private Station upStation;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "STATION_ID")
+    @JoinColumn(name = "DOWN_STATION_ID")
     private Station downStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
