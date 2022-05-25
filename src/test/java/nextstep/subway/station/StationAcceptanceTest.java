@@ -95,9 +95,9 @@ public class StationAcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = deleteStation(1L);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         List<Long> stationIds = findStations().jsonPath().getList("id");
         assertThat(stationIds).doesNotContain(1L);
     }
