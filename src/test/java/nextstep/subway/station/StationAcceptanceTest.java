@@ -95,10 +95,10 @@ class StationAcceptanceTest {
     @Test
     void deleteStation() {
         //given
-        ExtractableResponse<Response> response = 지하철역_생성("강남역");
+        String location = 지하철역_생성("강남역").header("location");
 
         //when
-        지하철역_제거(response.header("location"));
+        지하철역_삭제(location);
 
         //then
         List<String> stationNames = 지하철역_조회();
@@ -131,7 +131,7 @@ class StationAcceptanceTest {
         return response.jsonPath().getList("name", String.class);
     }
 
-    void 지하철역_제거(String location) {
+    void 지하철역_삭제(String location) {
         RestAssured.given().log().all()
                 .when().delete(location)
                 .then().log().all();
