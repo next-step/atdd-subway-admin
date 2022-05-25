@@ -110,14 +110,13 @@ class StationAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        // then
+        // when
         ExtractableResponse<Response> result = 지하철역_조회();
+
+        // then
         assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        List<String> stationNames = convertToStationNames(result);
-
-        assertThat(stationNames.size()).isEqualTo(2);
-        assertThat(stationNames).containsAnyOf("대림역", "역삼역");
+        assertThat(convertToStationNames(result).size()).isEqualTo(2);
+        assertThat(convertToStationNames(result)).containsAnyOf("대림역", "역삼역");
     }
 
     /**
