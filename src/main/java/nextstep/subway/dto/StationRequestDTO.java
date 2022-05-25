@@ -2,7 +2,7 @@ package nextstep.subway.dto;
 
 import nextstep.subway.domain.Station;
 
-public class StationRequest {
+public class StationRequestDTO {
     private String name;
 
     public String getName() {

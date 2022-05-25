@@ -4,20 +4,20 @@ import nextstep.subway.domain.Station;
 
 import java.time.LocalDateTime;
 
-public class StationResponse {
+public class StationResponseDTO {
     private Long id;
     private String name;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
-    public static StationResponse of(Station station) {
-        return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate());
+    public static StationResponseDTO of(Station station) {
+        return new StationResponseDTO(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate());
     }
 
-    public StationResponse() {
+    public StationResponseDTO() {
     }
 
-    public StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public StationResponseDTO(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.createdDate = createdDate;

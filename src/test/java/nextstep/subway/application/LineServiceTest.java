@@ -10,7 +10,7 @@ import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequestDTO;
 import nextstep.subway.dto.LineResponseDTO;
 import nextstep.subway.dto.LineResponsesDTO;
-import nextstep.subway.dto.StationResponse;
+import nextstep.subway.dto.StationResponseDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,7 @@ class LineServiceTest {
         assertThat(lineResponseDTO.getName()).isEqualTo("신분당선");
         assertThat(lineResponseDTO.getColor()).isEqualTo("bg-red-600");
 
-        List<StationResponse> stations = lineResponseDTO.getStations();
+        List<StationResponseDTO> stations = lineResponseDTO.getStations();
         assertThat(stations.get(0).getId()).isEqualTo(pangyo.getId());
         assertThat(stations.get(0).getName()).isEqualTo(pangyo.getName());
         assertThat(stations.get(1).getId()).isEqualTo(jeongja.getId());
