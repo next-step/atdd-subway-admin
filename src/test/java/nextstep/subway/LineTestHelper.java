@@ -1,7 +1,5 @@
 package nextstep.subway;
 
-import static nextstep.subway.StationTestHelper.역_생성_요청;
-import static nextstep.subway.TestHelper.getId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,13 +16,7 @@ import org.springframework.http.MediaType;
 public class LineTestHelper {
 
     public static ExtractableResponse<Response> 노선_생성_요청(String name, String color, int distance,
-        String upStationName, String downStationName) {
-
-        ExtractableResponse<Response> upStation_생성_응답 = 역_생성_요청(upStationName);
-        Long upStationId = getId(upStation_생성_응답);
-        ExtractableResponse<Response> downStation_생성_응답 = 역_생성_요청(downStationName);
-        Long downStationId = getId(downStation_생성_응답);
-
+        Long upStationId, Long downStationId) {
         LineRequest requestBody = new LineRequest(name, color, upStationId, downStationId, distance);
 
         return RestAssured.given().log().all()

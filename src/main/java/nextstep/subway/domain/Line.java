@@ -58,4 +58,5 @@ public class Line extends BaseEntity {
         sections.add(section);
         section.setLine(this);
     }
+
 }
