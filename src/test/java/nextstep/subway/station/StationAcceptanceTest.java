@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,14 +17,16 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Stream;
 
-import static nextstep.subway.station.RequestStationMode.CREATE;
-import static nextstep.subway.station.RequestStationMode.SEARCH_ALL;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
     private static final String INVALID_KEY = "name";
+    private static final Function<RequestSpecification, Response> CREATE = requestSpecification -> requestSpecification.post("/stations");
+    private static final Function<RequestSpecification, Response> SEARCH_ALL = requestSpecification -> requestSpecification.get("/stations");
+
     @LocalServerPort
     int port;
 
@@ -97,7 +100,6 @@ public class StationAcceptanceTest {
         // given
         Station[] createdStation = Stream.of("지하철역이름", "새로운지하철역이름", "또다른지하철역이름")
                 .map(stationName -> request(() -> makeBody(INVALID_KEY, stationName), CREATE, HttpStatus.CREATED).as(Station.class))
-                .distinct()
                 .toArray(Station[]::new);
 
         // when
@@ -114,7 +116,26 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        final String creatStationName = "강남역";
+        Station createStation = Stream.of(creatStationName)
+                .map(stationName -> request(() -> makeBody(INVALID_KEY, stationName), CREATE, HttpStatus.CREATED).as(Station.class))
+                .findAny().get();
+
+        final Function<RequestSpecification, Response> DELETE = requestSpecification -> requestSpecification.delete(String.format("/stations/%d",createStation.getId()));
+        request(HashMap::new, DELETE, HttpStatus.NO_CONTENT);
     }
+
+    /**
+     * When 없는 지하철역을 삭제하면
+     * Then 400 Bad Request 를 전달 받는다.
+     */
+    @DisplayName("지하철 역 정보가 없는 경우 삭제 요청 시 400 Bad Request 를 반환 한다.")
+    @Test
+    void noContentDeleteStation() {
+        final Function<RequestSpecification, Response> DELETE = requestSpecification -> requestSpecification.delete(String.format("/stations/%d",1));
+        request(HashMap::new, DELETE, HttpStatus.BAD_REQUEST);
+    }
+
 
     private Map<String, String> makeBody(final String key, final String value) {
         HashMap<String, String> input = new HashMap<>();
@@ -122,16 +143,13 @@ public class StationAcceptanceTest {
         return input;
     }
 
-    private ExtractableResponse<Response> request(Supplier<Map<String,String>> supplier, RequestStationMode mode, final HttpStatus expectedStatus) {
-
-        ExtractableResponse<Response> response = mode.function.apply(
+    private ExtractableResponse<Response> request(Supplier<Map<String,String>> supplier, Function<RequestSpecification, Response> function, final HttpStatus expectedStatus) {
+        ExtractableResponse<Response> response = function.apply(
                 RestAssured.given().log().all()
                         .body(supplier.get())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when()
         ).then().log().all().extract();
-
-
         assertThat(HttpStatus.valueOf(response.statusCode())).isEqualTo(expectedStatus);
         return response;
     }
