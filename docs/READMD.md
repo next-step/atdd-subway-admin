@@ -15,5 +15,5 @@
     - "name" key 가 없는 경우
     - "name" key 에 맞는 value 가 없는 경우
 
-  - 지하철 역 정보가 없는 경우 204 No Content 를 반환 한다.
+  - 지하철 역 정보가 없는 경우 ~~204 No Content~~ 404 Not Found 를 반환 한다.
   - 지하철 역 정보가 없는 경우 삭제 요청 시 404 Not Found 를 반환 한다. 
