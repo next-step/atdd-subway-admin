@@ -22,14 +22,33 @@ public class Sections {
     }
 
     public void add(Section section) {
-        sections.add(section);
+        if (sections.isEmpty()) {
+            sections.add(section);
+            return;
+        }
+        addSection(section);
     }
 
     public Set<Station> getStations() {
-        Set<Station> upStationSet = sections.stream().map(Section::getUpStation).collect(Collectors.toSet());
-        Set<Station> downStationSet = sections.stream().map(Section::getDownStation).collect(Collectors.toSet());
-        upStationSet.addAll(downStationSet);
-        return upStationSet;
+        return sections.stream()
+            .flatMap(section -> section.getStations().stream())
+            .collect(Collectors.toSet());
+    }
+
+    private void addSection(Section newSection) {
+        checkValidation(newSection);
+        sections.forEach(section -> section.update(newSection));
+        sections.add(newSection);
+    }
+
+    private void checkValidation(Section section) {
+        Set<Station> stations = getStations();
+        if (stations.contains(section.getUpStation()) && stations.contains(section.getDownStation())) {
+            throw new IllegalArgumentException("section is already registered.");
+        }
+        if (!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
+            throw new IllegalArgumentException("must be one station contains.");
+        }
     }
 
 }

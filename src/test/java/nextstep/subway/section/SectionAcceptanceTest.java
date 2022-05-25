@@ -1,11 +1,11 @@
 package nextstep.subway.section;
 
 import static nextstep.subway.LineTestHelper.노선_생성_요청;
+import static nextstep.subway.SectionTestHelper.구간_추가_요청;
 import static nextstep.subway.StationTestHelper.역_생성_요청;
 import static nextstep.subway.TestHelper.getId;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
@@ -13,7 +13,6 @@ import nextstep.subway.dto.SectionRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
@@ -54,15 +53,10 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(강남역_id, 삼성역_id, 10);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(sectionRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/lines/{id}/sections", 신분당선_id)
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> 구간_추가_응답 = 구간_추가_요청(신분당선_id, sectionRequest);
 
         //then
-        assertEquals(HttpStatus.OK.value(), response.statusCode());
+        assertEquals(HttpStatus.OK.value(), 구간_추가_응답.statusCode());
     }
 
     /**
@@ -74,15 +68,10 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(삼성역_id, 강남역_id, 10);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(sectionRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/lines/{id}/sections", 신분당선_id)
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> 구간_추가_응답 = 구간_추가_요청(신분당선_id, sectionRequest);
 
         //then
-        assertEquals(HttpStatus.OK.value(), response.statusCode());
+        assertEquals(HttpStatus.OK.value(), 구간_추가_응답.statusCode());
     }
 
     /**
@@ -94,15 +83,10 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(역삼역_id, 삼성역_id, 10);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(sectionRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/lines/{id}/sections", 신분당선_id)
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> 구간_추가_응답 = 구간_추가_요청(신분당선_id, sectionRequest);
 
         //then
-        assertEquals(HttpStatus.OK.value(), response.statusCode());
+        assertEquals(HttpStatus.OK.value(), 구간_추가_응답.statusCode());
     }
 
     /**
@@ -115,15 +99,10 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(강남역_id, 삼성역_id, 20);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(sectionRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/lines/{id}/sections", 신분당선_id)
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> 구간_추가_응답 = 구간_추가_요청(신분당선_id, sectionRequest);
 
         //then
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.statusCode());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), 구간_추가_응답.statusCode());
     }
 
     /**
@@ -133,18 +112,13 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void addSection_fail_same_up_down() {
         //given
-        SectionRequest sectionRequest = new SectionRequest(강남역_id, 삼성역_id, 20);
+        SectionRequest sectionRequest = new SectionRequest(강남역_id, 역삼역_id, 10);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(sectionRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/lines/{id}/sections", 신분당선_id)
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> 구간_추가_응답 = 구간_추가_요청(신분당선_id, sectionRequest);
 
         //then
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.statusCode());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), 구간_추가_응답.statusCode());
     }
 
     /**
@@ -154,17 +128,12 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void addSection_fail_not_contains_up_down() {
         //given
-        SectionRequest sectionRequest = new SectionRequest(역삼역_id, 삼성역_id, 20);
+        SectionRequest sectionRequest = new SectionRequest(서초역_id, 삼성역_id, 10);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(sectionRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/lines/{id}/sections", 신분당선_id)
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> 구간_추가_응답 = 구간_추가_요청(신분당선_id, sectionRequest);
 
         //then
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.statusCode());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), 구간_추가_응답.statusCode());
     }
 }

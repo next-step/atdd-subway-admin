@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import java.util.Arrays;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -56,5 +58,37 @@ public class Section {
     public void setLine(Line line) {
         this.line = line;
     }
+
+    public void update(Section newSection) {
+        if (this.upStation.equals(newSection.upStation)) {
+            updateUpStation(newSection);
+        }
+        if (this.downStation.equals(newSection.downStation)) {
+            updateDownStation(newSection);
+        }
+    }
+
+    private void updateUpStation(Section section) {
+        this.upStation = section.downStation;
+        updateDistance(section.distance);
+    }
+
+    private void updateDownStation(Section section) {
+        this.downStation = section.upStation;
+        updateDistance(section.distance);
+    }
+
+    private void updateDistance(int newDistance) {
+        int updateDistance = this.distance - newDistance;
+        if (updateDistance <= 0) {
+            throw new IllegalArgumentException("invalid distance.");
+        }
+        this.distance = updateDistance;
+    }
+
+    public List<Station> getStations() {
+        return Arrays.asList(upStation, downStation);
+    }
+
 
 }

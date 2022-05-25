@@ -3,9 +3,11 @@ package nextstep.subway.application;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Lines;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.error.LineNotFoundException;
 import nextstep.subway.error.StationNotFoundException;
 import org.springframework.stereotype.Service;
@@ -56,4 +58,11 @@ public class LineService {
         lineRepository.delete(line);
     }
 
+    public Line addSection(Long id, SectionRequest request) {
+        Line line = get(id);
+        Station upStation = getStation(request.getUpStationId());
+        Station downStation = getStation(request.getDownStationId());
+        line.addSection(new Section(upStation, downStation, request.getDistance()));
+        return line;
+    }
 }
