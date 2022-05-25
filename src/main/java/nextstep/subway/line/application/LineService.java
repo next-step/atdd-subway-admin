@@ -52,6 +52,14 @@ public class LineService {
         return LineResponse.of(line, generateStationResponse(line));
     }
 
+    @Transactional
+    public void updateLine(Long lineId, LineRequest lineRequest) {
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(() -> new NoSuchElementException(String.format(NOT_FOUND_LINE, lineId)));
+
+        line.update(lineRequest.toLine());
+    }
+
     private List<StationResponse> generateStationResponse(Line line) {
         return line.getStations().stream()
             .map(StationResponse::of)

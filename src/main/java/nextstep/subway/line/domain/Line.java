@@ -62,4 +62,9 @@ public class Line extends BaseEntity {
     public List<Station> getStations() {
         return this.sections.getStations();
     }
+
+    public void update(Line updateLine) {
+        this.name = updateLine.getName();
+        this.color = updateLine.getColor();
+    }
 }
