@@ -77,7 +77,7 @@ class SectionsTest {
         assertThat(toStationNames(sections)).containsExactlyElementsOf(expected);
     }
 
-    @DisplayName("포함되지 않은 Station이거나 더 이상 구간을 제거할 수 없어 에 해당하는 구간 제거하지 못 한다.")
+    @DisplayName("포함되지 않은 Station 이거나 더 이상 구간을 제거할 수 없어 구간 제거하지 못 한다.")
     @ParameterizedTest
     @ValueSource(strings = {
             "강남역",
