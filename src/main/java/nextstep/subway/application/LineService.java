@@ -14,8 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class LineService {
 
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -43,15 +43,18 @@ public class LineService {
 
     @Transactional
     public LineResponseDTO findOne(Long lineId){
-        Line line = lineRepository.findByIdAndDeletedFalse(lineId)
-                .orElseThrow(()->new IllegalArgumentException("[ERROR] ID에 해당하는 노선이 없습니다."));
+        Line line = getLine(lineId);
         return LineResponseDTO.of(line);
     }
 
     @Transactional
     public void deleteLine(Long lineId){
-        Line line = lineRepository.findByIdAndDeletedFalse(lineId)
-                .orElseThrow(()->new IllegalArgumentException("[ERROR] ID에 해당하는 노선이 없습니다."));
+        Line line = getLine(lineId);
         line.delete();
+    }
+
+    private Line getLine(Long lineId) {
+        return lineRepository.findByIdAndDeletedFalse(lineId)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] ID에 해당하는 노선이 없습니다."));
     }
 }
