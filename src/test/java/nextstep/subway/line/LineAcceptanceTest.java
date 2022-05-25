@@ -86,9 +86,9 @@ class LineAcceptanceTest {
     void getLine() {
         // given
         ExtractableResponse<Response> saveResponse = 지하철_노선_생성("신분당선", "black");
-        Long 지하철_노선_ID = saveResponse.as(LineResponse.class).getId();
 
         // when
+        Long 지하철_노선_ID = toId(saveResponse);
         ExtractableResponse<Response> response = 지하철_노선_조회(지하철_노선_ID);
 
         // then
@@ -109,13 +109,13 @@ class LineAcceptanceTest {
 
         // when
         LineRequest lineRequest = LineRequest.of("8호선", "skyblue");
-        Long 지하철_노선_ID = saveResponse.as(LineResponse.class).getId();
+        Long 지하철_노선_ID = toId(saveResponse);
         ExtractableResponse<Response> updateResponse = 지하철_노선_수정(지하철_노선_ID, lineRequest);
 
         // then
         assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(convertToFiledName(updateResponse, "name")).isEqualTo("8호선");
-        assertThat(convertToFiledName(updateResponse, "color")).isEqualTo("skyblue");
+        assertThat(toName(updateResponse)).isEqualTo("8호선");
+        assertThat(toColor(updateResponse)).isEqualTo("skyblue");
     }
 
     /**
@@ -168,6 +168,19 @@ class LineAcceptanceTest {
             .extract();
     }
 
+
+    private Long toId(ExtractableResponse<Response> response) {
+        return response.as(LineResponse.class).getId();
+    }
+
+    private String toName(ExtractableResponse<Response> response) {
+        return response.as(LineResponse.class).getName();
+    }
+
+    private String toColor(ExtractableResponse<Response> response) {
+        return response.as(LineResponse.class).getColor();
+    }
+
     private List<String> convertToFiledName(ExtractableResponse<Response> response, String field) {
         return response.jsonPath().getList(field, String.class);
     }
@@ -178,9 +191,5 @@ class LineAcceptanceTest {
 
     private LineResponse convertToDTO(ExtractableResponse<Response> response) {
         return response.jsonPath().getObject("", LineResponse.class);
-    }
-
-    private List<String> convertToFieldNames(ExtractableResponse<Response> response, String field) {
-        return response.jsonPath().getList(field, String.class);
     }
 }
