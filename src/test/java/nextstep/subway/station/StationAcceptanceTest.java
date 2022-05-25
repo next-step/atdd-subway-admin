@@ -19,12 +19,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
+class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
@@ -45,11 +45,7 @@ public class StationAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = 지하철역_조회().jsonPath().getList("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -84,17 +80,10 @@ public class StationAcceptanceTest {
         지하철역_생성("서초역");
 
         //when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract();
+        List<String> stationNames = 지하철역_조회().jsonPath().getList("name", String.class);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<String> names = response.jsonPath().getList("name", String.class);
-        assertThat(names).containsAnyOf("강남역", "서초역");
+        assertThat(stationNames).containsAnyOf("강남역", "서초역");
     }
 
     /**
@@ -115,15 +104,9 @@ public class StationAcceptanceTest {
                 .then().log().all();
 
         //then
-        List<String> names = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/stations")
-                .then().log().all()
-                .extract()
-                .jsonPath()
-                .getList("name", String.class);
+        List<String> stationNames = 지하철역_조회().jsonPath().getList("name", String.class);
 
-        assertThat(names).isEmpty();
+        assertThat(stationNames).isEmpty();
     }
 
     ExtractableResponse<Response> 지하철역_생성(String name) {
@@ -136,6 +119,18 @@ public class StationAcceptanceTest {
                 .when().post("/stations")
                 .then().log().all()
                 .extract();
+
+        return response;
+    }
+
+    ExtractableResponse<Response> 지하철역_조회() {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/stations")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         return response;
     }
