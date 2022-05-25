@@ -96,4 +96,19 @@ class SectionTest {
                 () -> assertThat(otherSection.getDistance()).isEqualTo(new Distance(9L))
         );
     }
+
+    @DisplayName("Section과 다른 Section와의 병합")
+    @Test
+    void merge() {
+        Section section = SectionUtils.generateSection("청계산입구역", "판교역", 10L);
+        Section otherSection = SectionUtils.generateSection("판교역", "정자역", 9L);
+
+        section.merge(otherSection);
+
+        assertAll(
+                () -> assertThat(section.getUpStation().getName()).isEqualTo("청계산입구역"),
+                () -> assertThat(section.getDownStation().getName()).isEqualTo("정자역"),
+                () -> assertThat(section.getDistance()).isEqualTo(new Distance(19L))
+        );
+    }
 }
