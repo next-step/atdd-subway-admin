@@ -42,8 +42,7 @@ class StationAcceptanceTest {
         지하철역_생성_성공("강남역");
 
         // then
-        List<String> stationNames = 지하철역_조회();
-        assertThat(stationNames).containsAnyOf("강남역");
+        지하철역_조회_성공("강남역");
     }
 
     /**
@@ -70,15 +69,13 @@ class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
-        //given
+        // given
         지하철역_생성_성공("강남역");
         지하철역_생성_성공("서초역");
 
-        //when
-        List<String> stationNames = 지하철역_조회();
-
+        // when
         // then
-        assertThat(stationNames).containsAnyOf("강남역", "서초역");
+        지하철역_조회_성공("강남역", "서초역");
     }
 
     /**
@@ -96,8 +93,7 @@ class StationAcceptanceTest {
         지하철역_삭제(location);
 
         //then
-        List<String> stationNames = 지하철역_조회();
-        assertThat(stationNames).isEmpty();
+        지하철역_조회_실패("강남역");
     }
 
     ExtractableResponse<Response> 지하철역_생성(String name) {
@@ -135,6 +131,19 @@ class StationAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         return response.jsonPath().getList("name", String.class);
+    }
+
+    void 지하철역_조회_성공(String... names) {
+        List<String> findNames = 지하철역_조회();
+        assertThat(findNames).containsAnyOf(names);
+    }
+
+    void 지하철역_조회_실패(String name) {
+        List<String> findNames = 지하철역_조회();
+        assertThat(findNames.stream()
+                .filter(name::equals)
+                .findAny())
+                .isNotPresent();
     }
 
     void 지하철역_삭제(String location) {
