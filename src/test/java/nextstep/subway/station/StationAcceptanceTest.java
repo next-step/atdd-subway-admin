@@ -38,10 +38,10 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        // given
+        // when
         ExtractableResponse<Response> response = createStation("강남역");
 
-        // when
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
