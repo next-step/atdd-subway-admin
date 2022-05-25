@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
+    private static final String INVALID_KEY = "name";
     @LocalServerPort
     int port;
 
@@ -41,9 +42,10 @@ public class StationAcceptanceTest {
     void requestCreateStation() {
         // when
         String[] result = Stream.of("강남역")
-                .map(stationName -> requestCreateStation(stationName, HttpStatus.CREATED).getName())
+                .map(stationName -> requestCreateStation(INVALID_KEY, stationName, HttpStatus.CREATED).getName())
                 .toArray(String[]::new);
 
+        //Then
         assertThat(result).contains("강남역");
     }
 
@@ -57,12 +59,29 @@ public class StationAcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         final String creatStationName = "강남역";
-        Stream.of(creatStationName).forEach(stationName -> requestCreateStation(stationName, HttpStatus.CREATED));
-        Stream.of(creatStationName).forEach(stationName -> requestCreateStation(stationName, HttpStatus.BAD_REQUEST));
+        //when
+        Stream.of(creatStationName).forEach(stationName -> requestCreateStation(INVALID_KEY, stationName, HttpStatus.CREATED));
+        //Then
+        Stream.of(creatStationName).forEach(stationName -> requestCreateStation(INVALID_KEY, stationName, HttpStatus.BAD_REQUEST));
 
     }
 
     /**
+    * When 잘못된 Key 값을 전달하면
+    * Then 400 Bad Request 를 전달 받는다.
+    */
+    @DisplayName("잘못된 입력 값을 전달 하면 Bad Request 를 받는다")
+    @Test
+    void invalidParameter() {
+        // given
+        final String creatStationName = "강남역";
+
+        //Then
+        Stream.of(creatStationName).forEach(stationName -> requestCreateStation("bad", stationName, HttpStatus.BAD_REQUEST));
+        Stream.of("").forEach(stationName -> requestCreateStation(INVALID_KEY, stationName, HttpStatus.BAD_REQUEST));
+    }
+
+     /**
      * Given 2개의 지하철역을 생성하고
      * When 지하철역 목록을 조회하면
      * Then 2개의 지하철역을 응답 받는다
@@ -72,7 +91,7 @@ public class StationAcceptanceTest {
     void getStations() {
         // given
         Station[] createdStation = Stream.of("지하철역이름", "새로운지하철역이름", "또다른지하철역이름")
-                .map(stationName -> requestCreateStation(stationName, HttpStatus.CREATED))
+                .map(stationName -> requestCreateStation(INVALID_KEY, stationName, HttpStatus.CREATED))
                 .distinct()
                 .toArray(Station[]::new);
 
@@ -97,9 +116,9 @@ public class StationAcceptanceTest {
     void deleteStation() {
     }
 
-    private  Station requestCreateStation(final String stationName, final HttpStatus httpStatus) {
+    private Station requestCreateStation(final String key, final String stationName, final HttpStatus httpStatus) {
         Map<String, String> params = new HashMap<>();
-        params.put("name", stationName);
+        params.put(key, stationName);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
