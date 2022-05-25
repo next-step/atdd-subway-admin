@@ -39,10 +39,7 @@ class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = 지하철역_생성("강남역");
-
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        지하철역_생성_성공("강남역");
 
         // then
         List<String> stationNames = 지하철역_조회();
@@ -58,13 +55,11 @@ class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        지하철역_생성("강남역");
+        지하철역_생성_성공("강남역");
 
         // when
-        ExtractableResponse<Response> response = 지하철역_생성("강남역");
-
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철역_생성_실패("강남역");
     }
 
     /**
@@ -76,8 +71,8 @@ class StationAcceptanceTest {
     @Test
     void getStations() {
         //given
-        지하철역_생성("강남역");
-        지하철역_생성("서초역");
+        지하철역_생성_성공("강남역");
+        지하철역_생성_성공("서초역");
 
         //when
         List<String> stationNames = 지하철역_조회();
@@ -95,7 +90,7 @@ class StationAcceptanceTest {
     @Test
     void deleteStation() {
         //given
-        String location = 지하철역_생성("강남역").header("location");
+        String location = 지하철역_생성_성공("강남역");
 
         //when
         지하철역_삭제(location);
@@ -117,6 +112,17 @@ class StationAcceptanceTest {
                 .extract();
 
         return response;
+    }
+
+    String 지하철역_생성_성공(String name) {
+        ExtractableResponse<Response> response = 지하철역_생성(name);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        return response.header("location");
+    }
+
+    void 지하철역_생성_실패(String name) {
+        ExtractableResponse<Response> response = 지하철역_생성(name);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     List<String> 지하철역_조회() {
