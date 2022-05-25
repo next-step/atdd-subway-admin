@@ -69,24 +69,25 @@ class StationAcceptanceTest {
         ExtractableResponse<Response> createResponse = requestCreateStation(STATION_PARAMS_BUNDLES.get(GANG_NAM_STATION));
 
         // then
-        존재하는_지하철역인_경우_오류_검증(createResponse);
+        존재하는_지하철역인_경우_오류_응답_인지_검증(createResponse);
 
         // when
         ExtractableResponse<Response> getAllResponse = requestGetStations();
-        assertThat(getAllResponse.jsonPath().getList("name")).contains("강남역");
 
         //then
         지하철역_목록_조회_검증(getAllResponse);
 
         //when
-        assertThat(requestDeleteStation(1L).statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        ExtractableResponse<Response> deleteResponse = requestDeleteStation(1L);
+        HTTP_응답_상태코드_검증(deleteResponse,HttpStatus.NO_CONTENT);
 
         //then
         ExtractableResponse<Response> response = requestGetStations();
         지하철역이_삭제_되었는지_검증(response);
     }
 
-    private void 존재하는_지하철역인_경우_오류_검증(ExtractableResponse<Response> createResponse) {
+
+    private void 존재하는_지하철역인_경우_오류_응답_인지_검증(ExtractableResponse<Response> createResponse) {
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -94,6 +95,10 @@ class StationAcceptanceTest {
         for (ExtractableResponse<Response> createResponse : createResponses) {
             assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         }
+    }
+
+    private void HTTP_응답_상태코드_검증(ExtractableResponse<Response> response,HttpStatus httpStatus) {
+        assertThat(response.statusCode()).isEqualTo(httpStatus.value());
     }
 
     private void 지하철역_목록_조회_검증(ExtractableResponse<Response> getAllResponse) {
