@@ -101,13 +101,13 @@ class StationAcceptanceTest {
         assertThat(지하철역_목록()).doesNotContain("강남역");
     }
 
-    private void 지하철역_삭제(ExtractableResponse<Response> response) {
+    public static void 지하철역_삭제(ExtractableResponse<Response> response) {
         RestAssured.given().log().all()
                 .when().delete("/stations/" + response.body().jsonPath().get("id"))
                 .then().log().all();
     }
 
-    private ExtractableResponse<Response> 지하철역_생성(StationRequest 역이름) {
+    public static ExtractableResponse<Response> 지하철역_생성(StationRequest 역이름) {
         return RestAssured.given().log().all()
                 .body(역이름.toString())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -116,7 +116,7 @@ class StationAcceptanceTest {
                 .extract();
     }
 
-    private List<String> 지하철역_목록() {
+    public static List<String> 지하철역_목록() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
