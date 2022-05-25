@@ -1,4 +1,4 @@
-package nextstep.subway.station;
+package nextstep.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,6 +21,9 @@ import org.springframework.test.context.jdbc.Sql;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LineAcceptanceTest extends AcceptanceTest {
     private final static String API_URL_LINES = "/lines";
+    private final static String COLOR_RED = "bg-red-400";
+    private final static String LINE_NUMBER_1 = "1호선";
+    private final static String LINE_NUMBER_2 = "2호선";
     @LocalServerPort
     int port;
 
@@ -39,11 +42,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        registerLine("2호선");
+        registerLine(LINE_NUMBER_2);
 
         // then
         List<String> lineNames = findLines().jsonPath().getList("name", String.class);
-        assertThat(lineNames).contains("2호선");
+        assertThat(lineNames).contains(LINE_NUMBER_2);
 
     }
 
@@ -56,14 +59,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        registerLine("1호선");
-        registerLine("2호선");
+        registerLine(LINE_NUMBER_1);
+        registerLine(LINE_NUMBER_2);
 
         // when
         List<String> lineNames = findLines().jsonPath().getList("name", String.class);
 
         // then
-        assertThat(lineNames).contains("1호선", "2호선");
+        assertThat(lineNames).contains(LINE_NUMBER_1, LINE_NUMBER_2);
     }
 
     /**
@@ -75,7 +78,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        String lineId = registerLine("2호선").jsonPath().getString("id");
+        String lineId = registerLine(LINE_NUMBER_2).jsonPath().getString("id");
 
         // when
         ExtractableResponse<Response> response = findLine(lineId);
@@ -93,17 +96,15 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철노선 수정")
     @Test
     void updateLine() {
-        final String newColor = "bg-red-400";
-
         // given
-        String lineId = registerLine("2호선").jsonPath().getString("id");
+        String lineId = registerLine(LINE_NUMBER_2).jsonPath().getString("id");
 
         // when
-        modifyLine(lineId, newColor);
+        modifyLine(lineId, COLOR_RED);
 
         // then
         String actual = findLine(lineId).jsonPath().getString("color");
-        assertThat(actual).isEqualTo(newColor);
+        assertThat(actual).isEqualTo(COLOR_RED);
     }
 
     /**
@@ -115,14 +116,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        String lineId = registerLine("2호선").jsonPath().getString("id");
+        String lineId = registerLine(LINE_NUMBER_2).jsonPath().getString("id");
 
         // when
         removeLine(lineId);
         List<String> lineNames = findLines().jsonPath().getList("name", String.class);
 
         // then
-        assertThat(lineNames.isEmpty() || !lineNames.contains("2호선")).isTrue();
+        assertThat(lineNames.isEmpty() || !lineNames.contains(LINE_NUMBER_2)).isTrue();
     }
 
     private ExtractableResponse<Response> registerLine(String lineName) {

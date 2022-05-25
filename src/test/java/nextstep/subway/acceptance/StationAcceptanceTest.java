@@ -1,4 +1,4 @@
-package nextstep.subway.station;
+package nextstep.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
