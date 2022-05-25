@@ -52,3 +52,8 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+---
+
+## 1단계 - 지하철역 인수 테스트 작성
+- [문서보기](./docs/STEP1_README.md)
