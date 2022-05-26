@@ -108,4 +108,28 @@ public class Section {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    public boolean isEqualsUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean isEqualsDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public void changeUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void changeDownStation(Station station) {
+        this.downStation = station;
+    }
+
+    public boolean isGreaterThanOrEqualsDistance(Section middleSection) {
+        return this.distance.isGraterThanOrEquals(middleSection.getDistance());
+    }
+
+    public void reduceDistanceByDistance(Distance distance) {
+        this.distance.minus(distance);
+    }
 }
