@@ -40,25 +40,6 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         생성한_지하철역_찾기(강남역);
     }
 
-    private ExtractableResponse<Response> 지하철역_생성(String 지하철역_이름) {
-        Map<String, String> params = new HashMap<>();
-        params.put(STATION_NAME_KEY, 지하철역_이름);
-        return post(STATIONS_URI, params);
-    }
-
-    private void 지하철역_생성됨(ExtractableResponse<Response> 지하철역_생성_응답) {
-        assertThat(지하철역_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-    }
-
-    private List<String> 지하철역_목록_조회() {
-        return get(STATIONS_URI).jsonPath().getList(STATION_NAME_KEY, String.class);
-    }
-
-    private void 생성한_지하철역_찾기(String... 지하철역_이름) {
-        List<String> 지하철역_목록 = 지하철역_목록_조회();
-        assertThat(지하철역_목록).contains(지하철역_이름);
-    }
-
     /**
      * Given 지하철역을 생성하고
      * When 기존에 존재하는 지하철역 이름으로 지하철역을 생성하면
@@ -76,10 +57,6 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         지하철역_생성_안됨(강남역_생성_응답);
-    }
-
-    private void 지하철역_생성_안됨(ExtractableResponse<Response> 지하철역_생성_응답) {
-        assertThat(지하철역_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -117,6 +94,30 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         지하철역_목록에서_찾을수_없음(잠실역);
+    }
+
+    // ##### private #####
+    private ExtractableResponse<Response> 지하철역_생성(String 지하철역_이름) {
+        Map<String, String> params = new HashMap<>();
+        params.put(STATION_NAME_KEY, 지하철역_이름);
+        return post(STATIONS_URI, params);
+    }
+
+    private void 지하철역_생성됨(ExtractableResponse<Response> 지하철역_생성_응답) {
+        assertThat(지하철역_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private List<String> 지하철역_목록_조회() {
+        return get(STATIONS_URI).jsonPath().getList(STATION_NAME_KEY, String.class);
+    }
+
+    private void 생성한_지하철역_찾기(String... 지하철역_이름) {
+        List<String> 지하철역_목록 = 지하철역_목록_조회();
+        assertThat(지하철역_목록).contains(지하철역_이름);
+    }
+
+    private void 지하철역_생성_안됨(ExtractableResponse<Response> 지하철역_생성_응답) {
+        assertThat(지하철역_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private void 지하철역_삭제(ExtractableResponse<Response> 지하철역_생성_응답) {
