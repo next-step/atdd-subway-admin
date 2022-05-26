@@ -4,12 +4,8 @@ import java.time.LocalDateTime;
 import nextstep.subway.domain.Station;
 
 public class StationResponse extends BaseDto {
-    private Long id;
-    private String name;
-
-    public StationResponse() {
-        super();
-    }
+    private final Long id;
+    private final String name;
 
     private StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         super(createdDate, modifiedDate);
