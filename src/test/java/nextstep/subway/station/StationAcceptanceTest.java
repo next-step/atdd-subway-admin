@@ -105,18 +105,18 @@ public class StationAcceptanceTest {
         assertThat(stationNames).isEmpty();
     }
 
-    private ExtractableResponse<Response> 지하철역을_생성한다(String stationName) {
+    public static ExtractableResponse<Response> 지하철역을_생성한다(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
         return RestAssuredTemplate.post("/stations", params);
     }
 
-    private List<String> 모든_지하철역을_조회한다() {
+    public static List<String> 모든_지하철역을_조회한다() {
         return RestAssuredTemplate.get("/stations").jsonPath().getList("name", String.class);
     }
 
-    private ExtractableResponse<Response> 지하철역을_삭제한다(long stationId) {
+    public static ExtractableResponse<Response> 지하철역을_삭제한다(long stationId) {
         return RestAssuredTemplate.delete("/stations/{id}", stationId);
     }
 }
