@@ -100,13 +100,15 @@ public class StationAcceptanceTest {
     void deleteStation() {
         // given
         ValidatableResponse response = createStation("강남역");
-        long createdStationId = getJsonPathForResponse(response).getLong("id");
+        long createdStationId = getJsonPathForResponse(response)
+                .getLong("id");
 
         // when
         getResponseForStationDelete(createdStationId);
 
         // then
-        int numberOfStations = getJsonPathForResponse(getResponseForStationList()).getList("$").size();
+        int numberOfStations = getJsonPathForResponse(getResponseForStationList())
+                .getList("$").size();
         assertThat(numberOfStations).isEqualTo(0);
     }
 
@@ -121,9 +123,9 @@ public class StationAcceptanceTest {
                 .then().log().all();
     }
 
-    private void getResponseForStationDelete(long createdStationId) {
+    private void getResponseForStationDelete(long stationId) {
         RestAssured.given().log().all()
-                .pathParam("id", createdStationId)
+                .pathParam("id", stationId)
                 .when().delete("/stations/{id}")
                 .then().log().all();
     }
