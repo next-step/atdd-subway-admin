@@ -9,11 +9,13 @@ import java.util.List;
 public class LineResponse {
     private Long id;
     private String name;
+    private String color;
     private List<LineStationInfo> stations;
 
-    public LineResponse(Long id, String name, Station upStation, Station downStation) {
+    public LineResponse(Long id, String name, String color, Station upStation, Station downStation) {
         this.id = id;
         this.name = name;
+        this.color = color;
         this.stations = Arrays.asList(new LineStationInfo(upStation), new LineStationInfo(downStation));
     }
 
@@ -30,7 +32,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getUpStation(), line.getDownStation());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getUpStation(), line.getDownStation());
     }
 
     private class LineStationInfo {

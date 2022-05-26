@@ -11,10 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,14 +39,8 @@ public class LinesAcceptanceTest {
     @Test
     void createLinesTest() {
         // given
-        Long upStationId = RequestHelper
-                .postRequest(STATION_PATH, new HashMap<>(), Collections.singletonMap("name", "지하철역"))
-                .jsonPath()
-                .getLong("id");
-        Long downStationId = RequestHelper
-                .postRequest(STATION_PATH, new HashMap<>(), Collections.singletonMap("name", "새로운지하철역"))
-                .jsonPath()
-                .getLong("id");
+        Long upStationId = Long.parseLong(saveStationAndGetInfo("지하철역").get("id"));
+        Long downStationId = Long.parseLong(saveStationAndGetInfo("새로운지하철역").get("id"));
         Map<String, Object> lineRequest = createLineRequest("신분당선", "bg-red-600", upStationId, downStationId, 10L);
 
         // when
@@ -63,29 +54,41 @@ public class LinesAcceptanceTest {
         assertThat(lineNames).containsAnyOf("신분당선");
     }
 
-//    /**
-//     * Given 2개의 지하철 노선을 생성하고
-//     * When 지하철 노선 목록을 조회하면
-//     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
-//     */
-//    @DisplayName("지하철 노선 목록을 조회한다.")
-//    @Test
-//    void getAllLinesTest() {
-//        // given
-//        LineRequest lineRequest1 = new LineRequest("신분당선");
-//        LineRequest lineRequest2 = new LineRequest("수인분당선");
-//
-//        // when
-//        RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest1);
-//        RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest2);
-//        List<String> lineNames = RequestHelper.getRequest(LINE_PATH, new HashMap<>())
-//                .jsonPath()
-//                .getList("name", String.class);
-//
-//        // then
-//        assertThat(lineNames).containsAnyOf(lineRequest1.getName(), lineRequest2.getName());
-//    }
-//
+    /**
+     * Given 2개의 지하철 노선을 생성하고
+     * When 지하철 노선 목록을 조회하면
+     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     */
+    @DisplayName("지하철 노선 목록을 조회한다.")
+    @Test
+    void getAllLinesTest() {
+        // given
+        List<Long> stationIds = Arrays.asList(
+                Long.parseLong(saveStationAndGetInfo("지하철역").get("id")),
+                Long.parseLong(saveStationAndGetInfo("새로운지하철역").get("id")),
+                Long.parseLong(saveStationAndGetInfo("또다른지하철역").get("id"))
+        );
+        RequestHelper.postRequest(
+                LINE_PATH,
+                new HashMap<>(),
+                createLineRequest("신분당선", "bg-red-600", stationIds.get(0), stationIds.get(1), 10L)
+        );
+        RequestHelper.postRequest(
+                LINE_PATH,
+                new HashMap<>(),
+                createLineRequest("분당선", "bg-green-600", stationIds.get(1), stationIds.get(2), 10L)
+        );
+
+        // when
+        List<String> lineNames = RequestHelper.getRequest(LINE_PATH, new HashMap<>())
+                .jsonPath()
+                .getList("name", String.class);
+
+
+        // then
+        assertThat(lineNames).containsAnyOf("신분당선", "분당선");
+    }
+
 //    /**
 //     * Given 지하철 노선을 생성하고
 //     * When 생성한 지하철 노선을 조회하면
@@ -165,6 +168,17 @@ public class LinesAcceptanceTest {
 //        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.SC_NO_CONTENT);
 //        assertThat(lineIds).doesNotContain(createdLineId);
 //    }
+
+    private Map<String, String> saveStationAndGetInfo(String stationName) {
+        Map<String, String> result = new HashMap<>();
+        ExtractableResponse<Response> stationResponse = RequestHelper
+                .postRequest(STATION_PATH, new HashMap<>(), Collections.singletonMap("name", stationName));
+
+        result.put("id", stationResponse.jsonPath().getString("id"));
+        result.put("name", stationResponse.jsonPath().getString("name"));
+
+        return result;
+    }
 
     private Map<String, Object> createLineRequest(String name, String color, Long upStationId, Long downStationId, Long distance) {
         Map<String, Object> lineRequest = new HashMap<>();
