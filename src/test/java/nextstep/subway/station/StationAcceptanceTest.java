@@ -17,6 +17,9 @@ import org.junit.jupiter.api.Test;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends BaseAcceptanceTest {
 
+    private static final String 강남역 = "강남역";
+    private static final String 교대역 = "교대역";
+
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다
@@ -25,18 +28,15 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     public void createStation() {
-        //given
-        String 생성_요청_역_이름 = "강남역";
-
         // when
-        ExtractableResponse<Response> response = 역_생성_요청(생성_요청_역_이름);
+        ExtractableResponse<Response> response = 역_생성_요청(강남역);
 
         // then
         생성됨_확인(response);
 
         // then
         ExtractableResponse<Response> 역_조회_응답 = 역_조회_요청();
-        역_포함_확인(역_조회_응답, 생성_요청_역_이름);
+        역_포함_확인(역_조회_응답, 강남역);
     }
 
     /**
@@ -48,7 +48,6 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
     @Test
     public void createStationWithDuplicateName() {
         // given
-        String 강남역 = "강남역";
         역_생성_요청(강남역);
 
         // when
@@ -67,8 +66,6 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
     @Test
     public void getStations() {
         //given
-        String 강남역 = "강남역";
-        String 교대역 = "교대역";
         역_생성_요청(강남역);
         역_생성_요청(교대역);
 
@@ -88,7 +85,6 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
     @Test
     public void deleteStation() {
         //given
-        String 강남역 = "강남역";
         Long 생성_역_id = 역_생성_요청(강남역).jsonPath().getLong("id");
 
         //when
