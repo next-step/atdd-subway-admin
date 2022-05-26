@@ -1,5 +1,6 @@
 package nextstep.subway.dto;
 
+import java.util.Objects;
 import nextstep.subway.domain.Station;
 
 public class StationRequest {
@@ -11,5 +12,22 @@ public class StationRequest {
 
     public Station toStation() {
         return Station.builder(name).build();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        StationRequest that = (StationRequest) o;
+        return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

@@ -1,6 +1,7 @@
 package nextstep.subway.dto;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import nextstep.subway.domain.Station;
 
 public class StationResponse extends BaseDto {
@@ -24,5 +25,22 @@ public class StationResponse extends BaseDto {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        StationResponse that = (StationResponse) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
