@@ -63,11 +63,11 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        RequestHelper.postRequest(STATION_PATH, new HashMap<>(), Collections.singletonMap("name", "강남역"));
+        RequestHelper.postRequest(STATION_PATH, new HashMap<>(), Collections.singletonMap("name", "선릉역"));
 
         // when
         ExtractableResponse<Response> response = RequestHelper
-                .postRequest(STATION_PATH, new HashMap<>(), Collections.singletonMap("name", "강남역"));
+                .postRequest(STATION_PATH, new HashMap<>(), Collections.singletonMap("name", "선릉역"));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -82,7 +82,7 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        RequestHelper.postRequest(STATION_PATH, new HashMap<>(), Collections.singletonMap("name", "강남역"));
+        RequestHelper.postRequest(STATION_PATH, new HashMap<>(), Collections.singletonMap("name", "역삼역"));
         RequestHelper.postRequest(STATION_PATH, new HashMap<>(), Collections.singletonMap("name", "삼성역"));
 
         // when
@@ -91,7 +91,7 @@ public class StationAcceptanceTest {
                 .getList("name", String.class);
 
         // then
-        assertThat(stationNames).containsAnyOf("강남역", "삼성역");
+        assertThat(stationNames).containsAnyOf("역삼역", "삼성역");
     }
 
     /**
@@ -104,7 +104,7 @@ public class StationAcceptanceTest {
     void deleteStation() {
         // given
         String createdStationId = RequestHelper
-                .postRequest(STATION_PATH, new HashMap<>(), Collections.singletonMap("name", "강남역"))
+                .postRequest(STATION_PATH, new HashMap<>(), Collections.singletonMap("name", "잠실역"))
                 .body()
                 .jsonPath()
                 .get("id")
