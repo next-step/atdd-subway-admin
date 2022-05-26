@@ -123,34 +123,38 @@ public class LinesAcceptanceTest {
         assertThat(lineName).isEqualTo("신분당선");
     }
 
-//    /**
-//     * Given 지하철 노선을 생성하고
-//     * When 생성한 지하철 노선을 수정하면
-//     * Then 해당 지하철 노선 정보는 수정된다
-//     */
-//    @DisplayName("지하철 노선을 수정한다.")
-//    @Test
-//    void updateLinesTest() {
-//        // given
-//        LineRequest lineRequest = new LineRequest("신분당선");
-//        LineRequest tobeLineRequest = new LineRequest("다른분당선");
-//        String createdLineId = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest)
-//                .jsonPath()
-//                .getString("id");
-//
-//        // when
-//        ExtractableResponse<Response> response = RequestHelper
-//                .putRequest(LINE_PATH + "/{id}", new HashMap<>(), tobeLineRequest, createdLineId);
-//        String changedName = RequestHelper.getRequest(LINE_PATH + "/{id}", new HashMap<>(), createdLineId)
-//                .jsonPath()
-//                .get("name");
-//
-//        // then
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-//        assertThat(changedName).isNotEqualTo(lineRequest.getName());
-//        assertThat(changedName).isEqualTo(tobeLineRequest.getName());
-//    }
-//
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLinesTest() {
+        // given
+        String createdLineId = RequestHelper.postRequest(
+                LINE_PATH,
+                new HashMap<>(),
+                createLineRequest("신분당선", "bg-red-600", null, null, 10L)
+        ).jsonPath()
+                .getString("id");
+        Map<String, Object> updateRequest = new HashMap<>();
+        updateRequest.put("name", "다른분당선");
+        updateRequest.put("color", "bg-red-600");
+
+        // when
+        ExtractableResponse<Response> response = RequestHelper
+                .putRequest(LINE_PATH + "/{id}", new HashMap<>(), updateRequest, createdLineId);
+        String changedName = RequestHelper.getRequest(LINE_PATH + "/{id}", new HashMap<>(), createdLineId)
+                .jsonPath()
+                .get("name");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_NO_CONTENT);
+        assertThat(changedName).isNotEqualTo("신분당선");
+        assertThat(changedName).isEqualTo("다른분당선");
+    }
+
 //    /**
 //     * Given 지하철 노선을 생성하고
 //     * When 생성한 지하철 노선을 삭제하면

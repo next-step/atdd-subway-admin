@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.dto.LineRequest;
+
 import javax.persistence.*;
 
 @Entity
@@ -25,6 +27,13 @@ public class Line extends BaseEntity {
         this.color = color;
         this.upStation = upStation;
         this.downStation = downStation;
+    }
+
+    public Line modify(LineRequest.Modify modify) {
+        this.name = modify.getName();
+        this.color = modify.getColor();
+
+        return this;
     }
 
     public Long getId() {

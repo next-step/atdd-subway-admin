@@ -48,6 +48,7 @@ public class RequestHelper {
         return RestAssured.given().log().all()
                 .params(params)
                 .body(body)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put(path, pathVariables)
                 .then().log().all()
                 .extract();

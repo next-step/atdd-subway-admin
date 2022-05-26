@@ -4,33 +4,55 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 
 public class LineRequest {
-    private String name;
-    private String color;
-    private Long upStationId;
-    private Long downStationId;
-    private Long distance;
 
-    public String getName() {
-        return name;
+    private LineRequest() {}
+
+    public static class Create {
+        private String name;
+        private String color;
+        private Long upStationId;
+        private Long downStationId;
+        private Long distance;
+
+        public String getName() {
+            return name;
+        }
+
+        public String getColor() {
+            return color;
+        }
+
+        public Long getUpStationId() {
+            return this.upStationId;
+        }
+
+        public Long getDownStationId() {
+            return this.downStationId;
+        }
+
+        public Long getDistance() {
+            return distance;
+        }
+
+        public Line toLine(Station upStation, Station downStation) {
+            return new Line(name, color, upStation, downStation);
+        }
     }
 
-    public String getColor() {
-        return color;
-    }
+    public static class Modify {
+        private String name;
+        private String color;
 
-    public Long getUpStationId() {
-        return this.upStationId;
-    }
+        public Line toLine(Line originalLine) {
+            return originalLine.modify(this);
+        }
 
-    public Long getDownStationId() {
-        return this.downStationId;
-    }
+        public String getName() {
+            return name;
+        }
 
-    public Long getDistance() {
-        return distance;
-    }
-
-    public Line toLine(Station upStation, Station downStation) {
-        return new Line(name, color, upStation, downStation);
+        public String getColor() {
+            return color;
+        }
     }
 }

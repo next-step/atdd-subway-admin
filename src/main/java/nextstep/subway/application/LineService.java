@@ -1,15 +1,14 @@
 package nextstep.subway.application;
 
+import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
 import nextstep.subway.error.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,24 +21,32 @@ public class LineService {
         this.stationService = stationService;
     }
 
-    public List<LineResponse> findAllLines() {
-        return lineRepository.findAll()
-                .stream().map(LineResponse::of)
-                .collect(Collectors.toList());
+    public List<Line> findAllLines() {
+        return lineRepository.findAll();
     }
 
-    public LineResponse findById(Long id) {
-        return LineResponse.of(
-                lineRepository.findById(id)
-                        .orElseThrow(() -> new NotFoundException(id + " 에 해당하는 지하철 노선이 존재하지 않습니다."))
-        );
+    public Line findById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(id + " 에 해당하는 지하철 노선이 존재하지 않습니다."));
     }
 
     @Transactional
-    public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationService.getStation(lineRequest.getUpStationId());
-        Station downStation = stationService.getStation(lineRequest.getDownStationId());
+    public Line saveLine(LineRequest.Create lineCreateRequest) {
+        Station upStation = null;
+        Station downStation = null;
 
-        return LineResponse.of(lineRepository.save(lineRequest.toLine(upStation, downStation)));
+        if (lineCreateRequest.getUpStationId() != null) {
+            upStation = stationService.getStation(lineCreateRequest.getUpStationId());
+        }
+        if (lineCreateRequest.getDownStationId() != null) {
+            downStation = stationService.getStation(lineCreateRequest.getDownStationId());
+        }
+
+        return lineRepository.save(lineCreateRequest.toLine(upStation, downStation));
+    }
+
+    @Transactional
+    public void modifyLine(Long id, LineRequest.Modify modify) {
+        lineRepository.save(findById(id).modify(modify));
     }
 }
