@@ -19,7 +19,7 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.dto.LineResponse;
+import nextstep.subway.domain.Line;
 
 @DisplayName("노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -35,7 +35,7 @@ public class LineAcceptanceTest {
 		}
 	}
 
-    /**
+	/**
      * When 노선을 생성하면
      * Then 노선이 생성된다
      * Then 노선 목록 조회 시 생성한 노선을 찾을 수 있다
@@ -64,9 +64,8 @@ public class LineAcceptanceTest {
         
 		// then
 		assertAll(() -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-				() -> assertNotNull(createResponse.jsonPath().getObject(".", LineResponse.class).getId()),
-				() -> assertEquals(createResponse.jsonPath().getObject(".", LineResponse.class).getName(), "1호선"),
-				() -> assertEquals(createResponse.jsonPath().getObject(".", LineResponse.class).getColor(), "파랑색"));
-    }    
-    
+				() -> assertNotNull(createResponse.jsonPath().getObject(".", Line.class).getId()),
+				() -> assertEquals(createResponse.jsonPath().getObject(".", Line.class).getName(), "1호선"),
+				() -> assertEquals(createResponse.jsonPath().getObject(".", Line.class).getColor(), "파랑색"));
+    }   
 }

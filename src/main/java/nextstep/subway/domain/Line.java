@@ -20,6 +20,9 @@ public class Line extends BaseEntity {
 	@NotNull
 	private String color;
 	
+	public Line() {
+	}
+	
 	public Line(String name, String color) {
 		this.name = name;
 		this.color = color;
