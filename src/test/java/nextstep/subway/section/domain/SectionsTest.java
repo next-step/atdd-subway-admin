@@ -1,6 +1,8 @@
 package nextstep.subway.section.domain;
 
+import static nextstep.subway.section.domain.exception.SectionExceptionMessage.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -8,10 +10,13 @@ import com.sun.javafx.UnmodifiableArrayList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import nextstep.subway.section.domain.exception.SectionExceptionMessage;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class SectionsTest {
 
@@ -130,4 +135,66 @@ class SectionsTest {
             () -> assertThat(sections.findSortedStations()).isEqualTo(Arrays.asList(강남역, 양재시민의숲역, 판교역))
         );
     }
+
+    @DisplayName("기존 지하철역 구간에 새로운 구간 추가 시 새로운 구간의 거리는 기존 지하철역 구간의 거리보다 크거나 같을 수 없다.")
+    @ParameterizedTest
+    @ValueSource(ints = { 5, 6, 7 })
+    void addUpStation(int distance) {
+        // given
+        List<Section> givenSections = new ArrayList<>();
+        givenSections.add(강남역_판교역_구간);
+
+        Sections sections = Sections.from(givenSections);
+
+        Station 양재시민의숲역 = Station.of(11L, "양재시민의숲역");
+        Section 양재시민의숲역_판교역_구간 = Section.of(11L, 양재시민의숲역, 판교역, Distance.from(distance));
+
+        // when & then
+        assertThatIllegalArgumentException().isThrownBy(() -> sections.add(양재시민의숲역_판교역_구간))
+            .withMessageContaining(NEW_SECTION_DISTANCE_IS_GREATER_OR_EQUALS.getMessage());
+    }
+
+    @DisplayName("기존 지하철역 구간 중간에 새로운 상행역 구간을 추가한다.")
+    @Test
+    void addUpStation01() {
+        // given
+        List<Section> givenSections = new ArrayList<>();
+        givenSections.add(강남역_판교역_구간);
+
+        Sections sections = Sections.from(givenSections);
+
+        Station 신사역 = Station.of(11L, "신사역");
+        Section 신사역_강남역_구간 = Section.of(11L, 신사역, 강남역, Distance.from(1));
+
+        // when
+        sections.add(신사역_강남역_구간);
+
+        // then
+        assertAll(
+            () -> assertThat(sections.allocatedStationCount()).isEqualTo(3),
+            () -> assertThat(sections.findSortedStations()).isEqualTo(Arrays.asList(신사역, 강남역, 판교역))
+        );
+    }
+
+    @DisplayName("기존 지하철역 구간 중간에 새로운 하행역 구간을 추가한다.")
+    @Test
+    void addDownStation01() {
+        // given
+        List<Section> givenSections = new ArrayList<>();
+        givenSections.add(강남역_판교역_구간);
+
+        Sections sections = Sections.from(givenSections);
+
+        Section 판교역_광교역_구간 = Section.of(11L, 판교역, 광교역, Distance.from(1));
+
+        // when
+        sections.add(판교역_광교역_구간);
+
+        // then
+        assertAll(
+            () -> assertThat(sections.allocatedStationCount()).isEqualTo(3),
+            () -> assertThat(sections.findSortedStations()).isEqualTo(Arrays.asList(강남역, 판교역, 광교역))
+        );
+    }
+
 }
