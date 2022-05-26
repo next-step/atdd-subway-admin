@@ -60,12 +60,12 @@ public class Line extends BaseEntity {
         return this.id;
     }
 
-    public List<Station> getStations() {
-        return this.sections.getAllStations();
-    }
-
     public void update(Line updateLine) {
         this.name = updateLine.getName();
         this.color = updateLine.getColor();
+    }
+
+    public List<Station> findSortedStations() {
+        return this.sections.findSortedStations();
     }
 }
