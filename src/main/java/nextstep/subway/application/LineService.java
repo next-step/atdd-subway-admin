@@ -35,16 +35,6 @@ public class LineService {
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
-        Station station = lines.get(0).getUpStation();
-
-        List<StationResponse> test = toStationsResponse(Arrays.asList(lines.get(0).getUpStation().getId(), lines.get(0).getDownStation().getId()));
-        List<StationResponse> test2 = toStationsResponse(Arrays.asList(lines.get(1).getUpStation().getId(), lines.get(1).getDownStation().getId()));
-
-        List<LineResponse> result =
-        lines.stream()
-                .map(line -> LineResponse.of(line, toStationsResponse(Arrays.asList(line.getUpStation().getId(), line.getDownStation().getId()))))
-                .collect(Collectors.toList());
-
         return lines.stream()
                 .map(line -> LineResponse.of(line, toStationsResponse(Arrays.asList(line.getUpStation().getId(), line.getDownStation().getId()))))
                 .collect(Collectors.toList());
