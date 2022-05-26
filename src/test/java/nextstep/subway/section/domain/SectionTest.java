@@ -1,9 +1,9 @@
 package nextstep.subway.section.domain;
 
-import static nextstep.subway.section.domain.exception.StationExceptionMessage.CANNOT_EQUALS_UP_STATION_WITH_DOWN_STATION;
-import static nextstep.subway.section.domain.exception.StationExceptionMessage.DISTANCE_IS_NOT_NULL;
-import static nextstep.subway.section.domain.exception.StationExceptionMessage.DOWN_STATION_IS_NOT_NULL;
-import static nextstep.subway.section.domain.exception.StationExceptionMessage.UP_STATION_IS_NOT_NULL;
+import static nextstep.subway.station.domain.exception.StationExceptionMessage.CANNOT_EQUALS_UP_STATION_WITH_DOWN_STATION;
+import static nextstep.subway.station.domain.exception.StationExceptionMessage.DISTANCE_IS_NOT_NULL;
+import static nextstep.subway.station.domain.exception.StationExceptionMessage.DOWN_STATION_IS_NOT_NULL;
+import static nextstep.subway.station.domain.exception.StationExceptionMessage.UP_STATION_IS_NOT_NULL;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;

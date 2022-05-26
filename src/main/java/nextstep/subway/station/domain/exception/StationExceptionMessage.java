@@ -1,4 +1,4 @@
-package nextstep.subway.section.domain.exception;
+package nextstep.subway.station.domain.exception;
 
 public enum StationExceptionMessage {
     UP_STATION_IS_NOT_NULL("상행역이 할당되어 있지 않습니다."),

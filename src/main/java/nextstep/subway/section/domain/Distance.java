@@ -1,6 +1,6 @@
 package nextstep.subway.section.domain;
 
-import static nextstep.subway.section.domain.exception.StationExceptionMessage.*;
+import static nextstep.subway.station.domain.exception.StationExceptionMessage.*;
 
 import java.util.Objects;
 import javax.persistence.Embeddable;
