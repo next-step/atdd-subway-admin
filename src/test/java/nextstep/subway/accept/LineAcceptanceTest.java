@@ -6,6 +6,8 @@ import static nextstep.subway.accept.StationAcceptanceTest.서초역;
 import static nextstep.subway.accept.StationAcceptanceTest.양재역;
 import static nextstep.subway.accept.StationAcceptanceTest.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
@@ -15,6 +17,7 @@ import java.util.List;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -144,7 +147,7 @@ class LineAcceptanceTest {
         LineResponse 생성된_신분당선 = 노선_생성(신분당선);
 
         // when
-        ExtractableResponse<Response> 노선_삭제_결과 = 노선_삭제(1L);
+        ExtractableResponse<Response> 노선_삭제_결과 = 노선_삭제(생성된_신분당선.getId());
 
         // then
         assertThat(노선_삭제_결과.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());

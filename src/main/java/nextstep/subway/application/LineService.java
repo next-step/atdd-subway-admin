@@ -42,18 +42,24 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        return LineResponse.of(
-                lineRepository.findById(id)
-                        .orElseThrow(() -> new NotFoundException("라인 정보가 존재하지 않습니다."))
-        );
+        return LineResponse.of(findLineById(id));
     }
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
-        Optional<Line> optionalLine = lineRepository.findById(id);
-        Line persistLine = optionalLine
-                .orElseThrow(() -> new NotFoundException("라인 정보가 존재하지 않습니다."));
+        Line persistLine = findLineById(id);
         persistLine.change(lineRequest);
+    }
+
+    @Transactional
+    public void deleteLine(Long id) {
+        lineRepository.delete(findLineById(id));
+    }
+
+    private Line findLineById(Long id) {
+        Optional<Line> optionalLine = lineRepository.findById(id);
+        return optionalLine
+                .orElseThrow(() -> new NotFoundException("라인 정보가 존재하지 않습니다."));
     }
 
     private Station findStationById(Long id) {
