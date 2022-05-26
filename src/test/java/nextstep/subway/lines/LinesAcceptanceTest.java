@@ -89,33 +89,40 @@ public class LinesAcceptanceTest {
         assertThat(lineNames).containsAnyOf("신분당선", "분당선");
     }
 
-//    /**
-//     * Given 지하철 노선을 생성하고
-//     * When 생성한 지하철 노선을 조회하면
-//     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
-//     */
-//    @DisplayName("지하철 노선을 조회한다.")
-//    @Test
-//    void getLinesTest() {
-//        // given
-//        Map<String, String> stationRequest1 = Collections.singletonMap("name", "강남역");
-//        Map<String, String> stationRequest2 = Collections.singletonMap("name", "판교역");
-//        LineRequest lineRequest = new LineRequest("신분당선", Arrays.asList(stationRequest1, stationRequest2));
-//
-//        // when
-//        String createdLineId = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest)
-//                .jsonPath()
-//                .getString("id");
-//        ExtractableResponse<Response> response = RequestHelper
-//                .getRequest(LINE_PATH + "/{id}", new HashMap<>(), createdLineId);
-//        List<String> stationNames = response.jsonPath()
-//                .getList("stations[*].name", String.class);
-//
-//        // then
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_CREATED);
-//        assertThat(stationNames).containsAll(Arrays.asList(stationRequest1.get("name"), stationRequest1.get("name")));
-//    }
-//
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void getLinesTest() {
+        // given
+        List<Long> stationIds = Arrays.asList(
+                Long.parseLong(saveStationAndGetInfo("지하철역").get("id")),
+                Long.parseLong(saveStationAndGetInfo("새로운지하철역").get("id"))
+        );
+        String createdLineId = RequestHelper.postRequest(
+                LINE_PATH,
+                new HashMap<>(),
+                createLineRequest("신분당선", "bg-red-600", stationIds.get(0), stationIds.get(1), 10L)
+        ).jsonPath()
+                .getString("id");
+
+        // when
+        ExtractableResponse<Response> response = RequestHelper
+                .getRequest(LINE_PATH + "/{id}", new HashMap<>(), createdLineId);
+        List<String> stationNames = response.jsonPath()
+                .getList("stations.name", String.class);
+        String lineName = response.jsonPath()
+                .get("name");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(stationNames).containsAll(Arrays.asList("지하철역", "새로운지하철역"));
+        assertThat(lineName).isEqualTo("신분당선");
+    }
+
 //    /**
 //     * Given 지하철 노선을 생성하고
 //     * When 생성한 지하철 노선을 수정하면

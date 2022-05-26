@@ -4,6 +4,7 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.error.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,13 @@ public class LineService {
         return lineRepository.findAll()
                 .stream().map(LineResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public LineResponse findById(Long id) {
+        return LineResponse.of(
+                lineRepository.findById(id)
+                        .orElseThrow(() -> new NotFoundException(id + " 에 해당하는 지하철 노선이 존재하지 않습니다."))
+        );
     }
 
     @Transactional
