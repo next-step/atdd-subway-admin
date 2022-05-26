@@ -1,14 +1,13 @@
 package nextstep.subway.domain;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Station extends BaseEntity {
@@ -19,15 +18,18 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "upStation", fetch = FetchType.LAZY)
-    private List<Line> upLines = new ArrayList<>();
-
-    @OneToMany(mappedBy = "downStation", fetch = FetchType.LAZY)
-    private List<Line> downLines = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "line_id")
+    private Line line;
 
     private Integer distance;
 
     protected Station() {
+    }
+
+    Station(Long id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public Station(String name) {
@@ -46,26 +48,56 @@ public class Station extends BaseEntity {
         return distance;
     }
 
-    public List<Line> getUpLines() {
-        return upLines;
+    public Line getLine() {
+        return line;
     }
 
-    public List<Line> getDownLines() {
-        return downLines;
+    public void setLine(Line line) {
+        if (Objects.nonNull(this.line)) {
+            this.line.getStations().removeStation(this);
+        }
+        this.line = line;
+        if (!line.getStations().containsStation(this)) {
+            line.getStations().addStation(this);
+        }
     }
 
-    public List<Line> getAllLines() {
-        List<Line> lines = new ArrayList<>();
-        lines.addAll(upLines);
-        lines.addAll(downLines);
-        return lines;
+    public void clearLine() {
+        this.line = null;
     }
 
-    public void addUpLine(Line line) {
-        upLines.add(line);
+    public void clearRelatedStation() {
+        if (line != null) {
+            this.line.getStations().removeStation(this);
+        }
     }
 
-    public void downLine(Line line) {
-        downLines.add(line);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Station station = (Station) o;
+
+        return id.equals(station.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", line=" + line +
+                ", distance=" + distance +
+                '}';
     }
 }

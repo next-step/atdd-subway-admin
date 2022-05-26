@@ -42,7 +42,7 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(line -> LineResponse.of(line))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
@@ -56,8 +56,10 @@ public class LineService {
     @Transactional
     public void deleteLineById(Long id) {
         Optional<Line> line = lineRepository.findById(id);
-        line.get().clearStations();
-        lineRepository.deleteById(id);
+        if (line.isPresent()) {
+            line.get().clearRelatedLines();
+            lineRepository.deleteById(id);
+        }
     }
 
     private void addStations(Line persistLine, LineCreateRequest lineCreateRequest) {
@@ -68,20 +70,19 @@ public class LineService {
     private void addUpLine(Line line, LineCreateRequest lineCreateRequest) {
         if (lineCreateRequest.hasUpStationsId()) {
             Station station = getStation(lineCreateRequest.getUpStationId());
-            line.setUpStation(station);
+            line.addStation(station);
         }
     }
 
     private void addDownLine(Line line, LineCreateRequest lineCreateRequest) {
         if (lineCreateRequest.hasDownStationsId()) {
             Station station = getStation(lineCreateRequest.getDownStationId());
-            line.setDownStation(station);
+            line.addStation(station);
         }
     }
 
     private Station getStation(Long stationId) {
-        Optional<Station> station = stationRepository.findById(stationId);
-        station.orElseThrow(() -> new NoSuchElementException("id(" + stationId + ")에 해당하는 역이 없습니다."));
-        return station.get();
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new NoSuchElementException("id(" + stationId + ")에 해당하는 역이 없습니다."));
     }
 }
