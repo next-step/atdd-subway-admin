@@ -50,7 +50,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(신분당선, RED_COLOR, 20, 강남역_id, 역삼역_id);
         신분당선_id = getId(노선_생성_응답);
 
-        //삼성-강남-역삼
+        //삼성-강남-서초
         ExtractableResponse<Response> 분당선_생성_응답 = 노선_생성_요청(분당선, GREEN_COLOR, 20, 삼성역_id, 서초역_id);
         분당선_id = getId(분당선_생성_응답);
         구간_추가_요청(분당선_id, new SectionRequest(삼성역_id, 강남역_id, 10));
@@ -176,12 +176,12 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
     /**
      * When 노선에 없는 역을 제거하면
-     * Then Badrequest
+     * Then BadRequest
      */
     @Test
     void removeStation_fail_not_contains_station() {
         //when
-        ExtractableResponse<Response> response = 구간_제거_요청(분당선_id, 서초역_id);
+        ExtractableResponse<Response> response = 구간_제거_요청(분당선_id, 역삼역_id);
 
         //then
         구간_제거_실패_확인(response);
@@ -189,7 +189,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
     /**
      * When 구간이 하나인 노선에서 역을 제거하면
-     * Then Badrequest
+     * Then BadRequest
      */
     @Test
     void removeStation_fail_only_one_section() {

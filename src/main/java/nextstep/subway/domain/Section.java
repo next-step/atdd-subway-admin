@@ -91,4 +91,30 @@ public class Section {
     }
 
 
+    public boolean isSame(Section section) {
+        return this.upStation.equals(section.upStation) && this.downStation.equals(section.downStation);
+    }
+
+    public boolean isAfter(Section section) {
+        return this.upStation.equals(section.downStation);
+    }
+
+    public boolean isBefore(Section section) {
+        return this.downStation.equals(section.upStation);
+    }
+
+    public boolean isUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean isDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public Section combine(Section afterSection) {
+        Section newSection = new Section(this.upStation, afterSection.getDownStation(), this.distance + afterSection.distance);
+        newSection.setLine(this.line);
+        return newSection;
+    }
+
 }
