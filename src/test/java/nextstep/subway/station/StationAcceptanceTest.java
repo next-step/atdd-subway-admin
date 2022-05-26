@@ -1,14 +1,10 @@
 package nextstep.subway.station;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static nextstep.subway.AcceptanceTestFactory.*;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-
-import java.util.Arrays;
-
-import nextstep.subway.SubwayTestFactory;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +12,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -25,43 +20,6 @@ import java.util.List;
 public class StationAcceptanceTest {
     @LocalServerPort
     int port;
-
-    private void 지하철_역_생성(String name) {
-        SubwayTestFactory.generateStation(name);
-    }
-
-    private ExtractableResponse<Response> 지하철_역_생성_요청(String name) {
-        return SubwayTestFactory.generateStationToResponse(name);
-    }
-
-    private void 지하철_역_생성_실패_확인(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    private void 지하철_역_생성_성공_확인(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-    }
-    
-    private void 지하철_역_조회_성공_확인(List<String> names, String... name) {
-        assertThat(names).contains(name);
-    }
-
-    private void 지하철_역_조회_실패_확인(List<String> names, String... name) {
-        assertThat(names).doesNotContain(name);
-    }
-
-    private List<String> 지하철_역_목록_조회() {
-        return SubwayTestFactory.findStations("name", String.class);
-    }
-
-    private Long 지하철_역_생성_ID_추출(String name) {
-        return 지하철_역_생성_요청(name)
-                .jsonPath().getObject("id", Long.class);
-    }
-
-    private void 지하철_역_삭제_요청(Long id) {
-        SubwayTestFactory.deleteStationById(id);
-    }
 
     @BeforeEach
     public void setUp() {
@@ -79,12 +37,12 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> 지하철_역_생성_응답_결과 = 지하철_역_생성_요청("강남역");
+        ExtractableResponse<Response> 지하철_역_생성_응답_결과 = 지하철_역_생성("강남역");
         // then
-        지하철_역_생성_성공_확인(지하철_역_생성_응답_결과);
+        생성_성공_확인(지하철_역_생성_응답_결과);
         // then
         List<String> 지하철_역_이름_목록 = 지하철_역_목록_조회();
-        지하철_역_조회_성공_확인(지하철_역_이름_목록, "강남역");
+        목록_조회_성공_확인(지하철_역_이름_목록, "강남역");
     }
 
     /**
@@ -98,9 +56,9 @@ public class StationAcceptanceTest {
         // given
         지하철_역_생성("강남역");
         // when
-        ExtractableResponse<Response> 지하철_역_생성_요청_결과 = 지하철_역_생성_요청("강남역");
+        ExtractableResponse<Response> 지하철_역_생성_요청_결과 = 지하철_역_생성("강남역");
         // then
-        지하철_역_생성_실패_확인(지하철_역_생성_요청_결과);
+        생성_실패_확인(지하철_역_생성_요청_결과);
     }
 
     /**
@@ -117,7 +75,7 @@ public class StationAcceptanceTest {
         //when
         List<String> 지하철_역_이름_목록 = 지하철_역_목록_조회();
         //then
-        지하철_역_조회_성공_확인(지하철_역_이름_목록, "공덕역", "애오개역");
+        목록_조회_성공_확인(지하철_역_이름_목록, "공덕역", "애오개역");
     }
 
     /**
@@ -134,6 +92,6 @@ public class StationAcceptanceTest {
         지하철_역_삭제_요청(지하철_역_ID);
         //then
         List<String> 지하철_역_이름_목록 = 지하철_역_목록_조회();
-        지하철_역_조회_실패_확인(지하철_역_이름_목록, "공덕역");
+        목록_조회_실패_확인(지하철_역_이름_목록, "공덕역");
     }
 }
