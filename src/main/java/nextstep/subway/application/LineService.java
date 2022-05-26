@@ -38,10 +38,13 @@ public class LineService {
     }
 
     public List<LineResponse> findAllLines() {
-        List<Line> lines = lineRepository.findAll();
-
-        return lines.stream()
+        return lineRepository.findAll().stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public LineResponse findLineById(Long id) {
+        return LineResponse.of(lineRepository.findById(id).orElseThrow(() -> new NotFoundException("등록된 노선이 없습니다.")));
     }
 }

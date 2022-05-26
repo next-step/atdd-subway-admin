@@ -51,8 +51,27 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
      */
     @DisplayName("지하철노선 목록 조회")
     @Test
-    void showStation() {
+    void showStations() {
+        // Given
+        지하철역_생성_요청("지하철역");
+        지하철역_생성_요청("새로운지하철역");
+        // when
+        지하철노선_생성_요청("신분당선", "bg-red-600", 1, 2, 10);
+        지하철노선_생성_요청("5호선", "bg-blue-600", 1, 2, 10);
 
+        // then
+        ExtractableResponse<Response> showResponse = 지하철노선_목록_조회_요청();
+        List<String> lineNames = showResponse.jsonPath().getList("name", String.class);
+        List<String> colors = showResponse.jsonPath().getList("color", String.class);
+        List<String> stations1 = showResponse.jsonPath().getList("stations[0].name", String.class);
+        List<String> stations2 = showResponse.jsonPath().getList("stations[1].name", String.class);
+        assertAll(
+                () -> assertThat(lineNames).containsExactly("신분당선", "5호선"),
+                () -> assertThat(lineNames).hasSize(2),
+                () -> assertThat(colors).containsExactly("bg-red-600", "bg-blue-600"),
+                () -> assertThat(stations1).containsExactly("지하철역", "새로운지하철역"),
+                () -> assertThat(stations2).containsExactly("지하철역", "새로운지하철역")
+        );
     }
 
     /**
@@ -63,8 +82,25 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
      */
     @DisplayName("지하철노선 조회")
     @Test
-    void showStations() {
+    void showStation() {
+        // Given
+        지하철역_생성_요청("지하철역");
+        지하철역_생성_요청("새로운지하철역");
+        // when
+        ExtractableResponse<Response> extractableResponse = 지하철노선_생성_요청("신분당선", "bg-red-600", 1, 2, 10);
+        Long id = extractableResponse.jsonPath().getLong("id");
 
+        // then
+        ExtractableResponse<Response> showResponse = 지하철노선_조회_요청(id);
+
+        String lineNames = showResponse.jsonPath().getString("name");
+        String colors = showResponse.jsonPath().getString("color");
+        List<String> stations = showResponse.jsonPath().getList("stations.name");
+        assertAll(
+                () -> assertThat(lineNames).isEqualTo("신분당선"),
+                () -> assertThat(colors).isEqualTo("bg-red-600"),
+                () -> assertThat(stations).containsExactly("지하철역", "새로운지하철역")
+        );
     }
 
     /**
@@ -109,6 +145,13 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
     ExtractableResponse<Response> 지하철노선_목록_조회_요청() {
         return RestAssured.given().log().all()
                 .when().get("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    ExtractableResponse<Response> 지하철노선_조회_요청(long id) {
+        return RestAssured.given().log().all()
+                .when().get("/lines/" + id)
                 .then().log().all()
                 .extract();
     }
