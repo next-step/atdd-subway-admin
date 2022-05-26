@@ -48,7 +48,7 @@ public class LineAcceptanceTest {
         params.put("name", "1호선");
         params.put("color", "파랑색");
 
-        ExtractableResponse<Response> createResponse =
+        ExtractableResponse<Response> response =
                 RestAssured
                 	.given()
                 		.log()
@@ -63,10 +63,10 @@ public class LineAcceptanceTest {
 					.extract();
 
 		// then
-		assertAll(() -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-				() -> assertNotNull(createResponse.jsonPath().getObject(".", Line.class).getId()),
-				() -> assertEquals(createResponse.jsonPath().getObject(".", Line.class).getName(), "1호선"),
-				() -> assertEquals(createResponse.jsonPath().getObject(".", Line.class).getColor(), "파랑색"));
+		assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+				() -> assertNotNull(response.jsonPath().getObject(".", Line.class).getId()),
+				() -> assertEquals(response.jsonPath().getObject(".", Line.class).getName(), "1호선"),
+				() -> assertEquals(response.jsonPath().getObject(".", Line.class).getColor(), "파랑색"));
     }   
     
     /**
@@ -94,15 +94,15 @@ public class LineAcceptanceTest {
         params.put("name", "2호선");
         params.put("color", "초록색");
         
-		RestAssured
-		.given()
-			.body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-		.when()
-			.post("/lines")
-		.then();
+        RestAssured
+			.given()
+				.body(params)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+				.post("/lines")
+			.then();
 		
-        // when
+		// when
         ExtractableResponse<Response> response =
                 RestAssured
                 	.given()
@@ -115,6 +115,7 @@ public class LineAcceptanceTest {
                     	.all()
                     .extract();
 
+
 		// then
 		assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
 				() -> assertThat(response.jsonPath().getList(".", Line.class)).hasSize(2),
@@ -122,5 +123,63 @@ public class LineAcceptanceTest {
 				() -> assertEquals(response.jsonPath().getList(".", Line.class).get(0).getColor(), "파랑색"),
 				() -> assertEquals(response.jsonPath().getList(".", Line.class).get(1).getName(), "2호선"),
 				() -> assertEquals(response.jsonPath().getList(".", Line.class).get(1).getColor(), "초록색"));
+    }    
+    
+    /**
+     * Given 2개의 노선을 생성하고
+     * When id값으로 노선을 조회하면
+     * Then 원하는 노선을 응답 받는다.
+     */
+    @DisplayName("노선id로 원하는 노선을 조회한다.")
+    @Test
+    void getLine() {
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "1호선");
+        params.put("color", "파랑색");
+
+		RestAssured
+			.given()
+				.body(params)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+				.post("/lines")
+			.then();
+		
+		params.clear();
+        params.put("name", "2호선");
+        params.put("color", "초록색");
+        
+		Long id = RestAssured
+				.given()
+					.body(params)
+					.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.when()
+					.post("/lines")
+				.then()
+				.extract()
+					.jsonPath()
+						.getObject(".", Line.class)
+							.getId();
+		
+        // when
+		String url = "/lines" + "/" + id;
+        ExtractableResponse<Response> response =
+                RestAssured
+                	.given()
+                		.log()
+                		.all()
+                    .when()
+                    	.get(url)
+                    .then()
+                    	.log()
+                    	.all()
+                    .extract();
+
+		// then
+		assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+				() -> assertEquals(response.jsonPath().getObject(".", Line.class).getId(), id),
+				() -> assertEquals(response.jsonPath().getObject(".", Line.class).getName(), "2호선"),
+				() -> assertEquals(response.jsonPath().getObject(".", Line.class).getColor(), "초록색"));
     }    
 }
