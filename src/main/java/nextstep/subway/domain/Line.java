@@ -17,13 +17,8 @@ public class Line extends BaseEntity {
     @Embedded
     private LineColor color;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "UP_STATION_ID")
-    private Station upStation;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "DOWN_STATION_ID")
-    private Station downStation;
+    @Embedded
+    private LineStations stations;
 
     protected Line() {
 
@@ -37,8 +32,7 @@ public class Line extends BaseEntity {
         this.id = null;
         this.name = new LineName(name);
         this.color = new LineColor(color);
-        this.upStation = upStation;
-        this.downStation = downStation;
+        this.stations = new LineStations(upStation, downStation);
     }
 
     public void modify(LineRequest lineRequest) {
@@ -59,11 +53,11 @@ public class Line extends BaseEntity {
     }
 
     public Station getUpStation() {
-        return upStation;
+        return stations.getUpStation();
     }
 
     public Station getDownStation() {
-        return downStation;
+        return stations.getDownStation();
     }
 
     @Override
