@@ -3,32 +3,30 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import nextstep.subway.domain.Station;
+import nextstep.subway.utils.RequestStation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import java.util.*;
-import java.util.function.*;
-import java.util.stream.Stream;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
-    private static final String INVALID_KEY = "name";
-    private static final Function<RequestSpecification, Response> CREATE = requestSpecification -> requestSpecification.post("/stations");
-    private static final Function<RequestSpecification, Response> SEARCH_ALL = requestSpecification -> requestSpecification.get("/stations");
 
     @LocalServerPort
     int port;
+
+    private RequestStation requestStation = new RequestStation();
 
     @BeforeEach
     public void setUp() {
@@ -48,13 +46,10 @@ public class StationAcceptanceTest {
         // when
         final String creatStationName = "강남역";
 
-        String[] result = Stream.of(creatStationName)
-                .map(stationName -> request(()->makeBody(INVALID_KEY, stationName), CREATE, HttpStatus.CREATED)
-                        .as(Station.class).getName())
-                .toArray(String[]::new);
+        Station savedStation = 지하철역_생성(creatStationName).as(Station.class);
 
         //Then
-        assertThat(result).contains(creatStationName);
+        assertThat(savedStation.getName()).isEqualTo(creatStationName);
     }
 
     /**
@@ -67,26 +62,28 @@ public class StationAcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         final String creatStationName = "강남역";
-        //when
-        Stream.of(creatStationName).forEach(stationName -> request(()->makeBody(INVALID_KEY, stationName), CREATE, HttpStatus.CREATED));
-        //Then
-        Stream.of(creatStationName).forEach(stationName -> request(()->makeBody(INVALID_KEY, stationName), CREATE, HttpStatus.BAD_REQUEST));
+        final Station savedStation = 지하철역_생성(creatStationName).as(Station.class);
 
+        //when
+        assertThat(savedStation.getName()).isEqualTo(creatStationName);
+
+        //Then
+        assertThat(HttpStatus.valueOf(지하철역_생성(creatStationName).statusCode())).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     /**
-     * When 잘못된 Key 값을 전달하면
-     * Then 400 Bad Request 를 전달 받는다.
+     * When 등록된 지하철 역이 없을때 지하철 역을 검색 하면
+     * Then 지하철 역 목록 정보가 없다.
      */
-    @DisplayName("잘못된 입력 값을 전달 하면 Bad Request 를 받는다")
+    @DisplayName("지하철 역 등록 을 하지 않고 조회 시 검색 결과가 없다.")
     @Test
-    void invalidParameter() {
-        // given
-        final String creatStationName = "강남역";
+    void noCreateAndSearch() {
+        // when
+        ExtractableResponse<Response> response = 지하철역_검색();
 
-        //Then
-        Stream.of(creatStationName).forEach(stationName -> request(()->makeBody("bad", stationName), CREATE, HttpStatus.BAD_REQUEST));
-        Stream.of("").forEach(stationName -> request(()->makeBody(INVALID_KEY, stationName), CREATE, HttpStatus.BAD_REQUEST));
+        // then
+        assertThat(HttpStatus.valueOf(response.statusCode())).isEqualTo(HttpStatus.OK);
+        assertThat(response.jsonPath().getList(".", Station.class).isEmpty()).isTrue();
     }
 
     /**
@@ -94,18 +91,20 @@ public class StationAcceptanceTest {
      * When 지하철역 목록을 조회하면
      * Then 2개의 지하철역을 응답 받는다
      */
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("지하철 역 등록 후 지하철 역 조회 등록 순서 대로 조회 된다.")
     @Test
-    void getStations() {
+    void createAndSearch() {
+        List<Station> createdStations = new ArrayList<>();
         // given
-        Station[] createdStation = Stream.of("지하철역이름", "새로운지하철역이름", "또다른지하철역이름")
-                .map(stationName -> request(() -> makeBody(INVALID_KEY, stationName), CREATE, HttpStatus.CREATED).as(Station.class))
-                .toArray(Station[]::new);
+        createdStations.add(지하철역_생성("지하철역이름").as(Station.class));
+        createdStations.add(지하철역_생성("새로운지하철역이름").as(Station.class));
+        createdStations.add(지하철역_생성("또다른지하철역이름").as(Station.class));
 
         // when
-        Station[] stations = request(HashMap::new, SEARCH_ALL, HttpStatus.OK).as(Station[].class);
-        //then
-        assertThat(stations).containsExactly(createdStation);
+        List<Station> searchResult = 지하철역_검색().jsonPath().getList(".", Station.class);
+
+        // then
+        assertThat(searchResult.toArray(new Station[0])).containsExactly(createdStations.toArray(new Station[0]));
     }
 
     /**
@@ -113,44 +112,55 @@ public class StationAcceptanceTest {
      * When 그 지하철역을 삭제하면
      * Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
      */
-    @DisplayName("지하철역을 제거한다.")
+    @DisplayName("지하철 역을 등록 한 후 특정 지하철 역을 삭제 하고 조회 시 해당 역을 제외 하고 검색 된다.")
     @Test
-    void deleteStation() {
-        final String creatStationName = "강남역";
-        Station createStation = Stream.of(creatStationName)
-                .map(stationName -> request(() -> makeBody(INVALID_KEY, stationName), CREATE, HttpStatus.CREATED).as(Station.class))
-                .findAny().get();
+    void 등록_삭제_검색() {
+        // given
+        final Station savedStation = 지하철역_생성("강남역").as(Station.class);
 
-        final Function<RequestSpecification, Response> DELETE = requestSpecification -> requestSpecification.delete(String.format("/stations/%d",createStation.getId()));
-        request(HashMap::new, DELETE, HttpStatus.NO_CONTENT);
+        // when
+        지하철역_삭제(savedStation.getId());
+
+        // then
+        Optional<Station> isStation = 지하철역_검색().jsonPath().getList(".", Station.class).stream()
+                .filter(station -> Objects.equals(station.getName(), savedStation.getName()))
+                .findAny();
+
+        assertThat(isStation.isPresent()).isFalse();
     }
 
     /**
-     * When 없는 지하철역을 삭제하면
-     * Then 400 Bad Request 를 전달 받는다.
+     * Given 등록되지 않는 상태인지 지하철역을 검색하고
+     * When 해당 지하철역을 삭제하면
+     * Then 삭제가 되지 않는다.
      */
-    @DisplayName("지하철 역 정보가 없는 경우 삭제 요청 시 400 Bad Request 를 반환 한다.")
+
+    @DisplayName("지하철 역 삭제 시 해당 역 정보가 없으면 삭제가 되지 않는다.")
     @Test
     void noContentDeleteStation() {
-        final Function<RequestSpecification, Response> DELETE = requestSpecification -> requestSpecification.delete(String.format("/stations/%d",1));
-        request(HashMap::new, DELETE, HttpStatus.BAD_REQUEST);
+        final Long id = 100L;
+        // Given
+        assertThat(
+                지하철역_검색().jsonPath().getList(".", Station.class)
+                .stream().anyMatch(station -> Objects.equals(station.getId(), id))).isFalse();
+
+        // when
+        ExtractableResponse<Response> response = 지하철역_삭제(id);
+
+        // then
+        assertThat(HttpStatus.valueOf(response.statusCode())).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
-
-    private Map<String, String> makeBody(final String key, final String value) {
-        HashMap<String, String> input = new HashMap<>();
-        input.put(key, value);
-        return input;
+    private ExtractableResponse<Response> 지하철역_생성(final String stationName) {
+        return requestStation.createStation(stationName);
     }
 
-    private ExtractableResponse<Response> request(Supplier<Map<String,String>> supplier, Function<RequestSpecification, Response> function, final HttpStatus expectedStatus) {
-        ExtractableResponse<Response> response = function.apply(
-                RestAssured.given().log().all()
-                        .body(supplier.get())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when()
-        ).then().log().all().extract();
-        assertThat(HttpStatus.valueOf(response.statusCode())).isEqualTo(expectedStatus);
-        return response;
+    private ExtractableResponse<Response> 지하철역_검색() {
+        return requestStation.getStations();
     }
+
+    private ExtractableResponse<Response> 지하철역_삭제(final Long index) {
+        return requestStation.deleteStation(index);
+    }
+
 }
