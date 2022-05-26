@@ -11,11 +11,11 @@ public class Line extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name")
-    private String name;
+    @Embedded
+    private LineName name;
 
-    @Column(name = "color")
-    private String color;
+    @Embedded
+    private LineColor color;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "UP_STATION_ID")
@@ -35,15 +35,15 @@ public class Line extends BaseEntity {
 
     public Line(String name, String color, Station upStation, Station downStation) {
         this.id = null;
-        this.name = name;
-        this.color = color;
+        this.name = new LineName(name);
+        this.color = new LineColor(color);
         this.upStation = upStation;
         this.downStation = downStation;
     }
 
     public void modify(LineRequest lineRequest) {
-        this.name = lineRequest.getName();
-        this.color = lineRequest.getColor();
+        this.name.modify(lineRequest.getName());
+        this.color.modify(lineRequest.getColor());
     }
 
     public Long getId() {
@@ -51,11 +51,11 @@ public class Line extends BaseEntity {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     public String getColor() {
-        return color;
+        return color.getColor();
     }
 
     public Station getUpStation() {
