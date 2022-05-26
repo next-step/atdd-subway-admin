@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class StationService {
+    public static final String STATION_NOT_FOUND = "역을 찾을 수 없습니다.";
     private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
@@ -37,7 +38,7 @@ public class StationService {
     @Transactional(readOnly = true)
     public Station findById(Long id) throws NotFoundException {
         return stationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException(STATION_NOT_FOUND));
     }
 
 
