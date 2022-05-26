@@ -46,16 +46,13 @@ public class StationAcceptanceTest {
 	@Test
 	void createStation() {
 		// when
-		Map<String, String> params = new HashMap<>();
-		params.put("name", "강남역");
-		ExtractableResponse<Response> response = CustomExtractableResponse.post(BASIC_URL_STATIONS, params);
+		ExtractableResponse<Response> Createresponse = 지하철_생성_요청("강남역");
 
-		List<String> stationNames = CustomExtractableResponse.get(BASIC_URL_STATIONS)
-				.jsonPath()
-					.getList("name", String.class);
-
+		// then
+		ExtractableResponse<Response> response = CustomExtractableResponse.get(BASIC_URL_STATIONS);
+		List<String> stationNames = 지하철_리스트_이름_조회();
 		
-		assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+		assertAll(() -> assertThat(Createresponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
 				() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
 				() -> assertThat(stationNames).containsAnyOf("강남역"));
 	}
@@ -70,13 +67,10 @@ public class StationAcceptanceTest {
 	@Order(2)
 	void createStationWithDuplicateName() {
 		// given
-		Map<String, String> params = new HashMap<>();
-		params.put("name", "강남역");
-
-		CustomExtractableResponse.post(BASIC_URL_STATIONS, params);
+		지하철_생성_요청("강남역");
 
 		// when
-		ExtractableResponse<Response> response = CustomExtractableResponse.post(BASIC_URL_STATIONS, params);
+		ExtractableResponse<Response> response = 지하철_생성_요청("강남역");
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -91,22 +85,16 @@ public class StationAcceptanceTest {
 	@Test
 	void getStations() {
 		// given
-		Map<String, String> params = new HashMap<>();
-		params.put("name", "강남역");
-		CustomExtractableResponse.post(BASIC_URL_STATIONS, params);
-
-		params.clear();
-		params.put("name", "역삼역");
-		CustomExtractableResponse.post(BASIC_URL_STATIONS, params);
+		지하철_생성_요청("강남역");
+		지하철_생성_요청("역삼역");
 
 		// when
-		ExtractableResponse<Response> response = CustomExtractableResponse.get(BASIC_URL_STATIONS);
+		List<String> stationNames = 지하철_리스트_이름_조회();
 
 		// then
-		assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-				() -> assertThat(response.jsonPath().getList(".", Station.class)).hasSize(2),
-				() -> assertThat(response.jsonPath().getList("name", String.class)).containsAnyOf("강남역"),
-				() -> assertThat(response.jsonPath().getList("name", String.class)).containsAnyOf("역삼역"));
+		assertAll(() -> assertThat(stationNames).hasSize(2),
+				() -> assertThat(stationNames).containsAnyOf("강남역"),
+				() -> assertThat(stationNames).containsAnyOf("역삼역"));
 	}
 
 	/**
@@ -118,23 +106,30 @@ public class StationAcceptanceTest {
 	@Test
 	void deleteStation() {
 		// given
-		Map<String, String> params = new HashMap<>();
-		params.put("name", "강남역");
-		CustomExtractableResponse.post(BASIC_URL_STATIONS, params);
-
+		Long stationId = 지하철_생성_요청("강남역")
+				.jsonPath()
+					.getObject(".", Station.class)
+						.getId();
+		
 		// when
-		Long stationId = CustomExtractableResponse.get(BASIC_URL_STATIONS).jsonPath().getList(".", Station.class).get(0)
-				.getId();
-
 		String url = CustomExtractableResponse.joinUrl(BASIC_URL_STATIONS, stationId);
 		ExtractableResponse<Response> deleteResponse = CustomExtractableResponse.delete(url);
-
-		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-
-		ExtractableResponse<Response> response = CustomExtractableResponse.get(BASIC_URL_STATIONS);
+		List<String> stationNames = 지하철_리스트_이름_조회();
 
 		// then
-		assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-				() -> assertThat(response.jsonPath().getList(".", Station.class)).hasSize(0));
+		assertAll(() -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+				() -> assertThat(stationNames).hasSize(0));
+	}
+
+	private ExtractableResponse<Response> 지하철_생성_요청(String name) {
+		Map<String, String> params = new HashMap<>();
+		params.put("name", name);
+		return CustomExtractableResponse.post(BASIC_URL_STATIONS, params);
+	}
+	
+	private List<String> 지하철_리스트_이름_조회() {
+		return CustomExtractableResponse.get(BASIC_URL_STATIONS)
+				.jsonPath()
+					.getList("name", String.class);
 	}
 }
