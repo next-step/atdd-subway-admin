@@ -3,6 +3,7 @@ package nextstep.subway.section.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import nextstep.subway.station.domain.Station;
@@ -39,5 +40,24 @@ class SectionsTest {
         assertThatNoException().isThrownBy(() ->
             Sections.from(Arrays.asList(강남역_판교역_구간, 정자역_광교역_구간))
         );
+    }
+
+    @DisplayName("기존 지하철역 구간 중간에 새로운 구간을 추가한다.")
+    @Test
+    void addSection01() {
+        // given
+        List<Section> givenSections = new ArrayList<>();
+        givenSections.add(강남역_판교역_구간);
+
+        Sections sections = Sections.from(givenSections);
+
+        Station 양재역 = Station.of(11L, "양재역");
+        Section 강남역_양재역_구간 = Section.of(강남역, 양재역, Distance.from(1));
+
+        // when
+        sections.add(강남역_양재역_구간);
+
+        // then
+        assertThat(sections.allocatedStationCount()).isEqualTo(3);
     }
 }
