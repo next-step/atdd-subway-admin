@@ -18,11 +18,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
 @DisplayName("지하철역 관련 기능")
+@Sql(value = "classpath:truncate_station_table.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public
-class StationAcceptanceTest {
+public class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
@@ -55,9 +57,7 @@ class StationAcceptanceTest {
     }
 
     /**
-     * Given 지하철역을 생성하고
-     * When 기존에 존재하는 지하철역 이름으로 지하철역을 생성하면
-     * Then 지하철역 생성이 안된다
+     * Given 지하철역을 생성하고 When 기존에 존재하는 지하철역 이름으로 지하철역을 생성하면 Then 지하철역 생성이 안된다
      */
     @Test
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
@@ -73,9 +73,7 @@ class StationAcceptanceTest {
     }
 
     /**
-     * Given 2개의 지하철역을 생성하고
-     * When 지하철역 목록을 조회하면
-     * Then 2개의 지하철역을 응답 받는다
+     * Given 2개의 지하철역을 생성하고 When 지하철역 목록을 조회하면 Then 2개의 지하철역을 응답 받는다
      */
     @Test
     @DisplayName("지하철역을 조회한다.")
@@ -89,20 +87,18 @@ class StationAcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(역목록).hasSize(2),
-                () -> assertThat(역목록).contains("강남역", "선릉역")
+                () -> assertThat(역목록).contains("강남역", "양재역")
         );
     }
 
     /**
-     * Given 지하철역을 생성하고
-     * When 그 지하철역을 삭제하면
-     * Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
+     * Given 지하철역을 생성하고 When 그 지하철역을 삭제하면 Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
      */
     @Test
     @DisplayName("지하철역을 제거한다.")
     void deleteStation() {
         // given
-         StationResponse 생성된_강남역 = 지하철역_생성(강남역);
+        StationResponse 생성된_강남역 = 지하철역_생성(강남역);
 
         // when
         지하철역_삭제(생성된_강남역.getId());
