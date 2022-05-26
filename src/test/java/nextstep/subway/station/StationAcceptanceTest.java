@@ -9,11 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -90,67 +87,42 @@ class StationAcceptanceTest {
         String location = 지하철역_생성_성공("강남역");
 
         //when
-        지하철역_삭제(location);
+        지하철역_삭제_성공(location);
 
         //then
         지하철역_조회_실패("강남역");
     }
 
-    ExtractableResponse<Response> 지하철역_생성(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
-
-        return response;
-    }
-
     String 지하철역_생성_성공(String name) {
-        ExtractableResponse<Response> response = 지하철역_생성(name);
+        ExtractableResponse<Response> response = StationApi.create(name);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         return response.header("location");
     }
 
     void 지하철역_생성_실패(String name) {
-        ExtractableResponse<Response> response = 지하철역_생성(name);
+        ExtractableResponse<Response> response = StationApi.create(name);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    List<String> 지하철역_조회() {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/stations")
-                .then().log().all()
-                .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        return response.jsonPath().getList("name", String.class);
-    }
-
     void 지하철역_조회_성공(String... names) {
-        List<String> findNames = 지하철역_조회();
+        ExtractableResponse<Response> response = StationApi.findAll();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<String> findNames = response.jsonPath().getList("name", String.class);
         assertThat(findNames).containsAnyOf(names);
     }
 
     void 지하철역_조회_실패(String name) {
-        List<String> findNames = 지하철역_조회();
+        ExtractableResponse<Response> response = StationApi.findAll();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<String> findNames = response.jsonPath().getList("name", String.class);
         assertThat(findNames.stream()
                 .filter(name::equals)
                 .findAny())
                 .isNotPresent();
     }
 
-    void 지하철역_삭제(String location) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().delete(location)
-                .then().log().all()
-                .extract();
+    void 지하철역_삭제_성공(String location) {
+        ExtractableResponse<Response> response = StationApi.delete(location);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
