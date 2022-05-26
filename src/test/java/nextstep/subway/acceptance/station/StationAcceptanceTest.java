@@ -26,9 +26,7 @@ class StationAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void createStation() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        ExtractableResponse<Response> createResponse = 지하철역_생성_요청(params);
+        ExtractableResponse<Response> createResponse = 지하철역_생성_요청("강남역");
 
         // then
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -50,12 +48,10 @@ class StationAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        지하철역_생성_요청(params);
+        지하철역_생성_요청("강남역");
 
         // when
-        ExtractableResponse<Response> response = 지하철역_생성_요청(params);
+        ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -70,12 +66,8 @@ class StationAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void getStations() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        지하철역_생성_요청(params);
-
-        params.put("name", "강동역");
-        지하철역_생성_요청(params);
+        지하철역_생성_요청("강남역");
+        지하철역_생성_요청("강동역");
 
         // when
         ExtractableResponse<Response> showResponse = 지하철역들_조회_요청();
@@ -94,9 +86,7 @@ class StationAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        ExtractableResponse<Response> createResponse = 지하철역_생성_요청(params);
+        ExtractableResponse<Response> createResponse = 지하철역_생성_요청("강남역");
         long id = createResponse.jsonPath().getLong("id");
 
         // when
@@ -106,7 +96,9 @@ class StationAcceptanceTest extends BaseAcceptanceTest {
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    ExtractableResponse<Response> 지하철역_생성_요청(Map<String, String> params) {
+    ExtractableResponse<Response> 지하철역_생성_요청(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
