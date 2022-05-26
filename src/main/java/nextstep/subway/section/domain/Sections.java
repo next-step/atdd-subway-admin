@@ -2,7 +2,9 @@ package nextstep.subway.section.domain;
 
 import static nextstep.subway.section.domain.exception.SectionExceptionMessage.*;
 
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -105,5 +107,41 @@ public class Sections {
         return this.sections.stream()
             .filter(section -> section.getId().equals(sectionId))
             .findFirst();
+    }
+
+    public List<Station> findSortedStations() {
+        Station firstStation = this.findFirstStation();
+
+        List<Station> sortedStations = Lists.newArrayList();
+        sortedStations.add(firstStation);
+
+        for (int i = 0; i < this.sections.size(); i++) {
+            Station station = this.findSectionByUpStation(sortedStations.get(i))
+                .map(Section::getDownStation)
+                .orElseThrow(() -> new IllegalStateException("상행역이 존재하지 않습니다."));
+
+            sortedStations.add(station);
+        }
+
+        return Collections.unmodifiableList(sortedStations);
+    }
+
+    private Station findFirstStation() {
+        List<Station> downStations = this.findDownStations();
+        Optional<Section> firstStation = this.sections.stream()
+            .filter(section -> !downStations.contains(section.getUpStation()))
+            .findFirst();
+
+        if (!firstStation.isPresent()) {
+            throw new IllegalStateException("상행선 종점역이 없습니다.");
+        }
+
+        return firstStation.get().getUpStation();
+    }
+
+    private List<Station> findDownStations() {
+        return this.sections.stream()
+            .map(Section::getDownStation)
+            .collect(Collectors.toList());
     }
 }

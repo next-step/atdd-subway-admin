@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.sun.javafx.UnmodifiableArrayList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -84,6 +85,49 @@ class SectionsTest {
         assertAll(
             () -> assertThat(중간역_추가로_조정된_강남역_판교역_구간.getDistance()).isEqualTo(Distance.from(4)),
             () -> assertThat(추가된_강남역_양재역_구간.getDistance()).isEqualTo(Distance.from(1))
+        );
+    }
+
+    @DisplayName("중간에 새로운 구간을 추가한 후 지하철 역을 상행부터 하행의 순서로 출력할 수 있다.")
+    @Test
+    void showStations01() {
+        // given
+        List<Section> givenSections = new ArrayList<>();
+        givenSections.add(강남역_판교역_구간);
+
+        Sections sections = Sections.from(givenSections);
+
+        Station 양재역 = Station.of(11L, "양재역");
+        Distance 강남역_양재역_구간_거리 = Distance.from(1);
+        Section 강남역_양재역_구간 = Section.of(11L, 강남역, 양재역, 강남역_양재역_구간_거리);
+
+        // when
+        sections.add(강남역_양재역_구간);
+        List<Station> stations = sections.findSortedStations();
+
+        // then
+        assertThat(stations).isEqualTo(Arrays.asList(강남역, 양재역, 판교역));
+    }
+
+    @DisplayName("기존 지하철역 구간 중간에 새로운 구간을 추가한다. (기존 구간의 하행역을 기준으로 추가해본다.)")
+    @Test
+    void addSection03() {
+        // given
+        List<Section> givenSections = new ArrayList<>();
+        givenSections.add(강남역_판교역_구간);
+
+        Sections sections = Sections.from(givenSections);
+
+        Station 양재시민의숲역 = Station.of(11L, "양재시민의숲역");
+        Section 양재시민의숲역_판교역_구간 = Section.of(11L, 양재시민의숲역, 판교역, Distance.from(1));
+
+        // when
+        sections.add(양재시민의숲역_판교역_구간);
+
+        // then
+        assertAll(
+            () -> assertThat(sections.allocatedStationCount()).isEqualTo(3),
+            () -> assertThat(sections.findSortedStations()).isEqualTo(Arrays.asList(강남역, 양재시민의숲역, 판교역))
         );
     }
 }
