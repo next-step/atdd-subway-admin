@@ -49,4 +49,9 @@ public class LineService {
     public void modifyLine(Long id, LineRequest.Modify modify) {
         lineRepository.save(findById(id).modify(modify));
     }
+
+    @Transactional
+    public void deleteLine(Long id) {
+        lineRepository.deleteById(id);
+    }
 }

@@ -155,30 +155,33 @@ public class LinesAcceptanceTest {
         assertThat(changedName).isEqualTo("다른분당선");
     }
 
-//    /**
-//     * Given 지하철 노선을 생성하고
-//     * When 생성한 지하철 노선을 삭제하면
-//     * Then 해당 지하철 노선 정보는 삭제된다
-//     */
-//    @DisplayName("지하철 노선을 삭제한다.")
-//    @Test
-//    void deleteLinesTest() {
-//        // given
-//        String createdLineId = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest)
-//                .jsonPath()
-//                .getString("id");
-//
-//        // when
-//        ExtractableResponse<Response> deleteResponse = RequestHelper
-//                .deleteRequest(LINE_PATH + "/{id}", new HashMap<>(), createdLineId);
-//        List<String> lineIds = RequestHelper.getRequest(LINE_PATH, new HashMap<>())
-//                .jsonPath()
-//                .getList("id", String.class);
-//
-//        // then
-//        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.SC_NO_CONTENT);
-//        assertThat(lineIds).doesNotContain(createdLineId);
-//    }
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철 노선을 삭제한다.")
+    @Test
+    void deleteLinesTest() {
+        // given
+        String createdLineId = RequestHelper.postRequest(
+                LINE_PATH,
+                new HashMap<>(),
+                createLineRequest("신분당선", "bg-red-600", null, null, 10L)
+        ).jsonPath()
+                .getString("id");
+
+        // when
+        ExtractableResponse<Response> deleteResponse = RequestHelper
+                .deleteRequest(LINE_PATH + "/{id}", new HashMap<>(), createdLineId);
+        List<String> lineIds = RequestHelper.getRequest(LINE_PATH, new HashMap<>())
+                .jsonPath()
+                .getList("id", String.class);
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.SC_NO_CONTENT);
+        assertThat(lineIds).doesNotContain(createdLineId);
+    }
 
     private Map<String, String> saveStationAndGetInfo(String stationName) {
         Map<String, String> result = new HashMap<>();
