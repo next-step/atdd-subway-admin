@@ -176,4 +176,19 @@ public class LineAddSectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선에_추가되지_않음(response);
     }
+
+    @DisplayName("기존 노선에 존재하지 않는 상/하행 역 구간을 등록하는 경우 등록되지 않는다.")
+    @Test
+    void addNotExistStations01() {
+        // given
+        StationResponse 양재역 = StationAcceptanceTestMethods.지하철역_생성(StationRequest.from("양재역")).as(StationResponse.class);
+        StationResponse 양재시민의숲역 = StationAcceptanceTestMethods.지하철역_생성(StationRequest.from("양재시민의숲역")).as(StationResponse.class);
+        SectionRequest 양재역_양재시민의숲역_구간 = SectionRequest.of(양재역.getId(), 양재시민의숲역.getId(), 1);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_새로운_구간_추가(신분당선.getId(), 양재역_양재시민의숲역_구간);
+
+        // then
+        지하철_노선에_추가되지_않음(response);
+    }
 }
