@@ -5,6 +5,7 @@ import static nextstep.subway.section.domain.exception.SectionExceptionMessage.*
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
@@ -34,14 +35,13 @@ public class Sections {
         return this.sections.contains(section);
     }
 
-    public List<Station> getStations() {
+    public List<Station> getAllStations() {
         List<Station> result = new ArrayList<>();
         for (Section section : this.sections) {
             result.add(section.getUpStation());
             result.add(section.getDownStation());
         }
-
-        return result;
+        return result.stream().distinct().collect(Collectors.toList());
     }
 
     public void add(Section section) {
@@ -55,7 +55,7 @@ public class Sections {
     }
 
     public long allocatedStationCount() {
-        return this.getStations().stream().distinct().count();
+        return this.getAllStations().stream().count();
     }
 
     private void validateAddableSectionDistance(Section middleSection, Section section) {
