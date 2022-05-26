@@ -1,10 +1,9 @@
 package nextstep.subway.application;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Lines;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
@@ -34,10 +33,8 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
-        return lineRepository.findAll()
-                .stream()
-                .map(LineResponse::of)
-                .collect(Collectors.toList());
+        return Lines.of(lineRepository.findAll())
+                .toLineResponse();
     }
 
     @Transactional(readOnly = true)
