@@ -36,8 +36,18 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(line -> LineResponse.of(line, toStationsResponse(Arrays.asList(line.getUpStation().getId(), line.getDownStation().getId()))))
+                .map(line -> LineResponse.of(line, toStationsResponse(toStationIds(line))))
                 .collect(Collectors.toList());
+    }
+
+    public LineResponse findLine(Long id) {
+        Line line = lineRepository.findById(id).get();
+
+        return LineResponse.of(line, toStationsResponse(toStationIds(line)));
+    }
+
+    private List<Long> toStationIds(Line line) {
+        return Arrays.asList(line.getUpStation().getId(), line.getDownStation().getId());
     }
 
     private List<StationResponse> toStationsResponse(List<Long> stationIds) {
@@ -46,5 +56,4 @@ public class LineService {
 
         return stations.stream().map(StationResponse::of).collect(Collectors.toList());
     }
-
 }
