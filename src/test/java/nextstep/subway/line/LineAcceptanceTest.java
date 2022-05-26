@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -163,34 +164,43 @@ public class LineAcceptanceTest {
         stationAcceptanceTest.createStation("지하철역");
         stationAcceptanceTest.createStation("새로운지하철역");
 
-        Map<String, Object> line1 = new HashMap<>();
-        line1.put("name", "신분당선");
-        line1.put("color", "bg-red-600");
-        line1.put("upStationId", 1);
-        line1.put("downStationId", 2);
-        line1.put("distance", 10);
+        Map<String, Object> param = new HashMap<>();
+        param.put("name", "신분당선");
+        param.put("color", "bg-red-600");
+        param.put("upStationId", 1);
+        param.put("downStationId", 2);
+        param.put("distance", 10);
 
-        RestAssured.given().log().all()
-                .body(line1)
+        ExtractableResponse<Response> resultLine = RestAssured.given().log().all()
+                .body(param)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all()
                 .extract();
 
         // when
-        Map<String, Object> putLine1 = new HashMap<>();
-        line1.put("name", "다른분당선");
-        line1.put("color", "bg-red-600");
+        Map<String, Object> putLine = new HashMap<>();
+        putLine.put("name", "다른분당선");
+        putLine.put("color", "bg-red-600");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(putLine1)
+                .body(putLine)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/{id}", 1L)
+                .when().put("/lines/{id}", resultLine.jsonPath().getLong("id"))
+                .then().log().all()
+                .extract();
+
+        ExtractableResponse<Response> findLine = RestAssured.given().log().all()
+                .when().get("/lines/{id}", resultLine.jsonPath().getLong("id"))
                 .then().log().all()
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(findLine.jsonPath().getString("name")).isEqualTo(putLine.get("name")),
+                () -> assertThat(findLine.jsonPath().getString("color")).isEqualTo(putLine.get("color"))
+        );
     }
 
     /*

@@ -40,10 +40,16 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findLine(Long id) {
+    public LineResponse findLineById(Long id) {
         Line line = lineRepository.findById(id).get();
 
         return LineResponse.of(line, toStationsResponse(toStationIds(line)));
+    }
+
+    public void modifyLine(Long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id).get();
+        line.modify(lineRequest);
+        lineRepository.flush();
     }
 
     private List<Long> toStationIds(Line line) {
