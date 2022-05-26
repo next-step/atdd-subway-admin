@@ -61,11 +61,66 @@ public class LineAcceptanceTest {
                     	.log()
                     	.all()
 					.extract();
-        
+
 		// then
 		assertAll(() -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
 				() -> assertNotNull(createResponse.jsonPath().getObject(".", Line.class).getId()),
 				() -> assertEquals(createResponse.jsonPath().getObject(".", Line.class).getName(), "1호선"),
 				() -> assertEquals(createResponse.jsonPath().getObject(".", Line.class).getColor(), "파랑색"));
     }   
+    
+    /**
+     * Given 2개의 노선을 생성하고
+     * When 노선 목록을 조회하면
+     * Then 2개의 노선을 응답 받는다
+     */
+    @DisplayName("노선을 조회한다.")
+    @Test
+    void getLines() {
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "1호선");
+        params.put("color", "파랑색");
+
+		RestAssured
+			.given()
+				.body(params)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+				.post("/lines")
+			.then();
+		
+		params.clear();
+        params.put("name", "2호선");
+        params.put("color", "초록색");
+        
+		RestAssured
+		.given()
+			.body(params)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+		.when()
+			.post("/lines")
+		.then();
+		
+        // when
+        ExtractableResponse<Response> response =
+                RestAssured
+                	.given()
+                		.log()
+                		.all()
+                    .when()
+                    	.get("/lines")
+                    .then()
+                    	.log()
+                    	.all()
+                    .extract();
+
+		// then
+		assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+				() -> assertThat(response.jsonPath().getList(".", Line.class)).hasSize(2),
+				() -> assertEquals(response.jsonPath().getList(".", Line.class).get(0).getName(), "1호선"),
+				() -> assertEquals(response.jsonPath().getList(".", Line.class).get(0).getColor(), "파랑색"),
+				() -> assertEquals(response.jsonPath().getList(".", Line.class).get(1).getName(), "2호선"),
+				() -> assertEquals(response.jsonPath().getList(".", Line.class).get(1).getColor(), "초록색"));
+    }    
 }
