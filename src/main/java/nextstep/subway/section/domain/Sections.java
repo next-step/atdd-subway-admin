@@ -12,6 +12,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import nextstep.subway.section.domain.exception.SectionExceptionMessage;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -47,7 +48,7 @@ public class Sections {
     }
 
     public void add(Section section) {
-        if (!this.sections.isEmpty()) {
+        if (!this.sections.isEmpty() && !this.isEndOfStation(section)) {
             Section middleSection = findMiddleSection(section);
             validateAddableSectionDistance(middleSection, section);
             adjustMiddleSection(middleSection, section);
@@ -56,8 +57,32 @@ public class Sections {
         this.sections.add(section);
     }
 
+    private boolean isEndOfStation(Section section) {
+        Section firstSection = this.findFirstSection();
+        Section lastSection = this.findLastSection();
+
+        return firstSection.isEqualsUpStation(section.getDownStation())
+            || lastSection.isEqualsDownStation(section.getUpStation());
+    }
+
+    private Section findFirstSection() {
+        List<Station> downStations = this.findDownStations();
+        return this.sections.stream()
+            .filter(section -> !downStations.contains(section.getUpStation()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("첫번째 Section을 못찾음"));
+    }
+
+    private Section findLastSection() {
+        List<Station> upStations = this.findUpStations();
+        return this.sections.stream()
+            .filter(section -> !upStations.contains(section.getDownStation()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("마지막 Section을 못찾음"));
+    }
+
     public long allocatedStationCount() {
-        return this.getAllStations().stream().count();
+        return this.getAllStations().size();
     }
 
     private void validateAddableSectionDistance(Section middleSection, Section section) {
@@ -118,7 +143,7 @@ public class Sections {
         for (int i = 0; i < this.sections.size(); i++) {
             Station station = this.findSectionByUpStation(sortedStations.get(i))
                 .map(Section::getDownStation)
-                .orElseThrow(() -> new IllegalStateException("상행역이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalStateException(NOT_FOUND_UP_STATION_BY_SECTION.getMessage()));
 
             sortedStations.add(station);
         }
@@ -133,7 +158,7 @@ public class Sections {
             .findFirst();
 
         if (!firstStation.isPresent()) {
-            throw new IllegalStateException("상행선 종점역이 없습니다.");
+            throw new IllegalStateException(NOT_FOUND_FIRST_STATION.getMessage());
         }
 
         return firstStation.get().getUpStation();
@@ -142,6 +167,12 @@ public class Sections {
     private List<Station> findDownStations() {
         return this.sections.stream()
             .map(Section::getDownStation)
+            .collect(Collectors.toList());
+    }
+
+    private List<Station> findUpStations() {
+        return this.sections.stream()
+            .map(Section::getUpStation)
             .collect(Collectors.toList());
     }
 }
