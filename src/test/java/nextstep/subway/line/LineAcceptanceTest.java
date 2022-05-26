@@ -1,19 +1,25 @@
 package nextstep.subway.line;
 
 import io.restassured.RestAssured;
-import org.assertj.core.api.Assertions;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static nextstep.subway.station.StationAcceptanceTest.createTestStation;
+import static org.assertj.core.api.Assertions.assertThat;
+
 @DisplayName("지하철 노선 관련 기능")
+@Sql("/truncate.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LineAcceptanceTest {
     @LocalServerPort
@@ -24,6 +30,9 @@ class LineAcceptanceTest {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        createTestStation("지하철역");
+        createTestStation("새로운지하철역");
+        createTestStation("또다른지하철역");
     }
 
     /**
@@ -33,27 +42,40 @@ class LineAcceptanceTest {
     @DisplayName("지하철 노선 생성")
     @Test
     void createLineTest() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", "1");
-        params.put("downStationId", "2");
-        params.put("distance", "10");
-
         // when
-        RestAssured.given().log().all()
+        createLine("신분당선", "bg-red-600", 10L, 1L, 2L);
+
+        // then
+        List<Object> lineNames = getLines()
+                .jsonPath().getList("name");
+
+        assertThat(lineNames).containsAnyOf("신분당선");
+    }
+
+    private ExtractableResponse<Response> createLine(String name, String color, Long distance, Long upStationId, Long downStationId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("distance", String.valueOf(distance));
+        params.put("upStationId", String.valueOf(upStationId));
+        params.put("downStationId", String.valueOf(downStationId));
+
+        return createLine(params);
+    }
+
+    private ExtractableResponse<Response> createLine(Map<String, String> params) {
+        return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all()
                 .extract();
+    }
 
-        // then
-        List<Object> lineNames = RestAssured.given().log().all()
+    private ExtractableResponse<Response> getLines() {
+        return RestAssured.given().log().all()
                 .when().get("/lines")
                 .then().log().all()
-                .extract().jsonPath().getList("name");
-
-        Assertions.assertThat(lineNames).containsAnyOf("신분당선");
+                .extract();
     }
 }
