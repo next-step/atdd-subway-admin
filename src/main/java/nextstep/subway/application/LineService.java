@@ -40,4 +40,12 @@ public class LineService {
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public LineResponse findByLine(Long id) throws NotFoundException {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("노선을 찾을 수 없습니다."));
+
+        return LineResponse.of(line);
+    }
 }

@@ -71,6 +71,25 @@ class LineAcceptanceTest {
         assertThat(lineNames).containsExactly("신분당선", "분당선");
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("지하철노선 조회")
+    @Test
+    void getLineTest() {
+        // Given
+        Long lineId = createLine("신분당선", "bg-red-600", 10L, 1L, 2L)
+                .jsonPath().getLong("id");
+
+        // When
+        String name = getLine(lineId).jsonPath().getString("name");
+
+        // Then
+        assertThat(name).isEqualTo("신분당선");
+    }
+
     private ExtractableResponse<Response> createLine(String name, String color, Long distance, Long upStationId, Long downStationId) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
@@ -94,6 +113,13 @@ class LineAcceptanceTest {
     private ExtractableResponse<Response> getLines() {
         return RestAssured.given().log().all()
                 .when().get("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> getLine(Long id) {
+        return RestAssured.given().log().all()
+                .when().get("/lines/{id}", id)
                 .then().log().all()
                 .extract();
     }
