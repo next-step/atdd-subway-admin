@@ -182,7 +182,7 @@ public class LineAcceptanceTest {
 				() -> assertEquals(response.jsonPath().getObject(".", Line.class).getName(), "2호선"),
 				() -> assertEquals(response.jsonPath().getObject(".", Line.class).getColor(), "초록색"));
     }    
-    
+
     /**
      * Given 2개의 노선을 생성하고
      * When 생성한 지하철 노선을 수정
@@ -245,5 +245,50 @@ public class LineAcceptanceTest {
 				() -> assertEquals(response.jsonPath().getObject(".", Line.class).getId(), id),
 				() -> assertEquals(response.jsonPath().getObject(".", Line.class).getName(), "3호선"),
 				() -> assertEquals(response.jsonPath().getObject(".", Line.class).getColor(), "주황색"));
+    }  
+    
+    /**
+     * Given 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제
+     * Then 해당 지하철 노선 정보는 수정 확인
+     */
+    @DisplayName("원하는 노선의 정보를 삭제한다")
+    @Test
+    void deleteLine() {
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "1호선");
+        params.put("color", "파랑색");
+        
+		Long id = RestAssured
+				.given()
+					.body(params)
+					.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.when()
+					.post("/lines")
+				.then()
+				.extract()
+					.jsonPath()
+						.getObject(".", Line.class)
+							.getId();
+		
+        // when
+		String url = "/lines" + "/" + id;
+        ExtractableResponse<Response> response =
+                RestAssured
+                	.given()
+                		.log()
+                		.all()
+                        .body(params)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when()
+                    	.delete(url)
+                    .then()
+                    	.log()
+                    	.all()
+                    .extract();
+
+		// then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }  
 }
