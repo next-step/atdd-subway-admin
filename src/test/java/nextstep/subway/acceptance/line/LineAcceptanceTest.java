@@ -1,6 +1,7 @@
 package nextstep.subway.acceptance.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -13,35 +14,37 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
+@DisplayName("지하철노선 관련 기능")
 class LineAcceptanceTest extends BaseAcceptanceTest {
+
     /**
+     * Given 상행, 하행 지하철 역을 생성하고
      * When 지하철 노선을 생성하면
      * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
      */
     @DisplayName("지하철노선 생성")
     @Test
     void createLine() {
+        // Given
+        지하철역_생성_요청("지하철역");
+        지하철역_생성_요청("새로운지하철역");
         // when
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", 1);
-        params.put("downStationId", 2);
-        params.put("distance", 10);
+        지하철노선_생성_요청("신분당선", "bg-red-600", 1, 2, 10);
 
-        지하철노선_생성_요청(params);
-
-        // when
+        // then
         ExtractableResponse<Response> showResponse = 지하철노선_목록_조회_요청();
         List<String> lineNames = showResponse.jsonPath().getList("name", String.class);
         List<String> colors = showResponse.jsonPath().getList("color", String.class);
-
-        // then
-        assertThat(lineNames).containsAnyOf("신분당선");
-        assertThat(colors).containsAnyOf("bg-red-600");
+        List<String> stations = showResponse.jsonPath().getList("stations[0].name", String.class);
+        assertAll(
+                () -> assertThat(lineNames).containsAnyOf("신분당선"),
+                () -> assertThat(colors).containsAnyOf("bg-red-600"),
+                () -> assertThat(stations).containsExactly("지하철역","새로운지하철역")
+        );
     }
 
     /**
+     * Given 상행, 하행 지하철 역을 생성하고
      * Given 2개의 지하철 노선을 생성하고
      * When 지하철 노선 목록을 조회하면
      * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
@@ -53,6 +56,7 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
     }
 
     /**
+     * Given 상행, 하행 지하철 역을 생성하고
      * Given 지하철 노선을 생성하고
      * When 생성한 지하철 노선을 조회하면
      * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
@@ -64,6 +68,7 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
     }
 
     /**
+     * Given 상행, 하행 지하철 역을 생성하고
      * Given 지하철 노선을 생성하고
      * When 생성한 지하철 노선을 수정하면
      * Then 해당 지하철 노선 정보는 수정된다
@@ -75,6 +80,7 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
     }
 
     /**
+     * Given 상행, 하행 지하철 역을 생성하고
      * Given 지하철 노선을 생성하고
      * When 생성한 지하철 노선을 삭제하면
      * Then 해당 지하철 노선 정보는 삭제된다
@@ -85,7 +91,13 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
 
     }
 
-    ExtractableResponse<Response> 지하철노선_생성_요청(Map<String, Object> params) {
+    ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color, long upStationId, long downStationId, int distance) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -104,6 +116,17 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
     ExtractableResponse<Response> 지하철노선_제거_요청(long id) {
         return RestAssured.given().log().all()
                 .when().delete("/lines/" + id)
+                .then().log().all()
+                .extract();
+    }
+
+    ExtractableResponse<Response> 지하철역_생성_요청(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
                 .then().log().all()
                 .extract();
     }
