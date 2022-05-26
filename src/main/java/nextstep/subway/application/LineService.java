@@ -1,5 +1,8 @@
 package nextstep.subway.application;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,13 +22,15 @@ public class LineService {
 
 	@Transactional
 	public LineResponse saveLine(LineRequest lineRequest) {
-		System.out.println("[lineRquest]");
-		System.out.println(lineRequest.getColor());
 		Line line = lineRepository.save(lineRequest.toLine());
-		System.out.println("[save line]");
-		System.out.println(line.getColor());
-		System.out.println("[reponse line]");
-		System.out.println(LineResponse.of(line).getColor());
 		return LineResponse.of(line);
 	}
+	
+	public List<LineResponse> findAllLines() {
+        List<Line> lines = lineRepository.findAll();
+
+        return lines.stream()
+                .map(line -> LineResponse.of(line))
+                .collect(Collectors.toList());
+    }
 }
