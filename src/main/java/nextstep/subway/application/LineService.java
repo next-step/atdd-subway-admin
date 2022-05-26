@@ -1,6 +1,7 @@
 package nextstep.subway.application;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -25,12 +26,17 @@ public class LineService {
 		Line line = lineRepository.save(lineRequest.toLine());
 		return LineResponse.of(line);
 	}
-	
+
 	public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
                 .map(line -> LineResponse.of(line))
                 .collect(Collectors.toList());
+    }
+	
+	public LineResponse findLine(Long id) {
+        Optional<Line> line = lineRepository.findById(id);
+        return LineResponse.of(line.get());
     }
 }
