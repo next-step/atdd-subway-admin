@@ -100,4 +100,10 @@ public class Sections {
             .filter(section -> section.isEqualsUpStation(station))
             .findFirst();
     }
+
+    public Optional<Section> findSectionBySectionId(Long sectionId) {
+        return this.sections.stream()
+            .filter(section -> section.getId().equals(sectionId))
+            .findFirst();
+    }
 }

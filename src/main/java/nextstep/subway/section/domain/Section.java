@@ -43,7 +43,14 @@ public class Section {
 
     protected Section() {}
 
-    public Section(Station upStation, Station downStation, Distance distance) {
+    private Section(Station upStation, Station downStation, Distance distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
+    private Section(Long id, Station upStation, Station downStation, Distance distance) {
+        this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -52,6 +59,11 @@ public class Section {
     public static Section of(Station upStation, Station downStation, Distance distance) {
         validateSection(upStation, downStation, distance);
         return new Section(upStation, downStation, distance);
+    }
+
+    public static Section of(Long id, Station upStation, Station downStation, Distance distance) {
+        validateSection(upStation, downStation, distance);
+        return new Section(id, upStation, downStation, distance);
     }
 
     private static void validateSection(Station upStation, Station downStation, Distance distance) {
@@ -114,6 +126,10 @@ public class Section {
 
     public void reduceDistanceByDistance(Distance distance) {
         this.distance.minus(distance);
+    }
+
+    public Long getId() {
+        return this.id;
     }
 
     @Override
