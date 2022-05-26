@@ -48,6 +48,14 @@ public class LineService {
         );
     }
 
+    @Transactional
+    public void updateLine(Long id, LineRequest lineRequest) {
+        Optional<Line> optionalLine = lineRepository.findById(id);
+        Line persistLine = optionalLine
+                .orElseThrow(() -> new NotFoundException("라인 정보가 존재하지 않습니다."));
+        persistLine.change(lineRequest);
+    }
+
     private Station findStationById(Long id) {
         Optional<Station> optionalStation = stationRepository.findById(id);
         return optionalStation

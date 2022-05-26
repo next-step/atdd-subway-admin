@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import nextstep.subway.dto.LineRequest;
 
 @Entity
 public class Line extends BaseEntity {
@@ -68,6 +69,14 @@ public class Line extends BaseEntity {
         return upStation;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -86,5 +95,10 @@ public class Line extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, color, upStation.getId(), downStation.getId(), distance);
+    }
+
+    public void change(LineRequest lineRequest) {
+        this.name = lineRequest.getName();
+        this.color = lineRequest.getColor();
     }
 }

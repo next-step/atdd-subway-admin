@@ -30,7 +30,7 @@ class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
-    private LineRequest 신분당선, 이호선, 구분당선;
+    private LineRequest 신분당선, 이호선, 변경할_신분당선_내용;
 
     @BeforeEach
     public void setUp() {
@@ -47,7 +47,7 @@ class LineAcceptanceTest {
 
         신분당선 = new LineRequest("신분당선", "bg-red-600", 생성된_강남역.getId(), 생성된_양재역.getId(), 10L);
         이호선 = new LineRequest("이호선", "bg-yellow-600", 생성된_강남역.getId(), 생성된_서초역.getId(), 5L);
-
+        변경할_신분당선_내용 = new LineRequest("구분당선", "bg-red-100");
     }
 
     /**
@@ -118,13 +118,18 @@ class LineAcceptanceTest {
     @DisplayName("노선 생성 후 정보 변경시 해당 노선의 정보가 변경된다.")
     void 노선_생성후_수정시_해당_노선정보가_변경() {
         // given
-        LineResponse 생성된_신분당선 = 노선_생성(신분당선);
+        final LineResponse 생성된_신분당선 = 노선_생성(신분당선);
 
         // when
-        ExtractableResponse<Response> 노선_수정_결과 = 노선_수정(1L, 구분당선);
+        ExtractableResponse<Response> 노선_수정_결과 = 노선_수정(생성된_신분당선.getId(), 변경할_신분당선_내용);
+        assertThat(노선_수정_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
-        assertThat(노선_수정_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        LineResponse 변경된_신분당선 = 노선_조회(생성된_신분당선.getId());
+        assertAll(
+                () -> assertThat(변경된_신분당선.getName()).isEqualTo(변경할_신분당선_내용.getName()),
+                () -> assertThat(변경된_신분당선.getColor()).isEqualTo(변경할_신분당선_내용.getColor())
+        );
     }
 
     /**
