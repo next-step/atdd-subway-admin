@@ -39,29 +39,23 @@ public class Line extends BaseEntity {
     private Line(LineBuilder lineBuilder) {
         this.name = lineBuilder.name;
         this.color = lineBuilder.color;
-        this.upStation = lineBuilder.upStation;
-        this.downStation = lineBuilder.downStation;
         this.distance = lineBuilder.distance;
     }
 
-    public static LineBuilder builder(String name, String color, Station upStation, Station downStation, int distance) {
-        return new LineBuilder(name, color, upStation, downStation, distance);
+    public static LineBuilder builder(String name, String color, int distance) {
+        return new LineBuilder(name, color, distance);
     }
 
     public static class LineBuilder {
         private Long id;
         private final String name;
         private final String color;
-        private final Station upStation;
-        private final Station downStation;
         private final int distance;
 
-        private LineBuilder(String name, String color, Station upStation, Station downStation, int distance) {
-            validateParameter(name, color, upStation, downStation);
+        private LineBuilder(String name, String color, int distance) {
+            validateParameter(name, color);
             this.name = name;
             this.color = color;
-            this.upStation = upStation;
-            this.downStation = downStation;
             this.distance = distance;
         }
 
@@ -70,11 +64,9 @@ public class Line extends BaseEntity {
             return this;
         }
 
-        private void validateParameter(String name, String color, Station upStation, Station downStation) {
+        private void validateParameter(String name, String color) {
             validateNameNotNull(name);
             validateColorNotNull(color);
-            validateUpStationNotNull(upStation);
-            validateDownStationNotNull(downStation);
         }
 
         private void validateNameNotNull(String name) {
@@ -89,20 +81,32 @@ public class Line extends BaseEntity {
             }
         }
 
-        private void validateUpStationNotNull(Station upStation) {
-            if (Objects.isNull(upStation)) {
-                throw new NotFoundException("상행역 정보가 없습니다.");
-            }
-        }
-
-        private void validateDownStationNotNull(Station downStation) {
-            if (Objects.isNull(downStation)) {
-                throw new NotFoundException("하행역 정보가 없습니다.");
-            }
-        }
-
         public Line build() {
             return new Line(this);
+        }
+    }
+
+    public Line addUpStation(Station upStation) {
+        validateUpStationNotNull(upStation);
+        this.upStation = upStation;
+        return this;
+    }
+
+    public Line addDownStation(Station downStation) {
+        validateDownStationNotNull(downStation);
+        this.downStation = downStation;
+        return this;
+    }
+
+    private void validateUpStationNotNull(Station upStation) {
+        if (Objects.isNull(upStation)) {
+            throw new NotFoundException("상행역 정보가 없습니다.");
+        }
+    }
+
+    private void validateDownStationNotNull(Station downStation) {
+        if (Objects.isNull(downStation)) {
+            throw new NotFoundException("하행역 정보가 없습니다.");
         }
     }
 
@@ -128,5 +132,22 @@ public class Line extends BaseEntity {
 
     public int getDistance() {
         return distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Line line = (Line) o;
+        return Objects.equals(id, line.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
