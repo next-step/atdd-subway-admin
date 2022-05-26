@@ -3,18 +3,17 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.util.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,9 +23,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철노선 관련 기능")
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
+
     private final StationAcceptanceTest stationAcceptanceTest = new StationAcceptanceTest();
+
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
 
     @LocalServerPort
     int port;
@@ -35,7 +39,9 @@ public class LineAcceptanceTest {
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
+            databaseCleanup.afterPropertiesSet();
         }
+        databaseCleanup.cleanUp();
     }
 
     /*
@@ -83,9 +89,6 @@ public class LineAcceptanceTest {
     @Test
     void 지하철노선_단건_조회() {
         // given
-        stationAcceptanceTest.createStation("지하철역");
-        stationAcceptanceTest.createStation("새로운지하철역");
-
         ExtractableResponse<Response> line = createLine("신분당선", "bg-red-600", 10, "지하철역", "새로운지하철역");
 
         // when
@@ -107,9 +110,9 @@ public class LineAcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = modifyLine(resultLine.jsonPath().getLong("id"), "다른분당선", "bg-red-600");
-        ExtractableResponse<Response> findLine = findLineById(resultLine.jsonPath().getLong("id"));
 
         // then
+        ExtractableResponse<Response> findLine = findLineById(resultLine.jsonPath().getLong("id"));
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(findLine.jsonPath().getString("name")).isEqualTo("다른분당선"),
