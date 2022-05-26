@@ -44,8 +44,19 @@ public class LineRequest {
     public Long getDistance() {
         return distance;
     }
-    
+
     public Line toLine(Station upStation, Station downStation) {
         return new Line(this.name, this.color, upStation, downStation, distance);
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"name\":\"" + name + "\"" +
+                ", \"color\":\"" + color + "\"" +
+                ", \"upStationId\":" + upStationId +
+                ", \"downStationId\":" + downStationId +
+                ", \"distance\":" + distance +
+                "}";
     }
 }

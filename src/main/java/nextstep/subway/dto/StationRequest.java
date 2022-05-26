@@ -19,4 +19,11 @@ public class StationRequest {
     public Station toStation() {
         return new Station(name);
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"name\":\"" + name + "\"" +
+                '}';
+    }
 }

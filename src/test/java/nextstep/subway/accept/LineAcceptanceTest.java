@@ -1,6 +1,5 @@
 package nextstep.subway.accept;
 
-import static nextstep.subway.accept.StationAcceptanceTest.GSON;
 import static nextstep.subway.accept.StationAcceptanceTest.강남역;
 import static nextstep.subway.accept.StationAcceptanceTest.서초역;
 import static nextstep.subway.accept.StationAcceptanceTest.양재역;
@@ -27,7 +26,8 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
 @DisplayName("지하철 노선 관련 기능")
-@Sql(value = {"classpath:truncate_station_table.sql", "classpath:truncate_line_table.sql"}, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(value = {"classpath:truncate_station_table.sql",
+        "classpath:truncate_line_table.sql"}, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class LineAcceptanceTest {
     @LocalServerPort
@@ -146,7 +146,7 @@ class LineAcceptanceTest {
 
     public static LineResponse 노선_생성(LineRequest 노선) {
         return RestAssured.given().log().all()
-                .body(GSON.toJson(노선))
+                .body(노선)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all()
@@ -169,7 +169,7 @@ class LineAcceptanceTest {
 
     public static ExtractableResponse<Response> 노선_수정(Long 노선아이디, LineRequest 노선정보) {
         return RestAssured.given().log().all()
-                .body(GSON.toJson(노선정보))
+                .body(노선정보)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/lines/" + 노선아이디)
                 .then().log().all()

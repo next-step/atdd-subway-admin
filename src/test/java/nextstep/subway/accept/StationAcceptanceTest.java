@@ -3,7 +3,6 @@ package nextstep.subway.accept;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -28,7 +27,6 @@ public class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
-    public static final Gson GSON = new Gson();
     public static final StationRequest 강남역 = new StationRequest("강남역");
     public static final StationRequest 양재역 = new StationRequest("양재역");
     public static final StationRequest 서초역 = new StationRequest("서초역");
@@ -115,7 +113,7 @@ public class StationAcceptanceTest {
 
     public static ExtractableResponse<Response> 지하철역_생성_응답(StationRequest 역이름) {
         return RestAssured.given().log().all()
-                .body(GSON.toJson(역이름))
+                .body(역이름)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all()
@@ -124,7 +122,7 @@ public class StationAcceptanceTest {
 
     public static StationResponse 지하철역_생성(StationRequest 역이름) {
         return RestAssured.given().log().all()
-                .body(GSON.toJson(역이름))
+                .body(역이름)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all()
