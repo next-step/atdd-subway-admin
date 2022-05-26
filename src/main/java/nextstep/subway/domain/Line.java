@@ -37,6 +37,7 @@ public class Line extends BaseEntity {
     }
 
     private Line(LineBuilder lineBuilder) {
+        this.id = lineBuilder.id;
         this.name = lineBuilder.name;
         this.color = lineBuilder.color;
         this.distance = lineBuilder.distance;

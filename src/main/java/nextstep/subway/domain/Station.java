@@ -21,6 +21,7 @@ public class Station extends BaseEntity {
     }
 
     private Station(StationBuilder stationBuilder) {
+        this.id = stationBuilder.id;
         this.name = stationBuilder.name;
     }
 
