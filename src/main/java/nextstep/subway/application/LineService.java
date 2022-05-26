@@ -52,6 +52,10 @@ public class LineService {
         lineRepository.flush();
     }
 
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
+
     private List<Long> toStationIds(Line line) {
         return Arrays.asList(line.getUpStation().getId(), line.getDownStation().getId());
     }
