@@ -1,16 +1,12 @@
 package nextstep.subway.station;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +14,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Sql("/truncate.sql")
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends BaseAcceptanceTest {
     private static final String STATIONS_URI = "/stations";
@@ -39,8 +36,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         지하철역_생성됨(지하철역_생성_응답);
 
         // then
-        List<String> 지하철역_목록 = 지하철역_목록_조회();
-        생성한_지하철역_찾기(지하철역_목록, 강남역);
+        생성한_지하철역_찾기(강남역);
     }
 
     private ExtractableResponse<Response> 지하철역_생성(String 지하철역_이름) {
@@ -57,8 +53,9 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         return get(STATIONS_URI).jsonPath().getList(STATION_NAME_KEY, String.class);
     }
 
-    private void 생성한_지하철역_찾기(List<String> 지하철역_목록, String 지하철역_이름) {
-        assertThat(지하철역_목록).containsAnyOf(지하철역_이름);
+    private void 생성한_지하철역_찾기(String... 지하철역_이름) {
+        List<String> 지하철역_목록 = 지하철역_목록_조회();
+        assertThat(지하철역_목록).contains(지하철역_이름);
     }
 
     /**
@@ -92,6 +89,14 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        String 잠실역 = "잠실역";
+        String 방배역 = "방배역";
+        지하철역_생성(잠실역);
+        지하철역_생성(방배역);
+
+        // when & then
+        생성한_지하철역_찾기(잠실역, 방배역);
     }
 
     /**
