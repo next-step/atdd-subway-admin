@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -30,10 +31,10 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
     void createStation() {
         // when
         String 강남역 = "강남역";
-        ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성(강남역);
+        ExtractableResponse<Response> 강남역_생성_응답 = 지하철역_생성(강남역);
 
         // then
-        지하철역_생성됨(지하철역_생성_응답);
+        지하철역_생성됨(강남역_생성_응답);
 
         // then
         생성한_지하철역_찾기(강남역);
@@ -71,10 +72,10 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         지하철역_생성(강남역);
 
         // when
-        ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성(강남역);
+        ExtractableResponse<Response> 강남역_생성_응답 = 지하철역_생성(강남역);
 
         // then
-        지하철역_생성_안됨(지하철역_생성_응답);
+        지하철역_생성_안됨(강남역_생성_응답);
     }
 
     private void 지하철역_생성_안됨(ExtractableResponse<Response> 지하철역_생성_응답) {
@@ -107,5 +108,23 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        String 잠실역 = "잠실역";
+        ExtractableResponse<Response> 잠실역_생성_응답 = 지하철역_생성(잠실역);
+
+        // when
+        지하철역_삭제(잠실역_생성_응답);
+
+        // then
+        지하철역_목록에서_찾을수_없음(잠실역);
+    }
+
+    private void 지하철역_삭제(ExtractableResponse<Response> 지하철역_생성_응답) {
+        delete(지하철역_생성_응답.header(HttpHeaders.LOCATION));
+    }
+
+    private void 지하철역_목록에서_찾을수_없음(String... 지하철역_이름) {
+        List<String> 지하철역_목록 = 지하철역_목록_조회();
+        assertThat(지하철역_목록).doesNotContain(지하철역_이름);
     }
 }
