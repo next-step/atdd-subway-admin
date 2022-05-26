@@ -45,36 +45,24 @@ public class Line extends BaseEntity {
         this.distance = distance;
     }
 
-    public Long getId() {
+    public Long id() {
         return id;
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
-    public String getColor() {
+    public String color() {
         return color;
     }
 
-    public Long getDistance() {
-        return distance;
-    }
-
-    public Station getDownStation() {
+    public Station downStation() {
         return downStation;
     }
 
-    public Station getUpStation() {
+    public Station upStation() {
         return upStation;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 
     @Override
@@ -87,14 +75,14 @@ public class Line extends BaseEntity {
         }
         Line line = (Line) o;
         return Objects.equals(id, line.id) && Objects.equals(name, line.name)
-                && Objects.equals(color, line.color) && Objects.equals(upStation.getId(), line.upStation.getId())
-                && Objects.equals(downStation.getId(), line.downStation.getId()) && Objects.equals(distance,
+                && Objects.equals(color, line.color) && Objects.equals(upStation.id(), line.upStation.id())
+                && Objects.equals(downStation.id(), line.downStation.id()) && Objects.equals(distance,
                 line.distance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, upStation.getId(), downStation.getId(), distance);
+        return Objects.hash(id, name, color, upStation.id(), downStation.id(), distance);
     }
 
     public void change(LineRequest lineRequest) {

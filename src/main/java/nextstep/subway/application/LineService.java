@@ -57,14 +57,12 @@ public class LineService {
     }
 
     private Line findLineById(Long id) {
-        Optional<Line> optionalLine = lineRepository.findById(id);
-        return optionalLine
+        return lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("라인 정보가 존재하지 않습니다."));
     }
 
     private Station findStationById(Long id) {
-        Optional<Station> optionalStation = stationRepository.findById(id);
-        return optionalStation
+        return stationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("역 정보가 존재하지 않습니다."));
     }
 }

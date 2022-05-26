@@ -1,7 +1,5 @@
 package nextstep.subway.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 
@@ -46,7 +44,7 @@ public class LineRequest {
     public Long getDistance() {
         return distance;
     }
-
+    
     public Line toLine(Station upStation, Station downStation) {
         return new Line(this.name, this.color, upStation, downStation, distance);
     }
