@@ -38,28 +38,18 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        //given
+        String name = "강남역";
 
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        //when
+        ExtractableResponse<Response> response = createStation(name);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
-        assertThat(stationNames).containsAnyOf("강남역");
+        List<String> stationNames = getAllStation().jsonPath().getList("name", String.class);
+        assertThat(stationNames).containsAnyOf(name);
     }
 
     /**
@@ -71,23 +61,11 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
+        String alreadyCreatedStationName = "강남역";
+        createStation(alreadyCreatedStationName);
 
         // when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = createStation(alreadyCreatedStationName);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -101,6 +79,17 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        //given
+        String name1 = "새로운지하철역이름";
+        String name2 = "또다른지하철역이름";
+        createStation(name1);
+        createStation(name2);
+
+        //when
+        List<String> allStationNames = getAllStation().jsonPath().getList("name", String.class);
+
+        // then
+        assertThat(allStationNames).containsExactlyInAnyOrder(name1, name2);
     }
 
     /**
@@ -111,5 +100,41 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        //given
+        String createdStationId = createStation("강남역").jsonPath().getString("id");
+
+        //when
+        assertThat(deleteStation(createdStationId).statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        //then
+        List<String> allStationNames = getAllStation().jsonPath().getList("id", String.class);
+        assertThat(allStationNames).doesNotContain(createdStationId);
+    }
+
+    private ExtractableResponse<Response> createStation(String station) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", station);
+
+        return RestAssured.given().log().all()
+                        .body(params)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().post("/stations")
+                        .then().log().all()
+                        .extract();
+    }
+
+    private ExtractableResponse<Response> deleteStation(String id) {
+        return RestAssured.given().log().all()
+                        .when().delete("/stations/{id}", id)
+                        .then().log().all()
+                        .extract();
+    }
+
+    private ExtractableResponse<Response> getAllStation() {
+        return RestAssured
+                .given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract();
     }
 }
