@@ -8,9 +8,7 @@ import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,13 +39,12 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long id) {
-        Line line = lineRepository.findById(id).get();
-
+        Line line = findById(id);
         return LineResponse.of(line, toStationsResponse(toStationIds(line)));
     }
 
     public void modifyLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).get();
+        Line line = findById(id);
         line.modify(lineRequest);
         lineRepository.flush();
     }
@@ -56,13 +53,17 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
+    private Line findById(Long id) {
+        return lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException("해당 지하철 노선을 찾을 수 없습니다."));
+    }
+
     private List<Long> toStationIds(Line line) {
         return Arrays.asList(line.getUpStation().getId(), line.getDownStation().getId());
     }
 
     private List<StationResponse> toStationsResponse(List<Long> stationIds) {
         List<Station> stations = new ArrayList<>();
-        stationIds.forEach(stationId -> stations.add(stationRepository.findById(stationId).get()));
+        stationIds.forEach(stationId -> stations.add(stationRepository.findById(stationId).orElseThrow(() -> new NoSuchElementException("해당 지하철 역을 찾을 수 없습니다."))));
 
         return stations.stream().map(StationResponse::of).collect(Collectors.toList());
     }
