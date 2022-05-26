@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import static nextstep.subway.line.LineAcceptanceTestMethods.지하철노선_조회;
 import static nextstep.subway.line.LineAddSectionAcceptanceTestMethods.지하철_노선에_새로운_구간_추가;
 import static nextstep.subway.line.LineAddSectionAcceptanceTestMethods.지하철_노선에_새로운_구간_추가됨;
+import static nextstep.subway.line.LineAddSectionAcceptanceTestMethods.지하철_노선에_추가되지_않음;
 import static nextstep.subway.line.LineAddSectionAcceptanceTestMethods.지하철_역_정렬됨;
 
 import io.restassured.response.ExtractableResponse;
@@ -114,5 +115,24 @@ public class LineAddSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> findLineResponse = 지하철노선_조회(신분당선.getId());
         지하철_역_정렬됨(findLineResponse, Arrays.asList(강남역.getId(), 광교역.getId(), 부산역.getId()));
+    }
+
+    /**
+     * Given : 추가할 노선 구간을 생성하고 (기존 노선 거리보다 짧게)
+     * When : 기존 생성된 노선에 구간을 추가하면
+     * Then : 새로운 노선이 등록되지 않는다.
+     */
+    @DisplayName("기존 노선에 새로운 구간을 추가 시 기존 역의 거리보다 크거나 같으면 등록할 수 없다.")
+    @Test
+    void addSectionException01() {
+        // given
+        StationResponse 양재역 = StationAcceptanceTestMethods.지하철역_생성(StationRequest.from("양재역")).as(StationResponse.class);
+        SectionRequest 강남역_양재역_구간 = SectionRequest.of(강남역.getId(), 양재역.getId(), 100);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_새로운_구간_추가(신분당선.getId(), 강남역_양재역_구간);
+
+        // then
+        지하철_노선에_추가되지_않음(response);
     }
 }

@@ -23,6 +23,10 @@ public class LineAddSectionAcceptanceTestMethods {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    public static void 지하철_노선에_추가되지_않음(ExtractableResponse response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
     public static void 지하철_역_정렬됨(ExtractableResponse response, List<Long> stationIds) {
         List<StationResponse> stationResponses = response.jsonPath().getList("stations", StationResponse.class);
         List<Long> stationResponseIds = stationResponses.stream()
