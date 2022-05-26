@@ -28,15 +28,21 @@ public class LineService {
 	}
 
 	public List<LineResponse> findAllLines() {
-        List<Line> lines = lineRepository.findAll();
+		List<Line> lines = lineRepository.findAll();
 
-        return lines.stream()
-                .map(line -> LineResponse.of(line))
-                .collect(Collectors.toList());
-    }
-	
+		return lines
+				.stream()
+					.map(line -> LineResponse.of(line))
+					.collect(Collectors.toList());
+	}
+
 	public LineResponse findLine(Long id) {
-        Optional<Line> line = lineRepository.findById(id);
-        return LineResponse.of(line.get());
-    }
+		Optional<Line> line = lineRepository.findById(id);
+		return LineResponse.of(line.get());
+	}
+
+	public LineResponse updateLine(Long id, LineRequest lineRequest) {
+		Line line = lineRepository.save(lineRequest.toLine(id));
+		return LineResponse.of(line);
+	}
 }
