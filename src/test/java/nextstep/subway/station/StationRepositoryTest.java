@@ -1,5 +1,7 @@
-package nextstep.subway.domain;
+package nextstep.subway.station;
 
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
