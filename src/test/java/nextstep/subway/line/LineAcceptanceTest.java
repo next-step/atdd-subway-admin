@@ -2,6 +2,8 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +11,7 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,7 +19,10 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.dto.LineResponse;
 
+@DisplayName("노선 관련 기능")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
 
 	@LocalServerPort
@@ -55,9 +61,12 @@ public class LineAcceptanceTest {
                     	.log()
                     	.all()
 					.extract();
-
+        
 		// then
-		assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+		assertAll(() -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+				() -> assertNotNull(createResponse.jsonPath().getObject(".", LineResponse.class).getId()),
+				() -> assertEquals(createResponse.jsonPath().getObject(".", LineResponse.class).getName(), "1호선"),
+				() -> assertEquals(createResponse.jsonPath().getObject(".", LineResponse.class).getColor(), "파랑색"));
     }    
     
 }
