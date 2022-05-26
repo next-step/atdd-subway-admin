@@ -43,12 +43,20 @@ public class Sections {
 
     private void checkValidation(Section section) {
         Set<Station> stations = getStations();
-        if (stations.contains(section.getUpStation()) && stations.contains(section.getDownStation())) {
+        if (isSameStations(section, stations)) {
             throw new IllegalArgumentException("section is already registered.");
         }
-        if (!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
+        if (isNotContainsStations(section, stations)) {
             throw new IllegalArgumentException("must be one station contains.");
         }
+    }
+
+    private boolean isSameStations(Section section, Set<Station> stations) {
+        return stations.contains(section.getUpStation()) && stations.contains(section.getDownStation());
+    }
+
+    private boolean isNotContainsStations(Section section, Set<Station> stations) {
+        return !stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation());
     }
 
 }
