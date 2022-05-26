@@ -73,7 +73,7 @@ class LineTest {
         Station 강남역 = Station.of(1L, "강남역");
         Station 판교역 = Station.of(2L, "판교역");
         Distance distance = Distance.from(10);
-        Section 강남역_판교역_구간 = Section.of(강남역, 판교역, distance);
+        Section 강남역_판교역_구간 = Section.of(1L, 강남역, 판교역, distance);
 
         // when
         신분당선.addSection(강남역_판교역_구간);
@@ -81,5 +81,24 @@ class LineTest {
         // when & then
         assertThatIllegalStateException().isThrownBy(() -> 신분당선.addSection(강남역_판교역_구간))
             .withMessageContaining(ALREADY_ADDED_SECTION.getMessage());
+    }
+
+    @DisplayName("지하철 노선에 다른 Section 이지만 이미 존재하는 상/하행역을 추가할 수 없다.")
+    @Test
+    void generate06() {
+        // given
+        Line 신분당선 = Line.of("신분당선", "RED");
+        Station 강남역 = Station.of(1L, "강남역");
+        Station 판교역 = Station.of(2L, "판교역");
+        Distance distance = Distance.from(10);
+        Section 강남역_판교역_구간 = Section.of(1L, 강남역, 판교역, distance);
+        Section 중복된_강남역_판교역_구간 = Section.of(2L, 강남역, 판교역, distance);
+
+        // when
+        신분당선.addSection(강남역_판교역_구간);
+
+        // when & then
+        assertThatIllegalStateException().isThrownBy(() -> 신분당선.addSection(중복된_강남역_판교역_구간))
+            .withMessageContaining(ALREADY_ADDED_UP_DOWN_STATION.getMessage());
     }
 }

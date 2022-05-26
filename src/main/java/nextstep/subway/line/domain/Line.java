@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import static nextstep.subway.line.domain.exception.LineExceptionMessage.ALREADY_ADDED_SECTION;
+import static nextstep.subway.line.domain.exception.LineExceptionMessage.ALREADY_ADDED_UP_DOWN_STATION;
 
 import java.util.List;
 import javax.persistence.Embedded;
@@ -45,12 +46,19 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        validateSections(section);
+        validateAddableSection(section);
+        validateAddableStation(section);
         this.sections.add(section);
         section.registerLine(this);
     }
 
-    private void validateSections(Section section) {
+    private void validateAddableStation(Section section) {
+        if (this.sections.containUpDownStation(section)) {
+            throw new IllegalStateException(ALREADY_ADDED_UP_DOWN_STATION.getMessage());
+        }
+    }
+
+    private void validateAddableSection(Section section) {
         if (this.sections.contains(section)) {
             throw new IllegalStateException(ALREADY_ADDED_SECTION.getMessage());
         }

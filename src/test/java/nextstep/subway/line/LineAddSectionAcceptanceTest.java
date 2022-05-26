@@ -120,7 +120,7 @@ public class LineAddSectionAcceptanceTest extends AcceptanceTest {
     /**
      * Given : 추가할 노선 구간을 생성하고 (기존 노선 거리보다 짧게)
      * When : 기존 생성된 노선에 구간을 추가하면
-     * Then : 새로운 노선이 등록되지 않는다.
+     * Then : 시도한 구간이 등록되지 않는다.
      */
     @DisplayName("기존 노선에 새로운 구간을 추가 시 기존 역의 거리보다 크거나 같으면 등록할 수 없다.")
     @Test
@@ -131,6 +131,47 @@ public class LineAddSectionAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = 지하철_노선에_새로운_구간_추가(신분당선.getId(), 강남역_양재역_구간);
+
+        // then
+        지하철_노선에_추가되지_않음(response);
+    }
+
+    /**
+     * Given : 기존에 존재하는 역으로 구성된 추가 노선을 생성하고
+     *  기존 : 강남역 - 광교역 (2개만 존재)
+     * When : 기존 생성된 노선에 구간을 추가하면
+     *  추가하려는 구간 : 강남역 - 광교역
+     * Then : 시도한 구간이 등록되지 않는다.
+     */
+    @DisplayName("기존 노선에 존재하는 역으로 구성된 새로운 구간 추가 시 구간 등록이 되지 않는다.")
+    @Test
+    void addDuplicateStations01() {
+        // given & when
+        SectionRequest 강남역_광교역_구간 = SectionRequest.of(강남역.getId(), 광교역.getId(), 1);
+        ExtractableResponse<Response> response = 지하철_노선에_새로운_구간_추가(신분당선.getId(), 강남역_광교역_구간);
+
+        // then
+        지하철_노선에_추가되지_않음(response);
+    }
+
+    /**
+     * Given : 기존에 존재하는 역으로 구성된 추가 노선을 생성하고
+     *  기존 : 강남역 - 양재역 - 광교역 (3개 역 존재)
+     * When : 기존 생성된 노선에 구간을 추가하면
+     *  추가하려는 구간 : 양재역 - 광교역
+     * Then : 시도한 구간이 등록되지 않는다.
+     */
+    @DisplayName("기존 노선에 존재하는 역으로 구성된 새로운 구간 추가 시 구간 등록이 되지 않는다.")
+    @Test
+    void addDuplicateStations02() {
+        // given
+        StationResponse 양재역 = StationAcceptanceTestMethods.지하철역_생성(StationRequest.from("양재역")).as(StationResponse.class);
+        SectionRequest 강남역_양재역_구간 = SectionRequest.of(강남역.getId(), 양재역.getId(), 1);
+        지하철_노선에_새로운_구간_추가(신분당선.getId(), 강남역_양재역_구간);
+
+        // when
+        SectionRequest 양재역_광교역_구간 = SectionRequest.of(양재역.getId(), 광교역.getId(), 1);
+        ExtractableResponse<Response> response = 지하철_노선에_새로운_구간_추가(신분당선.getId(), 양재역_광교역_구간);
 
         // then
         지하철_노선에_추가되지_않음(response);

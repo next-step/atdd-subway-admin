@@ -1,16 +1,14 @@
 package nextstep.subway.section.domain;
 
-import static nextstep.subway.section.domain.exception.SectionExceptionMessage.*;
+import static nextstep.subway.section.domain.exception.SectionExceptionMessage.NEW_SECTION_DISTANCE_IS_GREATER_OR_EQUALS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import com.sun.javafx.UnmodifiableArrayList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import nextstep.subway.section.domain.exception.SectionExceptionMessage;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -196,5 +194,4 @@ class SectionsTest {
             () -> assertThat(sections.findSortedStations()).isEqualTo(Arrays.asList(강남역, 판교역, 광교역))
         );
     }
-
 }

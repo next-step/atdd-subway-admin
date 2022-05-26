@@ -4,7 +4,8 @@ public enum LineExceptionMessage {
 
     LINE_NAME_IS_NOT_NULL("지하철노선의 명은 공란일 수 없습니다."),
     LINE_COLOR_IS_NOT_NULL("지하철노선의 노선 색상은 공란일 수 없습니다."),
-    ALREADY_ADDED_SECTION("이미 등록된 구간은 다시 등록될 수 없습니다.");
+    ALREADY_ADDED_SECTION("이미 등록된 구간은 다시 등록될 수 없습니다."),
+    ALREADY_ADDED_UP_DOWN_STATION("이미 등록된 상, 하행 역입니다.");
 
     String message;
 

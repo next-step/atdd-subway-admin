@@ -175,4 +175,12 @@ public class Sections {
             .map(Section::getUpStation)
             .collect(Collectors.toList());
     }
+
+    public boolean containUpDownStation(Section section) {
+        return this.isExistStation(section.getUpStation()) && this.isExistStation(section.getDownStation());
+    }
+
+    private boolean isExistStation(Station station) {
+        return this.getAllStations().contains(station);
+    }
 }
