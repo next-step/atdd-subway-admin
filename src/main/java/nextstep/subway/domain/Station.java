@@ -5,7 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import nextstep.subway.domain.Line.LineBuilder;
+import nextstep.subway.exception.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
 
 @Entity
@@ -42,8 +42,8 @@ public class Station extends BaseEntity {
         }
 
         private void validateNameNotNull(String name) {
-            if (StringUtils.isNotEmpty(name)) {
-                throw new IllegalArgumentException("이름 정보가 없습니다.");
+            if (StringUtils.isEmpty(name)) {
+                throw new NotFoundException("이름 정보가 없습니다.");
             }
         }
 
@@ -51,6 +51,7 @@ public class Station extends BaseEntity {
             return new Station(this);
         }
     }
+
     public Long getId() {
         return id;
     }
