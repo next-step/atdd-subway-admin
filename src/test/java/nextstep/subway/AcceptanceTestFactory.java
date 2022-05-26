@@ -12,7 +12,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 
 public class AcceptanceTestFactory {
-    private static final Map<String, String> params = new HashMap<>();
+    private static final Map<String, Object> params = new HashMap<>();
 
     public static ExtractableResponse<Response> 지하철_역_생성(String name) {
         params.put("name", name);
@@ -29,6 +29,16 @@ public class AcceptanceTestFactory {
 
     public static void 지하철_역_삭제_요청(Long id) {
         RestAssuredTemplate.sendDelete("/stations/{id}", id);
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_생성(String name) {
+        params.put("name", name);
+        params.put("color", "bg-red-600");
+        params.put("upStationId", 1L);
+        params.put("downStationId", 2L);
+        params.put("distance", 10);
+
+        return RestAssuredTemplate.sendPost("/lines", params);
     }
 
     public static void 생성_성공_확인(ExtractableResponse<Response> response) {

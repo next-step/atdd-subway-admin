@@ -9,7 +9,7 @@ import java.util.Map;
 import org.springframework.http.MediaType;
 
 public final class RestAssuredTemplate {
-    public static ExtractableResponse<Response> sendPost(String path, Map<String, String> params) {
+    public static ExtractableResponse<Response> sendPost(String path, Map<String, Object> params) {
         return RestAssured
                 .given().log().all()
                 .body(params)
@@ -37,7 +37,7 @@ public final class RestAssuredTemplate {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> sendPut(String path, String pathParamValue, Map<String, String> params) {
+    public static ExtractableResponse<Response> sendPut(String path, String pathParamValue, Map<String, Object> params) {
         return RestAssured
                 .given().pathParam("id", pathParamValue)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
