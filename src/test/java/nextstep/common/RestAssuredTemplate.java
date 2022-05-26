@@ -3,7 +3,7 @@ package nextstep.common;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Map;
+import nextstep.subway.dto.StationRequest;
 import org.springframework.http.MediaType;
 
 public class RestAssuredTemplate {
@@ -14,9 +14,9 @@ public class RestAssuredTemplate {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> post(String path, Map<String, String> params) {
+    public static ExtractableResponse<Response> post(String path, StationRequest request) {
         return RestAssured.given().log().all()
-                .body(params)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post(path)
                 .then().log().all()

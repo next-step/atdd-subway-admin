@@ -5,10 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import nextstep.common.RestAssuredTemplate;
+import nextstep.subway.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -106,10 +105,7 @@ public class StationAcceptanceTest {
     }
 
     public static ExtractableResponse<Response> 지하철역을_생성한다(String stationName) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", stationName);
-
-        return RestAssuredTemplate.post("/stations", params);
+        return RestAssuredTemplate.post("/stations", new StationRequest(stationName));
     }
 
     public static List<String> 모든_지하철역을_조회한다() {
