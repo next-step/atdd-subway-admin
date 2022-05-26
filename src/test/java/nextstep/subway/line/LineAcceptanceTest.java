@@ -52,6 +52,25 @@ class LineAcceptanceTest {
         assertThat(lineNames).containsAnyOf("신분당선");
     }
 
+    /**
+     * Given 2개의 지하철 노선을 생성하고
+     * When 지하철 노선 목록을 조회하면
+     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     */
+    @DisplayName("지하철노선 목록 조회")
+    @Test
+    void getLinesTest() {
+        // Given
+        createLine("신분당선", "bg-red-600", 10L, 1L, 2L);
+        createLine("분당선", "bg-green-600", 15L, 1L, 3L);
+
+        // When
+        List<Object> lineNames = getLines().jsonPath().getList("name");
+
+        // Then
+        assertThat(lineNames).containsExactly("신분당선", "분당선");
+    }
+
     private ExtractableResponse<Response> createLine(String name, String color, Long distance, Long upStationId, Long downStationId) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
