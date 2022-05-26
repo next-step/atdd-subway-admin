@@ -32,15 +32,15 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void createStation() {
         // when
-        String 지하철역_이름 = "강남역";
-        ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성(지하철역_이름);
+        String 강남역 = "강남역";
+        ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성(강남역);
 
         // then
         지하철역_생성됨(지하철역_생성_응답);
 
         // then
         List<String> 지하철역_목록 = 지하철역_목록_조회();
-        생성한_지하철역_찾기(지하철역_목록, 지하철역_이름);
+        생성한_지하철역_찾기(지하철역_목록, 강남역);
     }
 
     private ExtractableResponse<Response> 지하철역_생성(String 지하철역_이름) {
@@ -70,26 +70,18 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
+        String 강남역 = "강남역";
+        지하철역_생성(강남역);
 
         // when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성(강남역);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철역_생성_안됨(지하철역_생성_응답);
+    }
+
+    private void 지하철역_생성_안됨(ExtractableResponse<Response> 지하철역_생성_응답) {
+        assertThat(지하철역_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
