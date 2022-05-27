@@ -40,21 +40,26 @@ public class LineService {
     }
 
     public LineResponse getLine(Long id) {
-        Optional<Line> line = lineRepository.findById(id);
-        if (!line.isPresent()) {
-            throw new NoSuchElementException("지하철 노선이 존재하지 않습니다");
-        }
-        return LineResponse.of(line.get(), toStations());
+        Line line = lineRepository.findById(id)
+                                  .orElseThrow(() -> new NoSuchElementException("지하철 노선이 존재하지 않습니다"));
+        return LineResponse.of(line, toStations());
     }
 
     private static Long id = 1L;
 
     private List<Station> toStations() {
-        return Arrays.asList(new Station(id, "지하철역_" +  id++), new Station(id, "새로운지하철역_" +  id++));
+        return Arrays.asList(new Station(id, "지하철역_" + id++), new Station(id, "새로운지하철역_" + id++));
     }
 
     @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Line updateLineById(Long id, Line param) {
+        Line line = lineRepository.findById(id)
+                                  .orElseThrow(() -> new NoSuchElementException("지하철 노선이 존재하지 않습니다"));
+        return line.update(param);
     }
 }

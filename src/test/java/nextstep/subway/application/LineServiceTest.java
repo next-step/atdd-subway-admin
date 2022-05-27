@@ -1,5 +1,6 @@
 package nextstep.subway.application;
 
+import nextstep.subway.domain.Line;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.util.DatabaseCleaner;
@@ -97,5 +98,21 @@ class LineServiceTest {
 
         // then
         assertThatThrownBy(() -> service.getLine(response.getId())).isInstanceOf(NoSuchElementException.class);
+    }
+
+    @DisplayName("지하철 노선을 수정한다")
+    @Test
+    void updateLine() {
+        // given
+        LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        LineResponse response = service.createLine(request);
+
+        // when
+        service.updateLineById(response.getId(), new Line("다른분당선", "bg-blue-100"));
+
+        // then
+        LineResponse changed = service.getLine(response.getId());
+        assertThat(changed.getName()).isEqualTo("다른분당선");
+        assertThat(changed.getColor()).isEqualTo("bg-blue-100");
     }
 }
