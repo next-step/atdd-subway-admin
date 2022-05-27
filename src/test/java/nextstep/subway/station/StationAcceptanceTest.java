@@ -109,7 +109,7 @@ public class StationAcceptanceTest {
         assertThat(numberOfStations).isEqualTo(0);
     }
 
-    private ValidatableResponse createStation(String name) {
+    private static ValidatableResponse createStation(String name) {
         StationRequest request = new StationRequest(name);
 
         return RestAssured.given().log().all()
@@ -119,18 +119,18 @@ public class StationAcceptanceTest {
                 .then().log().all();
     }
 
-    private void getResponseForStationDelete(long stationId) {
+    private static void getResponseForStationDelete(long stationId) {
         RestAssured.given().log().all()
                 .pathParam("id", stationId)
                 .when().delete("/stations/{id}")
                 .then().log().all();
     }
 
-    private JsonPath getJsonPathForResponse(ValidatableResponse response) {
+    private static JsonPath getJsonPathForResponse(ValidatableResponse response) {
         return response.extract().jsonPath();
     }
 
-    private ValidatableResponse getResponseForStationList() {
+    private static ValidatableResponse getResponseForStationList() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all();
