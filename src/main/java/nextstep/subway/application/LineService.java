@@ -69,4 +69,9 @@ public class LineService {
     public LineResponse findLineById(Long id) {
         return LineResponse.of(lineRepository.findById(id).orElseThrow(() -> new NotFoundException("등록된 노선이 없습니다.")));
     }
+
+    @Transactional
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }

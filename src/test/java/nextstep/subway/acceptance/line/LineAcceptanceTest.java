@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nextstep.subway.acceptance.base.BaseAcceptanceTest;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -55,7 +53,7 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
      */
     @DisplayName("지하철노선 목록 조회")
     @Test
-    void showStations() {
+    void showLines() {
         // Given
         지하철역_생성_요청("지하철역");
         지하철역_생성_요청("새로운지하철역");
@@ -88,7 +86,7 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
      */
     @DisplayName("지하철노선 조회")
     @Test
-    void showStation() {
+    void showLine() {
         // Given
         지하철역_생성_요청("지하철역");
         지하철역_생성_요청("새로운지하철역");
@@ -117,7 +115,7 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
      */
     @DisplayName("지하철노선 수정")
     @Test
-    void updateStations() {
+    void updateLine() {
         // Given
         지하철역_생성_요청("지하철역");
         지하철역_생성_요청("새로운지하철역");
@@ -146,8 +144,20 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
      */
     @DisplayName("지하철노선 삭제")
     @Test
-    void deleteStations() {
+    void deleteLine() {
+        // Given
+        지하철역_생성_요청("지하철역");
+        지하철역_생성_요청("새로운지하철역");
 
+        // Given
+        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청("신분당선", "bg-red-600", 1, 2, 10);
+        long id = createResponse.jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철노선_제거_요청(id);
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color, long upStationId, long downStationId, int distance) {
