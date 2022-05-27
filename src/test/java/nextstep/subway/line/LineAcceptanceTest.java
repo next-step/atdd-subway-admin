@@ -28,7 +28,6 @@ class LineAcceptanceTest {
 
     private Long firstStationId;
     private Long secondStationId;
-    private Long thirdStationId;
 
     @BeforeEach
     public void setUp() {
@@ -37,7 +36,6 @@ class LineAcceptanceTest {
         }
         firstStationId = createTestStation("지하철역").jsonPath().getLong("id");
         secondStationId = createTestStation("새로운지하철역").jsonPath().getLong("id");
-        thirdStationId = createTestStation("또다른지하철역").jsonPath().getLong("id");
     }
 
     /**
@@ -51,10 +49,7 @@ class LineAcceptanceTest {
         createLine("신분당선", "bg-red-600", 10L, firstStationId, secondStationId);
 
         // then
-        List<Object> lineNames = getLines()
-                .jsonPath().getList("name");
-
-        assertThat(lineNames).containsAnyOf("신분당선");
+        assertThat(getLines().jsonPath().getList("name", String.class)).containsExactly("신분당선");
     }
 
     /**
@@ -65,12 +60,14 @@ class LineAcceptanceTest {
     @DisplayName("지하철노선 목록 조회")
     @Test
     void getLinesTest() {
+        Long thirdStationId = createTestStation("또다른지하철역").jsonPath().getLong("id");
+
         // Given
         createLine("신분당선", "bg-red-600", 10L, firstStationId, secondStationId);
         createLine("분당선", "bg-green-600", 15L, firstStationId, thirdStationId);
 
         // When
-        List<Object> lineNames = getLines().jsonPath().getList("name");
+        List<String> lineNames = getLines().jsonPath().getList("name", String.class);
 
         // Then
         assertThat(lineNames).containsExactly("신분당선", "분당선");
@@ -104,16 +101,14 @@ class LineAcceptanceTest {
     @Test
     void updateLineTest() {
         // Given
-        Long lineId = createLine("신분당선", "bg-red-600", 10L, firstStationId, thirdStationId)
+        Long lineId = createLine("신분당선", "bg-red-600", 10L, firstStationId, secondStationId)
                 .jsonPath().getLong("id");
 
         // When
         updateLine(lineId, "다른분당선", "bg-red-600", null, null, null);
 
         // Then
-        String name = getLine(lineId).jsonPath().get("name");
-
-        assertThat(name).isEqualTo("다른분당선");
+        assertThat(getLine(lineId).jsonPath().getString("name")).isEqualTo("다른분당선");
     }
 
     /**
@@ -125,7 +120,7 @@ class LineAcceptanceTest {
     @Test
     void deleteLineTest() {
         // Given
-        Long lineId = createLine("신분당선", "bg-red-600", 10L, firstStationId, thirdStationId)
+        Long lineId = createLine("신분당선", "bg-red-600", 10L, firstStationId, secondStationId)
                 .jsonPath().getLong("id");
 
         // When
@@ -192,6 +187,5 @@ class LineAcceptanceTest {
                 .when().delete("/lines/{id}", id)
                 .then().log().all()
                 .extract();
-
     }
 }
