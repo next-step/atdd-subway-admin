@@ -66,6 +66,14 @@ public class AcceptanceTestFactory {
         return RestAssuredTemplate.sendGetWithId("/lines/{id}", id);
     }
 
+    public static ExtractableResponse<Response> 지하철_노선_수정(Long id, String name, String color) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
+        return RestAssuredTemplate.sendPut("/lines/{id}", id, params);
+    }
+
     public static void 생성_성공_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -92,5 +100,9 @@ public class AcceptanceTestFactory {
 
     public static void 목록_조회_실패_확인(List<String> names, String... name) {
         assertThat(names).doesNotContain(name);
+    }
+
+    public static void 수정_성공_확인(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }

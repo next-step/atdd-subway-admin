@@ -66,4 +66,17 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> 지하철_노선_조회_결과 = 지하철_노선_조회(지하철_노선_ID);
         조회_성공_확인(지하철_노선_조회_결과, "5호선", "공덕역", "애오개역");
     }
+
+    /**
+     * Given: 지하철 노선이 생성되어 있다.
+     * When: 사용자는 생성한 지하철 노선 수정을 요청한다.
+     * Then: 사용자는 지하철 노선 조회 시 수정된 정보를 응답받는다.
+     */
+    @Test
+    @DisplayName("지하철 노선을 수정한다.")
+    void updateLine() {
+        Long 지하철_노선_ID = 지하철_노선_생성_ID_추출("5호선", "공덕역", "애오개역");
+        ExtractableResponse<Response> 지하철_노선_수정_결과 = 지하철_노선_수정(지하철_노선_ID, "6호선", "bg-blue-600");
+        수정_성공_확인(지하철_노선_수정_결과);
+    }
 }

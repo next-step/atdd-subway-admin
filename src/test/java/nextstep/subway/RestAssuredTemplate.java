@@ -45,9 +45,9 @@ public final class RestAssuredTemplate {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> sendPut(String path, String pathParamValue, Map<String, Object> params) {
+    public static ExtractableResponse<Response> sendPut(String path, Long id, Map<String, Object> params) {
         return RestAssured
-                .given().pathParam("id", pathParamValue)
+                .given().pathParam("id", id)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
                 .log().all()
