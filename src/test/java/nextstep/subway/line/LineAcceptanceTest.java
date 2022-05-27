@@ -7,7 +7,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import nextstep.subway.db.DataInitializer;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -119,23 +121,27 @@ class LineAcceptanceTest {
     }
 
     /**
-     * given 지하철 노선을 생성하고 when 생성한 지하철 노선을 수정하면 Then 해당 지하철 노선 정보는 수정된다
+     * given 지하철 노선을 생성하고
+     * when 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다
      */
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
         // given
-//        ExtractableResponse<Response> saveResponse = 지하철_노선_생성("신분당선", "black");
-//
-//        // when
-//        LineRequest lineRequest = LineRequest.of("8호선", "skyblue");
-//        Long 지하철_노선_ID = toId(saveResponse);
-//        ExtractableResponse<Response> updateResponse = 지하철_노선_수정(지하철_노선_ID, lineRequest);
-//
-//        // then
-//        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-//        assertThat(toName(updateResponse)).isEqualTo("8호선");
-//        assertThat(toColor(updateResponse)).isEqualTo("skyblue");
+        ExtractableResponse<Response> saveResponse = 지하철_노선_생성("2호선", "yellow", 대림역_id, 신대방역_id, 10L);
+
+        // when
+        Long 지하철_노선_ID = toLineId(saveResponse);
+        ExtractableResponse<Response> updateResponse = 지하철_노선_수정(지하철_노선_ID, "8호선", "skyblue");
+
+        // then
+        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> getResponse = 지하철_노선_조회(지하철_노선_ID);
+        assertThat(toLineName(getResponse)).isEqualTo("8호선");
+        assertThat(toColorName(getResponse)).isEqualTo("skyblue");
     }
 
     /**
@@ -196,9 +202,13 @@ class LineAcceptanceTest {
     /**
      * 지하철 노선을 수정한다
      */
-    private ExtractableResponse<Response> 지하철_노선_수정(Long id, LineRequest lineRequest) {
+    private ExtractableResponse<Response> 지하철_노선_수정(Long id, String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
         return RestAssured.given().log().all()
-            .body(lineRequest)
+            .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().put("/lines/" + id)
             .then().log().all()
@@ -226,6 +236,10 @@ class LineAcceptanceTest {
 
     private String toLineName(ExtractableResponse<Response> response) {
         return response.as(LineResponse.class).getName();
+    }
+
+    private String toColorName(ExtractableResponse<Response> response) {
+        return response.as(LineResponse.class).getColor();
     }
 
     private List<String> toLineNames(ExtractableResponse<Response> response) {

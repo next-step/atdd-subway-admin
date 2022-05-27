@@ -40,7 +40,7 @@ class StationAcceptanceTest {
 
     @AfterEach
     void cleanUp() {
-        dataInitializer.execute("station", "line");
+        dataInitializer.execute("station");
     }
 
     /**
