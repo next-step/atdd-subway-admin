@@ -62,6 +62,26 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         조회_노선_이름_확인(노선_조회_요청_응답, "신분당선");
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철노선 수정")
+    @Test
+    void updateLine() {
+        LineRequest 신분당선 = LineRequest.of("신분당선", "bg-red-600", 1L, 2L, 10);
+        ExtractableResponse<Response> 노선_생성_요청_응답 = 노선_생성_요청(신분당선);
+        long id = 노선의_id_구한다(노선_생성_요청_응답);
+        LineRequest 다른_분당선 = LineRequest.of("다른분당선", "bg-red-600", 1L, 2L, 10);
+        ExtractableResponse<Response> 노선_수정_요청_응답 = 노선_수정_요청(id, 다른_분당선);
+        수정_확인(노선_수정_요청_응답);
+    }
+
+    private void 수정_확인(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
     private void 조회_노선_이름_확인(ExtractableResponse<Response> 노선_조회_요청_응답, String name) {
         assertThat(노선_조회_요청_응답.jsonPath().getString("name")).isEqualTo(name);
     }
@@ -88,6 +108,15 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
     private void 노선_생성_성공_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private ExtractableResponse<Response> 노선_수정_요청(Long id, LineRequest line) {
+        return RestAssured.given().log().all()
+                .body(line)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/" + id)
+                .then().log().all()
+                .extract();
     }
 
     private ExtractableResponse<Response> 노선_조회_요청(Long id) {
