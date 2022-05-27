@@ -37,12 +37,12 @@ public class LineService {
         return lines.stream().map(LineResponse::of).collect(Collectors.toList());
     }
 
-//    public LineResponse findLine(Long id) {
-//        Line line = lineRepository.findById(id)
-//            .orElseThrow(() -> new NoSuchElementException("지하철 노선을 찾을 수 없습니다."));
-//
-//        return LineResponse.of(line);
-//    }
+    public LineResponse findLine(Long id) {
+        Line line = lineRepository.findLineAndStationsById(id)
+            .orElseThrow(() -> new NoSuchElementException("지하철 노선을 찾을 수 없습니다."));
+
+        return LineResponse.of(line);
+    }
 
 //    @Transactional
 //    public LineResponse updateLine(Long id, LineRequest lineRequest) {
