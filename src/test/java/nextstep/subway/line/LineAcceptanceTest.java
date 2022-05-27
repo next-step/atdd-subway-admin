@@ -15,40 +15,26 @@ import static nextstep.subway.station.StationAcceptance.toStationId;
 import static nextstep.subway.station.StationAcceptance.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-import nextstep.subway.db.DataInitializer;
+import nextstep.subway.AcceptanceTest;
 import nextstep.subway.dto.LineResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철 노선 인수 테스트")
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class LineAcceptanceTest {
-
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    DataInitializer dataInitializer;
+class LineAcceptanceTest extends AcceptanceTest {
 
     private Long 대림역_id;
     private Long 신대방역_id;
     private Long 강남역_id;
 
     @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-
+    void lineSetUp() {
         대림역_id = toStationId(지하철역_생성("대림역"));
         신대방역_id = toStationId(지하철역_생성("신대방역"));
         강남역_id = toStationId(지하철역_생성("강남역"));
@@ -56,7 +42,7 @@ class LineAcceptanceTest {
 
     @AfterEach
     void cleanUp() {
-        dataInitializer.execute("line", "station");
+        databaseClean("line", "station");
     }
 
     /**
