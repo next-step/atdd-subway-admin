@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
-import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
