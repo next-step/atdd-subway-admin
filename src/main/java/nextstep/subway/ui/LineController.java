@@ -44,7 +44,7 @@ public class LineController {
 
 	@PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-		return ResponseEntity.created(URI.create("/lines/" + id)).body(lineService.updateLine(id, lineRequest));
+		return ResponseEntity.ok().body(lineService.updateLine(id, lineRequest));
 	}
 	
 	@DeleteMapping(value = "/lines/{id}")

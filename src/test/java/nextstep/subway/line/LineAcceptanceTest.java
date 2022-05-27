@@ -14,7 +14,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,6 +25,8 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.MethodMode;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -41,20 +45,35 @@ public class LineAcceptanceTest {
     
 	@LocalServerPort
 	int port;
+	
+	@BeforeAll
+	@SqlGroup({
+		@Sql(statements = "insert into Station(id, name) values (1, '지하철역')"),
+		@Sql(statements = "insert into Station(id, name) values (2, '새로운지하철역')"),
+		@Sql(statements = "insert into Station(id, name) values (3, '또다른지하철역')")
+	})
+	private static void setUpAll() {
+	}
 
 	@BeforeEach
-	public void setUp() {
+	private void setUp() {
 		if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
 			RestAssured.port = port;
 		}
 	}
 	
 	@AfterEach
-	public void cleanup() {
+	private void cleanup() {
 	    EntityManager em = entityManagerFactory.createEntityManager();
 	    em.getTransaction().begin();
 	    em.createNativeQuery("truncate table Line").executeUpdate();
+	    em.createNativeQuery("ALTER TABLE Line ALTER COLUMN id RESTART WITH 1").executeUpdate();
 	    em.getTransaction().commit();
+	}
+	
+	@AfterAll
+	@Sql(statements = "truncate table Station")
+	private static void cleanUpAll() {
 	}
 
 	/**
@@ -66,7 +85,7 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> CreateResponse = 노선_생성_요청("1호선", "파랑색");
+        ExtractableResponse<Response> CreateResponse = 노선_생성_요청("신분당선", "bg-red-600");
         Line createdLine =  CustomExtractableResponse.getObject(CreateResponse, Line.class);
         List<Line> lines = 노선_리스트_조회(); 
 
@@ -85,8 +104,8 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-    	노선_생성_요청("1호선", "파랑색");
-    	노선_생성_요청("2호선", "초록색");
+    	노선_생성_요청("신분당선", "bg-red-600");
+    	노선_생성_요청("분당선", "bg-green-600");
 		
 		// when
         ExtractableResponse<Response> response = CustomExtractableResponse.get(BASIC_URL_LINES);
@@ -106,9 +125,9 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         // given
-    	노선_생성_요청("1호선", "파랑색");
     	Line createLine = CustomExtractableResponse
-				.getObject(노선_생성_요청("2호선", "초록색"), Line.class);
+				.getObject(노선_생성_요청("신분당선", "bg-red-600"), Line.class);
+    	노선_생성_요청("분당선", "bg-green-600");
 		
         // when
         Line line = 노선_ID_조회(createLine.getId());
@@ -126,15 +145,15 @@ public class LineAcceptanceTest {
     @Test
     void updateLine() {
         // given
-    	노선_생성_요청("1호선", "파랑색");
-    	Line createLine = CustomExtractableResponse.getObject(노선_생성_요청("2호선", "초록색"), Line.class);
+    	노선_생성_요청("신분당선", "bg-red-600");
+    	Line createLine = CustomExtractableResponse.getObject(노선_생성_요청("분당선", "bg-green-600"), Line.class);
 		
         // when
-		ExtractableResponse<Response> response = 노선_수정_요청(createLine, "3호선", "주황색");
+		ExtractableResponse<Response> response = 노선_수정_요청(createLine, "다른분당선", "bg-red-600");
 		Line line = CustomExtractableResponse.getObject(response, Line.class);
 
 		// then
-		assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+		assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
 				() -> assertEquals(createLine, line),
 				() -> assertFalse(createLine.match(line)));
     }
