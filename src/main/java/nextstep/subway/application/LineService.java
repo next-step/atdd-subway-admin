@@ -55,4 +55,9 @@ public class LineService {
                 .orElseThrow(() -> new IllegalStateException("해당 노선은 존재하지 않습니다."));
         line.updateLine(lineRequest.getName(), lineRequest.getColor());
     }
+
+    @Transactional
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
