@@ -115,6 +115,30 @@ public class StationAcceptanceTest {
 
     }
 
+    /**
+     * Given 지하철역을 생성하고
+     * When 그 지하철역을 삭제하면
+     * Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
+     */
+    @DisplayName("지하철역을 제거한다.")
+    @Test
+    void deleteStation() {
+        String locationOfNewStation = 지하철을_생성한다("강남역").header("Location");
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete(locationOfNewStation)
+                .then().log().all()
+                .extract();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        List<String> stationNames = RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
+        assertThat(stationNames).isNotIn("강남역");
+    }
+
+
     private ExtractableResponse<Response> 지하철을_생성한다(String name) {
         Map<String,String> params = new HashMap<>();
         params.put("name",name);
@@ -127,13 +151,4 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
-    /**
-     * Given 지하철역을 생성하고
-     * When 그 지하철역을 삭제하면
-     * Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
-     */
-    @DisplayName("지하철역을 제거한다.")
-    @Test
-    void deleteStation() {
-    }
 }
