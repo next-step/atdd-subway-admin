@@ -24,4 +24,9 @@ public class LineController {
         LineResponse lineResponse = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines" + lineResponse.getId())).body(lineResponse);
     }
+
+    @GetMapping("/lines")
+    public ResponseEntity<List<LineResponse>> findAllLines() {
+        return ResponseEntity.ok(lineService.findAllLines());
+    }
 }
