@@ -12,9 +12,8 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 
 public class AcceptanceTestFactory {
-    private static final Map<String, Object> params = new HashMap<>();
-
     public static ExtractableResponse<Response> 지하철_역_생성(String name) {
+        Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         return RestAssuredTemplate.sendPost("/stations", params);
     }
@@ -31,14 +30,27 @@ public class AcceptanceTestFactory {
         RestAssuredTemplate.sendDelete("/stations/{id}", id);
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_생성(String name) {
-        params.put("name", name);
+    private static Map<String, Object> 지하철_노선_정보_생성(String lineName, String upStationName, String downStationName) {
+        Long 상행역_ID = 지하철_역_생성_ID_추출(upStationName);
+        Long 하행역_ID = 지하철_역_생성_ID_추출(downStationName);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", lineName);
         params.put("color", "bg-red-600");
-        params.put("upStationId", 1L);
-        params.put("downStationId", 2L);
+        params.put("upStationId", 상행역_ID);
+        params.put("downStationId", 하행역_ID);
         params.put("distance", 10);
 
+        return params;
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_생성(String lineName, String upStationName, String downStationName) {
+        Map<String, Object> params = 지하철_노선_정보_생성(lineName, upStationName, downStationName);
         return RestAssuredTemplate.sendPost("/lines", params);
+    }
+
+    public static List<String> 지하철_노선_목록_조회() {
+        return RestAssuredTemplate.sendGet("/lines").jsonPath().getList("name", String.class);
     }
 
     public static void 생성_성공_확인(ExtractableResponse<Response> response) {
