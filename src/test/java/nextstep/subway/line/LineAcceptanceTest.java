@@ -31,6 +31,20 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         노선이름_포함_확인(노선_이름_목록, "신분당선");
     }
 
+    /**
+     * Given 2개의 지하철 노선을 생성하고 When 지하철 노선 목록을 조회하면 Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     */
+    @DisplayName("지하철노선 목록 조회")
+    @Test
+    void findAllLines() {
+        LineRequest 신분당선 = LineRequest.of("신분당선", "bg-red-600", 1L, 2L, 10);
+        LineRequest 분당선 = LineRequest.of("분당선", "bg-green-600", 1L, 2L, 10);
+        노선_생성_요청(신분당선);
+        노선_생성_요청(분당선);
+        List<String> 노선_이름_목록 = 노선_이름_목록을_구한다();
+        노선이름_포함_확인(노선_이름_목록, "신분당선", "분당선");
+    }
+
     private ExtractableResponse<Response> 노선_생성_요청(LineRequest line) {
         return RestAssured.given().log().all()
                 .body(line)
