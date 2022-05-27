@@ -1,19 +1,13 @@
 package nextstep.subway.line;
 
-import static nextstep.subway.AcceptanceTestFactory.목록_조회_성공_확인;
-import static nextstep.subway.AcceptanceTestFactory.생성_성공_확인;
-import static nextstep.subway.AcceptanceTestFactory.지하철_노선_목록_조회;
-import static nextstep.subway.AcceptanceTestFactory.지하철_노선_생성;
-import static nextstep.subway.AcceptanceTestFactory.지하철_역_생성;
-import static nextstep.subway.AcceptanceTestFactory.지하철_역_생성_ID_추출;
+import static nextstep.subway.AcceptanceTestFactory.*;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -58,5 +52,18 @@ public class LineAcceptanceTest {
 
         List<String> 지하철_노선_목록 = 지하철_노선_목록_조회();
         목록_조회_성공_확인(지하철_노선_목록, "5호선", "신분당선");
+    }
+
+    /**
+     * Given: 지하철 노선이 생성되어 있다.
+     * When: 사용자는 생성한 지하철 노선 조회를 요청한다.
+     * Then: 사용자는 생성한 지하철 노선의 정보를 응답받는다.
+     */
+    @Test
+    @DisplayName("지하철 노선을 조회한다.")
+    void getLine() {
+        Long 지하철_노선_ID = 지하철_노선_생성_ID_추출("5호선", "공덕역", "애오개역");
+        ExtractableResponse<Response> 지하철_노선_조회_결과 = 지하철_노선_조회(지하철_노선_ID);
+        조회_성공_확인(지하철_노선_조회_결과, "5호선", "공덕역", "애오개역");
     }
 }

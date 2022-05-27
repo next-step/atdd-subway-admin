@@ -1,6 +1,7 @@
 package nextstep.subway;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -9,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.stream.Collectors;
+import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.StationResponse;
 import org.springframework.http.HttpStatus;
 
 public class AcceptanceTestFactory {
@@ -49,8 +53,17 @@ public class AcceptanceTestFactory {
         return RestAssuredTemplate.sendPost("/lines", params);
     }
 
+    public static Long 지하철_노선_생성_ID_추출(String lineName, String upStationName, String downStationName) {
+        return 지하철_노선_생성(lineName, upStationName, downStationName)
+                .jsonPath().getObject("id", Long.class);
+    }
+
     public static List<String> 지하철_노선_목록_조회() {
         return RestAssuredTemplate.sendGet("/lines").jsonPath().getList("name", String.class);
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_조회(Long id) {
+        return RestAssuredTemplate.sendGetWithId("/lines/{id}", id);
     }
 
     public static void 생성_성공_확인(ExtractableResponse<Response> response) {
@@ -63,6 +76,18 @@ public class AcceptanceTestFactory {
 
     public static void 목록_조회_성공_확인(List<String> names, String... name) {
         assertThat(names).contains(name);
+    }
+
+    public static void 조회_성공_확인(ExtractableResponse<Response> response, String lineName, String... stationName) {
+        LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
+        List<String> stationNames = lineResponse.getStations().stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+
+        assertAll(
+                () -> assertThat(lineResponse.getName()).contains(lineName),
+                () -> assertThat(stationNames).contains(stationName)
+        );
     }
 
     public static void 목록_조회_실패_확인(List<String> names, String... name) {

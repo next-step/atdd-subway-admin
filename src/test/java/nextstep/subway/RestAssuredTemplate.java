@@ -27,6 +27,14 @@ public final class RestAssuredTemplate {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> sendGetWithId(String path, Long id) {
+        return RestAssured
+                .given().pathParam("id", id).log().all()
+                .when().get(path)
+                .then().log().all()
+                .extract();
+    }
+
     public static ExtractableResponse<Response> sendDelete(String path, Long id) {
         return RestAssured
                 .given().pathParam("id", id)
