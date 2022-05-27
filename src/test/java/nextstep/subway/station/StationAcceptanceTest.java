@@ -49,7 +49,7 @@ public class StationAcceptanceTest {
         지하철역_목록에_생성한_역이_포함된다(지하철역_목록, "강남역");
     }
 
-    private ExtractableResponse<Response> 지하철역_생성(String stationName) {
+    static ExtractableResponse<Response> 지하철역_생성(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
