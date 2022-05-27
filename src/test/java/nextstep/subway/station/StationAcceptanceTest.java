@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.assertj.core.api.AbstractIntegerAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -120,6 +121,25 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+//        given
+        이름으로_지하철역을_생성("강남역");
+
+//        when
+        ExtractableResponse<Response> response = ID값으로_지하철역_삭제(1L);
+
+//        then
+        응답결과로_NO_CONCENT를_응답(response);
+    }
+
+    private ExtractableResponse<Response> ID값으로_지하철역_삭제(Long id) {
+        return RestAssured.given().log().all()
+                .when().delete("/stations/" + id)
+                .then().log().all()
+                .extract();
+    }
+
+    private AbstractIntegerAssert<?> 응답결과로_NO_CONCENT를_응답(ExtractableResponse<Response> response) {
+        return assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private void 두개의_지하철역_응답을_받음(ExtractableResponse<Response> response) {
@@ -142,7 +162,6 @@ public class StationAcceptanceTest {
 
     private ExtractableResponse<Response> 지하철역_목록_조회() {
         return RestAssured.given().log().all()
-                .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .get("/stations")
                 .then()
