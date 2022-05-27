@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.assertj.core.api.AbstractIntegerAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -107,7 +108,28 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_조회();
         assertThat(response.jsonPath().getList(".").size()).isEqualTo(2);
     }
-    
+
+    /**
+     * Given 지하철역을 생성하고
+     * When 그 지하철역을 삭제하면
+     * Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
+     */
+    @Test
+    @DisplayName("지하철역을 제거한다.")
+    void deleteStation() {
+        ExtractableResponse<Response> 서현역Response = 지하철역_생성("서현역");
+        ExtractableResponse<Response> 이매역Response = 지하철역_생성("이매역");
+
+        Long 서현역Id = 서현역Response.jsonPath().getLong("id");
+        Long 이매역Id = 이매역Response.jsonPath().getLong("id");
+
+        지하철역_제거(서현역Id);
+        지하철역_제거(이매역Id);
+
+        ExtractableResponse response = 지하철역_조회();
+        assertThat(response.jsonPath().getList(".").size()).isEqualTo(0);
+    }
+
     private ExtractableResponse<Response> 지하철역_생성(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
@@ -143,5 +165,19 @@ public class StationAcceptanceTest {
 
     private void 지하철역_조회_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철역_제거(Long 역Id) {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/stations/" + 역Id)
+                .then().log().all()
+                .extract();
+
+        지하철역_제거_검증(response);
+    }
+
+    private AbstractIntegerAssert<?> 지하철역_제거_검증(ExtractableResponse<Response> response) {
+        return assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
