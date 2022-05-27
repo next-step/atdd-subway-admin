@@ -1,14 +1,17 @@
 package nextstep.subway.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
+import javax.persistence.JoinColumn;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequestDTO;
 import nextstep.subway.dto.LineResponseDTO;
+import nextstep.subway.dto.LineResponseDTO.StationResponse;
 import nextstep.subway.dto.LineResponsesDTO;
 import nextstep.subway.dto.StationResponseDTO;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +23,9 @@ import org.springframework.context.annotation.Import;
 @DataJpaTest
 @Import({LineService.class, StationService.class})
 class LineServiceTest {
+
+    private static final int PANGYO = 0;
+    private static final int JEONGJA = 1;
 
     @Autowired
     private LineService lineService;
@@ -40,14 +46,16 @@ class LineServiceTest {
         LineResponseDTO lineResponseDTO = lineService.saveLine(lineRequestDTO);
 
         //then
-        assertThat(lineResponseDTO.getName()).isEqualTo("신분당선");
-        assertThat(lineResponseDTO.getColor()).isEqualTo("bg-red-600");
+        List<StationResponse> stations = lineResponseDTO.getStations();
+        assertAll(
+                () -> assertThat(lineResponseDTO.getName()).isEqualTo("신분당선"),
+                () -> assertThat(lineResponseDTO.getColor()).isEqualTo("bg-red-600"),
+                () -> assertThat(stations.get(PANGYO).getId()).isEqualTo(pangyo.getId()),
+                () -> assertThat(stations.get(PANGYO).getName()).isEqualTo(pangyo.getName()),
+                () -> assertThat(stations.get(JEONGJA).getId()).isEqualTo(jeongja.getId()),
+                () -> assertThat(stations.get(JEONGJA).getName()).isEqualTo(jeongja.getName())
+        );
 
-        List<StationResponseDTO> stations = lineResponseDTO.getStations();
-        assertThat(stations.get(0).getId()).isEqualTo(pangyo.getId());
-        assertThat(stations.get(0).getName()).isEqualTo(pangyo.getName());
-        assertThat(stations.get(1).getId()).isEqualTo(jeongja.getId());
-        assertThat(stations.get(1).getName()).isEqualTo(jeongja.getName());
     }
 
     @DisplayName("노선 전체 목록을 조회한다.")
