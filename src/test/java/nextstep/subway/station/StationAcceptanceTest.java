@@ -94,11 +94,10 @@ public class StationAcceptanceTest {
     void deleteStation() {
         // given
         ValidatableResponse response = 지하철역_등록("강남역");
-        long createdStationId = getJsonPathForResponse(response)
-                .getLong("id");
+        long createdStationId = 응답_속성_조회(response, "id");
 
         // when
-        getResponseForStationDelete(createdStationId);
+        지하철역_삭제(createdStationId);
 
         // then
         List<Station> stations = 지하철역_목록_조회();
@@ -132,6 +131,15 @@ public class StationAcceptanceTest {
 
     private void 지하철역_개수_검증(List<Station> stations, int size) {
         assertThat(stations).hasSize(size);
+    }
+
+    private long 응답_속성_조회(ValidatableResponse response, String property) {
+        return getJsonPathForResponse(response)
+                .getLong(property);
+    }
+
+    private void 지하철역_삭제(long createdStationId) {
+        getResponseForStationDelete(createdStationId);
     }
 
     private static void getResponseForStationDelete(long stationId) {
