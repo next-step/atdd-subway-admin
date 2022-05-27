@@ -38,10 +38,10 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ValidatableResponse createResponse = 지하철역_등록_요청("강남역");
+        ValidatableResponse createResponse = 지하철역_등록("강남역");
 
         // then
-        요청_결과_검증(createResponse, HttpStatus.CREATED);
+        응답_검증(createResponse, HttpStatus.CREATED);
 
         // then
         ValidatableResponse listResponse = 지하철역_목록_조회();
@@ -61,13 +61,13 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        지하철역_등록_요청("강남역");
+        지하철역_등록("강남역");
 
         // when
-        ValidatableResponse response = 지하철역_등록_요청("강남역");
+        ValidatableResponse response = 지하철역_등록("강남역");
 
         // then
-        assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        응답_검증(response, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -79,8 +79,8 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        지하철역_등록_요청("잠실역");
-        지하철역_등록_요청("강남역");
+        지하철역_등록("잠실역");
+        지하철역_등록("강남역");
 
         // when
         ValidatableResponse listResponse = 지하철역_목록_조회();
@@ -100,7 +100,7 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ValidatableResponse response = 지하철역_등록_요청("강남역");
+        ValidatableResponse response = 지하철역_등록("강남역");
         long createdStationId = getJsonPathForResponse(response)
                 .getLong("id");
 
@@ -114,7 +114,7 @@ public class StationAcceptanceTest {
         assertThat(numberOfStations).isEqualTo(0);
     }
 
-    public static ValidatableResponse 지하철역_등록_요청(String name) {
+    public static ValidatableResponse 지하철역_등록(String name) {
         StationRequest request = new StationRequest(name);
 
         return RestAssured.given().log().all()
@@ -124,7 +124,7 @@ public class StationAcceptanceTest {
                 .then().log().all();
     }
 
-    private static void 요청_결과_검증(ValidatableResponse response, HttpStatus status) {
+    private static void 응답_검증(ValidatableResponse response, HttpStatus status) {
         assertThat(response.extract().statusCode()).isEqualTo(status.value());
     }
 
