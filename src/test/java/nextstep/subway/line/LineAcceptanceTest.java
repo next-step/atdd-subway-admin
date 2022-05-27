@@ -62,12 +62,12 @@ class LineAcceptanceTest {
 
         // then
         ExtractableResponse<Response> getResponse = 지하철_노선_목록_조회();
+        List<LineResponse> responses = toList(getResponse);
+        LineResponse result = responses.get(0);
 
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(convertToFiledName(getResponse, "name")).containsAnyOf("2호선");
-        assertThat(convertToFiledName(getResponse, "color")).containsAnyOf("yellow");
-        assertThat(convertToFiledName(getResponse, "distance").size()).isEqualTo(10L);
-        assertThat(convertToFiledName(getResponse, "stations").size()).isEqualTo(2);
+        assertThat(responses).hasSize(1);
+        assertThat(result.getName()).isEqualTo("2호선");
     }
 
     /**
@@ -212,27 +212,27 @@ class LineAcceptanceTest {
     }
 
 
-    private Long toId(ExtractableResponse<Response> response) {
+    private Long toLineId(ExtractableResponse<Response> response) {
         return response.as(LineResponse.class).getId();
     }
 
-    private String toName(ExtractableResponse<Response> response) {
+    private String toLineName(ExtractableResponse<Response> response) {
         return response.as(LineResponse.class).getName();
     }
 
-    private String toColor(ExtractableResponse<Response> response) {
+    private String toLineColor(ExtractableResponse<Response> response) {
         return response.as(LineResponse.class).getColor();
     }
 
-    private List<String> convertToFiledName(ExtractableResponse<Response> response, String field) {
-        return response.jsonPath().getList(field, String.class);
+    private Long toLineDistance(ExtractableResponse<Response> response) {
+        return response.as(LineResponse.class).getDistance();
     }
 
-    private List<LineResponse> convertToDTOS(ExtractableResponse<Response> response) {
+//    private List<String> convertToFiledName(ExtractableResponse<Response> response, String field) {
+//        return response.jsonPath().getList(field, String.class);
+//    }
+
+    private List<LineResponse> toList(ExtractableResponse<Response> response) {
         return response.jsonPath().getList("", LineResponse.class);
-    }
-
-    private LineResponse convertToDTO(ExtractableResponse<Response> response) {
-        return response.jsonPath().getObject("", LineResponse.class);
     }
 }
