@@ -32,9 +32,17 @@ class LineAcceptanceTest {
     @Autowired
     DataInitializer dataInitializer;
 
+    private Long 대림역_id;
+    private Long 신대방역_id;
+    private Long 강남역_id;
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+
+        대림역_id = toStationId(지하철역_생성("대림역"));
+        신대방역_id = toStationId(지하철역_생성("신대방역"));
+        강남역_id = toStationId(지하철역_생성("강남역"));
     }
 
     @AfterEach
@@ -51,11 +59,7 @@ class LineAcceptanceTest {
     @Test
     void createStation() {
         // when
-        Long 대림역_id = toStationId(지하철역_생성("대림역"));
-        Long 신대방역_id = toStationId(지하철역_생성("신대방역"));
-
-        LineRequest lineRequest = LineRequest.of("2호선", "yellow", 대림역_id, 신대방역_id, 10L);
-        ExtractableResponse<Response> saveResponse = 지하철_노선_생성(lineRequest);
+        ExtractableResponse<Response> saveResponse = 지하철_노선_생성("2호선", "yellow", 대림역_id, 신대방역_id, 10L);
 
         // then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -79,21 +83,20 @@ class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-//        지하철_노선_생성("3호선", "red");
-//        지하철_노선_생성("1호선", "blue");
-//
-//        // when
-//        ExtractableResponse<Response> response = 지하철_노선_목록_조회();
-//
-//        // then
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-//        assertThat(convertToDTOS(response)).hasSize(2);
+        지하철_노선_생성("2호선", "yellow", 대림역_id, 신대방역_id, 10L);
+        지하철_노선_생성("신분당선", "red", 대림역_id, 강남역_id, 15L);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(toLineNames(response)).hasSize(2);
+        assertThat(toLineNames(response)).containsAnyOf("2호선", "신분당선");
     }
 
     /**
-     * given 지하철 노선을 생성하고
-     * when 생성한 지하철 노선을 조회하면
-     * Then 생성한 지하촐 노선의 정보를 응답받을 수 있다.
+     * given 지하철 노선을 생성하고 when 생성한 지하철 노선을 조회하면 Then 생성한 지하촐 노선의 정보를 응답받을 수 있다.
      */
     @DisplayName("지하철 노선을 조회한다.")
     @Test
@@ -111,9 +114,7 @@ class LineAcceptanceTest {
     }
 
     /**
-     * given 지하철 노선을 생성하고
-     * when 생성한 지하철 노선을 수정하면
-     * Then 해당 지하철 노선 정보는 수정된다
+     * given 지하철 노선을 생성하고 when 생성한 지하철 노선을 수정하면 Then 해당 지하철 노선 정보는 수정된다
      */
     @DisplayName("지하철 노선을 수정한다.")
     @Test
@@ -133,9 +134,7 @@ class LineAcceptanceTest {
     }
 
     /**
-     * given 지하철 노선을 생성하고
-     * when 생성한 지하철 노선을 삭제하면
-     * Then 해당 지하철 노선 정보는 삭제된다
+     * given 지하철 노선을 생성하고 when 생성한 지하철 노선을 삭제하면 Then 해당 지하철 노선 정보는 삭제된다
      */
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
@@ -153,13 +152,13 @@ class LineAcceptanceTest {
 
     /**
      * 전달받은 지하철역 목록을 저장한다
-     * @param name 노선 이름
+     *
+     * @param name  노선 이름
      * @param color 노선 색상
      */
-    private ExtractableResponse<Response> 지하철_노선_생성(LineRequest lineRequest) {
-//        Map<String, String> params = new HashMap<>();
-//        params.put("name", name);
-//        params.put("color", color);
+    private ExtractableResponse<Response> 지하철_노선_생성(String name, String color, Long upStationId,
+        Long downStationId, Long distance) {
+        LineRequest lineRequest = LineRequest.of(name, color, upStationId, downStationId, distance);
 
         return RestAssured.given().log().all()
             .body(lineRequest)
@@ -224,13 +223,9 @@ class LineAcceptanceTest {
         return response.as(LineResponse.class).getColor();
     }
 
-    private Long toLineDistance(ExtractableResponse<Response> response) {
-        return response.as(LineResponse.class).getDistance();
+    private List<String> toLineNames(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList("name", String.class);
     }
-
-//    private List<String> convertToFiledName(ExtractableResponse<Response> response, String field) {
-//        return response.jsonPath().getList(field, String.class);
-//    }
 
     private List<LineResponse> toList(ExtractableResponse<Response> response) {
         return response.jsonPath().getList("", LineResponse.class);
