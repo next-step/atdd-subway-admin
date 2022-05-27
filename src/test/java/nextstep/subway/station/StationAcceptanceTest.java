@@ -153,18 +153,18 @@ public class StationAcceptanceTest {
             .containsExactly("역삼역");
     }
 
-    private void 지하철역지우기(long 지하철역_id) {
-        RestAssured.given().log().all()
+    private ExtractableResponse<Response> 지하철역지우기(long 지하철역_id) {
+        return RestAssured.given().log().all()
             .body("")
             .when().delete("/stations/" + 지하철역_id)
-            .then().log().all();
+            .then().log().all()
+            .extract();
     }
 
     /**
      * Given 지하철역을 생성하고
      * When 똑같은 이름의 지하철을 생성하면
-     * Then 생성이 되지 않고 에러(400)이 발생한다
-     */
+     * Then 생성이 되지 않고 에러(400)이 발생한다     */
     @Test
     @DisplayName("중복된 지하철이름을 저장시 에러가 발생한다")
     public void 지하철중복저장하기(){
