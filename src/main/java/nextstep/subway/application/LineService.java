@@ -1,8 +1,9 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.*;
+import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.dto.*;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
@@ -23,10 +24,12 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        List<StationResponse> stations = toStationsResponse(Arrays.asList(lineRequest.getUpStationId(), lineRequest.getDownStationId()));
-        Line persistLine = lineRepository.save(lineRequest.toLine(new Station(stations.get(0)), new Station(stations.get(1))));
+        Station upStation = getStation(lineRequest.getUpStationId());
+        Station downStation = getStation(lineRequest.getDownStationId());
 
-        return LineResponse.of(persistLine, stations);
+        Line persistLine = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation));
+
+        return LineResponse.of(persistLine);
     }
 
     @Transactional(readOnly = true)
@@ -34,14 +37,14 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(line -> LineResponse.of(line, toStationsResponse(toStationIds(line))))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLineById(Long id) {
         Line line = findById(id);
-        return LineResponse.of(line, toStationsResponse(toStationIds(line)));
+        return LineResponse.of(line);
     }
 
     @Transactional
@@ -60,14 +63,7 @@ public class LineService {
         return lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException("해당 지하철 노선을 찾을 수 없습니다."));
     }
 
-    private List<Long> toStationIds(Line line) {
-        return Arrays.asList(line.getUpStation().getId(), line.getDownStation().getId());
-    }
-
-    private List<StationResponse> toStationsResponse(List<Long> stationIds) {
-        List<Station> stations = new ArrayList<>();
-        stationIds.forEach(stationId -> stations.add(stationRepository.findById(stationId).orElseThrow(() -> new NoSuchElementException("해당 지하철 역을 찾을 수 없습니다."))));
-
-        return stations.stream().map(StationResponse::of).collect(Collectors.toList());
+    private Station getStation(Long lineRequest) {
+        return stationRepository.findById(lineRequest).orElseThrow(() -> new NoSuchElementException("해당 지하철 역을 찾을 수 없습니다."));
     }
 }
