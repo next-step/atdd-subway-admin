@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 @ActiveProfiles(value = "test")
 public class DataInitializer {
     private static final String TRUNCATE_COMMAND = "truncate table ";
+    private static final String FOREIGN_KEY_CHECKS_UNLOCK = "SET FOREIGN_KEY_CHECKS = 0";
+    private static final String FOREIGN_KEY_CHECKS_LOCK = "SET FOREIGN_KEY_CHECKS = 1";
 
     @PersistenceContext
     EntityManager entityManager;
@@ -22,8 +24,12 @@ public class DataInitializer {
     }
 
     private void executeQuery(String... names) {
+        entityManager.createNativeQuery(FOREIGN_KEY_CHECKS_UNLOCK).executeUpdate();
+
         for (String name : names) {
             entityManager.createNativeQuery(TRUNCATE_COMMAND + name).executeUpdate();
         }
+
+        entityManager.createNativeQuery(FOREIGN_KEY_CHECKS_LOCK).executeUpdate();
     }
 }
