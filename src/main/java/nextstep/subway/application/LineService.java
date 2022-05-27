@@ -44,14 +44,14 @@ public class LineService {
         return LineResponse.of(line);
     }
 
-//    @Transactional
-//    public LineResponse updateLine(Long id, LineRequest lineRequest) {
-//        Line line = lineRepository.findById(id)
-//            .orElseThrow(() -> new NoSuchElementException("지하철 노선을 찾을 수 없습니다."));
-//        line.update(lineRequest);
-//
-//        return LineResponse.of(line);
-//    }
+    @Transactional
+    public LineResponse updateLine(Long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("지하철 노선을 찾을 수 없습니다."));
+        line.update(lineRequest);
+
+        return LineResponse.of(line);
+    }
 
     @Transactional
     public void deleteLine(Long id) {
