@@ -3,9 +3,9 @@ package nextstep.subway.line;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
 import java.util.List;
 import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
@@ -27,6 +27,8 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         LineRequest 신분당선 = LineRequest.of("신분당선", "bg-red-600", 1L, 2L, 10);
         ExtractableResponse<Response> 노선_생성_요청_응답 = 노선_생성_요청(신분당선);
         노선_생성_성공_확인(노선_생성_요청_응답);
+        List<String> 노선_이름_목록 = 노선_이름_목록을_구한다();
+        노선이름_포함_확인(노선_이름_목록, "신분당선");
     }
 
     private ExtractableResponse<Response> 노선_생성_요청(LineRequest line) {
@@ -36,6 +38,13 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
                 .when().post("/lines")
                 .then().log().all()
                 .extract();
+    }
+
+    private List<String> 노선_이름_목록을_구한다() {
+        return 노선_조회_요청().jsonPath().getList("name", String.class);
+    }
+    private void 노선이름_포함_확인(List<String> lineNames, String... lineName) {
+        assertThat(lineNames).containsAll(Arrays.asList(lineName));
     }
 
     private void 노선_생성_성공_확인(ExtractableResponse<Response> response) {
