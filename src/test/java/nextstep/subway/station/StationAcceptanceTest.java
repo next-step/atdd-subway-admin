@@ -36,15 +36,15 @@ public class StationAcceptanceTest {
      */
     @DisplayName("지하철역을 생성한다.")
     @Test
-    void createStation() {
+    void 지하철역_생성하기_테스트() {
         // when
-        ExtractableResponse<Response> 지하철역만들기_response = 지하철역만들기("강남역");
+        ExtractableResponse<Response> 지하철역_만들기_response = 지하철역_만들기("강남역");
         // then
-        assertThat(지하철역만들기_response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(지하철역_만들기_response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        ExtractableResponse<Response> 지하철역조회하기_response = 지하철목록_조회하기();
-        List<String> stationNames = 지하철역조회하기_response.jsonPath().getList("name", String.class);
+        ExtractableResponse<Response> 지하철역_조회하기_response = 지하철목록_조회하기();
+        List<String> stationNames = 지하철역_조회하기_response.jsonPath().getList("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -55,25 +55,25 @@ public class StationAcceptanceTest {
      */
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
-    void createStationWithDuplicateName() {
+    void 지하철역_중복으로_생성하기_테스트() {
         // given
-        지하철역만들기("강남역");
+        지하철역_만들기("강남역");
 
         // when
-        ExtractableResponse<Response> 지하철중복으로만들기_response = 지하철역만들기("강남역");
+        ExtractableResponse<Response> 지하철_중복으로_만들기_response = 지하철역_만들기("강남역");
         // then
-        assertThat(지하철중복으로만들기_response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(지하철_중복으로_만들기_response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
      * Given 2개의 지하철역을 생성하고 When 지하철역 목록을 조회하면 Then 2개의 지하철역을 응답 받는다
      */
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("지하철역들을 조회한다.")
     @Test
-    void getStations() {
+    void 지하철역_리스트_조회하기_테스트() {
         //given
-        지하철역만들기("강남역");
-        지하철역만들기("양재역");
+        지하철역_만들기("강남역");
+        지하철역_만들기("양재역");
 
         //when
         ExtractableResponse<Response> response = 지하철목록_조회하기();
@@ -94,11 +94,11 @@ public class StationAcceptanceTest {
      */
     @DisplayName("지하철역을 제거한다.")
     @Test
-    void deleteStation() {
-        지하철역만들기("강남역"); //id 1
-        지하철역만들기("역삼역"); //id 2
+    void 지하철역_지우기_테스트() {
+        지하철역_만들기("강남역"); //id 1
+        지하철역_만들기("역삼역"); //id 2
 
-        지하철역지우기(1);
+        지하철역_지우기(1);
 
         ExtractableResponse<Response> response = 지하철목록_조회하기();
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -117,10 +117,10 @@ public class StationAcceptanceTest {
      * Then 생성이 되지 않고 에러(400)이 발생한다     */
     @Test
     @DisplayName("중복된 지하철이름을 저장시 에러가 발생한다")
-    public void 지하철중복저장하기(){
+    public void 지하철_중복_저장하기_테스트(){
 
-        ExtractableResponse<Response> responseOk = 지하철역만들기("강남역");
-        ExtractableResponse<Response> response = 지하철역만들기("강남역");
+        ExtractableResponse<Response> responseOk = 지하철역_만들기("강남역");
+        ExtractableResponse<Response> response = 지하철역_만들기("강남역");
 
         assertThat(responseOk.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -132,28 +132,28 @@ public class StationAcceptanceTest {
      * */
     @Test
     @DisplayName("저장되지 않은 지하철역을 삭제시 에러 발생한다.")
-    public void 없는지하철역삭제하기(){
+    public void 없는_지하철역_삭제하기_테스트(){
 
-        ExtractableResponse<Response> response = 지하철역지우기(10);
+        ExtractableResponse<Response> response = 지하철역_지우기(10);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     @Test
     @DisplayName("지하철 저장 후 수정이 가능해야한다")
-    public void 지하철수정하기() {
+    public void 지하철_수정하기_테스트() {
         //given
-        ExtractableResponse<Response> 강남역 = 지하철역만들기("강남역");
+        ExtractableResponse<Response> 강남역 = 지하철역_만들기("강남역");
         long 강남역_ID = Integer.toUnsignedLong(강남역.jsonPath().get("id"));
         ExtractableResponse<Response> 강남역상세 = 지하철상세_조회하기(강남역_ID);
 
         assertThat(강남역상세.jsonPath().get("name").toString()).isEqualTo("강남역");
 
-        ExtractableResponse<Response> 강남역_수정결과 = 지하철역수정하기(String.valueOf(강남역_ID), "강남역수정");
+        ExtractableResponse<Response> 강남역_수정결과 = 지하철역_수정하기(String.valueOf(강남역_ID), "강남역수정");
         assertThat(강남역_수정결과.jsonPath().get("name").toString()).isEqualTo("강남역수정");
 
     }
 
-    private ExtractableResponse<Response> 지하철역만들기(String 생성할_지하철역_이름) {
+    private ExtractableResponse<Response> 지하철역_만들기(String 생성할_지하철역_이름) {
         Map<String, String> params = new HashMap<>();
         params.put("name", 생성할_지하철역_이름);
         return RestAssured.given().log().all()
@@ -164,7 +164,7 @@ public class StationAcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> 지하철역지우기(long 지하철역_id) {
+    private ExtractableResponse<Response> 지하철역_지우기(long 지하철역_id) {
         return RestAssured.given().log().all()
             .body("")
             .when().delete("/stations/" + 지하철역_id)
@@ -192,7 +192,7 @@ public class StationAcceptanceTest {
         return response;
     }
 
-    private ExtractableResponse<Response> 지하철역수정하기(String 지하철_ID, String 생성할_지하철역_이름) {
+    private ExtractableResponse<Response> 지하철역_수정하기(String 지하철_ID, String 생성할_지하철역_이름) {
         Map<String, String> params = new HashMap<>();
         params.put("name", 생성할_지하철역_이름);
         params.put("id",지하철_ID);
