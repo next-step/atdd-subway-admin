@@ -41,13 +41,15 @@ public class StationAcceptanceTest {
         ValidatableResponse response = 지하철역_등록_요청("강남역");
 
         // then
-        assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        요청_결과_검증(response, HttpStatus.CREATED);
 
         // then
         List<String> stationNames = getJsonPathForResponse(getResponseForStationList())
                 .getList("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
     }
+
+
 
     /**
      * Given 지하철역을 생성하고
@@ -109,7 +111,7 @@ public class StationAcceptanceTest {
         assertThat(numberOfStations).isEqualTo(0);
     }
 
-    private static ValidatableResponse 지하철역_등록_요청(String name) {
+    public static ValidatableResponse 지하철역_등록_요청(String name) {
         StationRequest request = new StationRequest(name);
 
         return RestAssured.given().log().all()
@@ -117,6 +119,10 @@ public class StationAcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all();
+    }
+
+    private static void 요청_결과_검증(ValidatableResponse response, HttpStatus status) {
+        assertThat(response.extract().statusCode()).isEqualTo(status.value());
     }
 
     private static void getResponseForStationDelete(long stationId) {
