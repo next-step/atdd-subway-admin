@@ -1,7 +1,6 @@
 package nextstep.subway.station;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.atIndex;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -30,7 +29,7 @@ public class StationAcceptanceTest {
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
-    }용
+    }
 
     /**
      * When 지하철역을 생성하면 Then 지하철역이 생성된다 Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
