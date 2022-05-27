@@ -111,4 +111,13 @@ class LineServiceTest {
                 () -> assertThat(lineResponse.getStations().get(0)).isEqualTo(StationResponse.of(upStation))
         );
     }
+
+    @DisplayName("노선 조회시 없을 경우 예외 테스트")
+    @Test
+    void findLineByIdException() {
+        when(lineRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> lineService.findLineById(1L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("등록된 노선이 없습니다.");
+    }
 }
