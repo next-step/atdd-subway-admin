@@ -7,6 +7,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,17 +17,29 @@ import org.springframework.transaction.annotation.Transactional;
 public class LineService {
 
     public static final String NO_LINE_ERROR = "접근 하는 노선이 존재 하지 않습니다.";
+    public static final String NO_STATION_ERROR = "접근 하는 지하철역이 존재 하지 않습니다.";
+    
     private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
-        Line line = request.convertToLine();
+        Station upStation = getStation(request.getUpStationId());
+        Station downStation = getStation(request.getDownStationId());
+        Line line = request.convertToLine(upStation, downStation);
         Line savedLine = lineRepository.save(line);
         return LineResponse.of(savedLine);
+    }
+
+    private Station getStation(Long id) {
+        return stationRepository.findById(id).orElseThrow(
+                () -> new NoSuchElementException(NO_STATION_ERROR)
+        );
     }
 
     public List<LineResponse> findAllLines() {
@@ -47,7 +61,7 @@ public class LineService {
         Line line = lineRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException(NO_LINE_ERROR)
         );
-        line.update(lineRequest.convertToLine());
+        line.update(lineRequest.getName(), lineRequest.getColor());
     }
 
     @Transactional
