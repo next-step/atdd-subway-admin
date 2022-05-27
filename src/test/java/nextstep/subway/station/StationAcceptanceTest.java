@@ -38,13 +38,14 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ValidatableResponse response = 지하철역_등록_요청("강남역");
+        ValidatableResponse createResponse = 지하철역_등록_요청("강남역");
 
         // then
-        요청_결과_검증(response, HttpStatus.CREATED);
+        요청_결과_검증(createResponse, HttpStatus.CREATED);
 
         // then
-        List<String> stationNames = getJsonPathForResponse(getResponseForStationList())
+        ValidatableResponse listResponse = 지하철역_목록_조회();
+        List<String> stationNames = getJsonPathForResponse(listResponse)
                 .getList("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
     }
@@ -82,7 +83,8 @@ public class StationAcceptanceTest {
         지하철역_등록_요청("강남역");
 
         // when
-        int numberOfStations = getJsonPathForResponse(getResponseForStationList())
+        ValidatableResponse listResponse = 지하철역_목록_조회();
+        int numberOfStations = getJsonPathForResponse(listResponse)
                 .getList("$").size();
 
         // then
@@ -106,7 +108,8 @@ public class StationAcceptanceTest {
         getResponseForStationDelete(createdStationId);
 
         // then
-        int numberOfStations = getJsonPathForResponse(getResponseForStationList())
+        ValidatableResponse listResponse = 지하철역_목록_조회();
+        int numberOfStations = getJsonPathForResponse(listResponse)
                 .getList("$").size();
         assertThat(numberOfStations).isEqualTo(0);
     }
@@ -125,6 +128,12 @@ public class StationAcceptanceTest {
         assertThat(response.extract().statusCode()).isEqualTo(status.value());
     }
 
+    private static ValidatableResponse 지하철역_목록_조회() {
+        return RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all();
+    }
+
     private static void getResponseForStationDelete(long stationId) {
         RestAssured.given().log().all()
                 .pathParam("id", stationId)
@@ -134,11 +143,5 @@ public class StationAcceptanceTest {
 
     private static JsonPath getJsonPathForResponse(ValidatableResponse response) {
         return response.extract().jsonPath();
-    }
-
-    private static ValidatableResponse getResponseForStationList() {
-        return RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all();
     }
 }
