@@ -1,6 +1,7 @@
 package nextstep.subway.station;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.atIndex;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -29,7 +30,7 @@ public class StationAcceptanceTest {
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
-    }
+    }용
 
     /**
      * When 지하철역을 생성하면 Then 지하철역이 생성된다 Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
@@ -38,26 +39,13 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        ExtractableResponse<Response> response =
-            RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> 지하철역만들기_response = 지하철역만들기("강남역");
+        // then
+        assertThat(지하철역만들기_response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        // then
-        List<String> stationNames =
-            RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract().jsonPath().getList("name", String.class);
+        ExtractableResponse<Response> 지하철역조회하기_response = 지하철역조회하기();
+        List<String> stationNames = 지하철역조회하기_response.jsonPath().getList("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -68,26 +56,12 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/stations")
-            .then().log().all();
+        지하철역만들기("강남역");
 
         // when
-        ExtractableResponse<Response> response =
-            RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
-
+        ExtractableResponse<Response> 지하철중복으로만들기_response = 지하철역만들기("강남역");
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(지하철중복으로만들기_response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -119,6 +93,7 @@ public class StationAcceptanceTest {
             .when().get("/stations")
             .then().log().all()
             .extract();
+
         return response;
     }
 
