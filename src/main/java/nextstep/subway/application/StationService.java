@@ -1,10 +1,11 @@
 package nextstep.subway.application;
 
-import javassist.NotFoundException;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.exception.CustomException;
+import nextstep.subway.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +15,6 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class StationService {
-    public static final String STATION_NOT_FOUND = "역을 찾을 수 없습니다.";
     private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
@@ -36,9 +36,9 @@ public class StationService {
     }
 
     @Transactional(readOnly = true)
-    public Station findById(Long id) throws NotFoundException {
+    public Station findById(Long id) {
         return stationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(STATION_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.STATION_NOT_FOUND));
     }
 
 

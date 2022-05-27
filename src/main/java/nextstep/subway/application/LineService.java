@@ -1,11 +1,12 @@
 package nextstep.subway.application;
 
-import javassist.NotFoundException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.exception.CustomException;
+import nextstep.subway.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +15,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class LineService {
-    public static final String LINE_NOT_FOUND = "노선을 찾을 수 없습니다.";
     private final LineRepository lineRepository;
     private final StationService stationService;
 
@@ -24,7 +24,7 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse saveLine(LineRequest lineRequest) throws NotFoundException {
+    public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = stationService.findById(lineRequest.getUpStationId());
         Station downStation = stationService.findById(lineRequest.getDownStationId());
 
@@ -43,14 +43,14 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse findByLine(Long id) throws NotFoundException {
+    public LineResponse findByLine(Long id) {
         Line line = findById(id);
 
         return LineResponse.of(line);
     }
 
     @Transactional
-    public void updateLine(Long id, LineRequest lineRequest) throws NotFoundException {
+    public void updateLine(Long id, LineRequest lineRequest) {
         Line line = findById(id);
         Station upStation = getStation(lineRequest.getUpStationId());
         Station downStation = getStation(lineRequest.getDownStationId());
@@ -58,15 +58,15 @@ public class LineService {
         line.update(lineRequest, upStation, downStation);
     }
 
-    private Station getStation(Long stationId) throws NotFoundException {
+    private Station getStation(Long stationId) {
         if (stationId == null) {
             return null;
         }
         return stationService.findById(stationId);
     }
 
-    private Line findById(Long id) throws NotFoundException {
+    private Line findById(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.LINE_NOT_FOUND));
     }
 }
