@@ -10,13 +10,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.MethodMode;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -26,9 +32,13 @@ import nextstep.subway.domain.Line;
 
 @DisplayName("노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(methodMode = MethodMode.BEFORE_METHOD)
 public class LineAcceptanceTest {
 	private static final String BASIC_URL_LINES = "/lines";
 
+    @PersistenceUnit
+    private EntityManagerFactory entityManagerFactory;
+    
 	@LocalServerPort
 	int port;
 
@@ -37,6 +47,14 @@ public class LineAcceptanceTest {
 		if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
 			RestAssured.port = port;
 		}
+	}
+	
+	@AfterEach
+	public void cleanup() {
+	    EntityManager em = entityManagerFactory.createEntityManager();
+	    em.getTransaction().begin();
+	    em.createNativeQuery("truncate table Line").executeUpdate();
+	    em.getTransaction().commit();
 	}
 
 	/**

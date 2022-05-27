@@ -7,6 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +30,9 @@ import nextstep.subway.domain.Station;
 public class StationAcceptanceTest {
 	private static final String BASIC_URL_STATIONS = "/stations";
 
+    @PersistenceUnit
+    private EntityManagerFactory entityManagerFactory;
+    
 	@LocalServerPort
 	int port;
 
@@ -33,6 +41,14 @@ public class StationAcceptanceTest {
 		if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
 			RestAssured.port = port;
 		}
+	}
+	
+	@AfterEach
+	public void cleanup() {
+	    EntityManager em = entityManagerFactory.createEntityManager();
+	    em.getTransaction().begin();
+	    em.createNativeQuery("truncate table Station").executeUpdate();
+	    em.getTransaction().commit();
 	}
 
 	/**
