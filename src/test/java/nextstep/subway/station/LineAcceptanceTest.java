@@ -156,6 +156,22 @@ public class LineAcceptanceTest {
     @DisplayName("지하철노선을 삭제한다.")
     @Test
     void deleteStation() {
+        // given
+        LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        ExtractableResponse<Response> created = createLine(request);
+        assertThat(created.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
+        // when
+        ExtractableResponse<Response> response = deleteStation(created.jsonPath().getLong("id"));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    ExtractableResponse<Response> deleteStation(Long id) {
+        return RestAssured.given().log().all()
+                          .when().delete("/lines/{id}", id)
+                          .then().log().all()
+                          .extract();
     }
 }

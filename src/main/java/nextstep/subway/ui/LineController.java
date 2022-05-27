@@ -34,4 +34,10 @@ public class LineController {
         LineResponse response = lineService.getLine(id);
         return ResponseEntity.ok().body(response);
     }
+
+    @DeleteMapping("/lines/{id}")
+    public ResponseEntity deleteStation(@PathVariable Long id) {
+        lineService.deleteLineById(id);
+        return ResponseEntity.noContent().build();
+    }
 }
