@@ -49,4 +49,9 @@ public class LineService {
         );
         line.update(lineRequest.convertToLine());
     }
+
+    @Transactional
+    public void deleteLine(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
