@@ -1,13 +1,11 @@
 package nextstep.subway.domain;
 
-import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 @Entity
 public class Line extends BaseEntity {
@@ -17,23 +15,25 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections;
 
     protected Line() {}
 
-    private Line(String name, String color, Section section) {
+    private Line(String name, String color) {
         this.name = name;
         this.color = color;
-        addSection(section);
+        this.sections = new Sections();
     }
 
     public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
-        return new Line(name, color, Section.of(upStation, downStation, distance));
+        Line line = new Line(name, color);
+        line.addSection(Section.of(upStation, downStation, distance));
+        return line;
     }
 
     public void addSection(Section section) {
-        this.sections.add(section);
+        this.sections.addSection(section);
         section.addLine(this);
     }
 
@@ -55,6 +55,6 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 }
