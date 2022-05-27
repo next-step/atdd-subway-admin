@@ -101,7 +101,50 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        지하철역_생성("강남역");
+        지하철역_생성("판교역");
+
+        ExtractableResponse<Response> response = 지하철역_조회();
+        assertThat(response.jsonPath().getList(".").size()).isEqualTo(2);
     }
+
+    private ExtractableResponse<Response> 지하철역_생성(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        ExtractableResponse<Response> createdResponse =
+                RestAssured.given().log().all()
+                        .body(params)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().post("/stations")
+                        .then().log().all()
+                        .extract();
+
+        지하철역_생성_검증(createdResponse);
+
+        return createdResponse;
+    }
+
+    private void 지하철역_생성_검증(ExtractableResponse<Response> createdResponse) {
+        assertThat(createdResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private ExtractableResponse<Response> 지하철역_조회() {
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                        .when().get("/stations")
+                        .then().log().all()
+                        .extract();
+
+        지하철역_조회_검증(response);
+
+        return response;
+    }
+
+    private void 지하철역_조회_검증(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
 
     /**
      * Given 지하철역을 생성하고
