@@ -13,7 +13,7 @@ public class Line extends BaseEntity {
     @Column
     private String color;
     @Column
-    private int distance;
+    private Integer distance;
 
     @OneToOne
     @JoinColumn(name = "up_station_id")
@@ -61,7 +61,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public int getDistance() {
+    public Integer getDistance() {
         return distance;
     }
 
@@ -82,23 +82,13 @@ public class Line extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return distance == line.distance &&
-                Objects.equals(name, line.name) &&
-                Objects.equals(color, line.color);
+        return name.equals(line.name) &&
+                color.equals(line.color) &&
+                distance.equals(line.distance);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(name, color, distance);
-    }
-
-    @Override
-    public String toString() {
-        return "Line{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", color='" + color + '\'' +
-                ", distance=" + distance +
-                '}';
     }
 }
