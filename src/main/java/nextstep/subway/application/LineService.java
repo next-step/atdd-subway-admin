@@ -23,10 +23,10 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        List<StationResponse> stationsResponse = toStationsResponse(Arrays.asList(lineRequest.getUpStationId(), lineRequest.getDownStationId()));
-        Line persistLine = lineRepository.save(lineRequest.toLine(new Station(stationsResponse.get(0)), new Station(stationsResponse.get(1))));
+        List<StationResponse> stations = toStationsResponse(Arrays.asList(lineRequest.getUpStationId(), lineRequest.getDownStationId()));
+        Line persistLine = lineRepository.save(lineRequest.toLine(new Station(stations.get(0)), new Station(stations.get(1))));
 
-        return LineResponse.of(persistLine, stationsResponse);
+        return LineResponse.of(persistLine, stations);
     }
 
     @Transactional(readOnly = true)
