@@ -37,6 +37,11 @@ public class Line extends BaseEntity {
         section.addLine(this);
     }
 
+    public void updateLine(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
     public Long getId() {
         return id;
     }

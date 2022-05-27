@@ -48,4 +48,11 @@ public class LineService {
                 .orElseThrow(() -> new IllegalStateException("해당 노선은 존재하지 않습니다."));
         return LineResponse.of(line);
     }
+
+    @Transactional
+    public void updateLineInfo(Long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("해당 노선은 존재하지 않습니다."));
+        line.updateLine(lineRequest.getName(), lineRequest.getColor());
+    }
 }
