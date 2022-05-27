@@ -20,24 +20,24 @@
 ### 지하철 구간 등록 인수 테스트 작성과 기능 구현
 - **역 사이에 새로운 역을 등록할 경우**
   - 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정
-  ![step3_image1](step3_image1.png)
+  ![step3_image1](image/step3_image1.png)
 
 - **새로운 역을 상행 종점으로 등록할 경우**
-  ![step3_image2](step3_image2.png)
+  ![step3_image2](image/step3_image2.png)
 
 - **새로운 역을 하행 종점으로 등록할 경우**
-  ![step3_image3](step3_image3.png)
+  ![step3_image3](image/step3_image3.png)
 
 ### 구간 등록 시 예외 케이스를 고려하기
 - **역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음**
-  ![step4_image4](step3_image4.png)
+  ![step4_image4](image/step3_image4.png)
 
 - **상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음**
   - 아래의 이미지 에서 A-B, B-C 구간이 등록된 상황에서 B-C 구간을 등록할 수 없음(A-C 구간도 등록할 수 없음)
-  ![step3_image5](step3_image5.png)
+  ![step3_image5](image/step3_image5.png)
 
 - **상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음**
-  ![step3_image6](step3_image6.png)
+  ![step3_image6](image/step3_image6.png)
 
 ### 기능 구현 팁
 세부적인 예외 상황을 고려하지 않고 Happy Path 경우를 검증하기 위한 인수 테스트를 먼저 만드세요.
