@@ -101,6 +101,30 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        //Given
+        지하철을_생성한다("강남역");
+        지하철을_생성한다("역삼역");
+
+        //When
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .when().get("/stations").then().log().all().extract();
+
+        //Then
+        assertThat(response.jsonPath().getList(".").size()).isEqualTo(2);
+
+    }
+
+    private ExtractableResponse<Response> 지하철을_생성한다(String name) {
+        Map<String,String> params = new HashMap<>();
+        params.put("name",name);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract();
     }
 
     /**
