@@ -175,4 +175,16 @@ public class StationAcceptanceTest {
         assertThat(responseOk.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * when 없는 지하철을 삭제하면
+     * then 에러가 발생한다.
+     * */
+    @Test
+    @DisplayName("저장되지 않은 지하철역을 삭제시 에러 발생한다.")
+    public void 없는지하철역삭제하기(){
+
+        ExtractableResponse<Response> response = 지하철역지우기(10);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
 }
