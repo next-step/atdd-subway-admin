@@ -4,20 +4,19 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
 
 public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private List<Station> stations;
+    private List<StationResponse> stations;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, List<Station> stations, LocalDateTime createdDate,
+    public LineResponse(Long id, String name, String color, List<StationResponse> stations, LocalDateTime createdDate,
                         LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
@@ -28,7 +27,10 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        List<Station> stations = Arrays.asList(line.upStation(), line.downStation());
+        List<StationResponse> stations = Arrays.asList(
+                StationResponse.of(line.upStation()),
+                StationResponse.of(line.downStation())
+        );
         return new LineResponse(line.id(), line.name(), line.color(), stations, line.createdDate(),
                 line.updatedDate());
     }
@@ -45,7 +47,7 @@ public class LineResponse {
         return color;
     }
 
-    public List<Station> getStations() {
+    public List<StationResponse> getStations() {
         return stations;
     }
 
