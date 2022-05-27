@@ -78,6 +78,23 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         수정_확인(노선_수정_요청_응답);
     }
 
+    /**
+     * Given 지하철 노선을 생성하고 When 생성한 지하철 노선을 삭제하면 Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철노선 삭제")
+    @Test
+    void deleteLine() {
+        LineRequest 신분당선 = LineRequest.of("신분당선", "bg-red-600", 1L, 2L, 10);
+        ExtractableResponse<Response> 노선_생성_요청_응답 = 노선_생성_요청(신분당선);
+        long id = 노선의_id_구한다(노선_생성_요청_응답);
+        ExtractableResponse<Response> 노선_삭제_요청_응답 = 노선_삭제_요청(id);
+        삭제_확인(노선_삭제_요청_응답);
+    }
+
+    private void 삭제_확인(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
     private void 수정_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -108,6 +125,14 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
     private void 노선_생성_성공_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private ExtractableResponse<Response> 노선_삭제_요청(Long id) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/" + id)
+                .then().log().all()
+                .extract();
     }
 
     private ExtractableResponse<Response> 노선_수정_요청(Long id, LineRequest line) {
