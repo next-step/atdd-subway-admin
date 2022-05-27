@@ -31,8 +31,10 @@ class LineServiceTest {
     @InjectMocks
     private LineService lineService;
     LineRequest lineRequest;
+    LineRequest lineRequest2;
     LineResponse lineResponse;
     Line line;
+    Line line2;
     Station upStation;
     Station downStation;
 
@@ -49,7 +51,13 @@ class LineServiceTest {
                 .build()
                 .addUpStation(upStation)
                 .addDownStation(downStation);
+        line2 = Line.builder("신분당선", "bg-blue-600", 10)
+                .id(1L)
+                .build()
+                .addUpStation(upStation)
+                .addDownStation(downStation);
         lineRequest = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        lineRequest2 = new LineRequest("신분당선", "bg-blue-600", 1L, 2L, 10);
         lineResponse = LineResponse.of(line);
     }
 
@@ -66,6 +74,28 @@ class LineServiceTest {
         assertAll(
                 () -> assertThat(lineResponse.getId()).isNotNull(),
                 () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
+                () -> assertThat(lineResponse.getStations().get(0)).isEqualTo(StationResponse.of(upStation))
+        );
+    }
+
+    @DisplayName("노선 변경 테스트")
+    @Test
+    void updateLine() {
+        when(lineRepository.findByName(lineRequest2.getName())).thenReturn(Optional.of(line));
+        when(stationRepository.findById(lineRequest2.getUpStationId())).thenReturn(Optional.of(upStation));
+        when(stationRepository.findById(lineRequest2.getDownStationId())).thenReturn(Optional.of(downStation));
+        Line line = Line.builder(lineRequest2.getName(), lineRequest2.getColor(), lineRequest2.getDistance())
+                .id(1L)
+                .build()
+                .addUpStation(upStation)
+                .addDownStation(downStation);
+
+        when(lineRepository.save(line)).thenReturn(this.line2);
+        LineResponse lineResponse = lineService.updateLine(lineRequest2);
+        assertAll(
+                () -> assertThat(lineResponse.getId()).isNotNull(),
+                () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
+                () -> assertThat(lineResponse.getColor()).isEqualTo("bg-blue-600"),
                 () -> assertThat(lineResponse.getStations().get(0)).isEqualTo(StationResponse.of(upStation))
         );
     }
