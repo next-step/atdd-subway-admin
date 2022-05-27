@@ -19,16 +19,16 @@ public class RequestUtils {
                 .extract();
     }
 
-    public static List<ExtractableResponse<Response>> requestCreateBundle(String path,
-                                                                          List<Map<String, Object>> paramsBundle) {
+    public static List<ExtractableResponse<Response>> requestCreateBundle(List<Map<String, Object>> paramsBundle,
+                                                                          String path) {
         List<ExtractableResponse<Response>> responses = new ArrayList<>();
         for (Map<String, Object> params : paramsBundle) {
-            responses.add(requestCreate(path, params));
+            responses.add(requestCreate(params, path));
         }
         return responses;
     }
 
-    public static ExtractableResponse<Response> requestCreate(String path, Map<String, Object> params) {
+    public static ExtractableResponse<Response> requestCreate(Map<String, Object> params, String path) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

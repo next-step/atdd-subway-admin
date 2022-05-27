@@ -8,53 +8,59 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import nextstep.subway.test.DatabaseClean;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
-@Sql(scripts = "/drop_test_table.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LineAcceptanceTest {
 
-    private static final String LINE_PATH = "/lines";
-    private static final int SHIN_BUN_DANG_LINE = 0;
-    private static final List<Map<String, Object>> LINE_PARAMS_BUNDLES;
+    public static final String LINE_PATH = "/lines";
+
+    private static final Map<String, Object> 신분당선 = new HashMap<>();
+    private static final Map<String, Object> 분당선 = new HashMap<>();
+
+    private static boolean isFirst = true;
 
     static {
-        Map<String, Object> params1 = new HashMap<>();
-        Map<String, Object> params2 = new HashMap<>();
-        params1.put("name", "신분당선");
-        params1.put("color", "bg-red-6000");
-        params1.put("upStationId", 1);
-        params1.put("downStationId", 2);
-        params1.put("distance", 10);
+        신분당선.put("name", "신분당선");
+        신분당선.put("color", "bg-red-6000");
+        신분당선.put("distance", 10);
 
-        params2.put("name", "2호선");
-        params2.put("color", "bg-green-6000");
-        params2.put("upStationId", 1);
-        params2.put("downStationId", 2);
-        params2.put("distance", 10);
-        LINE_PARAMS_BUNDLES = Arrays.asList(params1, params2);
+        분당선.put("name", "분당선");
+        분당선.put("color", "bg-yellow-300");
+        분당선.put("distance", 10);
     }
 
     @LocalServerPort
     int port;
+
+    @Autowired
+    private DatabaseClean databaseClean;
 
     @BeforeEach
     void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
-        // 지하철역 2개 생성
-        requestCreateBundle(StationAcceptanceTest.STATION_PATH, StationAcceptanceTest.STATION_PARAMS_BUNDLES);
+        databaseClean.trancate("LINE");
+        if(isFirst){
+            Map<String,Object> 판교역 = new HashMap<>();
+            Map<String,Object> 정자역 = new HashMap<>();
+            판교역.put("name","판교역");
+            정자역.put("name","정자역");
+            신분당선.put("upStationId"  ,requestCreate(판교역, StationAcceptanceTest.STATION_PATH).jsonPath().getLong("id"));
+            신분당선.put("downStationId",requestCreate(정자역, StationAcceptanceTest.STATION_PATH).jsonPath().getLong("id"));
+
+            isFirst = false;
+        }
     }
 
     /**
@@ -68,8 +74,7 @@ class LineAcceptanceTest {
     void createLines() {
 
         //when
-        ExtractableResponse<Response> createResponse = requestCreate(LINE_PATH,
-                LINE_PARAMS_BUNDLES.get(SHIN_BUN_DANG_LINE));
+        ExtractableResponse<Response> createResponse = requestCreate(신분당선, LINE_PATH);
 
         //then
         노선_생성_및_지하철역들이_노선에_연결되었는지_검증(createResponse);
@@ -84,7 +89,7 @@ class LineAcceptanceTest {
 
     private void 노선_생성_및_지하철역들이_노선에_연결되었는지_검증(ExtractableResponse<Response> createResponse) {
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(createResponse.jsonPath().getList("stations.name")).contains("서울역", "강남역");
+        assertThat(createResponse.jsonPath().getList("stations.name")).contains("판교역", "정자역");
     }
 
     private void 목록_조회에서_생성한_노선이_있는지_검증(ExtractableResponse<Response> getResponse) {
@@ -102,7 +107,7 @@ class LineAcceptanceTest {
     void showLines() {
 
         //given
-        requestCreateBundle(LINE_PATH, LINE_PARAMS_BUNDLES);
+        requestCreateBundle(Arrays.asList(신분당선,분당선),LINE_PATH);
 
         //when
         ExtractableResponse<Response> response = requestGetAll(LINE_PATH);
@@ -114,7 +119,7 @@ class LineAcceptanceTest {
 
     private void 노선_목록_조회_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("name")).contains("신분당선", "2호선");
+        assertThat(response.jsonPath().getList("name")).contains("신분당선", "분당선");
     }
 
     /**
@@ -126,13 +131,17 @@ class LineAcceptanceTest {
     @Test
     void showLine() {
         //given
-        requestCreate(LINE_PATH, LINE_PARAMS_BUNDLES.get(SHIN_BUN_DANG_LINE));
+        ExtractableResponse<Response> createResponse = requestCreate(신분당선, LINE_PATH);
 
         //when
-        ExtractableResponse<Response> response = requestGetById(LINE_PATH, 1L);
+        ExtractableResponse<Response> response = requestGetById(LINE_PATH, extractId(createResponse));
 
         //then
         노선_개별_조회_검증(response);
+    }
+
+    private long extractId(ExtractableResponse<Response> createResponse) {
+        return createResponse.body().jsonPath().getLong("id");
     }
 
     private void 노선_개별_조회_검증(ExtractableResponse<Response> response) {
@@ -149,10 +158,10 @@ class LineAcceptanceTest {
     @Test
     void deleteLine() {
         //given
-        requestCreate(LINE_PATH, LINE_PARAMS_BUNDLES.get(SHIN_BUN_DANG_LINE));
+        ExtractableResponse<Response> createResponse = requestCreate(신분당선, LINE_PATH);
 
         //when
-        ExtractableResponse<Response> response = requestDeleteById(LINE_PATH, 1L);
+        ExtractableResponse<Response> response = requestDeleteById(LINE_PATH, extractId(createResponse));
 
         //then
         삭제된_노선_조회시_오류_응답_검증(response);
@@ -172,22 +181,23 @@ class LineAcceptanceTest {
     @Test
     void updateLine() {
         //given
-        requestCreate(LINE_PATH, LINE_PARAMS_BUNDLES.get(SHIN_BUN_DANG_LINE));
+        ExtractableResponse<Response> createResponse = requestCreate(신분당선, LINE_PATH);
 
         //when
-        Map<String, Object> lineParams = LINE_PARAMS_BUNDLES.get(SHIN_BUN_DANG_LINE);
-        lineParams.put("name", "분당선");
-        lineParams.put("color", "bg-yellow-600");
-        ExtractableResponse<Response> response = requestUpdateById(LINE_PATH, 1L, lineParams);
+        Map<String,Object> updateParams = new HashMap<>();
+        updateParams.put("name", "2호선");
+        updateParams.put("color", "bg-green-600");
+        ExtractableResponse<Response> response = requestUpdateById(LINE_PATH, extractId(createResponse), updateParams);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         //then
-        업데이트한_노선_정보가_변경되었는지_검증(response);
+        업데이트한_노선_정보가_변경되었는지_검증(createResponse,updateParams);
     }
 
-    private void 업데이트한_노선_정보가_변경되었는지_검증(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        ExtractableResponse<Response> getResponse = requestGetById(LINE_PATH, 1L);
-        assertThat(getResponse.jsonPath().getString("name")).contains("분당선");
-        assertThat(getResponse.jsonPath().getString("color")).contains("bg-yellow-600");
+    private void 업데이트한_노선_정보가_변경되었는지_검증(ExtractableResponse<Response> response,Map<String,Object> expect) {
+
+        ExtractableResponse<Response> getResponse = requestGetById(LINE_PATH, extractId(response));
+        assertThat(getResponse.jsonPath().getString("name")).isEqualTo(expect.get("name"));
+        assertThat(getResponse.jsonPath().getString("color")).isEqualTo(expect.get("color"));
     }
 }
