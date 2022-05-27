@@ -31,6 +31,10 @@ public class Line extends BaseEntity {
         this.distance = distance;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getName() {
         return name;
     }
@@ -41,6 +45,10 @@ public class Line extends BaseEntity {
 
     public int getDistance() {
         return distance;
+    }
+
+    public void updateDistance(int distance) {
+        this.distance = distance;
     }
 
     @Override
