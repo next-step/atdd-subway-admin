@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -64,7 +63,6 @@ public class StationAcceptanceTest {
 	 */
 	@DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
 	@Test
-	@Order(2)
 	void createStationWithDuplicateName() {
 		// given
 		지하철_생성_요청("강남역");

@@ -27,7 +27,7 @@ public class CustomExtractableResponse {
 				    .contentType(MediaType.APPLICATION_JSON_VALUE)
 				    .log().all()
 				.when()
-					.post("/stations")
+					.post(url)
 				.then()
 					.log().all()
 				.extract();
