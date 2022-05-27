@@ -25,14 +25,18 @@ class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
+    private Long firstStationId;
+    private Long secondStationId;
+    private Long thirdStationId;
+
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
-        createTestStation("지하철역");
-        createTestStation("새로운지하철역");
-        createTestStation("또다른지하철역");
+        firstStationId = createTestStation("지하철역").jsonPath().getLong("id");
+        secondStationId = createTestStation("새로운지하철역").jsonPath().getLong("id");
+        thirdStationId = createTestStation("또다른지하철역").jsonPath().getLong("id");
     }
 
     /**
@@ -43,7 +47,7 @@ class LineAcceptanceTest {
     @Test
     void createLineTest() {
         // when
-        createLine("신분당선", "bg-red-600", 10L, 1L, 2L);
+        createLine("신분당선", "bg-red-600", 10L, firstStationId, secondStationId);
 
         // then
         List<Object> lineNames = getLines()
@@ -61,8 +65,8 @@ class LineAcceptanceTest {
     @Test
     void getLinesTest() {
         // Given
-        createLine("신분당선", "bg-red-600", 10L, 1L, 2L);
-        createLine("분당선", "bg-green-600", 15L, 1L, 3L);
+        createLine("신분당선", "bg-red-600", 10L, firstStationId, secondStationId);
+        createLine("분당선", "bg-green-600", 15L, firstStationId, thirdStationId);
 
         // When
         List<Object> lineNames = getLines().jsonPath().getList("name");
@@ -80,7 +84,7 @@ class LineAcceptanceTest {
     @Test
     void getLineTest() {
         // Given
-        Long lineId = createLine("신분당선", "bg-red-600", 10L, 1L, 2L)
+        Long lineId = createLine("신분당선", "bg-red-600", 10L, firstStationId, secondStationId)
                 .jsonPath().getLong("id");
 
         // When
@@ -90,18 +94,46 @@ class LineAcceptanceTest {
         assertThat(name).isEqualTo("신분당선");
     }
 
-    private ExtractableResponse<Response> createLine(String name, String color, Long distance, Long upStationId, Long downStationId) {
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철노선 수정")
+    @Test
+    void updateLineTest() {
+        // Given
+        Long lineId = createLine("신분당선", "bg-red-600", 10L, firstStationId, thirdStationId)
+                .jsonPath().getLong("id");
+
+        // When
+        updateLine(lineId, "다른분당선", "bg-red-600", null, null, null);
+
+        // Then
+        String name = getLine(lineId).jsonPath().get("name");
+
+        assertThat(name).isEqualTo("다른분당선");
+    }
+
+    private Map<String, String> createLineRequestMap(String name, String color, Long distance, Long upStationId, Long downStationId) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
-        params.put("distance", String.valueOf(distance));
-        params.put("upStationId", String.valueOf(upStationId));
-        params.put("downStationId", String.valueOf(downStationId));
+        if (distance != null) {
+            params.put("distance", String.valueOf(distance));
+        }
+        if (upStationId != null) {
+            params.put("upStationId", String.valueOf(upStationId));
+        }
+        if (downStationId != null) {
+            params.put("downStationId", String.valueOf(downStationId));
+        }
 
-        return createLine(params);
+        return params;
     }
 
-    private ExtractableResponse<Response> createLine(Map<String, String> params) {
+    private ExtractableResponse<Response> createLine(String name, String color, Long distance, Long upStationId, Long downStationId) {
+        Map<String, String> params = createLineRequestMap(name, color, distance, upStationId, downStationId);
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -120,6 +152,17 @@ class LineAcceptanceTest {
     private ExtractableResponse<Response> getLine(Long id) {
         return RestAssured.given().log().all()
                 .when().get("/lines/{id}", id)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> updateLine(Long id, String name, String color, Long distance, Long upStationId, Long downStationId) {
+        Map<String, String> params = createLineRequestMap(name, color, distance, upStationId, downStationId);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/{id}", id)
                 .then().log().all()
                 .extract();
     }

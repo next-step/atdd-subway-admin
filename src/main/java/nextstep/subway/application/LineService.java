@@ -28,7 +28,7 @@ public class LineService {
         Station upStation = stationService.findById(lineRequest.getUpStationId());
         Station downStation = stationService.findById(lineRequest.getDownStationId());
 
-        Line line = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance(), upStation, downStation));
+        Line line = lineRepository.save(new Line(lineRequest, upStation, downStation));
 
         return LineResponse.of(line);
     }
@@ -44,9 +44,29 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findByLine(Long id) throws NotFoundException {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND));
+        Line line = findById(id);
 
         return LineResponse.of(line);
+    }
+
+    @Transactional
+    public void updateLine(Long id, LineRequest lineRequest) throws NotFoundException {
+        Line line = findById(id);
+        Station upStation = getStation(lineRequest.getUpStationId());
+        Station downStation = getStation(lineRequest.getDownStationId());
+
+        line.update(lineRequest, upStation, downStation);
+    }
+
+    private Station getStation(Long stationId) throws NotFoundException {
+        if (stationId == null) {
+            return null;
+        }
+        return stationService.findById(stationId);
+    }
+
+    private Line findById(Long id) throws NotFoundException {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND));
     }
 }
