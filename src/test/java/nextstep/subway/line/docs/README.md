@@ -61,5 +61,5 @@ Then 해당 지하철 노선 정보는 삭제된다
   - [ ] 조회 api
   - [ ] 수정 api
   - [ ] 삭제 api
-- [ ] Line 엔티티 매핑
+- [x] Line 엔티티 매핑
 - [ ] LineService
