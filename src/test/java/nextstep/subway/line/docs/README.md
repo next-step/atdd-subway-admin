@@ -57,8 +57,9 @@ Then 해당 지하철 노선 정보는 삭제된다
 
 - [x] Line 요청, 응답 dto
 - [ ] LineController
-  - [ ] 생성 api
-  - [ ] 조회 api
+  - [x] 생성 api
+  - [x] 전체 조회 api
+  - [ ] 단건 조회 api
   - [ ] 수정 api
   - [ ] 삭제 api
 - [x] Line 엔티티 매핑
