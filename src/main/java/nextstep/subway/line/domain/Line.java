@@ -28,4 +28,16 @@ public class Line extends BaseEntity {
     public static Line of(String name, String color) {
         return new Line(name, color);
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
 }
