@@ -29,7 +29,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 @Sql(value = {"classpath:truncate_station_table.sql",
         "classpath:truncate_line_table.sql"}, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class LineAcceptanceTest {
+public class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
