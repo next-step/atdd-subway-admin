@@ -51,17 +51,13 @@ class LineAcceptanceTest {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
-        databaseClean.trancate("LINE");
-        if (isFirst) {
-            Map<String, Object> 판교역 = new HashMap<>();
-            Map<String, Object> 정자역 = new HashMap<>();
-            판교역.put("name", "판교역");
-            정자역.put("name", "정자역");
-            신분당선.put("upStationId", ExtractUtils.extractId(requestCreate(판교역, StationAcceptanceTest.STATION_PATH)));
-            신분당선.put("downStationId", ExtractUtils.extractId(requestCreate(정자역, StationAcceptanceTest.STATION_PATH)));
-
-            isFirst = false;
-        }
+        databaseClean.trancateAll();
+        Map<String, Object> 판교역 = new HashMap<>();
+        Map<String, Object> 정자역 = new HashMap<>();
+        판교역.put("name", "판교역");
+        정자역.put("name", "정자역");
+        신분당선.put("upStationId", ExtractUtils.extractId(requestCreate(판교역, StationAcceptanceTest.STATION_PATH)));
+        신분당선.put("downStationId", ExtractUtils.extractId(requestCreate(정자역, StationAcceptanceTest.STATION_PATH)));
     }
 
     /**
