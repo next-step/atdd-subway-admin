@@ -9,8 +9,7 @@ import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
-import static nextstep.subway.line.LineRestAssured.노선_등록;
-import static nextstep.subway.line.LineRestAssured.노선_조회;
+import static nextstep.subway.line.LineRestAssured.*;
 import static nextstep.subway.station.StationRestAssured.지하철역_등록;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,16 +37,16 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> lines = 노선_조회().jsonPath().getList("name", String.class);
+        List<String> lines = 노선_목록_조회().jsonPath().getList("name", String.class);
         assertThat(lines).containsAnyOf(lineName);
     }
 
     /**
-     * ≈ 2개의 지하철 노선을 생성하고
+     * 2개의 지하철 노선을 생성하고
      * When 지하철 노선 목록을 조회하면
      * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
      */
-    @DisplayName("노선을 조회한다.")
+    @DisplayName("노선목록을 조회한다.")
     @Test
     public void getLines() {
         // given
@@ -55,10 +54,29 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         지하철역_노선_등록("선릉역", "한티역", "분당선", "bg-yellow-600");
 
         // when
-        List<String> lineNames = 노선_조회().jsonPath().getList("name", String.class);
+        List<String> lineNames = 노선_목록_조회().jsonPath().getList("name", String.class);
 
         // then
         assertThat(lineNames).hasSize(2);
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("노선을 조회한다.")
+    @Test
+    public void getLine() {
+        // given
+        String lineName = "신분당선";
+        ExtractableResponse<Response> response = 지하철역_노선_등록("강남역", "양재역", lineName, "bg-red-600");
+        Long lineId = response.jsonPath().getLong("id");
+
+        // when
+        String result = 노선_조회(lineId).jsonPath().getString("name");
+
+        // then
+        assertThat(result).isEqualTo(lineName);
+    }
 }

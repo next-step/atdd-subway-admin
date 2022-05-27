@@ -27,17 +27,24 @@ public class LineRestAssured {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 노선_조회() {
+    public static ExtractableResponse<Response> 노선_목록_조회() {
         return RestAssured.given().log().all()
                 .when().get(RESOURCE)
                 .then().log().all()
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 노선_삭제(Long stationId) {
+    public static ExtractableResponse<Response> 노선_조회(Long lineId) {
+        return RestAssured.given().log().all()
+                .when().get(RESOURCE + "/{id}", lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 노선_삭제(Long lineId) {
         return RestAssured.given().log().all()
                 .accept(ContentType.JSON)
-                .when().delete(RESOURCE + "/{id}", stationId)
+                .when().delete(RESOURCE + "/{id}", lineId)
                 .then().log().all()
                 .extract();
     }
