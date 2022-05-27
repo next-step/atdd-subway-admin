@@ -1,6 +1,7 @@
 package nextstep.subway.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.when;
 
@@ -10,6 +11,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,6 +78,16 @@ class LineServiceTest {
                 () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
                 () -> assertThat(lineResponse.getStations().get(0)).isEqualTo(StationResponse.of(upStation))
         );
+    }
+
+    @DisplayName("노선 저장 등록된 지하철이 없는 경우")
+    @Test
+    void saveLineNotFoundException() {
+        when(stationRepository.findById(lineRequest.getUpStationId())).thenReturn(Optional.of(upStation));
+        when(stationRepository.findById(lineRequest.getDownStationId())).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> lineService.saveLine(lineRequest))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("등록된 지하철역이 없습니다.");
     }
 
     @DisplayName("노선 변경 테스트")
