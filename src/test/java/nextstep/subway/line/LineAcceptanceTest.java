@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -115,6 +116,25 @@ class LineAcceptanceTest {
         assertThat(name).isEqualTo("다른분당선");
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철노선 삭제")
+    @Test
+    void deleteLineTest() {
+        // Given
+        Long lineId = createLine("신분당선", "bg-red-600", 10L, firstStationId, thirdStationId)
+                .jsonPath().getLong("id");
+
+        // When
+        deleteLine(lineId);
+
+        // Then
+        assertThat(getLine(lineId).statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
     private Map<String, String> createLineRequestMap(String name, String color, Long distance, Long upStationId, Long downStationId) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
@@ -165,5 +185,13 @@ class LineAcceptanceTest {
                 .when().put("/lines/{id}", id)
                 .then().log().all()
                 .extract();
+    }
+
+    private ExtractableResponse<Response> deleteLine(Long id) {
+        return RestAssured.given().log().all()
+                .when().delete("/lines/{id}", id)
+                .then().log().all()
+                .extract();
+
     }
 }

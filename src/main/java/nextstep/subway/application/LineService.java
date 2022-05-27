@@ -69,4 +69,9 @@ public class LineService {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.LINE_NOT_FOUND));
     }
+
+    @Transactional
+    public void deleteStationById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
