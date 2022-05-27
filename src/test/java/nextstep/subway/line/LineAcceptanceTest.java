@@ -8,26 +8,29 @@ import io.restassured.response.Response;
 
 import java.util.List;
 
+import nextstep.subway.DatabaseCleaner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
+    @Autowired
+    DatabaseCleaner databaseCleaner;
+
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
+        databaseCleaner.cleanUp();
     }
 
     /**
