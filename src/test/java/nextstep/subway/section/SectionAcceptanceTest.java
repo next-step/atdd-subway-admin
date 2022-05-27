@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class SectionAcceptanceTest extends AcceptanceTest {
 
     private static final String SECTION_ADD_URI = "/lines/1/sections";
+    private static final String SECTION_REMOVE_URI = "/lines/1/sections";
 
     @BeforeEach
     void setting() {
@@ -106,6 +107,32 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_구간_등록_실패(response);
     }
 
+    @DisplayName("종점이 제거될 경우 구간은 다음으로 오던 역이 종점이 된다.")
+    @Test
+    void removeLineStation() {
+        // when
+        // 구간이 하나 이상인 노선의 구간을 제거
+        지하철_구간("1", "2", "4");
+        ExtractableResponse<Response> response = 지하철_구간_삭제(SECTION_REMOVE_URI);
+
+        // then
+        // 지하철_노선에_구간_삭제_성공
+        지하철_구간_삭제_성공(response);
+    }
+
+
+    @DisplayName("구간이 하나인 노선에서는 마지막 구간을 제거 할 수 없다.")
+    @Test
+    void removeLineStationInOneSection() {
+        // when
+        // 구간이 하나인 노선의 구간을 제거
+        ExtractableResponse<Response> response = 지하철_구간_삭제(SECTION_REMOVE_URI);
+
+        // then
+        // 지하철_노선에_구간_삭제_실패
+        지하철_구간_삭제_실패(response);
+    }
+
 
     public static ExtractableResponse<Response> 지하철_구간(String upStationId, String downStationId, String distance) {
         return 지하철_구간_등록(지하철_구간_제공(upStationId, downStationId, distance));
@@ -129,6 +156,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
+    static ExtractableResponse<Response> 지하철_구간_삭제(String uri) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+    }
+
     public static void 지하철_구간_등록_성공(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -136,6 +171,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     public static void 지하철_구간_등록_실패(ExtractableResponse<Response> response) {
         assertThatThrownBy(() -> {
             throw new Exception("구간을 등록할 수 없습니다.");
+        });
+    }
+
+    public static void 지하철_구간_삭제_성공(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    public static void 지하철_구간_삭제_실패(ExtractableResponse<Response> response) {
+        assertThatThrownBy(() -> {
+            throw new Exception("구간을 삭제할 수 없습니다.");
         });
     }
 }
