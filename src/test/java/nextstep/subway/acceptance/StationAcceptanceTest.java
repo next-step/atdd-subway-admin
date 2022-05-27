@@ -6,6 +6,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
+import nextstep.subway.test.ExtractUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@DisplayName("지하철역 관련 기능")
+@DisplayName("지하철역 관련 기능 인수테스트")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class StationAcceptanceTest {
 
@@ -77,8 +78,7 @@ class StationAcceptanceTest {
         지하철역_목록_조회_검증(getAllResponse);
 
         //when
-
-        ExtractableResponse<Response> deleteResponse = requestDeleteById(STATION_PATH,extractId(requestCreate(신림역,STATION_PATH)));
+        ExtractableResponse<Response> deleteResponse = requestDeleteById(STATION_PATH, ExtractUtils.extractId(requestCreate(신림역,STATION_PATH)));
         HTTP_응답_상태코드_검증(deleteResponse, HttpStatus.NO_CONTENT);
 
         //then
@@ -104,18 +104,15 @@ class StationAcceptanceTest {
     private void 지하철역_목록_조회_검증(ExtractableResponse<Response> getAllResponse) {
         assertAll(
                 () -> assertThat(getAllResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(getAllResponse.jsonPath().getList("name")).contains("강남역", "서울역")
+                () -> assertThat(ExtractUtils.extractNames(getAllResponse)).contains("강남역", "서울역")
         );
     }
 
     private void 지하철역이_삭제_되었는지_검증(ExtractableResponse<Response> response) {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(response.jsonPath().getList("name")).doesNotContain("신림역"),
-                () -> assertThat(response.jsonPath().getList("name")).contains("강남역","서울역")
+                () -> assertThat(ExtractUtils.extractNames(response)).doesNotContain("신림역"),
+                () -> assertThat(ExtractUtils.extractNames(response)).contains("강남역","서울역")
         );
-    }
-    private long extractId(ExtractableResponse<Response> createResponse) {
-        return createResponse.body().jsonPath().getLong("id");
     }
 }

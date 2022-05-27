@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import nextstep.subway.test.DatabaseClean;
+import nextstep.subway.test.ExtractUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
-@DisplayName("지하철 노선 관련 기능")
+@DisplayName("지하철 노선 관련 기능 인수테스트")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LineAcceptanceTest {
 
@@ -56,8 +57,8 @@ class LineAcceptanceTest {
             Map<String,Object> 정자역 = new HashMap<>();
             판교역.put("name","판교역");
             정자역.put("name","정자역");
-            신분당선.put("upStationId"  ,requestCreate(판교역, StationAcceptanceTest.STATION_PATH).jsonPath().getLong("id"));
-            신분당선.put("downStationId",requestCreate(정자역, StationAcceptanceTest.STATION_PATH).jsonPath().getLong("id"));
+            신분당선.put("upStationId"  , ExtractUtils.extractId(requestCreate(판교역, StationAcceptanceTest.STATION_PATH)));
+            신분당선.put("downStationId", ExtractUtils.extractId(requestCreate(정자역, StationAcceptanceTest.STATION_PATH)));
 
             isFirst = false;
         }
@@ -89,12 +90,12 @@ class LineAcceptanceTest {
 
     private void 노선_생성_및_지하철역들이_노선에_연결되었는지_검증(ExtractableResponse<Response> createResponse) {
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(createResponse.jsonPath().getList("stations.name")).contains("판교역", "정자역");
+        assertThat(ExtractUtils.extract("stations.name",createResponse,String.class)).contains("판교역", "정자역");
     }
 
     private void 목록_조회에서_생성한_노선이_있는지_검증(ExtractableResponse<Response> getResponse) {
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(getResponse.jsonPath().getList("name")).contains("신분당선");
+        assertThat(ExtractUtils.extractNames(getResponse)).contains("신분당선");
     }
 
     /**
@@ -119,7 +120,7 @@ class LineAcceptanceTest {
 
     private void 노선_목록_조회_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("name")).contains("신분당선", "분당선");
+        assertThat(ExtractUtils.extractNames(response)).contains("신분당선", "분당선");
     }
 
     /**
@@ -134,19 +135,15 @@ class LineAcceptanceTest {
         ExtractableResponse<Response> createResponse = requestCreate(신분당선, LINE_PATH);
 
         //when
-        ExtractableResponse<Response> response = requestGetById(LINE_PATH, extractId(createResponse));
+        ExtractableResponse<Response> response = requestGetById(LINE_PATH, ExtractUtils.extractId(createResponse));
 
         //then
         노선_개별_조회_검증(response);
     }
 
-    private long extractId(ExtractableResponse<Response> createResponse) {
-        return createResponse.body().jsonPath().getLong("id");
-    }
-
     private void 노선_개별_조회_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getString("name")).contains("신분당선");
+        assertThat(ExtractUtils.extractName(response)).contains("신분당선");
     }
 
     /**
@@ -161,7 +158,7 @@ class LineAcceptanceTest {
         ExtractableResponse<Response> createResponse = requestCreate(신분당선, LINE_PATH);
 
         //when
-        ExtractableResponse<Response> response = requestDeleteById(LINE_PATH, extractId(createResponse));
+        ExtractableResponse<Response> response = requestDeleteById(LINE_PATH, ExtractUtils.extractId(createResponse));
 
         //then
         삭제된_노선_조회시_오류_응답_검증(response);
@@ -187,17 +184,17 @@ class LineAcceptanceTest {
         Map<String,Object> updateParams = new HashMap<>();
         updateParams.put("name", "2호선");
         updateParams.put("color", "bg-green-600");
-        ExtractableResponse<Response> response = requestUpdateById(LINE_PATH, extractId(createResponse), updateParams);
+        ExtractableResponse<Response> response = requestUpdateById(LINE_PATH, ExtractUtils.extractId(createResponse), updateParams);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         //then
         업데이트한_노선_정보가_변경되었는지_검증(createResponse,updateParams);
     }
 
-    private void 업데이트한_노선_정보가_변경되었는지_검증(ExtractableResponse<Response> response,Map<String,Object> expect) {
+    private void 업데이트한_노선_정보가_변경되었는지_검증(ExtractableResponse<Response> createResponse, Map<String,Object> expect) {
 
-        ExtractableResponse<Response> getResponse = requestGetById(LINE_PATH, extractId(response));
-        assertThat(getResponse.jsonPath().getString("name")).isEqualTo(expect.get("name"));
-        assertThat(getResponse.jsonPath().getString("color")).isEqualTo(expect.get("color"));
+        ExtractableResponse<Response> getResponse = requestGetById(LINE_PATH, ExtractUtils.extractId(createResponse));
+        assertThat(ExtractUtils.extractName(getResponse)).isEqualTo(expect.get("name"));
+        assertThat((String)ExtractUtils.extract("color",getResponse)).isEqualTo(expect.get("color"));
     }
 }
