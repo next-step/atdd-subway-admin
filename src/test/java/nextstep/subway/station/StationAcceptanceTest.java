@@ -121,10 +121,10 @@ public class StationAcceptanceTest {
         return response;
     }
 
-    private void 지하철역만들기(String 생성할_지하철역_이름) {
+    private ExtractableResponse<Response> 지하철역만들기(String 생성할_지하철역_이름) {
         Map<String, String> params = new HashMap<>();
         params.put("name", 생성할_지하철역_이름);
-        RestAssured.given().log().all()
+        return RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/stations")
@@ -158,5 +158,21 @@ public class StationAcceptanceTest {
             .body("")
             .when().delete("/stations/" + 지하철역_id)
             .then().log().all();
+    }
+
+    /**
+     * Given 지하철역을 생성하고
+     * When 똑같은 이름의 지하철을 생성하면
+     * Then 생성이 되지 않고 에러(400)이 발생한다
+     */
+    @Test
+    @DisplayName("중복된 지하철이름을 저장시 에러가 발생한다")
+    public void 지하철중복저장하기(){
+
+        ExtractableResponse<Response> responseOk = 지하철역만들기("강남역");
+        ExtractableResponse<Response> response = 지하철역만들기("강남역");
+
+        assertThat(responseOk.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
