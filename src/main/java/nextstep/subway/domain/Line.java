@@ -21,11 +21,19 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "line")
-    private final List<Station> stations = new ArrayList<>();
+    @Column
+    private String color;
+
+    @OneToMany(mappedBy = "line", orphanRemoval = true)
+    private final List<Section> sections = new ArrayList<>();
 
     public Line(String name) {
+        this(name, null);
+    }
+
+    public Line(String name, String color) {
         this.name = name;
+        this.color = color;
     }
 
     protected Line() {
@@ -40,16 +48,21 @@ public class Line extends BaseEntity {
         return name;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public String getColor() {
+        return color;
     }
 
-    public List<Station> getStations() {
-        return stations;
+    public List<Section> getSections() {
+        return sections;
     }
 
-    public void addStation(Station station) {
-        stations.add(station);
-        station.setLine(this);
+    public void addSection(Section section) {
+        sections.add(section);
+        section.setLine(this);
+    }
+
+    public void changeLineInfo(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 }
