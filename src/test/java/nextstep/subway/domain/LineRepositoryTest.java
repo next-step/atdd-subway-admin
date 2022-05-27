@@ -14,6 +14,9 @@ class LineRepositoryTest {
     @Autowired
     private LineRepository repository;
 
+    @Autowired
+    private StationRepository stationRepository;
+
     @Test
     void 생성() {
         // when
@@ -59,5 +62,21 @@ class LineRepositoryTest {
         // then
         Optional<Line> actual = repository.findById(line.getId());
         assertThat(actual.isPresent()).isFalse();
+    }
+
+    @Test
+    void 상행종점역_하행종점역_조회() {
+        // given
+        Station upStation = stationRepository.save(new Station("잠실역"));
+        Station downStation = stationRepository.save(new Station("강남역"));
+        Line line = repository.save(new Line("2호선", "초록색", 10)
+                .setUpStation(upStation).setDownStation(downStation));
+
+        // when
+        Optional<Line> actual = repository.findById(line.getId());
+
+        // then
+        assertThat(actual.get().getUpStation()).isEqualTo(upStation);
+        assertThat(actual.get().getDownStation()).isEqualTo(downStation);
     }
 }

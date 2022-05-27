@@ -15,6 +15,14 @@ public class Line extends BaseEntity {
     @Column
     private int distance;
 
+    @OneToOne
+    @JoinColumn(name = "up_station_id")
+    private Station upStation;
+
+    @OneToOne
+    @JoinColumn(name = "down_station_id")
+    private Station downStation;
+
     protected Line() {
     }
 
@@ -31,6 +39,16 @@ public class Line extends BaseEntity {
         this.distance = distance;
     }
 
+    public Line setUpStation(Station upStation) {
+        this.upStation = upStation;
+        return this;
+    }
+
+    public Line setDownStation(Station downStation) {
+        this.downStation = downStation;
+        return this;
+    }
+
     public Long getId() {
         return id;
     }
@@ -45,6 +63,14 @@ public class Line extends BaseEntity {
 
     public int getDistance() {
         return distance;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 
     public void updateDistance(int distance) {
