@@ -81,6 +81,8 @@ public class StationAcceptanceTest {
 
         // when
         List<Station> stations = 지하철역_목록_조회();
+
+        // then
         지하철역_개수_검증(stations, 2);
     }
 
