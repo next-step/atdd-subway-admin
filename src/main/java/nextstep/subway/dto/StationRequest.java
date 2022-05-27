@@ -2,6 +2,8 @@ package nextstep.subway.dto;
 
 import nextstep.subway.domain.Station;
 
+import java.util.Objects;
+
 public class StationRequest {
     private String name;
 
