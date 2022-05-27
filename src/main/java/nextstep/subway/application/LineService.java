@@ -50,4 +50,18 @@ public class LineService {
                 .map(line -> LineResponse.of(line))
                 .orElseThrow(() -> new LineNotFoundException(lineId));
     }
+
+    @Transactional
+    public void updateLine(Long lineId, LineRequest lineRequest) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new LineNotFoundException(lineId));
+        line.update(lineRequest.getName(), lineRequest.getColor());
+    }
+
+    @Transactional
+    public void deleteLine(Long lineId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new LineNotFoundException(lineId));
+        lineRepository.delete(line);
+    }
 }

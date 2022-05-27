@@ -79,4 +79,47 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         // then
         assertThat(result).isEqualTo(lineName);
     }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("노선을 수정한다.")
+    @Test
+    public void updateLine() {
+        // given
+        ExtractableResponse<Response> response = 지하철역_노선_등록("강남역", "양재역", "신분당선", "bg-red-600");
+        Long lineId = response.jsonPath().getLong("id");
+
+        // when
+        String updatedLineName = "분당선";
+        노선_수정(lineId, updatedLineName, "bg-yellow-600");
+
+
+        // then
+        String result = 노선_조회(lineId).jsonPath().getString("name");
+        assertThat(result).isEqualTo(updatedLineName);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("노선을 삭제한다.")
+    @Test
+    public void deleteLine() {
+        // given
+        String lineName = "신분당선";
+        ExtractableResponse<Response> response = 지하철역_노선_등록("강남역", "양재역", lineName, "bg-red-600");
+        Long lineId = response.jsonPath().getLong("id");
+
+        // when
+        노선_삭제(lineId);
+
+        // then
+        List<String> lines = 노선_목록_조회().jsonPath().getList("name", String.class);
+        assertThat(lines).doesNotContain(lineName);
+    }
 }

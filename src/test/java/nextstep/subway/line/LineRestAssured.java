@@ -41,9 +41,21 @@ public class LineRestAssured {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 노선_수정(Long lineId, String name, String color) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when().put(RESOURCE + "/{id}", lineId)
+                .then().log().all()
+                .extract();
+    }
+
     public static ExtractableResponse<Response> 노선_삭제(Long lineId) {
         return RestAssured.given().log().all()
-                .accept(ContentType.JSON)
                 .when().delete(RESOURCE + "/{id}", lineId)
                 .then().log().all()
                 .extract();
