@@ -24,10 +24,6 @@ public class Line extends BaseEntity {
 
     }
 
-    public Line(String name, String color) {
-        this(name, color, null, null);
-    }
-
     public Line(String name, String color, Station upStation, Station downStation) {
         this.name = new LineName(name);
         this.color = new LineColor(color);
