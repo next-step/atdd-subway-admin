@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,27 +39,13 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = 지하철역_생성("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = 지하철역_조회();
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -71,23 +58,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
+        지하철역_생성("강남역");
 
         // when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = 지하철역_생성("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -101,6 +75,16 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        지하철역_생성("강남역");
+        지하철역_생성("역삼역");
+
+        List<String> 지하철역_조회_결과 = 지하철역_조회();
+
+        org.junit.jupiter.api.Assertions.assertAll(
+                () -> assertThat(지하철역_조회_결과).size().isEqualTo(2),
+                () -> assertThat(지하철역_조회_결과).containsAnyOf("강남역"),
+                () -> assertThat(지하철역_조회_결과).containsAnyOf("역삼역")
+        );
     }
 
     /**
@@ -111,5 +95,43 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        int id = 지하철역_생성("강남역").jsonPath().getInt("id");
+
+        ExtractableResponse<Response> 지하철역_삭제_결과 = 지하철역_삭제(id);
+
+        assertThat(지하철역_삭제_결과.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        List<String> 지하철역_조회_결과 = 지하철역_조회();
+
+        Assertions.assertThat(지하철역_조회_결과).size().isEqualTo(0);
     }
+
+    private ExtractableResponse<Response> 지하철역_생성(String name) {
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private List<String> 지하철역_조회() {
+        return RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
+    }
+
+    private ExtractableResponse<Response> 지하철역_삭제(int id) {
+        return RestAssured.given().log().all()
+                .pathParam("id", id)
+                .when().delete("/stations/{id}")
+                .then().log().all()
+                .extract();
+    }
+
 }
