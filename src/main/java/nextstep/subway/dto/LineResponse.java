@@ -28,8 +28,7 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         List<StationResponse> stations = Arrays.asList(
-                StationResponse.of(line.upStation()),
-                StationResponse.of(line.downStation())
+                StationResponse.of(line.upStation()), StationResponse.of(line.downStation())
         );
         return new LineResponse(line.id(), line.name(), line.color(), stations, line.createdDate(),
                 line.updatedDate());

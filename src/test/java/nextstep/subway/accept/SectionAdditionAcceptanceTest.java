@@ -3,7 +3,9 @@ package nextstep.subway.accept;
 import static nextstep.subway.accept.LineAcceptanceTest.노선_생성;
 import static nextstep.subway.accept.LineAcceptanceTest.노선_조회;
 import static nextstep.subway.accept.StationAcceptanceTest.강남역;
+import static nextstep.subway.accept.StationAcceptanceTest.교대역;
 import static nextstep.subway.accept.StationAcceptanceTest.서초역;
+import static nextstep.subway.accept.StationAcceptanceTest.양재시민의숲역;
 import static nextstep.subway.accept.StationAcceptanceTest.양재역;
 import static nextstep.subway.accept.StationAcceptanceTest.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +37,7 @@ class SectionAdditionAcceptanceTest {
     @LocalServerPort
     int port;
 
-    private StationResponse 생성된_강남역, 생성된_양재역, 생성된_서초역;
+    private StationResponse 생성된_강남역, 생성된_양재시민의숲역, 생성된_양재역, 생성된_서초역, 생성된_교대역;
     private LineResponse 생성된_신분당선, 생성된_이호선;
 
     @BeforeEach
@@ -48,9 +50,11 @@ class SectionAdditionAcceptanceTest {
     private void saveStationAndLine() {
         생성된_강남역 = 지하철역_생성(강남역);
         생성된_양재역 = 지하철역_생성(양재역);
+        생성된_양재시민의숲역 = 지하철역_생성(양재시민의숲역);
         생성된_서초역 = 지하철역_생성(서초역);
+        생성된_교대역 = 지하철역_생성(교대역);
 
-        생성된_신분당선 = 노선_생성(new LineRequest("신분당선", "bg-red-600", 생성된_강남역.getId(), 생성된_양재역.getId(), 10L));
+        생성된_신분당선 = 노선_생성(new LineRequest("신분당선", "bg-red-600", 생성된_강남역.getId(), 생성된_양재시민의숲역.getId(), 10L));
         생성된_이호선 = 노선_생성(new LineRequest("이호선", "bg-yellow-100", 생성된_강남역.getId(), 생성된_서초역.getId(), 20L));
     }
 
@@ -59,16 +63,17 @@ class SectionAdditionAcceptanceTest {
      */
     @Test
     void 역_사이에_새로운_구간_추가시_노선에서_조회가능() {
+        // TODO : 양재역, 양재시민의숲역도 작성
         // given
         saveStationAndLine();
-        SectionRequest 강남역_양재역_사이_추가 = new SectionRequest();
-        ExtractableResponse<Response> 구간_추가_결과 = 구간_추가(1L, 강남역_양재역_사이_추가);
+        SectionRequest 강남역_양재시민의숲역_사이_추가 = new SectionRequest(생성된_강남역.getId(), 생성된_양재역.getId(), 5L);
+        ExtractableResponse<Response> 구간_추가_결과 = 구간_추가(생성된_신분당선.getId(), 강남역_양재시민의숲역_사이_추가);
 
         // when
-        LineResponse 노선_조회_결과 = 노선_조회(1L);
+        LineResponse 노선_조회_결과 = 노선_조회(생성된_신분당선.getId());
 
         // then
-        verifySizeAndStationOrder(노선_조회_결과, 생성된_강남역, 생성된_서초역, 생성된_양재역);
+        verifySizeAndStationOrder(노선_조회_결과, 생성된_강남역, 생성된_양재역, 생성된_양재시민의숲역);
     }
 
     /**
@@ -78,14 +83,14 @@ class SectionAdditionAcceptanceTest {
     void 상행선에_새로운_구간_추가시_노선_첫_번째에서_조회가능() {
         // given
         saveStationAndLine();
-        SectionRequest 강남역_앞에_추가 = new SectionRequest();
-        ExtractableResponse<Response> 구간_추가_결과 = 구간_추가(1L, 강남역_앞에_추가);
+        SectionRequest 강남역_앞에_추가 = new SectionRequest(생성된_양재역.getId(), 생성된_강남역.getId(), 10L);
+        ExtractableResponse<Response> 구간_추가_결과 = 구간_추가(생성된_신분당선.getId(), 강남역_앞에_추가);
 
         // when
-        LineResponse 노선_조회_결과 = 노선_조회(1L);
+        LineResponse 노선_조회_결과 = 노선_조회(생성된_신분당선.getId());
 
         // then
-        verifySizeAndStationOrder(노선_조회_결과, 생성된_서초역, 생성된_강남역, 생성된_양재역);
+        verifySizeAndStationOrder(노선_조회_결과, 생성된_양재역, 생성된_강남역, 생성된_양재시민의숲역);
     }
 
     /**
@@ -95,11 +100,11 @@ class SectionAdditionAcceptanceTest {
     void 하행선에_새로운_구간_추가시_노선_마지막에서_조회가능() {
         // given
         saveStationAndLine();
-        SectionRequest 양재역_뒤에_추가 = new SectionRequest();
-        ExtractableResponse<Response> 구간_추가_결과 = 구간_추가(1L, 양재역_뒤에_추가);
+        SectionRequest 양재시민의숲역_뒤에_추가 = new SectionRequest(생성된_양재시민의숲역.getId(), 생성된_양재역.getId(), 10L);
+        ExtractableResponse<Response> 구간_추가_결과 = 구간_추가(생성된_신분당선.getId(), 양재시민의숲역_뒤에_추가);
 
         // when
-        LineResponse 노선_조회_결과 = 노선_조회(1L);
+        LineResponse 노선_조회_결과 = 노선_조회(생성된_신분당선.getId());
 
         // then
         verifySizeAndStationOrder(노선_조회_결과, 생성된_강남역, 생성된_양재역, 생성된_서초역);
@@ -114,10 +119,10 @@ class SectionAdditionAcceptanceTest {
         saveStationAndLine();
 
         // when
-        SectionRequest 강남역_양재역_사이에_같은_길이_추가 = new SectionRequest();
-        SectionRequest 강남역_양재역_사이에_더_긴_길이_추가 = new SectionRequest();
-        ExtractableResponse<Response> 같은_길이_추가_결과 = 구간_추가(1L, 강남역_양재역_사이에_같은_길이_추가);
-        ExtractableResponse<Response> 더_긴_길이_추가_결과 = 구간_추가(1L, 강남역_양재역_사이에_더_긴_길이_추가);
+        SectionRequest 강남역_양재시민의숲역_사이에_같은_길이_추가 = new SectionRequest(생성된_강남역.getId(), 생성된_양재역.getId(), 10L);
+        SectionRequest 강남역_양재시민의숲역_사이에_더_긴_길이_추가 = new SectionRequest(생성된_강남역.getId(), 생성된_양재역.getId(), 15L);
+        ExtractableResponse<Response> 같은_길이_추가_결과 = 구간_추가(생성된_신분당선.getId(), 강남역_양재시민의숲역_사이에_같은_길이_추가);
+        ExtractableResponse<Response> 더_긴_길이_추가_결과 = 구간_추가(생성된_신분당선.getId(), 강남역_양재시민의숲역_사이에_더_긴_길이_추가);
 
         // then
         assertAll(
@@ -135,8 +140,8 @@ class SectionAdditionAcceptanceTest {
         saveStationAndLine();
 
         // when
-        SectionRequest 강남역_양재역_사이에_값은_구간_추가 = new SectionRequest();
-        ExtractableResponse<Response> 구간_추가_결과 = 구간_추가(1L, 강남역_양재역_사이에_값은_구간_추가);
+        SectionRequest 강남역_양재시민의숲역_사이에_값은_구간_추가 = new SectionRequest(생성된_강남역.getId(), 생성된_양재시민의숲역.getId(), 1L);
+        ExtractableResponse<Response> 구간_추가_결과 = 구간_추가(생성된_신분당선.getId(), 강남역_양재시민의숲역_사이에_값은_구간_추가);
 
         // then
         assertThat(구간_추가_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -151,8 +156,8 @@ class SectionAdditionAcceptanceTest {
         saveStationAndLine();
 
         // when
-        SectionRequest 해당_노선이_아닌_구간_추가 = new SectionRequest();
-        ExtractableResponse<Response> 구간_추가_결과 = 구간_추가(1L, 해당_노선이_아닌_구간_추가);
+        SectionRequest 해당_노선이_아닌_구간_추가 = new SectionRequest(생성된_서초역.getId(), 생성된_교대역.getId(), 5L);
+        ExtractableResponse<Response> 구간_추가_결과 = 구간_추가(생성된_신분당선.getId(), 해당_노선이_아닌_구간_추가);
 
         // then
         assertThat(구간_추가_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -162,7 +167,7 @@ class SectionAdditionAcceptanceTest {
         return RestAssured.given().log().all()
                 .body(구간)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines/{lineId}/sections", 노선아이디)
+                .when().post("/lines/{id}/sections", 노선아이디)
                 .then().log().all().extract();
     }
 

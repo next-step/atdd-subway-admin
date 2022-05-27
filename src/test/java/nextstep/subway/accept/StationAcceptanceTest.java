@@ -30,6 +30,8 @@ public class StationAcceptanceTest {
     public static final StationRequest 강남역 = new StationRequest("강남역");
     public static final StationRequest 양재역 = new StationRequest("양재역");
     public static final StationRequest 서초역 = new StationRequest("서초역");
+    public static final StationRequest 양재시민의숲역 = new StationRequest("양재시민의숲역");
+    public static final StationRequest 교대역 = new StationRequest("교대역");
 
     @BeforeEach
     public void setUp() {
