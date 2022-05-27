@@ -28,8 +28,6 @@ class LineAcceptanceTest {
     private static final Map<String, Object> 신분당선 = new HashMap<>();
     private static final Map<String, Object> 분당선 = new HashMap<>();
 
-    private static boolean isFirst = true;
-
     static {
         신분당선.put("name", "신분당선");
         신분당선.put("color", "bg-red-6000");
