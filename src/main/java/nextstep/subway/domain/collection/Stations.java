@@ -28,8 +28,8 @@ public class Stations {
         return stations;
     }
 
-    public void addStaion(Station pangyo) {
-        stations.add(pangyo);
+    public void addStaion(Station station) {
+        stations.add(station);
     }
 
     @Override
