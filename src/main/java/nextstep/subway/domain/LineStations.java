@@ -8,11 +8,11 @@ import java.util.Objects;
 
 @Embeddable
 public class LineStations {
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "UP_STATION_ID")
     private Station upStation;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DOWN_STATION_ID")
     private Station downStation;
 

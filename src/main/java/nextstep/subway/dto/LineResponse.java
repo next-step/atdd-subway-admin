@@ -7,8 +7,8 @@ public class LineResponse {
     private final Long id;
     private final String name;
     private final String color;
-    private final Station upStation;
-    private final Station downStation;
+    private final StationResponse upStation;
+    private final StationResponse downStation;
 
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getUpStation(), line.getDownStation());
@@ -18,8 +18,8 @@ public class LineResponse {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
+        this.upStation = new StationResponse(upStation.getId(), upStation.getName());
+        this.downStation = new StationResponse(downStation.getId(), downStation.getName());
     }
 
     public Long getId() {
@@ -34,11 +34,11 @@ public class LineResponse {
         return color;
     }
 
-    public Station getUpStation() {
+    public StationResponse getUpStation() {
         return upStation;
     }
 
-    public Station getDownStation() {
+    public StationResponse getDownStation() {
         return downStation;
     }
 }
