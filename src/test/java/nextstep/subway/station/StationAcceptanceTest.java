@@ -138,11 +138,7 @@ public class StationAcceptanceTest {
                 .getLong(property);
     }
 
-    private void 지하철역_삭제(long createdStationId) {
-        getResponseForStationDelete(createdStationId);
-    }
-
-    private static void getResponseForStationDelete(long stationId) {
+    private void 지하철역_삭제(long stationId) {
         RestAssured.given().log().all()
                 .pathParam("id", stationId)
                 .when().delete("/stations/{id}")
