@@ -96,21 +96,26 @@ class LineAcceptanceTest {
     }
 
     /**
-     * given 지하철 노선을 생성하고 when 생성한 지하철 노선을 조회하면 Then 생성한 지하촐 노선의 정보를 응답받을 수 있다.
+     * given 지하철 노선을 생성하고
+     * when 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하촐 노선의 정보를 응답받을 수 있다.
      */
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
         // given
-//        ExtractableResponse<Response> saveResponse = 지하철_노선_생성("신분당선", "black");
-//
-//        // when
-//        Long 지하철_노선_ID = toId(saveResponse);
-//        ExtractableResponse<Response> response = 지하철_노선_조회(지하철_노선_ID);
-//
-//        // then
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-//        assertThat(convertToDTO(response)).isNotNull();
+        ExtractableResponse<Response> saveResponse = 지하철_노선_생성("2호선", "yellow", 대림역_id, 신대방역_id, 10L);
+
+        // when
+        Long 지하철_노선_ID = toLineId(saveResponse);
+        ExtractableResponse<Response> response = 지하철_노선_조회(지하철_노선_ID);
+
+        // then
+        LineResponse result = toLine(response);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(result).isNotNull();
+        assertThat(result.getName()).isEqualTo("2호선");
+        assertThat(result.getStations()).hasSize(2);
     }
 
     /**
@@ -215,12 +220,12 @@ class LineAcceptanceTest {
         return response.as(LineResponse.class).getId();
     }
 
-    private String toLineName(ExtractableResponse<Response> response) {
-        return response.as(LineResponse.class).getName();
+    private LineResponse toLine(ExtractableResponse<Response> response) {
+        return response.jsonPath().getObject("", LineResponse.class);
     }
 
-    private String toLineColor(ExtractableResponse<Response> response) {
-        return response.as(LineResponse.class).getColor();
+    private String toLineName(ExtractableResponse<Response> response) {
+        return response.as(LineResponse.class).getName();
     }
 
     private List<String> toLineNames(ExtractableResponse<Response> response) {
