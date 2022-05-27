@@ -1,6 +1,8 @@
 package nextstep.subway.line.dto;
 
+import java.util.ArrayList;
 import java.util.List;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.dto.StationResponse;
 
 public class LineResponse {
@@ -20,6 +22,10 @@ public class LineResponse {
     public static LineResponse of(Long id, String name, String color,
                                List<StationResponse> stations) {
         return new LineResponse(id, name, color, stations);
+    }
+
+    public static LineResponse of(Line line) {
+        return LineResponse.of(line.getId(), line.getName(), line.getColor(), new ArrayList<>());
     }
 
     public Long getId() {

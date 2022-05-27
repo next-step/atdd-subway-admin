@@ -1,5 +1,7 @@
 package nextstep.subway.line.dto;
 
+import nextstep.subway.line.domain.Line;
+
 public class LineRequest {
 
     private String name;
@@ -41,5 +43,9 @@ public class LineRequest {
 
     public int getDistance() {
         return distance;
+    }
+
+    public Line convertToLine() {
+        return Line.of(this.name, this.color);
     }
 }
