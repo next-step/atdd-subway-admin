@@ -124,7 +124,7 @@ class LineAcceptanceTest {
      * given 지하철 노선을 생성하고
      * when 생성한 지하철 노선을 수정하면
      * Then 해당 지하철 노선 정보는 수정된다
-     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다
+     * Then 지하철 노선 조회 시 변경된 노선을 조회할 수 있다
      */
     @DisplayName("지하철 노선을 수정한다.")
     @Test
