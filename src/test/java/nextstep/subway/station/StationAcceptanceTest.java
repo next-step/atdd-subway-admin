@@ -38,7 +38,7 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ValidatableResponse response = createStation("강남역");
+        ValidatableResponse response = 지하철역_등록_요청("강남역");
 
         // then
         assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -58,10 +58,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        createStation("강남역");
+        지하철역_등록_요청("강남역");
 
         // when
-        ValidatableResponse response = createStation("강남역");
+        ValidatableResponse response = 지하철역_등록_요청("강남역");
 
         // then
         assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -76,8 +76,8 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        createStation("잠실역");
-        createStation("강남역");
+        지하철역_등록_요청("잠실역");
+        지하철역_등록_요청("강남역");
 
         // when
         int numberOfStations = getJsonPathForResponse(getResponseForStationList())
@@ -96,7 +96,7 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ValidatableResponse response = createStation("강남역");
+        ValidatableResponse response = 지하철역_등록_요청("강남역");
         long createdStationId = getJsonPathForResponse(response)
                 .getLong("id");
 
@@ -109,7 +109,7 @@ public class StationAcceptanceTest {
         assertThat(numberOfStations).isEqualTo(0);
     }
 
-    private static ValidatableResponse createStation(String name) {
+    private static ValidatableResponse 지하철역_등록_요청(String name) {
         StationRequest request = new StationRequest(name);
 
         return RestAssured.given().log().all()
