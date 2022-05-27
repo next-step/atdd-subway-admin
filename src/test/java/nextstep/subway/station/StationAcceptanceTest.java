@@ -5,20 +5,18 @@ import static nextstep.subway.utils.AttdStationUtils.지하철역_만들기;
 import static nextstep.subway.utils.AttdStationUtils.지하철역_수정하기;
 import static nextstep.subway.utils.AttdStationUtils.지하철역_지우기;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
@@ -89,13 +87,15 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = 지하철목록_조회하기();
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("$"))
-            .extracting("id")
-            .containsExactly(1, 2);
-        assertThat(response.jsonPath().getList("$"))
-            .extracting("name")
-            .containsExactly("강남역", "양재역");
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(response.jsonPath().getList("$"))
+                    .extracting("id")
+                    .containsExactly(1, 2),
+            () -> assertThat(response.jsonPath().getList("$"))
+                    .extracting("name")
+                    .containsExactly("강남역", "양재역")
+        );
     }
 
 
@@ -116,13 +116,15 @@ public class StationAcceptanceTest {
 
         //then
         ExtractableResponse<Response> response = 지하철목록_조회하기();
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("$"))
-            .extracting("id")
-            .containsExactly(2);
-        assertThat(response.jsonPath().getList("$"))
-            .extracting("name")
-            .containsExactly("역삼역");
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(response.jsonPath().getList("$"))
+                .extracting("id")
+                .containsExactly(2),
+            () -> assertThat(response.jsonPath().getList("$"))
+                .extracting("name")
+                .containsExactly("역삼역")
+        );
     }
 
 
@@ -141,8 +143,10 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_만들기("강남역");
 
         //then
-        assertThat(responseOk.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertAll(
+            () -> assertThat(responseOk.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
+        );
     }
 
     /**
