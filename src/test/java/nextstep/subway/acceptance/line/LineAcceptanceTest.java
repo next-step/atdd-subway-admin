@@ -10,8 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nextstep.subway.acceptance.base.BaseAcceptanceTest;
+import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철노선 관련 기능")
@@ -28,6 +31,7 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
         // Given
         지하철역_생성_요청("지하철역");
         지하철역_생성_요청("새로운지하철역");
+
         // when
         지하철노선_생성_요청("신분당선", "bg-red-600", 1, 2, 10);
 
@@ -55,12 +59,14 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
         // Given
         지하철역_생성_요청("지하철역");
         지하철역_생성_요청("새로운지하철역");
-        // when
+        // Given
         지하철노선_생성_요청("신분당선", "bg-red-600", 1, 2, 10);
         지하철노선_생성_요청("5호선", "bg-blue-600", 1, 2, 10);
 
-        // then
+        // when
         ExtractableResponse<Response> showResponse = 지하철노선_목록_조회_요청();
+
+        // then
         List<String> lineNames = showResponse.jsonPath().getList("name", String.class);
         List<String> colors = showResponse.jsonPath().getList("color", String.class);
         List<String> stations1 = showResponse.jsonPath().getList("stations[0].name", String.class);
@@ -86,13 +92,13 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
         // Given
         지하철역_생성_요청("지하철역");
         지하철역_생성_요청("새로운지하철역");
-        // when
-        ExtractableResponse<Response> extractableResponse = 지하철노선_생성_요청("신분당선", "bg-red-600", 1, 2, 10);
-        Long id = extractableResponse.jsonPath().getLong("id");
+        // Given
+        long id = 지하철노선_생성_요청("신분당선", "bg-red-600", 1, 2, 10).jsonPath().getLong("id");
 
-        // then
+        // when
         ExtractableResponse<Response> showResponse = 지하철노선_조회_요청(id);
 
+        // then
         String lineNames = showResponse.jsonPath().getString("name");
         String colors = showResponse.jsonPath().getString("color");
         List<String> stations = showResponse.jsonPath().getList("stations.name");
@@ -112,7 +118,24 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철노선 수정")
     @Test
     void updateStations() {
+        // Given
+        지하철역_생성_요청("지하철역");
+        지하철역_생성_요청("새로운지하철역");
+        // Given
+        지하철노선_생성_요청("신분당선", "bg-red-600", 1, 2, 10);
 
+        // when
+        ExtractableResponse<Response> updateResponse = 지하철노선_변경_요청("신분당선", "bg-blue-600", 1, 2, 12);
+
+        // then
+        String lineNames = updateResponse.jsonPath().getString("name");
+        String colors = updateResponse.jsonPath().getString("color");
+        List<String> stations = updateResponse.jsonPath().getList("stations.name");
+        assertAll(
+                () -> assertThat(lineNames).isEqualTo("신분당선"),
+                () -> assertThat(colors).isEqualTo("bg-blue-600"),
+                () -> assertThat(stations).containsExactly("지하철역", "새로운지하철역")
+        );
     }
 
     /**
@@ -152,6 +175,21 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
     ExtractableResponse<Response> 지하철노선_조회_요청(long id) {
         return RestAssured.given().log().all()
                 .when().get("/lines/" + id)
+                .then().log().all()
+                .extract();
+    }
+
+    ExtractableResponse<Response> 지하철노선_변경_요청(String name, String color, long upStationId, long downStationId, int distance) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines")
                 .then().log().all()
                 .extract();
     }
