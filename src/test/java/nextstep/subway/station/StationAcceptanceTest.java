@@ -114,38 +114,38 @@ public class StationAcceptanceTest {
                 .then().log().all();
     }
 
-    private static void 응답_검증(ValidatableResponse response, HttpStatus status) {
+    public static void 응답_검증(ValidatableResponse response, HttpStatus status) {
         assertThat(response.extract().statusCode()).isEqualTo(status.value());
     }
 
-    private static List<Station> 지하철역_목록_조회() {
+    public static List<Station> 지하철역_목록_조회() {
         ValidatableResponse listResponse = RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all();
         return getJsonPathForResponse(listResponse).getList("$", Station.class);
     }
 
-    private void 지하철역_등록_검증(List<Station> stations, String name) {
+    public static void 지하철역_등록_검증(List<Station> stations, String name) {
         assertThat(stations).containsAnyOf(new Station(name));
     }
 
-    private void 지하철역_개수_검증(List<Station> stations, int size) {
+    public static void 지하철역_개수_검증(List<Station> stations, int size) {
         assertThat(stations).hasSize(size);
     }
 
-    private long 응답_속성_조회(ValidatableResponse response, String property) {
+    public static long 응답_속성_조회(ValidatableResponse response, String property) {
         return getJsonPathForResponse(response)
                 .getLong(property);
     }
 
-    private void 지하철역_삭제(long stationId) {
+    public static void 지하철역_삭제(long stationId) {
         RestAssured.given().log().all()
                 .pathParam("id", stationId)
                 .when().delete("/stations/{id}")
                 .then().log().all();
     }
 
-    private static JsonPath getJsonPathForResponse(ValidatableResponse response) {
+    public static JsonPath getJsonPathForResponse(ValidatableResponse response) {
         return response.extract().jsonPath();
     }
 }
