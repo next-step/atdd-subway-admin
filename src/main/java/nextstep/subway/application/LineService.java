@@ -44,13 +44,13 @@ public class LineService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public LineResponsesDTO findAll() {
         List<Line> lines = lineRepository.findAllByDeletedFalse();
         return LineResponsesDTO.of(lines);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public LineResponseDTO findOne(Long lineId) {
         Line line = getLine(lineId);
         return LineResponseDTO.of(line);
