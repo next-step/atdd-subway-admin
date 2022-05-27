@@ -17,11 +17,11 @@ public class BaseEntity {
     @LastModifiedDate
     private LocalDateTime modifiedDate;
 
-    public LocalDateTime getCreatedDate() {
+    public LocalDateTime createdDate() {
         return createdDate;
     }
 
-    public LocalDateTime getModifiedDate() {
+    public LocalDateTime updatedDate() {
         return modifiedDate;
     }
 }
