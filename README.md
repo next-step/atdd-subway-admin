@@ -82,7 +82,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ### 도메인 분석
   * Line(지하철 노선)
     * 이름, 컬러, 상행종점역, 하행종점역, 거리
-    
+
   * Station (역)
     * 이름 존재
 
