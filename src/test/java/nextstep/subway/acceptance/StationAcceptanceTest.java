@@ -30,6 +30,7 @@ class StationAcceptanceTest {
     private static final Map<String, Object> 신림역 = new HashMap<>();
 
     public static final String STATION_PATH = "/stations";
+
     static {
         강남역.put("name", "강남역");
         서울역.put("name", "서울역");
@@ -60,7 +61,8 @@ class StationAcceptanceTest {
     @Test
     void manageStations() {
         // when
-        List<ExtractableResponse<Response>> createResponses = requestCreateBundle(Arrays.asList(강남역,서울역),STATION_PATH);
+        List<ExtractableResponse<Response>> createResponses =
+                requestCreateBundle(Arrays.asList(강남역, 서울역), STATION_PATH);
 
         // then
         지하철역들이_생성되었는지_검증(createResponses);
@@ -78,7 +80,8 @@ class StationAcceptanceTest {
         지하철역_목록_조회_검증(getAllResponse);
 
         //when
-        ExtractableResponse<Response> deleteResponse = requestDeleteById(STATION_PATH, ExtractUtils.extractId(requestCreate(신림역,STATION_PATH)));
+        ExtractableResponse<Response> deleteResponse =
+                requestDeleteById(STATION_PATH, ExtractUtils.extractId(requestCreate(신림역, STATION_PATH)));
         HTTP_응답_상태코드_검증(deleteResponse, HttpStatus.NO_CONTENT);
 
         //then
@@ -112,7 +115,7 @@ class StationAcceptanceTest {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(ExtractUtils.extractNames(response)).doesNotContain("신림역"),
-                () -> assertThat(ExtractUtils.extractNames(response)).contains("강남역","서울역")
+                () -> assertThat(ExtractUtils.extractNames(response)).contains("강남역", "서울역")
         );
     }
 }

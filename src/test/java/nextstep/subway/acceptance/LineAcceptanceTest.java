@@ -52,12 +52,12 @@ class LineAcceptanceTest {
             RestAssured.port = port;
         }
         databaseClean.trancate("LINE");
-        if(isFirst){
-            Map<String,Object> 판교역 = new HashMap<>();
-            Map<String,Object> 정자역 = new HashMap<>();
-            판교역.put("name","판교역");
-            정자역.put("name","정자역");
-            신분당선.put("upStationId"  , ExtractUtils.extractId(requestCreate(판교역, StationAcceptanceTest.STATION_PATH)));
+        if (isFirst) {
+            Map<String, Object> 판교역 = new HashMap<>();
+            Map<String, Object> 정자역 = new HashMap<>();
+            판교역.put("name", "판교역");
+            정자역.put("name", "정자역");
+            신분당선.put("upStationId", ExtractUtils.extractId(requestCreate(판교역, StationAcceptanceTest.STATION_PATH)));
             신분당선.put("downStationId", ExtractUtils.extractId(requestCreate(정자역, StationAcceptanceTest.STATION_PATH)));
 
             isFirst = false;
@@ -90,7 +90,7 @@ class LineAcceptanceTest {
 
     private void 노선_생성_및_지하철역들이_노선에_연결되었는지_검증(ExtractableResponse<Response> createResponse) {
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(ExtractUtils.extract("stations.name",createResponse,String.class)).contains("판교역", "정자역");
+        assertThat(ExtractUtils.extract("stations.name", createResponse, String.class)).contains("판교역", "정자역");
     }
 
     private void 목록_조회에서_생성한_노선이_있는지_검증(ExtractableResponse<Response> getResponse) {
@@ -108,7 +108,7 @@ class LineAcceptanceTest {
     void showLines() {
 
         //given
-        requestCreateBundle(Arrays.asList(신분당선,분당선),LINE_PATH);
+        requestCreateBundle(Arrays.asList(신분당선, 분당선), LINE_PATH);
 
         //when
         ExtractableResponse<Response> response = requestGetAll(LINE_PATH);
@@ -181,20 +181,21 @@ class LineAcceptanceTest {
         ExtractableResponse<Response> createResponse = requestCreate(신분당선, LINE_PATH);
 
         //when
-        Map<String,Object> updateParams = new HashMap<>();
+        Map<String, Object> updateParams = new HashMap<>();
         updateParams.put("name", "2호선");
         updateParams.put("color", "bg-green-600");
-        ExtractableResponse<Response> response = requestUpdateById(LINE_PATH, ExtractUtils.extractId(createResponse), updateParams);
+        ExtractableResponse<Response> response =
+                requestUpdateById(LINE_PATH, ExtractUtils.extractId(createResponse), updateParams);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         //then
-        업데이트한_노선_정보가_변경되었는지_검증(createResponse,updateParams);
+        업데이트한_노선_정보가_변경되었는지_검증(createResponse, updateParams);
     }
 
-    private void 업데이트한_노선_정보가_변경되었는지_검증(ExtractableResponse<Response> createResponse, Map<String,Object> expect) {
+    private void 업데이트한_노선_정보가_변경되었는지_검증(ExtractableResponse<Response> createResponse, Map<String, Object> expect) {
 
         ExtractableResponse<Response> getResponse = requestGetById(LINE_PATH, ExtractUtils.extractId(createResponse));
         assertThat(ExtractUtils.extractName(getResponse)).isEqualTo(expect.get("name"));
-        assertThat((String)ExtractUtils.extract("color",getResponse)).isEqualTo(expect.get("color"));
+        assertThat((String) ExtractUtils.extract("color", getResponse)).isEqualTo(expect.get("color"));
     }
 }

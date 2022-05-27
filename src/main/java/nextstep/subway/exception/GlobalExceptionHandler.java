@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({IllegalArgumentException.class, DataIntegrityViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Void> badRequest(Exception e) {
-        logger.error("Bad Request ",e);
+        logger.error("Bad Request ", e);
         return ResponseEntity.badRequest().build();
     }
 
