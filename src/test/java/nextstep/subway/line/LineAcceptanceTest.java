@@ -79,4 +79,17 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> 지하철_노선_수정_결과 = 지하철_노선_수정(지하철_노선_ID, "6호선", "bg-blue-600");
         수정_성공_확인(지하철_노선_수정_결과);
     }
+
+    /**
+     * Given: 지하철역이 생성되어 있다.
+     * When: 사용자는 지하철 노선 삭제를 요청한다.
+     * Then: 해당 지하철 노선 정보는 삭제된다.
+     */
+    @Test
+    @DisplayName("지하철 노선을 삭제한다.")
+    void deleteLine() {
+        Long 지하철_노선_ID = 지하철_노선_생성_ID_추출("5호선", "공덕역", "애오개역");
+        ExtractableResponse<Response> 지하철_노선_삭제_응답_결과 = 지하철_노선_삭제_요청(지하철_노선_ID);
+        삭제_성공_확인(지하철_노선_삭제_응답_결과);
+    }
 }

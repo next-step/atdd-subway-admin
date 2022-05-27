@@ -74,6 +74,10 @@ public class AcceptanceTestFactory {
         return RestAssuredTemplate.sendPut("/lines/{id}", id, params);
     }
 
+    public static ExtractableResponse<Response> 지하철_노선_삭제_요청(Long id) {
+        return RestAssuredTemplate.sendDelete("/lines/{id}", id);
+    }
+
     public static void 생성_성공_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -104,5 +108,9 @@ public class AcceptanceTestFactory {
 
     public static void 수정_성공_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    public static void 삭제_성공_확인(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
