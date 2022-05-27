@@ -37,7 +37,7 @@ public class StationAcceptanceTest {
      */
     @DisplayName("지하철역을 생성한다.")
     @Test
-    void createStation() {
+    void 이름으로_지하철역을_생성() {
         // when
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
@@ -101,6 +101,15 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+//        given
+        이름으로_지하철역을_생성("강남역");
+        이름으로_지하철역을_생성("역삼역");
+
+//        when
+        ExtractableResponse<Response> response = 지하철역_목록_조회();
+
+//        then
+        두개의_지하철역_응답을_받음(response);
     }
 
     /**
@@ -111,5 +120,32 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+    }
+
+    private void 두개의_지하철역_응답을_받음(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList(".").size()).isEqualTo(2);
+    }
+
+    private void 이름으로_지하철역을_생성(String name) {
+        Map<String, String> param = new HashMap<>();
+        param.put("name", name);
+
+        RestAssured.given().log().all()
+                .body(param)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철역_목록_조회() {
+        return RestAssured.given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/stations")
+                .then()
+                .log().all().extract();
     }
 }
