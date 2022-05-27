@@ -31,16 +31,15 @@ public class LineService {
     }
 
     private void linkStations(LineRequestDTO lineRequestDTO, Line line) {
-        if (lineRequestDTO.getUpStationId() != null) {
-            Station upStation = stationRepository.findById(lineRequestDTO.getUpStationId())
-                    .orElseThrow(() -> new IllegalArgumentException("[ERROR] 상단 ID가 해당하는 지하철역이 없습니다."));
-            line.addStation(upStation);
-        }
-        if (lineRequestDTO.getDownStationId() != null) {
-            Station downStation = stationRepository.findById(lineRequestDTO.getDownStationId())
-                    .orElseThrow(() -> new IllegalArgumentException("[ERROR] 하단 ID에 해당하는 지하철역이 없습니다."));
+        linkStation(lineRequestDTO.getUpStationId(), line, "[ERROR] 상행 ID가 해당하는 지하철역이 없습니다.");
+        linkStation(lineRequestDTO.getDownStationId(), line, "[ERROR] 하행 ID가 해당하는 지하철역이 없습니다.");
+    }
 
-            line.addStation(downStation);
+    private void linkStation(Long stationId, Line line, String errorMessage) {
+        if (stationId != null) {
+            Station upStation = stationRepository.findById(stationId)
+                    .orElseThrow(() -> new IllegalArgumentException(errorMessage));
+            line.addStation(upStation);
         }
     }
 
