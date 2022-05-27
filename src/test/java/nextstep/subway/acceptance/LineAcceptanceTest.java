@@ -51,7 +51,7 @@ class LineAcceptanceTest {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
-        databaseClean.trancateAll();
+        databaseClean.truncateAll();
         Map<String, Object> 판교역 = new HashMap<>();
         Map<String, Object> 정자역 = new HashMap<>();
         판교역.put("name", "판교역");

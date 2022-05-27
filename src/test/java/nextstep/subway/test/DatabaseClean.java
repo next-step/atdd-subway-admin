@@ -27,7 +27,7 @@ public class DatabaseClean implements InitializingBean {
     }
 
     @Transactional
-    public void trancate(String tableName) {
+    public void truncate(String tableName) {
         entityManager.flush();
         entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE " + tableName).executeUpdate();
@@ -36,9 +36,9 @@ public class DatabaseClean implements InitializingBean {
     }
 
     @Transactional
-    public void trancateAll() {
+    public void truncateAll() {
         for (String tableName : tableNames) {
-            trancate(tableName);
+            truncate(tableName);
         }
     }
 }
