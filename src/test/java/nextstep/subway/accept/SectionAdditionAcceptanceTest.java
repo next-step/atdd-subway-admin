@@ -169,9 +169,9 @@ class SectionAdditionAcceptanceTest {
     private void verifySizeAndStationOrder(LineResponse 노선_조회_결과, StationResponse... 예상되는_순서로_배치된_역들) {
         assertAll(
                 () -> assertThat(노선_조회_결과.getStations()).hasSize(3),
-                () -> assertThat(노선_조회_결과.getStations().get(0).id()).isEqualTo(예상되는_순서로_배치된_역들[0].getId()),
-                () -> assertThat(노선_조회_결과.getStations().get(1).id()).isEqualTo(예상되는_순서로_배치된_역들[1].getId()),
-                () -> assertThat(노선_조회_결과.getStations().get(2).id()).isEqualTo(예상되는_순서로_배치된_역들[2].getId())
+                () -> assertThat(노선_조회_결과.getStations().get(0).getId()).isEqualTo(예상되는_순서로_배치된_역들[0].getId()),
+                () -> assertThat(노선_조회_결과.getStations().get(1).getId()).isEqualTo(예상되는_순서로_배치된_역들[1].getId()),
+                () -> assertThat(노선_조회_결과.getStations().get(2).getId()).isEqualTo(예상되는_순서로_배치된_역들[2].getId())
         );
     }
 }

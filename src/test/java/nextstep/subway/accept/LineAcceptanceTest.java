@@ -188,7 +188,8 @@ public class LineAcceptanceTest {
                 () -> assertThat(lr1.getId()).isEqualTo(lr2.getId()),
                 () -> assertThat(lr1.getColor()).isEqualTo(lr2.getColor()),
                 () -> assertThat(lr1.getName()).isEqualTo(lr2.getName()),
-                () -> assertThat(lr1.getStations()).isEqualTo(lr2.getStations()),
+                () -> assertThat(lr1.getStations().get(0).getId()).isEqualTo(lr2.getStations().get(0).getId()),
+                () -> assertThat(lr1.getStations().get(1).getId()).isEqualTo(lr2.getStations().get(1).getId()),
                 () -> assertThat(lr1.getCreatedDate()).isEqualTo(lr2.getCreatedDate()),
                 () -> assertThat(lr1.getModifiedDate()).isEqualTo(lr2.getModifiedDate())
         );
