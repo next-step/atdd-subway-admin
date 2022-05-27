@@ -52,4 +52,9 @@ public class LineService {
     private List<Station> toStations() {
         return Arrays.asList(new Station(id, "지하철역_" +  id++), new Station(id, "새로운지하철역_" +  id++));
     }
+
+    @Transactional
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
