@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -17,9 +18,11 @@ public class Line extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    @Embedded
+    private LineName name;
 
-    private String color;
+    @Embedded
+    private LineColor color;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id")
@@ -32,14 +35,14 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    private Line(String name, String color, Station upStation, Station downStation) {
+    private Line(LineName name, LineColor color, Station upStation, Station downStation) {
         this.name = name;
         this.color = color;
         this.upStation = upStation;
         this.downStation = downStation;
     }
 
-    public static Line of(String name, String color, Station upStation, Station downStation) {
+    public static Line of(LineName name, LineColor color, Station upStation, Station downStation) {
         return new Line(name, color, upStation, downStation);
     }
 
@@ -47,11 +50,11 @@ public class Line extends BaseEntity {
         return id;
     }
 
-    public String getName() {
+    public LineName getName() {
         return name;
     }
 
-    public String getColor() {
+    public LineColor getColor() {
         return color;
     }
 
@@ -64,7 +67,7 @@ public class Line extends BaseEntity {
     }
 
     public void update(String name, String color) {
-        this.name = name;
-        this.color = color;
+        this.name = LineName.from(name);
+        this.color = LineColor.from(color);
     }
 }

@@ -11,7 +11,7 @@ public class LineResponse {
     private String color;
     private List<StationResponse> stations;
 
-    public LineResponse(Long id, String name, String color,
+    private LineResponse(Long id, String name, String color,
                         List<StationResponse> stations) {
         this.id = id;
         this.name = name;
@@ -19,13 +19,8 @@ public class LineResponse {
         this.stations = stations;
     }
 
-    public static LineResponse of(Long id, String name, String color,
-                               List<StationResponse> stations) {
-        return new LineResponse(id, name, color, stations);
-    }
-
     public static LineResponse of(Line line) {
-        return LineResponse.of(line.getId(), line.getName(), line.getColor(),
+        return new LineResponse(line.getId(), line.getName().getValue(), line.getColor().getValue(),
                 Arrays.asList(
                         StationResponse.of(line.getUpStation()),
                         StationResponse.of(line.getDownStation())

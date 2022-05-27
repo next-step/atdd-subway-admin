@@ -1,6 +1,8 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.LineColor;
+import nextstep.subway.line.domain.LineName;
 import nextstep.subway.station.domain.Station;
 
 public class LineRequest {
@@ -47,6 +49,6 @@ public class LineRequest {
     }
 
     public Line convertToLine(Station upStation, Station downStation) {
-        return Line.of(this.name, this.color, upStation, downStation);
+        return Line.of(LineName.from(this.name), LineColor.from(this.color), upStation, downStation);
     }
 }
