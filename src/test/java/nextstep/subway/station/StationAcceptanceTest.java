@@ -1,6 +1,7 @@
 package nextstep.subway.station;
 
 import static nextstep.subway.utils.AttdStationUtils.지하철목록_조회하기;
+import static nextstep.subway.utils.AttdStationUtils.지하철상세_조회하기;
 import static nextstep.subway.utils.AttdStationUtils.지하철역_만들기;
 import static nextstep.subway.utils.AttdStationUtils.지하철역_수정하기;
 import static nextstep.subway.utils.AttdStationUtils.지하철역_지우기;
@@ -182,4 +183,26 @@ public class StationAcceptanceTest {
         assertThat(강남역_수정결과.jsonPath().get("name").toString()).isEqualTo("강남역수정");
     }
 
+    /**
+     * given 지하철을 생성하고
+     * when 지하철ID를 통해 조회하면
+     * then 상세 정보를 받을수 있다.
+     */
+    @Test
+    @DisplayName("지하철 번호를 통해 상세 정보 조회가 가능하다")
+    public void 지하철_상세정보_조회하기_테스트() {
+        //given
+        ExtractableResponse<Response> 강남역 = 지하철역_만들기("강남역");
+        long 강남역_ID = Integer.toUnsignedLong(강남역.jsonPath().get("id"));
+
+        //when
+        ExtractableResponse<Response> 지하철상세_조회하기_response = 지하철상세_조회하기(강남역_ID);
+
+        //then
+        assertAll(
+            () -> assertThat(지하철상세_조회하기_response.jsonPath().get("name").toString()).isEqualTo(
+                "강남역"),
+            () -> assertThat(지하철상세_조회하기_response.jsonPath().get("id").toString()).isEqualTo("1")
+        );
+    }
 }
