@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ValidatableResponse;
+import nextstep.subway.domain.Station;
 import nextstep.subway.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -44,13 +45,9 @@ public class StationAcceptanceTest {
         응답_검증(createResponse, HttpStatus.CREATED);
 
         // then
-        ValidatableResponse listResponse = 지하철역_목록_조회();
-        List<String> stationNames = getJsonPathForResponse(listResponse)
-                .getList("name", String.class);
-        assertThat(stationNames).containsAnyOf("강남역");
+        List<Station> stations = 지하철역_목록_조회();
+        지하철역_등록_검증(stations, "강남역");
     }
-
-
 
     /**
      * Given 지하철역을 생성하고
@@ -83,12 +80,8 @@ public class StationAcceptanceTest {
         지하철역_등록("강남역");
 
         // when
-        ValidatableResponse listResponse = 지하철역_목록_조회();
-        int numberOfStations = getJsonPathForResponse(listResponse)
-                .getList("$").size();
-
-        // then
-        assertThat(numberOfStations).isEqualTo(2);
+        List<Station> stations = 지하철역_목록_조회();
+        지하철역_개수_검증(stations, 2);
     }
 
     /**
@@ -108,10 +101,8 @@ public class StationAcceptanceTest {
         getResponseForStationDelete(createdStationId);
 
         // then
-        ValidatableResponse listResponse = 지하철역_목록_조회();
-        int numberOfStations = getJsonPathForResponse(listResponse)
-                .getList("$").size();
-        assertThat(numberOfStations).isEqualTo(0);
+        List<Station> stations = 지하철역_목록_조회();
+        지하철역_개수_검증(stations, 0);
     }
 
     public static ValidatableResponse 지하철역_등록(String name) {
@@ -128,10 +119,19 @@ public class StationAcceptanceTest {
         assertThat(response.extract().statusCode()).isEqualTo(status.value());
     }
 
-    private static ValidatableResponse 지하철역_목록_조회() {
-        return RestAssured.given().log().all()
+    private static List<Station> 지하철역_목록_조회() {
+        ValidatableResponse listResponse = RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all();
+        return getJsonPathForResponse(listResponse).getList("$", Station.class);
+    }
+
+    private void 지하철역_등록_검증(List<Station> stations, String name) {
+        assertThat(stations).containsAnyOf(new Station(name));
+    }
+
+    private void 지하철역_개수_검증(List<Station> stations, int size) {
+        assertThat(stations).hasSize(size);
     }
 
     private static void getResponseForStationDelete(long stationId) {
