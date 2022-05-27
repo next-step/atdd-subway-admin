@@ -7,25 +7,34 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
 import nextstep.common.RestAssuredTemplate;
+import nextstep.subway.application.DatabaseCleanup;
 import nextstep.subway.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("acceptance")
 public class StationAcceptanceTest {
     @LocalServerPort
     int port;
+
+    @Autowired
+    private DatabaseCleanup dataBaseCleanUp;
 
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
+            dataBaseCleanUp.afterPropertiesSet();
         }
+        dataBaseCleanUp.execute();
     }
 
     /**
@@ -40,7 +49,7 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = 지하철역을_생성한다("강남역");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        지하철역이_생성된다(response);
 
         // then
         List<String> stationNames = 모든_지하철역을_조회한다();
@@ -62,7 +71,7 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = 지하철역을_생성한다("강남역");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철역이_생성되지_않는다(response);
     }
 
     /**
@@ -114,5 +123,13 @@ public class StationAcceptanceTest {
 
     public static ExtractableResponse<Response> 지하철역을_삭제한다(long stationId) {
         return RestAssuredTemplate.delete("/stations/{id}", stationId);
+    }
+
+    private void 지하철역이_생성된다(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private void 지하철역이_생성되지_않는다(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
