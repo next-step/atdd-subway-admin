@@ -3,6 +3,7 @@ package nextstep.subway.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.Optional;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,6 +49,19 @@ class LineRepositoryTest {
                 () -> assertThat(save.getColor()).isEqualTo("bg-red-600"),
                 () -> assertThat(save.getName()).isEqualTo("신분당선"),
                 () -> assertThat(save.getUpStation().getName()).isEqualTo(upStation.getName())
+        );
+    }
+
+    @DisplayName("노선 이름으로 조회 테스트")
+    @Test
+    void findByName() {
+        lineRepository.save(line);
+        Line line = lineRepository.findByName("신분당선").get();
+        assertAll(
+                () -> assertThat(line.getId()).isNotNull(),
+                () -> assertThat(line.getColor()).isEqualTo("bg-red-600"),
+                () -> assertThat(line.getName()).isEqualTo("신분당선"),
+                () -> assertThat(line.getUpStation().getName()).isEqualTo(upStation.getName())
         );
     }
 }
