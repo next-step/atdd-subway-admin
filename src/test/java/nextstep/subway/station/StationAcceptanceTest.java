@@ -172,7 +172,6 @@ public class StationAcceptanceTest {
 
         //then
         assertThat(강남역_수정결과.jsonPath().get("name").toString()).isEqualTo("강남역수정");
-
     }
 
     private ExtractableResponse<Response> 지하철역_만들기(String 생성할_지하철역_이름) {
@@ -195,23 +194,19 @@ public class StationAcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철목록_조회하기() {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().get("/stations")
             .then().log().all()
             .extract();
-
-        return response;
     }
 
     private ExtractableResponse<Response> 지하철상세_조회하기(long 지하철_ID) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().get("/stations/" + 지하철_ID)
             .then().log().all()
             .extract();
-
-        return response;
     }
 
     private ExtractableResponse<Response> 지하철역_수정하기(String 지하철_ID, String 생성할_지하철역_이름) {
