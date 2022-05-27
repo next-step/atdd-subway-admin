@@ -87,7 +87,6 @@ public class StationAcceptanceTest {
     }
 
 
-
     /**
      * Given 지하철역을 생성하고 When 그 지하철역을 삭제하면 Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
      */
@@ -139,10 +138,16 @@ public class StationAcceptanceTest {
 
     @Test
     @DisplayName("지하철 저장 후 수정이 가능해야한다")
-    public void 지하철수정하기(){
+    public void 지하철수정하기() {
+        //given
         ExtractableResponse<Response> 강남역 = 지하철역만들기("강남역");
-        long 강남역_ID = 강남역.jsonPath().get("id");
+        long 강남역_ID = Integer.toUnsignedLong(강남역.jsonPath().get("id"));
+        ExtractableResponse<Response> 강남역상세 = 지하철상세_조회하기(강남역_ID);
 
+        assertThat(강남역상세.jsonPath().get("name").toString()).isEqualTo("강남역");
+
+        ExtractableResponse<Response> 강남역_수정결과 = 지하철역수정하기(String.valueOf(강남역_ID), "강남역수정");
+        assertThat(강남역_수정결과.jsonPath().get("name").toString()).isEqualTo("강남역수정");
 
     }
 
@@ -156,6 +161,7 @@ public class StationAcceptanceTest {
             .then().log().all()
             .extract();
     }
+
     private ExtractableResponse<Response> 지하철역지우기(long 지하철역_id) {
         return RestAssured.given().log().all()
             .body("")
@@ -163,6 +169,7 @@ public class StationAcceptanceTest {
             .then().log().all()
             .extract();
     }
+
     private ExtractableResponse<Response> 지하철목록_조회하기() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -173,5 +180,25 @@ public class StationAcceptanceTest {
         return response;
     }
 
+    private ExtractableResponse<Response> 지하철상세_조회하기(long 지하철_ID) {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().get("/stations/" + 지하철_ID)
+            .then().log().all()
+            .extract();
 
+        return response;
+    }
+
+    private ExtractableResponse<Response> 지하철역수정하기(String 지하철_ID, String 생성할_지하철역_이름) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", 생성할_지하철역_이름);
+        params.put("id",지하철_ID);
+        return RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().post("/stations")
+            .then().log().all()
+            .extract();
+    }
 }
