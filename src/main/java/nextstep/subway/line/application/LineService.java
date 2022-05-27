@@ -41,4 +41,12 @@ public class LineService {
         );
         return LineResponse.of(line);
     }
+
+    @Transactional
+    public void updateLine(Long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id).orElseThrow(
+                () -> new NoSuchElementException(NO_LINE_ERROR)
+        );
+        line.update(lineRequest.convertToLine());
+    }
 }

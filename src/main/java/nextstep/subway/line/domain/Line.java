@@ -40,4 +40,9 @@ public class Line extends BaseEntity {
     public String getColor() {
         return color;
     }
+
+    public void update(Line line) {
+        this.name = line.getName();
+        this.color = line.getColor();
+    }
 }
