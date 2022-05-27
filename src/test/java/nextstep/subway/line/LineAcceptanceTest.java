@@ -3,8 +3,10 @@ package nextstep.subway.line;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
 import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +27,6 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         LineRequest 신분당선 = LineRequest.of("신분당선", "bg-red-600", 1L, 2L, 10);
         ExtractableResponse<Response> 노선_생성_요청_응답 = 노선_생성_요청(신분당선);
         노선_생성_성공_확인(노선_생성_요청_응답);
-        노선_조회_요청();
     }
 
     private ExtractableResponse<Response> 노선_생성_요청(LineRequest line) {
