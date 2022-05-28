@@ -19,7 +19,6 @@ import java.util.List;
 import static nextstep.subway.station.LineAcceptanceTest.LineAcceptanceTemplate.*;
 import static nextstep.subway.station.StationAcceptanceTest.StationAcceptanceTemplate.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관리 기능 구현")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -94,10 +93,10 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> 지하철_노선 = 지하철_노선_생성("2호선", "green", "강남역", "잠실역");
 
         // when
-        지하철_노선_수정(지하철_노선, "4호선", "blue");
+        ExtractableResponse<Response> 수정된_노선_응답 = 지하철_노선_수정(지하철_노선, "4호선", "blue");
 
         // then
-        지하철_노선_정보_수정을_확인한다(지하철_노선, "4호선", "blue");
+        지하철_노선_정보_수정을_확인한다(수정된_노선_응답);
     }
 
     /**
@@ -165,13 +164,8 @@ public class LineAcceptanceTest {
                     .extract().body().as(LineResponse.class);
         }
 
-        static void 지하철_노선_정보_수정을_확인한다(ExtractableResponse<Response> 수정된_지하철_노선, String updatedStationName, String updatedColor) {
-            LineResponse 조회된_지하철 = 지하철_노선_단건_조회(수정된_지하철_노선);
-
-            assertAll(
-                    () -> assertThat(조회된_지하철.getName()).isEqualTo(updatedStationName),
-                    () -> assertThat(조회된_지하철.getColor()).isEqualTo(updatedColor)
-            );
+        static void 지하철_노선_정보_수정을_확인한다(ExtractableResponse<Response> response) {
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         }
 
         static ExtractableResponse<Response> 지하철_노선_수정(ExtractableResponse<Response> response, String stationName, String color) {
