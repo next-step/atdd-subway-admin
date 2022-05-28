@@ -52,7 +52,7 @@ public class LineAcceptanceTest {
     @Test
     void 지하철노선_목록을_조회한다() {
         지하철노선_생성("1호선", "소요산역", "신창역");
-        지하철노선_생성("7호선","장암역","석남역");
+        지하철노선_생성("7호선", "장암역", "석남역");
 
         ExtractableResponse<Response> 지하철노선_목록 = RestAssured
                 .given().log().all()
@@ -82,6 +82,31 @@ public class LineAcceptanceTest {
                 .jsonPath().getObject(".", LineResponse.class);
 
         assertThat(지하철노선_1호선.getName()).isEqualTo(lineName);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @Test
+    void 지하철노선을_수정한다() {
+        Long id = 지하철노선_생성("1호선", "소요산역", "신창역")
+                .jsonPath().getObject("id", Long.class);
+
+        Map<String, Object> 분당선_정보 = new HashMap<>();
+        분당선_정보.put("name", "분당선");
+        분당선_정보.put("color", "노란색");
+
+        ExtractableResponse<Response> 수정결과 = RestAssured
+                .given().log().all()
+                .body(분당선_정보)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/" + id)
+                .then().log().all()
+                .extract();
+
+        assertThat(수정결과.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
 
