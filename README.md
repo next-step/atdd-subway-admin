@@ -115,6 +115,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [X] Then 해당 지하철 노선 정보는 삭제 확인
 
 ### 추가 기능
-- [ ] 공통로직 추출
-- [ ] 테스트간의 처리방법
+- [X] 공통로직 추출
+- [X] 테스트간의 처리방법
+- [X] API 명세 예제처럼 동작하는지 확인
 
