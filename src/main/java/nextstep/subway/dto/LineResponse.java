@@ -5,6 +5,7 @@ import nextstep.subway.domain.Station;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class LineResponse {
     private Long id;
@@ -14,6 +15,10 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getUpStation(), line.getDownStation());
+    }
+
+    public LineResponse(String name) {
+        this.name = name;
     }
 
     public LineResponse(Long id, String name, String color, Station upStation, Station downStation) {
@@ -38,5 +43,18 @@ public class LineResponse {
 
     public List<Station> getStations() {
         return stations;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LineResponse that = (LineResponse) o;
+        return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }
