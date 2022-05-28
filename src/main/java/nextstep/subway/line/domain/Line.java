@@ -73,7 +73,7 @@ public class Line extends BaseEntity {
         this.color = updateLine.getColor();
     }
 
-    public List<Station> findSortedStations() {
+    public LineStations findSortedLineStations() {
         return this.sections.findSortedStations();
     }
 }

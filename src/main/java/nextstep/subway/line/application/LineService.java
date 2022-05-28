@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.LineStations;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Distance;
@@ -75,9 +76,8 @@ public class LineService {
     }
 
     private List<StationResponse> generateStationResponse(Line line) {
-        return line.findSortedStations().stream()
-            .map(StationResponse::of)
-            .collect(Collectors.toList());
+        LineStations lineStations = line.findSortedLineStations();
+        return lineStations.convertToStationResponse();
     }
 
     private Section parseToSection(LineRequest lineRequest) {

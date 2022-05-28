@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import nextstep.subway.line.domain.LineStations;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -106,10 +107,10 @@ class SectionsTest {
 
         // when
         sections.add(강남역_양재역_구간);
-        List<Station> stations = sections.findSortedStations();
+        LineStations lineStations = sections.findSortedStations();
 
         // then
-        assertThat(stations).isEqualTo(Arrays.asList(강남역, 양재역, 판교역));
+        assertThat(lineStations).isEqualTo(LineStations.from(Arrays.asList(강남역, 양재역, 판교역)));
     }
 
     @DisplayName("기존 지하철역 구간 중간에 새로운 구간을 추가한다. (기존 구간의 하행역을 기준으로 추가해본다.)")
@@ -130,7 +131,7 @@ class SectionsTest {
         // then
         assertAll(
             () -> assertThat(sections.allocatedStationCount()).isEqualTo(3),
-            () -> assertThat(sections.findSortedStations()).isEqualTo(Arrays.asList(강남역, 양재시민의숲역, 판교역))
+            () -> assertThat(sections.findSortedStations()).isEqualTo(LineStations.from(Arrays.asList(강남역, 양재시민의숲역, 판교역)))
         );
     }
 
@@ -170,7 +171,7 @@ class SectionsTest {
         // then
         assertAll(
             () -> assertThat(sections.allocatedStationCount()).isEqualTo(3),
-            () -> assertThat(sections.findSortedStations()).isEqualTo(Arrays.asList(신사역, 강남역, 판교역))
+            () -> assertThat(sections.findSortedStations()).isEqualTo(LineStations.from(Arrays.asList(신사역, 강남역, 판교역)))
         );
     }
 
@@ -191,7 +192,7 @@ class SectionsTest {
         // then
         assertAll(
             () -> assertThat(sections.allocatedStationCount()).isEqualTo(3),
-            () -> assertThat(sections.findSortedStations()).isEqualTo(Arrays.asList(강남역, 판교역, 광교역))
+            () -> assertThat(sections.findSortedStations()).isEqualTo(LineStations.from(Arrays.asList(강남역, 판교역, 광교역)))
         );
     }
 }

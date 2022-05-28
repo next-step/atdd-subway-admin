@@ -15,6 +15,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import nextstep.subway.line.domain.LineStations;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.utils.StreamUtils;
 
@@ -69,7 +70,7 @@ public class Sections {
             section -> section.getId().equals(sectionId));
     }
 
-    public List<Station> findSortedStations() {
+    public LineStations findSortedStations() {
         List<Station> sortedStations = Lists.newArrayList();
         sortedStations.add(findFirstSection().getUpStation());
 
@@ -81,7 +82,7 @@ public class Sections {
             sortedStations.add(station);
         }
 
-        return Collections.unmodifiableList(sortedStations);
+        return LineStations.from(sortedStations);
     }
 
     public boolean containUpDownStation(Section section) {
