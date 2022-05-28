@@ -10,7 +10,7 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    List<Station> stations = new ArrayList<>();
+    private List<Station> stations = new ArrayList<>();
 
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getUpStation(), line.getDownStation());
