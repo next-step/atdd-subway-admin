@@ -116,7 +116,14 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void deleteLine() {
         // given
+        String 신분당선 = "신분당선";
+        LineRequest 신분당선_생성_요청 = LineRequest.of(신분당선, LINE_COLOR_GREEN, 지하철역_ID, 새로운지하철역_ID, DISTANCE);
+        ExtractableResponse<Response> 신분당선_생성_응답 = 지하철노선_생성(신분당선_생성_요청);
+
         // when
+        지하철노선_삭제(신분당선_생성_응답);
+
         // then
+        지하철노선_목록에서_찾을수_없음(신분당선);
     }
 }

@@ -43,4 +43,13 @@ public class LineAcceptanceMethod {
         ExtractableResponse<Response> 수정된_지하철노선_조회_응답 = 지하철노선_ID_조회(지하철노선_생성_응답);
         지하철노선_조회_응답_확인(수정된_지하철노선_조회_응답, 수정된_지하철노선_이름);
     }
+
+    public static void 지하철노선_삭제(ExtractableResponse<Response> 지하철노선_생성_응답) {
+        delete(지하철노선_생성_응답.header(HttpHeaders.LOCATION));
+    }
+
+    public static void 지하철노선_목록에서_찾을수_없음(String... 지하철노선_이름) {
+        List<String> 지하철노선_목록 = 지하철노선_목록_조회();
+        assertThat(지하철노선_목록).doesNotContain(지하철노선_이름);
+    }
 }
