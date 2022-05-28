@@ -36,11 +36,9 @@ public class LineService {
     }
 
     private void linkStation(Long stationId, Line line, String errorMessage) {
-        if (stationId != null) {
-            Station upStation = stationRepository.findById(stationId)
-                    .orElseThrow(() -> new IllegalArgumentException(errorMessage));
-            line.addStation(upStation);
-        }
+        Station upStation = stationRepository.findById(stationId)
+                .orElseThrow(() -> new IllegalArgumentException(errorMessage));
+        line.addStation(upStation);
     }
 
     @Transactional(readOnly = true)

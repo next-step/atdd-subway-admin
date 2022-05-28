@@ -27,6 +27,7 @@ class LineAcceptanceTest {
 
     private static final Map<String, Object> 신분당선 = new HashMap<>();
     private static final Map<String, Object> 분당선 = new HashMap<>();
+    private static final Map<String, Object> 중앙선 = new HashMap<>();
 
     static {
         신분당선.put("name", "신분당선");
@@ -36,6 +37,10 @@ class LineAcceptanceTest {
         분당선.put("name", "분당선");
         분당선.put("color", "bg-yellow-300");
         분당선.put("distance", 10);
+
+        중앙선.put("name", "중앙선");
+        중앙선.put("color", "bg-blue-100");
+        중앙선.put("distance", 20);
     }
 
     @LocalServerPort
@@ -50,12 +55,18 @@ class LineAcceptanceTest {
             RestAssured.port = port;
         }
         databaseClean.truncateAll();
-        Map<String, Object> 판교역 = new HashMap<>();
-        Map<String, Object> 정자역 = new HashMap<>();
-        판교역.put("name", "판교역");
-        정자역.put("name", "정자역");
-        신분당선.put("upStationId", ExtractUtils.extractId(requestCreate(판교역, StationAcceptanceTest.STATION_PATH)));
-        신분당선.put("downStationId", ExtractUtils.extractId(requestCreate(정자역, StationAcceptanceTest.STATION_PATH)));
+        setStationIds(신분당선,"판교역","정자역");
+        setStationIds(분당선,"죽전역","오리역");
+        setStationIds(중앙선,"청량리역","망우역");
+    }
+
+    private void setStationIds(Map<String,Object> line, String upStationName, String downStationName) {
+        Map<String, Object> upStation = new HashMap<>();
+        Map<String, Object> downStation = new HashMap<>();
+        upStation.put("name", upStationName);
+        downStation.put("name", downStationName);
+        line.put("upStationId", ExtractUtils.extractId(requestCreate(upStation, StationAcceptanceTest.STATION_PATH)));
+        line.put("downStationId", ExtractUtils.extractId(requestCreate(downStation, StationAcceptanceTest.STATION_PATH)));
     }
 
     /**
@@ -149,7 +160,7 @@ class LineAcceptanceTest {
     @Test
     void deleteLine() {
         //given
-        ExtractableResponse<Response> createResponse = requestCreate(신분당선, LINE_PATH);
+        ExtractableResponse<Response> createResponse = requestCreate(중앙선, LINE_PATH);
 
         //when
         ExtractableResponse<Response> response = requestDeleteById(LINE_PATH, ExtractUtils.extractId(createResponse));
