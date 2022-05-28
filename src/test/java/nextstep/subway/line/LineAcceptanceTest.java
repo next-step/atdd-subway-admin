@@ -46,9 +46,9 @@ public class LineAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> lineNames = fetchLinesByPath("name", String.class);
+        List<String> lineNames = getLinesIn("name", String.class);
         assertThat(lineNames).containsAnyOf("분당선");
-        List<String> lineColors = fetchLinesByPath("color", String.class);
+        List<String> lineColors = getLinesIn("color", String.class);
         assertThat(lineColors).containsAnyOf("노란색");
     }
 
@@ -65,7 +65,7 @@ public class LineAcceptanceTest {
         createLine("3호선", "주황색");
 
         // when
-        List<String> lineNames = fetchLinesByPath("name", String.class);
+        List<String> lineNames = getLinesIn("name", String.class);
 
         // then
         assertThat(lineNames).containsExactly("분당선", "3호선");
@@ -96,6 +96,7 @@ public class LineAcceptanceTest {
      * When 생성한 지하철 노선을 수정하면
      * Then 해당 지하철 노선 정보는 수정된다
      */
+    @DisplayName("지하철 노선을 수정한다.")
     @Test
     void 지하철_노선_수정() {
         ExtractableResponse<Response> response = createLine("분당선", "노란색");
@@ -132,7 +133,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private <T> List<T> fetchLinesByPath(String path, Class<T> genericType) {
+    private <T> List<T> getLinesIn(String path, Class<T> genericType) {
         return RestAssured.given().log().all()
                 .when().get(ENDPOINT)
                 .then().log().all()
