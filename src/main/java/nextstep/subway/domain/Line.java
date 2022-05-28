@@ -22,7 +22,16 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        this.sections.addSection(Section.of(upStation, downStation, distance));
+        this.addSection(Section.of(upStation, downStation, distance));
+    }
+
+    public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
+        return new Line(name, color, upStation, downStation, distance);
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
+        section.setLine(this);
     }
 
     public Long getId() {

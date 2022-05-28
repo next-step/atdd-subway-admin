@@ -11,12 +11,13 @@ import java.util.Map;
 public class LineRestAssured {
     private static final String RESOURCE = "/lines";
 
-    public static ExtractableResponse<Response> 노선_등록(String name, String color, Long upStationId, Long downStationId) {
+    public static ExtractableResponse<Response> 노선_등록(String name, String color, Long upStationId, Long downStationId, int distance) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);
+        params.put("distance", distance);
 
         return RestAssured.given().log().all()
                 .body(params)

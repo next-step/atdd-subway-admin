@@ -23,7 +23,6 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = getStation(lineRequest.getUpStationId());
         Station downStation = getStation(lineRequest.getDownStationId());
@@ -59,7 +58,7 @@ public class LineService {
         Line line = getLine(lineId);
         Station upStation = getStation(request.getUpStationId());
         Station downStation = getStation(request.getDownStationId());
-        line.addSetion(Section.of(upStation, downStation, request.getDistance()));
+        line.addSetion(request.toSection(upStation, downStation));
         lineRepository.save(line);
         return line;
     }
