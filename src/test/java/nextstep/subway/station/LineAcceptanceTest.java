@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -80,9 +81,15 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> 지하철_노선_목록_조회하기_response = 지하철_노선_목록_조회하기();
 
         //then
-        assertThat(지하철_노선_목록_조회하기_response.jsonPath().getList("."))
-            .extracting("id", "name", "color")
-            .contains(tuple(ID_신분당선, "신분당선", "bg-red-600"))
-            .contains(tuple(ID_2호선, "2호선", "bg-green-600"));
+        assertAll(
+            ()->assertThat(지하철_노선_목록_조회하기_response.jsonPath().getList("."))
+                    .extracting("id", "name", "color")
+                    .contains(tuple(Integer.parseInt(ID_신분당선), "신분당선", "bg-red-600"))
+                    .contains(tuple(Integer.parseInt(ID_2호선), "2호선", "bg-green-600")),
+            ()->assertThat(지하철_노선_목록_조회하기_response.jsonPath().getList("stations.name"))
+                .contains(Arrays.asList("강남역","양재역"))
+                .contains(Arrays.asList("강남역","역삼역"))
+        );
+
     }
 }
