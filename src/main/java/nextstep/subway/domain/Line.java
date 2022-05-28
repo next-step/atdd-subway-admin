@@ -18,7 +18,7 @@ public class Line extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    private long id;
+    private Long id;
 
     private String name;
 
@@ -33,7 +33,7 @@ public class Line extends BaseEntity {
     @JoinColumn(name = "DOWN_STATION_ID", foreignKey = @ForeignKey(name = "fk_line_down_station"))
     private Station downStation;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
