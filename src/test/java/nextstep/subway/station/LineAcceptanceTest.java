@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,7 +50,6 @@ public class LineAcceptanceTest {
      * When 지하철 노선 목록을 조회하면
      * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
      */
-
     @Test
     void 지하철_노선_목록을_조회한다() {
         // given
@@ -60,7 +60,32 @@ public class LineAcceptanceTest {
         List<String> 지하철_노선_목록 = 지하철_노선_목록_조회();
 
         // then
-        assertThat(지하철_노선_목록).hasSize(2);
+        노선_목록_사이즈를_확인한다(지하철_노선_목록, 2);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @Test
+    void 지하철_노선을_조회한다() {
+        // given
+        ExtractableResponse<Response> _2호선 = 지하철_노선_생성("2호선", "green", "강남역", "잠실역");
+
+        // when
+        LineResponse 조회된_지하철_노선 = 지하철_노선_단건_조회(_2호선);
+
+        // then
+        노선_정상_응답을_확인한다(조회된_지하철_노선);
+    }
+
+    private LineResponse 지하철_노선_단건_조회(ExtractableResponse<Response> response) {
+        return RestAssured
+                .given().log().all()
+                .when().post("/lines" + response.body().jsonPath().getLong("id"))
+                .then().log().all()
+                .extract().body().as(LineResponse.class);
     }
 
     static class LineAcceptanceTemplate {
@@ -93,6 +118,14 @@ public class LineAcceptanceTest {
 
         static void 목록에_생성한_노선이_포함된다(List<String> lineNames, String line) {
             assertThat(lineNames).containsExactly(line);
+        }
+
+        static void 노선_목록_사이즈를_확인한다(List<String> 지하철_노선_목록, int size) {
+            assertThat(지하철_노선_목록).hasSize(size);
+        }
+
+        static void 노선_정상_응답을_확인한다(LineResponse 조회된_지하철_노선) {
+            assertThat(조회된_지하철_노선).isNotNull();
         }
     }
 }
