@@ -11,14 +11,18 @@ public class LineResponse extends BaseDto {
     private final String name;
     private final String color;
 
+    private final int distance;
+
     private final List<StationResponse> stations;
 
-    private LineResponse(Long id, String name, String color, List<StationResponse> stations, LocalDateTime createdDate,
+    private LineResponse(Long id, String name, String color, int distance, List<StationResponse> stations,
+                         LocalDateTime createdDate,
                          LocalDateTime modifiedDate) {
         super(createdDate, modifiedDate);
         this.id = id;
         this.name = name;
         this.color = color;
+        this.distance = distance;
         this.stations = stations;
     }
 
@@ -26,7 +30,8 @@ public class LineResponse extends BaseDto {
         List<StationResponse> stations = new ArrayList<>();
         stations.add(StationResponse.of(line.getUpStation()));
         stations.add(StationResponse.of(line.getDownStation()));
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations, line.getCreatedDate(),
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getDistance(), stations,
+                line.getCreatedDate(),
                 line.getModifiedDate());
     }
 
@@ -44,6 +49,10 @@ public class LineResponse extends BaseDto {
 
     public List<StationResponse> getStations() {
         return stations;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     @Override

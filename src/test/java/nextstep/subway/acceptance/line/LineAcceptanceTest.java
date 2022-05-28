@@ -60,7 +60,7 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
      * When 기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성하면
      * Then 지하철 노선이 생성이 안된다
      */
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성하면 노선이 생성이 안된다.")
     @Test
     void createLineWithDuplicateName() {
         // Given
@@ -136,20 +136,13 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void updateLine() {
         // Given
-        지하철노선_생성_요청("신분당선", "bg-red-600", upStationId, downStationId, 10);
+        long id = 지하철노선_생성_요청("신분당선", "bg-red-600", upStationId, downStationId, 10).jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> updateResponse = 지하철노선_변경_요청("신분당선", "bg-blue-600", upStationId, downStationId, 12);
+        ExtractableResponse<Response> updateResponse = 지하철노선_변경_요청(id, "신분당선", "bg-blue-600");
 
         // then
-        String lineNames = updateResponse.jsonPath().getString("name");
-        String colors = updateResponse.jsonPath().getString("color");
-        List<String> stations = updateResponse.jsonPath().getList("stations.name");
-        assertAll(
-                () -> assertThat(lineNames).isEqualTo("신분당선"),
-                () -> assertThat(colors).isEqualTo("bg-blue-600"),
-                () -> assertThat(stations).containsExactly("지하철역", "새로운지하철역")
-        );
+        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     /**
@@ -200,17 +193,14 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
                 .extract();
     }
 
-    ExtractableResponse<Response> 지하철노선_변경_요청(String name, String color, long upStationId, long downStationId, int distance) {
+    ExtractableResponse<Response> 지하철노선_변경_요청(long id, String name, String color) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", distance);
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines")
+                .when().put("/lines/" + id)
                 .then().log().all()
                 .extract();
     }

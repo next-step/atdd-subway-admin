@@ -6,6 +6,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.StationResponse;
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.StationRepository;
@@ -40,15 +41,16 @@ public class LineService {
     @Transactional
     public LineResponse updateLine(long id, LineRequest lineRequest) {
         LineResponse line = findLineById(id);
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
+        List<StationResponse> stations = line.getStations();
+        Station upStation = stationRepository.findById(stations.get(0).getId())
                 .orElseThrow(() -> new NotFoundException("등록된 지하철역이 없습니다."));
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId())
+        Station downStation = stationRepository.findById(stations.get(1).getId())
                 .orElseThrow(() -> new NotFoundException("등록된 지하철역이 없습니다."));
-        Line newLine = Line.builder(lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance())
+        Line newLine = Line.builder(lineRequest.getName(), lineRequest.getColor(), line.getDistance())
                 .id(line.getId())
-                .build();
-        newLine.addUpStation(upStation);
-        newLine.addDownStation(downStation);
+                .build()
+                .addUpStation(upStation)
+                .addDownStation(downStation);
         Line persistStation = lineRepository.save(newLine);
         return LineResponse.of(persistStation);
     }
