@@ -52,6 +52,10 @@ public class LineService {
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("존재하지 않는 노선입니다."));
-        line.update(lineRequest.getName(),lineRequest.getColor());
+        line.update(lineRequest.getName(), lineRequest.getColor());
+    }
+
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
     }
 }
