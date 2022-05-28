@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -62,9 +63,31 @@ public class LineAcceptanceTest {
         assertThat(지하철노선_목록.jsonPath().getList("name", String.class).size()).isEqualTo(2);
     }
 
-    private void 지하철노선_생성(String lineName, String upStationName, String downStationName) {
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @Test
+    void 지하철노선을_조회한다() {
+        String lineName = "1호선";
+        Long id = 지하철노선_생성(lineName, "소요산역", "신창역")
+                .jsonPath().getObject("id", Long.class);
+
+        LineResponse 지하철노선_1호선 = RestAssured
+                .given().log().all()
+                .when().get("/lines/" + id)
+                .then().log().all()
+                .extract()
+                .jsonPath().getObject(".", LineResponse.class);
+
+        assertThat(지하철노선_1호선.getName()).isEqualTo(lineName);
+    }
+
+
+    private ExtractableResponse<Response> 지하철노선_생성(String lineName, String upStationName, String downStationName) {
         Map<String, Object> params = 지하철노선_정보_생성(lineName, upStationName, downStationName);
-        RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
