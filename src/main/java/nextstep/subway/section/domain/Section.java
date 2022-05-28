@@ -140,11 +140,14 @@ public class Section {
             return false;
         }
         Section section = (Section) o;
-        return Objects.equals(id, section.id);
+        return Objects.equals(getId(), section.getId()) && Objects.equals(
+            getDistance(), section.getDistance()) && Objects.equals(getUpStation(),
+            section.getUpStation()) && Objects.equals(getDownStation(),
+            section.getDownStation()) && Objects.equals(getLine(), section.getLine());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(getId());
     }
 }
