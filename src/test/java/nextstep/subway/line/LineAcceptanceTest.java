@@ -109,6 +109,26 @@ public class LineAcceptanceTest {
         assertThat(수정결과.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @Test
+    void 지하철노선을_삭제한다() {
+        Long id = 지하철노선_생성("1호선", "소요산역", "신창역")
+                .jsonPath().getObject("id", Long.class);
+
+        ExtractableResponse<Response> 삭제결과 = RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/" + id)
+                .then().log().all()
+                .extract();
+
+        assertThat(삭제결과.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
 
     private ExtractableResponse<Response> 지하철노선_생성(String lineName, String upStationName, String downStationName) {
         Map<String, Object> params = 지하철노선_정보_생성(lineName, upStationName, downStationName);
