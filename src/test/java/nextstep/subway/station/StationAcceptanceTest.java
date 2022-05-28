@@ -147,11 +147,11 @@ public class StationAcceptanceTest {
         assertThat(response.jsonPath().getList(".").size()).isEqualTo(2);
     }
 
-    public static void 지하철역을_생성(String name) {
+    public static ExtractableResponse<Response> 지하철역을_생성(String name) {
         Map<String, String> param = new HashMap<>();
         param.put("name", name);
 
-        RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .body(param)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()

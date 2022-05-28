@@ -43,6 +43,36 @@ public class LineAcceptanceTest {
         assertThat(파란색_1호선.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
+    /**
+     * Given 2개의 지하철 노선을 생성하고
+     * When 지하철 노선 목록을 조회하면
+     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     */
+    @Test
+    void 지하철노선_목록을_조회한다() {
+        지하철노선_생성("1호선", "소요산역", "신창역");
+        지하철노선_생성("7호선","장암역","석남역");
+
+        ExtractableResponse<Response> 지하철노선_목록 = RestAssured
+                .given().log().all()
+                .when().get("/lines")
+                .then().log().all()
+                .extract();
+
+        assertThat(지하철노선_목록.jsonPath().getList("name", String.class).size()).isEqualTo(2);
+    }
+
+    private void 지하철노선_생성(String lineName, String upStationName, String downStationName) {
+        Map<String, Object> params = 지하철노선_정보_생성(lineName, upStationName, downStationName);
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
     private ExtractableResponse<Response> 지하철노선_생성(String name, String color, Long upStationId, Long downStationId) {
         Map<String, Object> param = new HashMap<>();
         param.put("name", name);
@@ -57,6 +87,23 @@ public class LineAcceptanceTest {
                 .post("/lines")
                 .then().log().all()
                 .extract();
+    }
+
+    private static Map<String, Object> 지하철노선_정보_생성(String lineName, String upStationName, String downStationName) {
+        Long upStationId = StationAcceptanceTest.지하철역을_생성(upStationName)
+                .jsonPath().getObject("id", Long.class);
+
+        Long downStationId = StationAcceptanceTest.지하철역을_생성(downStationName)
+                .jsonPath().getObject("id", Long.class);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", lineName);
+        params.put("color", "색상");
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", 10);
+
+        return params;
     }
 
 
