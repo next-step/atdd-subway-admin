@@ -1,6 +1,7 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.LineService;
+import nextstep.subway.domain.Line;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class LineController {
@@ -31,12 +33,20 @@ public class LineController {
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLineById(@PathVariable Long id) {
-        return ResponseEntity.ok(LineResponse.of(lineService.findLineById(id)));
+        Optional<Line> line = lineService.findLineById(id);
+        return line.map(value -> ResponseEntity.ok(LineResponse.of(value)))
+                .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     @PutMapping("/lines/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineUpdateRequest request) {
         lineService.update(id, request);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/lines/{id}")
+    public ResponseEntity deleteLine(@PathVariable Long id) {
+        lineService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

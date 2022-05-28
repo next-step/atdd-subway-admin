@@ -105,6 +105,24 @@ class LineAcceptanceTest {
         assertThat(findLine.getColor()).isEqualTo("red");
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철 노선을 삭제한다.")
+    @Test
+    void deleteLine() {
+        // given
+        String location = 지하철노선_생성_성공("1호선", "blue", "영등포역", "신길역", 5);
+
+        // when
+        지하철노선_삭제_성공(location);
+
+        // then
+        지하철노선_조회_실패(location);
+    }
+
     String 지하철노선_생성_성공(String name, String color, String upStationName, String downStationName, long distance) {
         long upStationId = StationApi.create(upStationName).jsonPath().getLong("id");
         long downStationId = StationApi.create(downStationName).jsonPath().getLong("id");
@@ -128,5 +146,15 @@ class LineAcceptanceTest {
     void 지하철노선_수정_성공(String location, String name, String color) {
         ExtractableResponse<Response> response = LineApi.update(location, new LineUpdateRequest(name, color));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    void 지하철노선_삭제_성공(String location) {
+        ExtractableResponse<Response> response = LineApi.delete(location);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    void 지하철노선_조회_실패(String location) {
+        ExtractableResponse<Response> response = LineApi.find(location);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }

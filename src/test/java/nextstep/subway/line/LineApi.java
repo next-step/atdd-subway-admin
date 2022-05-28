@@ -46,4 +46,12 @@ public class LineApi {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> delete(String location) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete(location)
+                .then().log().all()
+                .extract();
+    }
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,13 +42,17 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public Line findLineById(Long id) {
-        return lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+    public Optional<Line> findLineById(Long id) {
+        return lineRepository.findById(id);
     }
 
     @Transactional
     public void update(Long id, LineUpdateRequest request) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-        line.modifyBy(request);
+        lineRepository.findById(id).ifPresent(line -> line.modifyBy(request));
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        lineRepository.deleteById(id);
     }
 }
