@@ -120,7 +120,7 @@ public class StationAcceptanceTest {
         assertThat(selectResponse).hasSize(0);
     }
 
-    private ValidatableResponse 지하철역_생성(String name) {
+    public static ValidatableResponse 지하철역_생성(String name) {
         return RestAssured.given().log().all()
             .body(new HashMap<String,String>(){{put("name", name);}})
             .contentType(MediaType.APPLICATION_JSON_VALUE)
