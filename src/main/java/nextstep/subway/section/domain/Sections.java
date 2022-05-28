@@ -1,6 +1,9 @@
 package nextstep.subway.section.domain;
 
-import static nextstep.subway.section.domain.exception.SectionExceptionMessage.*;
+import static nextstep.subway.section.domain.exception.SectionExceptionMessage.NEW_SECTION_DISTANCE_IS_GREATER_OR_EQUALS;
+import static nextstep.subway.section.domain.exception.SectionExceptionMessage.NOT_FOUND_SECTION;
+import static nextstep.subway.section.domain.exception.SectionExceptionMessage.NOT_FOUND_SECTION_BY_STATION;
+import static nextstep.subway.section.domain.exception.SectionExceptionMessage.NOT_FOUND_UP_STATION_BY_SECTION;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
@@ -12,8 +15,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-import nextstep.subway.section.domain.exception.SectionExceptionMessage;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.utils.StreamUtils;
 
 @Embeddable
 public class Sections {
@@ -67,18 +70,14 @@ public class Sections {
 
     private Section findFirstSection() {
         List<Station> downStations = this.findDownStations();
-        return this.sections.stream()
-            .filter(section -> !downStations.contains(section.getUpStation()))
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException("첫번째 Section을 못찾음"));
+        return StreamUtils.filterAndFindFirst(this.sections, section -> !downStations.contains(section.getUpStation()))
+            .orElseThrow(() -> new IllegalStateException(NOT_FOUND_SECTION.getMessage()));
     }
 
     private Section findLastSection() {
         List<Station> upStations = this.findUpStations();
-        return this.sections.stream()
-            .filter(section -> !upStations.contains(section.getDownStation()))
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException("마지막 Section을 못찾음"));
+        return StreamUtils.filterAndFindFirst(this.sections, section -> !upStations.contains(section.getDownStation()))
+            .orElseThrow(() -> new IllegalStateException(NOT_FOUND_SECTION.getMessage()));
     }
 
     public long allocatedStationCount() {
@@ -117,28 +116,23 @@ public class Sections {
     }
 
     private Optional<Section> findSectionByDownStation(Station station) {
-        return this.sections.stream()
-            .filter(section -> section.isEqualsDownStation(station))
-            .findFirst();
+        return StreamUtils.filterAndFindFirst(this.sections,
+            section -> section.isEqualsDownStation(station));
     }
 
     private Optional<Section> findSectionByUpStation(Station station) {
-        return this.sections.stream()
-            .filter(section -> section.isEqualsUpStation(station))
-            .findFirst();
+        return StreamUtils.filterAndFindFirst(this.sections,
+            section -> section.isEqualsUpStation(station));
     }
 
     public Optional<Section> findSectionBySectionId(Long sectionId) {
-        return this.sections.stream()
-            .filter(section -> section.getId().equals(sectionId))
-            .findFirst();
+        return StreamUtils.filterAndFindFirst(this.sections,
+            section -> section.getId().equals(sectionId));
     }
 
     public List<Station> findSortedStations() {
-        Station firstStation = this.findFirstStation();
-
         List<Station> sortedStations = Lists.newArrayList();
-        sortedStations.add(firstStation);
+        sortedStations.add(findFirstSection().getUpStation());
 
         for (int i = 0; i < this.sections.size(); i++) {
             Station station = this.findSectionByUpStation(sortedStations.get(i))
@@ -151,29 +145,12 @@ public class Sections {
         return Collections.unmodifiableList(sortedStations);
     }
 
-    private Station findFirstStation() {
-        List<Station> downStations = this.findDownStations();
-        Optional<Section> firstStation = this.sections.stream()
-            .filter(section -> !downStations.contains(section.getUpStation()))
-            .findFirst();
-
-        if (!firstStation.isPresent()) {
-            throw new IllegalStateException(NOT_FOUND_FIRST_STATION.getMessage());
-        }
-
-        return firstStation.get().getUpStation();
-    }
-
     private List<Station> findDownStations() {
-        return this.sections.stream()
-            .map(Section::getDownStation)
-            .collect(Collectors.toList());
+        return StreamUtils.mapToList(this.sections, Section::getDownStation);
     }
 
     private List<Station> findUpStations() {
-        return this.sections.stream()
-            .map(Section::getUpStation)
-            .collect(Collectors.toList());
+        return StreamUtils.mapToList(this.sections, Section::getUpStation);
     }
 
     public boolean containUpDownStation(Section section) {
