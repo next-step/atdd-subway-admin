@@ -1,10 +1,15 @@
 package nextstep.subway.station;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ValidatableResponse;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.StationRequest;
+import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
 
 import java.util.List;
 
@@ -48,6 +54,8 @@ public class StationAcceptanceTest {
         List<Station> stations = 지하철역_목록_조회();
         지하철역_등록_검증(stations, "강남역");
     }
+
+
 
     /**
      * Given 지하철역을 생성하고
@@ -149,5 +157,19 @@ public class StationAcceptanceTest {
 
     public static JsonPath getJsonPathForResponse(ValidatableResponse response) {
         return response.extract().jsonPath();
+    }
+
+    public static <T> T as(ValidatableResponse createResponse, Class<T> clazz) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_SELF_REFERENCES_AS_NULL);
+
+        String body = createResponse.extract().body().asString();
+        try {
+            return mapper.readValue(body, clazz);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
