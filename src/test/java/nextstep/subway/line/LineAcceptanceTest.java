@@ -113,6 +113,32 @@ public class LineAcceptanceTest {
     @Test
     @DisplayName("지하철노선 수정")
     void fixLine() {
+        //Given 지하철 노선을 생성하고
+        final ExtractableResponse<Response> 노선을_생성한다 = 노선을_생성한다(new LineRequest("1호선", "bg-red-500",
+                10, downStationId, upStationId));
+
+        //When 생성한 지하철 노선을 수정하면
+        Long lineId = 노선을_생성한다.jsonPath().getLong("id");
+        LineRequest lineRequest = new LineRequest();
+        lineRequest.setColor("bg-blue-500");
+        lineRequest.setName("2호선");
+
+        final ExtractableResponse<Response> 노선을_수정한다 = RestAssured.given().log().all()
+                .pathParam("id", lineId)
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/{id}")
+                .then().log().all()
+                .extract();
+
+        //Then 해당 지하철 노선 정보는 수정된다
+        final ExtractableResponse<Response> 수정된_노선 = 노선을_조회한다(lineId);
+        assertAll(
+                () -> assertThat(노선을_수정한다.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(수정된_노선.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(수정된_노선.jsonPath().getString("name")).isEqualTo("2호선"),
+                () -> assertThat(수정된_노선.jsonPath().getString("color")).isEqualTo("bg-blue-500")
+        );
 
     }
 

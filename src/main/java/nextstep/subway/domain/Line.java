@@ -59,6 +59,15 @@ public class Line extends BaseEntity {
         return this;
     }
 
+    public void changeColor(String color) {
+        validEmpty(color, "변경할 색상명이 없습니다.");
+        this.color = color;
+    }
+
+    public void changeName(String name) {
+        validEmpty(name, "변경할 이름이 없습니다.");
+        this.name = name;
+    }
 
     private void valid(String name, String color) {
         validEmpty(name, "노선의 이름은 필수 입니다.");

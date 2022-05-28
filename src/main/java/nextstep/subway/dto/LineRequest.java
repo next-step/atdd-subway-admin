@@ -11,7 +11,7 @@ public class LineRequest {
     private Long downStationId;
 
 
-    private LineRequest() {
+    public LineRequest() {
 
     }
 
