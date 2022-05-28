@@ -133,7 +133,7 @@ public class LineAcceptanceTest {
     }
 
     public static ExtractableResponse<Response> 지하철_노선을_생성한다(String name, String color) {
-        return RestAssuredTemplate.post("/lines", new LineRequest(name, color));
+        return RestAssuredTemplate.post("/lines", new LineRequest(name, color, 1, 2, 10));
     }
 
     public static List<String> 모든_지하철_노선을_조회한다() {
@@ -145,7 +145,7 @@ public class LineAcceptanceTest {
     }
 
     public static ExtractableResponse<Response> 지하철_노선을_수정한다(long lineId, String name, String color) {
-        return RestAssuredTemplate.put("/lines/" + lineId, new LineRequest(name, color));
+        return RestAssuredTemplate.put("/lines/" + lineId, new LineRequest(name, color, 1, 2, 10));
     }
 
     public static ExtractableResponse<Response> 지하철_노선을_삭제한다(long lineId) {
