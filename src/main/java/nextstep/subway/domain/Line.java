@@ -29,7 +29,7 @@ public class Line extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color, Long distance, Station upStation, Station downStation) {
