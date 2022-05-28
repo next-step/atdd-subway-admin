@@ -12,22 +12,16 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @ManyToOne
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-
-    @ManyToOne
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation) {
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
+        this.sections.addSection(Section.of(upStation, downStation, distance));
     }
 
     public Long getId() {
@@ -42,12 +36,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
+    public Sections getSections() {
+        return sections;
     }
 
     public void update(String name, String color) {
