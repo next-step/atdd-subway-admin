@@ -45,7 +45,7 @@ public class Section {
         this.distance = distance;
     }
 
-    public List<Station> getStations() {
+    public List<Station> getLineStations() {
         return Arrays.asList(upStationId, downStationId);
     }
 
