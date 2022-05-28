@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -19,17 +20,30 @@ public class LineTest {
     void nameIsNotEmpty() {
         assertAll(
                 () -> assertThatIllegalArgumentException()
-                        .isThrownBy(() -> new Line("", 1L, 2L, Distance.of(2))),
+                        .isThrownBy(() -> new Line("","bg-red" ,new Station("인천역"), new Station("주안역"), Distance.of(2))),
 
                 () -> assertThatIllegalArgumentException()
-                        .isThrownBy(() -> new Line(null, 1L, 2L, Distance.of(2)))
+                        .isThrownBy(() -> new Line(null, "bg-red",new Station("인천역"), new Station("주안역"), Distance.of(2)))
         );
     }
 
     @Test
+    @DisplayName("색상은 필수 이다.")
+    void colorIsNotEmpty() {
+        assertAll(
+                () -> assertThatIllegalArgumentException()
+                        .isThrownBy(() -> new Line("1호선",null ,new Station("인천역"), new Station("주안역"), Distance.of(2))),
+
+                () -> assertThatIllegalArgumentException()
+                        .isThrownBy(() -> new Line("1호선", "",new Station("인천역"), new Station("주안역"), Distance.of(2)))
+        );
+    }
+
+
+    @Test
     @DisplayName("노선이 생성 된다.")
     void createLine() {
-        Line line = new Line("이름", 1L, 1L, Distance.of(3));
+        Line line = new Line("이름","bg-red" ,new Station("인천역"), new Station("주안역"), Distance.of(3));
         assertThat(line.getName()).isEqualTo("이름");
     }
 }

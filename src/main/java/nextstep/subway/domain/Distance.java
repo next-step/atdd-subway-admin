@@ -1,10 +1,20 @@
 package nextstep.subway.domain;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+
+@Embeddable
 public class Distance {
     private static final int MIN_DISTANCE = 0;
     private static final IllegalArgumentException DISTANCE_VALID_EXCEPTION
             = new IllegalArgumentException("거리는 0보다 커야 합니다.");
-    private final int distance;
+
+    @Column
+    private int distance;
+
+    protected Distance() {
+
+    }
 
     private Distance(int distance) {
         valid(distance);

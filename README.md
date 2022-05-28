@@ -89,12 +89,13 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ### 인수 조건 
 
-* 지하철노선 생성
+- [X] 지하철노선 생성
   ``` text
   When 지하철 노선을 생성하면
   Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
   ```
-* 지하철노선 목록 조회
+  
+- [ ] 지하철노선 목록 조회
   ```text
   Given 2개의 지하철 노선을 생성하고
   When 지하철 노선 목록을 조회하면
@@ -104,19 +105,19 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
       노선 조회시 포함된 역 목록이 함께 응답되게  
 
 
-* 지하철노선 조회 
+- [ ] 지하철노선 조회 
   ```text
   Given 지하철 노선을 생성하고
   When 생성한 지하철 노선을 조회하면
   Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
   ```
-* 지하철노선 수정
+- [ ] 지하철노선 수정
   ```text
   Given 지하철 노선을 생성하고
   When 생성한 지하철 노선을 수정하면
   Then 해당 지하철 노선 정보는 수정된다
   ```
-* 지하철노선 삭제
+- [ ] 지하철노선 삭제
   ```text
   Given 지하철 노선을 생성하고
   When 생성한 지하철 노선을 삭제하면
