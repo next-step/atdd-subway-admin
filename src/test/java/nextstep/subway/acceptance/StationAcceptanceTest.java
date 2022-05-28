@@ -1,4 +1,4 @@
-package nextstep.subway.station;
+package nextstep.subway.acceptance;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -26,7 +26,7 @@ public class StationAcceptanceTest {
     int port;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
@@ -97,9 +97,7 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        long id = 지하철역_생성("강남역")
-                .jsonPath()
-                .getLong("id");
+        long id = 지하철역_생성_id_반환("강남역");
 
         // when
         지하철역_삭제(id);
@@ -108,21 +106,22 @@ public class StationAcceptanceTest {
         지하철역_존재하지_않음(전체_지하철역_이름_조회(), "강남역");
     }
 
-    private ExtractableResponse<Response> 전체_지하철역_조회() {
+    public static ExtractableResponse<Response> 전체_지하철역_조회() {
         return RestAssured
                 .given().log().all()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/stations")
-                .then().log().all().extract();
+                .then().log().all()
+                .extract();
     }
 
-    private List<String> 전체_지하철역_이름_조회() {
+    public static List<String> 전체_지하철역_이름_조회() {
         return 전체_지하철역_조회()
                 .jsonPath()
                 .getList("name", String.class);
     }
 
-    private ExtractableResponse<Response> 지하철역_생성(String name) {
+    public static ExtractableResponse<Response> 지하철역_생성(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
@@ -135,7 +134,13 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철역_삭제(long id) {
+    public static long 지하철역_생성_id_반환(String name) {
+        return 지하철역_생성(name)
+                .jsonPath()
+                .getLong("id");
+    }
+
+    public static ExtractableResponse<Response> 지하철역_삭제(long id) {
         return RestAssured
                 .given().log().all()
                 .when().delete("/stations/" + id)
