@@ -90,6 +90,5 @@ public class LineAcceptanceTest {
                 .contains(Arrays.asList("강남역","양재역"))
                 .contains(Arrays.asList("강남역","역삼역"))
         );
-
     }
 }
