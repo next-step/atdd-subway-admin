@@ -127,5 +127,25 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        final ExtractableResponse<Response> stationResponse = createStationAndReturnResponse("강남역");
+
+        // when
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/stations/{id}", stationResponse.body().jsonPath().getInt("id"))
+                .then().log().all()
+                .extract();
+
+        // then
+        final ExtractableResponse<Response> getStationsResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/stations")
+                .then().log().all()
+                .extract();
+
+        assertThat(getStationsResponse.body().jsonPath().getList("$")).hasSize(0);
     }
 }
