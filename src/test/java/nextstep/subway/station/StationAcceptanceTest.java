@@ -1,66 +1,19 @@
 package nextstep.subway.station;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.subway.BaseAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import static nextstep.subway.station.StationRestAssured.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-
-    static final String RESOURCE = "/stations";
-
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-    }
-
-    private ExtractableResponse<Response> reqCreateStation(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(RESOURCE)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> reqGetStation() {
-        return RestAssured.given().log().all()
-                .when().get(RESOURCE)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> reqDeleteStation(Long stationId) {
-        return RestAssured.given().log().all()
-                .accept(ContentType.JSON)
-                .when().delete(RESOURCE + "/{id}", stationId)
-                .then().log().all()
-                .extract();
-    }
-
+public class StationAcceptanceTest extends BaseAcceptanceTest {
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다
@@ -68,16 +21,16 @@ public class StationAcceptanceTest {
      */
     @DisplayName("지하철역을 생성한다.")
     @Test
-    void reqCreateStation() {
+    void createStations() {
         // when
         String station = "강남역";
-        ExtractableResponse<Response> response = reqCreateStation(station);
+        ExtractableResponse<Response> response = 지하철역_등록(station);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames = reqGetStation().jsonPath().getList("name", String.class);
+        List<String> stationNames = 지하철역_조회().jsonPath().getList("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -91,10 +44,10 @@ public class StationAcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         String station = "강남역";
-        reqCreateStation(station);
+        지하철역_등록(station);
 
         // when
-        ExtractableResponse<Response> response = reqCreateStation(station);
+        ExtractableResponse<Response> response = 지하철역_등록(station);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -109,11 +62,11 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        reqCreateStation("강남역");
-        reqCreateStation("역삼역");
+        지하철역_등록("강남역");
+        지하철역_등록("역삼역");
 
         // when
-        List<String> stationNames = reqGetStation().jsonPath().getList("name", String.class);
+        List<String> stationNames = 지하철역_조회().jsonPath().getList("name", String.class);
 
         // then
         assertThat(stationNames).hasSize(2);
@@ -128,13 +81,13 @@ public class StationAcceptanceTest {
     @Test
     void deleteStations() {
         // given
-        Long stationId = reqCreateStation("강남역").jsonPath().getLong("id");
+        Long stationId = 지하철역_등록("강남역").jsonPath().getLong("id");
 
         // when
-        reqDeleteStation(stationId);
+        지하철역_삭제(stationId);
 
         // then
-        List<String> stationNames = reqGetStation().jsonPath().getList("name", String.class);
+        List<String> stationNames = 지하철역_조회().jsonPath().getList("name", String.class);
         assertThat(stationNames).hasSize(0);
     }
 }
