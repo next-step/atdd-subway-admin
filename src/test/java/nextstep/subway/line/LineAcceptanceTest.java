@@ -38,17 +38,17 @@ public class LineAcceptanceTest {
         StationAcceptanceTest.지하철역을_생성("소요산");
         StationAcceptanceTest.지하철역을_생성("신창");
 
-        ExtractableResponse<Response> 파란색_1호선 = 지하철노선_생성("1호선", "파란색", "소요산", "신창");
+        ExtractableResponse<Response> 파란색_1호선 = 지하철노선_생성("1호선", "blue darken-4", 1L, 2L);
 
         assertThat(파란색_1호선.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-    private ExtractableResponse<Response> 지하철노선_생성(String name, String color, String upStationName, String downStationName) {
+    private ExtractableResponse<Response> 지하철노선_생성(String name, String color, Long upStationId, Long downStationId) {
         Map<String, Object> param = new HashMap<>();
         param.put("name", name);
         param.put("color", color);
-        param.put("upTerminalStation", upStationName);
-        param.put("downTerminalStation", downStationName);
+        param.put("upStationId", upStationId);
+        param.put("downStationId", downStationId);
 
         return RestAssured.given().log().all()
                 .body(param)
