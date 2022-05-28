@@ -1,4 +1,4 @@
-package nextstep.line;
+package nextstep.line.ui;
 
 import nextstep.line.dto.LineRequest;
 import nextstep.line.dto.LineResponse;
