@@ -24,11 +24,19 @@ public class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
+    private StationResponse 강남역;
+    private StationResponse 잠실역;
+    private StationResponse 모란역;
+
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+
+        강남역 = 응답_객체_생성(지하철역_등록("강남역"), StationResponse.class);
+        잠실역 = 응답_객체_생성(지하철역_등록("잠실역"), StationResponse.class);
+        모란역 = 응답_객체_생성(지하철역_등록("모란역"), StationResponse.class);
     }
 
     /**
@@ -40,8 +48,6 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        StationResponse 강남역 = 응답_객체_생성(지하철역_등록("강남역"), StationResponse.class);
-        StationResponse 잠실역 = 응답_객체_생성(지하철역_등록("잠실역"), StationResponse.class);
         ValidatableResponse createResponse = 노선_등록("2호선", "초록", 10, 강남역.getId(), 잠실역.getId());
 
         // then
@@ -61,8 +67,6 @@ public class LineAcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        StationResponse 강남역 = 응답_객체_생성(지하철역_등록("강남역"), StationResponse.class);
-        StationResponse 잠실역 = 응답_객체_생성(지하철역_등록("잠실역"), StationResponse.class);
         노선_등록("2호선", "초록", 10, 강남역.getId(), 잠실역.getId());
 
         // when
@@ -81,9 +85,6 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        StationResponse 강남역 = 응답_객체_생성(지하철역_등록("강남역"), StationResponse.class);
-        StationResponse 잠실역 = 응답_객체_생성(지하철역_등록("잠실역"), StationResponse.class);
-        StationResponse 모란역 = 응답_객체_생성(지하철역_등록("모란역"), StationResponse.class);
         노선_등록("2호선", "초록", 10, 강남역.getId(), 잠실역.getId());
         노선_등록("8호선", "분홍", 10, 모란역.getId(), 잠실역.getId());
 
@@ -103,8 +104,6 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        StationResponse 강남역 = 응답_객체_생성(지하철역_등록("강남역"), StationResponse.class);
-        StationResponse 잠실역 = 응답_객체_생성(지하철역_등록("잠실역"), StationResponse.class);
         LineResponse 지하철2호선 = 응답_객체_생성(노선_등록("2호선", "초록", 10, 강남역.getId(), 잠실역.getId()), LineResponse.class);
 
         // when
