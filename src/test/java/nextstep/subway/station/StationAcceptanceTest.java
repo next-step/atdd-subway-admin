@@ -163,7 +163,7 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_지우기(10);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -209,4 +209,5 @@ public class StationAcceptanceTest {
             () -> assertThat(지하철상세_조회하기_response.jsonPath().get("id").toString()).isEqualTo("1")
         );
     }
+
 }
