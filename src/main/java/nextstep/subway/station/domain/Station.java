@@ -9,21 +9,24 @@ public class Station extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
-    private String name;
+    @Embedded
+    private StationName name;
 
-    public Station() {
-    }
+    protected Station() {}
 
-    public Station(String name) {
+    public Station(StationName name) {
         this.name = name;
     }
 
+    public Station(String name) {
+        this(StationName.from(name));
+    }
+
     public Long getId() {
-        return id;
+        return this.id;
     }
 
     public String getName() {
-        return name;
+        return this.name.get();
     }
 }
