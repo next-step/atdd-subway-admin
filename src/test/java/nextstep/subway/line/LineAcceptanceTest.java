@@ -36,9 +36,14 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철노선 생성")
     @Test
     void createLine() {
+        //given
         LineRequest 신분당선 = LineRequest.of("신분당선", "bg-red-600", 지하철역_id, 새로운지하철역_id, 10);
+
+        //when
         ExtractableResponse<Response> 노선_생성_요청_응답 = 노선_생성_요청(신분당선);
         노선_생성_성공_확인(노선_생성_요청_응답);
+
+        //then
         List<String> 노선_이름_목록 = 노선_이름_목록을_구한다();
         노선이름_포함_확인(노선_이름_목록, "신분당선");
     }
@@ -51,10 +56,15 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철노선 목록 조회")
     @Test
     void findAllLines() {
+        //given
         LineRequest 신분당선 = LineRequest.of("신분당선", "bg-red-600", 지하철역_id, 새로운지하철역_id, 10);
         LineRequest 분당선 = LineRequest.of("분당선", "bg-green-600", 지하철역_id, 새로운지하철역_id, 10);
+
+        //when
         노선_생성_요청(신분당선);
         노선_생성_요청(분당선);
+
+        //then
         List<String> 노선_이름_목록 = 노선_이름_목록을_구한다();
         노선이름_포함_확인(노선_이름_목록, "신분당선", "분당선");
     }
@@ -67,10 +77,15 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철노선 조회")
     @Test
     void findOneLine() {
+        //given
         LineRequest 신분당선 = LineRequest.of("신분당선", "bg-red-600", 지하철역_id, 새로운지하철역_id, 10);
         ExtractableResponse<Response> 노선_생성_요청_응답 = 노선_생성_요청(신분당선);
         long id = 노선의_id_구한다(노선_생성_요청_응답);
+
+        //when
         ExtractableResponse<Response> 노선_조회_요청_응답 = 노선_조회_요청(id);
+
+        //then
         조회_노선_이름_확인(노선_조회_요청_응답, "신분당선");
     }
 
@@ -82,24 +97,36 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철노선 수정")
     @Test
     void updateLine() {
+        //given
         LineRequest 신분당선 = LineRequest.of("신분당선", "bg-red-600", 지하철역_id, 새로운지하철역_id, 10);
         ExtractableResponse<Response> 노선_생성_요청_응답 = 노선_생성_요청(신분당선);
         long id = 노선의_id_구한다(노선_생성_요청_응답);
         LineRequest 다른_분당선 = LineRequest.of("다른분당선", "bg-red-600", 지하철역_id, 새로운지하철역_id, 10);
+
+        //when
         ExtractableResponse<Response> 노선_수정_요청_응답 = 노선_수정_요청(id, 다른_분당선);
+
+        //then
         수정_확인(노선_수정_요청_응답);
     }
 
     /**
-     * Given 지하철 노선을 생성하고 When 생성한 지하철 노선을 삭제하면 Then 해당 지하철 노선 정보는 삭제된다
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
      */
     @DisplayName("지하철노선 삭제")
     @Test
     void deleteLine() {
+        //given
         LineRequest 신분당선 = LineRequest.of("신분당선", "bg-red-600", 지하철역_id, 새로운지하철역_id, 10);
         ExtractableResponse<Response> 노선_생성_요청_응답 = 노선_생성_요청(신분당선);
         long id = 노선의_id_구한다(노선_생성_요청_응답);
+
+        //when
         ExtractableResponse<Response> 노선_삭제_요청_응답 = 노선_삭제_요청(id);
+
+        //then
         삭제_확인(노선_삭제_요청_응답);
     }
 
