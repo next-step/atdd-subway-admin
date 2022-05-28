@@ -10,7 +10,7 @@ public class LineRequest {
     private String name;
     private Long upStationId;
     private Long downStationId;
-    private int distance;
+    private Integer distance;
     private String color;
 
 
@@ -34,7 +34,7 @@ public class LineRequest {
         return downStationId;
     }
 
-    public int getDistance() {
+    public Integer getDistance() {
         return distance;
     }
 
@@ -54,7 +54,7 @@ public class LineRequest {
         this.downStationId = downStationId;
     }
 
-    public void setDistance(int distance) {
+    public void setDistance(Integer distance) {
         this.distance = distance;
     }
 
