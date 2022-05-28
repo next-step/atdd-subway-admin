@@ -4,7 +4,8 @@ import java.util.Arrays;
 import nextstep.subway.exception.LineNotFoundException;
 
 public enum LineColor {
-    RED("bg-red-600");
+    RED("bg-red-600"),
+    GREEN("bg-green-600");
 
     private String colorName;
 
