@@ -40,7 +40,8 @@ class LineAcceptanceTest {
         지하철노선_생성_성공("2호선", "yellow", "강남역", "교대역", 10);
 
         // then
-        지하철노선_목록_조회_성공("2호선");
+        List<String> findNames = 지하철노선_목록_조회_성공();
+        assertThat(findNames).contains("2호선");
     }
 
     /**
@@ -56,8 +57,11 @@ class LineAcceptanceTest {
         지하철노선_생성_성공("2호선", "yellow", "강남역", "교대역", 10);
 
         // when
+        List<String> findNames = 지하철노선_목록_조회_성공();
+
         // then
-        지하철노선_목록_조회_성공("1호선", "2호선");
+        assertThat(findNames).hasSize(2);
+        assertThat(findNames).contains("1호선", "2호선");
     }
 
     /**
@@ -86,11 +90,10 @@ class LineAcceptanceTest {
         return response.header("location");
     }
 
-    void 지하철노선_목록_조회_성공(String... names) {
+    List<String> 지하철노선_목록_조회_성공() {
         ExtractableResponse<Response> response = LineApi.findAll();
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<String> findNames = response.jsonPath().getList("name", String.class);
-        assertThat(findNames).contains(names);
+        return response.jsonPath().getList("name", String.class);
     }
 
     String 지하철노선_조회_성공(String location) {
