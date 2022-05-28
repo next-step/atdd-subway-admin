@@ -88,13 +88,49 @@ public class LineAcceptanceTest {
         // when
         ExtractableResponse<Response> response = 지하철역_노선_정보_조회(lineId);
         LineResponse lineResponse = convertLineResponse(response);
+
         // then
         Assertions.assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(lineResponse.getColor()).isEqualTo("하늘색"),
-                () -> assertThat(lineResponse.getName()).isEqualTo("4호선")
+                () -> assertThat(lineResponse.getName()).isEqualTo("4호선"),
+                () -> assertThat(lineResponse.getColor()).isEqualTo("하늘색")
         );
 
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다.
+     */
+    @DisplayName("지하철 노선 이름과 색갈을 수정한다.")
+    @Test
+    void modifyLineById() {
+        // given
+        long lineId = 지하철_노선_생성("4호선", "하늘색", 20, "당고개역", "오이도역").jsonPath()
+                .getLong("id");
+
+        // when
+        ExtractableResponse<Response> lineModifyResponse = 지하철역_노선_수정(lineId, "1호선", "파란색");
+
+        // then
+        assertThat(lineModifyResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        // then
+        ExtractableResponse<Response> response = 지하철역_노선_정보_조회(lineId);
+        LineResponse lineResponse = convertLineResponse(response);
+
+        Assertions.assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(lineResponse.getName()).isEqualTo("1호선"),
+                () -> assertThat(lineResponse.getColor()).isEqualTo("파란색")
+        );
+
+
+    }
+
+    private LineResponse convertLineResponse(ExtractableResponse<Response> response) {
+        return response.body().as(LineResponse.class);
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성(String lineName, String color, int distance,
@@ -112,10 +148,6 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private LineResponse convertLineResponse(ExtractableResponse<Response> response) {
-        return response.body().as(LineResponse.class);
-    }
-
     private List<String> 지하철역_노선_이름_목록조회() {
         return RestAssured.given().log().all()
                 .when().get("/lines")
@@ -126,6 +158,19 @@ public class LineAcceptanceTest {
     private ExtractableResponse<Response> 지하철역_노선_정보_조회(Long lineId) {
         return RestAssured.given().log().all()
                 .when().get("/lines/" + lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철역_노선_수정(Long lineId, String lineName, String color) {
+        LineRequest lineRequest = new LineRequest();
+        lineRequest.setName(lineName);
+        lineRequest.setColor(color);
+
+        return RestAssured.given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/" + lineId)
                 .then().log().all()
                 .extract();
     }
