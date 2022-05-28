@@ -1,9 +1,8 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.StationService;
-import nextstep.subway.dto.StationRequest;
-import nextstep.subway.dto.StationResponse;
-import org.springframework.dao.DataIntegrityViolationException;
+import nextstep.subway.dto.StationRequestDTO;
+import nextstep.subway.dto.StationResponseDTO;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +19,13 @@ public class StationController {
     }
 
     @PostMapping("/stations")
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        StationResponse station = stationService.saveStation(stationRequest);
+    public ResponseEntity<StationResponseDTO> createStation(@RequestBody StationRequestDTO stationRequestDTO) {
+        StationResponseDTO station = stationService.saveStation(stationRequestDTO);
         return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(station);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<StationResponse>> showStations() {
+    public ResponseEntity<List<StationResponseDTO>> showStations() {
         return ResponseEntity.ok().body(stationService.findAllStations());
     }
 
@@ -34,10 +33,5 @@ public class StationController {
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationService.deleteStationById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException() {
-        return ResponseEntity.badRequest().build();
     }
 }

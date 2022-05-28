@@ -2,8 +2,8 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
-import nextstep.subway.dto.StationRequest;
-import nextstep.subway.dto.StationResponse;
+import nextstep.subway.dto.StationRequestDTO;
+import nextstep.subway.dto.StationResponseDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,16 +20,16 @@ public class StationService {
     }
 
     @Transactional
-    public StationResponse saveStation(StationRequest stationRequest) {
-        Station persistStation = stationRepository.save(stationRequest.toStation());
-        return StationResponse.of(persistStation);
+    public StationResponseDTO saveStation(StationRequestDTO stationRequestDTO) {
+        Station persistStation = stationRepository.save(stationRequestDTO.toStation());
+        return StationResponseDTO.of(persistStation);
     }
 
-    public List<StationResponse> findAllStations() {
+    public List<StationResponseDTO> findAllStations() {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-                .map(station -> StationResponse.of(station))
+                .map(station -> StationResponseDTO.of(station))
                 .collect(Collectors.toList());
     }
 
