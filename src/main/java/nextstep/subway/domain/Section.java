@@ -45,23 +45,11 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
     public Station getUpStation() {
         return upStation;
     }
 
     public Station getDownStation() {
         return downStation;
-    }
-
-    public Line getLine() {
-        return line;
     }
 }

@@ -41,14 +41,4 @@ public class LineResponse {
     public String getName() {
         return name;
     }
-
-    @Override
-    public String toString() {
-        return "LineResponse{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", color='" + color + '\'' +
-                ", stations=" + stations +
-                '}';
-    }
 }

@@ -15,7 +15,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private Sections sections = new Sections();
+    private Sections sections;
 
     public Line() {
     }
@@ -23,6 +23,10 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
+        addSection(section);
+    }
+
+    private void addSection(Section section) {
         this.sections.add(section);
         section.addLine(this);
     }
