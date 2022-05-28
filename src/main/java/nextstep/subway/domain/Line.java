@@ -30,9 +30,12 @@ public class Line extends BaseEntity {
         this.stations = new LineStations(upStation, downStation);
     }
 
-    public void modify(LineRequest lineRequest) {
-        this.name.modify(lineRequest.getName());
-        this.color.modify(lineRequest.getColor());
+    public void modifyName(String name) {
+        this.name.modify(name);
+    }
+
+    public void modifyColor(String color) {
+        this.color.modify(color);
     }
 
     public Long getId() {

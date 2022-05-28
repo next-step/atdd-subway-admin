@@ -50,7 +50,8 @@ public class LineService {
     @Transactional
     public void modifyLine(Long id, LineRequest lineRequest) {
         Line line = findById(id);
-        line.modify(lineRequest);
+        line.modifyName(lineRequest.getName());
+        line.modifyColor(lineRequest.getColor());
         lineRepository.flush();
     }
 
