@@ -7,7 +7,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ValidatableResponse;
-import nextstep.subway.domain.Station;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-
 
 import java.util.List;
 
@@ -51,7 +49,7 @@ public class StationAcceptanceTest {
         응답_검증(createResponse, HttpStatus.CREATED);
 
         // then
-        List<Station> stations = 지하철역_목록_조회();
+        List<StationResponse> stations = 지하철역_목록_조회();
         지하철역_등록_검증(stations, "강남역");
     }
 
@@ -88,7 +86,7 @@ public class StationAcceptanceTest {
         지하철역_등록("강남역");
 
         // when
-        List<Station> stations = 지하철역_목록_조회();
+        List<StationResponse> stations = 지하철역_목록_조회();
 
         // then
         지하철역_개수_검증(stations, 2);
@@ -110,7 +108,7 @@ public class StationAcceptanceTest {
         지하철역_삭제(createdStation.getId());
 
         // then
-        List<Station> stations = 지하철역_목록_조회();
+        List<StationResponse> stations = 지하철역_목록_조회();
         지하철역_개수_검증(stations, 0);
     }
 
@@ -128,11 +126,11 @@ public class StationAcceptanceTest {
         assertThat(response.extract().statusCode()).isEqualTo(status.value());
     }
 
-    public static List<Station> 지하철역_목록_조회() {
+    public static List<StationResponse> 지하철역_목록_조회() {
         ValidatableResponse listResponse = RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all();
-        return getJsonPathForResponse(listResponse).getList("$", Station.class);
+        return getJsonPathForResponse(listResponse).getList("$", StationResponse.class);
     }
 
     public static <T> T 응답_객체_생성(ValidatableResponse createResponse, Class<T> clazz) {
@@ -148,11 +146,11 @@ public class StationAcceptanceTest {
         }
     }
 
-    public static void 지하철역_등록_검증(List<Station> stations, String name) {
-        assertThat(stations).containsAnyOf(new Station(name));
+    public static void 지하철역_등록_검증(List<StationResponse> stations, String name) {
+        assertThat(stations).containsAnyOf(new StationResponse(name));
     }
 
-    public static void 지하철역_개수_검증(List<Station> stations, int size) {
+    public static void 지하철역_개수_검증(List<StationResponse> stations, int size) {
         assertThat(stations).hasSize(size);
     }
 
