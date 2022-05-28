@@ -53,8 +53,6 @@ public class StationAcceptanceTest {
         지하철역_등록_검증(stations, "강남역");
     }
 
-
-
     /**
      * Given 지하철역을 생성하고
      * When 기존에 존재하는 지하철역 이름으로 지하철역을 생성하면
@@ -152,11 +150,6 @@ public class StationAcceptanceTest {
 
     public static void 지하철역_개수_검증(List<StationResponse> stations, int size) {
         assertThat(stations).hasSize(size);
-    }
-
-    public static long 응답_속성_조회(ValidatableResponse response, String property) {
-        return getJsonPathForResponse(response)
-                .getLong(property);
     }
 
     public static void 지하철역_삭제(long stationId) {

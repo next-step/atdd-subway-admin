@@ -17,6 +17,10 @@ public class LineRequest {
         this.downStationId = downStationId;
     }
 
+    public static LineResponse of(Line line) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getUpStation(), line.getDownStation());
+    }
+
     public String getName() {
         return name;
     }

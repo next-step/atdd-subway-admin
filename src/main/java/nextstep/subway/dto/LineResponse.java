@@ -11,10 +11,9 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private List<Station> stations = new ArrayList<>();
+    private List<StationResponse> stations = new ArrayList<>();
 
-    public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getUpStation(), line.getDownStation());
+    protected LineResponse() {
     }
 
     public LineResponse(String name) {
@@ -25,8 +24,12 @@ public class LineResponse {
         this.id = id;
         this.name = name;
         this.color = color;
-        stations.add(upStation);
-        stations.add(downStation);
+        stations.add(StationResponse.of(upStation));
+        stations.add(StationResponse.of(downStation));
+    }
+
+    public static LineResponse of(Line line) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getUpStation(), line.getDownStation());
     }
 
     public Long getId() {
@@ -41,7 +44,7 @@ public class LineResponse {
         return color;
     }
 
-    public List<Station> getStations() {
+    public List<StationResponse> getStations() {
         return stations;
     }
 
