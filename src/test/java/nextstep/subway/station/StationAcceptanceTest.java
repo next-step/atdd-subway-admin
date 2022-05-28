@@ -1,35 +1,22 @@
 package nextstep.subway.station;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.subway.BaseAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import static nextstep.subway.station.StationAssuredMethod.지하철역_삭체_요청;
+import static nextstep.subway.station.StationAssuredMethod.지하철역_생성_요청;
+import static nextstep.subway.station.StationAssuredMethod.지하철역_조회_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-    }
+public class StationAcceptanceTest extends BaseAcceptanceTest {
 
     /**
      * When 지하철역을 생성하면
@@ -111,26 +98,6 @@ public class StationAcceptanceTest {
         return response.jsonPath().getLong("id");
     }
 
-    private void 지하철역_삭체_요청(Long id) {
-        RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/stations/{id}", id)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철역_생성_요청(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
     private void 지하철역_생성_성공_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -149,12 +116,5 @@ public class StationAcceptanceTest {
 
     private List<String> 지하철역_이름_목록을_구한다() {
         return 지하철역_조회_요청().jsonPath().getList("name", String.class);
-    }
-
-    private ExtractableResponse<Response> 지하철역_조회_요청() {
-        return RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract();
     }
 }
