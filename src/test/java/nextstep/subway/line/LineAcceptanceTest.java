@@ -118,6 +118,35 @@ public class LineAcceptanceTest {
         assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    /*
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("노선을 삭제한다.")
+    @Test
+    void deleteLine() {
+        // given
+        StationResponse downStation = 지하철역_생성("신사역").extract().as(StationResponse.class);
+        StationResponse upStation = 지하철역_생성("광교역").extract().as(StationResponse.class);
+        Long createLineId = 노선_생성("신분당선", "bg-red-600", downStation.getId(), upStation.getId(), 10)
+            .extract().jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> lineResponse = 노션_삭제(createLineId);
+
+        // then
+        assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> 노션_삭제(Long lindId) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().delete("/lines/{lineId}", lindId)
+            .then().log().all()
+            .extract();
+    }
+
     private ExtractableResponse<Response> 노션_수정(Long lindId, LineRequest lineRequest) {
         return RestAssured.given().log().all()
             .body(lineRequest)
