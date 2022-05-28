@@ -41,4 +41,14 @@ public class AttdLineUtils {
             .then().log().all()
             .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철_노선_수정하기(String 지하철_노선_ID,
+        Map<String, String> 수정할_데이터) {
+        return RestAssured.given().log().all()
+            .body(수정할_데이터)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().put("/lines/" + 지하철_노선_ID)
+            .then().log().all()
+            .extract();
+    }
 }

@@ -2,6 +2,7 @@ package nextstep.subway.station;
 
 import static nextstep.subway.utils.AttdLineUtils.지하철_노선_등록하기;
 import static nextstep.subway.utils.AttdLineUtils.지하철_노선_목록_조회하기;
+import static nextstep.subway.utils.AttdLineUtils.지하철_노선_수정하기;
 import static nextstep.subway.utils.AttdLineUtils.지하철_노선_조회하기;
 import static nextstep.subway.utils.AttdStationUtils.지하철역_만들기;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -12,11 +13,14 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
@@ -119,4 +123,26 @@ public class LineAcceptanceTest {
         );
     }
 
+
+    /**
+     * given 지하철노선 1개 생성후 when 수정 필요 데이터를 보내면 then 수정이 정상적으로 완료가된다
+     */
+    @Test
+    @DisplayName("지하철 노선을 수정할수 있어야한다")
+    public void 지하철_수정_테스트() {
+        //given
+        String 강남역_ID = 지하철역_만들기("강남역").jsonPath().get("id").toString();
+        String 역삼역_ID = 지하철역_만들기("역삼역").jsonPath().get("id").toString();
+        String ID_2호선 = 지하철_노선_등록하기("2호선", "bg-green-600", 강남역_ID, 역삼역_ID, "10")
+            .jsonPath().get("id").toString();
+
+        //when
+        Map<String, String> 변경할_데이터 = new HashMap<>();
+        변경할_데이터.put("name", "다른2호선");
+        변경할_데이터.put("color", "bg-red-600");
+        ExtractableResponse<Response> 지하철_노선_수정하기_response = 지하철_노선_수정하기(ID_2호선, 변경할_데이터);
+
+        //then
+        assertThat(지하철_노선_수정하기_response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 }
