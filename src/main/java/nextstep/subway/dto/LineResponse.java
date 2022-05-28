@@ -56,6 +56,9 @@ public class LineResponse {
             return new StationDto(station.getId(), station.getName());
         }
 
+        public StationDto() {
+        }
+
         private StationDto(Long id, String name) {
             this.id = id;
             this.name = name;

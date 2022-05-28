@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +47,7 @@ public class LineAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> lineNames = 지하철역_노선_이름_조회();
+        List<String> lineNames = 지하철역_노선_이름_목록조회();
         assertThat(lineNames).containsAnyOf("4호선");
     }
 
@@ -55,7 +56,7 @@ public class LineAcceptanceTest {
      * When 지하철 노선 목록을 조회하면
      * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
      */
-    @DisplayName("생성한 모든 노선을 조회한다.")
+    @DisplayName("생성한 모든 노선 목록을 조회한다.")
     @Test
     void findAllLines() {
         // given
@@ -63,13 +64,37 @@ public class LineAcceptanceTest {
         지하철_노선_생성("1호선", "파란색", 10, "소요산역", "인천역");
 
         // when
-        List<String> lineNames = 지하철역_노선_이름_조회();
+        List<String> lineNames = 지하철역_노선_이름_목록조회();
 
         // then
         Assertions.assertAll(
                 () -> assertThat(lineNames).hasSize(2),
                 () -> assertThat(lineNames).containsExactly("4호선", "1호선")
         );
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("생성한 노선을 조회한다.")
+    @Test
+    void findLineById() {
+        // given
+        long lineId = 지하철_노선_생성("4호선", "하늘색", 20, "당고개역", "오이도역").jsonPath()
+                .getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철역_노선_정보_조회(lineId);
+        LineResponse lineResponse = convertLineResponse(response);
+        // then
+        Assertions.assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(lineResponse.getColor()).isEqualTo("하늘색"),
+                () -> assertThat(lineResponse.getName()).isEqualTo("4호선")
+        );
+
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성(String lineName, String color, int distance,
@@ -87,11 +112,22 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private List<String> 지하철역_노선_이름_조회() {
+    private LineResponse convertLineResponse(ExtractableResponse<Response> response) {
+        return response.body().as(LineResponse.class);
+    }
+
+    private List<String> 지하철역_노선_이름_목록조회() {
         return RestAssured.given().log().all()
                 .when().get("/lines")
                 .then().log().all()
                 .extract().jsonPath().getList("name", String.class);
+    }
+
+    private ExtractableResponse<Response> 지하철역_노선_정보_조회(Long lineId) {
+        return RestAssured.given().log().all()
+                .when().get("/lines/" + lineId)
+                .then().log().all()
+                .extract();
     }
 
     private ExtractableResponse<Response> 지하철역_생성(String stationName) {
