@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,7 +41,7 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = create("강남역");
+        ExtractableResponse<Response> response = 지하철역을_생성한다("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -65,10 +66,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        create("강남역");
+        지하철역을_생성한다("강남역");
 
         // when
-        ExtractableResponse<Response> response = create("강남역");
+        ExtractableResponse<Response> response = 지하철역을_생성한다("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -83,11 +84,11 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         //==* given
-        create("강남역");
-        create("역삼역");
+        지하철역을_생성한다("강남역");
+        지하철역을_생성한다("역삼역");
 
         //==* when
-        ExtractableResponse<Response> response = read();
+        ExtractableResponse<Response> response = 전체_지하철역_목록을_조회한다();
 
         List<StationResponse> stations = response.jsonPath().getList(".");
         //==* then
@@ -104,35 +105,34 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         //==* given
-        ExtractableResponse<Response> create_response = create("강남역");
+        ExtractableResponse<Response> create_response = 지하철역을_생성한다("강남역");
 
         StationResponse station = create_response.as(StationResponse.class);
 
         //==* when
-        ExtractableResponse<Response> response_delete = delete(station.getId());
+        ExtractableResponse<Response> response_delete = 특정_지하철역을_제거한다(station.getId());
 
         //==* then
         assertThat(response_delete.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
-        ExtractableResponse<Response> response_read = read();
+        ExtractableResponse<Response> response_read = 전체_지하철역_목록을_조회한다();
 
         List<StationResponse> stations = response_read.jsonPath().getList(".");
         assertThat(stations.size()).isEqualTo(0);
     }
 
-    private ExtractableResponse<Response> create(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
+    private ExtractableResponse<Response> 지하철역을_생성한다(String name) {
+        StationRequest stationRequest = new StationRequest(name);
 
         return RestAssured.given().log().all()
-                .body(params)
+                .body(stationRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all()
                 .extract();
     }
 
-    private ExtractableResponse<Response> read() {
+    private ExtractableResponse<Response> 전체_지하철역_목록을_조회한다() {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/stations")
@@ -140,7 +140,7 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> delete(Long id) {
+    private ExtractableResponse<Response> 특정_지하철역을_제거한다(Long id) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/stations/" + id)
