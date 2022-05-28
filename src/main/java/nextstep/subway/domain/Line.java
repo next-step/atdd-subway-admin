@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import nextstep.subway.dto.LineRequest;
 
 @Entity
 public class Line {
@@ -37,6 +38,11 @@ public class Line {
         this.color = color;
         this.upStation = upStation;
         this.downStation = downStation;
+    }
+
+    public void update(LineRequest lineRequest) {
+        this.name = lineRequest.getName();
+        this.color = lineRequest.getColor();
     }
 
     public Long getId() {
