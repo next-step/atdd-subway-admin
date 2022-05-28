@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철 노선 관련 기능")
-public class LineAcceptanceTest extends BaseAcceptanceTest {
+class LineAcceptanceTest extends BaseAcceptanceTest {
 
     private Long 지하철역_id;
     private Long 새로운지하철역_id;
