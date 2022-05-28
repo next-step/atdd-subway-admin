@@ -39,4 +39,10 @@ public class LineService {
 
         return LineResponse.of(line);
     }
+
+    @Transactional
+    public void editLineById(Long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id).get();
+        line.update(lineRequest.toLine());
+    }
 }

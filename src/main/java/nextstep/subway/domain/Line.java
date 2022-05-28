@@ -4,7 +4,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.time.LocalDateTime;
 
 @Entity
 public class Line extends BaseEntity {
@@ -33,5 +32,10 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public void update(Line newLine) {
+        this.name = newLine.name;
+        this.color = newLine.color;
     }
 }

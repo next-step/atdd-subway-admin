@@ -39,7 +39,7 @@ public class LineAcceptanceTest {
      */
     @DisplayName("지하철 노선을 생성한다.")
     @Test
-    void createLine() {
+    void 지하철_노선_생성_조회() {
         // when
         ExtractableResponse<Response> response = createLine("분당선", "노란색");
 
@@ -59,7 +59,7 @@ public class LineAcceptanceTest {
      */
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
-    void showLines() {
+    void 지하철_노선_목록_조회() {
         // when
         createLine("분당선", "노란색");
         createLine("3호선", "주황색");
@@ -78,7 +78,7 @@ public class LineAcceptanceTest {
      */
     @DisplayName("지하철 노선 하나의 정보를 조회한다.")
     @Test
-    void showLine() {
+    void 지하철_노선_조회() {
         // when
         ExtractableResponse<Response> response = createLine("분당선", "노란색");
         Long lineId = response.body().jsonPath().getLong("id");
@@ -89,6 +89,34 @@ public class LineAcceptanceTest {
         // then
         assertThat(line.getName()).isEqualTo("분당선");
         assertThat(line.getColor()).isEqualTo("노란색");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @Test
+    void 지하철_노선_수정() {
+        ExtractableResponse<Response> response = createLine("분당선", "노란색");
+        Long lineId = response.body().jsonPath().getLong("id");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "구분당선");
+        params.put("color", "노란색");
+
+        editLine(lineId, params);
+
+        LineResponse line = getLine(lineId);
+        assertThat(line.getName()).isEqualTo("구분당선");
+    }
+
+    private void editLine(Long lineId, Map<String, String> params) {
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put(ENDPOINT + "/" + lineId)
+                .then().log().all();
     }
 
     private ExtractableResponse<Response> createLine(String name, String color) {
