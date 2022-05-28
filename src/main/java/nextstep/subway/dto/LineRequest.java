@@ -46,7 +46,9 @@ public class LineRequest {
     }
 
     public Line toLine(Station upStation, Station downStation) {
-        return new Line(this.name, this.color, upStation, downStation, distance);
+        Line line = new Line(this.name, this.color);
+        line.addSection(upStation, downStation, this.distance);
+        return line;
     }
 
     @Override

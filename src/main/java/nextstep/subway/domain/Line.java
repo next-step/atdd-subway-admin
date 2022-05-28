@@ -2,12 +2,11 @@ package nextstep.subway.domain;
 
 import java.util.Objects;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import nextstep.subway.dto.LineRequest;
 
 @Entity
@@ -23,26 +22,20 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private String color;
 
-    @ManyToOne
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-
-    @ManyToOne
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
-
-    @Column(nullable = false)
-    private Long distance;
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, Long distance) {
+    public Line(String name, String color) {
+        this(null, name, color);
+    }
+
+    public Line(Long id, String name, String color) {
+        this.id = id;
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
     }
 
     public Long id() {
@@ -57,12 +50,18 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station downStation() {
-        return downStation;
+    public Sections sections() {
+        return sections;
     }
 
-    public Station upStation() {
-        return upStation;
+    public void change(LineRequest lineRequest) {
+        this.name = lineRequest.getName();
+        this.color = lineRequest.getColor();
+    }
+
+    public void addSection(Station previousStation, Station nowStation, Long distance) {
+        sections.addSection(new Section(this, previousStation));
+        sections.addSection(new Section(this, previousStation, nowStation, distance));
     }
 
     @Override
@@ -75,18 +74,11 @@ public class Line extends BaseEntity {
         }
         Line line = (Line) o;
         return Objects.equals(id, line.id) && Objects.equals(name, line.name)
-                && Objects.equals(color, line.color) && Objects.equals(upStation.id(), line.upStation.id())
-                && Objects.equals(downStation.id(), line.downStation.id()) && Objects.equals(distance,
-                line.distance);
+                && Objects.equals(color, line.color);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, upStation.id(), downStation.id(), distance);
-    }
-
-    public void change(LineRequest lineRequest) {
-        this.name = lineRequest.getName();
-        this.color = lineRequest.getColor();
+        return Objects.hash(id, name, color);
     }
 }
