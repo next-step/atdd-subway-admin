@@ -8,6 +8,7 @@ import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import nextstep.subway.BaseAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -67,7 +68,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void getStations() {
         // given
-        지하철역_생성("깅님역");
+        지하철역_생성("강남역");
         지하철역_생성("선릉역");
 
         // when
@@ -104,12 +105,15 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         List<String> selectResponse = 지하철역_전체_조회().jsonPath().getList("$");
-        assertThat(selectResponse).hasSize(0);
+        assertThat(selectResponse).isEmpty();
     }
 
     public static ValidatableResponse 지하철역_생성(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
         return RestAssured.given().log().all()
-            .body(new HashMap<String,String>(){{put("name", name);}})
+            .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/stations")
             .then().log().all();
