@@ -104,10 +104,10 @@ public class StationAcceptanceTest {
     void deleteStation() {
         // given
         ValidatableResponse response = 지하철역_등록("강남역");
-        long createdStationId = 응답_속성_조회(response, "id");
+        StationResponse createdStation = 응답_객체_생성(response, StationResponse.class);
 
         // when
-        지하철역_삭제(createdStationId);
+        지하철역_삭제(createdStation.getId());
 
         // then
         List<Station> stations = 지하철역_목록_조회();
@@ -135,6 +135,19 @@ public class StationAcceptanceTest {
         return getJsonPathForResponse(listResponse).getList("$", Station.class);
     }
 
+    public static <T> T 응답_객체_생성(ValidatableResponse createResponse, Class<T> clazz) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_SELF_REFERENCES_AS_NULL);
+
+        String body = createResponse.extract().body().asString();
+        try {
+            return mapper.readValue(body, clazz);
+        } catch (JsonProcessingException e) {
+            return null;
+        }
+    }
+
     public static void 지하철역_등록_검증(List<Station> stations, String name) {
         assertThat(stations).containsAnyOf(new Station(name));
     }
@@ -157,19 +170,5 @@ public class StationAcceptanceTest {
 
     public static JsonPath getJsonPathForResponse(ValidatableResponse response) {
         return response.extract().jsonPath();
-    }
-
-    public static <T> T as(ValidatableResponse createResponse, Class<T> clazz) {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(SerializationFeature.WRITE_SELF_REFERENCES_AS_NULL);
-
-        String body = createResponse.extract().body().asString();
-        try {
-            return mapper.readValue(body, clazz);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }
