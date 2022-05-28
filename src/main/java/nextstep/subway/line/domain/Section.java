@@ -53,4 +53,27 @@ public class Section {
     public Station getDownStation() {
         return downStation;
     }
+
+    /*
+    애오개----------마포 => 공덕-----마포(update)
+    애오개-----공덕(new)
+     */
+    public void update(Section newSection) {
+        if (this.upStation.equals(newSection.getUpStation())) {
+            this.upStation = newSection.getDownStation();
+            updateDistance(newSection);
+        }
+        if (this.downStation.equals(newSection.getDownStation())) {
+            this.downStation = newSection.getUpStation();
+            updateDistance(newSection);
+        }
+    }
+
+    private void updateDistance(Section newSection) {
+        int newDistance = this.distance - newSection.distance;
+        if (newDistance <= 0) {
+            throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
+        }
+        this.distance = newDistance;
+    }
 }

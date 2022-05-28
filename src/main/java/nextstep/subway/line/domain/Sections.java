@@ -11,8 +11,13 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
-    public void addSection(Section section) {
-        this.sections.add(section);
+    public void addSection(Section newSection) {
+        if (sections.isEmpty()) {
+            this.sections.add(newSection);
+            return;
+        }
+        sections.forEach(section -> section.update(newSection));
+        sections.add(newSection);
     }
 
     public List<Section> getSections() {

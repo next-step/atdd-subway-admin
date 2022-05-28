@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 
@@ -68,5 +69,13 @@ public class LineService {
     private Line findById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(NO_EXIST_LINE_ERROR_MESSAGE));
+    }
+
+    public LineResponse addSection(Long id, SectionRequest sectionRequest) {
+        Line line = findById(id);
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
+        line.addSection(Section.of(upStation, downStation, sectionRequest.getDistance()));
+        return LineResponse.of(line);
     }
 }
