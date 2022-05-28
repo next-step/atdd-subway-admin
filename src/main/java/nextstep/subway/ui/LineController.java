@@ -32,7 +32,7 @@ public class LineController {
     }
 
     @GetMapping("/lines/{id}")
-    public ResponseEntity<LineResponse> deleteStation(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> showLineById(@PathVariable Long id) {
         return ResponseEntity.ok().body(lineService.findLineById(id));
     }
 
