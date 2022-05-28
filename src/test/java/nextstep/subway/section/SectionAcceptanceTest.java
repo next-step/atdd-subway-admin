@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.line.LineRestAssured.노선_구간_추가;
@@ -43,8 +44,8 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     /**
-     * When 강남역(상행) 양재역(하행)인 신분당선 노선에 신논현역(상행) 강남역(하행) 구간을 추가하면
-     * Then 지하철_노선에_신논현역_등록됨
+     * When 강남역(상행) 판교역(하행)인 신분당선 노선에 논현역(상행) 강남역(하행) 구간을 추가하면
+     * Then 지하철_노선에_논현역_등록됨
      */
     @DisplayName("노선에 새로운 역을 상행 종점으로 구간을 등록한다.")
     @Test
@@ -56,13 +57,15 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
-        assertThat(response.jsonPath().getList("stations", Station.class)
-                .stream().map(Station::getName).collect(Collectors.toList())).contains(논현역.getName());
+        List<String> stationNames = response.jsonPath().getList("stations", Station.class)
+                .stream().map(Station::getName).collect(Collectors.toList());
+        assertThat(stationNames).hasSize(3);
+        assertThat(stationNames).contains(논현역.getName());
     }
 
     /**
-     * When 강남역(상행) 양재역(하행)인 신분당선 노선에 양재역(상행) 양재시민의숲역(하행) 구간을 추가하면
-     * Then 지하철_노선에_양재시민의숲역_등록됨
+     * When 강남역(상행) 판교역(하행)인 신분당선 노선에 판교역(상행) 정자역(하행) 구간을 추가하면
+     * Then 지하철_노선에_정자역_등록됨
      */
     @DisplayName("노선에 새로운 역을 하행 종점으로 구간을 등록한다.")
     @Test
@@ -74,7 +77,9 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
-        assertThat(response.jsonPath().getList("stations", Station.class)
-                .stream().map(Station::getName).collect(Collectors.toList())).contains(정자역.getName());
+        List<String> stationNames = response.jsonPath().getList("stations", Station.class)
+                .stream().map(Station::getName).collect(Collectors.toList());
+        assertThat(stationNames).hasSize(3);
+        assertThat(stationNames).contains(정자역.getName());
     }
 }
