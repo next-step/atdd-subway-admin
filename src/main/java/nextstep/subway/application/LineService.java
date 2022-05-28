@@ -41,17 +41,25 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long lineId) {
-        Line findLine = lineRepository.findById(lineId)
-                .orElseThrow(() -> new NoSuchElementException("해당 지하철 노선을 찾을 수 없습니다."));
+        Line findLine = findById(lineId);
 
         return LineResponse.of(findLine);
     }
 
+    private Line findById(Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new NoSuchElementException("해당 지하철 노선을 찾을 수 없습니다."));
+    }
+
     @Transactional
     public void updateLine(Long lineId, LineUpdateRequest request) {
-        Line findLine = lineRepository.findById(lineId)
-                .orElseThrow(() -> new NoSuchElementException("해당 지하철 노선을 찾을 수 없습니다."));
+        Line findLine = findById(lineId);
 
         findLine.update(request.getName(), request.getColor());
+    }
+
+    @Transactional
+    public void deleteLine(Long lineId) {
+        lineRepository.deleteById(lineId);
     }
 }
