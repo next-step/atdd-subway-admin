@@ -1,4 +1,4 @@
-package nextstep.subway.station;
+package nextstep.subway.line;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -14,7 +14,7 @@ import org.springframework.http.MediaType;
 
 import java.util.List;
 
-import static nextstep.subway.station.LineAcceptanceTest.LineAcceptanceTemplate.*;
+import static nextstep.subway.line.LineAcceptanceTest.LineAcceptanceTemplate.*;
 import static nextstep.subway.station.StationAcceptanceTest.StationAcceptanceTemplate.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -104,8 +104,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제를_확인한다(지하철_삭제_응답);
     }
 
-    static class LineAcceptanceTemplate {
-        static ExtractableResponse<Response> 지하철_노선_생성(String line, String color, String upStationName, String downStationName) {
+    public static class LineAcceptanceTemplate {
+        public static ExtractableResponse<Response> 지하철_노선_생성(String line, String color, String upStationName, String downStationName) {
             Long 상행역_id = id_추출(지하철역_생성(upStationName));
             Long 하행역_id = id_추출(지하철역_생성(downStationName));
             LineRequest request = new LineRequest(line, color, 상행역_id, 하행역_id, 10);
@@ -119,11 +119,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                     .extract();
         }
 
-        static Long id_추출(ExtractableResponse<Response> response) {
+        public static Long id_추출(ExtractableResponse<Response> response) {
             return response.jsonPath().getLong("id");
         }
 
-        static List<String> 지하철_노선_목록_조회() {
+        public static List<String> 지하철_노선_목록_조회() {
             return RestAssured
                     .given().log().all()
                     .when().get("/lines")
@@ -132,19 +132,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
                     .getList( "name", String.class);
         }
 
-        static void 목록에_생성한_노선이_포함된다(List<String> lineNames, String line) {
+        public static void 목록에_생성한_노선이_포함된다(List<String> lineNames, String line) {
             assertThat(lineNames).containsExactly(line);
         }
 
-        static void 노선_목록_사이즈를_확인한다(List<String> 지하철_노선_목록, int size) {
+        public static void 노선_목록_사이즈를_확인한다(List<String> 지하철_노선_목록, int size) {
             assertThat(지하철_노선_목록).hasSize(size);
         }
 
-        static void 노선_정상_응답을_확인한다(LineResponse 조회된_지하철_노선) {
+        public static void 노선_정상_응답을_확인한다(LineResponse 조회된_지하철_노선) {
             assertThat(조회된_지하철_노선).isNotNull();
         }
 
-        static LineResponse 지하철_노선_단건_조회(ExtractableResponse<Response> response) {
+        public static LineResponse 지하철_노선_단건_조회(ExtractableResponse<Response> response) {
             return RestAssured
                     .given().log().all()
                     .when().get("/lines/" + response.body().jsonPath().getLong("id"))
@@ -152,11 +152,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                     .extract().body().as(LineResponse.class);
         }
 
-        static void 지하철_노선_정보_수정을_확인한다(ExtractableResponse<Response> response) {
+        public static void 지하철_노선_정보_수정을_확인한다(ExtractableResponse<Response> response) {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         }
 
-        static ExtractableResponse<Response> 지하철_노선_수정(ExtractableResponse<Response> response, String stationName, String color) {
+        public static ExtractableResponse<Response> 지하철_노선_수정(ExtractableResponse<Response> response, String stationName, String color) {
             Long 지하철_노선_id = id_추출(response);
             LineUpdateRequest updateRequest = new LineUpdateRequest(stationName, color);
 
@@ -169,11 +169,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                     .extract();
         }
 
-        static void 지하철_노선_삭제를_확인한다(ExtractableResponse<Response> response) {
+        public static void 지하철_노선_삭제를_확인한다(ExtractableResponse<Response> response) {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         }
 
-        static ExtractableResponse<Response> 지하철_노선_삭제(ExtractableResponse<Response> 지하철_노선) {
+        public static ExtractableResponse<Response> 지하철_노선_삭제(ExtractableResponse<Response> 지하철_노선) {
             Long id = id_추출(지하철_노선);
 
             return RestAssured

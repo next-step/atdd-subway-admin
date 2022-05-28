@@ -92,8 +92,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철역_목록에_생성한_역이_존재하지_않는다(지하철역_목록, "강남역");
     }
 
-    static class StationAcceptanceTemplate {
-        static ExtractableResponse<Response> 지하철역_생성(String stationName) {
+    public static class StationAcceptanceTemplate {
+        public static ExtractableResponse<Response> 지하철역_생성(String stationName) {
             Map<String, String> params = new HashMap<>();
             params.put("name", stationName);
 
@@ -105,11 +105,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
                     .extract();
         }
 
-        static void 지하철역_생성_성공을_확인한다(ExtractableResponse<Response> response) {
+        public static void 지하철역_생성_성공을_확인한다(ExtractableResponse<Response> response) {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         }
 
-        static List<String> 지하철역_목록_조회() {
+        public static List<String> 지하철역_목록_조회() {
             return RestAssured.given().log().all()
                     .when().get("/stations")
                     .then().log().all()
@@ -117,26 +117,26 @@ public class StationAcceptanceTest extends AcceptanceTest {
                     .getList( "name", String.class);
         }
 
-        static void 지하철역_목록에_생성한_역이_포함된다(List<String> stationNames, String station) {
+        public static void 지하철역_목록에_생성한_역이_포함된다(List<String> stationNames, String station) {
             assertThat(stationNames).containsAnyOf(station);
         }
 
-        static void 지하철역_생성_실패를_확인한다(ExtractableResponse<Response> response) {
+        public static void 지하철역_생성_실패를_확인한다(ExtractableResponse<Response> response) {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
 
-        static void 지하철역_목록에_생성한_역이_존재하지_않는다(List<String> stationNames, String station) {
+        public static void 지하철역_목록에_생성한_역이_존재하지_않는다(List<String> stationNames, String station) {
             assertThat(stationNames).containsAnyOf(station);
         }
 
-        static ValidatableResponse 지하철역_제거(ExtractableResponse<Response> response) {
+        public static ValidatableResponse 지하철역_제거(ExtractableResponse<Response> response) {
             return RestAssured.given().log().all()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .when().delete("/stations" + response.body().jsonPath().getLong("id"))
                     .then().log().all();
         }
 
-        static void 지하철역_개수를_확인한다(List<String> stationNames, int size) {
+        public static void 지하철역_개수를_확인한다(List<String> stationNames, int size) {
             assertThat(stationNames).hasSize(size);
         }
     }
