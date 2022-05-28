@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import nextstep.subway.enums.LineColor;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @Entity
 public class Line extends BaseEntity {
@@ -32,6 +34,21 @@ public class Line extends BaseEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "DOWN_STATION_ID", foreignKey = @ForeignKey(name = "fk_line_down_station"))
     private Station downStation;
+
+    public void update(Line line) {
+        if(StringUtils.isNotEmpty(line.getName())){
+            this.name = line.getName();
+        }
+        if(ObjectUtils.isNotEmpty(line.getLineColor())){
+            this.lineColor = line.getLineColor();
+        }
+        if(ObjectUtils.isNotEmpty(line.getDownStation())){
+            this.downStation = line.getDownStation();
+        }
+        if(ObjectUtils.isNotEmpty(line.getUpStation())){
+            this.upStation = line.getUpStation();
+        }
+    }
 
     public Long getId() {
         return id;
