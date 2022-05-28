@@ -23,14 +23,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LineAcceptanceTest {
     @LocalServerPort
     int port;
-    Long stationId1;
-    Long stationId2;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        stationId1 = StationApi.create("강남역").jsonPath().getLong("id");
-        stationId2 = StationApi.create("교대역").jsonPath().getLong("id");
     }
 
     /**
@@ -41,14 +37,33 @@ class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        지하철노선_생성_성공(new LineRequest("2호선", "yellow", stationId1, stationId2, 10));
+        지하철노선_생성_성공("2호선", "yellow", "강남역", "교대역", 10);
 
         // then
         지하철노선_조회_성공("2호선");
     }
 
-    String 지하철노선_생성_성공(LineRequest lineRequest) {
-        ExtractableResponse<Response> response = LineApi.create(lineRequest);
+    /**
+     * Given 2개의 지하철 노선을 생성하고
+     * When 지하철 노선 목록을 조회하면
+     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다
+     */
+    @DisplayName("지하철 노선 목록을 조회한다.")
+    @Test
+    void findLines() {
+        // given
+        지하철노선_생성_성공("1호선", "blue", "영등포역", "신길역", 5);
+        지하철노선_생성_성공("2호선", "yellow", "강남역", "교대역", 10);
+
+        // when
+        // then
+        지하철노선_조회_성공("1호선", "2호선");
+    }
+
+    String 지하철노선_생성_성공(String name, String color, String upStationName, String downStationName, long distance) {
+        long upStationId = StationApi.create(upStationName).jsonPath().getLong("id");
+        long downStationId = StationApi.create(downStationName).jsonPath().getLong("id");
+        ExtractableResponse<Response> response = LineApi.create(new LineRequest(name, color, upStationId, downStationId, distance));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         return response.header("location");
     }
