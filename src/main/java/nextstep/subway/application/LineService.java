@@ -58,7 +58,7 @@ public class LineService {
         Line line = getLine(lineId);
         Station upStation = getStation(request.getUpStationId());
         Station downStation = getStation(request.getDownStationId());
-        line.addSetion(request.toSection(upStation, downStation));
+        line.addSection(request.toSection(upStation, downStation));
         lineRepository.save(line);
         return line;
     }
