@@ -60,6 +60,34 @@ public class Sections {
         this.sections.add(section);
     }
 
+    public long allocatedStationCount() {
+        return this.getAllStations().size();
+    }
+
+    public Optional<Section> findSectionBySectionId(Long sectionId) {
+        return StreamUtils.filterAndFindFirst(this.sections,
+            section -> section.getId().equals(sectionId));
+    }
+
+    public List<Station> findSortedStations() {
+        List<Station> sortedStations = Lists.newArrayList();
+        sortedStations.add(findFirstSection().getUpStation());
+
+        for (int i = 0; i < this.sections.size(); i++) {
+            Station station = this.findSectionByUpStation(sortedStations.get(i))
+                .map(Section::getDownStation)
+                .orElseThrow(() -> new IllegalStateException(NOT_FOUND_UP_STATION_BY_SECTION.getMessage()));
+
+            sortedStations.add(station);
+        }
+
+        return Collections.unmodifiableList(sortedStations);
+    }
+
+    public boolean containUpDownStation(Section section) {
+        return this.isExistStation(section.getUpStation()) && this.isExistStation(section.getDownStation());
+    }
+
     private boolean isEndOfStation(Section section) {
         Section firstSection = this.findFirstSection();
         Section lastSection = this.findLastSection();
@@ -78,10 +106,6 @@ public class Sections {
         List<Station> upStations = this.findUpStations();
         return StreamUtils.filterAndFindFirst(this.sections, section -> !upStations.contains(section.getDownStation()))
             .orElseThrow(() -> new IllegalStateException(NOT_FOUND_SECTION.getMessage()));
-    }
-
-    public long allocatedStationCount() {
-        return this.getAllStations().size();
     }
 
     private void validateAddableSectionDistance(Section middleSection, Section section) {
@@ -125,36 +149,12 @@ public class Sections {
             section -> section.isEqualsUpStation(station));
     }
 
-    public Optional<Section> findSectionBySectionId(Long sectionId) {
-        return StreamUtils.filterAndFindFirst(this.sections,
-            section -> section.getId().equals(sectionId));
-    }
-
-    public List<Station> findSortedStations() {
-        List<Station> sortedStations = Lists.newArrayList();
-        sortedStations.add(findFirstSection().getUpStation());
-
-        for (int i = 0; i < this.sections.size(); i++) {
-            Station station = this.findSectionByUpStation(sortedStations.get(i))
-                .map(Section::getDownStation)
-                .orElseThrow(() -> new IllegalStateException(NOT_FOUND_UP_STATION_BY_SECTION.getMessage()));
-
-            sortedStations.add(station);
-        }
-
-        return Collections.unmodifiableList(sortedStations);
-    }
-
     private List<Station> findDownStations() {
         return StreamUtils.mapToList(this.sections, Section::getDownStation);
     }
 
     private List<Station> findUpStations() {
         return StreamUtils.mapToList(this.sections, Section::getUpStation);
-    }
-
-    public boolean containUpDownStation(Section section) {
-        return this.isExistStation(section.getUpStation()) && this.isExistStation(section.getDownStation());
     }
 
     private boolean isExistStation(Station station) {
