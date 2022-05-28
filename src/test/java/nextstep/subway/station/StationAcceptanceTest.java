@@ -108,7 +108,7 @@ class StationAcceptanceTest {
         ExtractableResponse<Response> response = StationApi.findAll();
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<String> findNames = response.jsonPath().getList("name", String.class);
-        assertThat(findNames).containsAnyOf(names);
+        assertThat(findNames).contains(names);
     }
 
     void 지하철역_조회_실패(String name) {
