@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,18 +20,18 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
 
     public static final String ENDPOINT = "/lines";
+
     @LocalServerPort
     int port;
 
     @BeforeEach
     public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
+        RestAssured.port = port;
     }
 
     /**
@@ -121,7 +122,7 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_삭제() {
         // given
-        ExtractableResponse<Response> response = createLine("삭제할노선", "노란색");
+        ExtractableResponse<Response> response = createLine("분당선", "노란색");
         Long lineId = response.body().jsonPath().getLong("id");
 
         // when
@@ -129,7 +130,7 @@ public class LineAcceptanceTest {
 
         // then
         List<String> lineNames = getLinesIn("name", String.class);
-        assertThat(lineNames).doesNotContain("삭제할노선");
+        assertThat(lineNames).doesNotContain("분당선");
     }
 
     private void deleteLine(Long lineId) {
@@ -137,7 +138,7 @@ public class LineAcceptanceTest {
                 .when().delete(ENDPOINT + "/" + lineId)
                 .then().log().all();
     }
-    
+
     private void editLine(Long lineId, Map<String, String> params) {
         RestAssured.given().log().all()
                 .body(params)
