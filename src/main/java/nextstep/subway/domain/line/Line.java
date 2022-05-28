@@ -30,9 +30,9 @@ public class Line extends BaseEntity {
     private Station downStation;
 
     @OneToMany(
-            mappedBy = "station",
+            mappedBy = "line",
             fetch = FetchType.LAZY,
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            cascade = CascadeType.ALL,
             orphanRemoval = true
     )
     private List<LineStation> lineStations = new ArrayList<>();
@@ -107,5 +107,9 @@ public class Line extends BaseEntity {
     public void modifyNameAndColor(String name, String color) {
         this.name = LineName.of(name);
         this.color = LineColor.of(color);
+    }
+
+    public void delete() {
+        lineStations.clear();
     }
 }
