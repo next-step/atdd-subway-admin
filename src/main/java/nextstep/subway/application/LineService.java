@@ -30,6 +30,7 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAllLine() {
         return lineRepository.findAll()
                 .stream()
