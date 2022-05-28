@@ -51,7 +51,9 @@ public class LineService {
         Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
         Station upStation = getStationSafely(lineRequest.getUpStationId());
         Station downStation = getStationSafely(lineRequest.getDownStationId());
+
         Line lineUpdate = lineRequest.toLine(upStation, downStation);
+
         line.update(lineUpdate);
     }
 
