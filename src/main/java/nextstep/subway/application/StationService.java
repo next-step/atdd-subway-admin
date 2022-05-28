@@ -35,7 +35,6 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
     public Station findById(Long id) {
         return stationRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.STATION_NOT_FOUND));
