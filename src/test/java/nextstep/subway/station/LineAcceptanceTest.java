@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,17 +36,21 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        long upStreamId = 응답_속성_조회(지하철역_등록("강남역"), "id");
-        long downStreamId = 응답_속성_조회(지하철역_등록("잠실역"), "id");
-        LineRequest lineRequest = new LineRequest("2호선", "초록", 10, upStreamId, downStreamId);
-
-        ValidatableResponse createResponse = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all();
+        StationResponse upStation = 응답_객체_생성(지하철역_등록("강남역"), StationResponse.class);
+        StationResponse downStation = 응답_객체_생성(지하철역_등록("잠실역"), StationResponse.class);
+        ValidatableResponse createResponse = 노선_등록("2호선", "초록", 10, upStation.getId(), downStation.getId());
 
         // then
         응답_검증(createResponse, HttpStatus.CREATED);
+    }
+
+    private ValidatableResponse 노선_등록(String name, String color, Integer distance, Long upStreamId, Long downStreamId) {
+        LineRequest lineRequest = new LineRequest(name, color, distance, upStreamId, downStreamId);
+
+        return RestAssured.given().log().all()
+                    .body(lineRequest)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().post("/lines")
+                    .then().log().all();
     }
 }
