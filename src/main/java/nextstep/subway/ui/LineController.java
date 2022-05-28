@@ -31,6 +31,11 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
+    @GetMapping("/lines/{id}")
+    public ResponseEntity<LineResponse> deleteStation(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findLineById(id));
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();

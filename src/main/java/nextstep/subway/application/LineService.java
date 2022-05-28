@@ -53,4 +53,15 @@ public class LineService {
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
+
+    public LineResponse findLineById(Long id) {
+        Line line = getLineById(id);
+
+        return LineResponse.of(line);
+    }
+
+    private Line getLineById(Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 노선입니다. lineId : " + lineId));
+    }
 }
