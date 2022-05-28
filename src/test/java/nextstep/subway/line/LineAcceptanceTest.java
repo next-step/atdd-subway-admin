@@ -36,7 +36,6 @@ public class LineAcceptanceTest {
 
         downStationId = 지하철역을_생성_한다("주안역").jsonPath().getLong("id");
         upStationId = 지하철역을_생성_한다("인천역").jsonPath().getLong("id");
-
     }
 
     /**
@@ -52,8 +51,11 @@ public class LineAcceptanceTest {
 
         //Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다.
         final ExtractableResponse<Response> findAllLine = 전체_노선을_찾는다();
-        assertThat(createLine.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(findAllLine.jsonPath().getList("name")).contains("1호선");
+        assertAll(
+                () -> assertThat(createLine.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(findAllLine.jsonPath().getList("name")).contains("1호선")
+        );
+
     }
 
     /**
@@ -66,19 +68,19 @@ public class LineAcceptanceTest {
     void searchLines() {
         //Given 2개의 지하철 노선을 생성하고
         노선을_생성한다(new LineRequest("1호선", "bg-red-500", 10,
-                downStationId, upStationId));
+                upStationId, downStationId));
 
         노선을_생성한다(new LineRequest("2호선", "bg-red-500", 4,
-                downStationId, upStationId));
+                upStationId, downStationId));
 
         // When 지하철 노선 목록을 조회하면
-        final ExtractableResponse<Response> findLinse = 전체_노선을_찾는다();
+        final ExtractableResponse<Response> findLins = 전체_노선을_찾는다();
 
         //Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
         assertAll(
-                () -> assertThat(findLinse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(findLinse.jsonPath().getList("id")).hasSize(2),
-                () -> assertThat(findLinse.jsonPath().getList("name")).contains("1호선", "2호선")
+                () -> assertThat(findLins.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(findLins.jsonPath().getList("id")).hasSize(2),
+                () -> assertThat(findLins.jsonPath().getList("name")).contains("1호선", "2호선")
         );
     }
 
@@ -92,7 +94,7 @@ public class LineAcceptanceTest {
     void searchLine() {
         //Given 지하철 노선을 생성하고
         final ExtractableResponse<Response> 생성된_노선 = 노선을_생성한다(new LineRequest("1호선", "bg-red-500", 10,
-                downStationId, upStationId));
+                upStationId, downStationId));
 
         final long createLineId = 생성된_노선.jsonPath().getLong("id");
         //When 생성한 지하철 노선을 조회하면
@@ -115,7 +117,7 @@ public class LineAcceptanceTest {
     void fixLine() {
         //Given 지하철 노선을 생성하고
         final ExtractableResponse<Response> 노선을_생성한다 = 노선을_생성한다(new LineRequest("1호선", "bg-red-500",
-                10, downStationId, upStationId));
+                10, upStationId, downStationId));
 
         //When 생성한 지하철 노선을 수정하면
         Long lineId = 노선을_생성한다.jsonPath().getLong("id");
@@ -123,13 +125,7 @@ public class LineAcceptanceTest {
         lineRequest.setColor("bg-blue-500");
         lineRequest.setName("2호선");
 
-        final ExtractableResponse<Response> 노선을_수정한다 = RestAssured.given().log().all()
-                .pathParam("id", lineId)
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/{id}")
-                .then().log().all()
-                .extract();
+        final ExtractableResponse<Response> 노선을_수정한다 = 노선을_수정한다(lineId, lineRequest);
 
         //Then 해당 지하철 노선 정보는 수정된다
         final ExtractableResponse<Response> 수정된_노선 = 노선을_조회한다(lineId);
@@ -152,7 +148,7 @@ public class LineAcceptanceTest {
     void deleteLine() {
         //Given 지하철 노선을 생성하고
         final ExtractableResponse<Response> 노선을_생성한다 = 노선을_생성한다(new LineRequest("1호선", "bg-red-500",
-                10, downStationId, upStationId));
+                10, upStationId, downStationId));
 
         //When 생성한 지하철 노선을 삭제하면
         Long lineId = 노선을_생성한다.jsonPath().getLong("id");
@@ -161,6 +157,38 @@ public class LineAcceptanceTest {
         //Then 해당 지하철 노선 정보는 삭제된다
         assertThat(노선을_삭제한다.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
+    @Test
+    @DisplayName("중복된 자하철 노선")
+    void deplicateLine() {
+        //Given 노선을 생성한다.
+        final ExtractableResponse<Response> 노선을_생성한다 = 노선을_생성한다(new LineRequest("1호선", "bg-red-500",
+                10, upStationId, downStationId));
+        //When 중복된 노선을 생성한다.
+        final ExtractableResponse<Response> 중복된_노선을_생성한다 = 노선을_생성한다(new LineRequest("1호선", "bg-red-700",
+                10, upStationId, downStationId));
+
+        //then 중복된 노선이 생성되지 않는다.
+        assertThat(중복된_노선을_생성한다.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("존재하지 않은 하행역과 상행역")
+    void noDownsStation() {
+        //Given & When 존재하지 않은 하행역과 함께 생성한다.
+        final ExtractableResponse<Response> 존재하지_않은_상행종점_노선을_생성한다 = 노선을_생성한다(new LineRequest("1호선", "bg-red-500",
+                10, 999L, downStationId));
+        final ExtractableResponse<Response> 존재하지_않은_하행종점_노선을_생성한다 = 노선을_생성한다(new LineRequest("1호선", "bg-red-500",
+                10, upStationId, 9999L));
+
+        //then 노선이 생성되지 않는다.
+        assertAll(
+            () -> assertThat(존재하지_않은_상행종점_노선을_생성한다.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+            () -> assertThat(존재하지_않은_하행종점_노선을_생성한다.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
+        );
+    }
+
+
 
     private ExtractableResponse<Response> 노선을_삭제한다(Long lineId) {
         return RestAssured.given().log().all()
@@ -204,6 +232,15 @@ public class LineAcceptanceTest {
                 .pathParam("id", createLineId)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines/{id}")
+                .then().log().all()
+                .extract();
+    }
+    private ExtractableResponse<Response> 노선을_수정한다(Long lineId, LineRequest lineRequest) {
+        return RestAssured.given().log().all()
+                .pathParam("id", lineId)
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/{id}")
                 .then().log().all()
                 .extract();
     }

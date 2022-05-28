@@ -1,9 +1,11 @@
 package nextstep.subway.application;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -22,10 +24,15 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
+        if (lineRepository.findByName(request.getName()).isPresent()) {
+            throw new IllegalArgumentException("중복된 노선 입니다");
+        }
+
+        final Station upStation = getValidStation(request.getUpStationId(), "유효하지 않은 상행종점입니다.");
+        final Station downStation = getValidStation(request.getDownStationId(), "유효하지 않은 하행종점입니다.");
+
         final Line line = lineRepository.save(
-            request.toLine()
-                    .withUpStation(stationRepository.getById(request.getUpStationId()))
-                    .withDownStation(stationRepository.getById(request.getDownStationId()))
+            request.toLine().withUpStation(upStation).withDownStation(downStation)
         );
 
         return LineResponse.of(line);
@@ -40,7 +47,9 @@ public class LineService {
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line findLine = lineRepository.findById(id).get();
+        Line findLine = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재 하지 않은 노선입니다."));
+
         findLine.changeColor(lineRequest.getColor());
         findLine.changeName(lineRequest.getName());
         lineRepository.flush();
@@ -48,7 +57,9 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long lindId) {
-        return LineResponse.of(lineRepository.findById(lindId).get());
+        return LineResponse.of(lineRepository
+                .findById(lindId)
+                .orElseThrow(() -> new IllegalArgumentException("존재 하지 않은 노선입니다.")));
     }
 
     public void deleteLine(Long lindId) {
@@ -56,8 +67,11 @@ public class LineService {
     }
 
 
-    private Station getValidStation(LineRequest request, String s) {
-        return stationRepository.findById(request.getUpStationId())
-                .orElseThrow(() -> new IllegalArgumentException(s));
+    private Station getValidStation(Long stationId, String msg) {
+        final Optional<Station> findStation = stationRepository.findById(stationId);
+        if (!findStation.isPresent()) {
+            throw new IllegalArgumentException(msg);
+        }
+        return findStation.get();
     }
 }

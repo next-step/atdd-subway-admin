@@ -117,7 +117,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   When 생성한 지하철 노선을 수정하면
   Then 해당 지하철 노선 정보는 수정된다
   ```
-- [ ] 지하철노선 삭제
+- [X] 지하철노선 삭제
   ```text
   Given 지하철 노선을 생성하고
   When 생성한 지하철 노선을 삭제하면
