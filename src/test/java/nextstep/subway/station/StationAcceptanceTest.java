@@ -106,17 +106,21 @@ public class StationAcceptanceTest {
         createStationAndReturnResponse("역삼역");
 
         // when
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
+        final ExtractableResponse<Response> response = getStationsAndReturnResponse();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.body().jsonPath().getList("$")).hasSize(2);
         assertThat(response.body().jsonPath().getList("name")).contains("강남역", "역삼역");
+    }
+
+    private ExtractableResponse<Response> getStationsAndReturnResponse() {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/stations")
+                .then().log().all()
+                .extract();
     }
 
     /**
@@ -131,20 +135,14 @@ public class StationAcceptanceTest {
         final ExtractableResponse<Response> stationResponse = createStationAndReturnResponse("강남역");
 
         // when
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .delete("/stations/{id}", stationResponse.body().jsonPath().getInt("id"))
-                .then().log().all()
-                .extract();
+                .then().log().all();
 
         // then
-        final ExtractableResponse<Response> getStationsResponse = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
+        final ExtractableResponse<Response> getStationsResponse = getStationsAndReturnResponse();
 
         assertThat(getStationsResponse.body().jsonPath().getList("$")).hasSize(0);
     }
