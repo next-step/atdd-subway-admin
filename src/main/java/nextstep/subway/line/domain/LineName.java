@@ -24,6 +24,10 @@ public class LineName {
         return new LineName(name);
     }
 
+    public String get() {
+        return this.name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -5,6 +5,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -57,6 +59,14 @@ public class Section extends BaseEntity {
         if (Objects.isNull(this.distance)) {
             throw new IllegalArgumentException(DISTANCE_NOT_NULL);
         }
+    }
+
+    public void toLine(Line line) {
+        this.line = line;
+    }
+
+    public List<Station> getStations() {
+        return Arrays.asList(this.upStation, this.downStation);
     }
 
     @Override

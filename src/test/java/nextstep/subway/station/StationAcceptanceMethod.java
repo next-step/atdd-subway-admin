@@ -2,6 +2,7 @@ package nextstep.subway.station;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.station.dto.StationRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
@@ -17,7 +18,7 @@ public class StationAcceptanceMethod {
     private static final String STATION_NAME_KEY = "name";
 
     public static ExtractableResponse<Response> 지하철역_생성(String 지하철역_이름) {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, String> params = new HashMap<>();
         params.put(STATION_NAME_KEY, 지하철역_이름);
         return post(STATIONS_URI, params);
     }

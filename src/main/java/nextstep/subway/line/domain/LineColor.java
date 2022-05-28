@@ -24,6 +24,10 @@ public class LineColor {
         return new LineColor(color);
     }
 
+    public String get() {
+        return this.color;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -1,24 +1,17 @@
 package nextstep.subway;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.util.Map;
-
 @Sql("/truncate.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class BaseAcceptanceTest {
-    @Autowired
-    public static ObjectMapper objectMapper;
-
     @LocalServerPort
     int port;
 
@@ -37,10 +30,10 @@ public class BaseAcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> post(String uri, Map<String, Object> params) {
+    public static <T> ExtractableResponse<Response> post(String uri, T body) {
         return RestAssured
                 .given().log().all()
-                .body(params)
+                .body(body)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post(uri)
                 .then().log().all()
