@@ -10,6 +10,9 @@ import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional(readOnly = true)
 public class LineService {
@@ -26,7 +29,7 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Line line = lineRequest.toLine();
         Station upStation = getStationById(lineRequest.getUpStationId());
-        Station downStation = getStationById(lineRequest.getUpStationId());
+        Station downStation = getStationById(lineRequest.getDownStationId());
 
         Section section = Section.create(upStation, downStation, lineRequest.getDistance());
 
@@ -41,5 +44,13 @@ public class LineService {
     private Station getStationById(Long stationId) {
         return stationRepository.findById(stationId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철역입니다. stationId : " + stationId));
+    }
+
+    public List<LineResponse> findAllLines() {
+        List<Line> lines = lineRepository.findAll();
+
+        return lines.stream()
+                .map(LineResponse::of)
+                .collect(Collectors.toList());
     }
 }
