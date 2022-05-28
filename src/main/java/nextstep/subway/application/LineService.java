@@ -60,8 +60,6 @@ public class LineService {
 
     @Transactional
     public void deleteLine(Long lineId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new LineNotFoundException(lineId));
-        lineRepository.delete(line);
+        lineRepository.deleteById(lineId);
     }
 }

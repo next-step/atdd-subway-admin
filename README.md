@@ -66,3 +66,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - 인수 테스트를 충족하는 기능 구현
 - 인수 테스트를 서로 격리
 - 인수 테스트를 리팩터링
+
+3단계 (구간 추가 기능)
+- 지하철 구간 등록 인수 테스트 작성과 기능 구현
