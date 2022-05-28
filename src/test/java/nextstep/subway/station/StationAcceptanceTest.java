@@ -3,13 +3,16 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.util.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,8 +21,13 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
+
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
+
     @LocalServerPort
     int port;
 
@@ -27,7 +35,9 @@ public class StationAcceptanceTest {
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
+            databaseCleanup.afterPropertiesSet();
         }
+        databaseCleanup.cleanUp();
     }
 
     /**
@@ -37,16 +47,12 @@ public class StationAcceptanceTest {
      */
     @DisplayName("지하철역을 생성한다.")
     @Test
-    void createStation() {
-        // given
+    public void createStation() {
+        // when
         ExtractableResponse<Response> response = createStation("강남역");
 
-        // when
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
         // then
-        List<String> stationNames = findStations().jsonPath().getList("name");
-        assertThat(stationNames).containsAnyOf("강남역");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     /**
@@ -99,14 +105,14 @@ public class StationAcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = deleteStation(1L);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.valueOf(204).value());
 
         // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         List<Long> stationIds = findStations().jsonPath().getList("id");
         assertThat(stationIds).doesNotContain(1L);
     }
 
-    private ExtractableResponse<Response> createStation(String stationName) {
+    public ExtractableResponse<Response> createStation(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
