@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.springframework.http.MediaType;
 
 public class LineApi {
@@ -33,6 +34,15 @@ public class LineApi {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get(location)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> update(String location, LineUpdateRequest request) {
+        return RestAssured.given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put(location)
                 .then().log().all()
                 .extract();
     }

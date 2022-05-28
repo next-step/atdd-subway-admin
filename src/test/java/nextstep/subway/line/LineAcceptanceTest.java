@@ -4,6 +4,8 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.station.StationApi;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -76,10 +78,31 @@ class LineAcceptanceTest {
         String location = 지하철노선_생성_성공("1호선", "blue", "영등포역", "신길역", 5);
 
         // when
-        String findName = 지하철노선_조회_성공(location);
+        LineResponse findLine = 지하철노선_조회_성공(location);
 
         // then
-        assertThat(findName).isEqualTo("1호선");
+        assertThat(findLine.getName()).isEqualTo("1호선");
+        assertThat(findLine.getColor()).isEqualTo("blue");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        String location = 지하철노선_생성_성공("1호선", "blue", "영등포역", "신길역", 5);
+
+        // when
+        지하철노선_수정_성공(location, "신분당선", "red");
+
+        // then
+        LineResponse findLine = 지하철노선_조회_성공(location);
+        assertThat(findLine.getName()).isEqualTo("신분당선");
+        assertThat(findLine.getColor()).isEqualTo("red");
     }
 
     String 지하철노선_생성_성공(String name, String color, String upStationName, String downStationName, long distance) {
@@ -96,9 +119,14 @@ class LineAcceptanceTest {
         return response.jsonPath().getList("name", String.class);
     }
 
-    String 지하철노선_조회_성공(String location) {
+    LineResponse 지하철노선_조회_성공(String location) {
         ExtractableResponse<Response> response = LineApi.find(location);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        return response.jsonPath().getString("name");
+        return response.jsonPath().getObject("", LineResponse.class);
+    }
+
+    void 지하철노선_수정_성공(String location, String name, String color) {
+        ExtractableResponse<Response> response = LineApi.update(location, new LineUpdateRequest(name, color));
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }
