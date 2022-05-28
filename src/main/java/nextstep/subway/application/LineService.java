@@ -42,4 +42,10 @@ public class LineService {
                 .map(line -> LineResponse.of(line))
                 .collect(Collectors.toList());
     }
+
+    public LineResponse findLineById(Long id) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("존재하지 않는 노선입니다."));
+        return LineResponse.of(line);
+    }
 }
