@@ -22,6 +22,10 @@ public class LineStations {
         return StreamUtils.mapToList(this.stations, StationResponse::of);
     }
 
+    public boolean contains(Station station) {
+        return this.stations.contains(station);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

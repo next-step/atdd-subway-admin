@@ -3,7 +3,6 @@ package nextstep.subway.line.domain;
 import static nextstep.subway.line.domain.exception.LineExceptionMessage.ALREADY_ADDED_SECTION;
 import static nextstep.subway.line.domain.exception.LineExceptionMessage.ALREADY_ADDED_UP_DOWN_STATION;
 
-import java.util.List;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,7 +11,6 @@ import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
-import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line extends BaseEntity {
@@ -53,6 +51,10 @@ public class Line extends BaseEntity {
     }
 
     private void validateAddableStation(Section section) {
+        if (this.sections.isEmpty()) {
+            return;
+        }
+
         if (this.sections.containUpDownStation(section)) {
             throw new IllegalStateException(ALREADY_ADDED_UP_DOWN_STATION.getMessage());
         }

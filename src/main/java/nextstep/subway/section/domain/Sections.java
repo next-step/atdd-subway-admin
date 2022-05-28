@@ -7,10 +7,8 @@ import static nextstep.subway.section.domain.exception.SectionExceptionMessage.N
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
@@ -42,15 +40,6 @@ public class Sections {
         return this.sections.contains(section);
     }
 
-    public List<Station> getAllStations() {
-        List<Station> result = new ArrayList<>();
-        for (Section section : this.sections) {
-            result.add(section.getUpStation());
-            result.add(section.getDownStation());
-        }
-        return result.stream().distinct().collect(Collectors.toList());
-    }
-
     public void add(Section section) {
         if (!this.sections.isEmpty() && !this.isEndOfStation(section)) {
             Section middleSection = findMiddleSection(section);
@@ -59,10 +48,6 @@ public class Sections {
         }
 
         this.sections.add(section);
-    }
-
-    public long allocatedStationCount() {
-        return this.getAllStations().size();
     }
 
     public Optional<Section> findSectionBySectionId(Long sectionId) {
@@ -87,6 +72,10 @@ public class Sections {
 
     public boolean containUpDownStation(Section section) {
         return this.isExistStation(section.getUpStation()) && this.isExistStation(section.getDownStation());
+    }
+
+    public boolean isEmpty() {
+        return this.sections.isEmpty();
     }
 
     private boolean isEndOfStation(Section section) {
@@ -159,6 +148,6 @@ public class Sections {
     }
 
     private boolean isExistStation(Station station) {
-        return this.getAllStations().contains(station);
+        return this.findSortedStations().contains(station);
     }
 }

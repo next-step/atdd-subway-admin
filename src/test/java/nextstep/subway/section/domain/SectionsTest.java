@@ -62,9 +62,10 @@ class SectionsTest {
 
         // when
         sections.add(강남역_양재역_구간);
+        LineStations lineStations = sections.findSortedStations();
 
         // then
-        assertThat(sections.allocatedStationCount()).isEqualTo(3);
+        assertThat(lineStations).isEqualTo(LineStations.from(Arrays.asList(강남역, 양재역, 판교역)));
     }
 
     @DisplayName("기존 지하철역 구간에 새로운 구간에 추가됨에 따라 역 간의 거리가 조정된다.")
@@ -129,10 +130,7 @@ class SectionsTest {
         sections.add(양재시민의숲역_판교역_구간);
 
         // then
-        assertAll(
-            () -> assertThat(sections.allocatedStationCount()).isEqualTo(3),
-            () -> assertThat(sections.findSortedStations()).isEqualTo(LineStations.from(Arrays.asList(강남역, 양재시민의숲역, 판교역)))
-        );
+        assertThat(sections.findSortedStations()).isEqualTo(LineStations.from(Arrays.asList(강남역, 양재시민의숲역, 판교역)));
     }
 
     @DisplayName("기존 지하철역 구간에 새로운 구간 추가 시 새로운 구간의 거리는 기존 지하철역 구간의 거리보다 크거나 같을 수 없다.")
@@ -169,10 +167,7 @@ class SectionsTest {
         sections.add(신사역_강남역_구간);
 
         // then
-        assertAll(
-            () -> assertThat(sections.allocatedStationCount()).isEqualTo(3),
-            () -> assertThat(sections.findSortedStations()).isEqualTo(LineStations.from(Arrays.asList(신사역, 강남역, 판교역)))
-        );
+        assertThat(sections.findSortedStations()).isEqualTo(LineStations.from(Arrays.asList(신사역, 강남역, 판교역)));
     }
 
     @DisplayName("기존 지하철역 구간 중간에 새로운 하행역 구간을 추가한다.")
@@ -190,9 +185,6 @@ class SectionsTest {
         sections.add(판교역_광교역_구간);
 
         // then
-        assertAll(
-            () -> assertThat(sections.allocatedStationCount()).isEqualTo(3),
-            () -> assertThat(sections.findSortedStations()).isEqualTo(LineStations.from(Arrays.asList(강남역, 판교역, 광교역)))
-        );
+        assertThat(sections.findSortedStations()).isEqualTo(LineStations.from(Arrays.asList(강남역, 판교역, 광교역)));
     }
 }
