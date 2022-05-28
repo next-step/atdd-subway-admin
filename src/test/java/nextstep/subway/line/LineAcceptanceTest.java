@@ -1,5 +1,7 @@
 package nextstep.subway.line;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,8 +54,15 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void getLines() {
         // given
-        // when
-        // then
+        String 신분당선 = "신분당선";
+        LineRequest 신분당선_생성_요청 = LineRequest.of(신분당선, LINE_COLOR_RED, 지하철역_ID, 새로운지하철역_ID, DISTANCE);
+        지하철노선_생성(신분당선_생성_요청);
+        String 분당선 = "분당선";
+        LineRequest 분당선_생성_요청 = LineRequest.of(분당선, LINE_COLOR_GREEN, 지하철역_ID, 또다른지하철역_ID, DISTANCE);
+        지하철노선_생성(분당선_생성_요청);
+
+        // when & then
+        생성한_지하철노선_찾기(신분당선, 분당선);
     }
 
     /**
@@ -65,8 +74,15 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void getLine() {
         // given
+        String 신분당선 = "신분당선";
+        LineRequest 신분당선_생성_요청 = LineRequest.of(신분당선, LINE_COLOR_RED, 지하철역_ID, 새로운지하철역_ID, DISTANCE);
+        ExtractableResponse<Response> 신분당선_생성_응답 = 지하철노선_생성(신분당선_생성_요청);
+
         // when
+        ExtractableResponse<Response> 신분당선_조회_응답 = 지하철노선_ID_조회(신분당선_생성_응답);
+
         // then
+        지하철노선_조회_응답_확인(신분당선_조회_응답, 신분당선);
     }
 
     /**
