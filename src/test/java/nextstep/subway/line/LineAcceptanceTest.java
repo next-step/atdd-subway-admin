@@ -67,7 +67,7 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> response = 노선을_생성한다("7호선", "#FFFFFF");
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -81,7 +81,7 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> response = 노선을_생성한다("7호선", null);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
