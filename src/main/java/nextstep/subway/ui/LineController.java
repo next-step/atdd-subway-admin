@@ -1,0 +1,26 @@
+package nextstep.subway.ui;
+
+import java.net.URI;
+import nextstep.subway.application.LineService;
+import nextstep.subway.dto.request.LineRequest;
+import nextstep.subway.dto.response.LineResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping(value = "/lines")
+public class LineController {
+
+    @Autowired
+    private LineService lineService;
+
+    @PostMapping()
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+        LineResponse line = lineService.createLine(lineRequest);
+        return ResponseEntity.created(URI.create("/stations/" + line.getId())).body(line);
+    }
+}
