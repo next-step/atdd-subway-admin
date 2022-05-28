@@ -105,7 +105,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
       노선 조회시 포함된 역 목록이 함께 응답되게  
 
 
-- [ ] 지하철노선 조회 
+- [X] 지하철노선 조회 
   ```text
   Given 지하철 노선을 생성하고
   When 생성한 지하철 노선을 조회하면
