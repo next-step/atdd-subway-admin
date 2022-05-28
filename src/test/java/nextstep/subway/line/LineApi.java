@@ -28,4 +28,12 @@ public class LineApi {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> find(String location) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get(location)
+                .then().log().all()
+                .extract();
+    }
 }

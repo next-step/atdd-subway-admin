@@ -40,7 +40,7 @@ class LineAcceptanceTest {
         지하철노선_생성_성공("2호선", "yellow", "강남역", "교대역", 10);
 
         // then
-        지하철노선_조회_성공("2호선");
+        지하철노선_목록_조회_성공("2호선");
     }
 
     /**
@@ -57,7 +57,25 @@ class LineAcceptanceTest {
 
         // when
         // then
-        지하철노선_조회_성공("1호선", "2호선");
+        지하철노선_목록_조회_성공("1호선", "2호선");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다
+     */
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void findLine() {
+        // given
+        String location = 지하철노선_생성_성공("1호선", "blue", "영등포역", "신길역", 5);
+
+        // when
+        String findName = 지하철노선_조회_성공(location);
+
+        // then
+        assertThat(findName).isEqualTo("1호선");
     }
 
     String 지하철노선_생성_성공(String name, String color, String upStationName, String downStationName, long distance) {
@@ -68,10 +86,16 @@ class LineAcceptanceTest {
         return response.header("location");
     }
 
-    void 지하철노선_조회_성공(String... names) {
+    void 지하철노선_목록_조회_성공(String... names) {
         ExtractableResponse<Response> response = LineApi.findAll();
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<String> findNames = response.jsonPath().getList("name", String.class);
         assertThat(findNames).contains(names);
+    }
+
+    String 지하철노선_조회_성공(String location) {
+        ExtractableResponse<Response> response = LineApi.find(location);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        return response.jsonPath().getString("name");
     }
 }
