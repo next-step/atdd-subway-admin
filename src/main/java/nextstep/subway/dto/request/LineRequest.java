@@ -1,11 +1,21 @@
 package nextstep.subway.dto.request;
 
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Station;
+import nextstep.subway.enums.LineColor;
+
 public class LineRequest {
+
     private Long id;
     private String name;
     private Long upStationId;
     private Long downStationId;
     private int distance;
+    private String color;
+
+    public Line toLine(Station upStation, Station downStation) {
+        return new Line(id, name, LineColor.getLineColorByName(color), upStation, downStation);
+    }
 
     public Long getId() {
         return id;
