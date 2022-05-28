@@ -65,5 +65,8 @@ public class LineService {
         return stationRepository.findById(stationId).orElse(null);
     }
 
-
+    @Transactional
+    public void deleteLine(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
