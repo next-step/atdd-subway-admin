@@ -8,7 +8,7 @@ import javax.persistence.Embeddable;
 public class LineColor {
     private static final String NO_LINE_COLOR_ERROR = "지하철 노선 색이 필요 합니다.";
 
-    @Column
+    @Column(nullable = false)
     private String color;
 
     protected LineColor() {
