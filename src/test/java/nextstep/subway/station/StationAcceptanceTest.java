@@ -50,7 +50,7 @@ public class StationAcceptanceTest {
 
         // then
         List<StationResponse> stations = 목록_조회("/stations", StationResponse.class);
-        지하철역_등록_검증(stations, "강남역");
+        개수_검증(stations, 1);
     }
 
     /**
@@ -87,7 +87,7 @@ public class StationAcceptanceTest {
         List<StationResponse> stations = 목록_조회("/stations", StationResponse.class);
 
         // then
-        지하철역_개수_검증(stations, 2);
+        개수_검증(stations, 2);
     }
 
     /**
@@ -103,11 +103,11 @@ public class StationAcceptanceTest {
         StationResponse createdStation = 응답_객체_생성(response, StationResponse.class);
 
         // when
-        지하철역_삭제(createdStation.getId());
+        삭제("/stations", createdStation.getId());
 
         // then
         List<StationResponse> stations = 목록_조회("/stations", StationResponse.class);
-        지하철역_개수_검증(stations, 0);
+        개수_검증(stations, 0);
     }
 
     public static ValidatableResponse 지하철역_등록(String name) {
@@ -148,14 +148,14 @@ public class StationAcceptanceTest {
         assertThat(stations).containsAnyOf(new StationResponse(name));
     }
 
-    public static void 지하철역_개수_검증(List<StationResponse> stations, int size) {
-        assertThat(stations).hasSize(size);
+    public static <T> void 개수_검증(List<T> list, int size) {
+        assertThat(list).hasSize(size);
     }
 
-    public static void 지하철역_삭제(long stationId) {
+    public static void 삭제(String path, long deleteId) {
         RestAssured.given().log().all()
-                .pathParam("id", stationId)
-                .when().delete("/stations/{id}")
+                .pathParam("id", deleteId)
+                .when().delete(path + "/{id}")
                 .then().log().all();
     }
 

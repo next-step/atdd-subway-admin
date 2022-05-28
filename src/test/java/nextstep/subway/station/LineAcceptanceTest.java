@@ -16,7 +16,6 @@ import org.springframework.http.MediaType;
 import java.util.List;
 
 import static nextstep.subway.station.StationAcceptanceTest.*;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -55,7 +54,7 @@ public class LineAcceptanceTest {
 
         // then
         List<LineResponse> lines = 목록_조회("/lines", LineResponse.class);
-        노선_등록_검증(lines, "2호선");
+        개수_검증(lines, 1);
     }
 
     /**
@@ -92,7 +91,7 @@ public class LineAcceptanceTest {
         List<LineResponse> lines = 목록_조회("/lines", LineResponse.class);
 
         // then
-        노선_개수_검증(lines, 2);
+        개수_검증(lines, 2);
     }
 
     /**
@@ -107,11 +106,11 @@ public class LineAcceptanceTest {
         LineResponse 지하철2호선 = 응답_객체_생성(노선_등록("2호선", "초록", 10, 강남역.getId(), 잠실역.getId()), LineResponse.class);
 
         // when
-        노선_삭제(지하철2호선.getId());
+        삭제("/lines", 지하철2호선.getId());
 
         // then
         List<LineResponse> lines = 목록_조회("/lines", LineResponse.class);
-        노선_개수_검증(lines, 0);
+        개수_검증(lines, 0);
     }
 
     private ValidatableResponse 노선_등록(String name, String color, Integer distance, Long upStreamId, Long downStreamId) {
@@ -122,20 +121,5 @@ public class LineAcceptanceTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .when().post("/lines")
                     .then().log().all();
-    }
-
-    public static void 노선_삭제(long lineId) {
-        RestAssured.given().log().all()
-                .pathParam("id", lineId)
-                .when().delete("/lines/{id}")
-                .then().log().all();
-    }
-
-    public static void 노선_등록_검증(List<LineResponse> stations, String name) {
-        assertThat(stations).containsAnyOf(new LineResponse(name));
-    }
-
-    public static void 노선_개수_검증(List<LineResponse> stations, int size) {
-        assertThat(stations).hasSize(size);
     }
 }
