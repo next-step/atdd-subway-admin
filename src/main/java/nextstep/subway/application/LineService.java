@@ -9,6 +9,9 @@ import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional(readOnly = true)
 public class LineService {
@@ -30,5 +33,13 @@ public class LineService {
         Line savedLine = lineRepository.save(Line.of(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance()));
 
         return LineResponse.of(savedLine);
+    }
+
+    public List<LineResponse> findAllLines() {
+        List<Line> allLines = lineRepository.findAll();
+
+        return allLines.stream()
+                .map(line -> LineResponse.of(line))
+                .collect(Collectors.toList());
     }
 }
