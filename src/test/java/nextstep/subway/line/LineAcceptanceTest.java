@@ -49,8 +49,8 @@ public class LineAcceptanceTest {
         노선_생성("신분당선", "bg-red-600", downStationId, upStationId, 10);
 
         // then
-        String responseLineName = 노션_목록_조회().jsonPath().getString("name");
-        assertThat(responseLineName).isEqualTo("신분당선");
+        List<String> lineList = 노션_목록_조회().jsonPath().getList("name", String.class);
+        assertThat(lineList).containsAnyOf("신분당선");
     }
 
     /*
@@ -66,8 +66,12 @@ public class LineAcceptanceTest {
         Long upStationId = 지하철역_생성("광교역").extract().jsonPath().getLong("id");
         노선_생성("신분당선", "bg-red-600", downStationId, upStationId, 10);
 
+        downStationId = 지하철역_생성("신림역").extract().jsonPath().getLong("id");
+        upStationId = 지하철역_생성("봉천역").extract().jsonPath().getLong("id");
+        노선_생성("2호선", "bg-blue-600", downStationId, upStationId, 10);
+
         // when
-        List<Object> stationList = 노션_목록_조회().jsonPath().getList("stations");
+        List<Object> stationList = 노션_목록_조회().jsonPath().getList("$");
 
         // then
         assertThat(stationList).hasSize(2);
