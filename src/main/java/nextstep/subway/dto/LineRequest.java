@@ -16,4 +16,12 @@ public class LineRequest {
     public Line toLine() {
         return new Line(name, color);
     }
+
+    public LineRequest() {
+    }
+
+    public LineRequest(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
 }

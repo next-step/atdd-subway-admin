@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,9 +13,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,28 +39,11 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         //when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "7호선");
-        params.put("color", "#EEEEEE");
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/lines")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = 노선을_생성한다("7호선", "#EEEEEE");
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        ExtractableResponse<Response> response_read =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().get("/lines")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response_read = 전체_노선목록을_조회한다();
 
         //then
         List<String> lineNames = response_read.jsonPath().getList("name", String.class);
@@ -77,29 +59,10 @@ public class LineAcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         //given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "7호선");
-        params.put("color", "#EEEEEE");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
+        노선을_생성한다("7호선", "#EEEEEE");
 
         //when
-        params.clear();
-        params.put("name", "7호선");
-        params.put("color", "#FFFFFF");
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/lines")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = 노선을_생성한다("7호선", "#FFFFFF");
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -112,16 +75,10 @@ public class LineAcceptanceTest {
     @DisplayName("Color를 지정하지 않고 노선을 생성한다.")
     @Test
     void createLineWithOutColor() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "7호선");
+        //when
+        ExtractableResponse<Response> response = 노선을_생성한다("7호선", null);
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
-
+        //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
@@ -134,40 +91,19 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         //given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "7호선");
-        params.put("color", "#EEEEEE");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
-
-        params.clear();
-        params.put("name", "8호선");
-        params.put("color", "#FFFFFF");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
+        노선을_생성한다("7호선", "#EEEEEE");
+        노선을_생성한다("8호선", "#FFFFFF");
 
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 전체_노선목록을_조회한다();
 
         //then
         List<String> lines = response.jsonPath().getList("name", String.class);
+        assertThat(lines.size()).isEqualTo(2);
         assertThat(lines).contains("7호선", "8호선");
     }
+
+
 
     /**
      * Given 노선을 생성하고
@@ -178,27 +114,37 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         //given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "7호선");
-        params.put("color", "#EEEEEE");
+        ExtractableResponse<Response> response_create = 노선을_생성한다("7호선", "#EEEEEE");
+        LineResponse lineResponse = response_create.as(LineResponse.class);
 
-        ExtractableResponse<Response> response_create = RestAssured.given().log().all()
-                .body(params)
+        //when
+        ExtractableResponse<Response> response_delete = 해당_노선을_제거한다(lineResponse.getId());
+        assertThat(response_delete.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> 노선을_생성한다(String name, String color) {
+        LineRequest lineRequest = new LineRequest(name, color);
+        return RestAssured.given().log().all()
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all()
                 .extract();
+    }
 
-        LineResponse lineResponse = response_create.as(LineResponse.class);
-
-        //when
-        ExtractableResponse<Response> response_delete = RestAssured.given().log().all()
-                .body(params)
+    private ExtractableResponse<Response> 전체_노선목록을_조회한다() {
+        return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/lines/" + lineResponse.getId())
+                .when().get("/lines")
                 .then().log().all()
                 .extract();
+    }
 
-        assertThat(response_delete.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    private ExtractableResponse<Response> 해당_노선을_제거한다(Long id) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/" + id)
+                .then().log().all()
+                .extract();
     }
 }
