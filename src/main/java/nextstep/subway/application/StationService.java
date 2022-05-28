@@ -35,7 +35,10 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public Station findById(Long id) {
+    public Station getOrElseThrow(Long id) {
+        if (id == null) {
+            return null;
+        }
         return stationRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.STATION_NOT_FOUND));
     }
