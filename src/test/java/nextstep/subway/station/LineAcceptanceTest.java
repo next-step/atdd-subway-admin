@@ -5,9 +5,11 @@ import io.restassured.response.ValidatableResponse;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -27,11 +29,16 @@ public class LineAcceptanceTest {
     private StationResponse 잠실역;
     private StationResponse 모란역;
 
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
+
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
+            databaseCleanup.afterPropertiesSet();
         }
+        databaseCleanup.execute();
 
         강남역 = 응답_객체_생성(지하철역_등록("강남역"), StationResponse.class);
         잠실역 = 응답_객체_생성(지하철역_등록("잠실역"), StationResponse.class);
