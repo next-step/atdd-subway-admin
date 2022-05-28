@@ -21,7 +21,8 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
@@ -29,19 +30,19 @@ public class Section {
     private Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = Distance.of(distance);
     }
 
     public static Section of(Station upStation, Station downStation, int distance) {
         return new Section(upStation, downStation, distance);
     }
 
-    public void setLine(Line line) {
-        this.line = line;
-    }
-
     public Line getLine() {
         return line;
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
     }
 
     public Station getUpStation() {
@@ -52,48 +53,14 @@ public class Section {
         return downStation;
     }
 
-    public boolean isSameUpstation(Section section) {
-        return upStation.equals(section.upStation);
+    public void updateByUpSection(Section section) {
+        distance.minus(section.distance);
+        this.upStation = section.getDownStation();
     }
 
-    public boolean isSameUpstation(Station station) {
-        return upStation.equals(station);
-    }
-
-    public boolean isSameDownStation(Section section) {
-        return downStation.equals(section.downStation);
-    }
-
-    public boolean isSameDownStation(Station station) {
-        return downStation.equals(station);
-    }
-
-    public boolean isSameStation(Section section) {
-        return isSameUpstation(section) && isSameDownStation(section);
-    }
-
-    public boolean isSameStation(Station station) {
-        return isSameUpstation(station) || isSameDownStation(station);
-    }
-
-    public int diffDistance(Section section) {
-        return distance - section.distance;
-    }
-
-    public int addDistance(Section section) {
-        return distance + section.distance;
-    }
-
-    public void update(Section section) {
-        if (isSameUpstation(section)) {
-            this.upStation = section.downStation;
-            this.distance = this.distance - section.distance;
-        }
-
-        if (isSameDownStation(section)) {
-            this.downStation = section.upStation;
-            this.distance = this.distance - section.distance;
-        }
+    public void updateByDownSection(Section section) {
+        distance.minus(section.distance);
+        this.downStation = section.getUpStation();
     }
 
     @Override
@@ -102,12 +69,23 @@ public class Section {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        Section section = (Section)o;
+        Section section = (Section) o;
         return Objects.equals(id, section.id);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", line=" + line +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance.toString() +
+                '}';
     }
 }

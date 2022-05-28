@@ -61,11 +61,11 @@ public class LineRestAssured {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 노선_구간_추가(Long lineId, Long upStationId, Long downStationId, int distnace) {
+    public static ExtractableResponse<Response> 노선_구간_추가(Long lineId, Long upStationId, Long downStationId, int distance) {
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);
-        params.put("distnace", distnace);
+        params.put("distance", distance);
 
         return RestAssured.given().log().all()
                 .body(params)
