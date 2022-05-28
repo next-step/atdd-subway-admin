@@ -27,4 +27,11 @@ public class AttdLineUtils {
             .extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_노선_목록_조회하기() {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().get("/lines")
+            .then().log().all()
+            .extract();
+    }
 }

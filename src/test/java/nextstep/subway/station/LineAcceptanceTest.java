@@ -1,8 +1,10 @@
 package nextstep.subway.station;
 
 import static nextstep.subway.utils.AttdLineUtils.지하철_노선_등록하기;
+import static nextstep.subway.utils.AttdLineUtils.지하철_노선_목록_조회하기;
 import static nextstep.subway.utils.AttdStationUtils.지하철역_만들기;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
@@ -56,4 +58,31 @@ public class LineAcceptanceTest {
         );
     }
 
+    /**
+     * given 지하철역 3개와 지하철 노선2개를 생성한다.
+     * when 지하철 노선 목록을 조회했을때
+     * then 2개의 노선정보를 확인할 수 있다.
+     */
+    @Test
+    @DisplayName("지하철 노선 목록 조회")
+    public void 지하철_노선_목록_조회하기_테스트() {
+        //given(지하철역3개생성)
+        String 강남역_ID = 지하철역_만들기("강남역").jsonPath().get("id").toString();
+        String 양재역_ID = 지하철역_만들기("양재역").jsonPath().get("id").toString();
+        String 역삼역_ID = 지하철역_만들기("역삼역").jsonPath().get("id").toString();
+        //give(지하철노선2개생성)
+        String ID_신분당선 = 지하철_노선_등록하기("신분당선", "bg-red-600", 강남역_ID, 양재역_ID, "10")
+            .jsonPath().get("id").toString();
+        String ID_2호선 = 지하철_노선_등록하기("2호선", "bg-green-600", 강남역_ID, 역삼역_ID, "10")
+            .jsonPath().get("id").toString();
+
+        //when
+        ExtractableResponse<Response> 지하철_노선_목록_조회하기_response = 지하철_노선_목록_조회하기();
+
+        //then
+        assertThat(지하철_노선_목록_조회하기_response.jsonPath().getList("."))
+            .extracting("id", "name", "color")
+            .contains(tuple(ID_신분당선, "신분당선", "bg-red-600"))
+            .contains(tuple(ID_2호선, "2호선", "bg-green-600"));
+    }
 }
