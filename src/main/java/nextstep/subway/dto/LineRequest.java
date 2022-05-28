@@ -1,7 +1,6 @@
 package nextstep.subway.dto;
 
 import java.util.Objects;
-import java.util.Optional;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 

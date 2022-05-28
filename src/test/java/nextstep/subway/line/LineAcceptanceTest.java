@@ -29,16 +29,14 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void createLine() {
         // given
-        Long downStationId = 지하철역_생성("신사역").extract().jsonPath().getLong("id");
-        Long upStationId = 지하철역_생성("광교역").extract().jsonPath().getLong("id");
-
-        // when
-        노선_생성("신분당선", "bg-red-600", downStationId, upStationId, 10);
+        지하철역과_노선_동시_생성("강남역", "양재역", "신분당선", "bg-red-600", 10);
 
         // then
         List<String> lineList = 노션_목록_조회().jsonPath().getList("name", String.class);
         assertThat(lineList).containsAnyOf("신분당선");
     }
+
+
 
     /*
      * Given 2개의 지하철 노선을 생성하고
@@ -49,13 +47,8 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void getLines() {
         // given
-        Long downStationId = 지하철역_생성("신사역").extract().jsonPath().getLong("id");
-        Long upStationId = 지하철역_생성("광교역").extract().jsonPath().getLong("id");
-        노선_생성("신분당선", "bg-red-600", downStationId, upStationId, 10);
-
-        downStationId = 지하철역_생성("신림역").extract().jsonPath().getLong("id");
-        upStationId = 지하철역_생성("봉천역").extract().jsonPath().getLong("id");
-        노선_생성("2호선", "bg-blue-600", downStationId, upStationId, 10);
+        지하철역과_노선_동시_생성("신사역", "광교역", "신분당선", "bg-red-600", 10);
+        지하철역과_노선_동시_생성("신림역", "봉천역", "2호선", "bg-blue-600", 10);
 
         // when
         List<Object> stationList = 노션_목록_조회().jsonPath().getList("$");
@@ -118,10 +111,9 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        StationResponse downStation = 지하철역_생성("신사역").extract().as(StationResponse.class);
-        StationResponse upStation = 지하철역_생성("광교역").extract().as(StationResponse.class);
-        Long createLineId = 노선_생성("신분당선", "bg-red-600", downStation.getId(), upStation.getId(), 10)
-            .extract().jsonPath().getLong("id");
+        ValidatableResponse validatableResponse =
+            지하철역과_노선_동시_생성("신사역", "광교역", "신분당선", "bg-red-600", 10);
+        Long createLineId = validatableResponse.extract().jsonPath().getLong("id");
 
         // when
         ExtractableResponse<Response> lineResponse = 노션_삭제(createLineId);
@@ -170,6 +162,14 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/lines")
             .then().log().all();
+    }
+
+    private ValidatableResponse 지하철역과_노선_동시_생성(String stationName1, String stationName2, String lineName, String lineColor, int distance) {
+        Long downStationId = 지하철역_생성(stationName1).extract().jsonPath().getLong("id");
+        Long upStationId = 지하철역_생성(stationName2).extract().jsonPath().getLong("id");
+
+        // when
+        return 노선_생성(lineName, lineColor, downStationId, upStationId, distance);
     }
 
 }
