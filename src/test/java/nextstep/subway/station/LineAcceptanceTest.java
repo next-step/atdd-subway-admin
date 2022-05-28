@@ -17,6 +17,7 @@ import java.util.List;
 import static nextstep.subway.station.LineAcceptanceTest.LineAcceptanceTemplate.*;
 import static nextstep.subway.station.StationAcceptanceTest.StationAcceptanceTemplate.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관리 기능 구현")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -80,6 +81,23 @@ public class LineAcceptanceTest {
         노선_정상_응답을_확인한다(조회된_지하철_노선);
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @Test
+    void 지하철_노선을_수정한다() {
+        // given
+        ExtractableResponse<Response> 지하철_노선 = 지하철_노선_생성("2호선", "green", "강남역", "잠실역");
+
+        // when
+        ExtractableResponse<Response> 수정된_지하철_노선 = 지하철_노선_수정(지하철_노선, "4호선", "blue");
+
+        // then
+        지하철_노선_정보_수정을_확인한다(수정된_지하철_노선, "4호선", "blue");
+    }
+
     static class LineAcceptanceTemplate {
         static ExtractableResponse<Response> 지하철_노선_생성(String line, String color, String upStationName, String downStationName) {
             Long 상행역_id = id_추출(지하철역_생성(upStationName));
@@ -126,6 +144,28 @@ public class LineAcceptanceTest {
                     .when().get("/lines/" + response.body().jsonPath().getLong("id"))
                     .then().log().all()
                     .extract().body().as(LineResponse.class);
+        }
+
+        static void 지하철_노선_정보_수정을_확인한다(ExtractableResponse<Response> 수정된_지하철_노선, String updatedStationName, String updatedColor) {
+            LineResponse 조회된_지하철 = 지하철_노선_단건_조회(수정된_지하철_노선);
+
+            assertAll(
+                    () -> assertThat(조회된_지하철.getName()).isEqualTo(updatedStationName),
+                    () -> assertThat(조회된_지하철.getColor()).isEqualTo(updatedColor)
+            );
+        }
+
+        static ExtractableResponse<Response> 지하철_노선_수정(ExtractableResponse<Response> response, String stationName, String color) {
+            Long 지하철_노선_id = id_추출(response);
+            LineRequest updateRequest = new LineRequest(stationName, color);
+
+            return RestAssured
+                    .given().log().all()
+                    .body(updateRequest)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().put("/lines/" + 지하철_노선_id)
+                    .then().log().all()
+                    .extract();
         }
     }
 }
