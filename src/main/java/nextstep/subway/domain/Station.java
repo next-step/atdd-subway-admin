@@ -8,6 +8,7 @@ import javax.persistence.Id;
 
 @Entity
 public class Station extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,4 +29,5 @@ public class Station extends BaseEntity {
     public String getName() {
         return name;
     }
+
 }
