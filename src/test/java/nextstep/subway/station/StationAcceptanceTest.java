@@ -5,22 +5,11 @@ import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.context.jdbc.Sql;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import static nextstep.subway.station.StationAcceptanceMethod.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-@Sql("/truncate.sql")
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends BaseAcceptanceTest {
-    private static final String STATIONS_URI = "/stations";
-    private static final String STATION_NAME_KEY = "name";
-
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다
@@ -94,38 +83,5 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         지하철역_목록에서_찾을수_없음(잠실역);
-    }
-
-    // ##### private #####
-    private ExtractableResponse<Response> 지하철역_생성(String 지하철역_이름) {
-        Map<String, String> params = new HashMap<>();
-        params.put(STATION_NAME_KEY, 지하철역_이름);
-        return post(STATIONS_URI, params);
-    }
-
-    private void 지하철역_생성됨(ExtractableResponse<Response> 지하철역_생성_응답) {
-        assertThat(지하철역_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-    }
-
-    private List<String> 지하철역_목록_조회() {
-        return get(STATIONS_URI).jsonPath().getList(STATION_NAME_KEY, String.class);
-    }
-
-    private void 생성한_지하철역_찾기(String... 지하철역_이름) {
-        List<String> 지하철역_목록 = 지하철역_목록_조회();
-        assertThat(지하철역_목록).contains(지하철역_이름);
-    }
-
-    private void 지하철역_생성_안됨(ExtractableResponse<Response> 지하철역_생성_응답) {
-        assertThat(지하철역_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    private void 지하철역_삭제(ExtractableResponse<Response> 지하철역_생성_응답) {
-        delete(지하철역_생성_응답.header(HttpHeaders.LOCATION));
-    }
-
-    private void 지하철역_목록에서_찾을수_없음(String... 지하철역_이름) {
-        List<String> 지하철역_목록 = 지하철역_목록_조회();
-        assertThat(지하철역_목록).doesNotContain(지하철역_이름);
     }
 }
