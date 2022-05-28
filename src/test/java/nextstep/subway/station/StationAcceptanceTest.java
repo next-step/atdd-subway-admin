@@ -82,7 +82,6 @@ public class StationAcceptanceTest {
         // given
         지하철역_생성("깅님역");
         지하철역_생성("선릉역");
-        지하철역_생성("방배역");
 
         // when
         ExtractableResponse<Response> response = 지하철역_전체_조회();
@@ -90,7 +89,7 @@ public class StationAcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(stationsList).hasSize(3);
+        assertThat(stationsList).hasSize(2);
     }
 
     /**
@@ -101,6 +100,24 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        ValidatableResponse validatableResponse = 지하철역_생성("강남역");
+        long createStationId = validatableResponse.extract().jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> deleteResponse =
+            RestAssured.given().log().all()
+                .pathParam("id", createStationId)
+                .when().delete("/stations/{id}")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        // then
+        List<String> selectResponse = 지하철역_전체_조회().jsonPath().getList("$");
+        assertThat(selectResponse).hasSize(0);
     }
 
     private ValidatableResponse 지하철역_생성(String name) {
