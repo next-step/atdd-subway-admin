@@ -2,6 +2,7 @@ package nextstep.subway.station;
 
 import static nextstep.subway.utils.AttdLineUtils.지하철_노선_등록하기;
 import static nextstep.subway.utils.AttdLineUtils.지하철_노선_목록_조회하기;
+import static nextstep.subway.utils.AttdLineUtils.지하철_노선_삭제하기;
 import static nextstep.subway.utils.AttdLineUtils.지하철_노선_수정하기;
 import static nextstep.subway.utils.AttdLineUtils.지하철_노선_조회하기;
 import static nextstep.subway.utils.AttdStationUtils.지하철역_만들기;
@@ -125,7 +126,9 @@ public class LineAcceptanceTest {
 
 
     /**
-     * given 지하철노선 1개 생성후 when 수정 필요 데이터를 보내면 then 수정이 정상적으로 완료가된다
+     * given 지하철노선 1개 생성후
+     * when 수정 필요 데이터를 보내면
+     * then 수정이 정상적으로 완료가된다
      */
     @Test
     @DisplayName("지하철 노선을 수정할수 있어야한다")
@@ -144,5 +147,35 @@ public class LineAcceptanceTest {
 
         //then
         assertThat(지하철_노선_수정하기_response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * given 지하철 노선을 생성 후
+     * when 지하철 노선을 삭제하면
+     * then 지하철 노선목록 조회할수가 없다
+     */
+    @Test
+    @DisplayName("지하철 노선을 삭제할수 있어야한다.")
+    public void 지하철_노선_삭제하기_테스트() {
+        //given(지하철역3개생성)
+        String 강남역_ID = 지하철역_만들기("강남역").jsonPath().get("id").toString();
+        String 양재역_ID = 지하철역_만들기("양재역").jsonPath().get("id").toString();
+        String 역삼역_ID = 지하철역_만들기("역삼역").jsonPath().get("id").toString();
+        //give(지하철노선2개생성)
+        String ID_신분당선 = 지하철_노선_등록하기("신분당선", "bg-red-600", 강남역_ID, 양재역_ID, "10")
+            .jsonPath().get("id").toString();
+        String ID_2호선 = 지하철_노선_등록하기("2호선", "bg-green-600", 강남역_ID, 역삼역_ID, "10")
+            .jsonPath().get("id").toString();
+
+        //when
+        ExtractableResponse<Response> 지하철_노선_삭제하기_response = 지하철_노선_삭제하기(ID_2호선);
+        ExtractableResponse<Response> 지하철_노선_목록_조회하기_response = 지하철_노선_목록_조회하기();
+
+        //then
+        assertAll(
+            () -> assertThat(지하철_노선_삭제하기_response.statusCode()).isEqualTo(
+                HttpStatus.NO_CONTENT.value()),
+            () -> assertThat(지하철_노선_목록_조회하기_response.jsonPath().getList(".")).hasSize(1)
+        );
     }
 }

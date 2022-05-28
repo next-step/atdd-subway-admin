@@ -51,4 +51,11 @@ public class AttdLineUtils {
             .then().log().all()
             .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철_노선_삭제하기(String 지하철_노선_ID) {
+        return RestAssured.given().log().all()
+            .when().delete("/lines/" + 지하철_노선_ID)
+            .then().log().all()
+            .extract();
+    }
 }
