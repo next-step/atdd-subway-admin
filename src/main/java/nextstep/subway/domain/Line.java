@@ -53,7 +53,8 @@ public class Line extends BaseEntity {
         return downStation;
     }
 
-    public Line(String name, LineColor lineColor, Station upStation, Station downStation) {
+    public Line(Long id, String name, LineColor lineColor, Station upStation, Station downStation) {
+        this.id = id;
         this.name = name;
         this.lineColor = lineColor;
         this.upStation = upStation;
