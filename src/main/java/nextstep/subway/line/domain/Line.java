@@ -51,6 +51,11 @@ public class Line extends BaseEntity {
         return allStations.stream().distinct().collect(Collectors.toList());
     }
 
+    public void update(Line line) {
+        this.name = line.name;
+        this.color = line.color;
+    }
+
     public Long getId() {
         return this.id;
     }

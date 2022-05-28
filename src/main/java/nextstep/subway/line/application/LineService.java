@@ -56,6 +56,12 @@ public class LineService {
         return lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
+    @Transactional
+    public void updateLine(Long id, LineRequest lineRequest) {
+        Line line = findLineById(id);
+        line.update(lineRequest.toLine());
+    }
+
     private Section generateSection(LineRequest lineRequest) {
         Station upStation = stationService.findStationById(lineRequest.getUpStationId());
         Station downStation = stationService.findStationById(lineRequest.getDownStationId());

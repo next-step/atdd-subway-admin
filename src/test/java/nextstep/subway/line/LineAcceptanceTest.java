@@ -94,8 +94,17 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void updateLine() {
         // given
+        String 신분당선 = "신분당선";
+        LineRequest 신분당선_생성_요청 = LineRequest.of(신분당선, LINE_COLOR_GREEN, 지하철역_ID, 새로운지하철역_ID, DISTANCE);
+        ExtractableResponse<Response> 신분당선_생성_응답 = 지하철노선_생성(신분당선_생성_요청);
+
         // when
+        String 다른분당선 = "다른분당선";
+        LineRequest 다른분당선_수정_요청 = LineRequest.of(다른분당선, LINE_COLOR_RED, 지하철역_ID, 새로운지하철역_ID, DISTANCE);
+        지하철노선_수정(신분당선_생성_응답, 다른분당선_수정_요청);
+
         // then
+        지하철노선_수정_확인(신분당선_생성_응답, 다른분당선);
     }
 
     /**

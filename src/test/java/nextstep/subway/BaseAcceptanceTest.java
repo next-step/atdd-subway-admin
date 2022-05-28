@@ -40,6 +40,16 @@ public class BaseAcceptanceTest {
                 .extract();
     }
 
+    public static <T> ExtractableResponse<Response> put(String uri, T body) {
+        return RestAssured
+                .given().log().all()
+                .body(body)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put(uri)
+                .then().log().all()
+                .extract();
+    }
+
     public static ExtractableResponse<Response> delete(String uri) {
         return RestAssured
                 .given().log().all()
