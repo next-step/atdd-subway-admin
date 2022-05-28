@@ -93,7 +93,7 @@ class LineServiceTest {
     @DisplayName("노선 변경 테스트")
     @Test
     void updateLine() {
-        when(lineRepository.findByName(lineRequest2.getName())).thenReturn(Optional.of(line));
+        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         when(stationRepository.findById(lineRequest2.getUpStationId())).thenReturn(Optional.of(upStation));
         when(stationRepository.findById(lineRequest2.getDownStationId())).thenReturn(Optional.of(downStation));
         Line line = Line.builder(lineRequest2.getName(), lineRequest2.getColor(), lineRequest2.getDistance())
@@ -103,7 +103,7 @@ class LineServiceTest {
                 .addDownStation(downStation);
 
         when(lineRepository.save(line)).thenReturn(this.line2);
-        LineResponse lineResponse = lineService.updateLine(lineRequest2);
+        LineResponse lineResponse = lineService.updateLine(line.getId(), lineRequest2);
         assertAll(
                 () -> assertThat(lineResponse.getId()).isNotNull(),
                 () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),

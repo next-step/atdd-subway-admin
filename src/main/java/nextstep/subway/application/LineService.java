@@ -38,8 +38,8 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse updateLine(LineRequest lineRequest) {
-        Line line = findLineByName(lineRequest.getName());
+    public LineResponse updateLine(long id, LineRequest lineRequest) {
+        LineResponse line = findLineById(id);
         Station upStation = stationRepository.findById(lineRequest.getUpStationId())
                 .orElseThrow(() -> new NotFoundException("등록된 지하철역이 없습니다."));
         Station downStation = stationRepository.findById(lineRequest.getDownStationId())
@@ -51,12 +51,6 @@ public class LineService {
         newLine.addDownStation(downStation);
         Line persistStation = lineRepository.save(newLine);
         return LineResponse.of(persistStation);
-    }
-
-    @Transactional(readOnly = true)
-    public Line findLineByName(String name) {
-        return lineRepository.findByName(name)
-                .orElseThrow(() -> new NotFoundException("조회되는 지하철노선이 없습니다."));
     }
 
     public List<LineResponse> findAllLines() {
