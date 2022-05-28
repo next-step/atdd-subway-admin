@@ -49,9 +49,9 @@ public class LineAcceptanceTest {
 
         //then
         assertAll(
-            () -> assertThat(신분당선.jsonPath().get("id").toString()).isEqualTo("0"),
+            () -> assertThat(신분당선.jsonPath().get("id").toString()).isEqualTo("1"),
             () -> assertThat(신분당선.jsonPath().get("name").toString()).isEqualTo("신분당선"),
-            () -> assertThat(신분당선.jsonPath().get("id").toString()).isEqualTo("bg-red-600"),
+            () -> assertThat(신분당선.jsonPath().get("color").toString()).isEqualTo("bg-red-600"),
             () -> assertThat(신분당선.jsonPath().getList("stations")).hasSize(2)
         );
     }
