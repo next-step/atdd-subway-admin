@@ -6,7 +6,6 @@ import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationRequest;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,7 @@ import org.springframework.http.MediaType;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -67,7 +67,7 @@ public class LineAcceptanceTest {
         List<String> lineNames = 지하철역_노선_이름_목록조회();
 
         // then
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(lineNames).hasSize(2),
                 () -> assertThat(lineNames).containsExactly("4호선", "1호선")
         );
@@ -90,12 +90,11 @@ public class LineAcceptanceTest {
         LineResponse lineResponse = convertLineResponse(response);
 
         // then
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(lineResponse.getName()).isEqualTo("4호선"),
                 () -> assertThat(lineResponse.getColor()).isEqualTo("하늘색")
         );
-
     }
 
     /**
@@ -120,14 +119,37 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_노선_정보_조회(lineId);
         LineResponse lineResponse = convertLineResponse(response);
 
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(lineResponse.getName()).isEqualTo("1호선"),
                 () -> assertThat(lineResponse.getColor()).isEqualTo("파란색")
         );
-
-
     }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다.
+     */
+    @DisplayName("지하철 노선을 제거한다.")
+    @Test
+    void deleteLine() {
+        // given
+        String lineName = "4호선";
+        long lineId = 지하철_노선_생성(lineName, "하늘색", 20, "당고개역", "오이도역").jsonPath()
+                .getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_삭제(lineId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        // then
+        List<String> lineNames = 지하철역_노선_이름_목록조회();
+        assertThat(lineNames.contains(lineName)).isFalse();
+    }
+
 
     private LineResponse convertLineResponse(ExtractableResponse<Response> response) {
         return response.body().as(LineResponse.class);
@@ -171,6 +193,14 @@ public class LineAcceptanceTest {
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/lines/" + lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_삭제(Long lineId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/" + lineId)
                 .then().log().all()
                 .extract();
     }
