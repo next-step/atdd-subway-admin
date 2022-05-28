@@ -2,6 +2,7 @@ package nextstep.subway.station;
 
 import static nextstep.subway.utils.AttdLineUtils.지하철_노선_등록하기;
 import static nextstep.subway.utils.AttdLineUtils.지하철_노선_목록_조회하기;
+import static nextstep.subway.utils.AttdLineUtils.지하철_노선_조회하기;
 import static nextstep.subway.utils.AttdStationUtils.지하철역_만들기;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -91,4 +92,31 @@ public class LineAcceptanceTest {
                 .contains(Arrays.asList("강남역","역삼역"))
         );
     }
+
+    /**
+     * given 지하철역 2개와 지하철 노선 1개 생성후
+     * when 지하철노선 ID를 통해 지하철노선 검색을할 경우
+     * then 해당 노선에 대한 정보를 획득할 수 있다
+     */
+    @Test
+    @DisplayName("지하철 노선 생성후 노선 정보를 가져올수 있다")
+    public void 지하철_노선_조회_테스트() {
+        //given
+        String 강남역_ID = 지하철역_만들기("강남역").jsonPath().get("id").toString();
+        String 역삼역_ID = 지하철역_만들기("역삼역").jsonPath().get("id").toString();
+        String ID_2호선 = 지하철_노선_등록하기("2호선", "bg-green-600", 강남역_ID, 역삼역_ID, "10")
+            .jsonPath().get("id").toString();
+
+        //when
+        ExtractableResponse<Response> 지하철_노선_조회하기_response = 지하철_노선_조회하기(ID_2호선);
+
+        //then
+        assertAll(
+            () -> assertThat(지하철_노선_조회하기_response.jsonPath().get("name").toString()).isEqualTo(
+                "2호선"),
+            () -> assertThat(지하철_노선_조회하기_response.jsonPath().get("color").toString()).isEqualTo(
+                "bg-green-600")
+        );
+    }
+
 }

@@ -34,4 +34,11 @@ public class AttdLineUtils {
             .then().log().all()
             .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철_노선_조회하기(String 지하철_노선_ID) {
+        return RestAssured.given().log().all()
+            .when().get("/lines/" + 지하철_노선_ID)
+            .then().log().all()
+            .extract();
+    }
 }
