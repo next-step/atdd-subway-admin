@@ -11,7 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -177,10 +179,12 @@ public class StationAcceptanceTest {
         long 강남역_ID = Integer.toUnsignedLong(강남역.jsonPath().get("id"));
 
         //when
-        ExtractableResponse<Response> 강남역_수정결과 = 지하철역_수정하기(String.valueOf(강남역_ID), "강남역수정");
+        Map<String, String> 수정할_데이터 = new HashMap<>();
+        수정할_데이터.put("name", "강남역수정");
+        ExtractableResponse<Response> 강남역_수정결과 = 지하철역_수정하기(String.valueOf(강남역_ID), 수정할_데이터);
 
         //then
-        assertThat(강남역_수정결과.jsonPath().get("name").toString()).isEqualTo("강남역수정");
+        assertThat(강남역_수정결과.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     /**

@@ -32,14 +32,12 @@ public class AttdStationUtils {
             .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철역_수정하기(String 지하철_ID, String 생성할_지하철역_이름) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", 생성할_지하철역_이름);
-        params.put("id",지하철_ID);
+    public static ExtractableResponse<Response> 지하철역_수정하기(String 지하철역_ID,
+        Map<String, String> 수정할_데이터) {
         return RestAssured.given().log().all()
-            .body(params)
+            .body(수정할_데이터)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/stations")
+            .when().put("/stations/" + 지하철역_ID)
             .then().log().all()
             .extract();
     }
