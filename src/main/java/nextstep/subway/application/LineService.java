@@ -7,6 +7,9 @@ import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class LineService {
     private LineRepository lineRepository;
@@ -27,5 +30,11 @@ public class LineService {
         line.addStation(downStation);
         line = lineRepository.save(line);
         return LineResponse.of(line);
+    }
+
+    public List<LineResponse> findAllLines() {
+        return lineRepository.findAll().stream()
+                .map(LineResponse::of)
+                .collect(Collectors.toList());
     }
 }
