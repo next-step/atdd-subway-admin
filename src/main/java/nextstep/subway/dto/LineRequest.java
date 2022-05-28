@@ -41,6 +41,14 @@ public class LineRequest {
         return downStationId;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
     public Line toLine() {
         return Line.create(name, color, distance);
     }

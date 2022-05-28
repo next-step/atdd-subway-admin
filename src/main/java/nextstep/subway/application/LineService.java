@@ -60,6 +60,13 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    @Transactional
+    public void modifyLine(Long lineId, LineRequest request) {
+        Line line = getLineById(lineId);
+
+        line.modifyNameAndColor(request.getName(), request.getColor());
+    }
+
     private Line getLineById(Long lineId) {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 노선입니다. lineId : " + lineId));
