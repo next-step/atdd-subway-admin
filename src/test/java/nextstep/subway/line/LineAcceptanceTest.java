@@ -9,7 +9,6 @@ import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import java.util.Arrays;
 import java.util.List;
-import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
@@ -18,6 +17,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -94,6 +94,37 @@ public class LineAcceptanceTest {
         LineResponse expectedResponse =
             new LineResponse(createLineId, "신분당선", "bg-red-600", Arrays.asList(downStation, upStation));
         assertThat(lineResponse).isEqualTo(expectedResponse);
+    }
+
+    /*
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("노선을 수정한다.")
+    @Test
+    void putLine() {
+        // given
+        StationResponse downStation = 지하철역_생성("신사역").extract().as(StationResponse.class);
+        StationResponse upStation = 지하철역_생성("광교역").extract().as(StationResponse.class);
+        Long createLineId = 노선_생성("신분당선", "bg-red-600", downStation.getId(), upStation.getId(), 10)
+            .extract().jsonPath().getLong("id");
+
+        // when
+        LineRequest lineRequest = new LineRequest("구분당선", "bg-blue-600", downStation.getId(), upStation.getId(), 10);
+        ExtractableResponse<Response> lineResponse = 노션_수정(createLineId, lineRequest);
+
+        // then
+        assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private ExtractableResponse<Response> 노션_수정(Long lindId, LineRequest lineRequest) {
+        return RestAssured.given().log().all()
+            .body(lineRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().put("/lines/{lineId}", lindId)
+            .then().log().all()
+            .extract();
     }
 
     private ExtractableResponse<Response> 노션_조회(Long lineId) {
