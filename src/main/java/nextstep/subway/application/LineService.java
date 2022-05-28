@@ -1,7 +1,6 @@
 package nextstep.subway.application;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -9,7 +8,6 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,14 +25,10 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Optional<Station> optionalDownStation = stationRepository.findById(lineRequest.getDownStationId());
-        Optional<Station> optionalUpStation = stationRepository.findById(lineRequest.getUpStationId());
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElse(null);
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElse(null);
 
-        if (!optionalDownStation.isPresent() || !optionalUpStation.isPresent()) {
-            throw new IllegalArgumentException("종점역이 존재하지 않습니다.");
-        }
-
-        Line persistLine = lineRepository.save(lineRequest.toLine(optionalDownStation.get(), optionalUpStation.get()));
+        Line persistLine = lineRepository.save(lineRequest.toLine(downStation, upStation));
         return LineResponse.of(persistLine);
     }
 
@@ -44,6 +38,11 @@ public class LineService {
         return lineList.stream()
             .map(LineResponse::of)
             .collect(Collectors.toList());
+    }
+
+    public LineResponse findLine(Long lineId) {
+        Line line = lineRepository.findById(lineId).orElse(null);
+        return LineResponse.of(line);
     }
 
 }

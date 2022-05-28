@@ -1,5 +1,6 @@
 package nextstep.subway.dto;
 
+import java.util.Objects;
 import java.util.Optional;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
@@ -21,6 +22,10 @@ public class LineRequest {
     }
 
     public Line toLine(Station downStation, Station upStation) {
+        if (Objects.isNull(downStation) || Objects.isNull(upStation)) {
+            throw new IllegalArgumentException("종점역이 존재하지 않습니다.");
+        }
+
         return new Line(name, color, downStation, upStation);
     }
 
