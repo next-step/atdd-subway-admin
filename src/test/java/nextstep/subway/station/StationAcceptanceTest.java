@@ -101,6 +101,27 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        String[] givenStationNames = {"선릉역", "삼성역"};
+        Map<String, String> params = new HashMap<>();
+        for (String givenStationName : givenStationNames) {
+            params.put("name", givenStationName);
+            RestAssured.given().log().all()
+                    .body(params)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().post("/stations")
+                    .then().log().all();
+        }
+
+        // when
+        List<String> stationNames =
+                RestAssured.given().log().all()
+                        .when().get("/stations")
+                        .then().log().all()
+                        .extract().jsonPath().getList("name", String.class);
+
+        // then
+        assertThat(stationNames).containsAnyOf(givenStationNames);
     }
 
     /**
@@ -111,5 +132,27 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        String givenStationName = "삼성역";
+        Map<String, String> params = new HashMap<>();
+        params.put("name", givenStationName);
+        long id = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all().extract().jsonPath().getLong("id");
+
+        // when
+        RestAssured.given().log().all()
+                .when().delete("/stations/" + id)
+                .then().log().all();
+
+        // then
+        List<String> stationNames =
+                RestAssured.given().log().all()
+                        .when().get("/stations")
+                        .then().log().all()
+                        .extract().jsonPath().getList("name", String.class);
+        assertThat(stationNames).doesNotContain(givenStationName);
     }
 }
