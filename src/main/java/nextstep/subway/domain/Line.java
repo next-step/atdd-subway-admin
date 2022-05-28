@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Line extends BaseEntity {
@@ -29,6 +30,8 @@ public class Line extends BaseEntity {
 
     // 연관 관계 편의 메서드
     private void addSection(Section section) {
+        Objects.requireNonNull(section, "구간 정보가 필요합니다.");
+
         sections.add(section);
         section.addLine(this);
     }
@@ -47,5 +50,10 @@ public class Line extends BaseEntity {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void update(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 }

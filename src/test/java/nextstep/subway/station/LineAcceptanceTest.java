@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -92,10 +93,10 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> 지하철_노선 = 지하철_노선_생성("2호선", "green", "강남역", "잠실역");
 
         // when
-        ExtractableResponse<Response> 수정된_지하철_노선 = 지하철_노선_수정(지하철_노선, "4호선", "blue");
+        지하철_노선_수정(지하철_노선, "4호선", "blue");
 
         // then
-        지하철_노선_정보_수정을_확인한다(수정된_지하철_노선, "4호선", "blue");
+        지하철_노선_정보_수정을_확인한다(지하철_노선, "4호선", "blue");
     }
 
     static class LineAcceptanceTemplate {
@@ -157,7 +158,7 @@ public class LineAcceptanceTest {
 
         static ExtractableResponse<Response> 지하철_노선_수정(ExtractableResponse<Response> response, String stationName, String color) {
             Long 지하철_노선_id = id_추출(response);
-            LineRequest updateRequest = new LineRequest(stationName, color);
+            LineUpdateRequest updateRequest = new LineUpdateRequest(stationName, color);
 
             return RestAssured
                     .given().log().all()

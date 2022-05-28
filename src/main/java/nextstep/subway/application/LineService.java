@@ -5,6 +5,7 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,5 +45,13 @@ public class LineService {
                 .orElseThrow(() -> new NoSuchElementException("해당 지하철 노선을 찾을 수 없습니다."));
 
         return LineResponse.of(findLine);
+    }
+
+    @Transactional
+    public void updateLine(Long lineId, LineUpdateRequest request) {
+        Line findLine = lineRepository.findById(lineId)
+                .orElseThrow(() -> new NoSuchElementException("해당 지하철 노선을 찾을 수 없습니다."));
+
+        findLine.update(request.getName(), request.getColor());
     }
 }
