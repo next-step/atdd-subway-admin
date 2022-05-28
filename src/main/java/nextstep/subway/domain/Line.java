@@ -2,9 +2,12 @@ package nextstep.subway.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 import com.sun.istack.NotNull;
 
@@ -20,18 +23,34 @@ public class Line extends BaseEntity {
 	@NotNull
 	private String color;
 
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "upStationId")
+	private Station upStation;
+
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "downStationId")
+	private Station downStation;
+
+	private int distance;
+
 	public Line() {
 	}
 
-	public Line(Long id, String name, String color) {
+	public Line(Long id, String name, String color, Station upStation, Station downStation, int distance) {
 		this.id = id;
 		this.name = name;
 		this.color = color;
+		this.upStation = upStation;
+		this.downStation = downStation;
+		this.distance = distance;
 	}
 
-	public Line(String name, String color) {
-		this.name = name;
-		this.color = color;
+	public Line(String name, String color, Station upStation, Station downStation, int distance) {
+		this(null, name, color, upStation, downStation, distance);
+	}
+
+	public Line(Long id, String name, String color) {
+		this(id, name, color, null, null, 0);
 	}
 
 	public Long getId() {
@@ -46,8 +65,16 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
-	public boolean match(Line line) {
-		return this.name == line.getName() && this.color == line.getColor();
+	public Station getUpStation() {
+		return upStation;
+	}
+
+	public Station getDownStation() {
+		return downStation;
+	}
+
+	public int getDistance() {
+		return distance;
 	}
 
 	@Override
