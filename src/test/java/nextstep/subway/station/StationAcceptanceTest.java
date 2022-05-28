@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,10 +19,28 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
+@Sql("/truncate.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
     @LocalServerPort
     int port;
+
+    public static ExtractableResponse<Response> createTestStation(String name) {
+        Map<String, String> params = createStationRequestMap(name);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private static Map<String, String> createStationRequestMap(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        return params;
+    }
 
     @BeforeEach
     public void setUp() {
@@ -81,7 +100,7 @@ public class StationAcceptanceTest {
         createTestStation("역삼역");
 
         // when
-        List<String> stationNames  = getStationNames();
+        List<String> stationNames = getStationNames();
 
         // then
         assertThat(stationNames).containsExactly("강남역", "역삼역");
@@ -113,23 +132,6 @@ public class StationAcceptanceTest {
                 .when().get("/stations")
                 .then().log().all()
                 .extract().jsonPath().getList("name", String.class);
-    }
-
-    private ExtractableResponse<Response> createTestStation(String name) {
-        Map<String, String> params = createStationRequestMap(name);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private Map<String, String> createStationRequestMap(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        return params;
     }
 
     private void deleteTestStation(Long id) {
