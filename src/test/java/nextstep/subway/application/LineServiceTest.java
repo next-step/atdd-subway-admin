@@ -80,7 +80,7 @@ class LineServiceTest {
         );
     }
 
-    @DisplayName("노선 저장 등록된 지하철이 없는 경우")
+    @DisplayName("노선에 등록하려는 지하철이 없는 경우 예외가 발생한다.")
     @Test
     void saveLineNotFoundException() {
         when(stationRepository.findById(lineRequest.getUpStationId())).thenReturn(Optional.of(upStation));
