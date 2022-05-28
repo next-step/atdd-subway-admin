@@ -1,11 +1,12 @@
-package nextstep.subway.dto;
+package nextstep.subway.line.dto;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 public class LineResponse {
     private final Long id;

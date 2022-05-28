@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import java.util.stream.Collectors;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.StationResponse;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.HttpStatus;
 
 public class AcceptanceTestFactory {
