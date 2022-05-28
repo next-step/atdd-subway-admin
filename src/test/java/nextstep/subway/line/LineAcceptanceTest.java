@@ -112,6 +112,32 @@ public class LineAcceptanceTest {
         assertThat(line.getName()).isEqualTo("구분당선");
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철 노선을 삭제한다.")
+    @Test
+    void 지하철_노선_삭제() {
+        // given
+        ExtractableResponse<Response> response = createLine("삭제할노선", "노란색");
+        Long lineId = response.body().jsonPath().getLong("id");
+
+        // when
+        deleteLine(lineId);
+
+        // then
+        List<String> lineNames = getLinesIn("name", String.class);
+        assertThat(lineNames).doesNotContain("삭제할노선");
+    }
+
+    private void deleteLine(Long lineId) {
+        RestAssured.given().log().all()
+                .when().delete(ENDPOINT + "/" + lineId)
+                .then().log().all();
+    }
+    
     private void editLine(Long lineId, Map<String, String> params) {
         RestAssured.given().log().all()
                 .body(params)
