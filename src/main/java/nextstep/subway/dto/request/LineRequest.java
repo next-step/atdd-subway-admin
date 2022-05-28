@@ -13,6 +13,7 @@ public class LineRequest {
     private int distance;
     private String color;
 
+
     public Line toLine(Station upStation, Station downStation) {
         return new Line(id, name, LineColor.getLineColorByName(color), upStation, downStation);
     }
@@ -55,5 +56,13 @@ public class LineRequest {
 
     public void setDistance(int distance) {
         this.distance = distance;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }
