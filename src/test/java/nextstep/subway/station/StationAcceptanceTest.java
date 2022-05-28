@@ -19,6 +19,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
+    public static final String HEADER_LOCATION = "Location";
+    public static final String URI_STATIONS = "/stations";
+    public static final String KEY_STATION_NAME = "name";
+
     @LocalServerPort
     int port;
 
@@ -44,8 +48,7 @@ public class StationAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stations = 지하철역_조회().jsonPath().getList("name", String.class);
-        assertThat(stations).containsAnyOf("강남역");
+        assertThat(stationNames(지하철역_조회())).containsAnyOf("강남역");
     }
 
     /**
@@ -79,10 +82,11 @@ public class StationAcceptanceTest {
         지하철역_생성("신논현역");
 
         //when
-        List<String> stations = 지하철역_조회().jsonPath().getList("name", String.class);
+        List<String> stations = stationNames(지하철역_조회());
 
         //then
         assertThat(stations.size()).isEqualTo(2);
+        assertThat(stations).contains("강남역", "신논현역");
 
     }
 
@@ -98,16 +102,15 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_생성("강남역");
 
         //when
-        지하철역_삭제(response.header("Location"));
+        지하철역_삭제(response.header(HEADER_LOCATION));
 
         //then
-        List<String> stations = 지하철역_조회().jsonPath().getList("name", String.class);
-        assertThat(stations).doesNotContain("강남역");
+        assertThat(stationNames(지하철역_조회())).doesNotContain("강남역");
     }
 
     private ExtractableResponse<Response> 지하철역_조회() {
         return RestAssured.given().log().all()
-                .when().get("/stations")
+                .when().get(URI_STATIONS)
                 .then().log().all()
                 .extract();
     }
@@ -116,7 +119,7 @@ public class StationAcceptanceTest {
         return RestAssured.given().log().all()
                 .body(StationRequest.from(stationName))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
+                .when().post(URI_STATIONS)
                 .then().log().all()
                 .extract();
     }
@@ -126,5 +129,9 @@ public class StationAcceptanceTest {
                 .when().delete(location)
                 .then().log().all()
                 .extract();
+    }
+
+    private List<String> stationNames(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(KEY_STATION_NAME, String.class);
     }
 }
