@@ -44,4 +44,12 @@ public class StationService {
             .orElseThrow(StationNotFoundException::new);
         return StationResponse.of(station);
     }
+
+    @Transactional
+    public void updateLineById(Long id, StationRequest stationRequest) {
+        Station station = stationRepository.findById(id)
+            .orElseThrow(StationNotFoundException::new);
+        Station stationUpdate = stationRequest.toStation();
+        station.update(stationUpdate);
+    }
 }

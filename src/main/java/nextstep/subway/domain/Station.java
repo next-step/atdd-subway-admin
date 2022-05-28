@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import nextstep.subway.dto.StationDTO;
+import org.apache.commons.lang3.StringUtils;
 
 @Entity
 public class Station extends BaseEntity {
@@ -15,6 +16,12 @@ public class Station extends BaseEntity {
     private Long id;
     @Column(unique = true)
     private String name;
+
+    public void update(Station station) {
+        if(StringUtils.isNotEmpty(station.getName())){
+            this.name = station.getName();
+        }
+    }
 
     public StationDTO toStationDTO() {
         return new StationDTO(this.id, this.name);
