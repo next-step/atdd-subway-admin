@@ -80,14 +80,6 @@ public class LineAcceptanceTest {
         노선_정상_응답을_확인한다(조회된_지하철_노선);
     }
 
-    private LineResponse 지하철_노선_단건_조회(ExtractableResponse<Response> response) {
-        return RestAssured
-                .given().log().all()
-                .when().post("/lines" + response.body().jsonPath().getLong("id"))
-                .then().log().all()
-                .extract().body().as(LineResponse.class);
-    }
-
     static class LineAcceptanceTemplate {
         static ExtractableResponse<Response> 지하철_노선_생성(String line, String color, String upStationName, String downStationName) {
             Long 상행역_id = id_추출(지하철역_생성(upStationName));
@@ -126,6 +118,14 @@ public class LineAcceptanceTest {
 
         static void 노선_정상_응답을_확인한다(LineResponse 조회된_지하철_노선) {
             assertThat(조회된_지하철_노선).isNotNull();
+        }
+
+        static LineResponse 지하철_노선_단건_조회(ExtractableResponse<Response> response) {
+            return RestAssured
+                    .given().log().all()
+                    .when().get("/lines/" + response.body().jsonPath().getLong("id"))
+                    .then().log().all()
+                    .extract().body().as(LineResponse.class);
         }
     }
 }
