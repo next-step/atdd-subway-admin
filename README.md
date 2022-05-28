@@ -67,5 +67,5 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 [v] 특정 지하철노선 조회
 [v] 지하철노선 수정
 [v] 지하철노선 삭제
-[ ] 인수 테스트들 서로 격리
+[v] 인수 테스트들 서로 격리
 [v] 인수 테스트를 리팩터링(재사용성과 가독성, 그리고 빠른 테스트 의도 파악)
