@@ -137,5 +137,28 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "강남역");
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all();
+
+        //when
+        RestAssured.given().log().all()
+                .params(params)
+                .when().delete("/stations/1")
+                .then().log().all()
+                .extract();
+
+        //then
+        ExtractableResponse<Response> result = RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract();
+        List<String> stations = result.jsonPath().getList("name", String.class);
+        assertThat(stations).doesNotContain("강남역");
     }
 }
