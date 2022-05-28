@@ -1,8 +1,8 @@
 package nextstep.subway.line.application;
 
-import nextstep.line.apllication.LineService;
-import nextstep.line.dto.LineRequest;
-import nextstep.line.dto.LineResponse;
+import nextstep.subway.line.apllication.LineService;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
