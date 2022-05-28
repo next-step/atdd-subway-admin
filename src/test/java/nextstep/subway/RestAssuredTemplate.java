@@ -55,4 +55,15 @@ public final class RestAssuredTemplate {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> sendPostWithId(String path, Long id, Map<String, Object> params) {
+        return RestAssured
+                .given().pathParam("id", id)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .log().all()
+                .when().post(path)
+                .then().log().all()
+                .extract();
+    }
 }
