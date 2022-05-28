@@ -49,4 +49,8 @@ public class Line extends BaseEntity {
         this.name = request.getName();
         this.color = request.getColor();
     }
+
+    public void resetStations() {
+        new ArrayList<>(stations).forEach(Station::resetLine);
+    }
 }

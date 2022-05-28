@@ -28,10 +28,15 @@ public class Station extends BaseEntity {
     }
 
     public void toLine(Line line) {
-        if (this.line != null) {
-            this.line.getStations().remove(this);
-        }
+        resetLine();
         this.line = line;
         line.getStations().add(this);
+    }
+
+    public void resetLine() {
+        if (this.line != null) {
+            this.line.getStations().remove(this);
+            this.line = null;
+        }
     }
 }
