@@ -95,17 +95,21 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         //given
-        지하철역_생성("강남역");
+        ExtractableResponse<Response> response = 지하철역_생성("강남역");
 
         //when
-        RestAssured.given().log().all()
-                .when().delete("/stations/1")
-                .then().log().all()
-                .extract();
+        지하철역_삭제(response.header("Location"));
 
         //then
         List<String> stations = 지하철역_조회().jsonPath().getList("name", String.class);
         assertThat(stations).doesNotContain("강남역");
+    }
+
+    private ExtractableResponse<Response> 지하철역_조회() {
+        return RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract();
     }
 
     private ExtractableResponse<Response> 지하철역_생성(String stationName) {
@@ -117,9 +121,9 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철역_조회() {
+    private ExtractableResponse<Response> 지하철역_삭제(String location) {
         return RestAssured.given().log().all()
-                .when().get("/stations")
+                .when().delete(location)
                 .then().log().all()
                 .extract();
     }
