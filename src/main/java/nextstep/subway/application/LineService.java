@@ -50,4 +50,14 @@ public class LineService {
     public LineResponse findLine(Long lindId) {
         return LineResponse.of(lineRepository.findById(lindId).get());
     }
+
+    public void deleteLine(Long lindId) {
+        lineRepository.deleteById(lindId);
+    }
+
+
+    private Station getValidStation(LineRequest request, String s) {
+        return stationRepository.findById(request.getUpStationId())
+                .orElseThrow(() -> new IllegalArgumentException(s));
+    }
 }

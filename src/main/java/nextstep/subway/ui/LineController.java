@@ -43,4 +43,15 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("lines/{id}")
+    public ResponseEntity fixLine(@PathVariable("id") Long lineId) {
+        lineService.deleteLine(lineId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity handleIllegalArgument(IllegalArgumentException e) { // 1
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
 }

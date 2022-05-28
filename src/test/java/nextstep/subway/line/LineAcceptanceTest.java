@@ -150,7 +150,25 @@ public class LineAcceptanceTest {
     @Test
     @DisplayName("지하철노선 삭제")
     void deleteLine() {
+        //Given 지하철 노선을 생성하고
+        final ExtractableResponse<Response> 노선을_생성한다 = 노선을_생성한다(new LineRequest("1호선", "bg-red-500",
+                10, downStationId, upStationId));
 
+        //When 생성한 지하철 노선을 삭제하면
+        Long lineId = 노선을_생성한다.jsonPath().getLong("id");
+        final ExtractableResponse<Response> 노선을_삭제한다 = 노선을_삭제한다(lineId);
+
+        //Then 해당 지하철 노선 정보는 삭제된다
+        assertThat(노선을_삭제한다.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> 노선을_삭제한다(Long lineId) {
+        return RestAssured.given().log().all()
+                .pathParam("id", lineId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/{id}")
+                .then().log().all()
+                .extract();
     }
 
     private ExtractableResponse<Response> 지하철역을_생성_한다(String name) {
