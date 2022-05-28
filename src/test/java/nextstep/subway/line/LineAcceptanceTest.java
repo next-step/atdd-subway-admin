@@ -29,9 +29,13 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("노선을 생성한다.")
     @Test
     public void createLine() {
+        //given
+        Long upStationId = 지하철역_등록("강남역").jsonPath().getLong("id");
+        Long downStationId = 지하철역_등록("양재역").jsonPath().getLong("id");
+
         // when
         String lineName = "신분당선";
-        ExtractableResponse<Response> response = 지하철역_노선_등록("강남역", "양재역", lineName, "bg-red-600");
+        ExtractableResponse<Response> response = 노선_등록(lineName, "bg-red-600", upStationId, downStationId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -49,9 +53,15 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("노선목록을 조회한다.")
     @Test
     public void getLines() {
-        // given
-        지하철역_노선_등록("강남역", "양재역", "신분당선", "bg-red-600");
-        지하철역_노선_등록("선릉역", "한티역", "분당선", "bg-yellow-600");
+        //given
+        Long upStationId = 지하철역_등록("강남역").jsonPath().getLong("id");
+        Long downStationId = 지하철역_등록("양재역").jsonPath().getLong("id");
+        노선_등록("신분당선", "bg-red-600", upStationId, downStationId);
+
+        //given
+        upStationId = 지하철역_등록("선릉역").jsonPath().getLong("id");
+        downStationId = 지하철역_등록("한티역").jsonPath().getLong("id");
+        노선_등록("신분당선", "bg-red-600", upStationId, downStationId);
 
         // when
         List<String> lineNames = 노선_목록_조회().jsonPath().getList("name", String.class);
@@ -70,8 +80,11 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     public void getLine() {
         // given
         String lineName = "신분당선";
-        ExtractableResponse<Response> response = 지하철역_노선_등록("강남역", "양재역", lineName, "bg-red-600");
+        Long upStationId = 지하철역_등록("강남역").jsonPath().getLong("id");
+        Long downStationId = 지하철역_등록("양재역").jsonPath().getLong("id");
+        ExtractableResponse<Response> response = 노선_등록(lineName, "bg-red-600", upStationId, downStationId);
         Long lineId = response.jsonPath().getLong("id");
+
 
         // when
         String result = 노선_조회(lineId).jsonPath().getString("name");
@@ -89,7 +102,9 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     public void updateLine() {
         // given
-        ExtractableResponse<Response> response = 지하철역_노선_등록("강남역", "양재역", "신분당선", "bg-red-600");
+        Long upStationId = 지하철역_등록("강남역").jsonPath().getLong("id");
+        Long downStationId = 지하철역_등록("양재역").jsonPath().getLong("id");
+        ExtractableResponse<Response> response = 노선_등록("신분당선", "bg-red-600", upStationId, downStationId);
         Long lineId = response.jsonPath().getLong("id");
 
         // when
@@ -112,7 +127,9 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     public void deleteLine() {
         // given
         String lineName = "신분당선";
-        ExtractableResponse<Response> response = 지하철역_노선_등록("강남역", "양재역", lineName, "bg-red-600");
+        Long upStationId = 지하철역_등록("강남역").jsonPath().getLong("id");
+        Long downStationId = 지하철역_등록("양재역").jsonPath().getLong("id");
+        ExtractableResponse<Response> response = 노선_등록(lineName, "bg-red-600", upStationId, downStationId);
         Long lineId = response.jsonPath().getLong("id");
 
         // when
