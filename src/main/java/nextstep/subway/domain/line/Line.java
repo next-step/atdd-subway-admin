@@ -32,7 +32,8 @@ public class Line extends BaseEntity {
     @OneToMany(
             mappedBy = "station",
             fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true
     )
     private List<LineStation> lineStations = new ArrayList<>();
 

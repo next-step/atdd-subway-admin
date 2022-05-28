@@ -11,7 +11,12 @@ import java.util.List;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(
+            mappedBy = "line",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<Section> sections = new ArrayList<>();
 
     public static Sections empty() {
