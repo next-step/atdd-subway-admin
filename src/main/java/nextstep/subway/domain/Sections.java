@@ -5,6 +5,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,9 +21,9 @@ public class Sections {
         sections.add(section);
     }
 
-    public List<Station> getStations() {
+    public Set<Station> getStations() {
         return sections.stream()
                 .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 }

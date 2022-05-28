@@ -22,39 +22,59 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
     private LineResponse 신분당선;
+    private StationResponse 논현역;
     private StationResponse 강남역;
     private StationResponse 양재역;
-    private StationResponse 신논현역;
-    private StationResponse 논현역;
+    private StationResponse 판교역;
+    private StationResponse 정자역;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
 
         // given
+        논현역 = 지하철역_등록("논현역").as(StationResponse.class);
         강남역 = 지하철역_등록("강남역").as(StationResponse.class);
         양재역 = 지하철역_등록("양재역").as(StationResponse.class);
-        신분당선 = 노선_등록("신분당선", "bg-red-600", 강남역.getId(), 양재역.getId(), 10).as(LineResponse.class);
-        
-        신논현역 = 지하철역_등록("신논현역").as(StationResponse.class);
-        논현역 = 지하철역_등록("논현역").as(StationResponse.class);
+        판교역 = 지하철역_등록("판교역").as(StationResponse.class);
+        정자역 = 지하철역_등록("정자역").as(StationResponse.class);
+
+        신분당선 = 노선_등록("신분당선", "bg-red-600", 강남역.getId(), 판교역.getId(), 10).as(LineResponse.class);
     }
 
     /**
-     * When 지하철_노선에_지하철역_등록_요청하면
-     * Then 지하철_노선에_지하철역_등록됨
+     * When 강남역(상행) 양재역(하행)인 신분당선 노선에 신논현역(상행) 강남역(하행) 구간을 추가하면
+     * Then 지하철_노선에_신논현역_등록됨
      */
-    @DisplayName("노선에 구간을 등록한다.")
+    @DisplayName("노선에 새로운 역을 상행 종점으로 구간을 등록한다.")
     @Test
-    void addSection() {
+    void addUpStationSection() {
         // when
-        ExtractableResponse<Response> response = 노선_구간_추가(신분당선.getId(), 신논현역.getId(), 강남역.getId(), 10);
+        ExtractableResponse<Response> response = 노선_구간_추가(신분당선.getId(), 논현역.getId(), 강남역.getId(), 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
         assertThat(response.jsonPath().getList("stations", Station.class)
-                .stream().map(Station::getName).collect(Collectors.toList())).contains(신논현역.getName());
+                .stream().map(Station::getName).collect(Collectors.toList())).contains(논현역.getName());
+    }
+
+    /**
+     * When 강남역(상행) 양재역(하행)인 신분당선 노선에 양재역(상행) 양재시민의숲역(하행) 구간을 추가하면
+     * Then 지하철_노선에_양재시민의숲역_등록됨
+     */
+    @DisplayName("노선에 새로운 역을 하행 종점으로 구간을 등록한다.")
+    @Test
+    void addUpDownSection() {
+        // when
+        ExtractableResponse<Response> response = 노선_구간_추가(신분당선.getId(), 판교역.getId(), 정자역.getId(), 10);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then
+        assertThat(response.jsonPath().getList("stations", Station.class)
+                .stream().map(Station::getName).collect(Collectors.toList())).contains(정자역.getName());
     }
 }
