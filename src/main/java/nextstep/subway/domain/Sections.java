@@ -5,13 +5,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import nextstep.subway.dto.StationResponse;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line")
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Section> sections;
 
     public Sections() {
