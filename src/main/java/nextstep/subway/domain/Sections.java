@@ -1,17 +1,20 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.error.CanNotRemovableSectionException;
+import nextstep.subway.error.SectionNotFoundException;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.OneToMany;
-import nextstep.subway.error.CanNotRemovableSectionException;
-import nextstep.subway.error.SectionNotFoundException;
 
 @Embeddable
 public class Sections {
+
+    private  static final int REMOVABLE_SIZE = 2;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true )
     private List<Section> sections = new ArrayList<>();
@@ -38,31 +41,23 @@ public class Sections {
     }
 
     private void addSection(Section newSection) {
-        checkValidation(newSection);
+        checkAddable(newSection);
         sections.forEach(section -> section.update(newSection));
         sections.add(newSection);
     }
 
-    private void checkValidation(Section section) {
+    private void checkAddable(Section section) {
         Set<Station> stations = getStations();
-        if (isSameStations(section, stations)) {
+        if (section.isSameStations(stations)) {
             throw new IllegalArgumentException("section is already registered.");
         }
-        if (isNotContainsStations(section, stations)) {
+        if (section.isNotContainsStations(stations)) {
             throw new IllegalArgumentException("must be one station contains.");
         }
     }
 
-    private boolean isSameStations(Section section, Set<Station> stations) {
-        return stations.contains(section.getUpStation()) && stations.contains(section.getDownStation());
-    }
-
-    private boolean isNotContainsStations(Section section, Set<Station> stations) {
-        return !stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation());
-    }
-
     public void remove(Station station) {
-        checkValid(station);
+        checkRemovable(station);
         Section firstSection = getFirstSection();
         Section lastSection = getLastSection();
         if (firstSection.isUpStation(station)) {
@@ -76,14 +71,17 @@ public class Sections {
         removeMiddleSection(station);
     }
 
-    private void checkValid(Station station) {
-        if (sections.size() < 2) {
+    private void checkRemovable(Station station) {
+        if (isInvalidSectionsSize()) {
             throw new CanNotRemovableSectionException();
         }
         if (!getStations().contains(station)) {
             throw new CanNotRemovableSectionException();
         }
+    }
 
+    private boolean isInvalidSectionsSize() {
+        return sections.size() < REMOVABLE_SIZE;
     }
 
     private Section getFirstSection() {

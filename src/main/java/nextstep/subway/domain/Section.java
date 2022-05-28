@@ -1,13 +1,9 @@
 package nextstep.subway.domain;
 
+import javax.persistence.*;
 import java.util.Arrays;
 import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import java.util.Set;
 
 @Entity
 public class Section {
@@ -117,4 +113,11 @@ public class Section {
         return newSection;
     }
 
+    public boolean isSameStations(Set<Station> stations) {
+        return stations.contains(upStation) && stations.contains(downStation);
+    }
+
+    public boolean isNotContainsStations(Set<Station> stations) {
+        return !stations.contains(upStation) && !stations.contains(downStation);
+    }
 }
