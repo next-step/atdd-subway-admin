@@ -54,7 +54,7 @@ public class LineAcceptanceTest {
         응답_검증(createResponse, HttpStatus.CREATED);
 
         // then
-        List<LineResponse> lines = 노선_목록_조회();
+        List<LineResponse> lines = 목록_조회("/lines", LineResponse.class);
         노선_등록_검증(lines, "2호선");
     }
 
@@ -89,7 +89,7 @@ public class LineAcceptanceTest {
         노선_등록("8호선", "분홍", 10, 모란역.getId(), 잠실역.getId());
 
         // when
-        List<LineResponse> lines = 노선_목록_조회();
+        List<LineResponse> lines = 목록_조회("/lines", LineResponse.class);
 
         // then
         노선_개수_검증(lines, 2);
@@ -110,7 +110,7 @@ public class LineAcceptanceTest {
         노선_삭제(지하철2호선.getId());
 
         // then
-        List<LineResponse> lines = 노선_목록_조회();
+        List<LineResponse> lines = 목록_조회("/lines", LineResponse.class);
         노선_개수_검증(lines, 0);
     }
 
@@ -122,13 +122,6 @@ public class LineAcceptanceTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .when().post("/lines")
                     .then().log().all();
-    }
-
-    public static List<LineResponse> 노선_목록_조회() {
-        ValidatableResponse listResponse = RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all();
-        return getJsonPathForResponse(listResponse).getList("$", LineResponse.class);
     }
 
     public static void 노선_삭제(long lineId) {

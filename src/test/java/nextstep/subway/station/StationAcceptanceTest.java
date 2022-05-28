@@ -49,7 +49,7 @@ public class StationAcceptanceTest {
         응답_검증(createResponse, HttpStatus.CREATED);
 
         // then
-        List<StationResponse> stations = 지하철역_목록_조회();
+        List<StationResponse> stations = 목록_조회("/stations", StationResponse.class);
         지하철역_등록_검증(stations, "강남역");
     }
 
@@ -84,7 +84,7 @@ public class StationAcceptanceTest {
         지하철역_등록("강남역");
 
         // when
-        List<StationResponse> stations = 지하철역_목록_조회();
+        List<StationResponse> stations = 목록_조회("/stations", StationResponse.class);
 
         // then
         지하철역_개수_검증(stations, 2);
@@ -106,7 +106,7 @@ public class StationAcceptanceTest {
         지하철역_삭제(createdStation.getId());
 
         // then
-        List<StationResponse> stations = 지하철역_목록_조회();
+        List<StationResponse> stations = 목록_조회("/stations", StationResponse.class);
         지하철역_개수_검증(stations, 0);
     }
 
@@ -124,11 +124,11 @@ public class StationAcceptanceTest {
         assertThat(response.extract().statusCode()).isEqualTo(status.value());
     }
 
-    public static List<StationResponse> 지하철역_목록_조회() {
+    public static <T> List<T> 목록_조회(String path, Class<T> clazz) {
         ValidatableResponse listResponse = RestAssured.given().log().all()
-                .when().get("/stations")
+                .when().get(path)
                 .then().log().all();
-        return getJsonPathForResponse(listResponse).getList("$", StationResponse.class);
+        return getJsonPathForResponse(listResponse).getList("$", clazz);
     }
 
     public static <T> T 응답_객체_생성(ValidatableResponse createResponse, Class<T> clazz) {
