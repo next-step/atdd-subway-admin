@@ -39,10 +39,16 @@ public class Section {
     }
 
     public void stationCheck(Section section) {
+        distanceCheck(section);
+
         if (this.upStation.equals(section.getUpStation())) {
-            distanceCheck(section);
             changeDistance(this.distance - section.getDistance());
-            changeUpstation(section.getDownStation());
+            changeUpStation(section.getDownStation());
+        }
+
+        if (this.downStation.equals(section.getDownStation())) {
+            changeDistance(this.distance - section.getDistance());
+            changeDownStation(section.getUpStation());
         }
     }
 
@@ -56,8 +62,12 @@ public class Section {
         this.distance = distance;
     }
 
-    public void changeUpstation(Station downStation) {
+    public void changeUpStation(Station downStation) {
         this.upStation = downStation;
+    }
+
+    private void changeDownStation(Station upStation) {
+        this.downStation = upStation;
     }
 
     public Long getId() {

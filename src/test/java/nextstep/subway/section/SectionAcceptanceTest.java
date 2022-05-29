@@ -71,8 +71,8 @@ public class SectionAcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(sections.get(0).getDistance()).isEqualTo(3),
-                () -> assertThat(sections.get(1).getDistance()).isEqualTo(7)
+                () -> assertThat(sections.get(0).getDistance()).isEqualTo(7),
+                () -> assertThat(sections.get(1).getDistance()).isEqualTo(3)
         );
     }
 
@@ -90,8 +90,8 @@ public class SectionAcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(sections.get(0).getDistance()).isEqualTo(7),
-                () -> assertThat(sections.get(1).getDistance()).isEqualTo(3)
+                () -> assertThat(sections.get(0).getDistance()).isEqualTo(3),
+                () -> assertThat(sections.get(1).getDistance()).isEqualTo(7)
         );
     }
 
