@@ -1,35 +1,18 @@
-package nextstep.subway.station;
-
-import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
+package nextstep.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
-public class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import java.util.List;
+import nextstep.subway.dto.StationRequest;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
-    @BeforeEach
-    public void setUp() {
-        RestAssured.port = port;
-    }
+@DisplayName("지하철역 관련 기능")
+public class StationAcceptanceTest extends BaseAcceptanceTest {
+    public static final String path = "/stations";
 
     /**
      * When 지하철역을 생성하면
@@ -72,19 +55,20 @@ public class StationAcceptanceTest {
      * When 지하철역 목록을 조회하면
      * Then 2개의 지하철역을 응답 받는다
      */
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("지하철역 목록을 조회한다.")
     @Test
     void getStations() {
         // given
-        지하철역_생성("강남역");
-        지하철역_생성("사당역");
+        지하철역_생성("지하철역이름");
+        지하철역_생성("새로운지하철역이름");
+        지하철역_생성("또다른지하철역이름");
 
         //when
         ExtractableResponse<Response> response = 전체_지하철역_조회();
 
         //then
         응답결과_확인(response, HttpStatus.OK);
-        지하철역_개수_확인(response, 2);
+        지하철역_개수_확인(response, 3);
     }
 
     /**
@@ -96,9 +80,7 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        long id = 지하철역_생성("강남역")
-                .jsonPath()
-                .getLong("id");
+        long id = 지하철역_생성_id_반환("강남역");
 
         // when
         지하철역_삭제(id);
@@ -107,39 +89,28 @@ public class StationAcceptanceTest {
         지하철역_존재하지_않음(전체_지하철역_이름_조회(), "강남역");
     }
 
-    private ExtractableResponse<Response> 전체_지하철역_조회() {
-        return RestAssured
-                .given().log().all()
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/stations")
-                .then().log().all().extract();
+    public ExtractableResponse<Response> 전체_지하철역_조회() {
+        return get(path);
     }
 
-    private List<String> 전체_지하철역_이름_조회() {
+    public List<String> 전체_지하철역_이름_조회() {
         return 전체_지하철역_조회()
                 .jsonPath()
                 .getList("name", String.class);
     }
 
-    private ExtractableResponse<Response> 지하철역_생성(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        return RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
+    public ExtractableResponse<Response> 지하철역_생성(String name) {
+        return post(path, new StationRequest(name));
     }
 
-    private ExtractableResponse<Response> 지하철역_삭제(long id) {
-        return RestAssured
-                .given().log().all()
-                .when().delete("/stations/" + id)
-                .then().log().all()
-                .extract();
+    public Long 지하철역_생성_id_반환(String name) {
+        return 지하철역_생성(name)
+                .jsonPath()
+                .getLong("id");
+    }
+
+    public ExtractableResponse<Response> 지하철역_삭제(long id) {
+        return delete(path, id);
     }
 
     private void 지하철역_개수_확인(ExtractableResponse<Response> response, int size) {
