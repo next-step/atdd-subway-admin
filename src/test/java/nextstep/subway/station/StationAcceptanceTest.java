@@ -10,13 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import static nextstep.subway.utils.AcceptanceApiFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -80,7 +79,7 @@ public class StationAcceptanceTest {
 
         List<String> 지하철역_조회_결과 = 지하철역_조회();
 
-        org.junit.jupiter.api.Assertions.assertAll(
+        assertAll(
                 () -> assertThat(지하철역_조회_결과).size().isEqualTo(2),
                 () -> assertThat(지하철역_조회_결과).containsAnyOf("강남역"),
                 () -> assertThat(지하철역_조회_결과).containsAnyOf("역삼역")
@@ -104,34 +103,6 @@ public class StationAcceptanceTest {
         List<String> 지하철역_조회_결과 = 지하철역_조회();
 
         Assertions.assertThat(지하철역_조회_결과).size().isEqualTo(0);
-    }
-
-    private ExtractableResponse<Response> 지하철역_생성(String name) {
-        // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private List<String> 지하철역_조회() {
-        return RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract().jsonPath().getList("name", String.class);
-    }
-
-    private ExtractableResponse<Response> 지하철역_삭제(int id) {
-        return RestAssured.given().log().all()
-                .pathParam("id", id)
-                .when().delete("/stations/{id}")
-                .then().log().all()
-                .extract();
     }
 
 }
