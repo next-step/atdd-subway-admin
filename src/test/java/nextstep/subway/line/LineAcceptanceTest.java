@@ -5,7 +5,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.StationRequest;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -82,7 +81,9 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         //given
-        ExtractableResponse<Response> response = 노선_생성(LineRequest.of("1호선", "blue", 1L, 2L, 10));
+        ExtractableResponse<Response> response = 노선_생성(
+                LineRequest.of("1호선", "blue", 1L, 2L, 10)
+        );
 
         //when
         String lineName = lineName(노선_단건_조회(response.jsonPath().getLong("id")));
@@ -100,11 +101,14 @@ public class LineAcceptanceTest {
     @Test
     void updataLine() {
         //given
-        ExtractableResponse<Response> created = 노선_생성(LineRequest.of("1호선", "blue", 1L, 2L, 10));
+        ExtractableResponse<Response> created = 노선_생성(
+                LineRequest.of("1호선", "blue", 1L, 2L, 10)
+        );
 
         //when
         LineRequest newLine = LineRequest.of("신_1호선", "skyblue", 1L, 2L, 10);
-        ExtractableResponse<Response> response = 노선_수정(newLine, created.jsonPath().getLong("id"));
+        노선_수정(created.jsonPath().getLong("id"), newLine);
+        ExtractableResponse<Response> response = 노선_단건_조회(created.jsonPath().getLong("id"));
 
         //then
         assertThat(lineName(response)).isEqualTo("신_1호선");
@@ -148,7 +152,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 노선_수정(LineRequest newLine, Long lineId) {
+    private ExtractableResponse<Response> 노선_수정(Long lineId, LineRequest newLine) {
         return RestAssured.given().log().all()
                 .body(newLine)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

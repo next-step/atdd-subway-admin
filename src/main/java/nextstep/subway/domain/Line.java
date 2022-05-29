@@ -27,6 +27,11 @@ public class Line {
         this.distance = distance;
     }
 
+    public void update(Line newLine) {
+        updateName(newLine.getName());
+        updateColor(newLine.getColor());
+    }
+
     public Long getId() {
         return id;
     }
@@ -49,5 +54,13 @@ public class Line {
 
     public int getDistance() {
         return distance;
+    }
+
+    private void updateName(String name) {
+        this.name = name;
+    }
+
+    private void updateColor(String color) {
+        this.color = color;
     }
 }

@@ -40,4 +40,10 @@ public class LineService {
                 .map(line -> LineResponse.of(line))
                 .orElseThrow(() -> new NoSuchElementException());
     }
+
+    @Transactional
+    public void updateLine(Long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException());
+        line.update(lineRequest.toLine());
+    }
 }
