@@ -9,6 +9,7 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.ValidatableResponse;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.dto.StationResponses;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -56,8 +57,8 @@ public class StationAcceptanceTest {
         응답_검증(createResponse, HttpStatus.CREATED);
 
         // then
-        List<StationResponse> stations = 목록_조회("/stations", StationResponse.class);
-        개수_검증(stations, 1);
+        StationResponses responses = new StationResponses(목록_조회("/stations", StationResponse.class));
+        개수_검증(responses.getList(), 1);
     }
 
     /**
@@ -91,10 +92,10 @@ public class StationAcceptanceTest {
         지하철역_등록("강남역");
 
         // when
-        List<StationResponse> stations = 목록_조회("/stations", StationResponse.class);
+        StationResponses responses = new StationResponses(목록_조회("/stations", StationResponse.class));
 
         // then
-        개수_검증(stations, 2);
+        개수_검증(responses.getList(), 2);
     }
 
     /**
@@ -113,8 +114,8 @@ public class StationAcceptanceTest {
         삭제("/stations", createdStation.getId());
 
         // then
-        List<StationResponse> stations = 목록_조회("/stations", StationResponse.class);
-        개수_검증(stations, 0);
+        StationResponses responses = new StationResponses(목록_조회("/stations", StationResponse.class));
+        개수_검증(responses.getList(), 0);
     }
 
     public static ValidatableResponse 지하철역_등록(String name) {
@@ -149,10 +150,6 @@ public class StationAcceptanceTest {
         } catch (JsonProcessingException e) {
             return null;
         }
-    }
-
-    public static void 지하철역_등록_검증(List<StationResponse> stations, String name) {
-        assertThat(stations).containsAnyOf(new StationResponse(name));
     }
 
     public static <T> void 개수_검증(List<T> list, int size) {

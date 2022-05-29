@@ -4,6 +4,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.dto.StationResponses;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,12 +26,14 @@ public class StationService {
     }
 
     @Transactional(readOnly = true)
-    public List<StationResponse> findAllStations() {
+    public StationResponses findAllStations() {
         List<Station> stations = stationRepository.findAll();
 
-        return stations.stream()
+        List<StationResponse> list = stations.stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
+
+        return new StationResponses(list);
     }
 
     public void deleteStationById(Long id) {
