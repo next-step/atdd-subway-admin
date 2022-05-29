@@ -1,14 +1,18 @@
 package nextstep.subway.line.domain;
 
-import static nextstep.subway.line.domain.exception.LineExceptionMessage.*;
+import static nextstep.subway.line.domain.exception.LineExceptionMessage.ALREADY_ADDED_SECTION;
+import static nextstep.subway.line.domain.exception.LineExceptionMessage.ALREADY_ADDED_UP_DOWN_STATION;
+import static nextstep.subway.line.domain.exception.LineExceptionMessage.LINE_COLOR_IS_NOT_NULL;
+import static nextstep.subway.line.domain.exception.LineExceptionMessage.LINE_NAME_IS_NOT_NULL;
 import static nextstep.subway.section.domain.exception.SectionExceptionMessage.NOT_FOUND_SECTION_BY_STATION;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import nextstep.subway.line.domain.exception.LineExceptionMessage;
+import java.util.Arrays;
 import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
@@ -124,4 +128,49 @@ class LineTest {
         assertThatIllegalArgumentException().isThrownBy(() -> 신분당선.addSection(양재역_양재시민의숲역_구간))
             .withMessageContaining(NOT_FOUND_SECTION_BY_STATION.getMessage());
     }
+
+    @DisplayName("지하철 노선에 종점을 제거할 수 있다. (상행 종점 제거)")
+    @Test
+    void remove01() {
+        // given
+        Line 신분당선 = Line.of("신분당선", "RED");
+        Station 강남역 = Station.of(1L, "강남역");
+        Station 판교역 = Station.of(2L, "판교역");
+        Section 강남역_판교역_구간 = Section.of(강남역, 판교역, Distance.from(10));
+        신분당선.addSection(강남역_판교역_구간);
+
+        Station 양재역 = Station.of(3L, "양재역");
+        Section 강남역_양재역_구간 = Section.of(2L, 강남역, 양재역, Distance.from(1));
+        신분당선.addSection(강남역_양재역_구간);
+
+        // when
+        신분당선.removeStation(강남역);
+
+        // then
+        LineStations lineStations = 신분당선.findSortedLineStations();
+        assertThat(lineStations).isEqualTo(LineStations.from(Arrays.asList(양재역, 판교역)));
+    }
+
+    @DisplayName("지하철 노선에 종점을 제거할 수 있다. (하행 종점 제거)")
+    @Test
+    void remove02() {
+        // given
+        Line 신분당선 = Line.of("신분당선", "RED");
+        Station 강남역 = Station.of(1L, "강남역");
+        Station 판교역 = Station.of(2L, "판교역");
+        Section 강남역_판교역_구간 = Section.of(강남역, 판교역, Distance.from(10));
+        신분당선.addSection(강남역_판교역_구간);
+
+        Station 양재역 = Station.of(3L, "양재역");
+        Section 강남역_양재역_구간 = Section.of(2L, 강남역, 양재역, Distance.from(1));
+        신분당선.addSection(강남역_양재역_구간);
+
+        // when
+        신분당선.removeStation(판교역);
+
+        // then
+        LineStations lineStations = 신분당선.findSortedLineStations();
+        assertThat(lineStations).isEqualTo(LineStations.from(Arrays.asList(강남역, 양재역)));
+    }
+
 }
