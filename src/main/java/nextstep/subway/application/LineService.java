@@ -23,7 +23,7 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public LineResponse saveStation(LineRequest lineRequest) {
+    public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId()).get();
         Station downStation = stationRepository.findById(lineRequest.getDownStationId()).get();
         Line persistLine = lineRepository.save(lineRequest.toLine());
