@@ -3,7 +3,7 @@ package nextstep.subway.domain;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,14 +22,14 @@ public class Section {
 
     @OneToOne
     @JoinColumn(name = "upstation_id")
-    private Station upStationId;
+    private Station upStation;
 
     @OneToOne
     @JoinColumn(name = "downstation_id")
-    private Station downStationId;
+    private Station downStation;
 
-    @Column
-    private long distance;
+    @Embedded
+    private Distance distance;
 
     @ManyToOne
     @JoinColumn(name = "line_id")
@@ -39,22 +39,22 @@ public class Section {
 
     }
 
-    public Section(Station upStationId, Station downStationId, long distance) {
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+    public Section(Station upStation, Station downStation, long distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = new Distance(distance);
     }
 
     public List<Station> getLineStations() {
-        return Arrays.asList(upStationId, downStationId);
+        return Arrays.asList(upStation, downStation);
     }
 
-    public Station getUpStationId() {
-        return upStationId;
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public Station getDownStationId() {
-        return downStationId;
+    public Station getDownStation() {
+        return downStation;
     }
 
     public void setLine(final Line line) {
@@ -63,6 +63,10 @@ public class Section {
         }
         this.line = line;
         line.getSections().add(this);
+    }
+
+    private void invalidSectionCheck() {
+
     }
 
     @Override
@@ -75,12 +79,12 @@ public class Section {
         }
         Section section = (Section) o;
         return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(
-                upStationId, section.upStationId) && Objects.equals(downStationId, section.downStationId)
+                upStation, section.upStation) && Objects.equals(downStation, section.downStation)
                 && Objects.equals(line, section.line);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(upStationId, downStationId, distance, line);
+        return Objects.hash(upStation, downStation, distance, line);
     }
 }
