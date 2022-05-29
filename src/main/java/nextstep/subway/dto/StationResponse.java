@@ -15,7 +15,7 @@ public class StationResponse extends BaseDto {
     }
 
     public static StationResponse of(Station station) {
-        return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(),
+        return new StationResponse(station.id(), station.name(), station.getCreatedDate(),
                 station.getModifiedDate());
     }
 
