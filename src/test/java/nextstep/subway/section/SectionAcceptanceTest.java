@@ -32,13 +32,13 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         신분당선_id = 노선_생성_요청(신분당선).jsonPath().getLong("id");
     }
 
-    @DisplayName("노선에 구간을 등록한다.")
+    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
     @Test
-    void addSection() {
+    void addSectionAtBackward() {
         // given 지하철 노선에 지하철역 등록 요청
         long 양재역_id = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
 
-        // when 신분당선 지하철 노선에 새로운 구간 등록 요청
+        // when 신분당선 지하철 노선에 새로운 구간을 등록 요청(하행 신규)
         SectionRequest 새로운_구간 = SectionRequest.of(광교역_id, 양재역_id, 5);
         ExtractableResponse<Response> 구간_생성_요청_응답 = 구간_생성_요청(새로운_구간, 신분당선_id);
 
@@ -46,8 +46,22 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         노선_생성_성공_확인(구간_생성_요청_응답);
     }
 
+    @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
+    @Test
+    void addSectionAtFront() {
+        // given 지하철 노선에 지하철역 등록 요청
+        long 양재역_id = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+
+        // when 신분당선 지하철 노선에 새로운 구간 등록 요청(상행 신규)
+        SectionRequest 새로운_구간 = SectionRequest.of(양재역_id, 강남역_id, 5);
+        ExtractableResponse<Response> 구간_생성_요청_응답 = 구간_생성_요청(새로운_구간, 신분당선_id);
+
+        // then 지하철_노선에_구간_등록됨
+        노선_생성_성공_확인(구간_생성_요청_응답);
+    }
+
     private void 노선_생성_성공_확인(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     private ExtractableResponse<Response> 구간_생성_요청(SectionRequest sectionRequest, Long lindId) {
