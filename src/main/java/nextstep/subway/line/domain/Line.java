@@ -1,16 +1,16 @@
 package nextstep.subway.line.domain;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import nextstep.subway.common.domain.BaseEntity;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.section.domain.Section;
 
 @Entity
 public class Line extends BaseEntity {
@@ -25,26 +25,19 @@ public class Line extends BaseEntity {
     @Embedded
     private LineColor color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
+    @OneToMany(mappedBy = "line")
+    private List<Section> sections = new ArrayList<>();
 
     protected Line() {
     }
 
-    private Line(LineName name, LineColor color, Station upStation, Station downStation) {
+    private Line(LineName name, LineColor color) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
     }
 
-    public static Line of(LineName name, LineColor color, Station upStation, Station downStation) {
-        return new Line(name, color, upStation, downStation);
+    public static Line of(LineName name, LineColor color) {
+        return new Line(name, color);
     }
 
     public Long getId() {
@@ -57,14 +50,6 @@ public class Line extends BaseEntity {
 
     public LineColor getColor() {
         return color;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
     }
 
     public void update(String name, String color) {
@@ -82,12 +67,11 @@ public class Line extends BaseEntity {
         }
         Line line = (Line) o;
         return Objects.equals(id, line.id) && Objects.equals(name, line.name)
-                && Objects.equals(color, line.color) && Objects.equals(upStation, line.upStation)
-                && Objects.equals(downStation, line.downStation);
+                && Objects.equals(color, line.color);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, upStation, downStation);
+        return Objects.hash(id, name, color);
     }
 }

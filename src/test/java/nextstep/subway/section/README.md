@@ -44,8 +44,8 @@ host: localhost:52165
 
 ## 구현 목록
 - [x] SectionRequest dto
-- [ ] Section 엔티티 매핑
-- [ ] Line 엔티티와  Section 엔티티의 연관관계 매핑
+- [x] Section 엔티티 매핑
+- [x] Line 엔티티와  Section 엔티티의 연관관계 매핑
   - [ ] 연관관계 편의 메소드
 - [ ] LineController에 구간 추가 api 
 - [ ] Line -> Section 으로 이동한 property에 따른 LineRequest, LineResponse dto 변경
