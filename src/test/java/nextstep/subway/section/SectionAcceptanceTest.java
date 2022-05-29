@@ -99,28 +99,45 @@ public class SectionAcceptanceTest {
      * Given  지하철 노선을 생성하고
      * When 하행역이 기존 생성한 노선의 상행역과 동일한 새로운 지하철 구간을 생성하면
      * Then 지하철 구간이 생성된다.
+     * Then 새로 생성한 구간이 기존 노선보다 앞에 정렬된다.
      */
     @Test
     void 새로운_역을_상행_종점_지하철구간_생성() {
         // when
         ExtractableResponse<Response> response = createSection(line.jsonPath().getLong("id"), newStation.jsonPath().getLong("id"), upStation.jsonPath().getLong("id"), 7);
+        List<Section> sections = response.jsonPath().getList("sections", Section.class);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(sections.get(0).getUpStation().getName()).isEqualTo("새로운역"),
+                () -> assertThat(sections.get(0).getDownStation().getName()).isEqualTo("강남역"),
+                () -> assertThat(sections.get(1).getUpStation().getName()).isEqualTo("강남역"),
+                () -> assertThat(sections.get(1).getDownStation().getName()).isEqualTo("판교역")
+        );
+
     }
 
     /*
      * Given 지하철 노선을 생성하고
      * When 상행역이 기존 생성한 노선의 하행역과 동일한 새로운 지하철 구간을 생성하면
      * Then 지하철 구간이 생성된다.
+     * Then 새로 생성한 구간이 기존 노선보다 뒤에 정렬된다.
      */
     @Test
     void 새로운_역을_하행_종점으로_지하철구간_생성() {
         // when
         ExtractableResponse<Response> response = createSection(line.jsonPath().getLong("id"), downStation.jsonPath().getLong("id"), newStation.jsonPath().getLong("id"), 7);
+        List<Section> sections = response.jsonPath().getList("sections", Section.class);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(sections.get(0).getUpStation().getName()).isEqualTo("강남역"),
+                () -> assertThat(sections.get(0).getDownStation().getName()).isEqualTo("판교역"),
+                () -> assertThat(sections.get(1).getUpStation().getName()).isEqualTo("판교역"),
+                () -> assertThat(sections.get(1).getDownStation().getName()).isEqualTo("새로운역")
+        );
     }
 
     /*
@@ -131,7 +148,11 @@ public class SectionAcceptanceTest {
     @Test
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
     void 지하철구간_생성_예외_1() {
+        // when
+        ExtractableResponse<Response> response = createSection(line.jsonPath().getLong("id"), downStation.jsonPath().getLong("id"), newStation.jsonPath().getLong("id"), 10);
 
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /*

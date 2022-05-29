@@ -23,7 +23,7 @@ public class LineResponse {
     }
 
     private static List<SectionResponse> ofSections(Line line) {
-        return line.getSections().getSections().stream().map(SectionResponse::of).collect(Collectors.toList());
+        return line.getSections().getOrderSections().stream().map(SectionResponse::of).collect(Collectors.toList());
     }
 
     public Long getId() {

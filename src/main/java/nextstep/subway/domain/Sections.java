@@ -3,9 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Embeddable
 public class Sections {
@@ -28,6 +26,50 @@ public class Sections {
         for (Section section : sections) {
             section.stationCheck(newSection);
         }
+    }
+
+    public List<Section> getOrderSections() {
+        List<Section> sections = new ArrayList<>();
+        Section section = lineFirstSection();
+
+        while (section != null) {
+            sections.add(section);
+            section = findNextSection(section);
+        }
+        return sections;
+    }
+
+    private Section lineFirstSection() {
+        if (isEmpty()) {
+            return null;
+        }
+        Section section = this.sections.get(size() - 1);
+        while (findPreviousSection(section) != null) {
+            section = findPreviousSection(section);
+        }
+        return section;
+    }
+
+    private Section findPreviousSection(Section section) {
+        return this.sections.stream()
+                .filter(value -> value.getDownStation().equals(section.getUpStation()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Section findNextSection(Section section) {
+        return this.sections.stream()
+                .filter(value -> value.getUpStation().equals(section.getDownStation()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public int size() {
+        return this.sections.size();
+    }
+
+    public boolean isEmpty() {
+        return this.sections.isEmpty();
     }
 
     @Override
