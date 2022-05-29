@@ -1,3 +1,9 @@
+## step1
+### 지하철역 인수 테스트를 완성하세요.
+- [ ] 지하철역 목록 조회 인수 테스트 작성하기
+- [ ] 지하철역 삭제 인수 테스트 작성하기
+- [ ] 인수 테스트 코드 리팩터링
+
 <p align="center">
     <img width="200px;" src="https://raw.githubusercontent.com/woowacourse/atdd-subway-admin-frontend/master/images/main_logo.png"/>
 </p>
