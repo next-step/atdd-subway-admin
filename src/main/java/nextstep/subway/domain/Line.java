@@ -15,11 +15,13 @@ public class Line extends BaseEntity{
     @Column(nullable = false)
     private String color;
 
-    @Column(nullable = false)
-    private Long upStationId;
+    @ManyToOne
+    @JoinColumn(name = "UPSTATION_ID")
+    private Station upStation;
 
-    @Column(nullable = false)
-    private Long downStationId;
+    @ManyToOne
+    @JoinColumn(name = "DOWNSTATION_ID")
+    private Station downStation;
 
     @Column(nullable = false)
     private Long distance;
@@ -27,11 +29,11 @@ public class Line extends BaseEntity{
     public Line() {
     }
 
-    public Line(String name, String color, Long upStationId, Long downStationId, Long distance) {
+    public Line(final String name, final String color, final Station upStation, final Station downStation, final Long distance) {
         this.name = name;
         this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
@@ -47,12 +49,12 @@ public class Line extends BaseEntity{
         return color;
     }
 
-    public Long getUpStationId() {
-        return upStationId;
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public Long getDownStationId() {
-        return downStationId;
+    public Station getDownStation() {
+        return downStation;
     }
 
     public Long getDistance() {
@@ -64,11 +66,11 @@ public class Line extends BaseEntity{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects.equals(upStationId, line.upStationId) && Objects.equals(downStationId, line.downStationId) && Objects.equals(distance, line.distance);
+        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects.equals(upStation, line.upStation) && Objects.equals(downStation, line.downStation) && Objects.equals(distance, line.distance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, upStationId, downStationId, distance);
+        return Objects.hash(id, name, color, upStation, downStation, distance);
     }
 }
