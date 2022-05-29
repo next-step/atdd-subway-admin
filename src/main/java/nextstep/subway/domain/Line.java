@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.dto.LineUpdateRequest;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,7 @@ public class Line extends BaseEntity {
     private Long id;
     @Column(unique = true)
     private String name;
+    @NotNull
     private String color;
     @OneToMany(mappedBy = "line")
     private List<Station> stations = new ArrayList<>();
