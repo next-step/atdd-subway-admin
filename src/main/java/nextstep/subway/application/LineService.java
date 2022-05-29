@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.LineStation;
+import nextstep.subway.domain.LineStationRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.request.LineRequest;
@@ -23,21 +25,31 @@ public class LineService {
     private final LineRepository lineRepository;
 
     private final StationRepository stationRepository;
+
+    private final LineStationRepository lineStationRepository;
+
     @Autowired
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository,
+        LineStationRepository lineStationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.lineStationRepository = lineStationRepository;
     }
-
 
 
     @Transactional
     public LineResponse createLine(LineRequest lineRequest) {
         Station upStation = getStationOrThrow(lineRequest.getUpStationId());
         Station downStation = getStationOrThrow(lineRequest.getDownStationId());
+        Line line = lineRequest.toLine(upStation, downStation);
 
-        Line savedLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
-        return LineResponse.of(savedLine);
+        LineStation upLineStation = new LineStation(line, upStation);
+        LineStation downLineStation = new LineStation(line, downStation);
+
+        lineStationRepository.save(upLineStation);
+        lineStationRepository.save(downLineStation);
+
+        return LineResponse.of(line);
     }
 
     public List<LineResponse> findAllLines() {
