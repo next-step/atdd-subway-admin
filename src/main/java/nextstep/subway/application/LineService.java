@@ -23,6 +23,7 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
+    @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = getStation(lineRequest.getUpStationId());
         Station downStation = getStation(lineRequest.getDownStationId());
@@ -55,6 +56,7 @@ public class LineService {
         lineRepository.deleteById(lineId);
     }
 
+    @Transactional
     public Line addSection(Long lineId, SectionRequest request) {
         Line line = getLine(lineId);
         Station upStation = getStation(request.getUpStationId());
