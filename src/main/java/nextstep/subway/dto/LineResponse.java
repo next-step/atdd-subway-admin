@@ -3,8 +3,8 @@ package nextstep.subway.dto;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,8 +25,19 @@ public class LineResponse {
         this.modifiedDate = modifiedDate;
     }
 
-    public static LineResponse of(final Line line, final List<Station> stations) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations, line.getCreatedDate(), line.getModifiedDate());
+    public static LineResponse of(final Line line) {
+        return new LineResponse(
+                line.getId(),
+                line.getName(),
+                line.getColor(),
+                Arrays.asList(line.getUpStation(), line.getDownStation()),
+                line.getCreatedDate(),
+                line.getModifiedDate()
+        );
+    }
+
+    public boolean isContainsBy(final Station station) {
+        return this.stations.contains(station);
     }
 
     @Override
