@@ -19,13 +19,13 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+    public Line(String name, String color, Station upStation, Station downStation, Integer distance) {
         this.name = name;
         this.color = color;
         this.addSection(Section.of(upStation, downStation, distance));
     }
 
-    public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
+    public static Line of(String name, String color, Station upStation, Station downStation, Integer distance) {
         return new Line(name, color, upStation, downStation, distance);
     }
 

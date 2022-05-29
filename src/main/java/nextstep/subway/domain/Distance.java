@@ -7,23 +7,22 @@ import java.util.Objects;
 @Embeddable
 public class Distance {
     @Column
-    private int distance;
+    private Integer distance;
 
     protected Distance() {
     }
 
-    public Distance(int distance) {
+    public Distance(Integer distance) {
         validate(distance);
         this.distance = distance;
     }
 
-
-    public static Distance of(int distance) {
+    public static Distance of(Integer distance) {
         return new Distance(distance);
     }
 
-    private void validate(int distance) {
-        if(distance <= 0) {
+    private void validate(Integer distance) {
+        if(null == distance || distance <= 0) {
             throw new IllegalArgumentException("구간길이는 0보다 커야합니다.");
         }
     }

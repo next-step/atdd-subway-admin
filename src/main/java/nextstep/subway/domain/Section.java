@@ -27,13 +27,13 @@ public class Section {
     protected Section() {
     }
 
-    private Section(Station upStation, Station downStation, int distance) {
+    private Section(Station upStation, Station downStation, Integer distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = Distance.of(distance);
     }
 
-    public static Section of(Station upStation, Station downStation, int distance) {
+    public static Section of(Station upStation, Station downStation, Integer distance) {
         return new Section(upStation, downStation, distance);
     }
 
