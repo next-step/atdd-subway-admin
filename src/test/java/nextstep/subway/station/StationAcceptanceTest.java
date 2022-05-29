@@ -94,6 +94,20 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        Integer id  = 지하철역_생성("강남역").jsonPath().get("id");
+
+        // when
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                        .when().delete("/stations/{id}", id)
+                        .then().log().all()
+                        .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(지하철역_조회()).doesNotContain("강남역");
+
     }
 
     private ExtractableResponse<Response> 지하철역_생성(String stationName) {
