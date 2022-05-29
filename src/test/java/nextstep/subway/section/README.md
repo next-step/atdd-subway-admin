@@ -37,9 +37,10 @@ host: localhost:52165
 ---
 ## 구간 등록 인수 테스트
 
-- [ ] 노선에 구간을 등록 한다.
-  - [ ] when 지하철 노션에 구간 등록 요청
-  - [ ] then 지하철 노선에 지하철역 등록됨
+- 일반적인 경우
+- [x] 노선에 구간을 등록 한다.
+  - [x] when 지하철 노션에 구간 등록 요청
+  - [x] then 지하철 노선에 지하철역 등록됨
 
 
 ## 구현 목록
@@ -47,5 +48,5 @@ host: localhost:52165
 - [x] Section 엔티티 매핑
 - [x] Line 엔티티와  Section 엔티티의 연관관계 매핑
   - [x] 연관관계 편의 메소드
-- [ ] LineController에 구간 추가 api 
-- [ ] Line -> Section 으로 이동한 property에 따른 LineRequest, LineResponse dto 변경
+- [x] LineController에 구간 추가 api 
+- [x] Line -> Section 으로 이동한 property에 따른 LineRequest, LineResponse dto 변경
