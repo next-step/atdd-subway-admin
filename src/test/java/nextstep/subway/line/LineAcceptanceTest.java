@@ -152,6 +152,43 @@ public class LineAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(404);
     }
 
+    /*
+     * When 존재하지 않는 지하철 노선을 조회 시
+     * Then 404 Not Found 응답이 전달된다.
+    * */
+    @DisplayName("존재하지 않는 지하철 노선 조회")
+    @Test
+    void notExistLineFetchTest() {
+        //When : 존재하지 않는 지하철 노선 조회
+        ExtractableResponse<Response> response = fetchLineById(1L);
+        //Then : Not Found
+        assertThat(response.statusCode()).isEqualTo(404);
+    }
+
+    /*
+     * When 존재하지 않는 지하철 노선을 수정 시
+     * Then 404 Not Found 응답이 전달된다.
+     * */
+    @DisplayName("존재하지 않는 지하철 노선 수정")
+    @Test
+    void notExistLineUpdateTest() {
+        ExtractableResponse<Response> response = updateLine(1L, "테스트노선이름", "bg-red-200");
+
+        assertThat(response.statusCode()).isEqualTo(404);
+    }
+
+    /*
+     * When 존재하지 않는 지하철 노선을 삭제 시
+     * Then 404 Not Found 응답이 전달된다.
+     * */
+    @DisplayName("존재하지 않는 지하철 노선 삭제")
+    @Test
+    void notExistLineDeleteTest() {
+        ExtractableResponse<Response> response = deleteLine(1L);
+
+        assertThat(response.statusCode()).isEqualTo(404);
+    }
+
     private ExtractableResponse<Response> createLine(String name, String color, String upStationName, String downStationName, int distance) {
         Long upStationId = createStation(upStationName);
         Long downStationId = createStation(downStationName);
@@ -176,7 +213,7 @@ public class LineAcceptanceTest {
         return get("/lines/{id}", pathParams);
     }
 
-    private void updateLine(Long id, String name, String color) {
+    private ExtractableResponse<Response> updateLine(Long id, String name, String color) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
@@ -185,14 +222,14 @@ public class LineAcceptanceTest {
         Map<String, Object> pathParams = new HashMap<>();
         pathParams.put("id", id);
 
-        put("/lines/{id}", pathParams, params);
+        return put("/lines/{id}", pathParams, params);
     }
 
-    private void deleteLine(Long id) {
+    private ExtractableResponse<Response> deleteLine(Long id) {
         Map<String, Object> pathParams = new HashMap<>();
         pathParams.put("id", id);
 
-        delete("/lines/{id}", pathParams);
+        return delete("/lines/{id}", pathParams);
     }
 
     private Long createStation(String name) {
@@ -201,7 +238,6 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> result = post("/stations", params);
 
         int id = result.jsonPath().get("id");
-        System.out.println("id = " + id);
         return (long) id;
     }
 
