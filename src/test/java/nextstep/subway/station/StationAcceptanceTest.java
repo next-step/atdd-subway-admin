@@ -20,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
-    static final String URL_PATH_STAIONS = "/stations";
-    static final String PARAM_NAME_TEXT = "name";
+    static final String URL_PATH_STATIONS = "/stations";
+    static final String KEY_NAME = "name";
 
     @LocalServerPort
     int port;
@@ -42,18 +42,14 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        String givenStationName = "강남역";
-        Map<String, String> params = new HashMap<>();
-        params.put(PARAM_NAME_TEXT, givenStationName);
-
-        ExtractableResponse<Response> response = createStation(params);
+        String testStationName = "강남역";
+        ExtractableResponse<Response> response = createStation(requestParamStationName(testStationName));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames = getStationNames();
-        assertThat(stationNames).containsAnyOf(givenStationName);
+        assertThat(getStationNames()).containsAnyOf(testStationName);
     }
 
     /**
@@ -65,8 +61,7 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put(PARAM_NAME_TEXT, "강남역");
+        Map<String, String> params = requestParamStationName("강남역");
         createStation(params);
 
         // when
@@ -85,19 +80,16 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        String[] givenStationNames = {"선릉역", "삼성역"};
-
-        Map<String, String> params = new HashMap<>();
-        for (String givenStationName : givenStationNames) {
-            params.put(PARAM_NAME_TEXT, givenStationName);
-            createStation(params);
+        String[] testStationNames = {"선릉역", "삼성역"};
+        for (String givenStationName : testStationNames) {
+            createStation(requestParamStationName(givenStationName));
         }
 
         // when
         List<String> stationNames = getStationNames();
 
         // then
-        assertThat(stationNames).containsAnyOf(givenStationNames);
+        assertThat(stationNames).containsAnyOf(testStationNames);
     }
 
     /**
@@ -109,33 +101,41 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        String givenStationName = "삼성역";
-        Map<String, String> params = new HashMap<>();
-        params.put(PARAM_NAME_TEXT, givenStationName);
-        long id = createStation(params).jsonPath().getLong("id");
+        String testStationName = "삼성역";
+        Map<String, String> params = requestParamStationName(testStationName);
+        long stationId = createStation(params).jsonPath().getLong("id");
 
         // when
-        RestAssured.given().log().all()
-                .when().delete(URL_PATH_STAIONS + "/" + id)
-                .then().log().all();
+        assertThat(deleteStation(stationId).statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         // then
-        List<String> stationNames = getStationNames();
-        assertThat(stationNames).doesNotContain(givenStationName);
+        assertThat(getStationNames()).doesNotContain(testStationName);
+    }
+
+    private Map<String, String> requestParamStationName(String stationName) {
+        Map<String, String> params = new HashMap<>();
+        params.put(KEY_NAME, stationName);
+        return params;
     }
 
     private List<String> getStationNames() {
         return RestAssured.given().log().all()
-                .when().get(URL_PATH_STAIONS)
+                .when().get(URL_PATH_STATIONS)
                 .then().log().all()
-                .extract().jsonPath().getList(PARAM_NAME_TEXT, String.class);
+                .extract().jsonPath().getList(KEY_NAME, String.class);
     }
 
     private ExtractableResponse<Response> createStation(Map<String, String> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(URL_PATH_STAIONS)
+                .when().post(URL_PATH_STATIONS)
+                .then().log().all().extract();
+    }
+
+    private ExtractableResponse<Response> deleteStation(long stationId) {
+        return RestAssured.given().log().all()
+                .when().delete(URL_PATH_STATIONS + "/" + stationId)
                 .then().log().all().extract();
     }
 }
