@@ -24,11 +24,11 @@ public class Line extends BaseEntity {
 	private String color;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "upStationId")
+	@JoinColumn(name = "up_station_id")
 	private Station upStation;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "downStationId")
+	@JoinColumn(name = "down_station_id")
 	private Station downStation;
 
 	private int distance;
