@@ -1,8 +1,9 @@
 package nextstep.subway.line.domain;
 
-import static nextstep.subway.line.domain.exception.LineExceptionMessage.*;
 import static nextstep.subway.line.domain.exception.LineExceptionMessage.ALREADY_ADDED_SECTION;
 import static nextstep.subway.line.domain.exception.LineExceptionMessage.ALREADY_ADDED_UP_DOWN_STATION;
+import static nextstep.subway.line.domain.exception.LineExceptionMessage.CANNOT_DELETE_WHEN_NO_EXIST_STATION;
+import static nextstep.subway.line.domain.exception.LineExceptionMessage.CANNOT_DELETE_WHEN_ONLY_ONE_SECTION;
 import static nextstep.subway.line.domain.exception.LineExceptionMessage.LINE_COLOR_IS_NOT_NULL;
 import static nextstep.subway.line.domain.exception.LineExceptionMessage.LINE_NAME_IS_NOT_NULL;
 import static nextstep.subway.section.domain.exception.SectionExceptionMessage.NOT_FOUND_SECTION_BY_STATION;
@@ -14,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
-import nextstep.subway.line.domain.exception.LineExceptionMessage;
 import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
@@ -208,9 +208,29 @@ class LineTest {
         신분당선.addSection(강남역_판교역_구간);
 
         Station 양재역 = Station.of(3L, "양재역");
+        Section 강남역_양재역_구간 = Section.of(2L, 강남역, 양재역, Distance.from(1));
+        신분당선.addSection(강남역_양재역_구간);
+
+
+        Station 정자역 = Station.of(4L, "정자역");
 
         // when & then
-        assertThatIllegalArgumentException().isThrownBy(() -> 신분당선.removeStation(양재역))
+        assertThatIllegalArgumentException().isThrownBy(() -> 신분당선.removeStation(정자역))
             .withMessageContaining(CANNOT_DELETE_WHEN_NO_EXIST_STATION.getMessage());
+    }
+
+    @DisplayName("노선의 마지막 구간에 해당하는 역을 제거하는 경우 제거될 수 없다.")
+    @Test
+    void removeException02() {
+        // given
+        Line 신분당선 = Line.of("신분당선", "RED");
+        Station 강남역 = Station.of(1L, "강남역");
+        Station 판교역 = Station.of(2L, "판교역");
+        Section 강남역_판교역_구간 = Section.of(강남역, 판교역, Distance.from(10));
+        신분당선.addSection(강남역_판교역_구간);
+
+        // when & then
+        assertThatIllegalArgumentException().isThrownBy(() -> 신분당선.removeStation(강남역))
+            .withMessageContaining(CANNOT_DELETE_WHEN_ONLY_ONE_SECTION.getMessage());
     }
 }

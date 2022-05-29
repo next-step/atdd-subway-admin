@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import static nextstep.subway.line.domain.exception.LineExceptionMessage.ALREADY_ADDED_SECTION;
 import static nextstep.subway.line.domain.exception.LineExceptionMessage.ALREADY_ADDED_UP_DOWN_STATION;
 import static nextstep.subway.line.domain.exception.LineExceptionMessage.CANNOT_DELETE_WHEN_NO_EXIST_STATION;
+import static nextstep.subway.line.domain.exception.LineExceptionMessage.CANNOT_DELETE_WHEN_ONLY_ONE_SECTION;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -53,7 +54,7 @@ public class Line extends BaseEntity {
     }
 
     public void removeStation(Station station) {
-
+        validateLastSectionDeleteStation();
         validateNotIncludeStation(station);
 
         if (this.sections.isEndStation(station)) {
@@ -62,6 +63,12 @@ public class Line extends BaseEntity {
         }
 
         this.sections.removeMiddleStation(station);
+    }
+
+    private void validateLastSectionDeleteStation() {
+        if (this.sections.isOnlyOneSection()) {
+            throw new IllegalArgumentException(CANNOT_DELETE_WHEN_ONLY_ONE_SECTION.getMessage());
+        }
     }
 
     private void validateNotIncludeStation(Station station) {
