@@ -1,27 +1,22 @@
 package nextstep.subway.dto;
 
+import java.time.LocalDateTime;
+import java.util.Objects;
 import nextstep.subway.domain.Station;
 
-import java.time.LocalDateTime;
+public class StationResponse extends BaseDto {
+    private final Long id;
+    private final String name;
 
-public class StationResponse {
-    private Long id;
-    private String name;
-    private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
-
-    public static StationResponse of(Station station) {
-        return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate());
-    }
-
-    public StationResponse() {
-    }
-
-    public StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    private StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+        super(createdDate, modifiedDate);
         this.id = id;
         this.name = name;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
+    }
+
+    public static StationResponse of(Station station) {
+        return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(),
+                station.getModifiedDate());
     }
 
     public Long getId() {
@@ -32,11 +27,20 @@ public class StationResponse {
         return name;
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        StationResponse that = (StationResponse) o;
+        return Objects.equals(id, that.id);
     }
 
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
