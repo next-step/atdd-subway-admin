@@ -9,13 +9,13 @@ public class StationResponse {
     private String name;
 
     public static StationResponse of(Station station) {
-        return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate());
+        return new StationResponse(station.getId(), station.getName());
     }
 
     public StationResponse() {
     }
 
-    public StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public StationResponse(Long id, String name) {
         this.id = id;
         this.name = name;
     }
