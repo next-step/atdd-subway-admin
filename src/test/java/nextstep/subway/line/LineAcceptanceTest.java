@@ -129,8 +129,8 @@ public class LineAcceptanceTest {
         Long id_1호선 = getId(createdResponse);
 
         //when
-        LineUpdateRequest newLine = LineUpdateRequest.of("1호선_new", "skyblue");
-        노선_수정(id_1호선, newLine);
+        LineUpdateRequest updateRequest = LineUpdateRequest.of("1호선_new", "skyblue");
+        노선_수정(id_1호선, updateRequest);
 
         //then
         ExtractableResponse<Response> response = 노선_단건_조회(id_1호선);
@@ -166,13 +166,10 @@ public class LineAcceptanceTest {
     }
 
     private LineRequest generateLineRequest
-            (String name, String color, String upStationName, String downStationName, int distance) {
-        ExtractableResponse<Response> upStationCreated = 지하철역_생성(upStationName);
-        ExtractableResponse<Response> downStationCreated = 지하철역_생성(downStationName);
-        return LineRequest.of(name, color,
-                upStationCreated.jsonPath().getLong("id"),
-                downStationCreated.jsonPath().getLong("id"),
-                distance);
+            (String name, String color, String upStationName, String downStationName, int distance) {;
+        Long upStationId = getId(지하철역_생성(upStationName));
+        Long downStationId = getId(지하철역_생성(downStationName));
+        return LineRequest.of(name, color, upStationId, downStationId, distance);
     }
 
     private List<String> lineNames(ExtractableResponse<Response> response) {
