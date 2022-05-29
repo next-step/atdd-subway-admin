@@ -1,5 +1,8 @@
 package nextstep.subway.section.domain;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -44,6 +47,10 @@ public class Section {
         return new Section(upStation, downStation, distance);
     }
 
+    public List<Station> getBothStations() {
+        return Arrays.asList(upStation, downStation);
+    }
+
     public Station getUpStation() {
         return upStation;
     }
@@ -62,5 +69,24 @@ public class Section {
 
     public void setLine(Line line) {
         this.line = line;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Section section = (Section) o;
+        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(
+                upStation, section.upStation) && Objects.equals(downStation, section.downStation)
+                && Objects.equals(line, section.line);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, upStation, downStation, distance, line);
     }
 }

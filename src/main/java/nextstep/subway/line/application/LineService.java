@@ -20,9 +20,10 @@ public class LineService {
 
     public static final String NO_LINE_ERROR = "접근 하는 노선이 존재 하지 않습니다.";
     public static final String NO_STATION_ERROR = "접근 하는 지하철역이 존재 하지 않습니다.";
-    
+
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -32,8 +33,16 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line line = request.convertToLine();
+        Section section = makeSectionFromLineRequest(request);
+        line.addSection(section);
         Line savedLine = lineRepository.save(line);
         return LineResponse.of(savedLine);
+    }
+
+    private Section makeSectionFromLineRequest(LineRequest request) {
+        Station upStation = getStation(request.getUpStationId());
+        Station downStation = getStation(request.getDownStationId());
+        return Section.of(upStation, downStation, request.getDistance());
     }
 
     private Station getStation(Long id) {
@@ -69,6 +78,7 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
+    @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Line findLine = lineRepository.findById(lineId).orElseThrow(
                 () -> new NoSuchElementException(NO_LINE_ERROR)
