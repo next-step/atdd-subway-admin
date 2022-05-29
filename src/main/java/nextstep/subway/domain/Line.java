@@ -32,13 +32,6 @@ public class Line extends BaseEntity {
         this.distance = distance;
     }
 
-    public Line(Long id, String name, String color, int distance) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-        this.distance = distance;
-    }
-
     public Line setUpStation(Station upStation) {
         this.upStation = upStation;
         return this;

@@ -17,10 +17,6 @@ public class LineRequest {
         this.downStationId = downStationId;
     }
 
-    public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getUpStation(), line.getDownStation());
-    }
-
     public String getName() {
         return name;
     }
@@ -29,16 +25,16 @@ public class LineRequest {
         return color;
     }
 
+    public Integer getDistance() {
+        return distance;
+    }
+
     public Long getUpStationId() {
         return upStationId;
     }
 
     public Long getDownStationId() {
         return downStationId;
-    }
-
-    public Integer getDistance() {
-        return distance;
     }
 
     public Line toLine() {
