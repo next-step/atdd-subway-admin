@@ -96,10 +96,8 @@ public class Sections {
     }
 
     public void removeMiddleStation(Station station) {
-        Section prevSection = findSectionByDownStation(station)
-            .orElseThrow(() -> new IllegalStateException(NOT_FOUND_UP_STATION_BY_SECTION.getMessage()));
-        Section postSection = findSectionByUpStation(station)
-            .orElseThrow(() -> new IllegalStateException(NOT_FOUND_UP_STATION_BY_SECTION.getMessage()));
+        Section prevSection = findByDownStation(station);
+        Section postSection = findByUpStation(station);
 
         rearrangeSection(prevSection, postSection);
         removeSection(postSection);
@@ -202,4 +200,15 @@ public class Sections {
     private boolean isExistStation(Station station) {
         return this.findSortedStations().contains(station);
     }
+
+    private Section findByUpStation(Station station) {
+        return this.findSectionByUpStation(station)
+            .orElseThrow(() -> new IllegalStateException(NOT_FOUND_UP_STATION_BY_SECTION.getMessage()));
+    }
+
+    private Section findByDownStation(Station station) {
+        return this.findSectionByDownStation(station)
+            .orElseThrow(() -> new IllegalStateException(NOT_FOUND_UP_STATION_BY_SECTION.getMessage()));
+    }
+
 }
