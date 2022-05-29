@@ -13,11 +13,19 @@ public class Distance {
     }
 
     public Distance(int distance) {
+        validate(distance);
         this.distance = distance;
     }
 
+
     public static Distance of(int distance) {
         return new Distance(distance);
+    }
+
+    private void validate(int distance) {
+        if(distance <= 0) {
+            throw new IllegalArgumentException("구간길이는 0보다 커야합니다.");
+        }
     }
 
     public void minus(Distance other) {

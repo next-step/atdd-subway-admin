@@ -133,4 +133,23 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         List<String> lines = 노선_목록_조회().jsonPath().getList("name", String.class);
         assertThat(lines).doesNotContain(lineName);
     }
+
+    /**
+     * When 지하철 노선 길이가 0보다 작게 생성하면
+     * Then 생성 실패한다.
+     */
+    @DisplayName("노선길이가 0이면 생성 실패한다.")
+    @Test
+    public void 노선길이0_생성_실패() {
+        //given
+        Long upStationId = 지하철역_등록("강남역").jsonPath().getLong("id");
+        Long downStationId = 지하철역_등록("양재역").jsonPath().getLong("id");
+
+        // when
+        String lineName = "신분당선";
+        ExtractableResponse<Response> response = 노선_등록(lineName, "bg-red-600", upStationId, downStationId, 0);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
