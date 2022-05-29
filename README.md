@@ -52,3 +52,18 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+
+---
+### Step3 구현 필요 기능 내역 ### 
+1. Line과 Station은 다대다 매핑이 필요하다
+ - ManyToMany는 사이 테이블에 대한 추가 정보 저장이 불가하여, Line_Station Entity 생성 후 각각 ManyToOne, ManyToOne으로 해결한다. 
+2. 구간 정보를 담은 Section 구현이 필요하다. 
+ - 구간의 각 Station정보와 해당하는 Line, 거리 Section순서 등을 포함한다.
+3. 구간저장시 에러처리가 필요하다.
+ - 구간 저장할 역이 상행 종점으로 되어야하는가?
+ - 구간 저장할 역이 하행 종점으로 되어야 하는가?
+ - 구간 저장시, 구간 설정할 두 역중 한곳이라도 line에 포함이 되어있는가?
+ - 구간 저장시, 이미 저장된 구간인가?
+ - 신규 구간의 distance가 포함될 구간의 distance를 넘지 않는가? 
+4. 위 구간에 대한 저장 기능을 구현한다.
