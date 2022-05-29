@@ -90,6 +90,22 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         노선_생성_실패_확인(구간_생성_요청_응답);
     }
 
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @Test
+    void addBiggerDistanceSection() {
+
+        // given 지하철 노선에 지하철역 등록 요청
+        long 양재역_id = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+
+        //when 중간 노선에 길이가 10인 새로운 구간을 등록한다.
+        SectionRequest 새로운_구간 = SectionRequest.of(강남역_id, 양재역_id, 10);
+        ExtractableResponse<Response> 구간_생성_요청_응답 = 구간_생성_요청(새로운_구간, 신분당선_id);
+
+        //then 등록 할 수 없다.
+        노선_생성_실패_확인(구간_생성_요청_응답);
+    }
+
+
     private void 노선_생성_실패_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
