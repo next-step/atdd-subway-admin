@@ -8,6 +8,7 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -94,6 +95,16 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        createOneStation("강남역");
+        createOneStation("삼성역");
+
+        // when
+        ExtractableResponse<Response> response = getAllStations();
+
+        // then
+        assertThat(response.jsonPath().getList("$", StationResponse.class)).hasSize(2);
+        assertThat(response.jsonPath().getList("name")).contains("강남역", "삼성역");
     }
 
     /**
