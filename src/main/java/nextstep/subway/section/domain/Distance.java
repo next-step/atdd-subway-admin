@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import java.util.Objects;
 import javax.persistence.Embeddable;
 
 @Embeddable
@@ -24,6 +25,38 @@ public class Distance {
     }
 
     void validateDistance(int distance) {
-        if (distance < MINIMUM_DISTANCE) throw new IllegalArgumentException(DISTANCE_UNDER_MINIMUM_ERROR);
+        if (distance < MINIMUM_DISTANCE) {
+            throw new IllegalArgumentException(DISTANCE_UNDER_MINIMUM_ERROR);
+        }
     }
+
+    public boolean isBiggerAndEqual(Distance other) {
+        return this.distance >= other.distance;
+    }
+
+    public void update(Distance newDistance) {
+        this.distance = newDistance.distance;
+    }
+
+    public Distance minus(Distance other) {
+        return Distance.from(this.distance - other.distance);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Distance distance1 = (Distance) o;
+        return distance == distance1.distance;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(distance);
+    }
+
 }
