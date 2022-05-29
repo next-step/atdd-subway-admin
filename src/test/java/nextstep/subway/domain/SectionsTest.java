@@ -22,21 +22,12 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("구역이 갯수만큼 추가되었는지 확인")
-    void addSection() {
-        Sections sections = new Sections();
-        sections.addSection(new Section(twoLine, seoCho, gyoDae, 10L));
-
-        assertThat(sections.size()).isEqualTo(1);
-    }
-
-    @Test
     @DisplayName("정렬된 순서대로 나오는지 검증")
     void verifyInOrderSections() {
         Section gyoDaeToGangNam = new Section(twoLine, gyoDae, gangNam, 5L);
         Section seoChoToGyoDae = new Section(twoLine, seoCho, gyoDae, 10L);
         Sections sections = Sections.of(Arrays.asList(gyoDaeToGangNam, seoChoToGyoDae));
 
-        assertThat(sections.getInOrderSections()).containsExactly(seoChoToGyoDae, gyoDaeToGangNam);
+        assertThat(sections.getInOrderStations()).containsExactly(seoCho, gyoDae, gangNam);
     }
 }

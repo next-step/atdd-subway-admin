@@ -60,6 +60,10 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
+        if (sections.isEmpty()) {
+            sections.initSection(section);
+            return;
+        }
         sections.addSection(section);
     }
 

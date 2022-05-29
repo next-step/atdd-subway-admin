@@ -28,18 +28,18 @@ public class Sections {
         return new Sections(sections);
     }
 
+    public void initSection(Section section) {
+        this.sections.add(section);
+    }
+
     public void addSection(Section section) {
-        if (isEmpty()) {
-            this.sections.add(section);
-            return;
-        }
         validateSection(section);
         this.sections.forEach(it -> it.update(section));
         this.sections.add(section);
     }
 
     private void validateSection(Section section) {
-        Set<Station> stations = getStations();
+        Set<Station> stations = getInOrderStations();
         Station upStation = section.upStation();
         Station downStation = section.downStation();
 
@@ -57,21 +57,14 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    private Set<Station> getStations() {
-        return this.sections.stream()
-                .map(Section::stations)
-                .flatMap(List::stream)
-                .collect(Collectors.toSet());
-    }
-
-    LinkedHashSet<Station> getInOrderStations() {
+    public Set<Station> getInOrderStations() {
         return getInOrderSections().stream()
                 .map(Section::stations)
                 .flatMap(List::stream)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    List<Section> getInOrderSections() {
+    private List<Section> getInOrderSections() {
         List<Section> inOrderStation = new ArrayList<>();
         Section section = lineFirstSection();
 
@@ -83,6 +76,9 @@ public class Sections {
     }
 
     private Section lineFirstSection() {
+        if (isEmpty()) {
+            return null;
+        }
         Section section = this.sections.get(size() - 1);
         while (findPreviousSection(section) != null) {
             section = findPreviousSection(section);
