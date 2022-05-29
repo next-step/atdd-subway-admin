@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
+import javax.persistence.criteria.CriteriaBuilder.In;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,6 +56,10 @@ public class StationAcceptanceTest {
         assertThat(getResponse.jsonPath().getList("name")).hasSameElementsAs(names);
     }
 
+    private void 지하철역_이름_지워짐(ExtractableResponse<Response> getResponse, String name) {
+        assertThat(getResponse.jsonPath().getList("name")).doesNotContain(name);
+    }
+
     private ExtractableResponse<Response> 지하철역_조회_요청() {
         return RestAssured.given().log().all()
             .when().get("/stations")
@@ -72,6 +77,15 @@ public class StationAcceptanceTest {
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/stations")
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철역_삭제_요청(Integer id) {
+        return RestAssured.given().log().all()
+            .pathParam("id", id)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().delete("/stations/{id}")
             .then().log().all()
             .extract();
     }
@@ -115,5 +129,15 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        //given
+        ExtractableResponse<Response> createResponse = 지하철역_생성_요청("강남역");
+        지하철역_생성_요청("판교역");
+
+        //when
+        ExtractableResponse<Response> deleteResponse = 지하철역_삭제_요청(createResponse.jsonPath().get("id"));
+
+        //then
+        응답코드_확인(deleteResponse, HttpStatus.NO_CONTENT);
+        지하철역_이름_지워짐(지하철역_조회_요청(), "강남역");
     }
 }
