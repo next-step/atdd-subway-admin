@@ -95,6 +95,25 @@ public class Sections {
         removeStation(this.findLastSection());
     }
 
+    public void removeMiddleStation(Station station) {
+        Section prevSection = findSectionByDownStation(station)
+            .orElseThrow(() -> new IllegalStateException(NOT_FOUND_UP_STATION_BY_SECTION.getMessage()));
+        Section postSection = findSectionByUpStation(station)
+            .orElseThrow(() -> new IllegalStateException(NOT_FOUND_UP_STATION_BY_SECTION.getMessage()));
+
+        rearrangeSection(prevSection, postSection);
+        removeSection(postSection);
+    }
+
+    private void removeSection(Section section) {
+        this.sections.remove(section);
+    }
+
+    private void rearrangeSection(Section prevSection, Section postSection) {
+        prevSection.changeDownStation(postSection.getDownStation());
+        prevSection.plusDistanceByDistance(postSection.getDistance());
+    }
+
     private void removeStation(Section section) {
         this.sections.remove(section);
     }

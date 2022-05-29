@@ -57,7 +57,7 @@ public class Line extends BaseEntity {
             return;
         }
 
-        // TODO. 중간역인 경우에 대한 Section 제거
+        this.sections.removeMiddleStation(station);
     }
 
     private void validateAddableStation(Section section) {

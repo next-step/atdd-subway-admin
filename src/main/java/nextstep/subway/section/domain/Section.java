@@ -127,6 +127,10 @@ public class Section {
         this.distance.minus(distance);
     }
 
+    public void plusDistanceByDistance(Distance distance) {
+        this.distance.plus(distance);
+    }
+
     public Long getId() {
         return this.id;
     }
