@@ -34,6 +34,7 @@ public class SectionAcceptanceTest {
     private ExtractableResponse<Response> upStation;
     private ExtractableResponse<Response> downStation;
     private ExtractableResponse<Response> newStation;
+    private ExtractableResponse<Response> exceptionStation;
     private ExtractableResponse<Response> line;
 
     @Autowired
@@ -54,6 +55,7 @@ public class SectionAcceptanceTest {
         upStation = stationAcceptanceTest.createStation("강남역");
         downStation = stationAcceptanceTest.createStation("판교역");
         newStation = stationAcceptanceTest.createStation("새로운역");
+        exceptionStation = stationAcceptanceTest.createStation("존재하지않는역");
         line = lineAcceptanceTest.createLine("신분당선", "bg-red-600", 10, upStation.jsonPath().getLong("id"), downStation.jsonPath().getLong("id"));
     }
 
@@ -177,7 +179,11 @@ public class SectionAcceptanceTest {
     @Test
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
     void 지하철구간_생성_예외_3() {
+        // when
+        ExtractableResponse<Response> response = createSection(line.jsonPath().getLong("id"), newStation.jsonPath().getLong("id"), exceptionStation.jsonPath().getLong("id"), 7);
 
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> createSection(Long lineId, Long upStationId, Long downStationId, int distance) {

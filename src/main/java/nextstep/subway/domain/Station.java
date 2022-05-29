@@ -23,6 +23,14 @@ public class Station extends BaseEntity {
         this.name = name;
     }
 
+    public boolean isSame(Section section){
+        if (this.equals(section.getUpStation()) || this.equals(section.getDownStation())) {
+            return true;
+        }
+
+        return false;
+    }
+
     public Long getId() {
         return id;
     }

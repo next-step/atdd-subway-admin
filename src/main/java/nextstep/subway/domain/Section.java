@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -41,9 +43,16 @@ public class Section {
     public void validateCheck(Section section) {
         distanceValidateCheck(section);
         duplicateValidateCheck(section);
+        mismatchValidateCheck(section);
 
         reregisterUpStation(section);
         reregisterDownStation(section);
+    }
+
+    private void mismatchValidateCheck(Section section) {
+        if (!this.upStation.isSame(section) && !this.downStation.isSame(section)) {
+            throw new IllegalArgumentException("상행역과 하행역 모두 현재 노선에 존재하지 않습니다.");
+        }
     }
 
     private void duplicateValidateCheck(Section section) {
