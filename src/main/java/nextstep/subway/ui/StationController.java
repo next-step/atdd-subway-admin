@@ -34,34 +34,40 @@ public class StationController {
     public ResponseEntity<StationResponse> createStation(
         @RequestBody StationRequest stationRequest) {
         StationResponse station = stationService.saveStation(stationRequest);
-        return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(station);
+        return ResponseEntity.created(URI.create("/stations/" + station.getId()))
+            .body(station);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        return ResponseEntity.ok().body(stationService.findAllStations());
+        return ResponseEntity.ok()
+            .body(stationService.findAllStations());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationService.deleteStationById(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+            .build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException() {
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest()
+            .build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity getStationDetail(@PathVariable Long id) {
-        return ResponseEntity.ok().body(stationService.findStationById(id));
+        return ResponseEntity.ok()
+            .body(stationService.findStationById(id));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity updateStationDetail(@PathVariable Long id,
         @RequestBody StationRequest stationRequest) {
         stationService.updateLineById(id, stationRequest);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+            .build();
     }
 }

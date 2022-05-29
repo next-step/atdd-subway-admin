@@ -12,16 +12,19 @@ public class ApiHandler {
 
     @ExceptionHandler(StationNotFoundException.class)
     public ResponseEntity StationNotfoundExceptionHandler(StationNotFoundException e){
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest()
+            .build();
     }
 
     @ExceptionHandler(LineNotFoundException.class)
     public ResponseEntity LineNotfoundExceptionHandler(LineNotFoundException e){
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest()
+            .build();
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity EmptyResultDataAccessExceptionHandler(EmptyResultDataAccessException e){
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest()
+            .build();
     }
 }

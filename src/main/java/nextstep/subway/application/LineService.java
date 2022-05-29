@@ -49,13 +49,15 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+        Line line = lineRepository.findById(id)
+            .orElseThrow(LineNotFoundException::new);
         return LineResponse.of(line);
     }
 
     @Transactional
     public void updateLineById(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+        Line line = lineRepository.findById(id)
+            .orElseThrow(LineNotFoundException::new);
         Station upStation = getStationSafely(lineRequest.getUpStationId());
         Station downStation = getStationSafely(lineRequest.getDownStationId());
 
@@ -73,11 +75,12 @@ public class LineService {
         if (ObjectUtils.isEmpty(stationId)) {
             return null;
         }
-        return stationRepository.findById(stationId).orElse(null);
+        return stationRepository.findById(stationId)
+            .orElse(null);
     }
 
     private Station getStationOrThrow(Long stationId) {
-        return stationRepository.findById(stationId).orElseThrow(
-            StationNotFoundException::new);
+        return stationRepository.findById(stationId)
+            .orElseThrow(StationNotFoundException::new);
     }
 }
