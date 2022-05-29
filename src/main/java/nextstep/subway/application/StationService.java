@@ -31,6 +31,13 @@ public class StationService {
                 .orElseThrow(() -> new NotFoundException(id + " 에 해당하는 지하철이 존재하지 않습니다."));
     }
 
+    public Station getStationByIdIfNotNull(Long id) throws NotFoundException {
+        if (id != null) {
+            return getStation(id);
+        }
+        return null;
+    }
+
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
 

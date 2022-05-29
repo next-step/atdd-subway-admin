@@ -208,9 +208,9 @@ public class LinesAcceptanceTest {
         Map<String, Object> addMiddleSectionLineRequest = createLineRequest(
                 null, null, upStationId, middleStationId, 4L
         );
-        String createdLineId = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest)
+        Long createdLineId = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest)
                 .jsonPath()
-                .get("id");
+                .getLong("id");
 
         // when
         ExtractableResponse<Response> addLineResponse = RequestHelper
@@ -220,10 +220,10 @@ public class LinesAcceptanceTest {
 
         // then
         assertThat(addLineResponse.statusCode()).isEqualTo(HttpStatus.SC_CREATED);
-        assertThat(originalCreationLine.jsonPath().getList("stations.name", Long.class))
-                .containsAnyOf(upStationId, middleStationId);
-        assertThat(addLineResponse.jsonPath().getList("stations.name", Long.class))
-                .containsAnyOf(downStationId, middleStationId);
+        assertThat(originalCreationLine.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(middleStationId, downStationId);
+        assertThat(addLineResponse.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(upStationId, middleStationId);
     }
 
     /**

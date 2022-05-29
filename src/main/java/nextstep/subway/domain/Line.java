@@ -14,6 +14,8 @@ public class Line extends BaseEntity {
 
     private String color;
 
+    private Long distance;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Station upStation;
 
@@ -22,9 +24,10 @@ public class Line extends BaseEntity {
 
     protected Line() {}
 
-    public Line(String name, String color, Station upStation, Station downStation) {
+    public Line(String name, String color, Long distance, Station upStation, Station downStation) {
         this.name = name;
         this.color = color;
+        this.distance = distance;
         this.upStation = upStation;
         this.downStation = downStation;
     }
@@ -34,6 +37,31 @@ public class Line extends BaseEntity {
         this.color = modify.getColor();
 
         return this;
+    }
+
+    public void addSection(LineRequest.Section lineSectionRequest, Station changeUpStation, Station changeDownStation) {
+        checkPossibleAddSection(lineSectionRequest);
+
+        if (this.upStation.isSameId(lineSectionRequest.getUpStationId())) {
+            this.upStation = changeDownStation;
+        }
+        if (this.downStation.isSameId(lineSectionRequest.getDownStationId())) {
+            this.downStation = changeUpStation;
+        }
+        this.distance -= lineSectionRequest.getUpStationId();
+    }
+
+    public void checkPossibleAddSection(LineRequest.Section lineSectionRequest) {
+        boolean isSameUpStation = this.upStation.getId().equals(lineSectionRequest.getUpStationId());
+        boolean isSameDownStation = this.downStation.getId().equals(lineSectionRequest.getDownStationId());
+
+        if (this.distance < lineSectionRequest.getDistance()) {
+            throw new IllegalArgumentException("기존 노선의 길이보다 긴 노선을 추가할 수 없습니다.");
+        }
+    }
+
+    public Line copyAndChangeBy(Long distance, Station upStation, Station downStation) {
+        return new Line(this.name, this.color, distance, upStation, downStation);
     }
 
     public Long getId() {

@@ -56,4 +56,11 @@ public class LineController {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/lines/{id}/sections")
+    public ResponseEntity<LineResponse> addSection(@PathVariable Long id, @RequestBody LineRequest.Section lineSectionRequest) throws NotFoundException {
+        Line addSectionResult = lineService.addSection(id, lineSectionRequest);
+        return ResponseEntity.created(URI.create("/lines/" + addSectionResult.getId()))
+                .body(LineResponse.of(addSectionResult));
+    }
 }

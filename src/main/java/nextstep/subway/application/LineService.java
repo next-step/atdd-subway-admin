@@ -32,17 +32,23 @@ public class LineService {
 
     @Transactional
     public Line saveLine(LineRequest.Create lineCreateRequest) throws NotFoundException {
-        Station upStation = null;
-        Station downStation = null;
-
-        if (lineCreateRequest.getUpStationId() != null) {
-            upStation = stationService.getStation(lineCreateRequest.getUpStationId());
-        }
-        if (lineCreateRequest.getDownStationId() != null) {
-            downStation = stationService.getStation(lineCreateRequest.getDownStationId());
-        }
+        Station upStation = stationService.getStationByIdIfNotNull(lineCreateRequest.getUpStationId());
+        Station downStation = stationService.getStationByIdIfNotNull(lineCreateRequest.getDownStationId());
 
         return lineRepository.save(lineCreateRequest.toLine(upStation, downStation));
+    }
+
+    @Transactional
+    public Line addSection(Long id, LineRequest.Section lineSectionRequest) throws NotFoundException {
+        Line line = findById(id);
+        Station upStation = stationService.getStationByIdIfNotNull(lineSectionRequest.getUpStationId());
+        Station downStation = stationService.getStationByIdIfNotNull(lineSectionRequest.getDownStationId());
+        line.addSection(lineSectionRequest, upStation, downStation);
+
+        this.lineRepository.save(line);
+        return lineRepository.save(
+                line.copyAndChangeBy(lineSectionRequest.getDistance(), upStation, downStation)
+        );
     }
 
     @Transactional
