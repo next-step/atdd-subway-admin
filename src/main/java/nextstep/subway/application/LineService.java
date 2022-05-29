@@ -6,6 +6,8 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.LineStation;
 import nextstep.subway.domain.LineStationRepository;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.SectionRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.request.LineRequest;
@@ -28,12 +30,14 @@ public class LineService {
 
     private final LineStationRepository lineStationRepository;
 
+    private final SectionRepository sectionRepository;
     @Autowired
     public LineService(LineRepository lineRepository, StationRepository stationRepository,
-        LineStationRepository lineStationRepository) {
+        LineStationRepository lineStationRepository, SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
         this.lineStationRepository = lineStationRepository;
+        this.sectionRepository = sectionRepository;
     }
 
 
@@ -50,6 +54,10 @@ public class LineService {
 
         lineStationRepository.save(upLineStation);
         lineStationRepository.save(downLineStation);
+
+        Section section = new Section(upStation, downStation, line, lineRequest.getDistance(), null,
+            null);
+        sectionRepository.save(section);
 
         return LineResponse.of(line);
     }
