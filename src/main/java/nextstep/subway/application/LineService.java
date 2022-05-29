@@ -1,11 +1,9 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.exception.LineNotFoundException;
 import nextstep.subway.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;
@@ -33,10 +31,6 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    private Station getStation(Long stationId) {
-        return stationRepository.findById(stationId).orElseThrow(() -> new StationNotFoundException(stationId));
-    }
-
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
@@ -53,15 +47,32 @@ public class LineService {
 
     @Transactional
     public void updateLine(Long lineId, LineRequest lineRequest) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new LineNotFoundException(lineId));
+        Line line = getLine(lineId);
         line.update(lineRequest.getName(), lineRequest.getColor());
     }
 
     @Transactional
     public void deleteLine(Long lineId) {
-        Line line = lineRepository.findById(lineId)
+        lineRepository.deleteById(lineId);
+    }
+
+    @Transactional
+    public Line addSection(Long lineId, SectionRequest request) {
+        Line line = getLine(lineId);
+        Station upStation = getStation(request.getUpStationId());
+        Station downStation = getStation(request.getDownStationId());
+        line.addSection(request.toSection(upStation, downStation));
+        lineRepository.save(line);
+        return line;
+    }
+
+    private Station getStation(Long stationId) {
+        return stationRepository.findById(stationId)
+        .orElseThrow(() -> new StationNotFoundException(stationId));
+    }
+
+    private Line getLine(Long lineId) {
+        return lineRepository.findById(lineId)
                 .orElseThrow(() -> new LineNotFoundException(lineId));
-        lineRepository.delete(line);
     }
 }

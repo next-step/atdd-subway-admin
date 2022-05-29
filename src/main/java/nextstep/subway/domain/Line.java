@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -12,22 +13,25 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @ManyToOne
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-
-    @ManyToOne
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation) {
+    public Line(String name, String color, Station upStation, Station downStation, Integer distance) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
+        this.addSection(Section.of(upStation, downStation, distance));
+    }
+
+    public static Line of(String name, String color, Station upStation, Station downStation, Integer distance) {
+        return new Line(name, color, upStation, downStation, distance);
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
+        section.setLine(this);
     }
 
     public Long getId() {
@@ -42,12 +46,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
+    public Sections getSections() {
+        return sections;
     }
 
     public void update(String name, String color) {
