@@ -1,11 +1,12 @@
 package nextstep.subway.advice;
 
+import nextstep.subway.error.CanNotRemovableSectionException;
 import nextstep.subway.error.LineNotFoundException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -16,6 +17,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(LineNotFoundException.class)
     public ResponseEntity<ApiError> handleNotFoundException(LineNotFoundException ex) {
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(CanNotRemovableSectionException.class)
+    public ResponseEntity<ApiError> handleCanNotRemovableSectionException(CanNotRemovableSectionException ex) {
+        return ResponseEntity.badRequest().body(new ApiError(ex.getMessage()));
     }
 
 }

@@ -38,7 +38,7 @@ public class LineController {
     @GetMapping
     public ResponseEntity<LinesResponse> getLists() {
         Lines lines = lineService.getLines();
-        return ResponseEntity.ok(lines.getResponse());
+        return ResponseEntity.ok(lines.toResponse());
     }
 
     @GetMapping("/{id}")
@@ -62,6 +62,12 @@ public class LineController {
     @PostMapping("/{id}/sections")
     public ResponseEntity<LineResponse> addSection(@PathVariable Long id, @RequestBody SectionRequest request) {
         Line line = lineService.addSection(id, request);
+        return ResponseEntity.ok(new LineResponse(line));
+    }
+
+    @DeleteMapping("/{id}/sections")
+    public ResponseEntity<LineResponse> removeSection(@PathVariable Long id, Long stationId) {
+        Line line = lineService.removeSection(id, stationId);
         return ResponseEntity.ok(new LineResponse(line));
     }
 

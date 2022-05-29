@@ -13,7 +13,7 @@ public class Lines {
         this.lines = lines;
     }
 
-    public LinesResponse getResponse() {
+    public LinesResponse toResponse() {
         List<LineResponse> linesResponse = lines.stream().map(LineResponse::new).collect(Collectors.toList());
         return new LinesResponse(linesResponse);
     }

@@ -63,6 +63,14 @@ public class LineService {
         Station upStation = getStation(request.getUpStationId());
         Station downStation = getStation(request.getDownStationId());
         line.addSection(new Section(upStation, downStation, request.getDistance()));
+        lineRepository.save(line);
+        return line;
+    }
+
+    public Line removeSection(Long id, Long stationId) {
+        Line line = get(id);
+        Station station = getStation(stationId);
+        line.removeSection(station);
         return line;
     }
 }

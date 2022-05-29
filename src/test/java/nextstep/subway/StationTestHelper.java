@@ -54,4 +54,24 @@ public class StationTestHelper {
             .extract();
     }
 
+    public static ExtractableResponse<Response> 구간_제거_요청(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+            .param("stationId", stationId)
+            .when().delete("/lines/{id}/sections", lineId)
+            .then().log().all()
+            .extract();
+    }
+
+    public static void 구간_제거_확인(ExtractableResponse<Response> response, String removeStationName) {
+        List<String> stationNames = response.jsonPath().getList("stations.name", String.class);
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), response.statusCode()),
+            () -> assertThat(stationNames).doesNotContain(removeStationName)
+        );
+    }
+
+    public static void 구간_제거_실패_확인(ExtractableResponse<Response> response) {
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.statusCode());
+    }
+
 }
