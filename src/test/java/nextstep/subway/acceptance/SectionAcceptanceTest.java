@@ -140,8 +140,8 @@ class SectionAcceptanceTest {
         ExtractableResponse<Response> response = requestGetAll(LineAcceptanceTest.LINE_PATH);
 
         //then
-        assertThat(ExtractUtils.extractNames(response)).containsExactly("당산역", "신도림역", "봉천역");
-        assertThat(ExtractUtils.extract("stations.distance", response, Integer.class)).contains(0, 10, 10);
+        List<String> extract = ExtractUtils.extract("stations.name", response, String.class);
+        assertThat(extract).containsExactly("[당산역, 신도림역, 봉천역]");
 
     }
 
@@ -151,7 +151,7 @@ class SectionAcceptanceTest {
      * When 노선 목록 조회 시
      * Then 연결된 구간의 지하철역들을 확인할 수 있다.
      */
-    @DisplayName("새로운 역을 상행 종점으로 등록한다.")
+    @DisplayName("새로운 역을 하행 종점으로 등록한다.")
     @Test
     void addSection_down_station() {
 
@@ -167,8 +167,8 @@ class SectionAcceptanceTest {
         ExtractableResponse<Response> response = requestGetAll(LineAcceptanceTest.LINE_PATH);
 
         //then
-        assertThat(ExtractUtils.extractNames(response)).containsExactly("신도림역", "봉천역", "사당역");
-        assertThat(ExtractUtils.extract("stations.distance", response, Integer.class)).contains(0, 10, 15);
+        List<String> extract = ExtractUtils.extract("stations.name", response, String.class);
+        assertThat(extract).containsExactly("[신도림역, 봉천역, 사당역]");
 
     }
 

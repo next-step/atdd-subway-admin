@@ -16,6 +16,8 @@ import nextstep.subway.domain.Station;
 @Embeddable
 public class LineStations {
 
+    private static final int START = 0;
+
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
     @JoinColumn(name = "line_id",foreignKey = @ForeignKey(name = "fk_line_station_to_line"))
     private List<LineStation> lineStations = new ArrayList<>();
@@ -33,27 +35,56 @@ public class LineStations {
         lineStations.add(target);
     }
 
-    public void addSection(Line line, Station upStation, Station downStation, long distance) {
-        LineStation up = findByUpStation(upStation);
+    public boolean addSection(Line line, Station upStation, Station downStation, long distance) {
+        if (addBetween(line, upStation, downStation, distance)) {
+            return true;
+        }
+        if (addStartSection(line, upStation, downStation, distance)) {
+            return true;
+        }
+        return addEndSection(line, upStation, downStation, distance);
+    }
+
+    private boolean addStartSection(Line line, Station upStation, Station downStation, long distance) {
+        LineStation startStation = findUpStation(downStation);
+        if(startStation != null){
+            lineStations.add(START,new LineStation(line, upStation, downStation, distance));
+            return true;
+        }
+        return false;
+    }
+
+    private boolean addEndSection(Line line, Station upStation, Station downStation, long distance) {
+        LineStation endStation = findDownStation(upStation);
+        if(endStation != null){
+            lineStations.add(new LineStation(line, upStation, downStation, distance));
+            return true;
+        }
+        return false;
+    }
+
+    private boolean addBetween(Line line, Station upStation, Station downStation, long distance) {
+        LineStation up = findUpStation(upStation);
         LineStation down = findDownStation(downStation);
-        validateSection(up, down);
+        validateAlreadySection(up, down);
+
         if (up != null) {
             long newDistance = up.getDistance() - distance;
             Station copyDownStation = up.getDownStation().copy();
             up.updateUpStation(downStation, distance);
             lineStations.add(new LineStation(line, downStation, copyDownStation, newDistance));
-            return;
+            return true;
         }
         if (down != null) {
             long newDistance = down.getDistance() - distance;
             down.updateDownStation(upStation, newDistance);
             lineStations.add(new LineStation(line, upStation, downStation, distance));
-            return;
+            return true;
         }
-        throw new IllegalArgumentException();
+        return false;
     }
 
-    private LineStation findByUpStation(Station upStation) {
+    private LineStation findUpStation(Station upStation) {
         return lineStations.stream()
                 .filter(lineStation -> lineStation.getUpStation().equals(upStation))
                 .findFirst()
@@ -66,20 +97,9 @@ public class LineStations {
                 .findFirst().orElse(null);
     }
 
-    private void validateSection(LineStation up, LineStation down) {
-        validateNotFound(up, down);
-        validateAlreadySection(up, down);
-    }
-
     private void validateAlreadySection(LineStation up, LineStation down) {
         if (up != null && down != null) {
             throw new IllegalArgumentException("[ERROR] 이미 구간이 존재합니다.");
-        }
-    }
-
-    private void validateNotFound(LineStation up, LineStation down) {
-        if (up == null && down == null) {
-            throw new IllegalArgumentException("[ERROR] 등록할 구간을 찾을 수 없습니다.");
         }
     }
 
