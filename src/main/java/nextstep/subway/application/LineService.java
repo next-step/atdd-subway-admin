@@ -39,7 +39,7 @@ public class LineService {
         return lines;
     }
 
-    public LineResponse getLine(Long id) {
+    public LineResponse getLineById(Long id) {
         Line line = lineRepository.findById(id)
                                   .orElseThrow(() -> new NoSuchElementException("지하철 노선이 존재하지 않습니다"));
         return LineResponse.of(line, toStations());
@@ -57,9 +57,9 @@ public class LineService {
     }
 
     @Transactional
-    public Line updateLineById(Long id, Line param) {
+    public void updateLineById(Long id, Line param) {
         Line line = lineRepository.findById(id)
                                   .orElseThrow(() -> new NoSuchElementException("지하철 노선이 존재하지 않습니다"));
-        return line.update(param);
+        line.update(param);
     }
 }

@@ -19,6 +19,7 @@ import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("지하철노선 서비스 관련 기능")
 @ActiveProfiles(value = "acceptance")
@@ -47,9 +48,7 @@ class LineServiceTest {
         LineResponse response = service.createLine(request);
 
         // then
-        assertThat(response).isNotNull();
-        assertThat(response.getName()).isEqualTo("신분당선");
-        assertThat(response.getColor()).isEqualTo("bg-red-600");
+        assertThat(response.getId()).isNotNull();
     }
 
     @DisplayName("지하철 노선 목록을 조회한다")
@@ -80,7 +79,7 @@ class LineServiceTest {
         LineResponse response = service.createLine(request);
 
         // when
-        LineResponse line = service.getLine(response.getId());
+        LineResponse line = service.getLineById(response.getId());
 
         // then
         assertThat(line).isNotNull();
@@ -97,7 +96,7 @@ class LineServiceTest {
         service.deleteLineById(response.getId());
 
         // then
-        assertThatThrownBy(() -> service.getLine(response.getId())).isInstanceOf(NoSuchElementException.class);
+        assertThatThrownBy(() -> service.getLineById(response.getId())).isInstanceOf(NoSuchElementException.class);
     }
 
     @DisplayName("지하철 노선을 수정한다")
@@ -111,8 +110,10 @@ class LineServiceTest {
         service.updateLineById(response.getId(), new Line("다른분당선", "bg-blue-100"));
 
         // then
-        LineResponse changed = service.getLine(response.getId());
-        assertThat(changed.getName()).isEqualTo("다른분당선");
-        assertThat(changed.getColor()).isEqualTo("bg-blue-100");
+        LineResponse line = service.getLineById(response.getId());
+        assertAll(
+                () -> assertEquals("다른분당선", line.getName()),
+                () -> assertEquals("bg-blue-100", line.getColor())
+        );
     }
 }

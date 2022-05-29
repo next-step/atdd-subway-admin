@@ -121,7 +121,7 @@ public class LineAcceptanceTest {
         assertThat(created.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
-        ExtractableResponse<Response> response = getLine(created.body().jsonPath().getLong("id"));
+        ExtractableResponse<Response> response = getLineById(created.body().jsonPath().getLong("id"));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
@@ -130,7 +130,7 @@ public class LineAcceptanceTest {
         assertThat(response.body().jsonPath().getString("stations")).isNotNull();
     }
 
-    ExtractableResponse<Response> getLine(Long id) {
+    ExtractableResponse<Response> getLineById(Long id) {
         return RestAssured.given().log().all()
                           .when().queryParam("id", id).get("/lines")
                           .then().log().all()
@@ -155,7 +155,7 @@ public class LineAcceptanceTest {
         assertThat(changed.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
-        ExtractableResponse<Response> response = getLine(created.body().jsonPath().getLong("id"));
+        ExtractableResponse<Response> response = getLineById(created.body().jsonPath().getLong("id"));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.body().jsonPath().getList("name")).contains("뉴신분당선");
         assertThat(response.body().jsonPath().getList("color")).contains("bg-white-400");

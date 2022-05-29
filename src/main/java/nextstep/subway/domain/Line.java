@@ -10,6 +10,7 @@ public class Line extends BaseEntity {
 
     @Column(nullable = false, unique = true)
     private String name;
+
     @Column(nullable = false)
     private String color;
 
@@ -32,9 +33,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Line update(Line line) {
+    public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
-        return this;
     }
 }
