@@ -50,11 +50,11 @@ public class LineService {
 
     @Transactional
     public void updateLine(final Long id, final LineRequest updateLine) {
-        update(updateLine,  lineRepository.findById(id).get());
+        update(lineRepository.findById(id).get(), updateLine);
     }
 
-    private void update(LineRequest updateLine, Line line) {
-        if (Objects.nonNull(updateLine.getUpStationId()) & updateLine.getUpStationId() > 0) {
+    private void update(Line line, LineRequest updateLine) {
+        if (Objects.nonNull(updateLine.getUpStationId()) && updateLine.getUpStationId() > 0) {
             line.setUpStation(stationRepository.findById(updateLine.getUpStationId()).get());
         }
         if (Objects.nonNull(updateLine.getDownStationId()) && updateLine.getDownStationId() > 0) {

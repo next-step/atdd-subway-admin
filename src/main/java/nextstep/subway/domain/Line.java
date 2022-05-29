@@ -73,7 +73,7 @@ public class Line extends BaseEntity{
     }
 
     public void setColor(String color) {
-        if (!color.isEmpty() && !Objects.equals(this.color, color)) {
+        if (Objects.nonNull(color) && !color.isEmpty() && !Objects.equals(this.color, color)) {
             this.color = color;
         }
     }
