@@ -12,8 +12,8 @@ public class Line extends BaseEntity {
     private String name;
     @Column
     private String color;
-    @Column
-    private Integer distance;
+    @Embedded
+    private Distance distance;
 
     @OneToOne
     @JoinColumn(name = "up_station_id")
@@ -29,7 +29,7 @@ public class Line extends BaseEntity {
     public Line(String name, String color, int distance) {
         this.name = name;
         this.color = color;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public Line setUpStation(Station upStation) {
@@ -54,7 +54,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Integer getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
@@ -67,7 +67,7 @@ public class Line extends BaseEntity {
     }
 
     public void updateDistance(int distance) {
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     @Override
