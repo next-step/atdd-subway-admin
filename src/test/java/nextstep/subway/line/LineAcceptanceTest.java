@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -44,8 +45,10 @@ public class LineAcceptanceTest {
         );
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(lineNames(노선_전체_조회())).containsAnyOf("1호선");
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(lineNames(노선_전체_조회())).containsAnyOf("1호선")
+        );
     }
 
     /**
@@ -64,7 +67,7 @@ public class LineAcceptanceTest {
         List<String> lineNames = lineNames(노선_전체_조회());
 
         //then
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(lineNames.size()).isEqualTo(2),
                 () -> assertThat(lineNames).contains("1호선", "2호선")
         );
