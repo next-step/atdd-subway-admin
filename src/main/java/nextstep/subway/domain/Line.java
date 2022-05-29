@@ -27,6 +27,8 @@ public class Line extends BaseEntity {
     @Enumerated(STRING)
     private LineColor lineColor;
 
+    private Integer distsnce;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "UP_STATION_ID", foreignKey = @ForeignKey(name = "fk_line_up_station"))
     private Station upStation;
@@ -35,12 +37,13 @@ public class Line extends BaseEntity {
     @JoinColumn(name = "DOWN_STATION_ID", foreignKey = @ForeignKey(name = "fk_line_down_station"))
     private Station downStation;
 
-    public Line(Long id, String name, LineColor lineColor, Station upStation, Station downStation) {
+    public Line(Long id, String name, LineColor lineColor, Station upStation, Station downStation, Integer distsnce) {
         this.id = id;
         this.name = name;
         this.lineColor = lineColor;
         this.upStation = upStation;
         this.downStation = downStation;
+        this.distsnce = distsnce;
     }
 
     protected Line() {

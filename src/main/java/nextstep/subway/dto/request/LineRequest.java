@@ -15,7 +15,7 @@ public class LineRequest {
 
 
     public Line toLine(Station upStation, Station downStation) {
-        return new Line(id, name, LineColor.getLineColorByName(color), upStation, downStation);
+        return new Line(id, name, LineColor.getLineColorByName(color), upStation, downStation, distance);
     }
 
     public Long getId() {
