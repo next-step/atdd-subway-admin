@@ -47,6 +47,7 @@ public class LineAcceptanceTest {
         param.put("color", "blue darken-4");
         param.put("upStationId", 1L);
         param.put("downStationId", 2L);
+        param.put("distance", 10);
 
         ExtractableResponse<Response> 파란색_1호선 = RestAssured.given().log().all()
                 .body(param)

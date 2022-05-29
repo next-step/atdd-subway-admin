@@ -22,10 +22,8 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         List<Station> stations = new ArrayList<>();
-        line.getSections().forEach(section -> {
-            stations.add(section.getUpStation());
-            stations.add(section.getDownStation());
-        });
+        stations.add(line.getUpStation());
+        stations.add(line.getDownStation());
         return new LineResponse(line.getId(),
                 line.getName(),
                 line.getColor(),
