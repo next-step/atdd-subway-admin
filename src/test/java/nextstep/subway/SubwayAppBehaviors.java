@@ -33,7 +33,7 @@ public class SubwayAppBehaviors {
         }
     public static Line 지하철노선을_조회한다(Long id) {
         return RestAssured
-                .given().contentType(ContentType.JSON).log().all()
+                .given().accept(ContentType.JSON).log().all()
                 .when().get("/lines/" + id)
                 .then().log().all()
                 .extract().jsonPath().getObject(".", Line.class);
@@ -41,7 +41,7 @@ public class SubwayAppBehaviors {
 
     public static List<Line> 지하철노선목록을_조회한다() {
         return RestAssured
-                .given().contentType(ContentType.JSON).log().all()
+                .given().accept(ContentType.JSON).log().all()
                 .when().get("/lines")
                 .then().log().all()
                 .extract().jsonPath().getList(".", Line.class);

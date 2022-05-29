@@ -8,6 +8,7 @@ import nextstep.subway.dto.LineRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,13 +32,13 @@ public class LineController {
                 .body(newLine);
     }
 
-    @GetMapping(value = "/lines", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Line>> getLines(){
         List<Line> lines = lineService.getLines();
         return ResponseEntity.ok(lines);
     }
 
-    @GetMapping(value = "/lines/{lineId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/lines/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Line> getLine(@PathVariable Long lineId){
         return ResponseEntity.ok(lineService.getLine(lineId));
     }
@@ -45,6 +46,12 @@ public class LineController {
     @PutMapping(value = "/lines/{lineId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest){
         lineService.updateLine(lineId, lineRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(value = "/lines/{lineId}")
+    public ResponseEntity<Void> deleteLine(@PathVariable Long lineId){
+        lineService.deleteLine(lineId);
         return ResponseEntity.ok().build();
     }
 }

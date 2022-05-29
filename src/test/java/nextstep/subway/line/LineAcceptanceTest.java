@@ -131,8 +131,10 @@ public class LineAcceptanceTest {
         // when
         지하철노선을_삭제한다(lineId);
         Line line = 지하철노선을_조회한다(lineId);
-
         // then
-        assertThat(line).isNull();
+        assertThat(line.getId()).isNull();
+        assertThat(line.getName()).isNull();
+        assertThat(line.getColor()).isNull();
+        assertThat(line.getStations().isEmpty()).isTrue();
     }
 }
