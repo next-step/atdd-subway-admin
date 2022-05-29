@@ -21,6 +21,10 @@ public class Distance {
         return new Distance(distance);
     }
 
+    public Integer getDistance() {
+        return distance;
+    }
+
     private void validate(Integer distance) {
         if(null == distance || distance <= 0) {
             throw new IllegalArgumentException("구간길이는 0보다 커야합니다.");
@@ -32,6 +36,10 @@ public class Distance {
             throw new IllegalArgumentException("구간길이가 이전구간길이 보다 클수가 없습니다.");
         }
         this.distance -= other.distance;
+    }
+
+    public int plus(Distance other) {
+        return this.distance += other.distance;
     }
 
     @Override

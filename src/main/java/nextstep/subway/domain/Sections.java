@@ -17,12 +17,34 @@ public class Sections {
     public Sections() {
     }
 
+    public List<Section> getSections() {
+        return sections;
+    }
+
     public void addSection(Section section) {
         if (!sections.isEmpty()) {
             validate(section);
             updateSection(section);
         }
         sections.add(section);
+    }
+
+    public void removeSection(Station station) {
+        Section sectionIncludeUpStation = sections.stream()
+                .filter(section -> section.getUpStation().equals(station)).findFirst().get();
+
+        Section sectionIncludeDownStation = sections.stream()
+                .filter(section -> section.getDownStation().equals(station)).findFirst().get();
+
+
+        sections.remove(sectionIncludeDownStation);
+        sections.remove(sectionIncludeUpStation);
+
+        sections.add(
+                Section.of(sectionIncludeDownStation.getUpStation(),
+                        sectionIncludeUpStation.getDownStation(),
+                        sectionIncludeUpStation.mergeDistance(sectionIncludeDownStation))
+        );
     }
 
     public Set<Station> getStations() {
