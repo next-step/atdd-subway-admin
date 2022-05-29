@@ -49,6 +49,14 @@ public class Section {
         return new Section(upStation, downStation, distance);
     }
 
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
     public List<Station> getBothStations() {
         return Arrays.asList(upStation, downStation);
     }
