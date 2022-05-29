@@ -9,11 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import java.util.HashMap;
+import static nextstep.subway.SubwayAppBehaviors.*;
+
 import java.util.List;
-import java.util.Map;
 import org.springframework.test.context.jdbc.Sql;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -103,32 +102,5 @@ public class StationAcceptanceTest {
 
         List<String> stationNames = 지하철역_목록을_조회한다();
         assertThat(stationNames).isNotIn("강남역");
-    }
-
-    private List<String> 지하철역_목록을_조회한다() {
-        return RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract().jsonPath().getList("name", String.class);
-    }
-
-    private ExtractableResponse<Response> 지하철역을_생성한다(String name) {
-        Map<String,String> params = new HashMap<>();
-        params.put("name",name);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철역을_삭제한다(String location) {
-        return  RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete(location)
-                .then().log().all()
-                .extract();
     }
 }
