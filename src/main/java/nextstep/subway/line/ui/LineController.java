@@ -5,6 +5,7 @@ import java.util.List;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -52,5 +53,16 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("{lineId}/sections")
+    public ResponseEntity<Void> addSection(
+            @PathVariable Long lineId,
+            @RequestBody SectionRequest sectionRequest) {
+
+        // id 로 line 객체 검색
+        // dto 를 Section 엔티티로 변환
+        //  검색한 line 객체에 section add
+        return ResponseEntity.ok().build();
     }
 }
