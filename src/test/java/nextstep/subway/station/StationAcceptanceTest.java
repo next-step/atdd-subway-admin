@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.StationRequest;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -85,9 +86,10 @@ public class StationAcceptanceTest {
         List<String> stations = stationNames(지하철역_조회());
 
         //then
-        assertThat(stations.size()).isEqualTo(2);
-        assertThat(stations).contains("강남역", "신논현역");
-
+        Assertions.assertAll(
+            () -> assertThat(stations.size()).isEqualTo(2),
+            () -> assertThat(stations).contains("강남역", "신논현역")
+        );
     }
 
     /**
