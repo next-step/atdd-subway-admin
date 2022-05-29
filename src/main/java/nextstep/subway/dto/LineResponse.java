@@ -1,25 +1,29 @@
 package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineResponse {
     private final Long id;
     private final String name;
     private final String color;
-    private final StationResponse upStation;
-    private final StationResponse downStation;
+    private final List<SectionResponse> sections;
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getUpStation(), line.getDownStation());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), ofSections(line));
     }
 
-    public LineResponse(Long id, String name, String color, Station upStation, Station downStation) {
+    public LineResponse(Long id, String name, String color, List<SectionResponse> sections) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.upStation = new StationResponse(upStation.getId(), upStation.getName());
-        this.downStation = new StationResponse(downStation.getId(), downStation.getName());
+        this.sections = sections;
+    }
+
+    private static List<SectionResponse> ofSections(Line line) {
+        return line.getSections().getSections().stream().map(SectionResponse::of).collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -34,11 +38,7 @@ public class LineResponse {
         return color;
     }
 
-    public StationResponse getUpStation() {
-        return upStation;
-    }
-
-    public StationResponse getDownStation() {
-        return downStation;
+    public List<SectionResponse> getSections() {
+        return sections;
     }
 }

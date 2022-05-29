@@ -28,7 +28,8 @@ class SectionRepositoryTest {
     void setUp() {
         upStation = stationRepository.save(new Station("강남역"));
         downStation = stationRepository.save(new Station("역삼역"));
-        line = lineRepository.save(new Line("신분당선", "bg-red-600", upStation, downStation));
+        line = lineRepository.save(new Line("신분당선", "bg-red-600"));
+        line.addSection(new Section(line, upStation, downStation, 10));
     }
 
     @Test

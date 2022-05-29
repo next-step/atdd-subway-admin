@@ -16,16 +16,16 @@ public class Line extends BaseEntity {
     private LineColor color;
 
     @Embedded
-    private Sections stations;
+    private Sections sections;
 
     protected Line() {
 
     }
 
-    public Line(String name, String color, Station upStation, Station downStation) {
+    public Line(String name, String color) {
         this.name = new LineName(name);
         this.color = new LineColor(color);
-        this.stations = new Sections(upStation, downStation);
+        this.sections = new Sections();
     }
 
     public void modifyName(String name) {
@@ -34,6 +34,11 @@ public class Line extends BaseEntity {
 
     public void modifyColor(String color) {
         this.color.modify(color);
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
+        section.setLine(this);
     }
 
     public Long getId() {
@@ -48,12 +53,8 @@ public class Line extends BaseEntity {
         return color.getColor();
     }
 
-    public Station getUpStation() {
-        return stations.getUpStation();
-    }
-
-    public Station getDownStation() {
-        return stations.getDownStation();
+    public Sections getSections() {
+        return sections;
     }
 
     @Override
@@ -62,12 +63,12 @@ public class Line extends BaseEntity {
         if (!(o instanceof Line)) return false;
         Line line = (Line) o;
         if (getId() != null && Objects.equals(getId(), line.getId())) return true;
-        return Objects.equals(getId(), line.getId()) && Objects.equals(getName(), line.getName()) && Objects.equals(getColor(), line.getColor()) && Objects.equals(getUpStation(), line.getUpStation()) && Objects.equals(getDownStation(), line.getDownStation());
+        return Objects.equals(getId(), line.getId()) && Objects.equals(getName(), line.getName()) && Objects.equals(getColor(), line.getColor()) && Objects.equals(getSections(), line.getSections());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getColor(), getUpStation(), getDownStation());
+        return Objects.hash(getId(), getName(), getColor(), getSections());
     }
 
     @Override
