@@ -105,6 +105,7 @@ public class LineAcceptanceTest {
         요청_성공_실패_여부_확인(findResponse, HttpStatus.OK);
 
         // Then
+        assertThat(객체리스트로_변환(findResponse).size()).isEqualTo(2);
         assertThat(지하철노선이름으로_검색(객체리스트로_변환(findResponse), "신분당선")).isTrue();
         assertThat(지하철노선이름으로_검색(객체리스트로_변환(findResponse), "분당선")).isTrue();
     }
