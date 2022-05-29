@@ -7,6 +7,7 @@ import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.request.StationRequest;
 import nextstep.subway.dto.response.StationResponse;
 import nextstep.subway.exception.StationNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,8 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class StationService {
 
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
+    @Autowired
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
     }

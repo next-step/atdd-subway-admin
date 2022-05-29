@@ -21,8 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/lines")
 public class LineController {
 
+
+    private final LineService lineService;
+
     @Autowired
-    private LineService lineService;
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
+    }
 
     @PostMapping()
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {

@@ -19,10 +19,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class LineService {
 
+
+    private final LineRepository lineRepository;
+
+    private final StationRepository stationRepository;
     @Autowired
-    private LineRepository lineRepository;
-    @Autowired
-    private StationRepository stationRepository;
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+        this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
+    }
+
+
 
     @Transactional
     public LineResponse createLine(LineRequest lineRequest) {

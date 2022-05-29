@@ -5,6 +5,7 @@ import java.util.List;
 import nextstep.subway.application.StationService;
 import nextstep.subway.dto.request.StationRequest;
 import nextstep.subway.dto.response.StationResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/stations")
 public class StationController {
 
-    private StationService stationService;
+    private final StationService stationService;
 
+    @Autowired
     public StationController(StationService stationService) {
         this.stationService = stationService;
     }
