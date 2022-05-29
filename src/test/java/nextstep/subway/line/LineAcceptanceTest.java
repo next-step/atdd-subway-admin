@@ -1,12 +1,10 @@
-package nextstep.subway.station;
+package nextstep.subway.line;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.DatabaseCleanup;
-import nextstep.subway.dto.line.LineRequest;
 import nextstep.subway.dto.line.LineResponse;
-import nextstep.subway.dto.station.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
+import static nextstep.subway.SubwayApi.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -58,6 +56,42 @@ public class LineAcceptanceTest {
         // then
         List<String> lineNames = 지하철역_노선_이름_목록조회();
         assertThat(lineNames).containsAnyOf("4호선");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성하면
+     * Then 지하철 노선 생성이 안된다
+     */
+    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철역을 생성한다.")
+    @Test
+    void createLineWithDuplicateName() {
+        // given
+        지하철_노선_생성("1호선", "하늘색", 20, "소요산역", "인천역");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_생성("4호선", "하늘색", 20, "당고개역", "오이도역");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 기존에 존재하는 지하철 노선 색갈로 지하철 노선을 생성하면
+     * Then 지하철 노선 생성이 안된다
+     */
+    @DisplayName("기존에 존재하는 지하철 노선 색갈로 지하철역을 생성한다.")
+    @Test
+    void createLineWithDuplicateColor() {
+        // given
+        지하철_노선_생성("1호선", "하늘색", 20, "소요산역", "인천역");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_생성("4호선", "하늘색", 20, "당고개역", "오이도역");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -136,6 +170,46 @@ public class LineAcceptanceTest {
     }
 
     /**
+     * Given 2개의 지하철 노선을 생성하고
+     * When 기존에 존재하는 노선이름으로 수정하면
+     * Then 해당 지하철 노선 이름은 수정되지 않는다.
+     */
+    @DisplayName("기존에 존해하는 지하철 노선의 이름으로 수정한다.")
+    @Test
+    void modifyLineDuplicateName() {
+        // given
+        지하철_노선_생성("1호선", "파란색", 10, "소요산역", "인천역");
+        long lineId = 지하철_노선_생성("4호선", "하늘색", 20, "당고개역", "오이도역").jsonPath()
+                .getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철역_노선_수정(lineId, "1호선", "하늘색");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 2개의 지하철 노선을 생성하고
+     * When 기존에 존재하는 노선이름으로 수정하면
+     * Then 해당 지하철 노선 색갈은 수정되지 않는다.
+     */
+    @DisplayName("기존에 존해하는 지하철 노선의 색갈로 수정한다.")
+    @Test
+    void modifyLineDuplicateColor() {
+        // given
+        지하철_노선_생성("1호선", "파란색", 10, "소요산역", "인천역");
+        long lineId = 지하철_노선_생성("4호선", "하늘색", 20, "당고개역", "오이도역").jsonPath()
+                .getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철역_노선_수정(lineId, "4호선", "파란색");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
      * Given 지하철 노선을 생성하고
      * When 생성한 지하철 노선을 삭제하면
      * Then 해당 지하철 노선 정보는 삭제된다.
@@ -157,71 +231,5 @@ public class LineAcceptanceTest {
         // then
         List<String> lineNames = 지하철역_노선_이름_목록조회();
         assertThat(lineNames.contains(lineName)).isFalse();
-    }
-
-
-    private LineResponse convertLineResponse(ExtractableResponse<Response> response) {
-        return response.body().as(LineResponse.class);
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_생성(String lineName, String color, int distance,
-                                                    String upStationName, String downStationName) {
-        Long upStationId = 지하철역_생성(upStationName).jsonPath().getLong("id");
-        Long downStationId = 지하철역_생성(downStationName).jsonPath().getLong("id");
-
-        LineRequest lineRequest = new LineRequest(lineName, color, distance, upStationId, downStationId);
-
-        return RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private List<String> 지하철역_노선_이름_목록조회() {
-        return RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract().jsonPath().getList("name", String.class);
-    }
-
-    private ExtractableResponse<Response> 지하철역_노선_정보_조회(Long lineId) {
-        return RestAssured.given().log().all()
-                .when().get("/lines/" + lineId)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철역_노선_수정(Long lineId, String lineName, String color) {
-        LineRequest lineRequest = new LineRequest();
-        lineRequest.setName(lineName);
-        lineRequest.setColor(color);
-
-        return RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/" + lineId)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_삭제(Long lineId) {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/lines/" + lineId)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철역_생성(String stationName) {
-        StationRequest stationRequest = new StationRequest(stationName);
-
-        return RestAssured.given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
     }
 }
