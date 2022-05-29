@@ -60,7 +60,8 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    private Line findById(Long id) {
+    @Transactional
+    public Line findById(Long id) {
         return lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException("해당 지하철 노선을 찾을 수 없습니다."));
     }
 }

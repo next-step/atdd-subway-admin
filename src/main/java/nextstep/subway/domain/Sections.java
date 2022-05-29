@@ -7,7 +7,7 @@ import javax.persistence.OneToOne;
 import java.util.Objects;
 
 @Embeddable
-public class LineStations {
+public class Sections {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "UP_STATION_ID")
     private Station upStation;
@@ -16,10 +16,10 @@ public class LineStations {
     @JoinColumn(name = "DOWN_STATION_ID")
     private Station downStation;
 
-    protected LineStations() {
+    protected Sections() {
     }
 
-    public LineStations(Station upStation, Station downStation) {
+    public Sections(Station upStation, Station downStation) {
         this.upStation = upStation;
         this.downStation = downStation;
     }
@@ -35,8 +35,8 @@ public class LineStations {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof LineStations)) return false;
-        LineStations that = (LineStations) o;
+        if (!(o instanceof Sections)) return false;
+        Sections that = (Sections) o;
         return Objects.equals(getUpStation(), that.getUpStation()) && Objects.equals(getDownStation(), that.getDownStation());
     }
 

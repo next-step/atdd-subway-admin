@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.LineRequest;
-
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -18,7 +16,7 @@ public class Line extends BaseEntity {
     private LineColor color;
 
     @Embedded
-    private LineStations stations;
+    private Sections stations;
 
     protected Line() {
 
@@ -27,7 +25,7 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Station upStation, Station downStation) {
         this.name = new LineName(name);
         this.color = new LineColor(color);
-        this.stations = new LineStations(upStation, downStation);
+        this.stations = new Sections(upStation, downStation);
     }
 
     public void modifyName(String name) {
