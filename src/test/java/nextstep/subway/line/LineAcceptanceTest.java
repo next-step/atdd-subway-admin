@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineResponse;
-import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +15,10 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 
+import static nextstep.subway.line.LineAcceptanceFactory.ID값으로_지하철노선_조회;
+import static nextstep.subway.line.LineAcceptanceFactory.지하철노선_목록_조회;
+import static nextstep.subway.line.LineAcceptanceFactory.지하철노선_생성;
+import static nextstep.subway.station.StationAcceptanceFactory.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선 관련 기능")
@@ -36,10 +39,22 @@ public class LineAcceptanceTest {
      */
     @Test
     void 지하철_노선을_생성한다() {
-        StationAcceptanceTest.지하철역을_생성("소요산");
-        StationAcceptanceTest.지하철역을_생성("신창");
+        지하철역_생성("소요산");
+        지하철역_생성("신창");
 
-        ExtractableResponse<Response> 파란색_1호선 = 지하철노선_생성("1호선", "blue darken-4", 1L, 2L);
+        Map<String, Object> param = new HashMap<>();
+        param.put("name", "1호선");
+        param.put("color", "blue darken-4");
+        param.put("upStationId", 1L);
+        param.put("downStationId", 2L);
+
+        ExtractableResponse<Response> 파란색_1호선 = RestAssured.given().log().all()
+                .body(param)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
 
         assertThat(파란색_1호선.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -54,11 +69,7 @@ public class LineAcceptanceTest {
         지하철노선_생성("1호선", "소요산역", "신창역");
         지하철노선_생성("7호선", "장암역", "석남역");
 
-        ExtractableResponse<Response> 지하철노선_목록 = RestAssured
-                .given().log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> 지하철노선_목록 = 지하철노선_목록_조회();
 
         assertThat(지하철노선_목록.jsonPath().getList("name", String.class).size()).isEqualTo(2);
     }
@@ -74,12 +85,7 @@ public class LineAcceptanceTest {
         Long id = 지하철노선_생성(lineName, "소요산역", "신창역")
                 .jsonPath().getObject("id", Long.class);
 
-        LineResponse 지하철노선_1호선 = RestAssured
-                .given().log().all()
-                .when().get("/lines/" + id)
-                .then().log().all()
-                .extract()
-                .jsonPath().getObject(".", LineResponse.class);
+        LineResponse 지하철노선_1호선 = ID값으로_지하철노선_조회(id);
 
         assertThat(지하철노선_1호선.getName()).isEqualTo(lineName);
     }
@@ -128,51 +134,5 @@ public class LineAcceptanceTest {
 
         assertThat(삭제결과.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
-
-
-    private ExtractableResponse<Response> 지하철노선_생성(String lineName, String upStationName, String downStationName) {
-        Map<String, Object> params = 지하철노선_정보_생성(lineName, upStationName, downStationName);
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철노선_생성(String name, String color, Long upStationId, Long downStationId) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("name", name);
-        param.put("color", color);
-        param.put("upStationId", upStationId);
-        param.put("downStationId", downStationId);
-
-        return RestAssured.given().log().all()
-                .body(param)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private static Map<String, Object> 지하철노선_정보_생성(String lineName, String upStationName, String downStationName) {
-        Long upStationId = StationAcceptanceTest.지하철역을_생성(upStationName)
-                .jsonPath().getObject("id", Long.class);
-
-        Long downStationId = StationAcceptanceTest.지하철역을_생성(downStationName)
-                .jsonPath().getObject("id", Long.class);
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", lineName);
-        params.put("color", "색상");
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", 10);
-
-        return params;
-    }
-
 
 }

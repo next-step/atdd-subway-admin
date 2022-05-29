@@ -3,7 +3,6 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.assertj.core.api.AbstractIntegerAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static nextstep.subway.station.StationAcceptanceFactory.ID값으로_지하철역_삭제;
+import static nextstep.subway.station.StationAcceptanceFactory.지하철역_목록_조회;
+import static nextstep.subway.station.StationAcceptanceFactory.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
@@ -103,14 +105,15 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
 //        given
-        지하철역을_생성("강남역");
-        지하철역을_생성("역삼역");
+        지하철역_생성("강남역");
+        지하철역_생성("역삼역");
 
 //        when
         ExtractableResponse<Response> response = 지하철역_목록_조회();
 
 //        then
-        두개의_지하철역_응답을_받음(response);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList(".").size()).isEqualTo(2);
     }
 
     /**
@@ -122,49 +125,12 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
 //        given
-        지하철역을_생성("강남역");
+        지하철역_생성("강남역");
 
 //        when
         ExtractableResponse<Response> response = ID값으로_지하철역_삭제(1L);
 
 //        then
-        응답결과로_NO_CONCENT를_응답(response);
-    }
-
-    private ExtractableResponse<Response> ID값으로_지하철역_삭제(Long id) {
-        return RestAssured.given().log().all()
-                .when().delete("/stations/" + id)
-                .then().log().all()
-                .extract();
-    }
-
-    private AbstractIntegerAssert<?> 응답결과로_NO_CONCENT를_응답(ExtractableResponse<Response> response) {
-        return assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private void 두개의_지하철역_응답을_받음(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList(".").size()).isEqualTo(2);
-    }
-
-    public static ExtractableResponse<Response> 지하철역을_생성(String name) {
-        Map<String, String> param = new HashMap<>();
-        param.put("name", name);
-
-        return RestAssured.given().log().all()
-                .body(param)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철역_목록_조회() {
-        return RestAssured.given().log().all()
-                .when()
-                .get("/stations")
-                .then()
-                .log().all().extract();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
