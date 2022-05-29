@@ -57,7 +57,7 @@ public class SectionAcceptanceTest {
     public void 구간등록_상향종착지변경_테스트_() {
         //when
         String 판교역_ID = 지하철역_만들기("판교역").jsonPath().get("id").toString();
-        ExtractableResponse<Response> 지하철_구간_등록하기_response = 지하철_구간_등록하기(정자역_ID, 판교역_ID, "10",ID_신분당선);
+        ExtractableResponse<Response> 지하철_구간_등록하기_response = 지하철_구간_등록하기(정자역_ID, 판교역_ID, "5",ID_신분당선);
 
         //then
         assertThat(지하철_구간_등록하기_response.statusCode()).isEqualTo(HttpStatus.OK.value());
