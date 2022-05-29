@@ -7,7 +7,7 @@ import java.util.Objects;
 @Embeddable
 public class LineColor {
 
-    @Column(name = "color")
+    @Column(name = "color", unique = true)
     private String value;
 
     public static LineColor of(String color) {
