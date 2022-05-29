@@ -82,7 +82,7 @@ class LineServiceTest {
         LineResponse line = service.getLineById(response.getId());
 
         // then
-        assertThat(line).isNotNull();
+        assertThat(line.getId()).isNotNull();
     }
 
     @DisplayName("지하철 노선을 삭제한다")

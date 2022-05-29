@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineResponse;
 import nextstep.subway.util.DatabaseCleaner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("지하철노선 관련 기능")
 @ActiveProfiles(value = "acceptance")
@@ -62,9 +65,7 @@ public class LineAcceptanceTest {
 
         // then
         // - 노선에 역을 매핑하진 않지만 조회 시 포함된 역 목록이 함께 반환된다
-        assertThat(created.body().jsonPath().getString("id")).isNotNull();
-        assertThat(created.body().jsonPath().getString("name")).isEqualTo("신분당선");
-        assertThat(created.body().jsonPath().getString("stations")).isNotNull();
+        assertThat(created.as(LineResponse.class).getId()).isNotNull();
     }
 
     ExtractableResponse<Response> createLine(LineRequest request) {
@@ -125,9 +126,10 @@ public class LineAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
-        assertThat(response.body().jsonPath().getString("id")).isNotNull();
-        assertThat(response.body().jsonPath().getList("name", String.class)).contains("신분당선");
-        assertThat(response.body().jsonPath().getString("stations")).isNotNull();
+        Arrays.stream(response.as(LineResponse[].class))
+              .forEach(
+                      line -> assertThat(line.getId()).isNotNull()
+              );
     }
 
     ExtractableResponse<Response> getLineById(Long id) {
@@ -151,17 +153,24 @@ public class LineAcceptanceTest {
         assertThat(created.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
-        ExtractableResponse<Response> changed = updateLine(created.body().jsonPath().getLong("id"), new LineRequest("뉴신분당선", "bg-white-400"));
+        Long id = created.body().jsonPath().getLong("id");
+        ExtractableResponse<Response> changed = updateLineById(id, new LineRequest("뉴신분당선", "bg-white-400"));
         assertThat(changed.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
-        ExtractableResponse<Response> response = getLineById(created.body().jsonPath().getLong("id"));
+        ExtractableResponse<Response> response = getLineById(id);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getList("name")).contains("뉴신분당선");
-        assertThat(response.body().jsonPath().getList("color")).contains("bg-white-400");
+
+        Arrays.stream(response.as(LineResponse[].class))
+              .forEach(
+                      line -> assertAll(
+                              () -> assertEquals(line.getName(), "뉴신분당선"),
+                              () -> assertEquals(line.getColor(), "bg-white-400")
+                      )
+              );
     }
 
-    ExtractableResponse<Response> updateLine(Long id, LineRequest request) {
+    ExtractableResponse<Response> updateLineById(Long id, LineRequest request) {
         return RestAssured.given().log().all()
                           .body(request).contentType(MediaType.APPLICATION_JSON_VALUE)
                           .when().put("/lines/{id}", id)
@@ -183,13 +192,13 @@ public class LineAcceptanceTest {
         assertThat(created.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
-        ExtractableResponse<Response> response = deleteLine(created.jsonPath().getLong("id"));
+        ExtractableResponse<Response> response = deleteLineById(created.jsonPath().getLong("id"));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    ExtractableResponse<Response> deleteLine(Long id) {
+    ExtractableResponse<Response> deleteLineById(Long id) {
         return RestAssured.given().log().all()
                           .when().delete("/lines/{id}", id)
                           .then().log().all()
