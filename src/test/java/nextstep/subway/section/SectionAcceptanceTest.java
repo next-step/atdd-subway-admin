@@ -145,8 +145,9 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     /**
-     * When 강남역(상행) 판교역(하행)인 신분당선 노선에 강남역(상행) 양재역(하행) 구간 길이를 같은 값을 추가하면
-     * Then 구간삭제 성공
+     * Given 2개의 구간을 가지는 노선에서
+     * When 중간역이 제거될 경우
+     * Then 거리 재배치하고 구간삭제 성공
      */
     @DisplayName("노선에 구간을 제거한다.")
     @Test
@@ -159,5 +160,19 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /***
+     * When 한개의 구간을 가지는 노선에서 역을 제거될 경우
+     * Then 실패 처리됨
+     */
+    @DisplayName("한개구간을 가지는 노선에 구간을 제거하면 실패한다.")
+    @Test
+    void 한개구간_삭제_실패() {
+        // when
+        ExtractableResponse<Response> response = 노선_구간_삭제(신분당선.getId(), 강남역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

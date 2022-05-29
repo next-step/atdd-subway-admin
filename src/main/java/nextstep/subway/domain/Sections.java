@@ -23,13 +23,15 @@ public class Sections {
 
     public void addSection(Section section) {
         if (!sections.isEmpty()) {
-            validate(section);
+            addValidate(section);
             updateSection(section);
         }
         sections.add(section);
     }
 
     public void removeSection(Station station) {
+        removeValidate(station);
+
         Section sectionIncludeUpStation = sections.stream()
                 .filter(section -> section.getUpStation().equals(station)).findFirst().get();
         Section sectionIncludeDownStation = sections.stream()
@@ -51,13 +53,19 @@ public class Sections {
                 .collect(Collectors.toSet());
     }
 
-    private void validate(Section section) {
+    private void addValidate(Section section) {
         Set<Station> stations = getStations();
         if (stations.contains(section.getUpStation()) && stations.contains(section.getDownStation())) {
             throw new IllegalArgumentException("구간이 이미 등록되어 있습니다.");
         }
         if (!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
             throw new IllegalArgumentException("상행역과 하행역 둘 중 하나라도 포함되어있어야 합니다.");
+        }
+    }
+
+    private void removeValidate(Station station) {
+        if(sections.size() < 2) {
+            throw new IllegalArgumentException("구간이 1개이하인 노선은 삭제할수 없습니다.");
         }
     }
 
