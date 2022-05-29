@@ -7,7 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import nextstep.subway.domain.collection.LineStations;
-import nextstep.subway.domain.collection.Stations;
 import org.apache.commons.lang3.StringUtils;
 
 @Entity
@@ -23,9 +22,6 @@ public class Line extends BaseEntity {
 
     @Embedded
     private LineStations lineStations = new LineStations();
-
-    @Embedded
-    private Stations stations = new Stations();
 
     protected Line() {
     }
@@ -64,16 +60,8 @@ public class Line extends BaseEntity {
         return deleted;
     }
 
-    public Stations getStations() {
-        return stations;
-    }
-
     public LineStations getLineStations() {
         return lineStations;
-    }
-
-    public void addStation(Station station) {
-        stations.addStaion(station);
     }
 
     public void addLineStation(LineStation lineStation) {
