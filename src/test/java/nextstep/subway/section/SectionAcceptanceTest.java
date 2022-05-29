@@ -175,4 +175,18 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /***
+     * When 존재하지 않는역을 제거될 경우
+     * Then 실패 처리됨
+     */
+    @DisplayName("한노선에 존재하지 않는 역을 제거하면 실패한다.")
+    @Test
+    void 등록되지않은_지하철역_삭제_실패() {
+        // when
+        ExtractableResponse<Response> response = 노선_구간_삭제(신분당선.getId(), 정자역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

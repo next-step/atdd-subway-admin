@@ -64,7 +64,10 @@ public class Sections {
     }
 
     private void removeValidate(Station station) {
-        if(sections.size() < 2) {
+        if (!hasStation(station)) {
+            throw new IllegalArgumentException("노선에 등록되지 않는 역입니다.");
+        }
+        if (sections.size() < 2) {
             throw new IllegalArgumentException("구간이 1개이하인 노선은 삭제할수 없습니다.");
         }
     }
@@ -79,5 +82,10 @@ public class Sections {
                 .filter(it -> it.getDownStation().equals(newSection.getDownStation()))
                 .findFirst()
                 .ifPresent(section -> section.updateByDownSection(newSection));
+    }
+
+    private boolean hasStation(Station station) {
+        return sections.stream().anyMatch(section ->
+                section.getDownStation().equals(station) || section.getUpStation().equals(station));
     }
 }
