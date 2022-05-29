@@ -38,7 +38,7 @@ class LineTest {
     void addSection() {
         Station seoCho = new Station("서초역");
         Station gangNam = new Station("강남역");
-        line.addSection(new Section(line, seoCho, gangNam, 10L));
+        line.addSection(new Section(line, seoCho, gangNam, Distance.of(10L)));
 
         assertThat(line.sections().size()).isEqualTo(1);
     }

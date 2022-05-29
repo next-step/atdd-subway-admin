@@ -1,6 +1,7 @@
 package nextstep.subway.application;
 
 import java.util.List;
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Lines;
@@ -64,8 +65,9 @@ public class LineService {
         Line line = findLineById(lineId);
         Station upStation = findStationById(sectionRequest.getUpStationId());
         Station downStation = findStationById(sectionRequest.getDownStationId());
+        Distance distance = Distance.of(sectionRequest.getDistance());
 
-        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        line.addSection(new Section(line, upStation, downStation, distance));
     }
 
     private Line findLineById(Long id) {

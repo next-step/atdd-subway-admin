@@ -13,8 +13,8 @@ class SectionTest {
     @Test
     @DisplayName("두 객체가 같은지 검증")
     void verifySameSectionObject() {
-        Section section = new Section(twoLine, gangNam, seoCho, 10L);
+        Section section = new Section(twoLine, gangNam, seoCho, Distance.of(10L));
 
-        assertThat(section).isEqualTo(new Section(twoLine, gangNam, seoCho, 10L));
+        assertThat(section).isEqualTo(new Section(twoLine, gangNam, seoCho, Distance.of(10L)));
     }
 }

@@ -24,8 +24,8 @@ class SectionsTest {
     @Test
     @DisplayName("정렬된 순서대로 나오는지 검증")
     void verifyInOrderSections() {
-        Section gyoDaeToGangNam = new Section(twoLine, gyoDae, gangNam, 5L);
-        Section seoChoToGyoDae = new Section(twoLine, seoCho, gyoDae, 10L);
+        Section gyoDaeToGangNam = new Section(twoLine, gyoDae, gangNam, Distance.of(5L));
+        Section seoChoToGyoDae = new Section(twoLine, seoCho, gyoDae, Distance.of(10L));
         Sections sections = Sections.of(Arrays.asList(gyoDaeToGangNam, seoChoToGyoDae));
 
         assertThat(sections.getInOrderStations()).containsExactly(seoCho, gyoDae, gangNam);

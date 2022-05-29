@@ -3,7 +3,7 @@ package nextstep.subway.domain;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -30,8 +30,8 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "down_station_id", nullable = false)
     private Station downStation;
 
-    @Column
-    private Long distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
@@ -40,7 +40,7 @@ public class Section extends BaseEntity {
         this(line, null, downStation, null);
     }
 
-    public Section(Line line, Station upStation, Station downStation, Long distance) {
+    public Section(Line line, Station upStation, Station downStation, Distance distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -67,10 +67,7 @@ public class Section extends BaseEntity {
     }
 
     private void minus(Section section) {
-        if (this.distance <= section.distance) {
-            throw new IllegalArgumentException("추가하려는 구간의 거리는 현재 거리보다 작아야 합니다.");
-        }
-        this.distance -= section.distance;
+        this.distance.minus(section.distance);
     }
 
     public Station upStation() {
@@ -83,10 +80,6 @@ public class Section extends BaseEntity {
 
     public List<Station> stations() {
         return Arrays.asList(this.upStation, this.downStation);
-    }
-
-    public Long distance() {
-        return distance;
     }
 
     @Override
