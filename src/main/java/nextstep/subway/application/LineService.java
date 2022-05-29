@@ -43,6 +43,8 @@ public class LineService {
         Station downStation = getStationOrThrow(lineRequest.getDownStationId());
         Line line = lineRequest.toLine(upStation, downStation);
 
+        lineRepository.save(line);
+
         LineStation upLineStation = new LineStation(line, upStation);
         LineStation downLineStation = new LineStation(line, downStation);
 
