@@ -190,6 +190,195 @@ public class LinesAcceptanceTest {
         assertThat(lineIds).doesNotContain(createdLineId);
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선 중간에 지하철을 추가하면
+     * Then 해당 지하철 노선 정보가 추가된다
+     */
+    @DisplayName("기존 지하철 노선에 중간 노선을 추가한다")
+    @Test
+    void addMiddleSection() {
+        // given
+        Long upStationId = Long.parseLong(saveStationAndGetInfo("지하철역").get("id"));
+        Long downStationId = Long.parseLong(saveStationAndGetInfo("새로운지하철역").get("id"));
+        Long middleStationId = Long.parseLong(saveStationAndGetInfo("또다른지하철역").get("id"));
+        Map<String, Object> lineRequest = createLineRequest(
+                "신분당선", "bg-red-600", upStationId, downStationId, 10L
+        );
+        Map<String, Object> addMiddleSectionLineRequest = createLineRequest(
+                null, null, upStationId, middleStationId, 4L
+        );
+        String createdLineId = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest)
+                .jsonPath()
+                .get("id");
+
+        // when
+        ExtractableResponse<Response> addLineResponse = RequestHelper
+                .postRequest(LINE_PATH + "/{id}" + "/sections", new HashMap<>(), addMiddleSectionLineRequest, createdLineId);
+        ExtractableResponse<Response> originalCreationLine = RequestHelper
+                .getRequest(LINE_PATH + "/{id}", new HashMap<>(), createdLineId);
+
+        // then
+        assertThat(addLineResponse.statusCode()).isEqualTo(HttpStatus.SC_CREATED);
+        assertThat(originalCreationLine.jsonPath().getList("stations.name", Long.class))
+                .containsAnyOf(upStationId, middleStationId);
+        assertThat(addLineResponse.jsonPath().getList("stations.name", Long.class))
+                .containsAnyOf(downStationId, middleStationId);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 하행 종점, 상행 종점을 추가하면
+     * Then 해당 지하철 노선 정보가 추가된다
+     */
+    @DisplayName("기존 지하철 노선에 하행 종점, 상행 종점을 추가한다")
+    @Test
+    void addFirstOrLastSection() {
+        // given
+        Long upStationId = Long.parseLong(saveStationAndGetInfo("지하철역").get("id"));
+        Long downStationId = Long.parseLong(saveStationAndGetInfo("새로운지하철역").get("id"));
+        Long newFirstStationId = Long.parseLong(saveStationAndGetInfo("또다른지하철역").get("id"));
+        Long newLastStationId = Long.parseLong(saveStationAndGetInfo("또다른지하철역").get("id"));
+        Map<String, Object> lineRequest1 = createLineRequest(
+                "신분당선", "bg-red-600", upStationId, downStationId, 10L
+        );
+        Map<String, Object> lineRequest2 = createLineRequest(
+                "분당선", "bg-red-600", upStationId, downStationId, 10L
+        );
+        Map<String, Object> sameDistanceLineRequest = createLineRequest(
+                null, null, newFirstStationId, upStationId, 4L
+        );
+        Map<String, Object> longerDistanceLineRequest = createLineRequest(
+                null, null, downStationId, newLastStationId, 4L
+        );
+        String createdLine1Id = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest1)
+                .jsonPath()
+                .get("id");
+        String createdLine2Id = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest2)
+                .jsonPath()
+                .get("id");
+
+        // when
+        ExtractableResponse<Response> newFirstResponse = RequestHelper
+                .postRequest(LINE_PATH + "/{id}" + "/sections", new HashMap<>(), sameDistanceLineRequest, createdLine1Id);
+        ExtractableResponse<Response> newLastResponse = RequestHelper
+                .postRequest(LINE_PATH + "/{id}" + "/sections", new HashMap<>(), longerDistanceLineRequest, createdLine2Id);
+        ExtractableResponse<Response> originalCreationLine1 = RequestHelper
+                .getRequest(LINE_PATH + "/{id}", new HashMap<>(), createdLine1Id);
+        ExtractableResponse<Response> originalCreationLine2 = RequestHelper
+                .getRequest(LINE_PATH + "/{id}", new HashMap<>(), createdLine2Id);
+
+        // then
+        assertThat(newFirstResponse.statusCode()).isEqualTo(HttpStatus.SC_CREATED);
+        assertThat(newLastResponse.statusCode()).isEqualTo(HttpStatus.SC_CREATED);
+
+        assertThat(originalCreationLine1.jsonPath().getList("stations.name", Long.class))
+                .containsAnyOf(upStationId, downStationId);
+        assertThat(newFirstResponse.jsonPath().getList("stations.name", Long.class))
+                .containsAnyOf(newFirstStationId, upStationId);
+
+        assertThat(originalCreationLine2.jsonPath().getList("stations.name", Long.class))
+                .containsAnyOf(upStationId, downStationId);
+        assertThat(originalCreationLine2.jsonPath().getList("stations.name", Long.class))
+                .containsAnyOf(downStationId, newLastStationId);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선 중간에 원본 노선의 길이보다 크거나 같은 노선을 추가하면
+     * Then 해당 지하철 노선 추가가 실패된다
+     */
+    @DisplayName("기존 지하철 노선의 길이보다 크거나 같은 중간 노선을 추가하면 실패된다")
+    @Test
+    void addMiddleSectionByLongerOrSameDistance() {
+        // given
+        Long upStationId = Long.parseLong(saveStationAndGetInfo("지하철역").get("id"));
+        Long downStationId = Long.parseLong(saveStationAndGetInfo("새로운지하철역").get("id"));
+        Long middleStationId = Long.parseLong(saveStationAndGetInfo("또다른지하철역").get("id"));
+        Map<String, Object> lineRequest = createLineRequest(
+                "신분당선", "bg-red-600", upStationId, downStationId, 10L
+        );
+        Map<String, Object> sameDistanceLineRequest = createLineRequest(
+                null, null, upStationId, middleStationId, 10L
+        );
+        Map<String, Object> longerDistanceLineRequest = createLineRequest(
+                null, null, upStationId, middleStationId, 11L
+        );
+        String createdLineId = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest)
+                .jsonPath()
+                .get("id");
+
+        // when
+        ExtractableResponse<Response> sameDistanceResponse = RequestHelper
+                .postRequest(LINE_PATH + "/{id}" + "/sections", new HashMap<>(), sameDistanceLineRequest, createdLineId);
+        ExtractableResponse<Response> LongerDistanceResponse = RequestHelper
+                .postRequest(LINE_PATH + "/{id}" + "/sections", new HashMap<>(), longerDistanceLineRequest, createdLineId);
+
+        // then
+        assertThat(sameDistanceResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+        assertThat(LongerDistanceResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 해당 노선의 상행, 하행 노선이 같은 노선을 추가하면
+     * Then 해당 지하철 노선 추가가 실패된다
+     */
+    @DisplayName("추가하려는 노선의 상행, 하행 노선이 추가되는 노선의 상행, 하행이 같은 노선을 추가하면 실패한다")
+    @Test
+    void addSameUpAndDownStationLine() {
+        // given
+        Long upStationId = Long.parseLong(saveStationAndGetInfo("지하철역").get("id"));
+        Long downStationId = Long.parseLong(saveStationAndGetInfo("새로운지하철역").get("id"));
+        Map<String, Object> lineRequest = createLineRequest(
+                "신분당선", "bg-red-600", upStationId, downStationId, 10L
+        );
+        Map<String, Object> sameLineStation = createLineRequest(
+                null, null, upStationId, downStationId, 7L
+        );
+        String createdLineId = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest)
+                .jsonPath()
+                .get("id");
+
+        // when
+        ExtractableResponse<Response> sameStationLineResponse = RequestHelper
+                .postRequest(LINE_PATH + "/{id}" + "/sections", new HashMap<>(), sameLineStation, createdLineId);
+
+        // then
+        assertThat(sameStationLineResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 해당 노선의 상행과 하행 노선 모두 같지 않은 노선을 추가하면
+     * Then 해당 지하철 노선 추가가 실패된다
+     */
+    @DisplayName("추가하려는 노선의 상행, 하행 노선이 추가되는 노선의 상행, 하행의 모든 노선과 다른 노선을 추가하면 실패한다")
+    @Test
+    void addNothingMatchUpAndDownStationLine() {
+        // given
+        Long upStationId = Long.parseLong(saveStationAndGetInfo("지하철역").get("id"));
+        Long downStationId = Long.parseLong(saveStationAndGetInfo("새로운지하철역").get("id"));
+        Long newStationId1 = Long.parseLong(saveStationAndGetInfo("다른지하철역").get("id"));
+        Long newStationId2 = Long.parseLong(saveStationAndGetInfo("또다른지하철역").get("id"));
+        Map<String, Object> lineRequest = createLineRequest(
+                "신분당선", "bg-red-600", upStationId, downStationId, 10L
+        );
+        Map<String, Object> nothingMatchedStationLineRequest = createLineRequest(
+                null, null, newStationId1, newStationId2, 7L
+        );
+        String createdLineId = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest)
+                .jsonPath()
+                .get("id");
+
+        // when
+        ExtractableResponse<Response> sameStationLineResponse = RequestHelper
+                .postRequest(LINE_PATH + "/{id}" + "/sections", new HashMap<>(), nothingMatchedStationLineRequest, createdLineId);
+
+        // then
+        assertThat(sameStationLineResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+    }
+
     private Map<String, String> saveStationAndGetInfo(String stationName) {
         Map<String, String> result = new HashMap<>();
         ExtractableResponse<Response> stationResponse = RequestHelper

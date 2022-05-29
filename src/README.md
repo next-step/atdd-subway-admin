@@ -270,11 +270,28 @@ Host: localhost:8080
 }
 ```
 
+
 ```http response
-HTTP/1.1 204 No Content
+HTTP/1.1 201 Created
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
+Location: /lines/1
+Content-Type: application/json
+Content-Length: 193
+
+{
+  "id" : 1,
+  "name" : "신분당선",
+  "color" : "bg-red-600",
+  "stations" : [ {
+    "id" : 1,
+    "name" : "지하철역"
+  }, {
+    "id" : 2,
+    "name" : "새로운지하철역"
+  } ]
+}
 ```
 
 * 역 사이에 새로운 역을 등록할 경우 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정해야 한다
