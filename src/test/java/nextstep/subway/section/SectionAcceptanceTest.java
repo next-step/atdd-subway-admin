@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+@DisplayName("지하철 구간 관련 기능")
 class SectionAcceptanceTest extends BaseAcceptanceTest {
 
     private Long 강남역_id;
