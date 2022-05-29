@@ -2,6 +2,7 @@ package nextstep.subway.application;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import nextstep.subway.domain.LineStationRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.request.StationRequest;
@@ -16,10 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class StationService {
 
     private final StationRepository stationRepository;
-
+    private final LineStationRepository lineStationRepository;
     @Autowired
-    public StationService(StationRepository stationRepository) {
+    public StationService(StationRepository stationRepository, LineStationRepository lineStationRepository) {
         this.stationRepository = stationRepository;
+        this.lineStationRepository = lineStationRepository;
     }
 
     @Transactional
@@ -38,12 +40,16 @@ public class StationService {
 
     @Transactional
     public void deleteStationById(Long id) {
+        Station station = stationRepository.findById(id)
+            .orElseThrow(StationNotFoundException::new);
+        lineStationRepository.deleteAllByStation(station);
         stationRepository.deleteById(id);
     }
 
     public StationResponse findStationById(Long id) {
         Station station = stationRepository.findById(id)
             .orElseThrow(StationNotFoundException::new);
+
         return StationResponse.of(station);
     }
 
