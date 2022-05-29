@@ -80,7 +80,9 @@ public class LineService {
 
     @Transactional
     public void deleteLine(Long id) {
-        lineRepository.deleteById(id);
+        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+        lineStationRepository.deleteAllByLine(line);
+        lineRepository.deleteById(line.getId());
     }
 
     private Station getStationSafely(Long stationId) {

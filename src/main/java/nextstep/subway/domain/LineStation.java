@@ -17,11 +17,11 @@ public class LineStation extends BaseEntity{
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     @JoinColumn(name = "LINE_ID",foreignKey = @ForeignKey(name = "fk_line_station_line"))
     private Line line;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "STATION_ID",foreignKey = @ForeignKey(name = "fk_line_station_station"))
     private Station station;
 
