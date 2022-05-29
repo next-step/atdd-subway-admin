@@ -65,12 +65,12 @@ class SectionAcceptanceTest {
     }
 
     /**
-     * When 상행역과 하행역 사이에 새로운 구간을 등록하면
+     * When 상행역과 하행역 사이에 새로운 구간을 등록하면(상행기준)
      * Then 상행역과 하행역 사이에 추가 역이 생성 된다.
      * When 노선 목록 조회 시
      * Then 연결된 구간의 지하철역들을 확인할 수 있다.
      */
-    @DisplayName("구간 사이에 새로운 역을 등록한다")
+    @DisplayName("구간 사이에 새로운 역을 등록한다.(상행기준)")
     @Test
     void addSection() {
 
@@ -86,8 +86,35 @@ class SectionAcceptanceTest {
         ExtractableResponse<Response> response = requestGetAll(LineAcceptanceTest.LINE_PATH);
 
         //then
-        assertThat(ExtractUtils.extractNames(response)).containsExactly("신도림역", "신대방역", "봉천역");
-        assertThat(ExtractUtils.extract("stations.distance", response, Integer.class)).contains(0, 3, 7);
+        List<String> extract = ExtractUtils.extract("stations.name", response, String.class);
+        assertThat(extract).containsExactly("[신도림역, 신대방역, 봉천역]");
+
+    }    
+    
+    /**
+     * When 상행역과 하행역 사이에 새로운 구간을 등록하면(하행기준)
+     * Then 상행역과 하행역 사이에 추가 역이 생성 된다.
+     * When 노선 목록 조회 시
+     * Then 연결된 구간의 지하철역들을 확인할 수 있다.
+     */
+    @DisplayName("구간 사이에 새로운 역을 등록한다.(하행기준)")
+    @Test
+    void addSection_standard_down() {
+
+        //when
+        ExtractableResponse<Response> createResponse = createSection((Long) 이호선.get("id"),
+                STATION_IDS.get("신대방역"),
+                STATION_IDS.get("봉천역"),
+                3);
+        //then
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        //when
+        ExtractableResponse<Response> response = requestGetAll(LineAcceptanceTest.LINE_PATH);
+
+        //then
+        List<String> extract = ExtractUtils.extract("stations.name", response, String.class);
+        assertThat(extract).containsExactly("[신도림역, 신대방역, 봉천역]");
 
     }
 

@@ -37,4 +37,11 @@ public class StationService {
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
     }
+
+    @Transactional
+    public Station findStation(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] ID에 해당하는 지하철역이 없습니다."));
+    }
+
 }

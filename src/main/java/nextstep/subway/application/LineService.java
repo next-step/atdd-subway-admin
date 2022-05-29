@@ -6,9 +6,11 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.LineStation;
 import nextstep.subway.domain.LineStationRepository;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.collection.LineStations;
 import nextstep.subway.dto.LineRequestDTO;
 import nextstep.subway.dto.LineResponseDTO;
 import nextstep.subway.dto.LineResponsesDTO;
+import nextstep.subway.dto.SectionRequestDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +20,7 @@ public class LineService {
     private final LineRepository lineRepository;
     private final LineStationRepository lineStationRepository;
 
-    public LineService(LineRepository lineRepository,LineStationRepository lineStationRepository) {
+    public LineService(LineRepository lineRepository, LineStationRepository lineStationRepository) {
         this.lineRepository = lineRepository;
         this.lineStationRepository = lineStationRepository;
     }
@@ -58,5 +60,12 @@ public class LineService {
     private Line getLine(Long lineId) {
         return lineRepository.findByIdAndDeletedFalse(lineId)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] ID에 해당하는 노선이 없습니다."));
+    }
+
+    @Transactional
+    public void addSection(Long id, Station upStation, Station downStation, SectionRequestDTO sectionRequestDTO) {
+        Line line = getLine(id);
+        LineStations lineStations = line.getLineStations();
+        lineStations.addSection(line, upStation, downStation, sectionRequestDTO.getDistance());
     }
 }

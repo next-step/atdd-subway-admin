@@ -33,10 +33,27 @@ public class LineStation extends BaseEntity {
     protected LineStation(){
 
     }
+
     public LineStation(Line line, Station upStation, Station downStation, Long distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
+        this.distance = distance;
+    }
+
+    public void updateUpStation(Station station,long distance) {
+        if(this.distance < distance){
+            throw new IllegalArgumentException("[ERROR] 구간이 깁니다.");
+        }
+        this.downStation = station;
+        this.distance = distance;
+    }
+
+    public void updateDownStation(Station station, long distance) {
+        if(this.distance < distance){
+            throw new IllegalArgumentException("[ERROR] 구간이 깁니다.");
+        }
+        this.downStation = station;
         this.distance = distance;
     }
 
@@ -46,6 +63,10 @@ public class LineStation extends BaseEntity {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public long getDistance() {
+        return distance;
     }
 
     public void setLine(Line line) {
