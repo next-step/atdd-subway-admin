@@ -120,6 +120,23 @@ public class LineAcceptanceTest {
         개수_검증(lines, 0);
     }
 
+    /**
+     * When 존재하지 않는 지하철역으로 노선을 등록하면
+     * Then 노선 등록이 불가하다.
+     */
+    @DisplayName("존재하지 않는 지하철역으로 노선 생성한다.")
+    @Test
+    void createLineWithNotExistStation() {
+        // when
+        final Long notExistStationId = 10001L;
+        ValidatableResponse response1 = 노선_등록("2호선", "초록", 10, notExistStationId, 잠실역.getId());
+        ValidatableResponse response2 = 노선_등록("2호선", "초록", 10, 잠실역.getId(), notExistStationId);
+
+        // then
+        응답_검증(response1, HttpStatus.BAD_REQUEST);
+        응답_검증(response2, HttpStatus.BAD_REQUEST);
+    }
+
     private ValidatableResponse 노선_등록(String name, String color, Integer distance, Long upStreamId, Long downStreamId) {
         LineRequest lineRequest = new LineRequest(name, color, distance, upStreamId, downStreamId);
 
