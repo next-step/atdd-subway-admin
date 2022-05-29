@@ -192,7 +192,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   * 제거 대상의 역의 이전 역과 다음 역을 하나의 구간으로 생성해낸다.
   * 이 때 구간의 거리는 두 구간의 합이다.
     
-- [ ]  인수 테스트를 위한 구간 제거 API 개발
+- [X]  인수 테스트를 위한 구간 제거 API 개발
 - [ ]  인수 테스트 패스
     
 **구간 삭제 시 예외 케이스 고려하기**
