@@ -8,10 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.http.HttpStatus;
 
 import io.restassured.response.ExtractableResponse;
@@ -19,11 +16,10 @@ import io.restassured.response.Response;
 import nextstep.subway.CustomExtractableResponse;
 
 @DisplayName("지하철역 관련 기능")
-@TestMethodOrder(OrderAnnotation.class)
 public class StationAcceptanceTest extends CustomExtractableResponse{
 
 	public static final String BASIC_URL_STATIONS = "/stations";
-
+	
 	/**
 	 * When 지하철역을 생성하면 
 	 * Then 지하철역이 생성된다 
@@ -31,7 +27,6 @@ public class StationAcceptanceTest extends CustomExtractableResponse{
 	 */
 	@DisplayName("지하철역을 생성한다.")
 	@Test
-	@Order(1)
 	void createStation() {
 		// when
 		ExtractableResponse<Response> Createresponse = 지하철_생성_요청("강남역");

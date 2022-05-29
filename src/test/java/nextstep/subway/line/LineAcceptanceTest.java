@@ -12,10 +12,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.http.HttpStatus;
 
 import io.restassured.response.ExtractableResponse;
@@ -26,7 +23,6 @@ import nextstep.subway.dto.StationResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 
 @DisplayName("노선 관련 기능")
-@TestMethodOrder(OrderAnnotation.class)
 public class LineAcceptanceTest extends CustomExtractableResponse{
 	public static final String BASIC_URL_LINES = "/lines";
 	
@@ -52,7 +48,6 @@ public class LineAcceptanceTest extends CustomExtractableResponse{
      */
     @DisplayName("노선을 생성한다.")
     @Test
-    @Order(1)
     void createLine() {
         // when
         ExtractableResponse<Response> CreateResponse = 

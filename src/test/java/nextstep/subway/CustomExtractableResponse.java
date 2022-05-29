@@ -3,7 +3,11 @@ package nextstep.subway;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
@@ -17,12 +21,19 @@ public class CustomExtractableResponse {
 
 	@LocalServerPort
 	protected int port;
+	
+	@PersistenceContext
+	private EntityManager entityManager;
 
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
+    
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        databaseCleanup.execute();
     }
 
 	public <T> T getObject(ExtractableResponse<Response> response, Class<T> type) {
