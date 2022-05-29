@@ -28,8 +28,6 @@ class LineServiceTest {
     @Autowired
     private LineService lineService;
     @Autowired
-    private LineRepository lineRepository;
-    @Autowired
     private StationRepository stationRepository;
 
     @DisplayName("연결된 지하철역이 있는 노선을 생성한다.")
@@ -56,17 +54,4 @@ class LineServiceTest {
 
     }
 
-    @DisplayName("노선 전체 목록을 조회한다.")
-    @Test
-    void findAll() {
-        //given
-        lineRepository.save(new Line("신분당선", "bg-red-600"));
-        lineRepository.save(new Line("분당선", "bg-yellow-600"));
-
-        //when
-        LineResponsesDTO lineResponsesDTO = lineService.findAll();
-
-        //then
-        assertThat(lineResponsesDTO.getLineResponses()).hasSize(2);
-    }
 }

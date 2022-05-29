@@ -17,7 +17,7 @@ public class LineResponseDTO {
     public static LineResponseDTO of(Line line) {
         List<StationResponse> stationResponses = new ArrayList<>();
         LineStations lineStations = line.getLineStations();
-        for (Station station : lineStations.includeStations()) {
+        for (Station station : lineStations.orderStations()) {
             stationResponses.add(StationResponse.of(station));
         }
         return new LineResponseDTO(line.getId(), line.getName(), line.getColor(), stationResponses);

@@ -20,15 +20,6 @@ public class LineStations {
     @JoinColumn(name = "line_id",foreignKey = @ForeignKey(name = "fk_line_station_to_line"))
     private List<LineStation> lineStations = new ArrayList<>();
 
-    public Set<Station> includeStations() {
-        Set<Station> stations = new LinkedHashSet<>();
-        for(LineStation lineStation : lineStations){
-            stations.add(lineStation.getUpStation());
-            stations.add(lineStation.getDownStation());
-        }
-        return stations;
-    }
-
     public void add(LineStation target) {
         lineStations.add(target);
     }
@@ -90,7 +81,29 @@ public class LineStations {
         }
     }
 
-    public void orderSections() {
+    public Set<Station> orderStations() {
+        Set<Station> orderStations = new LinkedHashSet<>();
+        LineStation lineStation = lineStations.stream().findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 구간이 존재하지 않습니다."));
+        LineStation cursor = findStartSection(lineStation);
+        addOrderStations(orderStations, cursor);
+        return orderStations;
+    }
 
+    private LineStation findStartSection(LineStation cursor) {
+        LineStation downLineStation = findDownStation(cursor.getUpStation());
+        if (downLineStation == null) {
+            return cursor;
+        }
+        return findStartSection(downLineStation);
+    }
+
+    private void addOrderStations(Set<Station> orderStations, LineStation cursor) {
+        orderStations.add(cursor.getUpStation());
+        orderStations.add(cursor.getDownStation());
+        LineStation upStation = findUpStation(cursor.getDownStation());
+        if (upStation != null) {
+            addOrderStations(orderStations, upStation);
+        }
     }
 }
