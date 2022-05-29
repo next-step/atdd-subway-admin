@@ -105,6 +105,10 @@ public class Sections {
         removeSection(postSection);
     }
 
+    public boolean hasStation(Station station) {
+        return this.findSortedStations().contains(station);
+    }
+
     private void removeSection(Section section) {
         this.sections.remove(section);
     }

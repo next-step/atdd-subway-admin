@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import static nextstep.subway.line.domain.exception.LineExceptionMessage.ALREADY_ADDED_SECTION;
 import static nextstep.subway.line.domain.exception.LineExceptionMessage.ALREADY_ADDED_UP_DOWN_STATION;
+import static nextstep.subway.line.domain.exception.LineExceptionMessage.CANNOT_DELETE_WHEN_NO_EXIST_STATION;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -52,12 +53,21 @@ public class Line extends BaseEntity {
     }
 
     public void removeStation(Station station) {
+
+        validateNotIncludeStation(station);
+
         if (this.sections.isEndStation(station)) {
             this.sections.removeEndStation(station);
             return;
         }
 
         this.sections.removeMiddleStation(station);
+    }
+
+    private void validateNotIncludeStation(Station station) {
+        if (!this.sections.hasStation(station)) {
+            throw new IllegalArgumentException(CANNOT_DELETE_WHEN_NO_EXIST_STATION.getMessage());
+        }
     }
 
     private void validateAddableStation(Section section) {
