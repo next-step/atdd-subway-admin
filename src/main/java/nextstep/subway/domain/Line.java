@@ -81,6 +81,16 @@ public class Line extends BaseEntity {
         }
     }
 
+    public void changeUpStation(Section section) {
+        this.distsnce = this.distsnce + section.getDistance();
+        this.upStation = section.getUpStation();
+    }
+
+    public void changeDownStation(Section section) {
+        this.distsnce = distsnce + section.getDistance();
+        this.downStation = section.getDownStation();
+    }
+
     public Long getId() {
         return id;
     }
