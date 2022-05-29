@@ -104,7 +104,7 @@ public class StationAcceptanceTest {
 
         // then
         assertThat(response.jsonPath().getList("$", StationResponse.class)).hasSize(2);
-        assertThat(response.jsonPath().getList("name")).contains("강남역", "삼성역");
+        assertThat(response.jsonPath().getList("name", String.class)).contains("강남역", "삼성역");
     }
 
     /**
@@ -113,6 +113,15 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        ExtractableResponse<Response> createResponse = createOneStation("강남역");
+
+        // when
+        deleteOneStation(createResponse.jsonPath().getLong("id"));
+
+        // then
+        ExtractableResponse<Response> response = getAllStations();
+        assertThat(response.jsonPath().getList("name", String.class)).doesNotContain("강남역");
     }
 
     private ExtractableResponse<Response> createOneStation(String stationName) {
