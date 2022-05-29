@@ -4,6 +4,8 @@ package nextstep.subway.ui;
 import java.net.URI;
 import java.util.List;
 import nextstep.subway.application.LineService;
+import nextstep.subway.application.StationService;
+import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequestDTO;
 import nextstep.subway.dto.LineResponseDTO;
 import nextstep.subway.dto.LineResponsesDTO;
@@ -22,14 +24,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class LineController {
 
     private final LineService lineService;
+    private final StationService stationService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, StationService stationService) {
         this.lineService = lineService;
+        this.stationService = stationService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponseDTO> createLines(@RequestBody LineRequestDTO lineRequestDTO) {
-        LineResponseDTO lineResponseDTO = lineService.saveLine(lineRequestDTO);
+        Station upStation = stationService.findStation(lineRequestDTO.getUpStationId());
+        Station downStation = stationService.findStation(lineRequestDTO.getDownStationId());
+        LineResponseDTO lineResponseDTO = lineService.saveLine(upStation,downStation,lineRequestDTO);
         return ResponseEntity.created(URI.create("/lines/" + lineResponseDTO.getId())).body(lineResponseDTO);
     }
 

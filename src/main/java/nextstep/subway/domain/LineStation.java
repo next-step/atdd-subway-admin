@@ -30,4 +30,25 @@ public class LineStation extends BaseEntity {
 
     private Long distance;
 
+    protected LineStation(){
+
+    }
+    public LineStation(Line line, Station upStation, Station downStation, Long distance) {
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
+    }
 }

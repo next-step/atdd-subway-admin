@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
-import javax.persistence.JoinColumn;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -13,7 +12,6 @@ import nextstep.subway.dto.LineRequestDTO;
 import nextstep.subway.dto.LineResponseDTO;
 import nextstep.subway.dto.LineResponseDTO.StationResponse;
 import nextstep.subway.dto.LineResponsesDTO;
-import nextstep.subway.dto.StationResponseDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,22 +36,22 @@ class LineServiceTest {
     @Test
     void saveLine() {
         //given
-        Station pangyo = stationRepository.save(new Station("판교"));
-        Station jeongja = stationRepository.save(new Station("정자"));
+        Station upStation = stationRepository.save(new Station("판교"));
+        Station downStation = stationRepository.save(new Station("정자"));
         LineRequestDTO lineRequestDTO = new LineRequestDTO("신분당선", "bg-red-600", 1L, 2L, 10L);
 
         //when
-        LineResponseDTO lineResponseDTO = lineService.saveLine(lineRequestDTO);
+        LineResponseDTO lineResponseDTO = lineService.saveLine(upStation, downStation, lineRequestDTO);
 
         //then
         List<StationResponse> stations = lineResponseDTO.getStations();
         assertAll(
                 () -> assertThat(lineResponseDTO.getName()).isEqualTo("신분당선"),
                 () -> assertThat(lineResponseDTO.getColor()).isEqualTo("bg-red-600"),
-                () -> assertThat(stations.get(PANGYO).getId()).isEqualTo(pangyo.getId()),
-                () -> assertThat(stations.get(PANGYO).getName()).isEqualTo(pangyo.getName()),
-                () -> assertThat(stations.get(JEONGJA).getId()).isEqualTo(jeongja.getId()),
-                () -> assertThat(stations.get(JEONGJA).getName()).isEqualTo(jeongja.getName())
+                () -> assertThat(stations.get(PANGYO).getId()).isEqualTo(upStation.getId()),
+                () -> assertThat(stations.get(PANGYO).getName()).isEqualTo(upStation.getName()),
+                () -> assertThat(stations.get(JEONGJA).getId()).isEqualTo(downStation.getId()),
+                () -> assertThat(stations.get(JEONGJA).getName()).isEqualTo(downStation.getName())
         );
 
     }

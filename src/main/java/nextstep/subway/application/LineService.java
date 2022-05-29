@@ -3,8 +3,9 @@ package nextstep.subway.application;
 import java.util.List;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.LineStation;
+import nextstep.subway.domain.LineStationRepository;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequestDTO;
 import nextstep.subway.dto.LineResponseDTO;
 import nextstep.subway.dto.LineResponsesDTO;
@@ -15,30 +16,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class LineService {
 
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
+    private final LineStationRepository lineStationRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository,LineStationRepository lineStationRepository) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.lineStationRepository = lineStationRepository;
     }
 
     @Transactional
-    public LineResponseDTO saveLine(LineRequestDTO lineRequestDTO) {
-        Line line = lineRequestDTO.toLine();
-        linkStations(lineRequestDTO, line);
-        Line savedLine = lineRepository.save(line);
-        return LineResponseDTO.of(savedLine);
-    }
-
-    private void linkStations(LineRequestDTO lineRequestDTO, Line line) {
-        linkStation(lineRequestDTO.getUpStationId(), line, "[ERROR] 상행 ID가 해당하는 지하철역이 없습니다.");
-        linkStation(lineRequestDTO.getDownStationId(), line, "[ERROR] 하행 ID가 해당하는 지하철역이 없습니다.");
-    }
-
-    private void linkStation(Long stationId, Line line, String errorMessage) {
-        Station upStation = stationRepository.findById(stationId)
-                .orElseThrow(() -> new IllegalArgumentException(errorMessage));
-        line.addStation(upStation);
+    public LineResponseDTO saveLine(Station upStation, Station downStation, LineRequestDTO lineRequestDTO) {
+        Line line = lineRepository.save(lineRequestDTO.toLine());
+        LineStation lineStation = lineStationRepository.save(new LineStation(line, upStation, downStation, lineRequestDTO.getDistance()));
+        line.addLineStation(lineStation);
+        return LineResponseDTO.of(line);
     }
 
     @Transactional(readOnly = true)
