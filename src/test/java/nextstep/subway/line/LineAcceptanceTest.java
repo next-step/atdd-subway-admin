@@ -101,8 +101,7 @@ public class LineAcceptanceTest {
 
         //then
         List<String> lines = response.jsonPath().getList("name", String.class);
-        assertThat(lines.size()).isEqualTo(2);
-        assertThat(lines).contains("7호선", "8호선");
+        assertThat(lines).containsExactly("7호선", "8호선");
     }
 
     /**
