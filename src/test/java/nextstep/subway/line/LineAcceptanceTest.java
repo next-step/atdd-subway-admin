@@ -105,8 +105,6 @@ public class LineAcceptanceTest {
         assertThat(lines).contains("7호선", "8호선");
     }
 
-
-
     /**
      * Given 노선을 생성하고
      * When 그 노선을 삭제하면
@@ -122,6 +120,20 @@ public class LineAcceptanceTest {
         //when
         ExtractableResponse<Response> response_delete = 해당_노선을_제거한다(lineResponse.getId());
         assertThat(response_delete.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    /**
+     * When 존재하지 않는 노선을 삭제하면
+     * Then 노선 삭제가 되지 않는다 (BAD_REQUEST처리)
+     */
+    @DisplayName("존재하지 않는 노선을 제거한다.")
+    @Test
+    void deleteEmptyLine() {
+        //when
+        ExtractableResponse<Response> response_delete = 해당_노선을_제거한다(3L);
+
+        //then
+        assertThat(response_delete.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> 노선을_생성한다(String name, String color) {

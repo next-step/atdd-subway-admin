@@ -121,6 +121,20 @@ public class StationAcceptanceTest {
         assertThat(stations.size()).isEqualTo(0);
     }
 
+    /**
+     * When 존재하지 않는 지하철역을 삭제하면
+     * Then 지하철역 삭제가 안된다.(BAD_REQUEST처리)
+     */
+    @DisplayName("존재하지 않는 지하철역을 제거한다.")
+    @Test
+    void deleteEmptyStation() {
+        //==* when
+        ExtractableResponse<Response> response_delete = 특정_지하철역을_제거한다(3L);
+
+        //==* then
+        assertThat(response_delete.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> 지하철역을_생성한다(String name) {
         StationRequest stationRequest = new StationRequest(name);
 
