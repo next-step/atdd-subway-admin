@@ -34,15 +34,14 @@ public class Section {
     protected Section() {
     }
 
-    private Section(Station upStation, Station downStation, int distance, Line line) {
+    private Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-        this.line = line;
     }
 
-    public static Section of(Station upStation, Station downStation, int distance, Line line) {
-        return new Section(upStation, downStation, distance, line);
+    public static Section of(Station upStation, Station downStation, int distance) {
+        return new Section(upStation, downStation, distance);
     }
 
     public Station getUpStation() {
