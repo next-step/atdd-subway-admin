@@ -3,7 +3,6 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.dto.StationRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,17 +10,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.List;
 
+import static nextstep.subway.station.StationTestMethods.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
     public static final String HEADER_LOCATION = "Location";
-    public static final String URI_STATIONS = "/stations";
     public static final String KEY_STATION_NAME = "name";
 
     @LocalServerPort
@@ -108,29 +106,6 @@ public class StationAcceptanceTest {
 
         //then
         assertThat(stationNames(지하철역_조회())).doesNotContain("강남역");
-    }
-
-    private ExtractableResponse<Response> 지하철역_조회() {
-        return RestAssured.given().log().all()
-                .when().get(URI_STATIONS)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철역_생성(String stationName) {
-        return RestAssured.given().log().all()
-                .body(StationRequest.from(stationName))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(URI_STATIONS)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철역_삭제(String location) {
-        return RestAssured.given().log().all()
-                .when().delete(location)
-                .then().log().all()
-                .extract();
     }
 
     private List<String> stationNames(ExtractableResponse<Response> response) {

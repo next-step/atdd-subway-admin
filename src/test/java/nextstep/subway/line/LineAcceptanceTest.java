@@ -4,17 +4,17 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-
 import java.util.List;
 
+import static nextstep.subway.line.LineTestMethods.*;
+import static nextstep.subway.line.LineTestMethods.노선_전체_조회;
+import static nextstep.subway.station.StationTestMethods.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,9 +40,8 @@ public class LineAcceptanceTest {
     void createLine() {
         // when
         ExtractableResponse<Response> response = 노선_생성(
-                LineRequest.of("1호선","blue",1L,2L,10)
+                generateLineRequest("1호선", "blue", "소요산역", "신창역", 10)
         );
-
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
@@ -59,8 +58,12 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        노선_생성(LineRequest.of("1호선","blue",1L,2L,10));
-        노선_생성(LineRequest.of("2호선","green",3L,4L,15));
+        노선_생성(
+                generateLineRequest("1호선", "blue", "소요산역", "신창역", 10)
+        );
+        노선_생성(
+                generateLineRequest("2호선", "green", "합정역", "잠실역", 10)
+        );
 
         //when
         List<String> lineNames = lineNames(노선_전체_조회());
@@ -82,14 +85,17 @@ public class LineAcceptanceTest {
     void getLine() {
         //given
         ExtractableResponse<Response> response = 노선_생성(
-                LineRequest.of("1호선", "blue", 1L, 2L, 10)
+                generateLineRequest("1호선", "blue", "소요산역", "신창역", 10)
         );
+        Long id_1호선 = getId(response);
 
         //when
-        String lineName = lineName(노선_단건_조회(response.jsonPath().getLong("id")));
+        String lineName = lineName(노선_단건_조회(id_1호선));
 
         //then
-        assertThat(lineName).isEqualTo("1호선");
+        assertAll(
+                () -> assertThat(lineName).isEqualTo("1호선")
+        );
     }
 
     /**
@@ -102,7 +108,7 @@ public class LineAcceptanceTest {
     void updataLine() {
         //given
         ExtractableResponse<Response> created = 노선_생성(
-                LineRequest.of("1호선", "blue", 1L, 2L, 10)
+                generateLineRequest("1호선", "blue", "소요산역", "신창역", 10)
         );
 
         //when
@@ -124,7 +130,7 @@ public class LineAcceptanceTest {
     void deleteLine() {
         //given
         ExtractableResponse<Response> created = 노선_생성(
-                LineRequest.of("1호선", "blue", 1L, 2L, 10)
+                generateLineRequest("1호선", "blue", "소요산역", "신창역", 10)
         );
 
         //when
@@ -135,43 +141,14 @@ public class LineAcceptanceTest {
         assertThat(lineNames(lines)).doesNotContain("1호선");
     }
 
-    private ExtractableResponse<Response> 노선_생성(LineRequest lineRequest) {
-        return RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 노선_수정(Long lineId, LineRequest newLine) {
-        return RestAssured.given().log().all()
-                .body(newLine)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/" + lineId)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 노선_전체_조회() {
-        return RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 노선_단건_조회(Long lineId) {
-        return RestAssured.given().log().all()
-                .when().get("/lines/" + lineId)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 노선_삭제(long lineId) {
-        return RestAssured.given().log().all()
-                .when().delete("/lines/" + lineId)
-                .then().log().all()
-                .extract();
+    private LineRequest generateLineRequest
+            (String name, String color, String upStationName, String downStationName, int distance) {
+        ExtractableResponse<Response> upStationCreated = 지하철역_생성(upStationName);
+        ExtractableResponse<Response> downStationCreated = 지하철역_생성(downStationName);
+        return LineRequest.of(name, color,
+                upStationCreated.jsonPath().getLong("id"),
+                downStationCreated.jsonPath().getLong("id"),
+                distance);
     }
 
     private List<String> lineNames(ExtractableResponse<Response> response) {
@@ -180,5 +157,9 @@ public class LineAcceptanceTest {
 
     private String lineName(ExtractableResponse<Response> response) {
         return response.jsonPath().getString("name");
+    }
+
+    private Long getId(ExtractableResponse<Response> response) {
+        return response.jsonPath().getLong("id");
     }
 }
