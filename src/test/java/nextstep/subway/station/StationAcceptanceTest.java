@@ -96,7 +96,7 @@ public class StationAcceptanceTest extends CustomExtractableResponse{
 		지하철_생성_요청("강남역");
 		
 		// when
-		String url = CustomExtractableResponse.joinUrl(BASIC_URL_STATIONS, 1);
+		String url = joinUrl(BASIC_URL_STATIONS, 1);
 		ExtractableResponse<Response> deleteResponse = delete(url);
 		List<String> stationNames = 지하철_리스트_이름_조회();
 

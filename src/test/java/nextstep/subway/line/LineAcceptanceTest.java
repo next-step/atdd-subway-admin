@@ -21,7 +21,6 @@ import org.springframework.http.HttpStatus;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.CustomExtractableResponse;
-import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
 import nextstep.subway.station.StationAcceptanceTest;
@@ -124,7 +123,7 @@ public class LineAcceptanceTest extends CustomExtractableResponse{
     	LineResponse createdLine = 노선_ID_조회(1L);
 		ExtractableResponse<Response> response = 노선_수정_요청(createdLine, "다른분당선", "bg-red-800");
 		LineResponse line = 노선_ID_조회(createdLine.getId());
-	    
+		
 		// then
 		assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
 				() -> assertEquals(createdLine.getId(), line.getId()),
@@ -172,7 +171,7 @@ public class LineAcceptanceTest extends CustomExtractableResponse{
 	}
 
 	private LineResponse 노선_ID_조회(Long id) {
-		String url = CustomExtractableResponse.joinUrl(BASIC_URL_LINES, id);
+		String url = joinUrl(BASIC_URL_LINES, id);
 		return getObject(get(url), LineResponse.class);
 	}
 
@@ -191,12 +190,12 @@ public class LineAcceptanceTest extends CustomExtractableResponse{
 		params.put("name", name);
 		params.put("color", color);
 
-		String url = CustomExtractableResponse.joinUrl(BASIC_URL_LINES, createdLine.getId());
+		String url = joinUrl(BASIC_URL_LINES, createdLine.getId());
 		return put(url, params);
 	}
 
 	private ExtractableResponse<Response> 노선_삭제_요청(LineResponse createdLine) {
-		String url = CustomExtractableResponse.joinUrl(BASIC_URL_LINES, createdLine.getId());
+		String url = joinUrl(BASIC_URL_LINES, createdLine.getId());
 		return delete(url);
 	}
 }

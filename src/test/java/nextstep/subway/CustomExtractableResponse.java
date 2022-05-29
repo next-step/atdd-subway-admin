@@ -90,7 +90,7 @@ public class CustomExtractableResponse {
 				.extract();
 	}
 	
-	public static <T> String joinUrl(String url, T value) {
+	public <T> String joinUrl(String url, T value) {
 		return url + "/" + value.toString();
 	}
 }

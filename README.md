@@ -114,6 +114,9 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [X] When 생성한 지하철 노선을 삭제
 - [X] Then 해당 지하철 노선 정보는 삭제 확인
 
+### 지하철노선 환승역 고려
+- [X] 역(1) : 노선(M), 환승
+
 ### 추가 기능
 - [X] 공통로직 추출
 - [X] 테스트간의 처리방법
