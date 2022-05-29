@@ -35,17 +35,28 @@ public class Line extends BaseEntity {
     @JoinColumn(name = "DOWN_STATION_ID", foreignKey = @ForeignKey(name = "fk_line_down_station"))
     private Station downStation;
 
+    public Line(Long id, String name, LineColor lineColor, Station upStation, Station downStation) {
+        this.id = id;
+        this.name = name;
+        this.lineColor = lineColor;
+        this.upStation = upStation;
+        this.downStation = downStation;
+    }
+
+    protected Line() {
+    }
+
     public void update(Line line) {
-        if(StringUtils.isNotEmpty(line.getName())){
+        if (StringUtils.isNotEmpty(line.getName())) {
             this.name = line.getName();
         }
-        if(ObjectUtils.isNotEmpty(line.getLineColor())){
+        if (ObjectUtils.isNotEmpty(line.getLineColor())) {
             this.lineColor = line.getLineColor();
         }
-        if(ObjectUtils.isNotEmpty(line.getDownStation())){
+        if (ObjectUtils.isNotEmpty(line.getDownStation())) {
             this.downStation = line.getDownStation();
         }
-        if(ObjectUtils.isNotEmpty(line.getUpStation())){
+        if (ObjectUtils.isNotEmpty(line.getUpStation())) {
             this.upStation = line.getUpStation();
         }
     }
@@ -70,14 +81,5 @@ public class Line extends BaseEntity {
         return downStation;
     }
 
-    public Line(Long id, String name, LineColor lineColor, Station upStation, Station downStation) {
-        this.id = id;
-        this.name = name;
-        this.lineColor = lineColor;
-        this.upStation = upStation;
-        this.downStation = downStation;
-    }
 
-    protected Line() {
-    }
 }

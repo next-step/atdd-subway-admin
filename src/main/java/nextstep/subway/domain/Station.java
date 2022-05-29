@@ -17,21 +17,23 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    public void update(Station station) {
-        if(StringUtils.isNotEmpty(station.getName())){
-            this.name = station.getName();
-        }
-    }
 
-    public StationDTO toStationDTO() {
-        return new StationDTO(this.id, this.name);
+    public Station(String name) {
+        this.name = name;
     }
 
     protected Station() {
     }
 
-    public Station(String name) {
-        this.name = name;
+    public void update(Station station) {
+        if (StringUtils.isNotEmpty(station.getName())) {
+            this.name = station.getName();
+        }
+    }
+
+
+    public StationDTO toStationDTO() {
+        return new StationDTO(this.id, this.name);
     }
 
     public Long getId() {
