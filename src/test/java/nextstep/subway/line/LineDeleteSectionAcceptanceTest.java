@@ -4,6 +4,7 @@ import static nextstep.subway.line.LineAcceptanceTestMethods.지하철노선_조
 import static nextstep.subway.line.LineAddSectionAcceptanceTestMethods.지하철_노선에_새로운_구간_추가;
 import static nextstep.subway.line.LineAddSectionAcceptanceTestMethods.지하철_역_정렬됨;
 import static nextstep.subway.line.LineDeleteSectionAcceptanceTestMethods.지하철_노선에_역_제거;
+import static nextstep.subway.line.LineDeleteSectionAcceptanceTestMethods.지하철_노선에_역_제거되지_읺음;
 import static nextstep.subway.line.LineDeleteSectionAcceptanceTestMethods.지하철_노선에_역_제거됨;
 
 import io.restassured.response.ExtractableResponse;
@@ -84,5 +85,40 @@ public class LineDeleteSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_역_정렬됨(findLineResponse, Arrays.asList(강남역.getId(), 광교역.getId()));
+    }
+
+    /**
+     * Given : 노선에 A-B 역이 존재한다.
+     * When : C역을 제거한다.
+     * Then : 노선에 존재하지 않는 역임으로 제거되지 않는다.
+     */
+    @DisplayName("노선에 등록되어 있지 않은 역을 제거하는 경우 역이 제거되지 않는다.")
+    @Test
+    void deleteStationException01() {
+        // given
+        StationResponse 양재역 = StationAcceptanceTestMethods.지하철역_생성(StationRequest.from("양재역")).as(StationResponse.class);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_역_제거(신분당선.getId(), 양재역.getId());
+
+        // then
+        지하철_노선에_역_제거되지_읺음(response);
+
+    }
+
+    /**
+     * Given : 노선에 A-B 역이 존재한다.
+     * When : A역을 제거한다.
+     * Then : 마지막 구간의 역임으로 제거되지 않는다.
+     */
+    @DisplayName("노선의 마지막 구간의 역을 제거하는 경우 역이 제거되지 않는다.")
+    @Test
+    void deleteStationException02() {
+        // given & when
+        ExtractableResponse<Response> response = 지하철_노선에_역_제거(신분당선.getId(), 강남역.getId());
+
+        // then
+        지하철_노선에_역_제거되지_읺음(response);
+
     }
 }

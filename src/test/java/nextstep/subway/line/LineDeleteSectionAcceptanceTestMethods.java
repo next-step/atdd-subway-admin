@@ -18,4 +18,8 @@ public class LineDeleteSectionAcceptanceTestMethods {
     public static void 지하철_노선에_역_제거됨(ExtractableResponse response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
+    public static void 지하철_노선에_역_제거되지_읺음(ExtractableResponse response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
 }
