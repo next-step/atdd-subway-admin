@@ -85,4 +85,18 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> 지하철_노선_조회_결과 = 지하철_노선_조회(애오개역_마포역_노선_ID);
         조회_성공_확인(지하철_노선_조회_결과, "5호선", "충정로역", "애오개역", "마포역");
     }
+
+    /**
+     * Given: 지하철 노선이 생성되어 있다.
+     * When: 사용자는 지하철 구간 추가를 요청한다.
+     * Then: 구간 추가에 실패한다.
+     */
+    @Test
+    @DisplayName("기존 구간보다 길거나 같은 구간을 추가하면 실패한다.")
+    void addEqualOrGreaterSection() {
+        Long 공덕역_ID = 지하철_역_생성_ID_추출("공덕역");
+        Map<String, Object> 공덕역_마포역_구간_정보 = 지하철_구간_정보_생성(공덕역_ID, 마포역_ID, 10);
+        ExtractableResponse<Response> 지하철_노선_구간_추가_응답_결과 = 지하철_노선_구간_추가_요청(애오개역_마포역_노선_ID, 공덕역_마포역_구간_정보);
+        생성_실패_확인(지하철_노선_구간_추가_응답_결과);
+    }
 }
