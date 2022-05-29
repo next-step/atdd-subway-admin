@@ -137,7 +137,7 @@ public class LineAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> createLine(String name, String color, int distance, String upStationName, String downStationName) {
+    public ExtractableResponse<Response> createLine(String name, String color, int distance, String upStationName, String downStationName) {
         ExtractableResponse<Response> upStation = stationAcceptanceTest.createStation(upStationName);
         ExtractableResponse<Response> downStation = stationAcceptanceTest.createStation(downStationName);
 
