@@ -28,7 +28,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선을_생성한다() {
         // when
-        지하철_노선_생성("2호선", "green", "강남역", "잠실역");
+        지하철_노선_생성("2호선", "green", "강남역", "잠실역", 10);
 
         // then
         List<String> 지하철_노선_목록 = 지하철_노선_목록_조회();
@@ -43,8 +43,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_목록을_조회한다() {
         // given
-        지하철_노선_생성("2호선", "green", "강남역", "잠실역");
-        지하철_노선_생성("4호선", "blue", "사당역", "안산역");
+        지하철_노선_생성("2호선", "green", "강남역", "잠실역", 10);
+        지하철_노선_생성("4호선", "blue", "사당역", "안산역", 10);
         
         // when
         List<String> 지하철_노선_목록 = 지하철_노선_목록_조회();
@@ -61,7 +61,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선을_조회한다() {
         // given
-        ExtractableResponse<Response> _2호선 = 지하철_노선_생성("2호선", "green", "강남역", "잠실역");
+        ExtractableResponse<Response> _2호선 = 지하철_노선_생성("2호선", "green", "강남역", "잠실역", 10);
 
         // when
         LineResponse 조회된_지하철_노선 = 지하철_노선_단건_조회(_2호선);
@@ -78,7 +78,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선을_수정한다() {
         // given
-        ExtractableResponse<Response> 지하철_노선 = 지하철_노선_생성("2호선", "green", "강남역", "잠실역");
+        ExtractableResponse<Response> 지하철_노선 = 지하철_노선_생성("2호선", "green", "강남역", "잠실역", 10);
 
         // when
         ExtractableResponse<Response> 수정된_노선_응답 = 지하철_노선_수정(지하철_노선, "4호선", "blue");
@@ -95,7 +95,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선을_삭제한다() {
         // given
-        ExtractableResponse<Response> 지하철_노선 = 지하철_노선_생성("2호선", "green", "강남역", "잠실역");
+        ExtractableResponse<Response> 지하철_노선 = 지하철_노선_생성("2호선", "green", "강남역", "잠실역", 10);
 
         // when
         ExtractableResponse<Response> 지하철_삭제_응답 = 지하철_노선_삭제(지하철_노선);
@@ -105,7 +105,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     public static class LineAcceptanceTemplate {
-        public static ExtractableResponse<Response> 지하철_노선_생성(String line, String color, String upStationName, String downStationName) {
+        public static ExtractableResponse<Response> 지하철_노선_생성(String line, String color, String upStationName, String downStationName, int distance) {
             Long 상행역_id = id_추출(지하철역_생성(upStationName));
             Long 하행역_id = id_추출(지하철역_생성(downStationName));
             LineRequest request = new LineRequest(line, color, 상행역_id, 하행역_id, 10);
