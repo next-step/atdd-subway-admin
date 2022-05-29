@@ -94,4 +94,29 @@ public class LineAcceptanceTest {
         assertThat(line.getColor()).isEqualTo("color1");
         assertThat(stationNames).containsExactly("서울역", "인천역");
     }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        Long lineId = 지하철노선을_생성하고_ID를_반환한다("1호선", "color1", "서울역", "인천역", 100);
+        String newName = "1호선수정";
+        String newColor = "color2";
+
+        // when
+        지하철노선을_수정한다(newName,newColor,lineId);
+        Line line = 지하철노선을_조회한다(lineId);
+
+        // then
+        assertThat(line).isNotNull();
+        assertThat(line.getName()).isEqualTo(newName);
+        assertThat(line.getColor()).isEqualTo(newColor);
+    }
+
+
 }

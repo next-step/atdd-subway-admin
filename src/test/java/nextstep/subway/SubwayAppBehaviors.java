@@ -10,6 +10,17 @@ import nextstep.subway.domain.Line;
 import org.springframework.http.MediaType;
 
 public class SubwayAppBehaviors {
+    public static ExtractableResponse<Response> 지하철노선을_수정한다(String newName, String newColor, Long lineId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", newName);
+        params.put("color", newColor);
+        return RestAssured
+                    .given().log().all()
+                    .body(params)
+                    .when().put("/lines/"+lineId)
+                    .then().log().all()
+                    .extract();
+        }
     public static Line 지하철노선을_조회한다(Long id) {
         return RestAssured
                 .given().log().all()
