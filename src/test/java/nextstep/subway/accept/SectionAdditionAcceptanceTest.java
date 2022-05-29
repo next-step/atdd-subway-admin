@@ -31,7 +31,8 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
 @DisplayName("구간 추가 기능")
 @Sql(value = {"classpath:truncate_line_table.sql",
-        "classpath:truncate_station_table.sql"}, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+        "classpath:truncate_station_table.sql",
+        "classpath:truncate_section_table.sql"}, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class SectionAdditionAcceptanceTest {
     @LocalServerPort
@@ -62,8 +63,8 @@ class SectionAdditionAcceptanceTest {
      * Given 라인을 만들고 노선의 역 사이에 새로운 구간 추가한다 When 해당 노선을 조회하면 Then 추가된 구간을 찾을 수 있다
      */
     @Test
+    @DisplayName("역 사이에 새로운 구간 추가시 해당 역은 사이에 조회된다")
     void 역_사이에_새로운_구간_추가시_노선에서_조회가능() {
-        // TODO : 양재역, 양재시민의숲역도 작성
         // given
         saveStationAndLine();
         SectionRequest 강남역_양재시민의숲역_사이_추가 = new SectionRequest(생성된_강남역.getId(), 생성된_양재역.getId(), 5L);

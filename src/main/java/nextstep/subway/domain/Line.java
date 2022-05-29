@@ -59,9 +59,8 @@ public class Line extends BaseEntity {
         this.color = lineRequest.getColor();
     }
 
-    public void addSection(Station previousStation, Station nowStation, Long distance) {
-        sections.addSection(new Section(this, previousStation));
-        sections.addSection(new Section(this, previousStation, nowStation, distance));
+    public void addSection(Section section) {
+        sections.addSection(section);
     }
 
     @Override

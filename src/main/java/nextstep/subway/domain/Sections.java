@@ -1,9 +1,9 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -28,38 +28,52 @@ public class Sections {
     }
 
     public void addSection(Section section) {
+        this.sections.forEach(it -> it.update(section));
         this.sections.add(section);
     }
 
     public List<StationResponse> toInOrderStationResponse() {
-        return getInOrderSection().stream()
-                .map(Section::nowStation)
+        return getInOrderStations().stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 
-    public List<Section> getInOrderSection() {
-        List<Section> inOrderSection = new ArrayList<>();
+    LinkedHashSet<Station> getInOrderStations() {
+        return getInOrderSections().stream()
+                .map(Section::stations)
+                .flatMap(List::stream)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    List<Section> getInOrderSections() {
+        List<Section> inOrderStation = new ArrayList<>();
         Section section = lineFirstSection();
 
         while (section != null) {
-            inOrderSection.add(section);
-            section = findNextSection(section.nowStation());
+            inOrderStation.add(section);
+            section = findNextSection(section);
         }
-        return inOrderSection;
+        return inOrderStation;
     }
 
     private Section lineFirstSection() {
-        Optional<Section> firstSection = this.sections.stream()
-                .filter(Section::isLineFirstSection)
-                .findFirst();
-
-        return firstSection.orElseThrow(() -> new IllegalStateException("해당 라인에 첫번째 섹션이 존재하지 않습니다."));
+        Section section = this.sections.get(size() - 1);
+        while (findPreviousSection(section) != null) {
+            section = findPreviousSection(section);
+        }
+        return section;
     }
 
-    private Section findNextSection(Station station) {
+    private Section findPreviousSection(Section section) {
         return this.sections.stream()
-                .filter(it -> it.previousStation() == station)
+                .filter(it -> it.downStation().equals(section.upStation()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Section findNextSection(Section section) {
+        return this.sections.stream()
+                .filter(it -> it.upStation().equals(section.downStation()))
                 .findFirst()
                 .orElse(null);
     }

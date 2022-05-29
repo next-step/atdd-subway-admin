@@ -64,13 +64,12 @@ public class LineController {
                 .build();
     }
 
-    @PostMapping(value = "/{id}/stations")
+    @PostMapping(value = "/{id}/sections")
     public ResponseEntity createSection(@PathVariable Long id,
                                         @RequestBody SectionRequest sectionRequest) {
         lineService.addSection(id, sectionRequest);
         return ResponseEntity
                 .ok()
                 .build();
-
     }
 }

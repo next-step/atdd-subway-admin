@@ -25,10 +25,9 @@ class SectionsTest {
     @DisplayName("구역이 갯수만큼 추가되었는지 확인")
     void addSection() {
         Sections sections = new Sections();
-        sections.addSection(new Section(twoLine, seoCho));
         sections.addSection(new Section(twoLine, seoCho, gyoDae, 10L));
 
-        assertThat(sections.size()).isEqualTo(2);
+        assertThat(sections.size()).isEqualTo(1);
     }
 
     @Test
@@ -36,9 +35,8 @@ class SectionsTest {
     void verifyInOrderSections() {
         Section gyoDaeToGangNam = new Section(twoLine, gyoDae, gangNam, 5L);
         Section seoChoToGyoDae = new Section(twoLine, seoCho, gyoDae, 10L);
-        Section startSeoCho = new Section(twoLine, seoCho);
-        Sections sections = Sections.of(Arrays.asList(gyoDaeToGangNam, seoChoToGyoDae, startSeoCho));
+        Sections sections = Sections.of(Arrays.asList(gyoDaeToGangNam, seoChoToGyoDae));
 
-        assertThat(sections.getInOrderSection()).containsExactly(startSeoCho, seoChoToGyoDae, gyoDaeToGangNam);
+        assertThat(sections.getInOrderSections()).containsExactly(seoChoToGyoDae, gyoDaeToGangNam);
     }
 }

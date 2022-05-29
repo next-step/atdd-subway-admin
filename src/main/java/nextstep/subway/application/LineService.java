@@ -4,6 +4,7 @@ import java.util.List;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Lines;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.SectionRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
@@ -44,7 +45,8 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        return LineResponse.of(findLineById(id));
+        Line lineById = findLineById(id);
+        return LineResponse.of(lineById);
     }
 
     @Transactional
@@ -61,7 +63,10 @@ public class LineService {
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = findLineById(lineId);
-        // TODO : 저장하는 로직 작성
+        Station upStation = findStationById(sectionRequest.getUpStationId());
+        Station downStation = findStationById(sectionRequest.getDownStationId());
+
+        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
     private Line findLineById(Long id) {

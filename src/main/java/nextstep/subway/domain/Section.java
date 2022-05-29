@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,13 +22,13 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "line_id")
     private Line line;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "previous_station_id")
-    private Station previousStation;
+    @ManyToOne
+    @JoinColumn(name = "up_station_id")
+    private Station upStation;
 
     @ManyToOne
-    @JoinColumn(name = "now_station_id", nullable = false)
-    private Station nowStation;
+    @JoinColumn(name = "down_station_id", nullable = false)
+    private Station downStation;
 
     @Column
     private Long distance;
@@ -34,31 +36,46 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    public Section(Line line, Station nowStation) {
-        this(line, null, nowStation, null);
+    public Section(Line line, Station downStation) {
+        this(line, null, downStation, null);
     }
 
-    public Section(Line line, Station previousStation, Station nowStation, Long distance) {
+    public Section(Line line, Station upStation, Station downStation, Long distance) {
         this.line = line;
-        this.previousStation = previousStation;
-        this.nowStation = nowStation;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
-    public Station previousStation() {
-        return previousStation;
+    public void update(Section section) {
+        updateUpStation(section);
     }
 
-    public Station nowStation() {
-        return nowStation;
+    private void updateUpStation(Section section) {
+        if (this.upStation.equals(section.upStation)) {
+            this.upStation = section.downStation();
+        }
+        minus(section);
     }
 
-    public Long distanceFromPreviousStation() {
+    private void minus(Section section) {
+        this.distance -= section.distance();
+    }
+
+    public Station upStation() {
+        return upStation;
+    }
+
+    public Station downStation() {
+        return downStation;
+    }
+
+    public List<Station> stations() {
+        return Arrays.asList(this.upStation, this.downStation);
+    }
+
+    public Long distance() {
         return distance;
-    }
-
-    public boolean isLineFirstSection() {
-        return this.previousStation == null;
     }
 
     @Override
@@ -71,12 +88,12 @@ public class Section extends BaseEntity {
         }
         Section section = (Section) o;
         return Objects.equals(id, section.id) && Objects.equals(line, section.line)
-                && Objects.equals(previousStation, section.previousStation) && Objects.equals(
-                nowStation, section.nowStation) && Objects.equals(distance, section.distance);
+                && Objects.equals(upStation, section.upStation) && Objects.equals(
+                downStation, section.downStation) && Objects.equals(distance, section.distance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, line, previousStation, nowStation, distance);
+        return Objects.hash(id, line, upStation, downStation, distance);
     }
 }

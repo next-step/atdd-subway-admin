@@ -34,12 +34,12 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("구간을 추가시 두 개가 들어가는지 검증")
+    @DisplayName("구간을 추가시 들어가는지 검증")
     void addSection() {
         Station seoCho = new Station("서초역");
         Station gangNam = new Station("강남역");
-        line.addSection(seoCho, gangNam, 10L);
+        line.addSection(new Section(line, seoCho, gangNam, 10L));
 
-        assertThat(line.sections().size()).isEqualTo(2);
+        assertThat(line.sections().size()).isEqualTo(1);
     }
 }
