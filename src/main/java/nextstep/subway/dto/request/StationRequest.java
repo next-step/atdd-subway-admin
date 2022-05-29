@@ -1,8 +1,10 @@
-package nextstep.subway.dto;
+package nextstep.subway.dto.request;
 
 import nextstep.subway.domain.Station;
 
 public class StationRequest {
+
+    private Long id;
     private String name;
 
     public String getName() {
@@ -12,4 +14,5 @@ public class StationRequest {
     public Station toStation() {
         return new Station(name);
     }
+
 }
