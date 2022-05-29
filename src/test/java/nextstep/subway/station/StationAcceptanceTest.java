@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,14 +48,14 @@ public class StationAcceptanceTest {
 
         // then
         ExtractableResponse<Response> getResponse = 지하철역_조회_요청();
-        지하철역_이름_포함_확인(getResponse, "강남역");
+        지하철역_이름_포함_확인(getResponse, Arrays.asList("강남역"));
     }
 
-    private void 지하철역_이름_포함_확인(ExtractableResponse<Response> getResponse,String name) {
-        assertThat(getResponse.jsonPath().getList("name")).containsAnyOf(name);
+    private void 지하철역_이름_포함_확인(ExtractableResponse<Response> getResponse, List<String> names) {
+        assertThat(getResponse.jsonPath().getList("name")).hasSameElementsAs(names);
     }
 
-    private ExtractableResponse<Response> 지하철역_조회_요청 () {
+    private ExtractableResponse<Response> 지하철역_조회_요청() {
         return RestAssured.given().log().all()
             .when().get("/stations")
             .then().log().all()
@@ -97,6 +98,15 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        //given
+        지하철역_생성_요청("강남역");
+        지하철역_생성_요청("판교역");
+
+        //when
+        ExtractableResponse<Response> getResponse = 지하철역_조회_요청();
+
+        //then
+        지하철역_이름_포함_확인(getResponse, Arrays.asList("강남역", "판교역"));
     }
 
     /**
