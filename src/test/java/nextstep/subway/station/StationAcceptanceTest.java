@@ -144,23 +144,23 @@ public class StationAcceptanceTest {
         요청_성공_실패_여부_확인(response, HttpStatus.BAD_REQUEST);
     }
 
-     static ExtractableResponse<Response> 지하철역_생성(final String stationName) {
+     public static ExtractableResponse<Response> 지하철역_생성(final String stationName) {
         return requestStation.createStation(stationName);
     }
 
-    static ExtractableResponse<Response> 지하철역_검색() {
+    public static ExtractableResponse<Response> 지하철역_검색() {
         return requestStation.getStations();
     }
 
-    static ExtractableResponse<Response> 지하철역_삭제(final Long index) {
+    public static ExtractableResponse<Response> 지하철역_삭제(final Long index) {
         return requestStation.deleteStation(index);
     }
 
-    static List<Station> 역_객체_리스트로_변환(ExtractableResponse<Response> response) {
+    public static List<Station> 역_객체_리스트로_변환(ExtractableResponse<Response> response) {
         return response.jsonPath().getList(".", Station.class);
     }
 
-    static Optional<Station> 역_이름으로_검색(List<Station> stations, final String findStationName) {
+    public static Optional<Station> 역_이름으로_검색(List<Station> stations, final String findStationName) {
         return stations.stream()
                 .filter(station -> Objects.equals(station.getName(), findStationName))
                 .findAny();
@@ -170,15 +170,15 @@ public class StationAcceptanceTest {
         assertThat(isStation.isPresent()).isEqualTo(expectedResult);
     }
 
-    private void 역_검색결과에_포함_여부_확인(final List<Station> searchResult, final List<Station> createdStations) {
+    public static void 역_검색결과에_포함_여부_확인(final List<Station> searchResult, final List<Station> createdStations) {
         assertThat(searchResult.toArray(new Station[0])).containsExactly(createdStations.toArray(new Station[0]));
     }
 
-    static boolean 역_아이디로_여부_확인(List<Station> stations, final Long id) {
+    public static boolean 역_아이디로_여부_확인(List<Station> stations, final Long id) {
         return  stations.stream().anyMatch(station -> Objects.equals(station.getId(), id));
     }
 
-    static void 요청_성공_실패_여부_확인(ExtractableResponse<Response> response, HttpStatus status) {
+    public static void 요청_성공_실패_여부_확인(ExtractableResponse<Response> response, HttpStatus status) {
         assertThat(HttpStatus.valueOf(response.statusCode())).isEqualTo(status);
     }
 
