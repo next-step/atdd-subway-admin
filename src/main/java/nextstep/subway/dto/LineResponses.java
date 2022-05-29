@@ -1,0 +1,19 @@
+package nextstep.subway.dto;
+
+import java.util.Collections;
+import java.util.List;
+
+public class LineResponses {
+    private List<LineResponse> list;
+
+    public LineResponses() {
+    }
+
+    public LineResponses(List<LineResponse> list) {
+        this.list = list;
+    }
+
+    public List<LineResponse> getList() {
+        return Collections.unmodifiableList(list);
+    }
+}

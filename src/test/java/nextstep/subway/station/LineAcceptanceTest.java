@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineResponses;
 import nextstep.subway.dto.StationResponse;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-
-import java.util.List;
 
 import static nextstep.subway.station.StationAcceptanceTest.*;
 
@@ -60,8 +59,8 @@ public class LineAcceptanceTest {
         응답_검증(createResponse, HttpStatus.CREATED);
 
         // then
-        List<LineResponse> lines = 목록_조회("/lines", LineResponse.class);
-        개수_검증(lines, 1);
+        LineResponses responses = new LineResponses(목록_조회("/lines", LineResponse.class));
+        개수_검증(responses.getList(), 1);
     }
 
     /**
@@ -95,10 +94,10 @@ public class LineAcceptanceTest {
         노선_등록("8호선", "분홍", 10, 모란역.getId(), 잠실역.getId());
 
         // when
-        List<LineResponse> lines = 목록_조회("/lines", LineResponse.class);
+        LineResponses responses = new LineResponses(목록_조회("/lines", LineResponse.class));
 
         // then
-        개수_검증(lines, 2);
+        개수_검증(responses.getList(), 2);
     }
 
     /**
@@ -116,8 +115,8 @@ public class LineAcceptanceTest {
         삭제("/lines", 지하철2호선.getId());
 
         // then
-        List<LineResponse> lines = 목록_조회("/lines", LineResponse.class);
-        개수_검증(lines, 0);
+        LineResponses responses = new LineResponses(목록_조회("/lines", LineResponse.class));
+        개수_검증(responses.getList(), 0);
     }
 
     /**
