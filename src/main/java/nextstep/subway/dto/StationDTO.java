@@ -5,6 +5,11 @@ public class StationDTO {
     private Long id;
     private String name;
 
+    public StationDTO(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }
@@ -21,8 +26,5 @@ public class StationDTO {
         this.name = name;
     }
 
-    public StationDTO(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+
 }
