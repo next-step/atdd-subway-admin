@@ -2,10 +2,7 @@ package nextstep.subway.station;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.LineResponses;
-import nextstep.subway.dto.StationResponse;
+import nextstep.subway.dto.*;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -84,9 +81,9 @@ public class LineAcceptanceTest {
     /**
      * Given 2개의 노선을 생성하고
      * When 노선 목록을 조회하면
-     * Then 2개의 노선을 응답 받는다
+     * Then 2개의 노선 목록을 응답 받는다
      */
-    @DisplayName("노선을 조회한다.")
+    @DisplayName("노선 목록을 조회한다.")
     @Test
     void getLines() {
         // given
@@ -95,6 +92,24 @@ public class LineAcceptanceTest {
 
         // when
         LineResponses responses = new LineResponses(목록_조회("/lines", LineResponse.class));
+
+        // then
+        개수_검증(responses.getList(), 2);
+    }
+
+    /**
+     * given 지하철 노선을 등록한다.
+     * When 지하철 노선에 포함된 지하철 역을 조회한다.
+     * Then 2개의 지하철역 목록을 응답 받는다.
+     */
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void getLineStations() {
+        // given
+        LineResponse 지하철2호선 = 응답_객체_생성(노선_등록("2호선", "초록", 10, 강남역.getId(), 잠실역.getId()), LineResponse.class);
+
+        // when
+        StationResponses responses = new StationResponses(지하철2호선.getStations());
 
         // then
         개수_검증(responses.getList(), 2);

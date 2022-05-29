@@ -20,8 +20,8 @@ public class LineResponse {
         this.id = id;
         this.name = name;
         this.color = color;
-        stations.add(StationResponse.of(upStation));
-        stations.add(StationResponse.of(downStation));
+        this.stations.add(StationResponse.of(upStation));
+        this.stations.add(StationResponse.of(downStation));
     }
 
     public static LineResponse of(Line line) {
