@@ -4,8 +4,6 @@ import nextstep.subway.dto.LineUpdateRequest;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -16,8 +14,8 @@ public class Line extends BaseEntity {
     private String name;
     @NotNull
     private String color;
-    @OneToMany(mappedBy = "line")
-    private List<Station> stations = new ArrayList<>();
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private Section section;
 
     protected Line() {
     }
@@ -25,10 +23,6 @@ public class Line extends BaseEntity {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
-    }
-
-    public void addStation(Station station) {
-        station.toLine(this);
     }
 
     public Long getId() {
@@ -43,8 +37,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getStations() {
-        return stations;
+    public Section getSection() {
+        return section;
     }
 
     public void modifyBy(LineUpdateRequest request) {
@@ -52,7 +46,7 @@ public class Line extends BaseEntity {
         this.color = request.getColor();
     }
 
-    public void resetStations() {
-        new ArrayList<>(stations).forEach(Station::resetLine);
+    public void addSection(Station upStation, Station downStation) {
+        this.section = new Section(this, upStation, downStation);
     }
 }

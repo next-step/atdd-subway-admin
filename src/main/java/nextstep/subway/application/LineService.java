@@ -2,6 +2,7 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
@@ -26,19 +27,22 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Line line = lineRequest.toLine();
-        stationService.findStationById(lineRequest.getUpStationId()).ifPresent(line::addStation);
-        stationService.findStationById(lineRequest.getDownStationId()).ifPresent(line::addStation);
+        Station upStation = stationService.findStationById(lineRequest.getUpStationId())
+                .orElseThrow(IllegalArgumentException::new);
+        Station downStation = stationService.findStationById(lineRequest.getDownStationId())
+                .orElseThrow(IllegalArgumentException::new);
+        line.addSection(upStation, downStation);
         return LineResponse.of(lineRepository.save(line));
     }
 
     public List<LineResponse> findAllLines() {
-        return lineRepository.findAll().stream()
+        return lineRepository.findAllWithSection().stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
     public Optional<Line> findLineById(Long id) {
-        return lineRepository.findById(id);
+        return lineRepository.findByIdWithSection(id);
     }
 
     @Transactional
@@ -48,7 +52,6 @@ public class LineService {
 
     @Transactional
     public void deleteById(Long id) {
-        lineRepository.findByIdWithStations(id).ifPresent(Line::resetStations);
         lineRepository.deleteById(id);
     }
 }
