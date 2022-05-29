@@ -7,9 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 
-import java.util.Map;
-
+@Sql("/truncate.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class BaseAcceptanceTest {
     @LocalServerPort
@@ -22,7 +22,7 @@ public class BaseAcceptanceTest {
         }
     }
 
-    protected ExtractableResponse<Response> get(String uri) {
+    public static ExtractableResponse<Response> get(String uri) {
         return RestAssured
                 .given().log().all()
                 .when().get(uri)
@@ -30,17 +30,27 @@ public class BaseAcceptanceTest {
                 .extract();
     }
 
-    protected ExtractableResponse<Response> post(String uri, Map<String, String> params) {
+    public static <T> ExtractableResponse<Response> post(String uri, T body) {
         return RestAssured
                 .given().log().all()
-                .body(params)
+                .body(body)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post(uri)
                 .then().log().all()
                 .extract();
     }
 
-    protected ExtractableResponse<Response> delete(String uri) {
+    public static <T> ExtractableResponse<Response> put(String uri, T body) {
+        return RestAssured
+                .given().log().all()
+                .body(body)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put(uri)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> delete(String uri) {
         return RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
