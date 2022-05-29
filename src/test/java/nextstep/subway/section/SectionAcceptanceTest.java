@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.common.AcceptanceTest;
+import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,14 +21,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("구간 관련 기능 구현")
 public class SectionAcceptanceTest extends AcceptanceTest {
+    private Long 양재역_id;
+    private Long 정자역_id;
     private LineResponse 신분당선;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
 
-        신분당선 = 지하철_노선_생성("신분당선", "red", "강남역", "광교역", 10)
-                .as(LineResponse.class);
+        양재역_id = id_추출(지하철역_생성("양재역"));
+        정자역_id = id_추출(지하철역_생성("정자역"));
+
+        LineRequest 노선 = new LineRequest("신분당선", "red", 양재역_id, 정자역_id, 10);
+        신분당선 = 지하철_노선_생성(노선).as(LineResponse.class);
     }
 
     /**
@@ -38,7 +44,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 노선에_구간을_등록한다() {
         // given
-        SectionRequest 신규_구간 = 신규_구간에_대한_지하철_역_생성("양재역", "양재역", 10);
+        Long 판교역_id = id_추출(지하철역_생성("판교역"));
+        SectionRequest 신규_구간 = new SectionRequest(판교역_id, 정자역_id, 3);
 
         // when
         ExtractableResponse<Response> 신규_구간이_등록된_노선 = 노선에_신규_구간을_등록(신분당선, 신규_구간);
@@ -50,13 +57,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     public static class SectionAcceptanceTemplate {
         public static void 노선에_신규_구간이_정상_등록된다(ExtractableResponse<Response> 신규_구간이_등록된_노선) {
             assertThat(신규_구간이_등록된_노선.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        }
-
-        public static SectionRequest 신규_구간에_대한_지하철_역_생성(String upStationName, String downStationName, int distance) {
-            Long 상행역_id = id_추출(지하철역_생성(upStationName));
-            Long 하행역_id = id_추출(지하철역_생성(downStationName));
-
-            return new SectionRequest(상행역_id, 하행역_id, distance);
         }
 
         public static ExtractableResponse<Response> 노선에_신규_구간을_등록(LineResponse 신분당선, SectionRequest 신규_구간) {
