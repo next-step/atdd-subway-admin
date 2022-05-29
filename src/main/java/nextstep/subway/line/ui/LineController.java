@@ -59,10 +59,7 @@ public class LineController {
     public ResponseEntity<Void> addSection(
             @PathVariable Long lineId,
             @RequestBody SectionRequest sectionRequest) {
-
-        // id 로 line 객체 검색
-        // dto 를 Section 엔티티로 변환
-        //  검색한 line 객체에 section add
+        lineService.addSection(lineId, sectionRequest);
         return ResponseEntity.ok().build();
     }
 }
