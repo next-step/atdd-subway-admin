@@ -20,12 +20,17 @@ public class RequestUtil {
     private static final BiFunction<RequestSpecification,String, Response> DELETE = RequestSenderOptions::delete;
 
     private static final String STATION_URL = "/stations";
+    private static final String LINE_URL = "/lines";
+
     private static final String INVALID_KEY = "name";
+
+    public ExtractableResponse<Response> createLine(final Map<String, String> body) {
+        return this.request(()->body, CREATE , LINE_URL);
+    }
 
     public ExtractableResponse<Response> createStation(final String stationName) {
         return this.request(() -> makeBody(INVALID_KEY, stationName), CREATE , STATION_URL);
     }
-
     public ExtractableResponse<Response> getStations() {
         return this.request(HashMap::new, SEARCH_ALL, STATION_URL);
     }
