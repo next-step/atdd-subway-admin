@@ -8,11 +8,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 public class StationService {
+    public static final String NOT_FOUND_LINE = "해당 지하철역을 찾을 수 없습니다";
+
     private StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
@@ -31,6 +34,11 @@ public class StationService {
         return stations.stream()
                 .map(station -> StationResponse.of(station))
                 .collect(Collectors.toList());
+    }
+
+    public Station findById(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(NOT_FOUND_LINE));
     }
 
     @Transactional
