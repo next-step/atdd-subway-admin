@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.*;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,11 +24,18 @@ public class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
+    private Long 지하철역_ID;
+    private Long 새로운지하철역_ID;
+    private Long 또다른지하철역_ID;
+
     @BeforeEach
     void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        지하철역_ID = StationAcceptanceTest.지하철역_생성_id_반환("지하철역");
+        새로운지하철역_ID = StationAcceptanceTest.지하철역_생성_id_반환("새로운지하철역");
+        또다른지하철역_ID = StationAcceptanceTest.지하철역_생성_id_반환("또다른지하철역");
     }
 
     /**
@@ -39,17 +46,11 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = 지하철노선_생성(
-                "신분당선",
-                "bg-red-600",
-                StationAcceptanceTest.지하철역_생성_id_반환("강남역"),
-                StationAcceptanceTest.지하철역_생성_id_반환("사당역"),
-                10
-        );
+        ExtractableResponse<Response> response = 지하철노선_생성("신분당선", "bg-red-600", 지하철역_ID, 새로운지하철역_ID, 10);
 
         // then
         응답결과_확인(response, HttpStatus.CREATED);
-        지하철노선_존재함(전체_지하철노선_이름_조회(), "강남역");
+        지하철노선_존재함(전체_지하철노선_이름_조회(), "신분당선");
     }
 
     /**
@@ -59,22 +60,10 @@ public class LineAcceptanceTest {
      */
     @DisplayName("지하철노선 목록을 조회한다.")
     @Test
-    void getStations() {
+    void getLines() {
         // given
-        지하철노선_생성(
-                "신분당선",
-                "bg-red-600",
-                StationAcceptanceTest.지하철역_생성_id_반환("강남역"),
-                StationAcceptanceTest.지하철역_생성_id_반환("사당역"),
-                10
-        );
-        지하철노선_생성(
-                "4호선",
-                "blue",
-                StationAcceptanceTest.지하철역_생성_id_반환("신용산역"),
-                StationAcceptanceTest.지하철역_생성_id_반환("이수역"),
-                5
-        );
+        지하철노선_생성("신분당선", "bg-red-600", 지하철역_ID, 새로운지하철역_ID, 10);
+        지하철노선_생성("분당선", "bg-green-600", 지하철역_ID, 또다른지하철역_ID, 5);
 
         //when
         ExtractableResponse<Response> response = 전체_지하철노선_조회();
@@ -91,15 +80,9 @@ public class LineAcceptanceTest {
      */
     @DisplayName("지하철노선을 조회한다.")
     @Test
-    void getStation() {
+    void getLine() {
         // given
-        long expected = 지하철노선_생성_id_반환(
-                "신분당선",
-                "bg-red-600",
-                StationAcceptanceTest.지하철역_생성_id_반환("강남역"),
-                StationAcceptanceTest.지하철역_생성_id_반환("사당역"),
-                10
-        );
+        long expected = 지하철노선_생성_id_반환("신분당선", "bg-red-600", 지하철역_ID, 새로운지하철역_ID, 10);
 
         //when
         ExtractableResponse<Response> response = 지하철노선_조회(expected);
@@ -116,18 +99,16 @@ public class LineAcceptanceTest {
      */
     @DisplayName("지하철노선을 수정한다.")
     @Test
-    void updateStation() {
+    void updateLine() {
         // given
-        long upStationId = StationAcceptanceTest.지하철역_생성_id_반환("강남역");
-        long downStationId = StationAcceptanceTest.지하철역_생성_id_반환("사당역");
-        long id = 지하철노선_생성_id_반환("신분당선", "bg-red-600", upStationId, downStationId, 10);
+        long id = 지하철노선_생성_id_반환("신분당선", "bg-red-600", 지하철역_ID, 새로운지하철역_ID, 10);
 
         // when
         ExtractableResponse<Response> response = 지하철노선_수정(id, "다른분당선", "bg-red-600");
 
         // then
         응답결과_확인(response, HttpStatus.OK);
-        지하철노선_이름_같음(response, "다른분당선");
+        지하철노선_이름_같음(지하철노선_조회(id), "다른분당선");
     }
 
     /**
@@ -137,15 +118,9 @@ public class LineAcceptanceTest {
      */
     @DisplayName("지하철노선을 제거한다.")
     @Test
-    void deleteStation() {
+    void deleteLine() {
         // given
-        long id = 지하철노선_생성_id_반환(
-                "신분당선",
-                "bg-red-600",
-                StationAcceptanceTest.지하철역_생성_id_반환("강남역"),
-                StationAcceptanceTest.지하철역_생성_id_반환("사당역"),
-                10
-        );
+        long id = 지하철노선_생성_id_반환("신분당선", "bg-red-600", 지하철역_ID, 새로운지하철역_ID, 10);
 
         // when
         ExtractableResponse<Response> response = 지하철노선_삭제(id);
@@ -156,16 +131,11 @@ public class LineAcceptanceTest {
 
     private ExtractableResponse<Response> 지하철노선_생성(String name, String color, long upStationId, long downStationId,
                                                    int distance) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", distance);
+        LineRequest lineRequest = new LineRequest(name, color, upStationId, downStationId, distance);
 
         return RestAssured
                 .given().log().all()
-                .body(params)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all()
@@ -179,13 +149,11 @@ public class LineAcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철노선_수정(long id, String name, String color) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
+        LineUpdateRequest lineUpdateRequest = new LineUpdateRequest(name, color);
 
         return RestAssured
                 .given().log().all()
-                .body(params)
+                .body(lineUpdateRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/lines/" + id)
                 .then().log().all()
@@ -213,7 +181,7 @@ public class LineAcceptanceTest {
     private List<String> 전체_지하철노선_이름_조회() {
         return 전체_지하철노선_조회()
                 .jsonPath()
-                .getList("stations.name", String.class);
+                .getList("name", String.class);
     }
 
     private ExtractableResponse<Response> 지하철노선_삭제(long id) {
