@@ -64,10 +64,26 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test
-    void addDuplicationSectionAdd() {
+    void addDuplicationSectionA() {
 
         // when 노선에 기존의 구간에 등록된 상행역과 하행역을 가진 새로운 구간을 등록한다.
         SectionRequest 새로운_구간 = SectionRequest.of(강남역_id, 광교역_id, 5);
+        ExtractableResponse<Response> 구간_생성_요청_응답 = 구간_생성_요청(새로운_구간, 신분당선_id);
+
+        // then 등록 할 수 없다.
+        노선_생성_실패_확인(구간_생성_요청_응답);
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void addNotLinkableSection() {
+
+        //given 새로운 지하철 역을 등록 한다.
+        long 도쿄역_id = 지하철역_생성_요청("도쿄역").jsonPath().getLong("id");
+        long 간사이역_id = 지하철역_생성_요청("간사이역").jsonPath().getLong("id");
+
+        // when 노선에 기존 지하철 역에서 상행역과 하행역 둘 중 하나도 포함되어있지 않는 새로운 구간을 등록한다.
+        SectionRequest 새로운_구간 = SectionRequest.of(도쿄역_id, 간사이역_id, 5);
         ExtractableResponse<Response> 구간_생성_요청_응답 = 구간_생성_요청(새로운_구간, 신분당선_id);
 
         // then 등록 할 수 없다.
