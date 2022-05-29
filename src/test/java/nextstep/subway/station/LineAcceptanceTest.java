@@ -16,33 +16,39 @@ import io.restassured.response.Response;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @DisplayName("지하철 노선")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+//@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class LineAcceptanceTest {
 
     @LocalServerPort
     int port;
 
+    private final DatabaseCleanup databaseCleanup;
+
+    @Autowired
+    public LineAcceptanceTest(DatabaseCleanup databaseCleanup) {
+        this.databaseCleanup = databaseCleanup;
+    }
+
     @BeforeEach
     public void init() {
         RestAssured.port = port;
+        databaseCleanup.execute();
     }
 
 
     /**
-     * given 지하철역 2개를 생성해놓은 뒤
-     * when 지하철 노선을 등록하며 해당 지하철역 2개를 상향, 하향 종착점으로 설정시
-     * then 노선이 등록된다.
+     * given 지하철역 2개를 생성해놓은 뒤 when 지하철 노선을 등록하며 해당 지하철역 2개를 상향, 하향 종착점으로 설정시 then 노선이 등록된다.
      */
     @Test
     @DisplayName("지하철 노선 등록")
@@ -66,9 +72,7 @@ public class LineAcceptanceTest {
     }
 
     /**
-     * given 지하철역 3개와 지하철 노선2개를 생성한다.
-     * when 지하철 노선 목록을 조회했을때
-     * then 2개의 노선정보를 확인할 수 있다.
+     * given 지하철역 3개와 지하철 노선2개를 생성한다. when 지하철 노선 목록을 조회했을때 then 2개의 노선정보를 확인할 수 있다.
      */
     @Test
     @DisplayName("지하철 노선 목록 조회")
@@ -88,20 +92,18 @@ public class LineAcceptanceTest {
 
         //then
         assertAll(
-            ()->assertThat(지하철_노선_목록_조회하기_response.jsonPath().getList("."))
-                    .extracting("id", "name", "color")
-                    .contains(tuple(Integer.parseInt(ID_신분당선), "신분당선", "bg-red-600"))
-                    .contains(tuple(Integer.parseInt(ID_2호선), "2호선", "bg-green-600")),
-            ()->assertThat(지하철_노선_목록_조회하기_response.jsonPath().getList("stations.name"))
-                .contains(Arrays.asList("강남역","양재역"))
-                .contains(Arrays.asList("강남역","역삼역"))
+            () -> assertThat(지하철_노선_목록_조회하기_response.jsonPath().getList("."))
+                .extracting("id", "name", "color")
+                .contains(tuple(Integer.parseInt(ID_신분당선), "신분당선", "bg-red-600"))
+                .contains(tuple(Integer.parseInt(ID_2호선), "2호선", "bg-green-600")),
+            () -> assertThat(지하철_노선_목록_조회하기_response.jsonPath().getList("stations.name"))
+                .contains(Arrays.asList("강남역", "양재역"))
+                .contains(Arrays.asList("강남역", "역삼역"))
         );
     }
 
     /**
-     * given 지하철역 2개와 지하철 노선 1개 생성후
-     * when 지하철노선 ID를 통해 지하철노선 검색을할 경우
-     * then 해당 노선에 대한 정보를 획득할 수 있다
+     * given 지하철역 2개와 지하철 노선 1개 생성후 when 지하철노선 ID를 통해 지하철노선 검색을할 경우 then 해당 노선에 대한 정보를 획득할 수 있다
      */
     @Test
     @DisplayName("지하철 노선 생성후 노선 정보를 가져올수 있다")
@@ -126,9 +128,7 @@ public class LineAcceptanceTest {
 
 
     /**
-     * given 지하철노선 1개 생성후
-     * when 수정 필요 데이터를 보내면
-     * then 수정이 정상적으로 완료가된다
+     * given 지하철노선 1개 생성후 when 수정 필요 데이터를 보내면 then 수정이 정상적으로 완료가된다
      */
     @Test
     @DisplayName("지하철 노선을 수정할수 있어야한다")
@@ -150,9 +150,7 @@ public class LineAcceptanceTest {
     }
 
     /**
-     * given 지하철 노선을 생성 후
-     * when 지하철 노선을 삭제하면
-     * then 지하철 노선목록 조회할수가 없다
+     * given 지하철 노선을 생성 후 when 지하철 노선을 삭제하면 then 지하철 노선목록 조회할수가 없다
      */
     @Test
     @DisplayName("지하철 노선을 삭제할수 있어야한다.")
