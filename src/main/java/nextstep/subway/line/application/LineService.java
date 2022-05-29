@@ -71,6 +71,7 @@ public class LineService {
                 .orElseThrow(() -> new NoSuchElementException(NO_EXIST_LINE_ERROR_MESSAGE));
     }
 
+    @Transactional
     public LineResponse addSection(Long id, SectionRequest sectionRequest) {
         Line line = findById(id);
         Station upStation = stationService.findById(sectionRequest.getUpStationId());

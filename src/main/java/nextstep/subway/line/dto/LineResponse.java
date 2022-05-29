@@ -23,7 +23,9 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         List<Station> stations = mapToStations(line);
-        List<StationResponse> stationResponses = stations.stream().map(StationResponse::of)
+        List<StationResponse> stationResponses = stations.stream()
+                .distinct()
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
