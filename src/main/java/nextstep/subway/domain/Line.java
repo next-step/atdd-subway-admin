@@ -3,11 +3,16 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Line extends BaseEntity{
@@ -18,6 +23,12 @@ public class Line extends BaseEntity{
     private String name;
     @Column(unique = true)
     private String color;
+
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinTable(name = "line_station"
+        ,joinColumns = {@JoinColumn(name = "line_id",referencedColumnName = "id")}
+        , inverseJoinColumns = {@JoinColumn(name = "station_id",referencedColumnName = "id")}
+    )
     private List<Station> stations = new ArrayList<>();
 
     protected Line() {
