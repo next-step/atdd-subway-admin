@@ -36,6 +36,10 @@ public class LineResponse {
         );
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public boolean isContainsBy(final Station station) {
         return this.stations.contains(station);
     }
