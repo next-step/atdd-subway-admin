@@ -21,6 +21,8 @@ import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -116,22 +118,18 @@ class SectionAdditionAcceptanceTest {
     /**
      * Given 라인을 만들고 When 기존 구간의 길이보다 같거나 큰 새로운 구간 추가하면 Then 등록할 수 없다는 에러가 발생한다
      */
-    @Test
-    void 역_사이_길이보다_같거나_큰_새로운_구간은_등록불가() {
+    @ParameterizedTest(name = "추가하려는 거리가 현재 거리보다 같거나 긴 거리({0})는 추가할 수 없다.")
+    @ValueSource(longs = {10L, 15L})
+    void 역_사이_길이보다_같거나_큰_새로운_구간은_등록불가(Long 길이) {
         // given
         saveStationAndLine();
 
         // when
-        SectionRequest 강남역_양재시민의숲역_사이에_같은_길이_추가 = new SectionRequest(생성된_강남역.getId(), 생성된_양재역.getId(), 10L);
-        SectionRequest 강남역_양재시민의숲역_사이에_더_긴_길이_추가 = new SectionRequest(생성된_강남역.getId(), 생성된_양재역.getId(), 15L);
-        ExtractableResponse<Response> 같은_길이_추가_결과 = 구간_추가(생성된_신분당선.getId(), 강남역_양재시민의숲역_사이에_같은_길이_추가);
-        ExtractableResponse<Response> 더_긴_길이_추가_결과 = 구간_추가(생성된_신분당선.getId(), 강남역_양재시민의숲역_사이에_더_긴_길이_추가);
+        SectionRequest 강남역_양재시민의숲역_사이에_같거나_긴_길이_추가 = new SectionRequest(생성된_강남역.getId(), 생성된_양재역.getId(), 길이);
+        ExtractableResponse<Response> 같거나_긴_길이_추가_결과 = 구간_추가(생성된_신분당선.getId(), 강남역_양재시민의숲역_사이에_같거나_긴_길이_추가);
 
         // then
-        assertAll(
-                () -> assertThat(같은_길이_추가_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(더_긴_길이_추가_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
-        );
+        assertThat(같거나_긴_길이_추가_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**

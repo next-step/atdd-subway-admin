@@ -53,13 +53,16 @@ public class Section extends BaseEntity {
 
     private void updateUpStation(Section section) {
         if (this.upStation.equals(section.upStation)) {
-            this.upStation = section.downStation();
+            this.upStation = section.downStation;
         }
         minus(section);
     }
 
     private void minus(Section section) {
-        this.distance -= section.distance();
+        if (this.distance <= section.distance) {
+            throw new IllegalArgumentException("추가하려는 구간의 거리는 현재 거리보다 작아야 합니다.");
+        }
+        this.distance -= section.distance;
     }
 
     public Station upStation() {

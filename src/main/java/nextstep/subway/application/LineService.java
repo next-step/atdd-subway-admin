@@ -45,8 +45,7 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        Line lineById = findLineById(id);
-        return LineResponse.of(lineById);
+        return LineResponse.of(findLineById(id));
     }
 
     @Transactional
