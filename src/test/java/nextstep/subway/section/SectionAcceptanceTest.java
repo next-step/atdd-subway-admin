@@ -15,7 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,7 +56,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> line = lineAcceptanceTest.createLine("신분당선", "bg-red-600", 10, "강남역", "판교역");
 
         // when
-        ExtractableResponse<Response> response = createSection(line.jsonPath().get(), "강남역", "양재역", 7);
+        ExtractableResponse<Response> response = createSection(line.jsonPath().getLong("id"), "강남역", "양재역", 7);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -69,7 +73,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> line = lineAcceptanceTest.createLine("신분당선", "bg-red-600", 10, "강남역", "판교역");
 
         // when
-        ExtractableResponse<Response> response = createSection(line.jsonPath().get(), "논현역", "강남역", 7);
+        ExtractableResponse<Response> response = createSection(line.jsonPath().getLong("id"), "논현역", "강남역", 7);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -86,7 +90,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> line = lineAcceptanceTest.createLine("신분당선", "bg-red-600", 10, "강남역", "판교역");
 
         // when
-        ExtractableResponse<Response> response = createSection(line.jsonPath().get(), "판교역", "광교역", 7);
+        ExtractableResponse<Response> response = createSection(line.jsonPath().getLong("id"), "판교역", "광교역", 7);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -124,7 +128,20 @@ public class SectionAcceptanceTest {
 
     }
 
-    private ExtractableResponse<Response> createSection(Line line, String 강남역, String 양재역, int distance) {
-        return null;
+    private ExtractableResponse<Response> createSection(Long lineId, String upStationName, String downStationName, int distance) {
+        ExtractableResponse<Response> upStation = stationAcceptanceTest.createStation(upStationName);
+        ExtractableResponse<Response> downStation = stationAcceptanceTest.createStation(downStationName);
+
+        Map<String, Object> param = new HashMap<>();
+        param.put("upStationId", upStation.jsonPath().getLong("id"));
+        param.put("downStationId", downStation.jsonPath().getLong("id"));
+        param.put("distance", distance);
+
+        return RestAssured.given().log().all()
+                .body(param)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines/{id}/sections", lineId)
+                .then().log().all()
+                .extract();
     }
 }
