@@ -118,5 +118,22 @@ public class LineAcceptanceTest {
         assertThat(line.getColor()).isEqualTo(newColor);
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철노선을 삭제한다.")
+    @Test
+    void deleteLine() {
+        // given
+        Long lineId = 지하철노선을_생성하고_ID를_반환한다("1호선", "color1", "서울역", "인천역", 100);
 
+        // when
+        지하철노선을_삭제한다(lineId);
+        Line line = 지하철노선을_조회한다(lineId);
+
+        // then
+        assertThat(line).isNull();
+    }
 }
