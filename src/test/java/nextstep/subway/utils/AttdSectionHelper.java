@@ -18,7 +18,7 @@ public class AttdSectionHelper {
         params.put("upStationId", 상향_지하철역_ID);
         params.put("distance", 거리);
 
-        String URI = stringAppender(Arrays.asList("/lines/", 노선_ID, "sections"));
+        String URI = stringAppender(Arrays.asList("/lines/", 노선_ID, "/sections"));
 
         return RestAssured.given().log().all()
             .body(params)
