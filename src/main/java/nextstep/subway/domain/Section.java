@@ -22,15 +22,15 @@ public class Section {
     @ManyToOne(fetch = FetchType.LAZY)
     private Station downStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private Line line;
 
     private Integer distance;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private Section nextSection;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private Section backSection;
 
     protected Section() {
