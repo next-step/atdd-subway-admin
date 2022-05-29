@@ -81,6 +81,7 @@ class SectionAdditionAcceptanceTest {
      * Given 라인을 만들고 노선 상행선에 새로운 구간 추가한다 When 해당 노선을 조회하면 Then 추가된 구간을 첫 번째로 찾을 수 있다
      */
     @Test
+    @DisplayName("상행역 앞에 새로운 구간 추가시 해당 역은 제일 처음에 조회된다.")
     void 상행선에_새로운_구간_추가시_노선_첫_번째에서_조회가능() {
         // given
         saveStationAndLine();
