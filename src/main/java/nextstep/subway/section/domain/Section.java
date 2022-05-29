@@ -65,24 +65,6 @@ public class Section {
         return new Section(id, upStation, downStation, distance);
     }
 
-    private static void validateSection(Station upStation, Station downStation, Distance distance) {
-        if (Objects.isNull(upStation)) {
-            throw new IllegalArgumentException(UP_STATION_IS_NOT_NULL.getMessage());
-        }
-
-        if (Objects.isNull(downStation)) {
-            throw new IllegalArgumentException(DOWN_STATION_IS_NOT_NULL.getMessage());
-        }
-
-        if (Objects.isNull(distance)) {
-            throw new IllegalArgumentException(DISTANCE_IS_NOT_NULL.getMessage());
-        }
-
-        if(upStation.equals(downStation)) {
-            throw new IllegalArgumentException(CANNOT_EQUALS_UP_STATION_WITH_DOWN_STATION.getMessage());
-        }
-    }
-
     public Station getUpStation() {
         return this.upStation;
     }
@@ -133,6 +115,24 @@ public class Section {
 
     public Long getId() {
         return this.id;
+    }
+
+    private static void validateSection(Station upStation, Station downStation, Distance distance) {
+        if (Objects.isNull(upStation)) {
+            throw new IllegalArgumentException(UP_STATION_IS_NOT_NULL.getMessage());
+        }
+
+        if (Objects.isNull(downStation)) {
+            throw new IllegalArgumentException(DOWN_STATION_IS_NOT_NULL.getMessage());
+        }
+
+        if (Objects.isNull(distance)) {
+            throw new IllegalArgumentException(DISTANCE_IS_NOT_NULL.getMessage());
+        }
+
+        if (upStation.equals(downStation)) {
+            throw new IllegalArgumentException(CANNOT_EQUALS_UP_STATION_WITH_DOWN_STATION.getMessage());
+        }
     }
 
     @Override

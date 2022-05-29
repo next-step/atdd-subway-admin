@@ -109,6 +109,10 @@ public class Sections {
         return this.findSortedStations().contains(station);
     }
 
+    public boolean isOnlyOneSection() {
+        return this.sections.size() == 1;
+    }
+
     private void removeSection(Section section) {
         this.sections.remove(section);
     }
@@ -197,9 +201,5 @@ public class Sections {
 
     private boolean isExistStation(Station station) {
         return this.findSortedStations().contains(station);
-    }
-
-    public boolean isOnlyOneSection() {
-        return this.sections.size() == 1;
     }
 }

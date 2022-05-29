@@ -65,6 +65,19 @@ public class Line extends BaseEntity {
         this.sections.removeMiddleStation(station);
     }
 
+    public Long getId() {
+        return this.id;
+    }
+
+    public void update(Line updateLine) {
+        this.name = updateLine.getName();
+        this.color = updateLine.getColor();
+    }
+
+    public LineStations findSortedLineStations() {
+        return this.sections.findSortedStations();
+    }
+
     private void validateLastSectionDeleteStation() {
         if (this.sections.isOnlyOneSection()) {
             throw new IllegalArgumentException(CANNOT_DELETE_WHEN_ONLY_ONE_SECTION.getMessage());
@@ -91,18 +104,5 @@ public class Line extends BaseEntity {
         if (this.sections.contains(section)) {
             throw new IllegalStateException(ALREADY_ADDED_SECTION.getMessage());
         }
-    }
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public void update(Line updateLine) {
-        this.name = updateLine.getName();
-        this.color = updateLine.getColor();
-    }
-
-    public LineStations findSortedLineStations() {
-        return this.sections.findSortedStations();
     }
 }
