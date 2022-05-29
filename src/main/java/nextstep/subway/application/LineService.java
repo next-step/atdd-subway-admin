@@ -34,7 +34,9 @@ public class LineService {
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findLineAndStations();
-        return lines.stream().map(LineResponse::of).collect(Collectors.toList());
+        return lines.stream()
+	        .map(LineResponse::of)
+	        .collect(Collectors.toList());
     }
 
     public LineResponse findLine(Long id) {
