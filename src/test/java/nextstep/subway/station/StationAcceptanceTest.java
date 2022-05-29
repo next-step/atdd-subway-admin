@@ -11,14 +11,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Sql("classpath:truncate.sql")
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
@@ -46,10 +45,10 @@ public class StationAcceptanceTest {
         // when
         final String creatStationName = "강남역";
 
-        Station savedStation = 지하철역_생성(creatStationName).as(Station.class);
+        Station savedStation = 역_객체로_변환(지하철역_생성(creatStationName));
 
         //Then
-        assertThat(savedStation.getName()).isEqualTo(creatStationName);
+        검색_결과_여부_확인(역_이름으로_검색(Collections.singletonList(savedStation), creatStationName), true);
     }
 
     /**
@@ -62,13 +61,13 @@ public class StationAcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         final String creatStationName = "강남역";
-        final Station savedStation = 지하철역_생성(creatStationName).as(Station.class);
+        final Station savedStations = 역_객체로_변환(지하철역_생성(creatStationName));
 
         //when
-        assertThat(savedStation.getName()).isEqualTo(creatStationName);
+        검색_결과_여부_확인(역_이름으로_검색(Collections.singletonList(savedStations), creatStationName), true);
 
         //Then
-        assertThat(HttpStatus.valueOf(지하철역_생성(creatStationName).statusCode())).isEqualTo(HttpStatus.BAD_REQUEST);
+        요청_성공_실패_여부_확인(지하철역_생성(creatStationName), HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -82,8 +81,8 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_검색();
 
         // then
-        assertThat(HttpStatus.valueOf(response.statusCode())).isEqualTo(HttpStatus.OK);
-        assertThat(response.jsonPath().getList(".", Station.class).isEmpty()).isTrue();
+        요청_성공_실패_여부_확인(response, HttpStatus.OK);
+        역_검색결과에_포함_여부_확인(역_객체_리스트로_변환(response), Collections.emptyList());
     }
 
     /**
@@ -101,10 +100,10 @@ public class StationAcceptanceTest {
         createdStations.add(지하철역_생성("또다른지하철역이름").as(Station.class));
 
         // when
-        List<Station> searchResult = 지하철역_검색().jsonPath().getList(".", Station.class);
+        List<Station> searchResult = 역_객체_리스트로_변환(지하철역_검색());
 
         // then
-        assertThat(searchResult.toArray(new Station[0])).containsExactly(createdStations.toArray(new Station[0]));
+        역_검색결과에_포함_여부_확인(searchResult, createdStations);
     }
 
     /**
@@ -122,11 +121,7 @@ public class StationAcceptanceTest {
         지하철역_삭제(savedStation.getId());
 
         // then
-        Optional<Station> isStation = 지하철역_검색().jsonPath().getList(".", Station.class).stream()
-                .filter(station -> Objects.equals(station.getName(), savedStation.getName()))
-                .findAny();
-
-        assertThat(isStation.isPresent()).isFalse();
+        검색_결과_여부_확인(역_이름으로_검색(역_객체_리스트로_변환(지하철역_검색()), savedStation.getName()), false);
     }
 
     /**
@@ -140,15 +135,13 @@ public class StationAcceptanceTest {
     void noContentDeleteStation() {
         final Long id = 100L;
         // Given
-        assertThat(
-                지하철역_검색().jsonPath().getList(".", Station.class)
-                .stream().anyMatch(station -> Objects.equals(station.getId(), id))).isFalse();
+        assertThat(역_아이디로_여부_확인(역_객체_리스트로_변환(지하철역_검색()), id)).isFalse();
 
         // when
         ExtractableResponse<Response> response = 지하철역_삭제(id);
 
         // then
-        assertThat(HttpStatus.valueOf(response.statusCode())).isEqualTo(HttpStatus.BAD_REQUEST);
+        요청_성공_실패_여부_확인(response, HttpStatus.BAD_REQUEST);
     }
 
     private ExtractableResponse<Response> 지하철역_생성(final String stationName) {
@@ -163,4 +156,33 @@ public class StationAcceptanceTest {
         return requestStation.deleteStation(index);
     }
 
+    private List<Station> 역_객체_리스트로_변환(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(".", Station.class);
+    }
+
+    private Optional<Station> 역_이름으로_검색(List<Station> stations, final String findStationName) {
+        return stations.stream()
+                .filter(station -> Objects.equals(station.getName(), findStationName))
+                .findAny();
+    }
+
+    private void 검색_결과_여부_확인(final Optional<Station> isStation, final boolean expectedResult) {
+        assertThat(isStation.isPresent()).isEqualTo(expectedResult);
+    }
+
+    private void 역_검색결과에_포함_여부_확인(final List<Station> searchResult, final List<Station> createdStations) {
+        assertThat(searchResult.toArray(new Station[0])).containsExactly(createdStations.toArray(new Station[0]));
+    }
+
+    private boolean 역_아이디로_여부_확인(List<Station> stations, final Long id) {
+        return  stations.stream().anyMatch(station -> Objects.equals(station.getId(), id));
+    }
+
+    private void 요청_성공_실패_여부_확인(ExtractableResponse<Response> response, HttpStatus status) {
+        assertThat(HttpStatus.valueOf(response.statusCode())).isEqualTo(status);
+    }
+
+    private Station 역_객체로_변환(ExtractableResponse<Response> response) {
+        return response.as(Station.class);
+    }
 }
