@@ -91,6 +91,7 @@ public class LineAcceptanceTest {
         assertThat(line).isNotNull();
         assertThat(line.getName()).isEqualTo("1호선");
         assertThat(line.getColor()).isEqualTo("color1");
+        assertThat(line.getDistance()).isEqualTo(100);
         assertThat(stationNames).containsExactly("서울역", "인천역");
     }
 
@@ -135,6 +136,7 @@ public class LineAcceptanceTest {
         assertThat(line.getId()).isNull();
         assertThat(line.getName()).isNull();
         assertThat(line.getColor()).isNull();
+        assertThat(line.getDistance()).isNull();
         assertThat(line.getStations().isEmpty()).isTrue();
     }
 }
