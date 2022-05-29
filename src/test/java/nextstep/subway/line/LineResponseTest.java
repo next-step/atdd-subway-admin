@@ -13,7 +13,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineResponseTest {
-
+    private static final Line line = new Line(1L,"신분당선", "bg-red-600", new Station(1L,"지하철역"), new Station(2L,"새로운지하철역"), 10L);
     private List<Station> stations;
     private LineResponse lineResponse;
 
@@ -30,11 +30,6 @@ public class LineResponseTest {
 
     @Test
     void ofTest() {
-        LineResponse lineResponse = LineResponse.of(
-                new Line("신분당선", "bg-red-600", 1L, 2L, 10L),
-                stations
-        );
-
-        assertThat(lineResponse).isEqualTo(lineResponse);
+        assertThat(LineResponse.of(line)).isEqualTo(lineResponse);
     }
 }
