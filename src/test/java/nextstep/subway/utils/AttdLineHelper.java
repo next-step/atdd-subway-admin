@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.MediaType;
 
-public class AttdLineUtils {
+public class AttdLineHelper {
 
     public static ExtractableResponse<Response> 지하철_노선_등록하기(
         String 노선_이름, String 색깔, String 상향종착점_ID, String 하향종착점_ID, String 거리

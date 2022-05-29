@@ -1,10 +1,10 @@
 package nextstep.subway.station;
 
-import static nextstep.subway.utils.AttdStationUtils.지하철목록_조회하기;
-import static nextstep.subway.utils.AttdStationUtils.지하철상세_조회하기;
-import static nextstep.subway.utils.AttdStationUtils.지하철역_만들기;
-import static nextstep.subway.utils.AttdStationUtils.지하철역_수정하기;
-import static nextstep.subway.utils.AttdStationUtils.지하철역_지우기;
+import static nextstep.subway.utils.AttdStationHelper.지하철목록_조회하기;
+import static nextstep.subway.utils.AttdStationHelper.지하철상세_조회하기;
+import static nextstep.subway.utils.AttdStationHelper.지하철역_만들기;
+import static nextstep.subway.utils.AttdStationHelper.지하철역_수정하기;
+import static nextstep.subway.utils.AttdStationHelper.지하철역_지우기;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
