@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.dto.LineRequest;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -42,6 +44,12 @@ public class Line extends BaseEntity {
         return this;
     }
 
+    public void updateLine(String name, String color, int distance) {
+        this.name = name;
+        this.color = color;
+        this.distance = new Distance(distance);
+    }
+
     public Long getId() {
         return id;
     }
@@ -64,10 +72,6 @@ public class Line extends BaseEntity {
 
     public Station getDownStation() {
         return downStation;
-    }
-
-    public void updateDistance(int distance) {
-        this.distance = new Distance(distance);
     }
 
     @Override
