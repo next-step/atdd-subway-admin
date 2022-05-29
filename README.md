@@ -52,3 +52,15 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+<br>
+
+---------------
+## 기능 목록
+### 인수테스트
+1. 지하철역 생성 인수 테스트
+   1. 지하철역을 생성한다.
+   2. 기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.
+2. 지하철역 목록 조회 인수 테스트
+   1. 지하철역 목록을 조회한다.
+3. 지하철역 삭제 인수 테스트
+   1. 지하철역을 삭제한다.
