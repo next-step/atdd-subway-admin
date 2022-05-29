@@ -6,6 +6,7 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,5 +62,14 @@ public class LineService {
     @Transactional
     public void deleteLine(Long lineId) {
         lineRepository.deleteById(lineId);
+    }
+
+    @Transactional
+    public Long addSection(Long lineId, SectionRequest request) {
+        Line findLine = findById(lineId);
+        Section section = sectionMapper.from(request);
+
+        findLine.addSection(section);
+        return findLine.getId();
     }
 }

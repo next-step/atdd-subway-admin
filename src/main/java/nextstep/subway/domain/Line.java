@@ -49,7 +49,7 @@ public class Line extends BaseEntity {
     }
 
     // 연관 관계 편의 메서드
-    private void addSection(Section section) {
+    public void addSection(Section section) {
         Objects.requireNonNull(section, "구간 정보가 필요합니다.");
 
         sections.add(section);

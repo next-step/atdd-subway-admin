@@ -27,7 +27,7 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    public Section(Integer distance, Station upStation, Station downStation) {
+    public Section(int distance, Station upStation, Station downStation) {
         this.distance = distance;
         this.upStation = upStation;
         this.downStation = downStation;
