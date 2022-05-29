@@ -7,44 +7,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.http.HttpStatus;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.comm.CustomExtractableResponse;
-import nextstep.subway.domain.Station;
+import nextstep.subway.CustomExtractableResponse;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-	private static final String BASIC_URL_STATIONS = "/stations";
+@TestMethodOrder(OrderAnnotation.class)
+public class StationAcceptanceTest extends CustomExtractableResponse{
 
-    @PersistenceUnit
-    private EntityManagerFactory entityManagerFactory;
-    
-	@LocalServerPort
-	int port;
-
-	@BeforeEach
-	public void setUp() {
-		if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-			RestAssured.port = port;
-		}
-	    EntityManager em = entityManagerFactory.createEntityManager();
-	    em.getTransaction().begin();
-	    em.createNativeQuery("delete from Station").executeUpdate();
-	    em.getTransaction().commit();
-	}
+	public static final String BASIC_URL_STATIONS = "/stations";
 
 	/**
 	 * When 지하철역을 생성하면 
@@ -53,12 +31,13 @@ public class StationAcceptanceTest {
 	 */
 	@DisplayName("지하철역을 생성한다.")
 	@Test
+	@Order(1)
 	void createStation() {
 		// when
 		ExtractableResponse<Response> Createresponse = 지하철_생성_요청("강남역");
 
 		// then
-		ExtractableResponse<Response> response = CustomExtractableResponse.get(BASIC_URL_STATIONS);
+		ExtractableResponse<Response> response = get(BASIC_URL_STATIONS);
 		List<String> stationNames = 지하철_리스트_이름_조회();
 		
 		assertAll(() -> assertThat(Createresponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
@@ -114,14 +93,11 @@ public class StationAcceptanceTest {
 	@Test
 	void deleteStation() {
 		// given
-		Long stationId = 지하철_생성_요청("강남역")
-				.jsonPath()
-					.getObject(".", Station.class)
-						.getId();
+		지하철_생성_요청("강남역");
 		
 		// when
-		String url = CustomExtractableResponse.joinUrl(BASIC_URL_STATIONS, stationId);
-		ExtractableResponse<Response> deleteResponse = CustomExtractableResponse.delete(url);
+		String url = CustomExtractableResponse.joinUrl(BASIC_URL_STATIONS, 1);
+		ExtractableResponse<Response> deleteResponse = delete(url);
 		List<String> stationNames = 지하철_리스트_이름_조회();
 
 		// then
@@ -132,11 +108,11 @@ public class StationAcceptanceTest {
 	private ExtractableResponse<Response> 지하철_생성_요청(String name) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);
-		return CustomExtractableResponse.post(BASIC_URL_STATIONS, params);
+		return post(BASIC_URL_STATIONS, params);
 	}
 	
 	private List<String> 지하철_리스트_이름_조회() {
-		return CustomExtractableResponse.get(BASIC_URL_STATIONS)
+		return get(BASIC_URL_STATIONS)
 				.jsonPath()
 					.getList("name", String.class);
 	}

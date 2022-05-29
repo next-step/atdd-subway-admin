@@ -29,7 +29,7 @@ public class LineService {
 	public LineResponse saveLine(LineRequest lineRequest) {
 		Optional<Station> upStation = stationRepository.findById(lineRequest.getUpStationId());
 		Optional<Station> downStation = stationRepository.findById(lineRequest.getDownStationId());
-
+		
 		Line line = lineRepository.save(lineRequest.toLine(upStation.get(), downStation.get()));
 		return LineResponse.of(line);
 	}

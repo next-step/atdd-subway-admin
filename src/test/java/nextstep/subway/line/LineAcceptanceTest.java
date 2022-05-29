@@ -10,58 +10,40 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
-
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.MethodMode;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.comm.CustomExtractableResponse;
+import nextstep.subway.CustomExtractableResponse;
+import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.StationResponse;
+import nextstep.subway.station.StationAcceptanceTest;
 
 @DisplayName("노선 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(methodMode = MethodMode.BEFORE_METHOD)
-public class LineAcceptanceTest {
-	private static final String BASIC_URL_LINES = "/lines";
-
-    @PersistenceUnit
-    private EntityManagerFactory entityManagerFactory;
-    
-	@LocalServerPort
-	int port;
-
-//    @Sql({"/sql/station/insert.sql"})
-	@BeforeEach
-	private void setUp() {
-		if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-			RestAssured.port = port;
-		}
-	    EntityManager em = entityManagerFactory.createEntityManager();
-	    em.getTransaction().begin();
-	    em.createNativeQuery("delete from Station where id in (1, 2, 3)").executeUpdate();
-	    em.createNativeQuery("insert into Station(id, name) values (1, '지하철역'), (2, '새로운지하철역'), (3, '또다른지하철역')").executeUpdate();
-	    em.getTransaction().commit();
-	}
+@TestMethodOrder(OrderAnnotation.class)
+public class LineAcceptanceTest extends CustomExtractableResponse{
+	public static final String BASIC_URL_LINES = "/lines";
 	
-	@AfterEach
-	private void cleanup() {
-	    EntityManager em = entityManagerFactory.createEntityManager();
-	    em.getTransaction().begin();
-	    em.createNativeQuery("truncate table Line").executeUpdate();
-	    em.createNativeQuery("ALTER TABLE Line ALTER COLUMN id RESTART WITH 1").executeUpdate();
-	    em.getTransaction().commit();
+	public Map<String, Long> stations = new HashMap<>();
+    
+	@BeforeEach
+	public void setUp() {
+		super.setUp();
+		지하철_생성_요청("지하철역");
+	    지하철_생성_요청("새로운지하철역");
+	    지하철_생성_요청("또다른지하철역");
+	    
+	    stations.clear();
+	    for(StationResponse s: 지하철_조회_요청()) {
+	    	stations.put(s.getName(), s.getId());
+	    }
 	}
 
 	/**
@@ -71,16 +53,18 @@ public class LineAcceptanceTest {
      */
     @DisplayName("노선을 생성한다.")
     @Test
+    @Order(1)
     void createLine() {
         // when
-        ExtractableResponse<Response> CreateResponse = 노선_생성_요청("신분당선", "bg-red-600", "1", "2", "10");
-        LineResponse createdLine =  CustomExtractableResponse.getObject(CreateResponse, LineResponse.class);
-        List<LineResponse> lines = 노선_리스트_조회(); 
+        ExtractableResponse<Response> CreateResponse = 
+        		노선_생성_요청("신분당선", "bg-red-600", stations.get("지하철역").toString(), stations.get("새로운지하철역").toString(), "10");
+        LineResponse createdLine = getObject(CreateResponse, LineResponse.class);
+        List<String> lines = 노선_리스트_이름_조회(); 
 
 		// then
 		assertAll(() -> assertThat(CreateResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
 				() -> assertNotNull(createdLine.getId()),
-				() -> assertEquals(createdLine.getId(), lines.get(0).getId()));
+				() -> assertThat(lines).containsAnyOf("신분당선"));
     }   
     
     /**
@@ -92,16 +76,17 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-    	노선_생성_요청("신분당선", "bg-red-600", "1", "2", "10");
-    	노선_생성_요청("분당선", "bg-green-600", "1", "3", "10");	
+    	노선_생성_요청("신분당선", "bg-red-600", stations.get("지하철역").toString(), stations.get("새로운지하철역").toString(), "10");
+    	노선_생성_요청("분당선", "bg-green-600", stations.get("지하철역").toString(), stations.get("또다른지하철역").toString(), "10");	
 		
 		// when
-        ExtractableResponse<Response> response = CustomExtractableResponse.get(BASIC_URL_LINES);
-        List<LineResponse> lines = 노선_리스트_조회();
-
+        ExtractableResponse<Response> response = get(BASIC_URL_LINES);
+        List<String> lines = 노선_리스트_이름_조회();
+        
 		// then
 		assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-				() -> assertThat(lines).hasSize(2));
+				() -> assertThat(lines).contains("신분당선"),
+				() -> assertThat(lines).contains("분당선"));
     }    
     
     /**
@@ -113,15 +98,14 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         // given
-		LineResponse createdLine = CustomExtractableResponse
-				.getObject(노선_생성_요청("신분당선", "bg-red-600", "1", "2", "10"), LineResponse.class);
-		노선_생성_요청("분당선", "bg-green-600", "1", "3", "10");
+    	노선_생성_요청("신분당선", "bg-red-600", stations.get("지하철역").toString(), stations.get("새로운지하철역").toString(), "10");
+    	노선_생성_요청("분당선", "bg-green-600", stations.get("지하철역").toString(), stations.get("또다른지하철역").toString(), "10");	
 		
         // when
-		LineResponse line = 노선_ID_조회(createdLine.getId());
+		LineResponse line = 노선_ID_조회(1L);
 
 		// then
-		assertEquals(createdLine.getId(), line.getId());
+		assertEquals(1L, line.getId());
     }    
 
     /**
@@ -133,10 +117,11 @@ public class LineAcceptanceTest {
     @Test
     void updateLine() {
         // given
-    	LineResponse createdLine = CustomExtractableResponse.getObject(노선_생성_요청("신분당선", "bg-red-600", "1", "2", "10"), LineResponse.class);
-    	노선_생성_요청("분당선", "bg-green-600", "1", "3", "10");
+    	노선_생성_요청("신분당선", "bg-red-600", stations.get("지하철역").toString(), stations.get("새로운지하철역").toString(), "10");
+    	노선_생성_요청("분당선", "bg-green-600", stations.get("지하철역").toString(), stations.get("또다른지하철역").toString(), "10");	
 		
         // when
+    	LineResponse createdLine = 노선_ID_조회(1L);
 		ExtractableResponse<Response> response = 노선_수정_요청(createdLine, "다른분당선", "bg-red-800");
 		LineResponse line = 노선_ID_조회(createdLine.getId());
 	    
@@ -156,22 +141,39 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         // given
-    	LineResponse createdLine = CustomExtractableResponse.getObject(노선_생성_요청("신분당선", "bg-red-600", "1", "2", "10"), LineResponse.class);
+    	노선_생성_요청("신분당선", "bg-red-600", stations.get("지하철역").toString(), stations.get("새로운지하철역").toString(), "10");
 		
         // when
+    	LineResponse createdLine = 노선_ID_조회(1L);
 		ExtractableResponse<Response> response = 노선_삭제_요청(createdLine);
 
 		// then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
-
+	
+	private List<StationResponse> 지하철_조회_요청() {
+		return getList(get(StationAcceptanceTest.BASIC_URL_STATIONS), StationResponse.class);
+	}
+    
+	private ExtractableResponse<Response> 지하철_생성_요청(String name) {
+		Map<String, String> params = new HashMap<>();
+		params.put("name", name);
+		return post(StationAcceptanceTest.BASIC_URL_STATIONS, params);
+	}
+	
 	private List<LineResponse> 노선_리스트_조회() {
-		return CustomExtractableResponse.getList(CustomExtractableResponse.get(BASIC_URL_LINES), LineResponse.class);
+		return getList(get(BASIC_URL_LINES), LineResponse.class);
+	}
+
+	private List<String> 노선_리스트_이름_조회() {
+		return get(BASIC_URL_LINES)
+				.jsonPath()
+					.getList("name", String.class);
 	}
 
 	private LineResponse 노선_ID_조회(Long id) {
 		String url = CustomExtractableResponse.joinUrl(BASIC_URL_LINES, id);
-		return CustomExtractableResponse.getObject(CustomExtractableResponse.get(url), LineResponse.class);
+		return getObject(get(url), LineResponse.class);
 	}
 
 	private ExtractableResponse<Response> 노선_생성_요청(String name, String color, String upStationId, String downStationId, String distance) {
@@ -181,7 +183,7 @@ public class LineAcceptanceTest {
 		params.put("upStationId", upStationId);
 		params.put("downStationId", downStationId);
 		params.put("distance", distance);
-		return CustomExtractableResponse.post(BASIC_URL_LINES, params);
+		return post(BASIC_URL_LINES, params);
 	}
 
 	private ExtractableResponse<Response> 노선_수정_요청(LineResponse createdLine, String name, String color) {
@@ -190,11 +192,11 @@ public class LineAcceptanceTest {
 		params.put("color", color);
 
 		String url = CustomExtractableResponse.joinUrl(BASIC_URL_LINES, createdLine.getId());
-		return CustomExtractableResponse.put(url, params);
+		return put(url, params);
 	}
 
 	private ExtractableResponse<Response> 노선_삭제_요청(LineResponse createdLine) {
 		String url = CustomExtractableResponse.joinUrl(BASIC_URL_LINES, createdLine.getId());
-		return CustomExtractableResponse.delete(url);
+		return delete(url);
 	}
 }
