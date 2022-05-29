@@ -85,7 +85,7 @@ public class LineAcceptanceTest {
         // when
         Line line = 지하철노선을_조회한다(lineId);
         List<Station> stations = line.getStations();
-        List<String> stationNames = stations.stream().map((station) -> line.getName()).collect(toList());
+        List<String> stationNames = stations.stream().map((station) -> station.getName()).collect(toList());
 
         // then
         assertThat(line).isNotNull();

@@ -32,4 +32,15 @@ public class LineService {
     public List<Line> getLines() {
         return lineRepository.findAll();
     }
+
+    public Line getLine(Long lineId) {
+        return lineRepository.getById(lineId);
+    }
+
+    @Transactional
+    public void updateLine(Long lineId, LineRequest lineRequest) {
+        Line line = lineRepository.getById(lineId);
+        line.updateLine(lineRequest.getName(),lineRequest.getColor());
+        lineRepository.save(line);
+    }
 }

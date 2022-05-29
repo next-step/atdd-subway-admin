@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,6 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Line extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,5 +56,10 @@ public class Line extends BaseEntity{
 
     public List<Station> getStations() {
         return stations;
+    }
+
+    public void updateLine(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 }
