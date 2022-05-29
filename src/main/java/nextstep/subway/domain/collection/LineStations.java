@@ -16,8 +16,6 @@ import nextstep.subway.domain.Station;
 @Embeddable
 public class LineStations {
 
-    private static final int START = 0;
-
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
     @JoinColumn(name = "line_id",foreignKey = @ForeignKey(name = "fk_line_station_to_line"))
     private List<LineStation> lineStations = new ArrayList<>();
@@ -39,24 +37,13 @@ public class LineStations {
         if (addBetween(line, upStation, downStation, distance)) {
             return true;
         }
-        if (addStartSection(line, upStation, downStation, distance)) {
-            return true;
-        }
-        return addEndSection(line, upStation, downStation, distance);
+        return addStartOrEndSection(line, upStation, downStation, distance);
     }
 
-    private boolean addStartSection(Line line, Station upStation, Station downStation, long distance) {
+    private boolean addStartOrEndSection(Line line, Station upStation, Station downStation, long distance) {
         LineStation startStation = findUpStation(downStation);
-        if(startStation != null){
-            lineStations.add(START,new LineStation(line, upStation, downStation, distance));
-            return true;
-        }
-        return false;
-    }
-
-    private boolean addEndSection(Line line, Station upStation, Station downStation, long distance) {
         LineStation endStation = findDownStation(upStation);
-        if(endStation != null){
+        if(startStation != null || endStation != null){
             lineStations.add(new LineStation(line, upStation, downStation, distance));
             return true;
         }
@@ -103,4 +90,7 @@ public class LineStations {
         }
     }
 
+    public void orderSections() {
+
+    }
 }
