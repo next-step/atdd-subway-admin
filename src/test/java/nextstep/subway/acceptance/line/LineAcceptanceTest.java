@@ -13,21 +13,16 @@ import nextstep.subway.acceptance.base.BaseAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철노선 관련 기능")
 class LineAcceptanceTest extends BaseAcceptanceTest {
-    @LocalServerPort
-    int port;
     long upStationId;
     long downStationId;
     @BeforeEach
-    void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
+    protected void setUp() {
+        super.setUp();
         // Given
         upStationId = 지하철역_생성_요청("지하철역").jsonPath().getLong("id");
         downStationId = 지하철역_생성_요청("새로운지하철역").jsonPath().getLong("id");

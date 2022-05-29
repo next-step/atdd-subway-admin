@@ -13,7 +13,7 @@ public abstract class BaseAcceptanceTest {
     int port;
 
     @BeforeEach
-    void setUp() {
+    protected void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
