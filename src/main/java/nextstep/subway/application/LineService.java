@@ -30,9 +30,7 @@ public class LineService {
                 .orElseThrow(() -> new NotFoundException("등록된 지하철역이 없습니다."));
         Station downStation = stationRepository.findById(lineRequest.getDownStationId())
                 .orElseThrow(() -> new NotFoundException("등록된 지하철역이 없습니다."));
-        Line line = lineRequest.toLine();
-        line.addUpStation(upStation);
-        line.addDownStation(downStation);
+        Line line = lineRequest.toLine(upStation, downStation);
         Line persistStation = lineRepository.save(line);
         return LineResponse.of(persistStation);
     }
@@ -44,11 +42,10 @@ public class LineService {
                 .orElseThrow(() -> new NotFoundException("등록된 지하철역이 없습니다."));
         Station downStation = stationRepository.findById(line.getDownStation().getId())
                 .orElseThrow(() -> new NotFoundException("등록된 지하철역이 없습니다."));
-        Line newLine = Line.builder(lineRequest.getName(), lineRequest.getColor(), line.getDistance())
+        Line newLine = Line.builder(lineRequest.getName(), lineRequest.getColor(), line.getDistance(), upStation,
+                        downStation)
                 .id(line.getId())
-                .build()
-                .addUpStation(upStation)
-                .addDownStation(downStation);
+                .build();
         Line persistStation = lineRepository.save(newLine);
         return LineResponse.of(persistStation);
     }

@@ -10,9 +10,11 @@ class LineTest {
     @DisplayName("상행 지하철역이 Null 일 경우 예외 테스트")
     @Test
     void createLineByNullUpStation() {
-        assertThatThrownBy(() -> Line.builder("신분당선", "bg-red-600", 10)
-                .build()
-                .addUpStation(null))
+        Station downStation = Station.builder("새로운지하철역")
+                .id(1L)
+                .build();
+        assertThatThrownBy(() -> Line.builder("신분당선", "bg-red-600", 10, null, downStation)
+                .build())
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("상행역 정보가 없습니다.");
     }
@@ -20,9 +22,11 @@ class LineTest {
     @DisplayName("하행 지하철역이 Null 일 경우 예외 테스트")
     @Test
     void createLineByNullDownStation() {
-        assertThatThrownBy(() -> Line.builder("신분당선", "bg-red-600", 10)
-                .build()
-                .addDownStation(null))
+        Station upStation = Station.builder("지하철역")
+                .id(1L)
+                .build();
+        assertThatThrownBy(() -> Line.builder("신분당선", "bg-red-600", 10, upStation, null)
+                .build())
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("하행역 정보가 없습니다.");
     }

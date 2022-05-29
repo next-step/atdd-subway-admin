@@ -33,10 +33,8 @@ class LineRepositoryTest {
                 .build();
         Station save1 = stationRepository.save(upStation);
         Station save2 = stationRepository.save(downStation);
-        line = Line.builder("신분당선", "bg-red-600", 10)
-                .build()
-                .addUpStation(save1)
-                .addDownStation(save2);
+        line = Line.builder("신분당선", "bg-red-600", 10, save1, save2)
+                .build();
     }
 
     @DisplayName("노선 저장 테스트")

@@ -48,16 +48,12 @@ class LineServiceTest {
         downStation = Station.builder("새로운지하철역")
                 .id(2L)
                 .build();
-        line = Line.builder("신분당선", "bg-red-600", 10)
+        line = Line.builder("신분당선", "bg-red-600", 10, upStation, downStation)
                 .id(1L)
-                .build()
-                .addUpStation(upStation)
-                .addDownStation(downStation);
-        line2 = Line.builder("신분당선", "bg-blue-600", 10)
+                .build();
+        line2 = Line.builder("신분당선", "bg-blue-600", 10, upStation, downStation)
                 .id(1L)
-                .build()
-                .addUpStation(upStation)
-                .addDownStation(downStation);
+                .build();
         lineRequest = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
         lineRequest2 = new LineRequest("신분당선", "bg-blue-600", 1L, 2L, 10);
         lineResponse = LineResponse.of(line);
@@ -68,9 +64,7 @@ class LineServiceTest {
     void saveLine() {
         when(stationRepository.findById(lineRequest.getUpStationId())).thenReturn(Optional.of(upStation));
         when(stationRepository.findById(lineRequest.getDownStationId())).thenReturn(Optional.of(downStation));
-        Line line = lineRequest.toLine();
-        line.addUpStation(upStation);
-        line.addDownStation(downStation);
+        Line line = lineRequest.toLine(upStation, downStation);
         when(lineRepository.save(line)).thenReturn(this.line);
         LineResponse lineResponse = lineService.saveLine(lineRequest);
         assertAll(
@@ -96,11 +90,10 @@ class LineServiceTest {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         when(stationRepository.findById(lineRequest2.getUpStationId())).thenReturn(Optional.of(upStation));
         when(stationRepository.findById(lineRequest2.getDownStationId())).thenReturn(Optional.of(downStation));
-        Line line = Line.builder(lineRequest2.getName(), lineRequest2.getColor(), lineRequest2.getDistance())
+        Line line = Line.builder(lineRequest2.getName(), lineRequest2.getColor(), lineRequest2.getDistance(), upStation,
+                        downStation)
                 .id(1L)
-                .build()
-                .addUpStation(upStation)
-                .addDownStation(downStation);
+                .build();
 
         when(lineRepository.save(line)).thenReturn(this.line2);
         LineResponse lineResponse = lineService.updateLine(line.getId(), lineRequest2);

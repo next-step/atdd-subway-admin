@@ -41,10 +41,12 @@ public class Line extends BaseEntity {
         this.name = lineBuilder.name;
         this.color = lineBuilder.color;
         this.distance = lineBuilder.distance;
+        this.upStation = lineBuilder.upStation;
+        this.downStation = lineBuilder.downStation;
     }
 
-    public static LineBuilder builder(String name, String color, int distance) {
-        return new LineBuilder(name, color, distance);
+    public static LineBuilder builder(String name, String color, int distance, Station upStation, Station downStation) {
+        return new LineBuilder(name, color, distance, upStation, downStation);
     }
 
     public static class LineBuilder {
@@ -52,12 +54,16 @@ public class Line extends BaseEntity {
         private final String name;
         private final String color;
         private final int distance;
+        private final Station upStation;
+        private final Station downStation;
 
-        private LineBuilder(String name, String color, int distance) {
-            validateParameter(name, color);
+        private LineBuilder(String name, String color, int distance, Station upStation, Station downStation) {
+            validateParameter(name, color, upStation, downStation);
             this.name = name;
             this.color = color;
             this.distance = distance;
+            this.upStation = upStation;
+            this.downStation = downStation;
         }
 
         public LineBuilder id(Long id) {
@@ -65,9 +71,11 @@ public class Line extends BaseEntity {
             return this;
         }
 
-        private void validateParameter(String name, String color) {
+        private void validateParameter(String name, String color, Station upStation, Station downStation) {
             validateNameNotNull(name);
             validateColorNotNull(color);
+            validateUpStationNotNull(upStation);
+            validateDownStationNotNull(downStation);
         }
 
         private void validateNameNotNull(String name) {
@@ -82,32 +90,20 @@ public class Line extends BaseEntity {
             }
         }
 
+        private void validateUpStationNotNull(Station upStation) {
+            if (Objects.isNull(upStation)) {
+                throw new NotFoundException("상행역 정보가 없습니다.");
+            }
+        }
+
+        private void validateDownStationNotNull(Station downStation) {
+            if (Objects.isNull(downStation)) {
+                throw new NotFoundException("하행역 정보가 없습니다.");
+            }
+        }
+
         public Line build() {
             return new Line(this);
-        }
-    }
-
-    public Line addUpStation(Station upStation) {
-        validateUpStationNotNull(upStation);
-        this.upStation = upStation;
-        return this;
-    }
-
-    public Line addDownStation(Station downStation) {
-        validateDownStationNotNull(downStation);
-        this.downStation = downStation;
-        return this;
-    }
-
-    private void validateUpStationNotNull(Station upStation) {
-        if (Objects.isNull(upStation)) {
-            throw new NotFoundException("상행역 정보가 없습니다.");
-        }
-    }
-
-    private void validateDownStationNotNull(Station downStation) {
-        if (Objects.isNull(downStation)) {
-            throw new NotFoundException("하행역 정보가 없습니다.");
         }
     }
 
