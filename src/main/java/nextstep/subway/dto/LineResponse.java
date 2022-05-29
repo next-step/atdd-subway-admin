@@ -16,7 +16,7 @@ public class LineResponse {
     private final LocalDateTime createdDate;
     private final LocalDateTime modifiedDate;
 
-    public LineResponse(final Long id, final String name, final String color, final List<Station> stations, final LocalDateTime createdDate, final  LocalDateTime modifiedDate) {
+    public LineResponse(final Long id, final String name, final String color, final List<Station> stations, final LocalDateTime createdDate, final LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -38,6 +38,26 @@ public class LineResponse {
 
     public Long getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public List<Station> getStations() {
+        return stations;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public LocalDateTime getModifiedDate() {
+        return modifiedDate;
     }
 
     public boolean isContainsBy(final Station station) {

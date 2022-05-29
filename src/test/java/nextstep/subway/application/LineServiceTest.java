@@ -11,11 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
+import javax.transaction.Transactional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @SpringBootTest
+@Transactional
 public class LineServiceTest {
 
     public static LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10L);

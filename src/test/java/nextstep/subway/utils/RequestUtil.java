@@ -33,6 +33,10 @@ public class RequestUtil {
         return this.request(()->body, CREATE , LINE_URL);
     }
 
+    public ExtractableResponse<Response> getLine() {
+        return this.request(HashMap::new, SEARCH_ALL , LINE_URL);
+    }
+
     public ExtractableResponse<Response> createStation(final String stationName) {
         return this.request(() -> makeBody(INVALID_KEY, stationName), CREATE , STATION_URL);
     }

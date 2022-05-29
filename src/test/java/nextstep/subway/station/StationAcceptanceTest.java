@@ -179,7 +179,7 @@ public class StationAcceptanceTest {
         return  stations.stream().anyMatch(station -> Objects.equals(station.getId(), id));
     }
 
-    private Station 역_객체로_변환(ExtractableResponse<Response> response) {
+    public static Station 역_객체로_변환(ExtractableResponse<Response> response) {
         return response.as(Station.class);
     }
 }
