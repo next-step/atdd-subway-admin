@@ -117,16 +117,36 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        //given
+        createStationRequest("강남역");
+        final Long jamsil = createStationRequest("잠실역");
+
+        //when
+        RestAssured.given().log().all()
+                .when().delete("/stations/" + jamsil)
+                .then().log().all();
+
+        //then
+        final List<String> stationNames = RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
+
+        //then
+        assertThat(stationNames.size()).isEqualTo(1);
+        assertThat(stationNames).containsAnyOf("강남역");
+        assertThat(stationNames).doesNotContain("잠실역");
     }
 
-    private void createStationRequest(final String name) {
+    private Long createStationRequest(final String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
-        RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
-                .then().log().all();
+                .then().log().all()
+                .extract().jsonPath().getLong("id");
     }
 }
