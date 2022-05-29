@@ -15,7 +15,7 @@ import nextstep.subway.station.dto.StationResponse;
 public class Sections {
 
     private static final String NOT_LINKABLE_SECTION = "둘중 하나의 역이 등록이 되어 있어야 합니다.";
-    private static final String SECTION_DUPLICATION_ERROR = "같은 구간이 이미 등록 되어 있습니다.";
+    private static final String SECTION_DUPLICATION_ERROR = "상, 하행 지하철역이 같은 구간 이미 등록 되어 있습니다.";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -58,7 +58,7 @@ public class Sections {
     }
 
     private void validateDuplicateSection(Section section) {
-        if (sections.contains(section)) {
+        if (sections.stream().anyMatch(s -> s.isSameBothStation(section))) {
             throw new IllegalArgumentException(SECTION_DUPLICATION_ERROR);
         }
     }

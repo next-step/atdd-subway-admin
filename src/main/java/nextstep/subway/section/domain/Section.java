@@ -69,6 +69,11 @@ public class Section {
         this.line = line;
     }
 
+    public boolean isSameBothStation(Section other) {
+        return this.upStation.equals(other.upStation)
+                && this.downStation.equals(other.downStation);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
