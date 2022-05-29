@@ -60,13 +60,14 @@ class LineAcceptanceTest {
         setStationIds(중앙선,"청량리역","망우역");
     }
 
-    private void setStationIds(Map<String,Object> line, String upStationName, String downStationName) {
-        Map<String, Object> upStation = new HashMap<>();
-        Map<String, Object> downStation = new HashMap<>();
-        upStation.put("name", upStationName);
-        downStation.put("name", downStationName);
-        line.put("upStationId", ExtractUtils.extractId(requestCreate(upStation, StationAcceptanceTest.STATION_PATH)));
-        line.put("downStationId", ExtractUtils.extractId(requestCreate(downStation, StationAcceptanceTest.STATION_PATH)));
+    static ExtractableResponse<Response> createLine(Map<String, Object> lineParams, String upStationName, String downStationName) {
+        setStationIds(lineParams,upStationName,downStationName);
+        return requestCreate(lineParams, LINE_PATH);
+    }
+
+    private static void setStationIds(Map<String,Object> line, String upStationName, String downStationName) {
+        line.put("upStationId", ExtractUtils.extractId(StationAcceptanceTest.createStation(upStationName)));
+        line.put("downStationId", ExtractUtils.extractId(StationAcceptanceTest.createStation(downStationName)));
     }
 
     /**
