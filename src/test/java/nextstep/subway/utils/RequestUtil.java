@@ -75,6 +75,4 @@ public class RequestUtil {
                 path
         ).then().log().all().extract();
     }
-
-
 }

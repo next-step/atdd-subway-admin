@@ -160,6 +160,29 @@ public class LineAcceptanceTest {
         assertThat(lineResponse.getColor()).isEqualTo(searchResponse.getColor());
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("노선 추가 후 삭제하기")
+    @Test
+    void addAndDeleteTest() {
+        // Given
+        ExtractableResponse<Response> response = 지하철_노선_생성(
+                new LineRequest("신분당선", "bg-red-600", savedOldStation.getId(), savedNewStation.getId(), 10L)
+        );
+        요청_성공_실패_여부_확인(response, HttpStatus.CREATED);
+        LineResponse lineResponse = 객체로_변환(response);
+
+        // When
+        지하철_노선_삭제(lineResponse.getId());
+
+        // Then
+        assertThat(지하철노선이름으로_검색(객체리스트로_변환(지하철_노선_전체_검색()), "신분당선")).isFalse();
+
+    }
+
     private ExtractableResponse<Response> 지하철_노선_정보_업데이트(final Long id ,final LineRequest lineRequest) {
         return requestUtil.updateLine(id, convertMapBy(lineRequest));
     }
@@ -174,6 +197,10 @@ public class LineAcceptanceTest {
 
     private ExtractableResponse<Response> 지하철_노선_일부_검색(final Long id) {
         return requestUtil.searchLine(id);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_삭제(final Long id) {
+        return requestUtil.deleteLine(id);
     }
 
     private List<LineResponse> 객체리스트로_변환(ExtractableResponse<Response> response) {
