@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
@@ -47,14 +48,15 @@ public class Sections {
                 collect(Collectors.toSet());
     }
 
-    public void add(Section section) {
+    public void add(Section newSection) {
         if (sections.isEmpty()) {
-            sections.add(section);
+            sections.add(newSection);
             return;
         }
-        validateLinkableSection(section);
-        validateDuplicateSection(section);
-        sections.add(section);
+        validateLinkableSection(newSection);
+        validateDuplicateSection(newSection);
+        sections.forEach(s -> s.modifySectionFor(newSection));
+        sections.add(newSection);
     }
 
     private void validateDuplicateSection(Section section) {
@@ -74,4 +76,20 @@ public class Sections {
         return !findAllStations().contains(station);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Sections sections1 = (Sections) o;
+        return Objects.equals(sections, sections1.sections);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sections);
+    }
 }

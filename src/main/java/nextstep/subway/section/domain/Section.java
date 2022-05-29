@@ -17,6 +17,8 @@ import nextstep.subway.station.domain.Station;
 @Entity
 public class Section {
 
+    private static final String NEW_DISTANCE_BIGGER_ERROR = "새로운 구간의 길이가 기존의 길이보다 길수 없습니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -72,6 +74,25 @@ public class Section {
     public boolean isSameBothStation(Section other) {
         return this.upStation.equals(other.upStation)
                 && this.downStation.equals(other.downStation);
+    }
+
+    public void modifySectionFor(Section newSection) {
+        if (this.upStation.equals(newSection.upStation)) {
+            this.upStation = newSection.downStation;
+            changeDistance(newSection);
+        }
+        if (this.downStation.equals(newSection.downStation)) {
+            this.downStation = newSection.upStation;
+            changeDistance(newSection);
+        }
+    }
+
+    private void changeDistance(Section newSection) {
+        if (newSection.distance.isBiggerAndEqual(this.distance)) {
+            throw new IllegalArgumentException(NEW_DISTANCE_BIGGER_ERROR);
+        }
+        Distance newDistance = this.distance.minus(newSection.distance);
+        this.distance.update(newDistance);
     }
 
     @Override
