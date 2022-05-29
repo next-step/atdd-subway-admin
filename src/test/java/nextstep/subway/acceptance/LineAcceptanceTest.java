@@ -60,6 +60,9 @@ class LineAcceptanceTest {
         setStationIds(중앙선,"청량리역","망우역");
     }
 
+    static ExtractableResponse<Response> creatLine(Map<String, Object> lineParams) {
+        return requestCreate(lineParams, LINE_PATH);
+    }
     static ExtractableResponse<Response> createLine(Map<String, Object> lineParams, String upStationName, String downStationName) {
         setStationIds(lineParams,upStationName,downStationName);
         return requestCreate(lineParams, LINE_PATH);
