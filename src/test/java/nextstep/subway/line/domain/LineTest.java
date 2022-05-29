@@ -173,4 +173,25 @@ class LineTest {
         assertThat(lineStations).isEqualTo(LineStations.from(Arrays.asList(강남역, 양재역)));
     }
 
+    @DisplayName("지하철 노선에 중간역을 제거할 수 있다.")
+    @Test
+    void remove03() {
+        // given
+        Line 신분당선 = Line.of("신분당선", "RED");
+        Station 강남역 = Station.of(1L, "강남역");
+        Station 판교역 = Station.of(2L, "판교역");
+        Section 강남역_판교역_구간 = Section.of(강남역, 판교역, Distance.from(10));
+        신분당선.addSection(강남역_판교역_구간);
+
+        Station 양재역 = Station.of(3L, "양재역");
+        Section 강남역_양재역_구간 = Section.of(2L, 강남역, 양재역, Distance.from(1));
+        신분당선.addSection(강남역_양재역_구간);
+
+        // when
+        신분당선.removeStation(양재역);
+
+        // then
+        LineStations lineStations = 신분당선.findSortedLineStations();
+        assertThat(lineStations).isEqualTo(LineStations.from(Arrays.asList(강남역, 판교역)));
+    }
 }
