@@ -3,7 +3,6 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.domain.Line;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.StationRequest;
 import org.junit.jupiter.api.Assertions;
@@ -40,7 +39,9 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = 노선_생성(LineRequest.of("1호선","blue",1L,2L,10));
+        ExtractableResponse<Response> response = 노선_생성(
+                LineRequest.of("1호선","blue",1L,2L,10)
+        );
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
