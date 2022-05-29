@@ -8,13 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 public interface LineRepository extends JpaRepository<Line, Long> {
 
     @Query(value = "select l from Line l "
-        + "join fetch l.upStation "
-        + "join fetch l.downStation ")
+        + "join fetch l.sections s "
+        + "join fetch s.upStation "
+        + "join fetch s.downStation ")
     List<Line> findLineAndStations();
-
-    @Query(value = "select l from Line l "
-        + "join fetch l.upStation "
-        + "join fetch l.downStation "
-        + "where l.id = :id")
-    Optional<Line> findLineAndStationsById(Long id);
 }

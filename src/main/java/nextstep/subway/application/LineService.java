@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class LineService {
 
     private final LineRepository lineRepository;
@@ -23,43 +23,40 @@ public class LineService {
         this.stationService = stationService;
     }
 
-    @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = stationService.findById(lineRequest.getUpStationId());
         Station downStation = stationService.findById(lineRequest.getDownStationId());
         Line line = lineRepository.save(Line.of(lineRequest, upStation, downStation));
 
-        return LineResponse.of(line);
+        return LineResponse.from(line);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findLineAndStations();
         return lines.stream()
-	        .map(LineResponse::of)
+	        .map(LineResponse::from)
 	        .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.findLineAndStationsById(id)
-            .orElseThrow(() -> new NoSuchElementException("지하철 노선을 찾을 수 없습니다."));
-
-        return LineResponse.of(line);
+        Line line = findLineById(id);
+        return LineResponse.from(line);
     }
 
-    @Transactional
-    public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("지하철 노선을 찾을 수 없습니다."));
-        line.update(lineRequest);
-
-        return LineResponse.of(line);
+    public void updateLine(Long id, LineRequest lineRequest) {
+        Line line = findLineById(id);
+        line.update(lineRequest.getName(), lineRequest.getColor());
     }
 
-    @Transactional
     public void deleteLine(Long id) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("지하철 노선을 찾을 수 없습니다."));
-
+        Line line = findLineById(id);
         lineRepository.delete(line);
+    }
+
+    public Line findLineById(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("지하철 노선을 찾을 수 없습니다."));
     }
 }

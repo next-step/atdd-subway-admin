@@ -27,9 +27,6 @@ public class LineAcceptance {
             .extract();
     }
 
-    /**
-     * 지하철 노선을 조회한다
-     */
     public static ExtractableResponse<Response> 지하철_노선_조회(Long id) {
         return RestAssured.given().log().all()
             .when().get("/lines/" + id)
@@ -37,9 +34,6 @@ public class LineAcceptance {
             .extract();
     }
 
-    /**
-     * 지하철 노선 목록을 조회한다
-     */
     public static ExtractableResponse<Response> 지하철_노선_목록_조회() {
         return RestAssured.given().log().all()
             .when().get("/lines")
@@ -47,9 +41,6 @@ public class LineAcceptance {
             .extract();
     }
 
-    /**
-     * 지하철 노선을 수정한다
-     */
     public static ExtractableResponse<Response> 지하철_노선_수정(Long id, String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
@@ -63,9 +54,6 @@ public class LineAcceptance {
             .extract();
     }
 
-    /**
-     * 지하철 노선을 삭제한다
-     */
     public static ExtractableResponse<Response> 지하철_노선_삭제(Long id) {
         return RestAssured.given().log().all()
             .when().delete("/lines/" + id)

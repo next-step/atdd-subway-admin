@@ -1,8 +1,11 @@
 package nextstep.subway.dto;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
 
 public class LineResponse {
 
@@ -18,11 +21,14 @@ public class LineResponse {
         this.stations = list;
     }
 
-    public static LineResponse of(Line line) {
-        List<StationResponse> stations = Arrays.asList(StationResponse.of(line.getUpStation()),
-            StationResponse.of(line.getDownStation()));
+    public static LineResponse from(Line line) {
+        Set<StationResponse> stations = new HashSet<>();
+        for (Section section : line.getSections()) {
+            stations.add(StationResponse.of(section.getUpStation()));
+            stations.add(StationResponse.of(section.getDownStation()));
+        }
 
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>(stations));
     }
 
     public Long getId() {

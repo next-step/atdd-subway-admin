@@ -28,8 +28,13 @@ public class LineRequest {
         return distance;
     }
 
-    private LineRequest(String name, String color, Long upStationId, Long downStationId,
-        Long distance) {
+    private LineRequest(
+        String name,
+        String color,
+        Long upStationId,
+        Long downStationId,
+        Long distance
+    ) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
