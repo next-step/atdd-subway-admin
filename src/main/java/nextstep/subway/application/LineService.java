@@ -67,7 +67,7 @@ public class LineService {
     }
 
     @Transactional
-    public void removeSection(Long lineId, Long stationId) {
+    public void removeSectionByStationId(Long lineId, Long stationId) {
         Line line = getLine(lineId);
         Station station = getStation(stationId);
         line.removeSection(station);

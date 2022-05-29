@@ -32,10 +32,8 @@ public class Sections {
     public void removeSection(Station station) {
         Section sectionIncludeUpStation = sections.stream()
                 .filter(section -> section.getUpStation().equals(station)).findFirst().get();
-
         Section sectionIncludeDownStation = sections.stream()
                 .filter(section -> section.getDownStation().equals(station)).findFirst().get();
-
 
         sections.remove(sectionIncludeDownStation);
         sections.remove(sectionIncludeUpStation);

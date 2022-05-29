@@ -76,4 +76,12 @@ public class LineRestAssured {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> 노선_구간_삭제(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .queryParam("stationId", stationId)
+                .when().delete(RESOURCE + "/{id}/sections", lineId)
+                .then().log().all()
+                .extract();
+    }
 }

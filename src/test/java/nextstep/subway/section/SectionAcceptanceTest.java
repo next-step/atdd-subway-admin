@@ -14,8 +14,7 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.line.LineRestAssured.노선_구간_추가;
-import static nextstep.subway.line.LineRestAssured.노선_등록;
+import static nextstep.subway.line.LineRestAssured.*;
 import static nextstep.subway.station.StationRestAssured.지하철역_등록;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -143,5 +142,22 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 강남역(상행) 판교역(하행)인 신분당선 노선에 강남역(상행) 양재역(하행) 구간 길이를 같은 값을 추가하면
+     * Then 구간삭제 성공
+     */
+    @DisplayName("노선에 구간을 제거한다.")
+    @Test
+    void 지하철역_구간삭제_성공() {
+        // given
+        노선_구간_추가(신분당선.getId(), 강남역.getId(), 양재역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> response = 노선_구간_삭제(신분당선.getId(), 양재역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }
