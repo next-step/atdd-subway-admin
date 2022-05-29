@@ -6,12 +6,14 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,19 +32,19 @@ public class LineService {
         Station upStation = stationRepository.getById(lineRequest.getUpStationId());
         Station downStation = stationRepository.getById(lineRequest.getDownStationId());
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
-        return LineResponse.of(persistLine);
+        return LineResponse.of(persistLine, generateStationResponses(persistLine));
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
-                .map(line -> LineResponse.of(line))
+                .map(line -> LineResponse.of(line, generateStationResponses(line)))
                 .collect(Collectors.toList());
     }
 
     public LineResponse findLineById(Long id) {
         return lineRepository.findById(id)
-                .map(line -> LineResponse.of(line))
+                .map(line -> LineResponse.of(line, generateStationResponses(line)))
                 .orElseThrow(() -> new NoSuchElementException());
     }
 
@@ -55,5 +57,9 @@ public class LineService {
     @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    private List<StationResponse> generateStationResponses(Line line) {
+        return Arrays.asList(StationResponse.of(line.getUpStation()), StationResponse.of(line.getDownStation()));
     }
 }

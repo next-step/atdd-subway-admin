@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -91,10 +92,12 @@ public class LineAcceptanceTest {
 
         //when
         String lineName = lineName(노선_단건_조회(id_1호선));
+        List<Station> stations = stations(노선_단건_조회(id_1호선));
 
         //then
         assertAll(
-                () -> assertThat(lineName).isEqualTo("1호선")
+                () -> assertThat(lineName).isEqualTo("1호선"),
+                () -> assertThat(stations.size()).isEqualTo(2)
         );
     }
 
@@ -112,12 +115,12 @@ public class LineAcceptanceTest {
         );
 
         //when
-        LineRequest newLine = LineRequest.of("신_1호선", "skyblue", 1L, 2L, 10);
+        LineRequest newLine = LineRequest.of("1호선_new", "skyblue", 1L, 2L, 10);
         노선_수정(created.jsonPath().getLong("id"), newLine);
         ExtractableResponse<Response> response = 노선_단건_조회(created.jsonPath().getLong("id"));
 
         //then
-        assertThat(lineName(response)).isEqualTo("신_1호선");
+        assertThat(lineName(response)).isEqualTo("1호선_new");
     }
 
     /**
@@ -157,6 +160,10 @@ public class LineAcceptanceTest {
 
     private String lineName(ExtractableResponse<Response> response) {
         return response.jsonPath().getString("name");
+    }
+
+    private List<Station> stations(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList("stations");
     }
 
     private Long getId(ExtractableResponse<Response> response) {
