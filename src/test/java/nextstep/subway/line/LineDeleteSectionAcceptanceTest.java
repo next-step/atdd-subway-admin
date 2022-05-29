@@ -4,6 +4,7 @@ import static nextstep.subway.line.LineAcceptanceTestMethods.지하철노선_조
 import static nextstep.subway.line.LineAddSectionAcceptanceTestMethods.지하철_노선에_새로운_구간_추가;
 import static nextstep.subway.line.LineAddSectionAcceptanceTestMethods.지하철_역_정렬됨;
 import static nextstep.subway.line.LineDeleteSectionAcceptanceTestMethods.지하철_노선에_역_제거;
+import static nextstep.subway.line.LineDeleteSectionAcceptanceTestMethods.지하철_노선에_역_제거됨;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -50,7 +51,8 @@ public class LineDeleteSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_새로운_구간_추가(신분당선.getId(), 강남역_양재역_구간);
 
         // when
-        지하철_노선에_역_제거(신분당선.getId(), 강남역.getId());
+        ExtractableResponse<Response> response = 지하철_노선에_역_제거(신분당선.getId(), 강남역.getId());
+        지하철_노선에_역_제거됨(response);
 
         // when
         ExtractableResponse<Response> findLineResponse = 지하철노선_조회(신분당선.getId());
@@ -74,7 +76,8 @@ public class LineDeleteSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_새로운_구간_추가(신분당선.getId(), 강남역_양재역_구간);
 
         // when
-        지하철_노선에_역_제거(신분당선.getId(), 양재역.getId());
+        ExtractableResponse<Response> response = 지하철_노선에_역_제거(신분당선.getId(), 양재역.getId());
+        지하철_노선에_역_제거됨(response);
 
         // when
         ExtractableResponse<Response> findLineResponse = 지하철노선_조회(신분당선.getId());

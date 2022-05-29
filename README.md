@@ -193,7 +193,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   * 이 때 구간의 거리는 두 구간의 합이다.
     
 - [X]  인수 테스트를 위한 구간 제거 API 개발
-- [ ]  인수 테스트 패스
+- [X]  구간 제거 인수 테스트 패스
     
 **구간 삭제 시 예외 케이스 고려하기**
 - [ ]  인수 조건 : 노선에 등록되어 있지 않은 역을 제거하는 경우 제거할 수 없다.
