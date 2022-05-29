@@ -1,5 +1,6 @@
 package nextstep.subway.application;
 
+import nextstep.subway.consts.ErrorMessage;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -30,8 +31,8 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationRepository.getById(lineRequest.getUpStationId());
-        Station downStation = stationRepository.getById(lineRequest.getDownStationId());
+        Station upStation = findStation(lineRequest.getUpStationId());
+        Station downStation = findStation(lineRequest.getDownStationId());
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.of(persistLine, generateStationResponses(persistLine));
     }
@@ -46,12 +47,13 @@ public class LineService {
     public LineResponse findLineById(Long id) {
         return lineRepository.findById(id)
                 .map(line -> LineResponse.of(line, generateStationResponses(line)))
-                .orElseThrow(() -> new NoSuchElementException());
+                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.ERROR_LINE_NOT_EXIST));
     }
 
     @Transactional
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException());
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.ERROR_LINE_NOT_EXIST));
         line.update(lineUpdateRequest.toLine(line.getUpStation(), line.getDownStation(), line.getDistance()));
     }
 
@@ -62,5 +64,10 @@ public class LineService {
 
     private List<StationResponse> generateStationResponses(Line line) {
         return Arrays.asList(StationResponse.of(line.getUpStation()), StationResponse.of(line.getDownStation()));
+    }
+
+    private Station findStation(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.ERROR_STATION_NOT_EXIST));
     }
 }
