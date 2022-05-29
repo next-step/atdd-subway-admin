@@ -1,5 +1,6 @@
 package nextstep.subway.application;
 
+import java.util.NoSuchElementException;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class StationService {
+
     private StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
@@ -25,12 +27,18 @@ public class StationService {
         return StationResponse.of(persistStation);
     }
 
+    public Station findById(Long id) {
+        return stationRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("해당 지하철역을 찾을 수 없습니다."));
+    }
+
+
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-                .map(station -> StationResponse.of(station))
-                .collect(Collectors.toList());
+            .map(StationResponse::of)
+            .collect(Collectors.toList());
     }
 
     @Transactional
