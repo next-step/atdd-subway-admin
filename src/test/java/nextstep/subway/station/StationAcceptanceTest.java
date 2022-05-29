@@ -1,21 +1,26 @@
 package nextstep.subway.station;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
+import nextstep.subway.dto.StationRequest;
+import nextstep.subway.dto.StationResponse;
+import nextstep.subway.dto.StationResponses;
+import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,11 +30,16 @@ public class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
+
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
+            databaseCleanup.afterPropertiesSet();
         }
+        databaseCleanup.execute();
     }
 
     /**
@@ -41,15 +51,14 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ValidatableResponse response = createStation("강남역");
+        ValidatableResponse createResponse = 지하철역_등록("강남역");
 
         // then
-        assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        응답_검증(createResponse, HttpStatus.CREATED);
 
         // then
-        List<String> stationNames = getJsonPathForResponse(getResponseForStationList())
-                .getList("name", String.class);
-        assertThat(stationNames).containsAnyOf("강남역");
+        StationResponses responses = new StationResponses(목록_조회("/stations", StationResponse.class));
+        개수_검증(responses.getList(), 1);
     }
 
     /**
@@ -61,13 +70,13 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        createStation("강남역");
+        지하철역_등록("강남역");
 
         // when
-        ValidatableResponse response = createStation("강남역");
+        ValidatableResponse response = 지하철역_등록("강남역");
 
         // then
-        assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        응답_검증(response, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -79,15 +88,14 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        createStation("잠실역");
-        createStation("강남역");
+        지하철역_등록("잠실역");
+        지하철역_등록("강남역");
 
         // when
-        int numberOfStations = getJsonPathForResponse(getResponseForStationList())
-                .getList("$").size();
+        StationResponses responses = new StationResponses(목록_조회("/stations", StationResponse.class));
 
         // then
-        assertThat(numberOfStations).isEqualTo(2);
+        개수_검증(responses.getList(), 2);
     }
 
     /**
@@ -99,44 +107,63 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ValidatableResponse response = createStation("강남역");
-        long createdStationId = getJsonPathForResponse(response)
-                .getLong("id");
+        ValidatableResponse response = 지하철역_등록("강남역");
+        StationResponse createdStation = 응답_객체_생성(response, StationResponse.class);
 
         // when
-        getResponseForStationDelete(createdStationId);
+        삭제("/stations", createdStation.getId());
 
         // then
-        int numberOfStations = getJsonPathForResponse(getResponseForStationList())
-                .getList("$").size();
-        assertThat(numberOfStations).isEqualTo(0);
+        StationResponses responses = new StationResponses(목록_조회("/stations", StationResponse.class));
+        개수_검증(responses.getList(), 0);
     }
 
-    private ValidatableResponse createStation(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
+    public static ValidatableResponse 지하철역_등록(String name) {
+        StationRequest request = new StationRequest(name);
 
         return RestAssured.given().log().all()
-                .body(params)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all();
     }
 
-    private void getResponseForStationDelete(long stationId) {
+    public static void 응답_검증(ValidatableResponse response, HttpStatus status) {
+        assertThat(response.extract().statusCode()).isEqualTo(status.value());
+    }
+
+    public static <T> List<T> 목록_조회(String path, Class<T> clazz) {
+        ValidatableResponse listResponse = RestAssured.given().log().all()
+                .when().get(path)
+                .then().log().all();
+        return getJsonPathForResponse(listResponse).getList("$", clazz);
+    }
+
+    public static <T> T 응답_객체_생성(ValidatableResponse createResponse, Class<T> clazz) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_SELF_REFERENCES_AS_NULL);
+
+        String body = createResponse.extract().body().asString();
+        try {
+            return mapper.readValue(body, clazz);
+        } catch (JsonProcessingException e) {
+            return null;
+        }
+    }
+
+    public static <T> void 개수_검증(List<T> list, int size) {
+        assertThat(list).hasSize(size);
+    }
+
+    public static void 삭제(String path, long deleteId) {
         RestAssured.given().log().all()
-                .pathParam("id", stationId)
-                .when().delete("/stations/{id}")
+                .pathParam("id", deleteId)
+                .when().delete(path + "/{id}")
                 .then().log().all();
     }
 
-    private JsonPath getJsonPathForResponse(ValidatableResponse response) {
+    public static JsonPath getJsonPathForResponse(ValidatableResponse response) {
         return response.extract().jsonPath();
-    }
-
-    private ValidatableResponse getResponseForStationList() {
-        return RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all();
     }
 }
