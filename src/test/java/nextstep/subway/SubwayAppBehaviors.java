@@ -1,6 +1,7 @@
 package nextstep.subway;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
@@ -40,7 +41,7 @@ public class SubwayAppBehaviors {
 
     public static List<Line> 지하철노선목록을_조회한다() {
         return RestAssured
-                .given().log().all()
+                .given().accept(ContentType.JSON).contentType(ContentType.JSON).log().all()
                 .when().get("/lines")
                 .then().log().all()
                 .extract().jsonPath().getList(".", Line.class);

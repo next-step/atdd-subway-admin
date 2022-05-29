@@ -34,6 +34,12 @@ public class Line extends BaseEntity{
     protected Line() {
     }
 
+    public Line(String name, String color, List<Station> stations) {
+        this.name = name;
+        this.color = color;
+        this.stations.addAll(stations);
+    }
+
     public Long getId() {
         return id;
     }
@@ -47,6 +53,6 @@ public class Line extends BaseEntity{
     }
 
     public List<Station> getStations() {
-        return Collections.unmodifiableList(stations);
+        return stations;
     }
 }
