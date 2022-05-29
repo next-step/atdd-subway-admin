@@ -6,6 +6,9 @@ import nextstep.subway.dto.SectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class SectionService {
     private final SectionRepository sectionRepository;
@@ -26,10 +29,10 @@ public class SectionService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
 
         Section section = new Section(upStation, downStation, sectionRequest.getDistance());
+
         line.addSection(section);
         lineService.flush();
 
         return LineResponse.of(line);
     }
-
 }

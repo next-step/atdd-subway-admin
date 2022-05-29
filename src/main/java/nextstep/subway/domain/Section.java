@@ -38,6 +38,28 @@ public class Section {
         this.distance = distance;
     }
 
+    public void stationCheck(Section section) {
+        if (this.upStation.equals(section.getUpStation())) {
+            distanceCheck(section);
+            changeDistance(this.distance - section.getDistance());
+            changeUpstation(section.getDownStation());
+        }
+    }
+
+    private void distanceCheck(Section section) {
+        if (this.distance <= section.getDistance()) {
+            throw new IllegalArgumentException("기존 역 사이 길이 보다 크거나 같으면 등록을 할 수 없습니다.");
+        }
+    }
+
+    public void changeDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public void changeUpstation(Station downStation) {
+        this.upStation = downStation;
+    }
+
     public Long getId() {
         return id;
     }

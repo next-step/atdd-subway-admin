@@ -37,8 +37,14 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
+        stationsCheck(section);
+
         sections.addSection(section);
         section.setLine(this);
+    }
+
+    private void stationsCheck(Section section) {
+        this.sections.stationsCheck(section);
     }
 
     public Long getId() {

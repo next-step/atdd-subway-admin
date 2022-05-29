@@ -3,8 +3,7 @@ package nextstep.subway.section;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.Section;
 import nextstep.subway.line.LineAcceptanceTest;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.util.DatabaseCleanup;
@@ -19,9 +18,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관련 기능")
 @ActiveProfiles("test")
@@ -62,12 +63,36 @@ public class SectionAcceptanceTest {
      * Then 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정된 지하철 구간이 생성된다.
      */
     @Test
-    void 역_사이에_새로운_역으로_지하철구간_생성() {
+    void 역_사이에_새로운_역을_기존_상행역과_같도록_지하철구간_생성() {
         // when
         ExtractableResponse<Response> response = createSection(line.jsonPath().getLong("id"), upStation.jsonPath().getLong("id"), newStation.jsonPath().getLong("id"), 7);
+        List<Section> sections = response.jsonPath().getList("sections", Section.class);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(sections.get(0).getDistance()).isEqualTo(3),
+                () -> assertThat(sections.get(1).getDistance()).isEqualTo(7)
+        );
+    }
+
+    /*
+     * Given 지하철 노선을 생성하고
+     * When 하행역이 기존 생성한 노선의 하행역과 동일하고 구간 길이가 더 짧은 새로운 지하철 구간을 생성하면
+     * Then 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정된 지하철 구간이 생성된다.
+     */
+    @Test
+    void 역_사이에_새로운_역을_기존_하행역과_같도록_지하철구간_생성() {
+        // when
+        ExtractableResponse<Response> response = createSection(line.jsonPath().getLong("id"), newStation.jsonPath().getLong("id"), downStation.jsonPath().getLong("id"), 7);
+        List<Section> sections = response.jsonPath().getList("sections", Section.class);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(sections.get(0).getDistance()).isEqualTo(7),
+                () -> assertThat(sections.get(1).getDistance()).isEqualTo(3)
+        );
     }
 
     /*

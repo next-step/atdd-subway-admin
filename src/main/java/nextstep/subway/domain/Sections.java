@@ -22,6 +22,12 @@ public class Sections {
         sections.add(section);
     }
 
+    public void stationsCheck(Section newSection) {
+        for (Section section : sections) {
+            section.stationCheck(newSection);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
