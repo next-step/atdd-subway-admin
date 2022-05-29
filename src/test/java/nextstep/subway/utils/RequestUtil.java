@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSenderOptions;
 import io.restassured.specification.RequestSpecification;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
@@ -23,6 +24,10 @@ public class RequestUtil {
     private static final String LINE_URL = "/lines";
 
     private static final String INVALID_KEY = "name";
+
+    public static void 요청_성공_실패_여부_확인(ExtractableResponse<Response> response, HttpStatus status) {
+        assertThat(HttpStatus.valueOf(response.statusCode())).isEqualTo(status);
+    }
 
     public ExtractableResponse<Response> createLine(final Map<String, String> body) {
         return this.request(()->body, CREATE , LINE_URL);

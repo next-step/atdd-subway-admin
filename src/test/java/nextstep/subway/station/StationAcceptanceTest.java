@@ -15,6 +15,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.*;
 
+import static nextstep.subway.utils.RequestUtil.요청_성공_실패_여부_확인;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Sql("classpath:truncate.sql")
@@ -176,10 +177,6 @@ public class StationAcceptanceTest {
 
     public static boolean 역_아이디로_여부_확인(List<Station> stations, final Long id) {
         return  stations.stream().anyMatch(station -> Objects.equals(station.getId(), id));
-    }
-
-    public static void 요청_성공_실패_여부_확인(ExtractableResponse<Response> response, HttpStatus status) {
-        assertThat(HttpStatus.valueOf(response.statusCode())).isEqualTo(status);
     }
 
     private Station 역_객체로_변환(ExtractableResponse<Response> response) {
