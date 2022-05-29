@@ -29,7 +29,8 @@ public class LineService {
         Station downStation = stationService.findById(lineRequest.getDownStationId());
 
         Line persistLine = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-        persistLine.addSection(new Section(persistLine, upStation, downStation, 10));
+
+        persistLine.addSection(new Section(persistLine, upStation, downStation, lineRequest.getDistance()));
         lineRepository.flush();
 
         return LineResponse.of(persistLine);
@@ -66,5 +67,9 @@ public class LineService {
     @Transactional
     public Line findById(Long id) {
         return lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException("해당 지하철 노선을 찾을 수 없습니다."));
+    }
+
+    public void flush() {
+        lineRepository.flush();
     }
 }

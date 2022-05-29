@@ -4,10 +4,10 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 
 public class SectionResponse {
-    private Long id;
-    private Station upStation;
-    private Station downStation;
-    private int distance;
+    private final Long id;
+    private final StationResponse upStation;
+    private final StationResponse downStation;
+    private final int distance;
 
     public static SectionResponse of(Section section) {
         return new SectionResponse(section.getId(), section.getUpStation(), section.getDownStation(), section.getDistance());
@@ -15,20 +15,28 @@ public class SectionResponse {
 
     public SectionResponse(Long id, Station upStation, Station downStation, int distance) {
         this.id = id;
-        this.upStation = upStation;
-        this.downStation = downStation;
+        this.upStation = StationResponse.of(upStation);
+        this.downStation = StationResponse.of(downStation);
         this.distance = distance;
     }
 
-    public Station getUpStation() {
+    public StationResponse getUpStation() {
         return upStation;
     }
 
-    public Station getDownStation() {
+    public StationResponse getDownStation() {
         return downStation;
     }
 
     public int getDistance() {
         return distance;
+    }
+
+    @Override
+    public String toString() {
+        return "SectionResponse{" +
+                "id=" + id +
+                ", distance=" + distance +
+                '}';
     }
 }

@@ -7,7 +7,7 @@ import java.util.Objects;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line")
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     protected Sections() {

@@ -1,9 +1,6 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.SectionRepository;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
 import org.springframework.stereotype.Service;
@@ -24,11 +21,13 @@ public class SectionService {
     @Transactional
     public LineResponse saveSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineService.findById(lineId);
+
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
 
-        Section section = sectionRepository.save(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        Section section = new Section(upStation, downStation, sectionRequest.getDistance());
         line.addSection(section);
+        lineService.flush();
 
         return LineResponse.of(line);
     }
