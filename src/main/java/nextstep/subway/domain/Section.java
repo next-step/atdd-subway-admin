@@ -8,7 +8,8 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer distance;
+    @Column(nullable = false)
+    private int distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_up_station"))
@@ -35,19 +36,11 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
-    public Integer getDistance() {
-        return distance;
-    }
-
     public Station getUpStation() {
         return upStation;
     }
 
     public Station getDownStation() {
         return downStation;
-    }
-
-    public Line getLine() {
-        return line;
     }
 }
