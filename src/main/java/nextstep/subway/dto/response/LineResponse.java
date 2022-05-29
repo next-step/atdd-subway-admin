@@ -14,7 +14,7 @@ public class LineResponse {
     private String color;
     private List<StationDTO> stations = new LinkedList<>();
 
-    public LineResponse(Long id, String name, LineColor lineColor, Station upStation, Station downStation) {
+    protected LineResponse(Long id, String name, LineColor lineColor, Station upStation, Station downStation) {
         this.id = id;
         this.name = name;
         this.color = lineColor.getColorName();
