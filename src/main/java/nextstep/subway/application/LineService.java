@@ -24,6 +24,7 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
+    @Transactional
     public LineResponse saveLine(final LineRequest lineRequest) {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId()).get();
         Station downStation = stationRepository.findById(lineRequest.getDownStationId()).get();
@@ -33,6 +34,11 @@ public class LineService {
     public List<LineResponse> findAllLine() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream().map(LineResponse::of).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
     }
 
     @Override
