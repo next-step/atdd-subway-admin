@@ -18,6 +18,10 @@ import org.springframework.boot.web.server.LocalServerPort;
 @DisplayName("지하철 구간 관련 기능")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class SectionAcceptanceTest {
+    private Long 애오개역_ID;
+    private Long 마포역_ID;
+    private Long 애오개역_마포역_노선_ID;
+
     @LocalServerPort
     int port;
 
@@ -28,6 +32,10 @@ public class SectionAcceptanceTest {
     void setUp() {
         RestAssured.port = port;
         databaseCleaner.cleanUp();
+
+        애오개역_ID = 지하철_역_생성_ID_추출("애오개역");
+        마포역_ID = 지하철_역_생성_ID_추출("마포역");
+        애오개역_마포역_노선_ID = 지하철_노선_생성_ID_추출(지하철_노선_정보_생성("5호선", "bg-red-600", 애오개역_ID, 마포역_ID, 10));
     }
 
     /**
@@ -38,14 +46,43 @@ public class SectionAcceptanceTest {
     @Test
     @DisplayName("기존 노선 구간 중간에 새로운 구간을 추가한다.")
     void addSection() {
-        Long 애오개역_ID = 지하철_역_생성_ID_추출("애오개역");
-        Long 마포역_ID = 지하철_역_생성_ID_추출("마포역");
-        Long 노선_ID = 지하철_노선_생성_ID_추출(지하철_노선_정보_생성("5호선", "bg-red-600", 애오개역_ID, 마포역_ID, 10));
-
         Long 공덕역_ID = 지하철_역_생성_ID_추출("공덕역");
-        Map<String, Object> 구간_정보 = 지하철_구간_정보_생성(애오개역_ID, 공덕역_ID, 5);
-        ExtractableResponse<Response> 지하철_노선_구간_추가_응답_결과 = 지하철_노선_구간_추가_요청(노선_ID, 구간_정보);
-
+        Map<String, Object> 애오개역_공덕역_구간_정보 = 지하철_구간_정보_생성(애오개역_ID, 공덕역_ID, 5);
+        ExtractableResponse<Response> 지하철_노선_구간_추가_응답_결과 = 지하철_노선_구간_추가_요청(애오개역_마포역_노선_ID, 애오개역_공덕역_구간_정보);
         수정_성공_확인(지하철_노선_구간_추가_응답_결과);
+    }
+
+    /**
+     * Given: 지하철 노선이 생성되어 있다.
+     * When: 사용자는 지하철 구간 추가를 요청한다.
+     * Then: 하행 구간이 추가된다.
+     */
+    @Test
+    @DisplayName("기존 노선 하행 구간에 새로운 구간을 추가한다.")
+    void add_down_section() {
+        Long 여의나루역_ID = 지하철_역_생성_ID_추출("여의나루역");
+        Map<String, Object> 마포역_여의나루역_구간_정보 = 지하철_구간_정보_생성(마포역_ID, 여의나루역_ID, 5);
+        ExtractableResponse<Response> 지하철_노선_구간_추가_응답_결과 = 지하철_노선_구간_추가_요청(애오개역_마포역_노선_ID, 마포역_여의나루역_구간_정보);
+        수정_성공_확인(지하철_노선_구간_추가_응답_결과);
+
+        ExtractableResponse<Response> 지하철_노선_조회_결과 = 지하철_노선_조회(애오개역_마포역_노선_ID);
+        조회_성공_확인(지하철_노선_조회_결과, "5호선", "애오개역", "마포역", "여의나루역");
+    }
+
+    /**
+     * Given: 지하철 노선이 생성되어 있다.
+     * When: 사용자는 지하철 구간 추가를 요청한다.
+     * Then: 상행 구간이 추가된다.
+     */
+    @Test
+    @DisplayName("기존 노선 상행 구간에 새로운 구간을 추가한다.")
+    void add_up_section() {
+        Long 충정로역_ID = 지하철_역_생성_ID_추출("충정로역");
+        Map<String, Object> 충정로역_애오개역_구간_정보 = 지하철_구간_정보_생성(충정로역_ID, 애오개역_ID, 5);
+        ExtractableResponse<Response> 지하철_노선_구간_추가_응답_결과 = 지하철_노선_구간_추가_요청(애오개역_마포역_노선_ID, 충정로역_애오개역_구간_정보);
+        수정_성공_확인(지하철_노선_구간_추가_응답_결과);
+
+        ExtractableResponse<Response> 지하철_노선_조회_결과 = 지하철_노선_조회(애오개역_마포역_노선_ID);
+        조회_성공_확인(지하철_노선_조회_결과, "5호선", "충정로역", "애오개역", "마포역");
     }
 }
