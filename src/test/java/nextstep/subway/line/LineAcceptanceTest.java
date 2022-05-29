@@ -123,10 +123,12 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         //given
-        ExtractableResponse<Response> created = 노선_생성(LineRequest.of("1호선", "blue", 1L, 2L, 10));
+        ExtractableResponse<Response> created = 노선_생성(
+                LineRequest.of("1호선", "blue", 1L, 2L, 10)
+        );
 
         //when
-        ExtractableResponse<Response> response = 노선_삭제(created.jsonPath().getLong("id"));
+        노선_삭제(created.jsonPath().getLong("id"));
 
         //then
         ExtractableResponse<Response> lines = 노선_전체_조회();
@@ -136,16 +138,6 @@ public class LineAcceptanceTest {
     private ExtractableResponse<Response> 노선_생성(LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-
-    private ExtractableResponse<Response> 노선_생성2(StationRequest stationRequest) {
-        return RestAssured.given().log().all()
-                .body(stationRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all()
