@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import static nextstep.subway.line.domain.exception.LineExceptionMessage.*;
 import static nextstep.subway.line.domain.exception.LineExceptionMessage.ALREADY_ADDED_SECTION;
 import static nextstep.subway.line.domain.exception.LineExceptionMessage.ALREADY_ADDED_UP_DOWN_STATION;
 import static nextstep.subway.line.domain.exception.LineExceptionMessage.LINE_COLOR_IS_NOT_NULL;
@@ -13,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
+import nextstep.subway.line.domain.exception.LineExceptionMessage;
 import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
@@ -193,5 +195,22 @@ class LineTest {
         // then
         LineStations lineStations = 신분당선.findSortedLineStations();
         assertThat(lineStations).isEqualTo(LineStations.from(Arrays.asList(강남역, 판교역)));
+    }
+
+    @DisplayName("지하철 노선에 포함되지 않는 역은 제거할 수 없다.")
+    @Test
+    void removeException01() {
+        // given
+        Line 신분당선 = Line.of("신분당선", "RED");
+        Station 강남역 = Station.of(1L, "강남역");
+        Station 판교역 = Station.of(2L, "판교역");
+        Section 강남역_판교역_구간 = Section.of(강남역, 판교역, Distance.from(10));
+        신분당선.addSection(강남역_판교역_구간);
+
+        Station 양재역 = Station.of(3L, "양재역");
+
+        // when & then
+        assertThatIllegalArgumentException().isThrownBy(() -> 신분당선.removeStation(양재역))
+            .withMessageContaining(CANNOT_DELETE_WHEN_NO_EXIST_STATION.getMessage());
     }
 }
