@@ -6,16 +6,15 @@ import io.restassured.response.Response;
 import nextstep.subway.DatabaseCleanup;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
-
 import java.util.List;
 
 import static nextstep.subway.line.LineTestMethods.*;
@@ -54,6 +53,7 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> response = 노선_생성(
                 generateLineRequest("1호선", "blue", "소요산역", "신창역", 10)
         );
+
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
@@ -78,10 +78,12 @@ public class LineAcceptanceTest {
         );
 
         //when
-        List<String> lineNames = lineNames(노선_전체_조회());
+        ExtractableResponse<Response> response = 노선_전체_조회();
+        List<String> lineNames = lineNames(response);
 
         //then
         assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(lineNames.size()).isEqualTo(2),
                 () -> assertThat(lineNames).contains("1호선", "2호선")
         );
@@ -96,19 +98,19 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         //given
-        ExtractableResponse<Response> response = 노선_생성(
+        ExtractableResponse<Response> createdResponse = 노선_생성(
                 generateLineRequest("1호선", "blue", "소요산역", "신창역", 10)
         );
-        Long id_1호선 = getId(response);
+        Long id_1호선 = getId(createdResponse);
 
         //when
-        String lineName = lineName(노선_단건_조회(id_1호선));
-        List<Station> stations = stations(노선_단건_조회(id_1호선));
+        ExtractableResponse<Response> findResponse = 노선_단건_조회(id_1호선);
 
         //then
         assertAll(
-                () -> assertThat(lineName).isEqualTo("1호선"),
-                () -> assertThat(stations.size()).isEqualTo(2)
+                () -> assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(lineName(findResponse)).isEqualTo("1호선"),
+                () -> assertThat(stations(findResponse).size()).isEqualTo(2)
         );
     }
 
@@ -119,19 +121,24 @@ public class LineAcceptanceTest {
      */
     @DisplayName("지하철 노선을 수정한다.")
     @Test
-    void updataLine() {
+    void updateLine() {
         //given
-        ExtractableResponse<Response> created = 노선_생성(
+        ExtractableResponse<Response> createdResponse = 노선_생성(
                 generateLineRequest("1호선", "blue", "소요산역", "신창역", 10)
         );
+        Long id_1호선 = getId(createdResponse);
 
         //when
-        LineRequest newLine = LineRequest.of("1호선_new", "skyblue", 1L, 2L, 10);
-        노선_수정(created.jsonPath().getLong("id"), newLine);
-        ExtractableResponse<Response> response = 노선_단건_조회(created.jsonPath().getLong("id"));
+        LineUpdateRequest newLine = LineUpdateRequest.of("1호선_new", "skyblue");
+        노선_수정(id_1호선, newLine);
 
         //then
-        assertThat(lineName(response)).isEqualTo("1호선_new");
+        ExtractableResponse<Response> response = 노선_단건_조회(id_1호선);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(lineName(response)).isEqualTo("1호선_new"),
+                () -> assertThat(color(response)).isEqualTo("skyblue")
+        );
     }
 
     /**
@@ -143,16 +150,20 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         //given
-        ExtractableResponse<Response> created = 노선_생성(
+        ExtractableResponse<Response> createdResponse = 노선_생성(
                 generateLineRequest("1호선", "blue", "소요산역", "신창역", 10)
         );
+        Long id_1호선 = getId(createdResponse);
 
         //when
-        노선_삭제(created.jsonPath().getLong("id"));
+        노선_삭제(id_1호선);
 
         //then
-        ExtractableResponse<Response> lines = 노선_전체_조회();
-        assertThat(lineNames(lines)).doesNotContain("1호선");
+        ExtractableResponse<Response> response = 노선_전체_조회();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(lineNames(response)).doesNotContain("1호선")
+        );
     }
 
     private LineRequest generateLineRequest
@@ -175,6 +186,10 @@ public class LineAcceptanceTest {
 
     private List<Station> stations(ExtractableResponse<Response> response) {
         return response.jsonPath().getList("stations");
+    }
+
+    private String color(ExtractableResponse<Response> response) {
+        return response.jsonPath().getString("color");
     }
 
     private Long getId(ExtractableResponse<Response> response) {

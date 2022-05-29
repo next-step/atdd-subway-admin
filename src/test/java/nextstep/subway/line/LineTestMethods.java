@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.springframework.http.MediaType;
 
 public class LineTestMethods {
@@ -16,7 +17,7 @@ public class LineTestMethods {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 노선_수정(Long lineId, LineRequest newLine) {
+    public static ExtractableResponse<Response> 노선_수정(Long lineId, LineUpdateRequest newLine) {
         return RestAssured.given().log().all()
                 .body(newLine)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
