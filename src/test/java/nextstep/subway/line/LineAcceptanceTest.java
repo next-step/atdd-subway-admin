@@ -78,9 +78,36 @@ public class LineAcceptanceTest {
         요청_성공_실패_여부_확인(response, HttpStatus.CREATED);
         // Then
         assertThat(지하철노선이름으로_검색(객체리스트로_변환(지하철_노선_검색()), "신분당선")).isTrue();
-
     }
 
+    /**
+     * Given 2개의 지하철 노선을 생성하고
+     * When 지하철 노선 목록을 조회하면
+     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     */
+    @DisplayName("노선 2개 추가 후 노선을 조회한다.")
+    @Test
+    void addTwoLineAndFindAll() {
+        // Given
+        final Station savedOldStation = 역_객체로_변환(지하철역_생성("지하철역"));
+        final Station savedNewStation = 역_객체로_변환(지하철역_생성(("새로운지하철역")));
+        final Station savedOtherStation = 역_객체로_변환(지하철역_생성(("또다른지하철역")));
+        지하철_노선_생성(
+                new LineRequest("신분당선", "bg-red-600", savedOldStation.getId(), savedNewStation.getId(), 10L)
+        );
+        지하철_노선_생성(
+                new LineRequest("분당선", "bg-red-600", savedOldStation.getId(), savedOtherStation.getId(), 10L)
+        );
+
+
+        // When
+        ExtractableResponse<Response> findResponse = 지하철_노선_검색();
+        요청_성공_실패_여부_확인(findResponse, HttpStatus.OK);
+
+        // Then
+        assertThat(지하철노선이름으로_검색(객체리스트로_변환(findResponse), "신분당선")).isTrue();
+        assertThat(지하철노선이름으로_검색(객체리스트로_변환(findResponse), "분당선")).isTrue();
+    }
 
     private ExtractableResponse<Response> 지하철_노선_생성(final LineRequest lineRequest) {
         return requestUtil.createLine(convertMapBy(lineRequest));
