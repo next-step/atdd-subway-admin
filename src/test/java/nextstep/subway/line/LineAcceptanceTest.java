@@ -156,13 +156,12 @@ public class LineAcceptanceTest {
         Long id_1호선 = getId(createdResponse);
 
         //when
-        노선_삭제(id_1호선);
+        ExtractableResponse<Response> deletedResponse = 노선_삭제(id_1호선);
 
         //then
-        ExtractableResponse<Response> response = 노선_전체_조회();
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(lineNames(response)).doesNotContain("1호선")
+                () -> assertThat(deletedResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(lineNames(노선_전체_조회())).doesNotContain("1호선")
         );
     }
 

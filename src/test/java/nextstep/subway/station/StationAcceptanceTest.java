@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.DatabaseCleanup;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,7 @@ import java.util.List;
 
 import static nextstep.subway.station.StationTestMethods.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -53,10 +53,10 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_생성("강남역");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        // then
-        assertThat(stationNames(지하철역_조회())).containsAnyOf("강남역");
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(stationNames(지하철역_조회())).containsAnyOf("강남역")
+        );
     }
 
     /**
@@ -90,12 +90,14 @@ public class StationAcceptanceTest {
         지하철역_생성("신논현역");
 
         //when
-        List<String> stations = stationNames(지하철역_조회());
+        ExtractableResponse<Response> response = 지하철역_조회();
+        List<String> stations = stationNames(response);
 
         //then
-        Assertions.assertAll(
-            () -> assertThat(stations.size()).isEqualTo(2),
-            () -> assertThat(stations).contains("강남역", "신논현역")
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(stations.size()).isEqualTo(2),
+                () -> assertThat(stations).contains("강남역", "신논현역")
         );
     }
 
@@ -108,13 +110,16 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         //given
-        ExtractableResponse<Response> response = 지하철역_생성("강남역");
+        ExtractableResponse<Response> createdResponse = 지하철역_생성("강남역");
 
         //when
-        지하철역_삭제(response.header(HEADER_LOCATION));
+        ExtractableResponse<Response> deletedResponse = 지하철역_삭제(createdResponse.header(HEADER_LOCATION));
 
         //then
-        assertThat(stationNames(지하철역_조회())).doesNotContain("강남역");
+        assertAll(
+                () -> assertThat(deletedResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(stationNames(지하철역_조회())).doesNotContain("강남역")
+        );
     }
 
     private List<String> stationNames(ExtractableResponse<Response> response) {
