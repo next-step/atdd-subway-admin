@@ -14,16 +14,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static nextstep.subway.station.StationAcceptanceTest.*;
+import static nextstep.subway.station.StationAcceptanceTest.역_객체로_변환;
+import static nextstep.subway.station.StationAcceptanceTest.지하철역_생성;
 import static nextstep.subway.utils.RequestUtil.요청_성공_실패_여부_확인;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
+@Sql("classpath:truncate.sql")
 @DisplayName("노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
@@ -32,12 +34,18 @@ public class LineAcceptanceTest {
 
     private static RequestUtil requestUtil = new RequestUtil();
 
+    private Station savedOldStation;
+    private Station savedNewStation;
+    private Station savedOtherStation;
 
     @BeforeEach
     void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        savedOldStation = 역_객체로_변환(지하철역_생성("지하철역"));
+        savedNewStation = 역_객체로_변환(지하철역_생성(("새로운지하철역")));
+        savedOtherStation = 역_객체로_변환(지하철역_생성(("또다른지하철역")));
     }
 
     /**
@@ -48,10 +56,8 @@ public class LineAcceptanceTest {
     @Test
     void invalidCreateLineTest() {
         // When
-        역_검색결과에_포함_여부_확인(역_객체_리스트로_변환(지하철역_검색()), Collections.emptyList());
-        // When
         ExtractableResponse<Response> response = 지하철_노선_생성(
-                new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10L)
+                new LineRequest("신분당선", "bg-red-600", 100L, 200L, 10L)
         );
 
         // Then
@@ -68,8 +74,6 @@ public class LineAcceptanceTest {
     @Test
     void createLineTest() {
         // When
-        final Station savedOldStation = 역_객체로_변환(지하철역_생성("지하철역"));
-        final Station savedNewStation = 역_객체로_변환(지하철역_생성(("새로운지하철역")));
         ExtractableResponse<Response> response = 지하철_노선_생성(
                 new LineRequest("신분당선", "bg-red-600", savedOldStation.getId(), savedNewStation.getId(), 10L)
         );
@@ -77,7 +81,7 @@ public class LineAcceptanceTest {
         // Then
         요청_성공_실패_여부_확인(response, HttpStatus.CREATED);
         // Then
-        assertThat(지하철노선이름으로_검색(객체리스트로_변환(지하철_노선_검색()), "신분당선")).isTrue();
+        assertThat(지하철노선이름으로_검색(객체리스트로_변환(지하철_노선_전체_검색()), "신분당선")).isTrue();
     }
 
     /**
@@ -89,9 +93,6 @@ public class LineAcceptanceTest {
     @Test
     void addTwoLineAndFindAll() {
         // Given
-        final Station savedOldStation = 역_객체로_변환(지하철역_생성("지하철역"));
-        final Station savedNewStation = 역_객체로_변환(지하철역_생성(("새로운지하철역")));
-        final Station savedOtherStation = 역_객체로_변환(지하철역_생성(("또다른지하철역")));
         지하철_노선_생성(
                 new LineRequest("신분당선", "bg-red-600", savedOldStation.getId(), savedNewStation.getId(), 10L)
         );
@@ -101,7 +102,7 @@ public class LineAcceptanceTest {
 
 
         // When
-        ExtractableResponse<Response> findResponse = 지하철_노선_검색();
+        ExtractableResponse<Response> findResponse = 지하철_노선_전체_검색();
         요청_성공_실패_여부_확인(findResponse, HttpStatus.OK);
 
         // Then
@@ -110,16 +111,45 @@ public class LineAcceptanceTest {
         assertThat(지하철노선이름으로_검색(객체리스트로_변환(findResponse), "분당선")).isTrue();
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("노선 추가 후 노선 id로 조회한다.")
+    @Test
+    void addLineAndSearch() {
+        // Given
+        LineResponse lineResponse = 객체로_변환(지하철_노선_생성(
+                new LineRequest("신분당선", "bg-red-600", savedOldStation.getId(), savedNewStation.getId(), 10L)
+        ));
+
+        // When
+        ExtractableResponse<Response> response = 지하철_노선_일부_검색(lineResponse.getId());
+
+        // Then
+        요청_성공_실패_여부_확인(response, HttpStatus.OK);
+        assertThat(객체로_변환(response)).isEqualTo(lineResponse);
+    }
+
     private ExtractableResponse<Response> 지하철_노선_생성(final LineRequest lineRequest) {
         return requestUtil.createLine(convertMapBy(lineRequest));
     }
 
-    private ExtractableResponse<Response> 지하철_노선_검색() {
-        return requestUtil.getLine();
+    private ExtractableResponse<Response> 지하철_노선_전체_검색() {
+        return requestUtil.searchAllLine();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_일부_검색(final Long id) {
+        return requestUtil.searchLine(id);
     }
 
     private List<LineResponse> 객체리스트로_변환(ExtractableResponse<Response> response) {
         return response.jsonPath().getList(".", LineResponse.class);
+    }
+
+    private LineResponse 객체로_변환(ExtractableResponse<Response> response) {
+        return response.as(LineResponse.class);
     }
 
     private boolean 지하철노선이름으로_검색(List<LineResponse> responseList, final String lineName) {

@@ -16,8 +16,8 @@ import java.util.function.Supplier;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class RequestUtil {
-    private static final BiFunction<RequestSpecification, String, Response> CREATE = RequestSenderOptions::post;
-    private static final BiFunction<RequestSpecification, String, Response> SEARCH_ALL = RequestSenderOptions::get;
+    private static final BiFunction<RequestSpecification, String, Response> POST = RequestSenderOptions::post;
+    private static final BiFunction<RequestSpecification, String, Response> GET = RequestSenderOptions::get;
     private static final BiFunction<RequestSpecification,String, Response> DELETE = RequestSenderOptions::delete;
 
     private static final String STATION_URL = "/stations";
@@ -30,18 +30,26 @@ public class RequestUtil {
     }
 
     public ExtractableResponse<Response> createLine(final Map<String, String> body) {
-        return this.request(()->body, CREATE , LINE_URL);
+        return this.request(()->body, POST, LINE_URL);
     }
 
-    public ExtractableResponse<Response> getLine() {
-        return this.request(HashMap::new, SEARCH_ALL , LINE_URL);
+    public ExtractableResponse<Response> searchAllLine() {
+        return this.request(HashMap::new, GET, LINE_URL);
+    }
+
+    public ExtractableResponse<Response> searchLine(final Long id) {
+        return this.request(HashMap::new, GET, String.format(LINE_URL+"/%d",id));
+    }
+
+    public ExtractableResponse<Response> deleteLine(final Long index) {
+        return this.request(HashMap::new, DELETE, String.format(LINE_URL+"/%d",index));
     }
 
     public ExtractableResponse<Response> createStation(final String stationName) {
-        return this.request(() -> makeBody(INVALID_KEY, stationName), CREATE , STATION_URL);
+        return this.request(() -> makeBody(INVALID_KEY, stationName), POST, STATION_URL);
     }
     public ExtractableResponse<Response> getStations() {
-        return this.request(HashMap::new, SEARCH_ALL, STATION_URL);
+        return this.request(HashMap::new, GET, STATION_URL);
     }
 
     public ExtractableResponse<Response> deleteStation(final Long index) {

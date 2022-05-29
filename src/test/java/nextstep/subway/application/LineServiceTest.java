@@ -58,4 +58,11 @@ public class LineServiceTest {
         LineResponse lineResponse = lineService.saveLine(new LineRequest("신분당선", "bg-red-600", savedStation1.getId(), savedStation2.getId(), 10L));
        assertThat(lineService.findAllLine()).contains(lineResponse);
     }
+
+    @DisplayName("특정 Line 정보를 조회한다")
+    @Test
+    void findTest() {
+        LineResponse lineResponse = lineService.saveLine(new LineRequest("신분당선", "bg-red-600", savedStation1.getId(), savedStation2.getId(), 10L));
+        assertThat(lineService.findLine(lineResponse.getId())).isEqualTo(lineResponse);
+    }
 }

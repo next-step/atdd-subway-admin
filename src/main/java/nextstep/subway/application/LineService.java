@@ -36,6 +36,10 @@ public class LineService {
         return lines.stream().map(LineResponse::of).collect(Collectors.toList());
     }
 
+    public LineResponse findLine(final Long id) {
+        return LineResponse.of(lineRepository.findById(id).get());
+    }
+
     @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
