@@ -30,6 +30,11 @@ public class SectionAcceptanceTest {
     private final LineAcceptanceTest lineAcceptanceTest = new LineAcceptanceTest();
     private final StationAcceptanceTest stationAcceptanceTest = new StationAcceptanceTest();
 
+    private ExtractableResponse<Response> upStation;
+    private ExtractableResponse<Response> downStation;
+    private ExtractableResponse<Response> newStation;
+    private ExtractableResponse<Response> line;
+
     @Autowired
     private DatabaseCleanup databaseCleanup;
 
@@ -43,6 +48,12 @@ public class SectionAcceptanceTest {
             databaseCleanup.afterPropertiesSet();
         }
         databaseCleanup.cleanUp();
+
+        // given
+        upStation = stationAcceptanceTest.createStation("강남역");
+        downStation = stationAcceptanceTest.createStation("판교역");
+        newStation = stationAcceptanceTest.createStation("새로운역");
+        line = lineAcceptanceTest.createLine("신분당선", "bg-red-600", 10, upStation.jsonPath().getLong("id"), downStation.jsonPath().getLong("id"));
     }
 
     /*
@@ -52,11 +63,8 @@ public class SectionAcceptanceTest {
      */
     @Test
     void 역_사이에_새로운_역으로_지하철구간_생성() {
-        // given
-        ExtractableResponse<Response> line = lineAcceptanceTest.createLine("신분당선", "bg-red-600", 10, "강남역", "판교역");
-
         // when
-        ExtractableResponse<Response> response = createSection(line.jsonPath().getLong("id"), "강남역", "양재역", 7);
+        ExtractableResponse<Response> response = createSection(line.jsonPath().getLong("id"), upStation.jsonPath().getLong("id"), newStation.jsonPath().getLong("id"), 7);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -69,11 +77,8 @@ public class SectionAcceptanceTest {
      */
     @Test
     void 새로운_역을_상행_종점_지하철구간_생성() {
-        // given
-        ExtractableResponse<Response> line = lineAcceptanceTest.createLine("신분당선", "bg-red-600", 10, "강남역", "판교역");
-
         // when
-        ExtractableResponse<Response> response = createSection(line.jsonPath().getLong("id"), "논현역", "강남역", 7);
+        ExtractableResponse<Response> response = createSection(line.jsonPath().getLong("id"), newStation.jsonPath().getLong("id"), upStation.jsonPath().getLong("id"), 7);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -86,11 +91,8 @@ public class SectionAcceptanceTest {
      */
     @Test
     void 새로운_역을_하행_종점으로_지하철구간_생성() {
-        // given
-        ExtractableResponse<Response> line = lineAcceptanceTest.createLine("신분당선", "bg-red-600", 10, "강남역", "판교역");
-
         // when
-        ExtractableResponse<Response> response = createSection(line.jsonPath().getLong("id"), "판교역", "광교역", 7);
+        ExtractableResponse<Response> response = createSection(line.jsonPath().getLong("id"), downStation.jsonPath().getLong("id"), newStation.jsonPath().getLong("id"), 7);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -128,13 +130,10 @@ public class SectionAcceptanceTest {
 
     }
 
-    private ExtractableResponse<Response> createSection(Long lineId, String upStationName, String downStationName, int distance) {
-        ExtractableResponse<Response> upStation = stationAcceptanceTest.createStation(upStationName);
-        ExtractableResponse<Response> downStation = stationAcceptanceTest.createStation(downStationName);
-
+    private ExtractableResponse<Response> createSection(Long lineId, Long upStationId, Long downStationId, int distance) {
         Map<String, Object> param = new HashMap<>();
-        param.put("upStationId", upStation.jsonPath().getLong("id"));
-        param.put("downStationId", downStation.jsonPath().getLong("id"));
+        param.put("upStationId", upStationId);
+        param.put("downStationId", downStationId);
         param.put("distance", distance);
 
         return RestAssured.given().log().all()

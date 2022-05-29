@@ -156,7 +156,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> createLine(String name, String color, int distance, Long upStationId, Long downStationId) {
+    public ExtractableResponse<Response> createLine(String name, String color, int distance, Long upStationId, Long downStationId) {
         Map<String, Object> param = new HashMap<>();
         param.put("name", name);
         param.put("color", color);
