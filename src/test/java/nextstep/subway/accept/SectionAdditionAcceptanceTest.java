@@ -99,6 +99,7 @@ class SectionAdditionAcceptanceTest {
      * Given 라인을 만들고 노선 하행선에 새로운 구간 추가한다 When 해당 노선을 조회하면 Then 추가된 구간을 마지막에 찾을 수 있다
      */
     @Test
+    @DisplayName("하행역 뒤에 새로운 구간 추가시 해당 역은 제일 마지막에 조회된다.")
     void 하행선에_새로운_구간_추가시_노선_마지막에서_조회가능() {
         // given
         saveStationAndLine();
@@ -109,7 +110,7 @@ class SectionAdditionAcceptanceTest {
         LineResponse 노선_조회_결과 = 노선_조회(생성된_신분당선.getId());
 
         // then
-        verifySizeAndStationOrder(노선_조회_결과, 생성된_강남역, 생성된_양재역, 생성된_서초역);
+        verifySizeAndStationOrder(노선_조회_결과, 생성된_강남역, 생성된_양재시민의숲역, 생성된_양재역);
     }
 
     /**
