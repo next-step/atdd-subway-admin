@@ -79,6 +79,24 @@ public class LineAcceptanceTest {
     }
 
     /**
+     * Given 노선을 생성하고
+     * When 노선의 정보를 수정하면
+     * Then 노선 정보가 수정된다
+     */
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        LineResponse 지하철2호선 = 응답_객체_생성(노선_등록("2호선", "초록", 10, 강남역.getId(), 잠실역.getId()), LineResponse.class);
+
+        // when
+        ValidatableResponse response = 노선_수정(지하철2호선.getId(), "8호선", "분홍", 200, 모란역.getId(), 잠실역.getId());
+
+        // then
+        응답_검증(response, HttpStatus.OK);
+    }
+
+    /**
      * Given 2개의 노선을 생성하고
      * When 노선 목록을 조회하면
      * Then 2개의 노선 목록을 응답 받는다
@@ -159,5 +177,15 @@ public class LineAcceptanceTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .when().post("/lines")
                     .then().log().all();
+    }
+
+    private ValidatableResponse 노선_수정(Long id, String name, String color, Integer distance, Long upStreamId, Long downStreamId) {
+        LineRequest lineRequest = new LineRequest(name, color, distance, upStreamId, downStreamId);
+
+        return RestAssured.given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/" + id)
+                .then().log().all();
     }
 }
