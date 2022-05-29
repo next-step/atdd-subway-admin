@@ -10,6 +10,14 @@ import nextstep.subway.domain.Line;
 import org.springframework.http.MediaType;
 
 public class SubwayAppBehaviors {
+    public static Line 지하철노선을_조회한다(Long id) {
+        return RestAssured
+                .given().log().all()
+                .when().get("/lines/" + id)
+                .then().log().all()
+                .extract().jsonPath().getObject(".", Line.class);
+    }
+
     public static List<Line> 지하철노선목록을_조회한다() {
         return RestAssured
                 .given().log().all()
@@ -18,12 +26,21 @@ public class SubwayAppBehaviors {
                 .extract().jsonPath().getList(".", Line.class);
     }
 
+    public static Long 지하철노선을_생성하고_ID를_반환한다(
+            String name, String color,
+            String upStationName, String downStationName, int distance) {
+
+        ExtractableResponse<Response> response = 지하철노선을_생성한다(name,color,upStationName,downStationName,distance);
+
+        return response.jsonPath().getLong("id");
+    }
+
     public static ExtractableResponse<Response> 지하철노선을_생성한다(
             String name, String color,
             String upStationName, String downStationName, int distance) {
 
-        int upStationId = 지하철역을_생성하고_생성된_ID를_반환한다(upStationName);
-        int downStationId = 지하철역을_생성하고_생성된_ID를_반환한다(downStationName);
+        Long upStationId = 지하철역을_생성하고_생성된_ID를_반환한다(upStationName);
+        Long downStationId = 지하철역을_생성하고_생성된_ID를_반환한다(downStationName);
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
@@ -41,9 +58,9 @@ public class SubwayAppBehaviors {
                 .extract();
     }
 
-    private static int 지하철역을_생성하고_생성된_ID를_반환한다(String 역이름) {
+    private static Long 지하철역을_생성하고_생성된_ID를_반환한다(String 역이름) {
         ExtractableResponse<Response> response = 지하철역을_생성한다(역이름);
-        return response.jsonPath().getInt("id");
+        return response.jsonPath().getLong("id");
     }
 
     public static List<String> 지하철역_목록을_조회한다() {

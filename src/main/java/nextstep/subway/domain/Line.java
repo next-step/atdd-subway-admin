@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,12 +18,24 @@ public class Line extends BaseEntity{
     private String name;
     @Column(unique = true)
     private String color;
-    private List<Station> stations;
+    private List<Station> stations = new ArrayList<>();
 
     protected Line() {
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public List<Station> getStations() {
+        return Collections.unmodifiableList(stations);
     }
 }

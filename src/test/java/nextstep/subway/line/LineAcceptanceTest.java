@@ -1,8 +1,7 @@
 package nextstep.subway.line;
 
 import static java.util.stream.Collectors.toList;
-import static nextstep.subway.SubwayAppBehaviors.지하철노선목록을_조회한다;
-import static nextstep.subway.SubwayAppBehaviors.지하철노선을_생성한다;
+import static nextstep.subway.SubwayAppBehaviors.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
@@ -10,6 +9,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -70,5 +70,28 @@ public class LineAcceptanceTest {
 
         // then
         assertThat(lines.size()).isEqualTo(2);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("지하철노선을 조회한다.")
+    @Test
+    void getLine() {
+        // given
+        Long lineId = 지하철노선을_생성하고_ID를_반환한다("1호선", "color1", "서울역", "인천역", 100);
+
+        // when
+        Line line = 지하철노선을_조회한다(lineId);
+        List<Station> stations = line.getStations();
+        List<String> stationNames = stations.stream().map((station) -> line.getName()).collect(toList());
+
+        // then
+        assertThat(line).isNotNull();
+        assertThat(line.getName()).isEqualTo("1호선");
+        assertThat(line.getColor()).isEqualTo("color1");
+        assertThat(stationNames).containsExactly("서울역", "인천역");
     }
 }
