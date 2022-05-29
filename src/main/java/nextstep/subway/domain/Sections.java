@@ -24,7 +24,7 @@ public class Sections {
 
     public void stationsCheck(Section newSection) {
         for (Section section : sections) {
-            section.stationCheck(newSection);
+            section.validateCheck(newSection);
         }
     }
 

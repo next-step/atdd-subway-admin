@@ -163,7 +163,11 @@ public class SectionAcceptanceTest {
     @Test
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
     void 지하철구간_생성_예외_2() {
+        // when
+        ExtractableResponse<Response> response = createSection(line.jsonPath().getLong("id"), upStation.jsonPath().getLong("id"), downStation.jsonPath().getLong("id"), 7);
 
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /*

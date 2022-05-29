@@ -1,8 +1,6 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -40,21 +38,35 @@ public class Section {
         this.distance = distance;
     }
 
-    public void stationCheck(Section section) {
-        distanceCheck(section);
+    public void validateCheck(Section section) {
+        distanceValidateCheck(section);
+        duplicateValidateCheck(section);
 
-        if (this.upStation.equals(section.getUpStation())) {
-            changeDistance(this.distance - section.getDistance());
-            changeUpStation(section.getDownStation());
+        reregisterUpStation(section);
+        reregisterDownStation(section);
+    }
+
+    private void duplicateValidateCheck(Section section) {
+        if (this.upStation.equals(section.getUpStation()) && this.downStation.equals(section.getDownStation())) {
+            throw new IllegalArgumentException("이미 등록된 정보 입니다.");
         }
+    }
 
+    private void reregisterDownStation(Section section) {
         if (this.downStation.equals(section.getDownStation())) {
             changeDistance(this.distance - section.getDistance());
             changeDownStation(section.getUpStation());
         }
     }
 
-    private void distanceCheck(Section section) {
+    private void reregisterUpStation(Section section) {
+        if (this.upStation.equals(section.getUpStation())) {
+            changeDistance(this.distance - section.getDistance());
+            changeUpStation(section.getDownStation());
+        }
+    }
+
+    private void distanceValidateCheck(Section section) {
         if (this.distance <= section.getDistance()) {
             throw new IllegalArgumentException("기존 역 사이 길이 보다 크거나 같으면 등록을 할 수 없습니다.");
         }
