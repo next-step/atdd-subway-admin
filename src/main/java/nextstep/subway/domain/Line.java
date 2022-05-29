@@ -11,10 +11,10 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Station upStation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Station downStation;
 
     public Line(String name, String color, Station upStation, Station downStation) {
