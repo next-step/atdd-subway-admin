@@ -29,6 +29,10 @@ public class Sections {
     }
 
     public void addSection(Section section) {
+        if (isEmpty()) {
+            this.sections.add(section);
+            return;
+        }
         validateSection(section);
         this.sections.forEach(it -> it.update(section));
         this.sections.add(section);
@@ -37,10 +41,13 @@ public class Sections {
     private void validateSection(Section section) {
         Set<Station> stations = getStations();
         Station upStation = section.upStation();
-        Station downStation = section.upStation();
+        Station downStation = section.downStation();
 
         if (stations.contains(upStation) && stations.contains(downStation)) {
-            throw new IllegalArgumentException("상행, 하행역 모두 존재합니다.");
+            throw new IllegalArgumentException("상행, 하행역 모두 존재하는 노선입니다.");
+        }
+        if (!stations.contains(upStation) && !stations.contains(downStation)) {
+            throw new IllegalArgumentException("상행, 하행역 모두 존재하지 않는 노선입니다.");
         }
     }
 
@@ -99,6 +106,10 @@ public class Sections {
 
     public int size() {
         return this.sections.size();
+    }
+
+    public boolean isEmpty() {
+        return this.sections.isEmpty();
     }
 
     @Override

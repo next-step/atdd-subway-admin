@@ -142,6 +142,7 @@ class SectionAdditionAcceptanceTest {
      * Given 라인을 만들고 When 상, 하행선 모두 새로운 값을 가진 새로운 구간 추가하면 Then 등록할 수 없다는 에러가 발생
      */
     @Test
+    @DisplayName("상,하행선 모두 해당 노선에 존재하지 않으면 추가할 수 없다.")
     void 상_하행선_모두_해당_노선이_아닌_구간_추가시_등록불가() {
         // given
         saveStationAndLine();

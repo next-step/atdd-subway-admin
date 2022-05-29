@@ -55,15 +55,15 @@ public class Section extends BaseEntity {
     private void updateUpStation(Section section) {
         if (this.upStation.equals(section.upStation)) {
             this.upStation = section.downStation;
+            minus(section);
         }
-        minus(section);
     }
 
     private void updateDownStation(Section section) {
         if (this.downStation.equals(section.downStation)) {
             this.downStation = section.upStation;
+            minus(section);
         }
-        minus(section);
     }
 
     private void minus(Section section) {
