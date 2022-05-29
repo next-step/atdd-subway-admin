@@ -62,6 +62,21 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         노선_생성_성공_확인(구간_생성_요청_응답);
     }
 
+    @DisplayName("역 사이에 새로운 역을 등록할 경우")
+    @Test
+    void addSectionAtMiddle() {
+
+        // given 지하철 노선에 지하철역 등록 요청
+        long 양재역_id = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+
+        // 지하철 노션에 지하철 역사이에 구간 등록 요청
+        SectionRequest 새로운_구간 = SectionRequest.of(강남역_id, 양재역_id, 5);
+        ExtractableResponse<Response> 구간_생성_요청_응답 = 구간_생성_요청(새로운_구간, 신분당선_id);
+
+        // then 지하철_노선에_구간_등록됨
+        노선_생성_성공_확인(구간_생성_요청_응답);
+    }
+
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test
     void addDuplicationSectionA() {
