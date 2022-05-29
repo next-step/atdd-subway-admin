@@ -39,7 +39,7 @@ public class LineRequest {
         }
     }
 
-    public static class Modify {
+    public static class Modification {
         private String name;
         private String color;
 

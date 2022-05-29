@@ -147,9 +147,7 @@ public class LinesAcceptanceTest {
                 createLineRequest("신분당선", "bg-red-600", null, null, 10L)
         ).jsonPath()
                 .getString("id");
-        Map<String, Object> updateRequest = new HashMap<>();
-        updateRequest.put("name", "다른분당선");
-        updateRequest.put("color", "bg-red-600");
+        Map<String, Object> updateRequest = updateLineRequest("다른분당선", "bg-red-600");
 
         // when
         ExtractableResponse<Response> response = RequestHelper
@@ -223,5 +221,18 @@ public class LinesAcceptanceTest {
         }
 
         return lineRequest;
+    }
+
+    private Map<String, Object> updateLineRequest(String name, String color) {
+        Map<String, Object> updateRequest = new HashMap<>();
+
+        if (name != null) {
+            updateRequest.put("name", name);
+        }
+        if (color != null) {
+            updateRequest.put("color", color);
+        }
+
+        return updateRequest;
     }
 }

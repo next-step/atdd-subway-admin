@@ -29,7 +29,7 @@ public class Line extends BaseEntity {
         this.downStation = downStation;
     }
 
-    public Line modify(LineRequest.Modify modify) {
+    public Line modify(LineRequest.Modification modify) {
         this.name = modify.getName();
         this.color = modify.getColor();
 

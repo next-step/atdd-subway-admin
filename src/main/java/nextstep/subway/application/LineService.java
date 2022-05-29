@@ -1,10 +1,10 @@
 package nextstep.subway.application;
 
+import javassist.NotFoundException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
-import nextstep.subway.error.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,13 +25,13 @@ public class LineService {
         return lineRepository.findAll();
     }
 
-    public Line findById(Long id) {
+    public Line findById(Long id) throws NotFoundException {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(id + " 에 해당하는 지하철 노선이 존재하지 않습니다."));
     }
 
     @Transactional
-    public Line saveLine(LineRequest.Create lineCreateRequest) {
+    public Line saveLine(LineRequest.Create lineCreateRequest) throws NotFoundException {
         Station upStation = null;
         Station downStation = null;
 
@@ -46,7 +46,7 @@ public class LineService {
     }
 
     @Transactional
-    public void modifyLine(Long id, LineRequest.Modify modify) {
+    public void modifyLine(Long id, LineRequest.Modification modify) throws NotFoundException {
         lineRepository.save(findById(id).modify(modify));
     }
 

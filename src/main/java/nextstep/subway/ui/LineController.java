@@ -1,5 +1,6 @@
 package nextstep.subway.ui;
 
+import javassist.NotFoundException;
 import nextstep.subway.application.LineService;
 import nextstep.subway.domain.Line;
 import nextstep.subway.dto.LineRequest;
@@ -31,7 +32,7 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest.Create lineCreateRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest.Create lineCreateRequest) throws NotFoundException {
         Line createResult = lineService.saveLine(lineCreateRequest);
         return ResponseEntity
                 .created(URI.create("/lines/" + createResult.getId()))
@@ -39,13 +40,13 @@ public class LineController {
     }
 
     @GetMapping("/lines/{id}")
-    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) throws NotFoundException {
         return ResponseEntity.ok()
                 .body(LineResponse.of(lineService.findById(id)));
     }
 
     @PutMapping("/lines/{id}")
-    public ResponseEntity modifyLine(@PathVariable Long id, @RequestBody LineRequest.Modify modify) {
+    public ResponseEntity modifyLine(@PathVariable Long id, @RequestBody LineRequest.Modification modify) throws NotFoundException {
         lineService.modifyLine(id, modify);
         return ResponseEntity.noContent().build();
     }
