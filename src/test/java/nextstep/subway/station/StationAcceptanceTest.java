@@ -38,7 +38,7 @@ public class StationAcceptanceTest {
      */
     @DisplayName("지하철역을 생성한다.")
     @Test
-    void 이름으로_지하철역을_생성() {
+    void 지하철역을_생성() {
         // when
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
@@ -103,8 +103,8 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
 //        given
-        이름으로_지하철역을_생성("강남역");
-        이름으로_지하철역을_생성("역삼역");
+        지하철역을_생성("강남역");
+        지하철역을_생성("역삼역");
 
 //        when
         ExtractableResponse<Response> response = 지하철역_목록_조회();
@@ -122,7 +122,7 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
 //        given
-        이름으로_지하철역을_생성("강남역");
+        지하철역을_생성("강남역");
 
 //        when
         ExtractableResponse<Response> response = ID값으로_지하철역_삭제(1L);
@@ -147,11 +147,11 @@ public class StationAcceptanceTest {
         assertThat(response.jsonPath().getList(".").size()).isEqualTo(2);
     }
 
-    private void 이름으로_지하철역을_생성(String name) {
+    public static ExtractableResponse<Response> 지하철역을_생성(String name) {
         Map<String, String> param = new HashMap<>();
         param.put("name", name);
 
-        RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .body(param)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
