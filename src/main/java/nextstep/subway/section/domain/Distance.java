@@ -24,7 +24,7 @@ public class Distance {
         return new Distance(distance);
     }
 
-    void validateDistance(int distance) {
+    private void validateDistance(int distance) {
         if (distance < MINIMUM_DISTANCE) {
             throw new IllegalArgumentException(DISTANCE_UNDER_MINIMUM_ERROR);
         }
