@@ -1,11 +1,19 @@
 package nextstep.subway.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import nextstep.subway.domain.collection.LineStations;
 import nextstep.subway.domain.collection.Stations;
 import org.apache.commons.lang3.StringUtils;
 
@@ -19,6 +27,9 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
     private boolean deleted = false;
+
+    @Embedded
+    private LineStations lineStations = new LineStations();
 
     @Embedded
     private Stations stations = new Stations();
