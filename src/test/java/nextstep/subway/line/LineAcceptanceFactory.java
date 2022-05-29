@@ -12,8 +12,8 @@ import java.util.Map;
 
 public class LineAcceptanceFactory {
 
-    public static ExtractableResponse<Response> 지하철노선_생성(String lineName, String upStationName, String downStationName) {
-        Map<String, Object> params = 지하철노선_정보_생성(lineName, upStationName, downStationName);
+    public static ExtractableResponse<Response> 지하철노선_생성(String lineName, String upStationName, String downStationName, String color) {
+        Map<String, Object> params = 지하철노선_정보_생성(lineName, upStationName, downStationName, color);
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -23,7 +23,7 @@ public class LineAcceptanceFactory {
                 .extract();
 
     }
-    private static Map<String, Object> 지하철노선_정보_생성(String lineName, String upStationName, String downStationName) {
+    private static Map<String, Object> 지하철노선_정보_생성(String lineName, String upStationName, String downStationName, String color) {
         Long upStationId = StationAcceptanceFactory.지하철역_생성(upStationName)
                 .jsonPath().getObject("id", Long.class);
 
@@ -32,7 +32,7 @@ public class LineAcceptanceFactory {
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", lineName);
-        params.put("color", "색상");
+        params.put("color", color);
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);
         params.put("distance", 10);
