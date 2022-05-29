@@ -11,22 +11,26 @@ import org.springframework.http.MediaType;
 
 public class SubwayAppBehaviors {
     public static List<Line> 지하철노선목록을_조회한다() {
-            return RestAssured
-                    .given().log().all()
-                    .when().get()
-                    .then().log().all()
-                    .extract().jsonPath().getList("", Line.class);
-        }
+        return RestAssured
+                .given().log().all()
+                .when().get("/lines")
+                .then().log().all()
+                .extract().jsonPath().getList(".", Line.class);
+    }
 
     public static ExtractableResponse<Response> 지하철노선을_생성한다(
-            String name, String color
-            , int upStationId, int downStationId, int distance) {
-        Map<String,Object> params = new HashMap<>();
-        params.put("name",name);
-        params.put("color",color);
-        params.put("upStationId",upStationId);
-        params.put("downStationId",downStationId);
-        params.put("distance",distance);
+            String name, String color,
+            String upStationName, String downStationName, int distance) {
+
+        int upStationId = 지하철역을_생성하고_생성된_ID를_반환한다(upStationName);
+        int downStationId = 지하철역을_생성하고_생성된_ID를_반환한다(downStationName);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
 
         return RestAssured
                 .given().log().all()
@@ -37,15 +41,21 @@ public class SubwayAppBehaviors {
                 .extract();
     }
 
+    private static int 지하철역을_생성하고_생성된_ID를_반환한다(String 역이름) {
+        ExtractableResponse<Response> response = 지하철역을_생성한다(역이름);
+        return response.jsonPath().getInt("id");
+    }
+
     public static List<String> 지하철역_목록을_조회한다() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
                 .extract().jsonPath().getList("name", String.class);
     }
+
     public static ExtractableResponse<Response> 지하철역을_생성한다(String name) {
-        Map<String,String> params = new HashMap<>();
-        params.put("name",name);
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
 
         return RestAssured.given().log().all()
                 .body(params)
@@ -56,7 +66,7 @@ public class SubwayAppBehaviors {
     }
 
     public static ExtractableResponse<Response> 지하철역을_삭제한다(String location) {
-        return  RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete(location)
                 .then().log().all()

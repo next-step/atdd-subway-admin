@@ -1,21 +1,21 @@
 package nextstep.subway.station;
 
+import static nextstep.subway.SubwayAppBehaviors.지하철역_목록을_조회한다;
+import static nextstep.subway.SubwayAppBehaviors.지하철역을_삭제한다;
+import static nextstep.subway.SubwayAppBehaviors.지하철역을_생성한다;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-
-import static nextstep.subway.SubwayAppBehaviors.*;
-
-import java.util.List;
 import org.springframework.test.context.jdbc.Sql;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
