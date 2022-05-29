@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -72,9 +73,15 @@ public class LineService {
 
     @Transactional
     public void modifyLine(Long lineId, LineRequest lineRequest) {
-        validateDuplicate(lineRequest.getName(), lineRequest.getColor());
-
         Line line = getLineById(lineId);
+
+        if (!Objects.equals(line.getName(), lineRequest.getName())) {
+            validateDuplicatedName(lineRequest.getName());
+        }
+
+        if (!Objects.equals(line.getColor(), lineRequest.getColor())) {
+            validateDuplicatedColor(lineRequest.getColor());
+        }
 
         line.modifyNameAndColor(lineRequest.getName(), lineRequest.getColor());
     }
