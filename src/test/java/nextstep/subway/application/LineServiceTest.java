@@ -65,4 +65,13 @@ public class LineServiceTest {
         LineResponse lineResponse = lineService.saveLine(new LineRequest("신분당선", "bg-red-600", savedStation1.getId(), savedStation2.getId(), 10L));
         assertThat(lineService.findLine(lineResponse.getId())).isEqualTo(lineResponse);
     }
+
+    @DisplayName("변경할 id 에 LineRequest 정보를 업데이트 한다.")
+    @Test
+    void updateTest() {
+        LineResponse lineResponse = lineService.saveLine(new LineRequest("신분당선", "bg-red-600", savedStation1.getId(), savedStation2.getId(), 10L));
+        LineRequest request = new LineRequest("test", "bg-red-600", null, null, null);
+        lineService.updateLine(lineResponse.getId(), request);
+        assertThat(lineRepository.findById(lineResponse.getId()).get().getName()).isEqualTo("test");
+    }
 }

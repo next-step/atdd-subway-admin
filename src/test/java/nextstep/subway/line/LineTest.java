@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.dto.LineRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,5 +55,18 @@ public class LineTest {
         assertThat(stationRepository.findById(savedLine.getDownStation().getId()).get()).isEqualTo(S2);
     }
 
+    @DisplayName("update 테스트")
+    @Test
+    void updateTest() {
+        Line savedLine = lineRepository.save(line);
+        LineRequest request = new LineRequest("test", null, null, null, null);
+        savedLine.setName(request.getName());
+        savedLine.setDistance(request.getDistance());
+        savedLine.setColor(request.getColor());
+
+       assertThat(lineRepository.findById(savedLine.getId()).get().getName()).isEqualTo(request.getName());
+       assertThat(lineRepository.findById(savedLine.getId()).get().getColor()).isNotEqualTo(request.getName());
+       assertThat(lineRepository.findById(savedLine.getId()).get().getDistance()).isNotEqualTo(request.getDistance());
+    }
 
 }

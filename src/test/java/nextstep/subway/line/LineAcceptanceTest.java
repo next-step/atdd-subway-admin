@@ -132,6 +132,38 @@ public class LineAcceptanceTest {
         assertThat(객체로_변환(response)).isEqualTo(lineResponse);
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("노선 생성 후 수정하기")
+    @Test
+    void changeTest() {
+        // Given
+        LineResponse lineResponse = 객체로_변환(지하철_노선_생성(
+                new LineRequest("신분당선", "bg-red-600", savedOldStation.getId(), savedNewStation.getId(), 10L)
+        ));
+
+        // When
+        요청_성공_실패_여부_확인(
+                지하철_노선_정보_업데이트(
+                        lineResponse.getId(),
+                        new LineRequest("다른분당선", "bg-red-600",0L, 0L,0L)
+                ), HttpStatus.OK);
+
+        // Then
+        LineResponse searchResponse = 객체로_변환(지하철_노선_일부_검색(lineResponse.getId()));
+        assertThat(lineResponse.getName()).isNotEqualTo(searchResponse.getName());
+        assertThat(searchResponse.getName()).isEqualTo("다른분당선");
+        assertThat(lineResponse.getStations()).isEqualTo(searchResponse.getStations());
+        assertThat(lineResponse.getColor()).isEqualTo(searchResponse.getColor());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_정보_업데이트(final Long id ,final LineRequest lineRequest) {
+        return requestUtil.updateLine(id, convertMapBy(lineRequest));
+    }
+
     private ExtractableResponse<Response> 지하철_노선_생성(final LineRequest lineRequest) {
         return requestUtil.createLine(convertMapBy(lineRequest));
     }

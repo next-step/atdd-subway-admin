@@ -41,6 +41,10 @@ public class RequestUtil {
         return this.request(HashMap::new, GET, String.format(LINE_URL+"/%d",id));
     }
 
+    public ExtractableResponse<Response> updateLine(Long id, Map<String, String> body) {
+        return  this.request(()->body, POST, String.format(LINE_URL+"/%d",id));
+    }
+
     public ExtractableResponse<Response> deleteLine(final Long index) {
         return this.request(HashMap::new, DELETE, String.format(LINE_URL+"/%d",index));
     }
@@ -71,4 +75,6 @@ public class RequestUtil {
                 path
         ).then().log().all().extract();
     }
+
+
 }

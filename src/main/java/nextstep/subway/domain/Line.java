@@ -66,6 +66,36 @@ public class Line extends BaseEntity{
         return distance;
     }
 
+    public void setName(String name) {
+        if (!name.isEmpty() && !Objects.equals(this.name, name)) {
+            this.name = name;
+        }
+    }
+
+    public void setColor(String color) {
+        if (!color.isEmpty() && !Objects.equals(this.color, color)) {
+            this.color = color;
+        }
+    }
+
+    public void setUpStation(Station upStation) {
+        if (Objects.nonNull(upStation) && !Objects.equals(this.getUpStation(), upStation)) {
+            this.upStation = upStation;
+        }
+    }
+
+    public void setDownStation(Station downStation) {
+        if (Objects.nonNull(downStation) && !Objects.equals(this.getDownStation(), downStation)) {
+            this.downStation = downStation;
+        }
+    }
+
+    public void setDistance(Long distance) {
+        if (Objects.nonNull(distance) && distance > 0) {
+            this.distance = distance;
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
