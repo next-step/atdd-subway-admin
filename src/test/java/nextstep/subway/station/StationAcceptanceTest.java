@@ -4,7 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.domain.Station;
-import nextstep.subway.utils.RequestStation;
+import nextstep.subway.utils.RequestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ public class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
-    private RequestStation requestStation = new RequestStation();
+    private RequestUtil requestStation = new RequestUtil();
 
     @BeforeEach
     public void setUp() {

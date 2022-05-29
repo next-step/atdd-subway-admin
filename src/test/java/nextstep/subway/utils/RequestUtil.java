@@ -3,33 +3,35 @@ package nextstep.subway.utils;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSenderOptions;
 import io.restassured.specification.RequestSpecification;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RequestStation {
-    private static final Function<RequestSpecification, Response> CREATE = requestSpecification -> requestSpecification.post("/stations");
-    private static final Function<RequestSpecification, Response> SEARCH_ALL = requestSpecification -> requestSpecification.get("/stations");
+public class RequestUtil {
+    private static final BiFunction<RequestSpecification, String, Response> CREATE = RequestSenderOptions::post;
+    private static final BiFunction<RequestSpecification, String, Response> SEARCH_ALL = RequestSenderOptions::get;
+    private static final BiFunction<RequestSpecification,String, Response> DELETE = RequestSenderOptions::delete;
+
+    private static final String STATION_URL = "/stations";
     private static final String INVALID_KEY = "name";
 
-
     public ExtractableResponse<Response> createStation(final String stationName) {
-        return this.request(() -> makeBody(INVALID_KEY, stationName), CREATE);
+        return this.request(() -> makeBody(INVALID_KEY, stationName), CREATE , STATION_URL);
     }
 
     public ExtractableResponse<Response> getStations() {
-        return this.request(HashMap::new, SEARCH_ALL);
+        return this.request(HashMap::new, SEARCH_ALL, STATION_URL);
     }
 
     public ExtractableResponse<Response> deleteStation(final Long index) {
-        final Function<RequestSpecification, Response> DELETE = requestSpecification -> requestSpecification.delete("/stations/{id}", index);
-        return this.request(HashMap::new, DELETE);
+        return this.request(HashMap::new, DELETE, String.format(STATION_URL+"/%d",index));
     }
 
     private Map<String, String> makeBody(final String key, final String value) {
@@ -38,12 +40,13 @@ public class RequestStation {
         return input;
     }
 
-    private ExtractableResponse<Response> request(Supplier<Map<String, String>> supplier, Function<RequestSpecification, Response> function) {
+    private ExtractableResponse<Response> request(Supplier<Map<String, String>> supplier, BiFunction<RequestSpecification, String, Response> function, String path) {
         return function.apply(
                 RestAssured.given().log().all()
                         .body(supplier.get())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when()
+                        .when(),
+                path
         ).then().log().all().extract();
     }
 }
