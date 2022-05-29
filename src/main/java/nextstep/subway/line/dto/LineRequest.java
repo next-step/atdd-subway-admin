@@ -3,7 +3,6 @@ package nextstep.subway.line.dto;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineColor;
 import nextstep.subway.line.domain.LineName;
-import nextstep.subway.station.domain.Station;
 
 public class LineRequest {
 
