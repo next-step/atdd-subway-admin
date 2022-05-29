@@ -57,6 +57,12 @@ public class Line extends BaseEntity {
         this.color = LineColor.from(color);
     }
 
+    public void addSection(Section section) {
+        //TODO: Section 검증 로직 추가
+        this.sections.add(section);
+        section.setLine(this);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

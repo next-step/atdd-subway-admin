@@ -60,4 +60,8 @@ public class Section {
     public Line getLine() {
         return line;
     }
+
+    public void setLine(Line line) {
+        this.line = line;
+    }
 }
