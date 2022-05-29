@@ -7,8 +7,8 @@ import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.domain.section.Section;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRepository;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.line.LineRequest;
+import nextstep.subway.dto.line.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

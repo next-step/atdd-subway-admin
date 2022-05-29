@@ -1,4 +1,4 @@
-package nextstep.subway.dto;
+package nextstep.subway.dto.station;
 
 import nextstep.subway.domain.station.Station;
 
