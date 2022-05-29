@@ -3,6 +3,7 @@ package nextstep.subway.application;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -38,14 +39,16 @@ public class LineService {
     @Transactional
     public LineResponse updateLine(long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundException("등록된 노선이 없습니다."));
-        Station upStation = stationRepository.findById(line.getUpStation().getId())
+        Station upStation = stationRepository.findById(line.upStation().getId())
                 .orElseThrow(() -> new NotFoundException("등록된 지하철역이 없습니다."));
-        Station downStation = stationRepository.findById(line.getDownStation().getId())
+        Station downStation = stationRepository.findById(line.downStation().getId())
                 .orElseThrow(() -> new NotFoundException("등록된 지하철역이 없습니다."));
-        Line newLine = Line.builder(lineRequest.getName(), lineRequest.getColor(), line.getDistance(), upStation,
-                        downStation)
-                .id(line.getId())
+        Section section = Section.builder(upStation, downStation, line.distance())
                 .build();
+        Line newLine = Line.builder(lineRequest.getName(), lineRequest.getColor())
+                .id(line.id())
+                .build();
+        newLine.addSection(section);
         Line persistStation = lineRepository.save(newLine);
         return LineResponse.of(persistStation);
     }

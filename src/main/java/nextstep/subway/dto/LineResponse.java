@@ -28,9 +28,9 @@ public class LineResponse extends BaseDto {
 
     public static LineResponse of(Line line) {
         List<StationResponse> stations = new ArrayList<>();
-        stations.add(StationResponse.of(line.getUpStation()));
-        stations.add(StationResponse.of(line.getDownStation()));
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getDistance(), stations,
+        stations.add(StationResponse.of(line.upStation()));
+        stations.add(StationResponse.of(line.downStation()));
+        return new LineResponse(line.id(), line.name(), line.color(), line.distance().distance(), stations,
                 line.getCreatedDate(),
                 line.getModifiedDate());
     }
