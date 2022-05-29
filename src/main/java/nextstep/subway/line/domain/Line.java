@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line extends BaseEntity {
@@ -48,6 +49,15 @@ public class Line extends BaseEntity {
         validateAddableStation(section);
         this.sections.add(section);
         section.registerLine(this);
+    }
+
+    public void removeStation(Station station) {
+        if (this.sections.isEndStation(station)) {
+            this.sections.removeEndStation(station);
+            return;
+        }
+
+        // TODO. 중간역인 경우에 대한 Section 제거
     }
 
     private void validateAddableStation(Section section) {

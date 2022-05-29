@@ -78,6 +78,31 @@ public class Sections {
         return this.sections.isEmpty();
     }
 
+    public boolean isEndStation(Station station) {
+        Section firstSection = this.findFirstSection();
+        Section lastSection = this.findLastSection();
+
+        return firstSection.isEqualsUpStation(station)
+            || lastSection.isEqualsDownStation(station);
+    }
+
+    public void removeEndStation(Station station) {
+        if (isFirstEndStation(station)) {
+            removeStation(this.findFirstSection());
+            return;
+        }
+
+        removeStation(this.findLastSection());
+    }
+
+    private void removeStation(Section section) {
+        this.sections.remove(section);
+    }
+
+    private boolean isFirstEndStation(Station station) {
+        return this.findFirstSection().isEqualsUpStation(station);
+    }
+
     private boolean isEndOfStation(Section section) {
         Section firstSection = this.findFirstSection();
         Section lastSection = this.findLastSection();
