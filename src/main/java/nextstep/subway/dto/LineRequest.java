@@ -50,11 +50,11 @@ public class LineRequest {
         return new Line(this.name, this.color);
     }
 
-    public Station getFirstStation() {
-        return new Station("지하철역_" + firstStationId);
+    public Station getFirstStation(Long lineId) {
+        return new Station("지하철역_" + firstStationId, lineId);
     }
 
-    public Station getLastStation() {
-        return new Station("새로운지하철역_" + lastStationId);
+    public Station getLastStation(Long lineId) {
+        return new Station("지하철역_" + lastStationId, lineId);
     }
 }

@@ -11,6 +11,8 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
+    private Long lineId;
+
     public Station() {
     }
 
@@ -18,9 +20,9 @@ public class Station extends BaseEntity {
         this.name = name;
     }
 
-    public Station(Long id, String name) {
-        this.id = id;
+    public Station(String name, Long lineId) {
         this.name = name;
+        this.lineId = lineId;
     }
 
     public Long getId() {
@@ -29,5 +31,9 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    public Long getLineId() {
+        return lineId;
     }
 }

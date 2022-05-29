@@ -19,7 +19,7 @@ public class LineController {
     }
 
     @PostMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> createStation(@RequestBody LineRequest request) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest request) {
         LineResponse response = lineService.createLine(request);
         return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
@@ -30,19 +30,19 @@ public class LineController {
     }
 
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> getLineById(@PathVariable Long id) {
         LineResponse response = lineService.getLineById(id);
         return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/lines/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id) {
+    public ResponseEntity deleteLineById(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/lines/{id}")
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest request) {
+    public ResponseEntity updateLineById(@PathVariable Long id, @RequestBody LineRequest request) {
         lineService.updateLineById(id, request.getLine());
         return ResponseEntity.ok().build();
     }

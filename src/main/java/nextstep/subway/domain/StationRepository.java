@@ -7,4 +7,5 @@ import java.util.List;
 public interface StationRepository extends JpaRepository<Station, Long> {
     @Override
     List<Station> findAll();
+    List<Station> findAllByLineId(Long lineId);
 }

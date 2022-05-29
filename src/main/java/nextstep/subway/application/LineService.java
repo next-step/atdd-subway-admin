@@ -25,8 +25,8 @@ public class LineService {
     public LineResponse createLine(LineRequest request) {
         Line newLine = lineRepository.save(request.getLine());
 
-        Station firstStation = stationRepository.save(request.getFirstStation());
-        Station lastStation = stationRepository.save(request.getLastStation());
+        Station firstStation = stationRepository.save(request.getFirstStation(newLine.getId()));
+        Station lastStation = stationRepository.save(request.getLastStation(newLine.getId()));
 
         return LineResponse.of(newLine, Arrays.asList(firstStation, lastStation));
     }
@@ -34,7 +34,7 @@ public class LineService {
     public List<LineResponse> getLines() {
         List<LineResponse> lines = new LinkedList<>();
         for (Line line : lineRepository.findAll()) {
-            lines.add(LineResponse.of(line, toStations()));
+            lines.add(LineResponse.of(line, stationRepository.findAllByLineId(line.getId())));
         }
         return lines;
     }
@@ -42,13 +42,7 @@ public class LineService {
     public LineResponse getLineById(Long id) {
         Line line = lineRepository.findById(id)
                                   .orElseThrow(() -> new NoSuchElementException("지하철 노선이 존재하지 않습니다"));
-        return LineResponse.of(line, toStations());
-    }
-
-    private static Long id = 1L;
-
-    private List<Station> toStations() {
-        return Arrays.asList(new Station(id, "지하철역_" + id++), new Station(id, "새로운지하철역_" + id++));
+        return LineResponse.of(line, stationRepository.findAllByLineId(line.getId()));
     }
 
     @Transactional
