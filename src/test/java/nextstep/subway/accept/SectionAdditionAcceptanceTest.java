@@ -50,17 +50,6 @@ class SectionAdditionAcceptanceTest {
         }
     }
 
-    private void saveStationAndLine() {
-        생성된_강남역 = 지하철역_생성(강남역);
-        생성된_양재역 = 지하철역_생성(양재역);
-        생성된_양재시민의숲역 = 지하철역_생성(양재시민의숲역);
-        생성된_서초역 = 지하철역_생성(서초역);
-        생성된_교대역 = 지하철역_생성(교대역);
-
-        생성된_신분당선 = 노선_생성(new LineRequest("신분당선", "bg-red-600", 생성된_강남역.getId(), 생성된_양재시민의숲역.getId(), 10L));
-        생성된_이호선 = 노선_생성(new LineRequest("이호선", "bg-yellow-100", 생성된_강남역.getId(), 생성된_서초역.getId(), 20L));
-    }
-
     /**
      * Given 라인을 만들고 노선의 역 사이에 새로운 구간 추가한다 When 해당 노선을 조회하면 Then 추가된 구간을 찾을 수 있다
      */
@@ -136,6 +125,7 @@ class SectionAdditionAcceptanceTest {
      * Given 라인을 만들고 When 이미 등록된 구간을 추가하면 Then 등록할 수 없다는 에러가 발생
      */
     @Test
+    @DisplayName("상,하행선 모두 기존에 있는 구간이면 추가할 수 없다.")
     void 기존에_있는_구간_추가시_등록불가() {
         // given
         saveStationAndLine();
@@ -170,6 +160,17 @@ class SectionAdditionAcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines/{id}/sections", 노선아이디)
                 .then().log().all().extract();
+    }
+
+    private void saveStationAndLine() {
+        생성된_강남역 = 지하철역_생성(강남역);
+        생성된_양재역 = 지하철역_생성(양재역);
+        생성된_양재시민의숲역 = 지하철역_생성(양재시민의숲역);
+        생성된_서초역 = 지하철역_생성(서초역);
+        생성된_교대역 = 지하철역_생성(교대역);
+
+        생성된_신분당선 = 노선_생성(new LineRequest("신분당선", "bg-red-600", 생성된_강남역.getId(), 생성된_양재시민의숲역.getId(), 10L));
+        생성된_이호선 = 노선_생성(new LineRequest("이호선", "bg-yellow-100", 생성된_강남역.getId(), 생성된_서초역.getId(), 20L));
     }
 
     private void verifySizeAndStationOrder(LineResponse 노선_조회_결과, StationResponse... 예상되는_순서로_배치된_역들) {

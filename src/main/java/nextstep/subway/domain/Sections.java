@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -28,14 +29,32 @@ public class Sections {
     }
 
     public void addSection(Section section) {
+        validateSection(section);
         this.sections.forEach(it -> it.update(section));
         this.sections.add(section);
+    }
+
+    private void validateSection(Section section) {
+        Set<Station> stations = getStations();
+        Station upStation = section.upStation();
+        Station downStation = section.upStation();
+
+        if (stations.contains(upStation) && stations.contains(downStation)) {
+            throw new IllegalArgumentException("상행, 하행역 모두 존재합니다.");
+        }
     }
 
     public List<StationResponse> toInOrderStationResponse() {
         return getInOrderStations().stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    private Set<Station> getStations() {
+        return this.sections.stream()
+                .map(Section::stations)
+                .flatMap(List::stream)
+                .collect(Collectors.toSet());
     }
 
     LinkedHashSet<Station> getInOrderStations() {
