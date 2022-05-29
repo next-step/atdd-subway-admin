@@ -91,7 +91,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 신분당선_생성_response = 지하철노선_생성(신분당선_request);
 
         // when
-        ExtractableResponse<Response> 지하철노선_조회_response = 지하철노선_조회(신분당선_생성_response);
+        Long lineId = parseIdFromLocationHeader(신분당선_생성_response);
+        ExtractableResponse<Response> 지하철노선_조회_response = 지하철노선_조회(lineId);
 
         // then
         지하철노선_응답(지하철노선_조회_response);

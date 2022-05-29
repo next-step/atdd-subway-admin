@@ -1,12 +1,14 @@
 package nextstep.subway.line.domain;
 
+import static nextstep.subway.line.domain.exception.LineExceptionMessage.*;
+import static nextstep.subway.section.domain.exception.SectionExceptionMessage.NOT_FOUND_SECTION_BY_STATION;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import nextstep.subway.constants.LineExceptionMessage;
+import nextstep.subway.line.domain.exception.LineExceptionMessage;
 import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
@@ -38,7 +40,7 @@ class LineTest {
     void generate02(String name) {
         // given & when & then
         assertThatIllegalArgumentException().isThrownBy(() -> Line.of(name, "RED"))
-            .withMessageContaining(LineExceptionMessage.LINE_NAME_IS_NOT_NULL);
+            .withMessageContaining(LINE_NAME_IS_NOT_NULL.getMessage());
     }
 
     @DisplayName("지하철 노선 생성 시 노선 색상이 공란일 수 없다.")
@@ -47,7 +49,7 @@ class LineTest {
     void generate03(String color) {
         // given & when & then
         assertThatIllegalArgumentException().isThrownBy(() -> Line.of("신분당선", color))
-            .withMessageContaining(LineExceptionMessage.LINE_COLOR_IS_NOT_NULL);
+            .withMessageContaining(LINE_COLOR_IS_NOT_NULL.getMessage());
     }
 
     @DisplayName("지하철 노선에 Section을 추가할 수 있다.")
@@ -72,13 +74,54 @@ class LineTest {
         Station 강남역 = Station.of(1L, "강남역");
         Station 판교역 = Station.of(2L, "판교역");
         Distance distance = Distance.from(10);
-        Section 강남역_판교역_구간 = Section.of(강남역, 판교역, distance);
+        Section 강남역_판교역_구간 = Section.of(1L, 강남역, 판교역, distance);
 
         // when
         신분당선.addSection(강남역_판교역_구간);
 
         // when & then
         assertThatIllegalStateException().isThrownBy(() -> 신분당선.addSection(강남역_판교역_구간))
-            .withMessageContaining(LineExceptionMessage.ALREADY_ADDED_SECTION);
+            .withMessageContaining(ALREADY_ADDED_SECTION.getMessage());
+    }
+
+    @DisplayName("지하철 노선에 다른 Section 이지만 이미 존재하는 상/하행역을 추가할 수 없다.")
+    @Test
+    void generate06() {
+        // given
+        Line 신분당선 = Line.of("신분당선", "RED");
+        Station 강남역 = Station.of(1L, "강남역");
+        Station 판교역 = Station.of(2L, "판교역");
+        Distance distance = Distance.from(10);
+        Section 강남역_판교역_구간 = Section.of(1L, 강남역, 판교역, distance);
+        Section 중복된_강남역_판교역_구간 = Section.of(2L, 강남역, 판교역, distance);
+
+        // when
+        신분당선.addSection(강남역_판교역_구간);
+
+        // when & then
+        assertThatIllegalStateException().isThrownBy(() -> 신분당선.addSection(중복된_강남역_판교역_구간))
+            .withMessageContaining(ALREADY_ADDED_UP_DOWN_STATION.getMessage());
+    }
+
+    @DisplayName("지하철 노선에 존재하지 않는 상/하행 역의 구간은 추가할 수 없다.")
+    @Test
+    void generate07() {
+        // given
+        Line 신분당선 = Line.of("신분당선", "RED");
+        Station 강남역 = Station.of(1L, "강남역");
+        Station 판교역 = Station.of(2L, "판교역");
+        Distance distance = Distance.from(10);
+        Section 강남역_판교역_구간 = Section.of(1L, 강남역, 판교역, distance);
+
+        신분당선.addSection(강남역_판교역_구간);
+
+        // when
+        Station 양재역 = Station.of(3L, "양재역");
+        Station 양재시민의숲역 = Station.of(4L, "양재시민의숲역");
+        Section 양재역_양재시민의숲역_구간 = Section.of(2L, 양재역, 양재시민의숲역, Distance.from(1));
+
+        // when & then
+        assertThatIllegalArgumentException().isThrownBy(() -> 신분당선.addSection(양재역_양재시민의숲역_구간))
+            .withMessageContaining(NOT_FOUND_SECTION_BY_STATION.getMessage());
     }
 }

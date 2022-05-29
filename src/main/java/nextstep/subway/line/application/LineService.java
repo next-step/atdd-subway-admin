@@ -5,10 +5,12 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.LineStations;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
@@ -65,10 +67,17 @@ public class LineService {
         lineRepository.deleteById(lineId);
     }
 
+    @Transactional
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(() -> new NoSuchElementException(String.format(NOT_FOUND_LINE, lineId)));
+
+        line.addSection(sectionRequest.toSection());
+    }
+
     private List<StationResponse> generateStationResponse(Line line) {
-        return line.getStations().stream()
-            .map(StationResponse::of)
-            .collect(Collectors.toList());
+        LineStations lineStations = line.findSortedLineStations();
+        return lineStations.convertToStationResponse();
     }
 
     private Section parseToSection(LineRequest lineRequest) {

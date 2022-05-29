@@ -29,9 +29,8 @@ public class LineAcceptanceTestMethods {
         return get(LINE_URL_PATH);
     }
 
-    public static ExtractableResponse<Response> 지하철노선_조회(ExtractableResponse response) {
-        Long targetId = parseIdFromLocationHeader(response);
-        return get(LINE_URL_PATH + SLASH + targetId);
+    public static ExtractableResponse<Response> 지하철노선_조회(Long lineId) {
+        return get(LINE_URL_PATH + SLASH + lineId);
     }
 
     public static ExtractableResponse<Response> 지하철노선_수정(Long id, LineRequest lineRequest) {

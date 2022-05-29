@@ -1,6 +1,6 @@
 package nextstep.subway.section.domain;
 
-import static nextstep.subway.constants.SectionExceptionMessage.DISTANCE_IS_MUST_BE_GREATER_THAN_1;
+import static nextstep.subway.station.domain.exception.StationExceptionMessage.*;
 
 import java.util.Objects;
 import javax.persistence.Embeddable;
@@ -21,9 +21,17 @@ public class Distance {
         return new Distance(distance);
     }
 
+    public boolean isGraterThanOrEquals(Distance distance) {
+        return this.distance >= distance.distance;
+    }
+
+    public void minus(Distance distance) {
+        this.distance -= distance.distance;
+    }
+
     private static void validateDistance(int distance) {
         if (distance < 1) {
-            throw new IllegalArgumentException(DISTANCE_IS_MUST_BE_GREATER_THAN_1);
+            throw new IllegalArgumentException(DISTANCE_IS_MUST_BE_GREATER_THAN_1.getMessage());
         }
     }
 
@@ -43,4 +51,5 @@ public class Distance {
     public int hashCode() {
         return Objects.hash(distance);
     }
+
 }

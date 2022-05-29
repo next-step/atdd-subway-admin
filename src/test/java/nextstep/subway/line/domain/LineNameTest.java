@@ -1,9 +1,9 @@
 package nextstep.subway.line.domain;
 
+import static nextstep.subway.line.domain.exception.LineExceptionMessage.LINE_NAME_IS_NOT_NULL;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
-import nextstep.subway.constants.LineExceptionMessage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -25,6 +25,6 @@ class LineNameTest {
     void generate02(String name) {
         // given & when & then
         assertThatIllegalArgumentException().isThrownBy(() -> LineName.from(name))
-            .withMessageContaining(LineExceptionMessage.LINE_NAME_IS_NOT_NULL);
+            .withMessageContaining(LINE_NAME_IS_NOT_NULL.getMessage());
     }
 }

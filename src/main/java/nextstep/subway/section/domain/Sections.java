@@ -1,12 +1,21 @@
 package nextstep.subway.section.domain;
 
+import static nextstep.subway.section.domain.exception.SectionExceptionMessage.NEW_SECTION_DISTANCE_IS_GREATER_OR_EQUALS;
+import static nextstep.subway.section.domain.exception.SectionExceptionMessage.NOT_FOUND_SECTION;
+import static nextstep.subway.section.domain.exception.SectionExceptionMessage.NOT_FOUND_SECTION_BY_STATION;
+import static nextstep.subway.section.domain.exception.SectionExceptionMessage.NOT_FOUND_UP_STATION_BY_SECTION;
+
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import nextstep.subway.line.domain.LineStations;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.utils.StreamUtils;
 
 @Embeddable
 public class Sections {
@@ -27,20 +36,118 @@ public class Sections {
         return new Sections(new ArrayList<>());
     }
 
-    public void add(Section section) {
-        this.sections.add(section);
-    }
-
     public boolean contains(Section section) {
         return this.sections.contains(section);
     }
 
-    public List<Station> getStations() {
-        List<Station> result = new ArrayList<>();
-        for (Section section : this.sections) {
-            result.add(section.getUpStation());
-            result.add(section.getDownStation());
+    public void add(Section section) {
+        if (!this.sections.isEmpty() && !this.isEndOfStation(section)) {
+            Section middleSection = findMiddleSection(section);
+            validateAddableSectionDistance(middleSection, section);
+            adjustMiddleSection(middleSection, section);
         }
-        return result;
+
+        this.sections.add(section);
+    }
+
+    public Optional<Section> findSectionBySectionId(Long sectionId) {
+        return StreamUtils.filterAndFindFirst(this.sections,
+            section -> section.getId().equals(sectionId));
+    }
+
+    public LineStations findSortedStations() {
+        List<Station> sortedStations = Lists.newArrayList();
+        sortedStations.add(findFirstSection().getUpStation());
+
+        for (int i = 0; i < this.sections.size(); i++) {
+            Station station = this.findSectionByUpStation(sortedStations.get(i))
+                .map(Section::getDownStation)
+                .orElseThrow(() -> new IllegalStateException(NOT_FOUND_UP_STATION_BY_SECTION.getMessage()));
+
+            sortedStations.add(station);
+        }
+
+        return LineStations.from(sortedStations);
+    }
+
+    public boolean containUpDownStation(Section section) {
+        return this.isExistStation(section.getUpStation()) && this.isExistStation(section.getDownStation());
+    }
+
+    public boolean isEmpty() {
+        return this.sections.isEmpty();
+    }
+
+    private boolean isEndOfStation(Section section) {
+        Section firstSection = this.findFirstSection();
+        Section lastSection = this.findLastSection();
+
+        return firstSection.isEqualsUpStation(section.getDownStation())
+            || lastSection.isEqualsDownStation(section.getUpStation());
+    }
+
+    private Section findFirstSection() {
+        List<Station> downStations = this.findDownStations();
+        return StreamUtils.filterAndFindFirst(this.sections, section -> !downStations.contains(section.getUpStation()))
+            .orElseThrow(() -> new IllegalStateException(NOT_FOUND_SECTION.getMessage()));
+    }
+
+    private Section findLastSection() {
+        List<Station> upStations = this.findUpStations();
+        return StreamUtils.filterAndFindFirst(this.sections, section -> !upStations.contains(section.getDownStation()))
+            .orElseThrow(() -> new IllegalStateException(NOT_FOUND_SECTION.getMessage()));
+    }
+
+    private void validateAddableSectionDistance(Section middleSection, Section section) {
+        if (section.isGreaterThanOrEqualsDistance(middleSection)) {
+            throw new IllegalArgumentException(NEW_SECTION_DISTANCE_IS_GREATER_OR_EQUALS.getMessage());
+        }
+    }
+
+    private void adjustMiddleSection(Section middleSection, Section section) {
+        adjustMiddleSectionUpStation(middleSection, section);
+        adjustMiddleSectionDownStation(middleSection, section);
+    }
+
+    private void adjustMiddleSectionDownStation(Section middleSection, Section section) {
+        if (middleSection.isEqualsDownStation(section.getDownStation())) {
+            middleSection.changeDownStation(section.getUpStation());
+            middleSection.reduceDistanceByDistance(section.getDistance());
+        }
+    }
+
+    private void adjustMiddleSectionUpStation(Section middleSection, Section section) {
+        if (middleSection.isEqualsUpStation(section.getUpStation())) {
+            middleSection.changeUpStation(section.getDownStation());
+            middleSection.reduceDistanceByDistance(section.getDistance());
+        }
+    }
+
+    private Section findMiddleSection(Section section) {
+        return findSectionByUpStation(section.getUpStation())
+            .orElseGet(() -> findSectionByDownStation(section.getDownStation())
+                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_SECTION_BY_STATION.getMessage())));
+    }
+
+    private Optional<Section> findSectionByDownStation(Station station) {
+        return StreamUtils.filterAndFindFirst(this.sections,
+            section -> section.isEqualsDownStation(station));
+    }
+
+    private Optional<Section> findSectionByUpStation(Station station) {
+        return StreamUtils.filterAndFindFirst(this.sections,
+            section -> section.isEqualsUpStation(station));
+    }
+
+    private List<Station> findDownStations() {
+        return StreamUtils.mapToList(this.sections, Section::getDownStation);
+    }
+
+    private List<Station> findUpStations() {
+        return StreamUtils.mapToList(this.sections, Section::getUpStation);
+    }
+
+    private boolean isExistStation(Station station) {
+        return this.findSortedStations().contains(station);
     }
 }

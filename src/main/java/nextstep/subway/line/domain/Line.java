@@ -1,16 +1,16 @@
 package nextstep.subway.line.domain;
 
-import java.util.List;
+import static nextstep.subway.line.domain.exception.LineExceptionMessage.ALREADY_ADDED_SECTION;
+import static nextstep.subway.line.domain.exception.LineExceptionMessage.ALREADY_ADDED_UP_DOWN_STATION;
+
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.constants.LineExceptionMessage;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
-import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line extends BaseEntity {
@@ -44,14 +44,25 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        validateSections(section);
+        validateAddableSection(section);
+        validateAddableStation(section);
         this.sections.add(section);
         section.registerLine(this);
     }
 
-    private void validateSections(Section section) {
+    private void validateAddableStation(Section section) {
+        if (this.sections.isEmpty()) {
+            return;
+        }
+
+        if (this.sections.containUpDownStation(section)) {
+            throw new IllegalStateException(ALREADY_ADDED_UP_DOWN_STATION.getMessage());
+        }
+    }
+
+    private void validateAddableSection(Section section) {
         if (this.sections.contains(section)) {
-            throw new IllegalStateException(LineExceptionMessage.ALREADY_ADDED_SECTION);
+            throw new IllegalStateException(ALREADY_ADDED_SECTION.getMessage());
         }
     }
 
@@ -59,12 +70,12 @@ public class Line extends BaseEntity {
         return this.id;
     }
 
-    public List<Station> getStations() {
-        return this.sections.getStations();
-    }
-
     public void update(Line updateLine) {
         this.name = updateLine.getName();
         this.color = updateLine.getColor();
+    }
+
+    public LineStations findSortedLineStations() {
+        return this.sections.findSortedStations();
     }
 }
