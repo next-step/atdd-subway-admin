@@ -4,6 +4,9 @@ import static javax.persistence.EnumType.STRING;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
@@ -11,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import nextstep.subway.enums.LineColor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +41,12 @@ public class Line extends BaseEntity {
     @JoinColumn(name = "DOWN_STATION_ID", foreignKey = @ForeignKey(name = "fk_line_down_station"))
     private Station downStation;
 
-    public Line(Long id, String name, LineColor lineColor, Station upStation, Station downStation, Integer distsnce) {
+    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST)
+    private Set<LineStation> lineStationList = new LinkedHashSet<>();
+
+
+    public Line(Long id, String name, LineColor lineColor, Station upStation, Station downStation,
+        Integer distsnce) {
         this.id = id;
         this.name = name;
         this.lineColor = lineColor;
@@ -57,10 +66,18 @@ public class Line extends BaseEntity {
             this.lineColor = line.getLineColor();
         }
         if (ObjectUtils.isNotEmpty(line.getDownStation())) {
+            addLineStation(line.getDownStation());
             this.downStation = line.getDownStation();
         }
         if (ObjectUtils.isNotEmpty(line.getUpStation())) {
+            addLineStation(line.getUpStation());
             this.upStation = line.getUpStation();
+        }
+    }
+
+    private void addLineStation(Station station) {
+        if (this.downStation != station) {
+            lineStationList.add(new LineStation(this, station));
         }
     }
 
