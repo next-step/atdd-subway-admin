@@ -83,5 +83,36 @@ public class SectionAcceptanceTest {
 
     }
 
+    /**
+     * given 지하철역 2개와, 그를 포함하는 line이 주어지고(init) 미금-정자
+     * given 지하철역 1개를 추가하고
+     * when 해당 지하철역을 line 하향종착지를 변경했을때
+     * then 지하철 구간이 정상적으로 확인되고, 지하철 노선의 하향종착지가 변경된다.
+     */
+    @Test
+    public void 구간등록_하향종착지변경_테스트() {
+        //given
+        String 동천역_ID = 지하철역_만들기("동천역").jsonPath().get("id").toString();
+
+        //when
+        ExtractableResponse<Response> 지하철_구간_등록하기_response = 지하철_구간_등록하기(동천역_ID, 미금역_ID, "20",
+            ID_신분당선);
+        ExtractableResponse<Response> 지하철_구간_조회하기_response = 지하철_구간_조회하기(ID_신분당선);
+        ExtractableResponse<Response> 지하철_노선_조회하기_response = 지하철_노선_조회하기(ID_신분당선);
+
+        //then
+        assertAll(
+            () -> assertThat(지하철_구간_등록하기_response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(지하철_노선_조회하기_response.jsonPath().getList("stations.name"))
+                .contains("동천역","정자역"),
+            () -> assertThat(지하철_구간_조회하기_response.jsonPath().getList("downStationInfo.name"))
+                .contains("동천역","미금역"), //동천 - 미금 - 정자
+            () -> assertThat(지하철_구간_조회하기_response.jsonPath().getList("upStationInfo.name"))
+                .contains("미금역","정자역"),
+            () -> assertThat(지하철_구간_조회하기_response.jsonPath().getList("distance"))
+                .contains(20,10)
+        );
+    }
+
 
 }
