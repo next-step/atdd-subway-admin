@@ -1,16 +1,16 @@
-package nextstep.subway.vo;
+package nextstep.subway.dto.line;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.station.Station;
 
-public class SectionVO {
+public class SectionDTO {
 
     private final Line line;
     private final Station upStation;
     private final Station downStation;
     private final long distance;
 
-    public SectionVO(Line line, Station upStation, Station downStation, long distance) {
+    public SectionDTO(Line line, Station upStation, Station downStation, long distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;

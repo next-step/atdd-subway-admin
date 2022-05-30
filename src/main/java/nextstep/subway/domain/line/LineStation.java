@@ -1,4 +1,4 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.line;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,6 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import nextstep.subway.domain.BaseEntity;
+import nextstep.subway.domain.station.Station;
 import nextstep.subway.exception.CreateSectionException;
 
 @Entity
@@ -71,5 +73,10 @@ public class LineStation extends BaseEntity {
 
     public void setLine(Line line) {
         this.line = line;
+    }
+
+    public void merge(LineStation deleteSection) {
+        this.downStation = deleteSection.getDownStation();
+        this.distance += deleteSection.distance;
     }
 }

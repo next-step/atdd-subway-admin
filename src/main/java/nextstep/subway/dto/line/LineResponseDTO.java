@@ -1,10 +1,10 @@
-package nextstep.subway.dto;
+package nextstep.subway.dto.line;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.collection.LineStations;
 
 public class LineResponseDTO {

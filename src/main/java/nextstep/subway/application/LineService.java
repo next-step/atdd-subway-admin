@@ -1,18 +1,18 @@
 package nextstep.subway.application;
 
 import java.util.List;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.LineStation;
-import nextstep.subway.domain.LineStationRepository;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.line.LineRepository;
+import nextstep.subway.domain.line.LineStation;
+import nextstep.subway.domain.line.LineStationRepository;
+import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.collection.LineStations;
-import nextstep.subway.dto.LineRequestDTO;
-import nextstep.subway.dto.LineResponseDTO;
-import nextstep.subway.dto.LineResponsesDTO;
-import nextstep.subway.dto.SectionRequestDTO;
+import nextstep.subway.dto.line.LineRequestDTO;
+import nextstep.subway.dto.line.LineResponseDTO;
+import nextstep.subway.dto.line.LineResponsesDTO;
+import nextstep.subway.dto.line.SectionRequestDTO;
 import nextstep.subway.exception.CreateSectionException;
-import nextstep.subway.vo.SectionVO;
+import nextstep.subway.dto.line.SectionDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,9 +62,10 @@ public class LineService {
     @Transactional
     public void addSection(Long id, Station upStation, Station downStation, SectionRequestDTO sectionRequestDTO) {
         Line line = getLine(id);
+        line.addSection(new SectionDTO(line, upStation, downStation, sectionRequestDTO.getDistance()));
         LineStations lineStations = line.getLineStations();
         boolean isCreatedSection = lineStations
-                .addSection(new SectionVO(line, upStation, downStation, sectionRequestDTO.getDistance()));
+                .addSection(new SectionDTO(line, upStation, downStation, sectionRequestDTO.getDistance()));
         if(!isCreatedSection){
             throw new CreateSectionException("[ERROR] 등록할 구간을 찾을 수 없습니다.");
         }

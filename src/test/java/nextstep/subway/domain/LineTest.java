@@ -2,9 +2,9 @@ package nextstep.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
 import javax.persistence.EntityManager;
-import nextstep.subway.domain.collection.Stations;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.line.LineRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

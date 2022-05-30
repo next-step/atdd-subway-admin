@@ -9,10 +9,10 @@ import javax.persistence.Embeddable;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import nextstep.subway.domain.LineStation;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.line.LineStation;
+import nextstep.subway.domain.station.Station;
 import nextstep.subway.exception.CreateSectionException;
-import nextstep.subway.vo.SectionVO;
+import nextstep.subway.dto.line.SectionDTO;
 
 @Embeddable
 public class LineStations {
@@ -25,39 +25,41 @@ public class LineStations {
         lineStations.add(target);
     }
 
-    public boolean addSection(SectionVO sectionVO) {
-        if (addBetweenSection(sectionVO)) {
+    public boolean addSection(SectionDTO sectionDTO) {
+        if (addBetweenSection(sectionDTO)) {
             return true;
         }
-        return addStartOrEndSection(sectionVO);
+        return addStartOrEndSection(sectionDTO);
     }
 
-    private boolean addStartOrEndSection(SectionVO sectionVO) {
-        LineStation startStation = findSectionByUpStation(sectionVO.getDownStation());
-        LineStation endStation = findSectionByDownStation(sectionVO.getUpStation());
+    private boolean addStartOrEndSection(SectionDTO sectionDTO) {
+        LineStation startStation = findSectionByUpStation(sectionDTO.getDownStation());
+        LineStation endStation = findSectionByDownStation(sectionDTO.getUpStation());
         if(isStartOrEndStation(startStation, endStation)){
-            lineStations.add(new LineStation(sectionVO.getLine(), sectionVO.getUpStation(), sectionVO.getDownStation(), sectionVO.getDistance()));
+            lineStations.add(new LineStation(sectionDTO.getLine(), sectionDTO.getUpStation(), sectionDTO.getDownStation(), sectionDTO
+                    .getDistance()));
             return true;
         }
         return false;
     }
 
-    private boolean addBetweenSection(SectionVO sectionVO) {
-        LineStation sectionByUpStation = findSectionByUpStation(sectionVO.getUpStation());
-        LineStation sectionByDownStation = findSectionByDownStation(sectionVO.getDownStation());
+    private boolean addBetweenSection(SectionDTO sectionDTO) {
+        LineStation sectionByUpStation = findSectionByUpStation(sectionDTO.getUpStation());
+        LineStation sectionByDownStation = findSectionByDownStation(sectionDTO.getDownStation());
         validateAlreadySection(sectionByUpStation, sectionByDownStation);
 
         if (isExistSection(sectionByUpStation)){
-            long newDistance = sectionByUpStation.calcNewSectionDistance(sectionVO.getDistance());
+            long newDistance = sectionByUpStation.calcNewSectionDistance(sectionDTO.getDistance());
             Station copyDownStation = sectionByUpStation.getDownStation().copy();
-            sectionByUpStation.updateDownStation(sectionVO.getDownStation(), sectionVO.getDistance());
-            lineStations.add(new LineStation(sectionVO.getLine(),sectionVO.getDownStation(), copyDownStation, newDistance));
+            sectionByUpStation.updateDownStation(sectionDTO.getDownStation(), sectionDTO.getDistance());
+            lineStations.add(new LineStation(sectionDTO.getLine(), sectionDTO.getDownStation(), copyDownStation, newDistance));
             return true;
         }
         if (isExistSection(sectionByDownStation)) {
-            long newDistance = sectionByDownStation.calcNewSectionDistance(sectionVO.getDistance());
-            sectionByDownStation.updateDownStation(sectionVO.getUpStation(), newDistance);
-            lineStations.add(new LineStation(sectionVO.getLine(), sectionVO.getUpStation(), sectionVO.getDownStation(), sectionVO.getDistance()));
+            long newDistance = sectionByDownStation.calcNewSectionDistance(sectionDTO.getDistance());
+            sectionByDownStation.updateDownStation(sectionDTO.getUpStation(), newDistance);
+            lineStations.add(new LineStation(sectionDTO.getLine(), sectionDTO.getUpStation(), sectionDTO.getDownStation(), sectionDTO
+                    .getDistance()));
             return true;
         }
         return false;

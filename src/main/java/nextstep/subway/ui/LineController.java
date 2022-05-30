@@ -5,11 +5,11 @@ import java.net.URI;
 import java.util.List;
 import nextstep.subway.application.LineService;
 import nextstep.subway.application.StationService;
-import nextstep.subway.domain.Station;
-import nextstep.subway.dto.LineRequestDTO;
-import nextstep.subway.dto.LineResponseDTO;
-import nextstep.subway.dto.LineResponsesDTO;
-import nextstep.subway.dto.SectionRequestDTO;
+import nextstep.subway.domain.station.Station;
+import nextstep.subway.dto.line.LineRequestDTO;
+import nextstep.subway.dto.line.LineResponseDTO;
+import nextstep.subway.dto.line.LineResponsesDTO;
+import nextstep.subway.dto.line.SectionRequestDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +36,7 @@ public class LineController {
     public ResponseEntity<LineResponseDTO> createLines(@RequestBody LineRequestDTO lineRequestDTO) {
         Station upStation = stationService.findStation(lineRequestDTO.getUpStationId());
         Station downStation = stationService.findStation(lineRequestDTO.getDownStationId());
-        LineResponseDTO lineResponseDTO = lineService.saveLine(upStation,downStation,lineRequestDTO);
+        LineResponseDTO lineResponseDTO = lineService.saveLine(upStation, downStation, lineRequestDTO);
         return ResponseEntity.created(URI.create("/lines/" + lineResponseDTO.getId())).body(lineResponseDTO);
     }
 
@@ -71,5 +71,4 @@ public class LineController {
         lineService.addSection(id, upStation, downStation, sectionRequestDTO);
         return ResponseEntity.created(URI.create("/lines/" + id)).build();
     }
-
 }
