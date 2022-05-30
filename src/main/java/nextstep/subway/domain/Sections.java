@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.util.StationsComparator;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -23,39 +25,8 @@ public class Sections {
     }
 
     public List<Section> getOrderSections() {
-        List<Section> sections = new ArrayList<>();
-        Section section = lineFirstSection();
-
-        while (section != null) {
-            sections.add(section);
-            section = findNextSection(section);
-        }
+        sections.sort(new StationsComparator());
         return sections;
-    }
-
-    private Section lineFirstSection() {
-        if (isEmpty()) {
-            return null;
-        }
-        Section section = this.sections.get(size() - 1);
-        while (findPreviousSection(section) != null) {
-            section = findPreviousSection(section);
-        }
-        return section;
-    }
-
-    private Section findPreviousSection(Section section) {
-        return this.sections.stream()
-                .filter(value -> value.getDownStation().equals(section.getUpStation()))
-                .findFirst()
-                .orElse(null);
-    }
-
-    private Section findNextSection(Section section) {
-        return this.sections.stream()
-                .filter(value -> value.getUpStation().equals(section.getDownStation()))
-                .findFirst()
-                .orElse(null);
     }
 
     public int size() {
