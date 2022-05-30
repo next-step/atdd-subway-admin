@@ -14,8 +14,7 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.line.LineRestAssured.노선_구간_추가;
-import static nextstep.subway.line.LineRestAssured.노선_등록;
+import static nextstep.subway.line.LineRestAssured.*;
 import static nextstep.subway.station.StationRestAssured.지하철역_등록;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -140,6 +139,52 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     void 역이포함되어있지않는_구간등록_실패() {
         // when
         ExtractableResponse<Response> response = 노선_구간_추가(신분당선.getId(), 논현역.getId(), 양재역.getId(), 10);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 2개의 구간을 가지는 노선에서
+     * When 중간역이 제거될 경우
+     * Then 거리 재배치하고 구간삭제 성공
+     */
+    @DisplayName("노선에 구간을 제거한다.")
+    @Test
+    void 지하철역_구간삭제_성공() {
+        // given
+        노선_구간_추가(신분당선.getId(), 강남역.getId(), 양재역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> response = 노선_구간_삭제(신분당선.getId(), 양재역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /***
+     * When 한개의 구간을 가지는 노선에서 역을 제거될 경우
+     * Then 실패 처리됨
+     */
+    @DisplayName("한개구간을 가지는 노선에 구간을 제거하면 실패한다.")
+    @Test
+    void 한개구간_삭제_실패() {
+        // when
+        ExtractableResponse<Response> response = 노선_구간_삭제(신분당선.getId(), 강남역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /***
+     * When 존재하지 않는역을 제거될 경우
+     * Then 실패 처리됨
+     */
+    @DisplayName("한노선에 존재하지 않는 역을 제거하면 실패한다.")
+    @Test
+    void 등록되지않은_지하철역_삭제_실패() {
+        // when
+        ExtractableResponse<Response> response = 노선_구간_삭제(신분당선.getId(), 정자역.getId());
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

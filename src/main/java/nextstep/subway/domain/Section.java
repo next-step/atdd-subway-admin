@@ -53,6 +53,10 @@ public class Section {
         return downStation;
     }
 
+    public Distance getDistance() {
+        return distance;
+    }
+
     public void updateByUpSection(Section section) {
         distance.minus(section.distance);
         this.upStation = section.getDownStation();
@@ -61,6 +65,10 @@ public class Section {
     public void updateByDownSection(Section section) {
         distance.minus(section.distance);
         this.downStation = section.getUpStation();
+    }
+
+    public Integer mergeDistance(Section section) {
+        return distance.plus(section.distance);
     }
 
     @Override
