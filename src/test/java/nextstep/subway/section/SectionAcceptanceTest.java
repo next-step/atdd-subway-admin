@@ -54,7 +54,7 @@ public class SectionAcceptanceTest {
 
     /**
      * Given: 지하철 노선이 생성되어 있다.
-     * When: 사용자는 지하철 구간 추가를 요청한다.
+     * When: 사용자는 하행 지하철 구간 추가를 요청한다.
      * Then: 하행 구간이 추가된다.
      */
     @Test
@@ -71,7 +71,7 @@ public class SectionAcceptanceTest {
 
     /**
      * Given: 지하철 노선이 생성되어 있다.
-     * When: 사용자는 지하철 구간 추가를 요청한다.
+     * When: 사용자는 상행 지하철 구간 추가를 요청한다.
      * Then: 상행 구간이 추가된다.
      */
     @Test
@@ -88,7 +88,7 @@ public class SectionAcceptanceTest {
 
     /**
      * Given: 지하철 노선이 생성되어 있다.
-     * When: 사용자는 지하철 구간 추가를 요청한다.
+     * When: 사용자는 기존 노선 구간보다 긴 지하철 구간 추가를 요청한다.
      * Then: 구간 추가에 실패한다.
      */
     @Test
@@ -98,5 +98,25 @@ public class SectionAcceptanceTest {
         Map<String, Object> 공덕역_마포역_구간_정보 = 지하철_구간_정보_생성(공덕역_ID, 마포역_ID, 10);
         ExtractableResponse<Response> 지하철_노선_구간_추가_응답_결과 = 지하철_노선_구간_추가_요청(애오개역_마포역_노선_ID, 공덕역_마포역_구간_정보);
         생성_실패_확인(지하철_노선_구간_추가_응답_결과);
+    }
+
+    /**
+     * Given: 지하철 노선이 생성되어 있다.
+     * When: 사용자는 기존에 등록된 지하철 구간 추가를 요청한다.
+     * Then: 구간 추가에 실패한다.
+     */
+    @Test
+    @DisplayName("상행 역과 하행 역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
+    void addAlreadyRegisteredSection() {
+        Long 공덕역_ID = 지하철_역_생성_ID_추출("공덕역");
+        Map<String, Object> 애오개역_공덕역_구간_정보 = 지하철_구간_정보_생성(애오개역_ID, 공덕역_ID, 5);
+        지하철_노선_구간_추가_요청(애오개역_마포역_노선_ID, 애오개역_공덕역_구간_정보);
+
+        Map<String, Object> 애오개역_마포역_구간_정보 = 지하철_구간_정보_생성(애오개역_ID, 마포역_ID, 5);
+        ExtractableResponse<Response> 애오개역_마포역_구간_추가_응답_결과 = 지하철_노선_구간_추가_요청(애오개역_마포역_노선_ID, 애오개역_마포역_구간_정보);
+        생성_실패_확인(애오개역_마포역_구간_추가_응답_결과);
+
+        ExtractableResponse<Response> 애오개역_공덕역_구간_추가_응답_결과 = 지하철_노선_구간_추가_요청(애오개역_마포역_노선_ID, 애오개역_공덕역_구간_정보);
+        생성_실패_확인(애오개역_공덕역_구간_추가_응답_결과);
     }
 }
