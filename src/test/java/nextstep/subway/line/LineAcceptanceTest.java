@@ -3,9 +3,11 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -28,11 +30,16 @@ public class LineAcceptanceTest {
     private int 강남역_ID;
     private int 교대역_ID;
 
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
+
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
+            databaseCleanup.afterPropertiesSet();
         }
+        databaseCleanup.clean();
 
         강남역_ID = 지하철역_생성("강남역").jsonPath().getInt("id");
         교대역_ID = 지하철역_생성("교대역").jsonPath().getInt("id");
