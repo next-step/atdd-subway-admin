@@ -55,6 +55,12 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/lines/{lineId}/sections")
+    public ResponseEntity addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        lineService.saveSection(lineId, sectionRequest);
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler({DataIntegrityViolationException.class, NotFoundException.class})
     public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
