@@ -24,6 +24,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private static final String SECTION_ADD_URI = "/lines/1/sections";
     private static final String SECTION_REMOVE_URI = "/lines/1/3/sections";
+    private static final String SECTION_REMOVE_FAIL_URI = "/lines/1/4/sections";
 
     @BeforeEach
     void setting() {
@@ -130,6 +131,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선에_구간_삭제_실패
+        지하철_구간_삭제_실패(response);
+    }
+
+    @DisplayName("노선에 등록되어있지 않은 역을 제거할 수 없다.")
+    @Test
+    void removeLineNotExistsStation() {
+        // when
+        // 구간이 하나 이상인 노선의 구간을 제거
+        ExtractableResponse<Response> response = 지하철_구간_삭제(SECTION_REMOVE_FAIL_URI);
+
+        // then
+        // 지하철_노선에_구간_삭제_성공
         지하철_구간_삭제_실패(response);
     }
 
