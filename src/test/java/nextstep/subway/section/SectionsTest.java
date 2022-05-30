@@ -39,9 +39,8 @@ public class SectionsTest {
 
         // then
         List<Section> list = sections.getSections();
-        assertThat(list).hasSize(2);
-        assertThat(list.stream().map(Section::getDistance).mapToInt(i -> i.getDistance()).sum())
-                .isEqualTo(10);
+        assertThat(sections.getSections()).hasSize(2);
+        assertThat(sections.getTotalDistance()).isEqualTo(10);
     }
 
     @DisplayName("강남_판교 구간 길이10에 강남_양재 구간 3을 추가하면, 구간은 2개이고 총구간길이는 10이다.")
@@ -56,9 +55,8 @@ public class SectionsTest {
 
         // then
         List<Section> list = sections.getSections();
-        assertThat(list).hasSize(2);
-        assertThat(list.stream().map(Section::getDistance).mapToInt(i -> i.getDistance()).sum())
-                .isEqualTo(13);
+        assertThat(sections.getSections()).hasSize(2);
+        assertThat(sections.getTotalDistance()).isEqualTo(13);
     }
 
     @DisplayName("구간이 2개 (강남_양재/양재_판교)인데 양재역을 제거하면, 구간은 한개이고  구간길이는 10이다.")
@@ -73,9 +71,7 @@ public class SectionsTest {
         sections.removeSection(양재역);
 
         // then
-        List<Section> list = sections.getSections();
-        assertThat(list).hasSize(1);
-        assertThat(list.stream().map(Section::getDistance).mapToInt(i -> i.getDistance()).sum())
-                .isEqualTo(13);
+        assertThat(sections.getSections()).hasSize(1);
+        assertThat(sections.getTotalDistance()).isEqualTo(10);
     }
 }

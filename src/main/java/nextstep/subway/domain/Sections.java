@@ -21,6 +21,10 @@ public class Sections {
         return sections;
     }
 
+    public int getTotalDistance() {
+        return sections.stream().mapToInt(section -> section.getDistance().getDistance()).sum();
+    }
+
     public void addSection(Section section) {
         if (!sections.isEmpty()) {
             addValidate(section);
