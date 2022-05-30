@@ -41,7 +41,8 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        final ExtractableResponse<Response> response = createLineRequest("1호선", "bg-blue-600", upStationId, downStationId);
+        final ExtractableResponse<Response> response = createLineRequest("1호선", "bg-blue-600", upStationId,
+                downStationId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -53,5 +54,27 @@ public class LineAcceptanceTest {
                         .then().log().all()
                         .extract().jsonPath().getList("name", String.class);
         assertThat(lineNames).containsAnyOf("1호선");
+    }
+
+    /**
+     * Given 2개의 지하철 노선을 생성하고 When 지하철 노선 목록을 조회하면 Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     */
+    @DisplayName("지하철 노선 목록을 조회한다.")
+    @Test
+    void getLines() {
+        // given
+        createLineRequest("1호선", "bg-blue-600", upStationId, downStationId);
+        createLineRequest("2호선", "bg-green-600", upStationId, downStationId);
+
+        //when
+        final List<String> lineNames = RestAssured.given().log().all()
+                .when().get("/lines")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
+
+        //then
+        assertThat(lineNames.size()).isEqualTo(2);
+        assertThat(lineNames).containsAnyOf("1호선");
+        assertThat(lineNames).containsAnyOf("2호선");
     }
 }
