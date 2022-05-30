@@ -53,6 +53,11 @@ public class Line extends BaseEntity {
 		this(id, name, color, null, null, 0);
 	}
 
+	public void updateNameAndColor(String name, String color) {
+		this.name = name;
+		this.color = color;
+	}
+
 	public void addSection(Long upStationId, Long downStationId, int distance) {
 		// TODO
 		// section 로직 생성

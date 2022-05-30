@@ -44,15 +44,18 @@ public class LineService {
 					.collect(Collectors.toList());
 	}
 
-	public LineResponse findLine(Long id) {
-		Optional<Line> line = lineRepository.findById(id);
+	public LineResponse findLine(Long lineId) {
+		Optional<Line> line = lineRepository.findById(lineId);
 		return LineResponse.of(line.get());
 	}
 
-	public void updateNameAndColor(Long id, LineRequest lineRequest) {
-		lineRepository.updateNameAndColor(lineRequest.getName(), lineRequest.getColor(), id);
+	@Transactional
+	public void updateNameAndColor(Long lineId, LineRequest lineRequest) {
+		Line line = lineRepository.getById(lineId);
+		line.updateNameAndColor(lineRequest.getName(), lineRequest.getColor());
 	}
 
+	@Transactional
 	public void deleteLine(Long id) {
 		lineRepository.deleteById(id);
 	}
