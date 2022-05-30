@@ -10,7 +10,8 @@ public class Section extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private int distance;
+    @Embedded
+    private Distance distance = new Distance();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_up_station"))
@@ -28,7 +29,7 @@ public class Section extends BaseEntity {
     }
 
     public Section(int distance, Station upStation, Station downStation) {
-        this.distance = distance;
+        this.distance = new Distance(distance);
         this.upStation = upStation;
         this.downStation = downStation;
     }
@@ -54,29 +55,39 @@ public class Section extends BaseEntity {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.value();
     }
 
     public void repair(Section section) {
         if (Objects.isNull(section)) {
             return;
         }
-        repairUpStation(section);
-        repairDownStation(section);
+        repairStation(section);
+    }
+
+    private void repairStation(Section section) {
+        if (isSameUpStation(section.upStation)) {
+            repairUpStation(section);
+            return;
+        }
+
+        if (isSameDownStation(section.downStation)) {
+            repairDownStation(section);
+        }
     }
 
     private void repairUpStation(Section section) {
-        if (isSameUpStation(section.upStation)) {
-            this.upStation = section.downStation;
-            minusDistance(section.distance);
-        }
+        this.upStation = section.downStation;
+        changeDistance(section.distance);
     }
 
     private void repairDownStation(Section section) {
-        if (isSameDownStation(section.downStation)) {
-            this.downStation = section.upStation;
-            minusDistance(section.distance);
-        }
+        this.downStation = section.upStation;
+        changeDistance(section.distance);
+    }
+
+    private void changeDistance(Distance distance) {
+        this.distance.minus(distance);
     }
 
     private boolean isSameUpStation(Station station) {
@@ -85,10 +96,6 @@ public class Section extends BaseEntity {
 
     public boolean isSameDownStation(Station station) {
         return this.downStation.equals(station);
-    }
-
-    public void minusDistance(int distance) {
-        this.distance -= distance;
     }
 
     @Override
