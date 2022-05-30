@@ -35,14 +35,20 @@ public class LineService {
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findLineAndStations();
         return lines.stream()
-	        .map(LineResponse::from)
-	        .collect(Collectors.toList());
+            .map(LineResponse::from)
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
         Line line = findLineById(id);
         return LineResponse.from(line);
+    }
+
+    @Transactional(readOnly = true)
+    public Line findOne(Long id) {
+        return lineRepository.findLineAndStationsById(id)
+            .orElseThrow(() -> new NoSuchElementException("지하철 노선을 찾을 수 없습니다."));
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {

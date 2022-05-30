@@ -38,7 +38,8 @@ public class Line extends BaseEntity {
         validateLine(name, color, distance);
         this.name = name;
         this.color = color;
-        sections.add(Section.of(upStation, downStation, distance));
+        Section section = Section.of(upStation, downStation, distance);
+        section.addLine(this);
     }
 
     private void validateLine(String name, String color, Long distance) {
@@ -101,6 +102,6 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-
+        section.addLine(this);
     }
 }

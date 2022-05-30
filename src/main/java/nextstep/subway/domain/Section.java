@@ -46,6 +46,47 @@ public class Section extends BaseEntity {
         return new Section(upStation, downStation, distance);
     }
 
+    public void addLine(Line line) {
+        line.getSections().add(this);
+        this.line = line;
+    }
+
+    public Section addSection(Section newSection) {
+        if (isEqualsUpStation(newSection)) {
+            return rePositionUpStation(newSection);
+        }
+
+        return rePositionDownStation(newSection);
+    }
+
+    private Section rePositionUpStation(Section section) {
+        this.upStation = section.getDownStation();
+        this.distance.minus(section.getDistance());
+        return section;
+    }
+
+    private Section rePositionDownStation(Section section) {
+        this.downStation = section.getUpStation();
+        this.distance.minus(section.getDistance());
+        return section;
+    }
+
+    public boolean isContains(Station station) {
+        return upStation == station || downStation == station;
+    }
+
+    public boolean isStationConnectable(Section newSection) {
+        return isEqualsUpStation(newSection) || isEqualsDownStation(newSection);
+    }
+
+    public boolean isEqualsUpStation(Section section) {
+        return upStation == section.getUpStation();
+    }
+
+    public boolean isEqualsDownStation(Section section) {
+        return downStation == section.getDownStation();
+    }
+
     public Long getId() {
         return id;
     }
@@ -64,6 +105,10 @@ public class Section extends BaseEntity {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public Distance getDistance() {
+        return distance;
     }
 
     public Long getDistanceValue() {
