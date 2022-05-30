@@ -101,6 +101,21 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given();
+        지하철역_등록하기("강남역");
+        지하철역_등록하기("선릉역");
+
+        // when
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/stations")
+                .then().log().all()
+                .extract();
+        // then
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(getResponse.body().jsonPath().getList("$")).hasSize(2);
+        assertThat(getResponse.body().jsonPath().getList("name")).hasSize(2);
+        assertThat(getResponse.body().jsonPath().getList("name")).contains("강남역", "선릉역");
     }
 
     /**
@@ -111,5 +126,30 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        ExtractableResponse<Response> postResponse = 지하철역_등록하기("강남역");
+        int id = postResponse.body().jsonPath().getInt("id");
+
+        // when
+        ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
+                .when()
+                .delete("/stations/{id}", id)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> 지하철역_등록하기(String stationName) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", stationName);
+
+        return RestAssured.given().log().all()
+                        .body(params)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().post("/stations")
+                        .then().log().all()
+                        .extract();
     }
 }
