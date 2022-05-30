@@ -40,23 +40,28 @@ public class SectionService {
         Line line = getLineOrThrow(lineId);
         Station upStation = getStationOrThrow(sectionRequest.getUpStationId());
         Station downStation = getStationOrThrow(sectionRequest.getDownStationId());
-        
+
         if (sectionRepository.findAllByUpStationAndDownStationAndLine(upStation, downStation, line)
             .isPresent()) {
             throw new DupSectionException();
         }
-        Section appendSection = new Section(upStation, downStation, line, sectionRequest.getDistance(),
+        Section appendSection = new Section(upStation, downStation, line,
+            sectionRequest.getDistance(),
             null, null);
 
         Optional<Section> section = null;
-        if ((section = sectionRepository.findAllByDownStationAndLine(upStation, line)).isPresent()) {
-
-        }else if ((section = sectionRepository.findAllByUpStationAndLine(downStation, line)).isPresent()){
-            section.get().setSectionAfterThis(appendSection);
-        }else if ((section = sectionRepository.findAllByDownStationAndLine(downStation, line)).isPresent()) {
-
-        }else if ((section = sectionRepository.findAllByUpStationAndLine(upStation, line)).isPresent()){
-
+        if ((section = sectionRepository.findAllByDownStationAndLine(upStation,
+            line)).isPresent()) { //기준이 Up인데 down에있다?
+            section.get().appendBeforeSection(appendSection);
+        } else if ((section = sectionRepository.findAllByUpStationAndLine(downStation,
+            line)).isPresent()) {
+            section.get().appendAfterSection(appendSection);
+        } else if ((section = sectionRepository.findAllByDownStationAndLine(downStation,
+            line)).isPresent()) {
+            section.get().insertBackOfSection(appendSection);
+        } else if ((section = sectionRepository.findAllByUpStationAndLine(upStation,
+            line)).isPresent()) {
+            section.get().insertFrontOfSection(appendSection);
         }
 
     }
