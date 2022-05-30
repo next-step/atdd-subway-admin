@@ -23,6 +23,15 @@ public class RestAssuredTemplate {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> post(String path, Object param, RequestDTO request) {
+        return RestAssured.given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(path, param)
+                .then().log().all()
+                .extract();
+    }
+
     public static ExtractableResponse<Response> put(String path, RequestDTO request) {
         return RestAssured.given().log().all()
                 .body(request)
