@@ -58,15 +58,34 @@ public class Section {
     }
 
     public void setLine(final Line line) {
-        if (Objects.nonNull(this.line)) {
-            this.line.getSections().remove(this);
-        }
         this.line = line;
-        line.getSections().add(this);
     }
 
-    private void invalidSectionCheck() {
+    public long getDistance() {
+        return this.distance.getDistance();
+    }
 
+    public void changeStationInfo(Section section) {
+        if (upStation.equals(section.getUpStation())) {
+            changeUpStation(section.getDownStation());
+            changeDistance(section.getDistance());
+        }
+        if (downStation.equals(section.getDownStation())) {
+            changeDownStation(section.getUpStation());
+            changeDistance(section.getDistance());
+        }
+    }
+
+    private void changeUpStation(Station downStation) {
+        this.upStation = downStation;
+    }
+
+    private void changeDownStation(Station upStation) {
+        this.downStation = upStation;
+    }
+
+    private void changeDistance(long distance) {
+        this.distance.changeDistance(distance);
     }
 
     @Override
