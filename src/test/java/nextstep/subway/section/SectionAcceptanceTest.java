@@ -145,6 +145,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         노선에_신규_구간이_등록되지_않는다(신규_구간이_등록되지_않음);
     }
 
+    /**
+     * Given 노선에 포함되지 않은 역을 생성하고
+     * When 새로운 구간을 등록하면
+     * Then 지하철 노선에 구간이 등록되지 않는다.
+     */
+    @Test
+    void 상행역과_하행역_둘_중_하나도_포함되어_있지_않으면_구간을_등록할_수_없다() {
+        // given
+        Long 판교역_id = id_추출(지하철역_생성("판교역"));
+        Long 청계산입구역_id = id_추출(지하철역_생성("청계산입구역"));
+        SectionRequest 신규_구간 = new SectionRequest(판교역_id, 청계산입구역_id, 10);
+
+        // when
+        ExtractableResponse<Response> 신규_구간이_등록되지_않음 = 노선에_신규_구간을_등록(신분당선, 신규_구간);
+
+        // then
+        노선에_신규_구간이_등록되지_않는다(신규_구간이_등록되지_않음);
+    }
+
     public static class SectionAcceptanceTemplate {
         public static void 노선에_신규_구간이_정상_등록된다(ExtractableResponse<Response> 신규_구간이_등록된_노선) {
             assertThat(신규_구간이_등록된_노선.statusCode()).isEqualTo(HttpStatus.CREATED.value());

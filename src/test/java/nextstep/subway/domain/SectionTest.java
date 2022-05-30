@@ -35,5 +35,4 @@ class SectionTest {
         // then
         assertThat(result).isTrue();
     }
-
 }
