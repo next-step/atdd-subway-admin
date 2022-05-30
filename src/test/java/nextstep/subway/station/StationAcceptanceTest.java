@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static nextstep.subway.helper.DomainCreationHelper.createStationRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
@@ -119,7 +120,7 @@ public class StationAcceptanceTest {
     void deleteStation() {
         //given
         createStationRequest("강남역");
-        final Long jamsil = createStationRequest("잠실역");
+        final Long jamsil = createStationRequest("잠실역").jsonPath().getLong("id");
 
         //when
         RestAssured.given().log().all()
@@ -136,17 +137,5 @@ public class StationAcceptanceTest {
         assertThat(stationNames.size()).isEqualTo(1);
         assertThat(stationNames).containsAnyOf("강남역");
         assertThat(stationNames).doesNotContain("잠실역");
-    }
-
-    private Long createStationRequest(final String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract().jsonPath().getLong("id");
     }
 }
