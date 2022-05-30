@@ -9,15 +9,27 @@ import javax.persistence.OneToMany;
 
 @Embeddable
 public class Sections {
-    public static final int ZERO_NUM = 0;
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<Section> sections = new ArrayList<>();
+    private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
     }
 
+    private Sections(List<Section> sections) {
+        this.sections = sections;
+    }
+
+    public static Sections valueOf(List<Section> sections) {
+        return new Sections(sections);
+    }
+
     public void addSection(Section section) {
-        sections.add(section);
+        if (isSectionsEmpty()) {
+            sections.add(section);
+        }
+        if (!isSectionsEmpty()) {
+            registerSection(section);
+        }
     }
 
     public Distance distance() {
@@ -36,6 +48,27 @@ public class Sections {
         return sections.get(sections.size() - 1).downStation();
     }
 
+    public List<Section> sections() {
+        return sections;
+    }
+
+    private void registerSection(Section newSection) {
+        for (int i = 0; i < sections.size(); i++) {
+            registerSectionIfEqualsUpStation(newSection, i);
+        }
+    }
+
+    private void registerSectionIfEqualsUpStation(Section newSection, int index) {
+        if (isEqualsUpStation(sections.get(index), newSection)) {
+            sections.get(index).changeUpSection(newSection);
+            sections.add(index, newSection);
+        }
+    }
+
+    private boolean isEqualsUpStation(Section targetSection, Section newSection) {
+        return targetSection.upStation().equals(newSection.upStation());
+    }
+
     private void validateSections() {
         if (isSectionsEmpty()) {
             throw new IllegalStateException("지하철 구간이 비어있습니다.");
@@ -43,6 +76,6 @@ public class Sections {
     }
 
     private boolean isSectionsEmpty() {
-        return sections.size() == ZERO_NUM;
+        return sections.isEmpty();
     }
 }
