@@ -47,4 +47,10 @@ public class LineService {
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
+
+    public LineResponse findLine(final Long lineId) {
+        final Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new ResourceNotFoundException(Line.class, RESOURCE_NOT_FOUND));
+        return LineResponse.of(line);
+    }
 }
