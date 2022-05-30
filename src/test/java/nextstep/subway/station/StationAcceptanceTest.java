@@ -16,7 +16,7 @@ import static nextstep.subway.station.StationAssuredMethod.지하철역_조회_�
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
-public class StationAcceptanceTest extends BaseAcceptanceTest {
+class StationAcceptanceTest extends BaseAcceptanceTest {
 
     /**
      * When 지하철역을 생성하면

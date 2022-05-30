@@ -8,7 +8,7 @@ import javax.persistence.Embeddable;
 public class LineName {
     private static final String NO_LINE_NAME_ERROR = "지하철 노선 이름이 필요 합니다.";
 
-    @Column
+    @Column(nullable = false)
     private String name;
 
     protected LineName() {

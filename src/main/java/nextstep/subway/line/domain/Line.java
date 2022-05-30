@@ -1,15 +1,15 @@
 package nextstep.subway.line.domain;
 
+import java.util.List;
+import java.util.Objects;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import nextstep.subway.common.domain.BaseEntity;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.dto.StationResponse;
 
 @Entity
 public class Line extends BaseEntity {
@@ -24,26 +24,19 @@ public class Line extends BaseEntity {
     @Embedded
     private LineColor color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
+    @Embedded
+    private Sections sections = Sections.newInstance();
 
     protected Line() {
     }
 
-    private Line(LineName name, LineColor color, Station upStation, Station downStation) {
+    private Line(LineName name, LineColor color) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
     }
 
-    public static Line of(LineName name, LineColor color, Station upStation, Station downStation) {
-        return new Line(name, color, upStation, downStation);
+    public static Line of(LineName name, LineColor color) {
+        return new Line(name, color);
     }
 
     public Long getId() {
@@ -58,16 +51,36 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
 
-    public Station getDownStation() {
-        return downStation;
+    public List<StationResponse> getAllStations() {
+        return this.sections.getAllStations();
     }
 
     public void update(String name, String color) {
         this.name = LineName.from(name);
         this.color = LineColor.from(color);
+    }
+
+    public void addSection(Section section) {
+        this.sections.add(section);
+        section.setLine(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Line line = (Line) o;
+        return Objects.equals(id, line.id) && Objects.equals(name, line.name)
+                && Objects.equals(color, line.color);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, color);
     }
 }

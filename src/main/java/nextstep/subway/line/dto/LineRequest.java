@@ -3,7 +3,6 @@ package nextstep.subway.line.dto;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineColor;
 import nextstep.subway.line.domain.LineName;
-import nextstep.subway.station.domain.Station;
 
 public class LineRequest {
 
@@ -48,7 +47,7 @@ public class LineRequest {
         return distance;
     }
 
-    public Line convertToLine(Station upStation, Station downStation) {
-        return Line.of(LineName.from(this.name), LineColor.from(this.color), upStation, downStation);
+    public Line convertToLine() {
+        return Line.of(LineName.from(this.name), LineColor.from(this.color));
     }
 }
