@@ -51,11 +51,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         databaseClean("line", "station", "section");
     }
 
-    /**
-     * When 지하철 노선을 생성하면
-     * Then 지하철 노선이 생성된다
-     * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
-     */
     @DisplayName("지하철 노선을 생성한다.")
     @TestFactory
     Stream<DynamicTest> createStation() {
@@ -82,11 +77,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    /**
-     * given 2개의 지하철 노선을 생성하고
-     * when 지하철 노선 목록을 조회하면
-     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다
-     */
     @DisplayName("지하철 노선 목록을 조회한다.")
     @TestFactory
     Stream<DynamicTest> getLines() {
@@ -110,11 +100,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    /**
-     * given 지하철 노선을 생성하고
-     * when 생성한 지하철 노선을 조회하면
-     * Then 생성한 지하촐 노선의 정보를 응답받을 수 있다.
-     */
     @DisplayName("지하철 노선을 조회한다.")
     @TestFactory
     Stream<DynamicTest> getLine() {
@@ -136,12 +121,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    /**
-     * given 지하철 노선을 생성하고
-     * when 생성한 지하철 노선을 수정하면
-     * Then 해당 지하철 노선 정보는 수정된다
-     * Then 지하철 노선 조회 시 변경된 노선을 조회할 수 있다
-     */
     @DisplayName("지하철 노선을 수정한다.")
     @TestFactory
     Stream<DynamicTest> updateLine() {
@@ -161,11 +140,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    /**
-     * given 지하철 노선을 생성하고
-     * when 생성한 지하철 노선을 삭제하면
-     * Then 해당 지하철 노선 정보는 삭제된다
-     */
     @DisplayName("지하철 노선을 삭제한다.")
     @TestFactory
     Stream<DynamicTest> deleteLine() {

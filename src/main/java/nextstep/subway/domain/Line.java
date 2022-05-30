@@ -1,8 +1,10 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.StationResponse;
 
 @Entity
 public class Line extends BaseEntity {
@@ -25,8 +28,6 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String color;
 
-    private Long distance;
-
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
@@ -38,7 +39,6 @@ public class Line extends BaseEntity {
         validateLine(name, color, distance);
         this.name = name;
         this.color = color;
-        this.distance = distance;
         sections.add(Section.of(upStation, downStation, distance));
     }
 
@@ -79,5 +79,15 @@ public class Line extends BaseEntity {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public Set<StationResponse> getStations() {
+        Set<StationResponse> stations = new HashSet<>();
+        for (Section section : sections) {
+            stations.add(StationResponse.of(section.getUpStation()));
+            stations.add(StationResponse.of(section.getDownStation()));
+        }
+
+        return stations;
     }
 }

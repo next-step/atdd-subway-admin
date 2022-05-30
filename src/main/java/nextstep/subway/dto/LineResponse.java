@@ -22,13 +22,7 @@ public class LineResponse {
     }
 
     public static LineResponse from(Line line) {
-        Set<StationResponse> stations = new HashSet<>();
-        for (Section section : line.getSections()) {
-            stations.add(StationResponse.of(section.getUpStation()));
-            stations.add(StationResponse.of(section.getDownStation()));
-        }
-
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>(stations));
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>(line.getStations()));
     }
 
     public Long getId() {

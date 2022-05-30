@@ -24,8 +24,8 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationService.findById(lineRequest.getUpStationId());
-        Station downStation = stationService.findById(lineRequest.getDownStationId());
+        Station upStation = findStationById(lineRequest.getUpStationId());
+        Station downStation = findStationById(lineRequest.getDownStationId());
         Line line = lineRepository.save(Line.of(lineRequest, upStation, downStation));
 
         return LineResponse.from(line);
@@ -55,8 +55,12 @@ public class LineService {
         lineRepository.delete(line);
     }
 
-    public Line findLineById(Long id) {
+    private Line findLineById(Long id) {
         return lineRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException("지하철 노선을 찾을 수 없습니다."));
+    }
+
+    private Station findStationById(Long id) {
+        return stationService.findById(id);
     }
 }
