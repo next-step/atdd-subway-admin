@@ -110,6 +110,24 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         노선에_신규_구간이_정상_등록된다(신규_구간이_등록된_노선);
     }
 
+    /**
+     * Given 기존 역 사이 길이보다 크거나 같은 새로운 역을 등록하고
+     * When 새로운 구간을 등록하면
+     * Then 지하철 노선에 구간이 등록되지 않는다.
+     */
+    @Test
+    void 기존_역_사이_길이보다_크거나_같은_구간은_등록할_수_없다() {
+        // given
+        Long 판교역_id = id_추출(지하철역_생성("판교역"));
+        SectionRequest 신규_구간 = new SectionRequest(판교역_id, 정자역_id, 10);
+
+        // when
+        ExtractableResponse<Response> 신규_구간이_등록되지_않음 = 노선에_신규_구간을_등록(신분당선, 신규_구간);
+
+        // then
+        노선에_신규_구간이_등록되지_않는다(신규_구간이_등록되지_않음);
+    }
+
     public static class SectionAcceptanceTemplate {
         public static void 노선에_신규_구간이_정상_등록된다(ExtractableResponse<Response> 신규_구간이_등록된_노선) {
             assertThat(신규_구간이_등록된_노선.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -129,6 +147,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             List<Integer> 구간들 = 신규_구간이_등록된_노선.jsonPath().getList("sections.distance");
             int 구간_길이의_합 = 구간들.get(0) + 구간들.get(1);
             assertThat(구간_길이의_합).isEqualTo(totalDistance);
+        }
+
+        public static void 노선에_신규_구간이_등록되지_않는다(ExtractableResponse<Response> 신규_구간이_등록되지_않음) {
+            assertThat(신규_구간이_등록되지_않음.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
     }
 }
