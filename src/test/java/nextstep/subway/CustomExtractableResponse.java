@@ -30,9 +30,7 @@ public class CustomExtractableResponse {
     
     @BeforeEach
     public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
+        RestAssured.port = port;
         databaseCleanup.execute();
     }
 
