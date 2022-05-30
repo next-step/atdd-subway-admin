@@ -1,13 +1,11 @@
 package nextstep.subway.domain;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 import com.sun.istack.NotNull;
 
@@ -23,44 +21,25 @@ public class Line extends BaseEntity {
 	@NotNull
 	private String color;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "up_station_id")
-	private Station upStation;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "down_station_id")
-	private Station downStation;
-
-	private int distance;
+    @Embedded
+    private Sections sections = new Sections();
 
 	protected Line() {
 	}
-
-	protected Line(Long id, String name, String color, Station upStation, Station downStation, int distance) {
-		this.id = id;
+	
+	public Line(String name, String color, Section section) {
 		this.name = name;
 		this.color = color;
-		this.upStation = upStation;
-		this.downStation = downStation;
-		this.distance = distance;
+		add(section);
 	}
 
-	public Line(String name, String color, Station upStation, Station downStation, int distance) {
-		this(null, name, color, upStation, downStation, distance);
-	}
-
-	public Line(Long id, String name, String color) {
-		this(id, name, color, null, null, 0);
+	public void add(Section section) {
+		sections.add(section);
 	}
 
 	public void updateNameAndColor(String name, String color) {
 		this.name = name;
 		this.color = color;
-	}
-
-	public void addSection(Long upStationId, Long downStationId, int distance) {
-		// TODO
-		// section 로직 생성
 	}
 
 	public Long getId() {
@@ -74,17 +53,9 @@ public class Line extends BaseEntity {
 	public String getColor() {
 		return color;
 	}
-
-	public Station getUpStation() {
-		return upStation;
-	}
-
-	public Station getDownStation() {
-		return downStation;
-	}
-
-	public int getDistance() {
-		return distance;
+	
+	public Sections getSections() {
+		return sections;
 	}
 
 	@Override

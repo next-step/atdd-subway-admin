@@ -1,44 +1,38 @@
 package nextstep.subway.dto;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Sections;
 
 public class LineResponse {
 	private Long id;
 	private String name;
 	private String color;
 	private List<StationResponse> stations;
-	private LocalDateTime createdDate;
-	private LocalDateTime modifiedDate;
 
 	public static LineResponse of(Line line) {
-		return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getUpStation(),
-				line.getDownStation(), line.getCreatedDate(), line.getModifiedDate());
+		return new LineResponse(line);
 	}
 
 	public LineResponse() {
 	}
 
-	public LineResponse(Long id, String name, String color, Station upStation, Station downStation,
-			LocalDateTime createdDate, LocalDateTime modifiedDate) {
-		this.id = id;
-		this.name = name;
-		this.color = color;
-		this.createdDate = createdDate;
-		this.modifiedDate = modifiedDate;
-		setStations(upStation, downStation);
+	public LineResponse(Line line) {
+		this.id = line.getId();
+		this.name = line.getName();
+		this.color = line.getColor();
+		setStations(line.getSections());
 	}
 	
-	private void setStations(Station... stations) {
-		this.stations = new ArrayList<StationResponse>();
-
-		for (Station station : stations) {
-			this.stations.add(StationResponse.of(station));
+	private void setStations(Sections sections) {
+		stations = new ArrayList<StationResponse>();
+		for (Section section: sections.getSections()) {
+			this.stations.add(StationResponse.of(section.getUpStation()));
 		}
+		this.stations.add(StationResponse.of(sections.getSections().get(sections.lastIndex()).getDownStation()));
 	}
 
 	public Long getId() {

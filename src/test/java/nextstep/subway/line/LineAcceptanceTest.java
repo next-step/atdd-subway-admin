@@ -52,12 +52,12 @@ public class LineAcceptanceTest extends CustomExtractableResponse{
         // when
         ExtractableResponse<Response> CreateResponse = 
         		노선_생성_요청("신분당선", "bg-red-600", stations.get("지하철역").toString(), stations.get("새로운지하철역").toString(), "10");
-        LineResponse createdLine = getObject(CreateResponse, LineResponse.class);
+        long id = getId(CreateResponse);
         List<String> lines = 노선_리스트_이름_조회(); 
 
 		// then
 		assertAll(() -> assertThat(CreateResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-				() -> assertNotNull(createdLine.getId()),
+				() -> assertNotNull(id),
 				() -> assertThat(lines).containsAnyOf("신분당선"));
     }   
     
@@ -92,14 +92,17 @@ public class LineAcceptanceTest extends CustomExtractableResponse{
     @Test
     void getLine() {
         // given
-    	노선_생성_요청("신분당선", "bg-red-600", stations.get("지하철역").toString(), stations.get("새로운지하철역").toString(), "10");
+        long id = getId(
+        		노선_생성_요청("신분당선", "bg-red-600", stations.get("지하철역").toString(), stations.get("새로운지하철역").toString(), "10"));
     	노선_생성_요청("분당선", "bg-green-600", stations.get("지하철역").toString(), stations.get("또다른지하철역").toString(), "10");	
 		
         // when
-		LineResponse line = 노선_ID_조회(1L);
+		long findId = 노선_ID_조회(id)
+				.jsonPath()
+				.getLong("id");
 
 		// then
-		assertEquals(1L, line.getId());
+		assertEquals(id, findId);
     }    
 
     /**
@@ -111,19 +114,20 @@ public class LineAcceptanceTest extends CustomExtractableResponse{
     @Test
     void updateLine() {
         // given
-    	노선_생성_요청("신분당선", "bg-red-600", stations.get("지하철역").toString(), stations.get("새로운지하철역").toString(), "10");
+    	long id = getId(
+    			노선_생성_요청("신분당선", "bg-red-600", stations.get("지하철역").toString(), stations.get("새로운지하철역").toString(), "10"));
     	노선_생성_요청("분당선", "bg-green-600", stations.get("지하철역").toString(), stations.get("또다른지하철역").toString(), "10");	
 		
         // when
-    	LineResponse createdLine = 노선_ID_조회(1L);
-		ExtractableResponse<Response> response = 노선_수정_요청(createdLine, "다른분당선", "bg-red-800");
-		LineResponse line = 노선_ID_조회(createdLine.getId());
-		
+    	ExtractableResponse<Response> createdLine = 노선_ID_조회(id);
+		ExtractableResponse<Response> response = 노선_수정_요청(id, "다른분당선", "bg-red-800");
+		ExtractableResponse<Response> findLine = 노선_ID_조회(id);
+		findLine.jsonPath().getString("name");
 		// then
 		assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-				() -> assertEquals(createdLine.getId(), line.getId()),
-				() -> assertNotEquals(createdLine.getName(), line.getName()),
-				() -> assertNotEquals(createdLine.getColor(), line.getColor()));
+				() -> assertEquals(findLine.jsonPath().getLong("id"), findLine.jsonPath().getLong("id")),
+				() -> assertNotEquals(createdLine.jsonPath().getString("name"), findLine.jsonPath().getString("name")),
+				() -> assertNotEquals(createdLine.jsonPath().getString("color"), findLine.jsonPath().getString("color")));
     }
     
     /**
@@ -135,11 +139,11 @@ public class LineAcceptanceTest extends CustomExtractableResponse{
     @Test
     void deleteLine() {
         // given
-    	노선_생성_요청("신분당선", "bg-red-600", stations.get("지하철역").toString(), stations.get("새로운지하철역").toString(), "10");
+    	long id = getId(
+    			노선_생성_요청("신분당선", "bg-red-600", stations.get("지하철역").toString(), stations.get("새로운지하철역").toString(), "10"));
 		
         // when
-    	LineResponse createdLine = 노선_ID_조회(1L);
-		ExtractableResponse<Response> response = 노선_삭제_요청(createdLine);
+		ExtractableResponse<Response> response = 노선_삭제_요청(id);
 
 		// then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -154,10 +158,6 @@ public class LineAcceptanceTest extends CustomExtractableResponse{
 		params.put("name", name);
 		return post(StationAcceptanceTest.BASIC_URL_STATIONS, params);
 	}
-	
-	private List<LineResponse> 노선_리스트_조회() {
-		return getList(get(BASIC_URL_LINES), LineResponse.class);
-	}
 
 	private List<String> 노선_리스트_이름_조회() {
 		return get(BASIC_URL_LINES)
@@ -165,9 +165,9 @@ public class LineAcceptanceTest extends CustomExtractableResponse{
 					.getList("name", String.class);
 	}
 
-	private LineResponse 노선_ID_조회(Long id) {
+	private ExtractableResponse<Response> 노선_ID_조회(Long id) {
 		String url = joinUrl(BASIC_URL_LINES, id);
-		return getObject(get(url), LineResponse.class);
+		return get(url);
 	}
 
 	private ExtractableResponse<Response> 노선_생성_요청(
@@ -186,19 +186,19 @@ public class LineAcceptanceTest extends CustomExtractableResponse{
 	}
 
 	private ExtractableResponse<Response> 노선_수정_요청(
-			LineResponse createdLine, 
+			Long id, 
 			String name, 
 			String color) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);
 		params.put("color", color);
 
-		String url = joinUrl(BASIC_URL_LINES, createdLine.getId());
+		String url = joinUrl(BASIC_URL_LINES, id);
 		return put(url, params);
 	}
 
-	private ExtractableResponse<Response> 노선_삭제_요청(LineResponse createdLine) {
-		String url = joinUrl(BASIC_URL_LINES, createdLine.getId());
+	private ExtractableResponse<Response> 노선_삭제_요청(Long id) {
+		String url = joinUrl(BASIC_URL_LINES, id);
 		return delete(url);
 	}
 }

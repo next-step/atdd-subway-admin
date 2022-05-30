@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.SectionRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
@@ -20,10 +22,12 @@ import nextstep.subway.dto.SectionRequest;
 public class LineService {
 	private final StationRepository stationRepository;
 	private final LineRepository lineRepository;
+	private final SectionRepository sectionRepository;
 
-	public LineService(StationRepository stationRepository, LineRepository lineRepository) {
+	public LineService(StationRepository stationRepository, LineRepository lineRepository, SectionRepository sectionRepository) {
 		this.stationRepository = stationRepository;
 		this.lineRepository = lineRepository;
+		this.sectionRepository = sectionRepository;
 	}
 
 	@Transactional
@@ -31,7 +35,8 @@ public class LineService {
 		Optional<Station> upStation = stationRepository.findById(lineRequest.getUpStationId());
 		Optional<Station> downStation = stationRepository.findById(lineRequest.getDownStationId());
 		
-		Line line = lineRepository.save(lineRequest.toLine(upStation.get(), downStation.get()));
+		Section section = sectionRepository.save(lineRequest.toSection(upStation.get(), downStation.get()));
+		Line line = lineRepository.save(lineRequest.toLine(section));
 		return LineResponse.of(line);
 	}
 
@@ -60,8 +65,11 @@ public class LineService {
 		lineRepository.deleteById(id);
 	}
 
+	@Transactional
 	public void addSection(Long lineId, SectionRequest sectionRequest) {
+		Optional<Station> upStation = stationRepository.findById(sectionRequest.getUpStationId());
+		Optional<Station> downStation = stationRepository.findById(sectionRequest.getDownStationId());
 		Line line = lineRepository.getById(lineId);
-		line.addSection(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+		line.add(sectionRequest.toSection(upStation.get(), downStation.get()));
 	}
 }
