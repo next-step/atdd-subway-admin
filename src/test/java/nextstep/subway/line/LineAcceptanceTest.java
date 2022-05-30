@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.utils.DatabaseCleaner;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
@@ -49,6 +50,48 @@ public class LineAcceptanceTest {
     @AfterEach
     public void tearDown() {
         databaseCleaner.clean();
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @Test
+    @DisplayName("지하철 노선을 수정한다.")
+    void updateLine() {
+        // given
+        ExtractableResponse<Response> response =
+                createLine("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        //when
+        updateLine(new LineUpdateRequest());
+
+        // then
+        ExtractableResponse<Response> actual = getOne(response.jsonPath().getLong("id"));
+        assertThat(actual.jsonPath().getString("name")).isEqualTo("신분당선");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @Test
+    @DisplayName("지하철 노선을 삭제한다.")
+    void deleteLine() {
+        // given
+        ExtractableResponse<Response> response =
+                createLine("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        //when
+        deleteLine(response.jsonPath().getLong("id"));
+
+        // then
+        ExtractableResponse<Response> actual = getOne(response.jsonPath().getLong("id"));
+        assertThat(actual.jsonPath().getString("name")).isEqualTo("신분당선");
     }
 
     /**
@@ -105,10 +148,23 @@ public class LineAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
-        List<String> stationNames = getAllLine().jsonPath().getList("name", String.class);
+        ExtractableResponse<Response> actual = getOne(response.jsonPath().getLong("id"));
 
         // then
-        assertThat(stationNames).containsExactly("신분당선");
+        assertThat(actual.jsonPath().getString("name")).isEqualTo("신분당선");
+    }
+
+
+    private  ExtractableResponse<Response> getOne(Long id) {
+        throw new UnsupportedOperationException();
+    }
+
+    private void updateLine(LineUpdateRequest lineUpdateRequest) {
+        throw new UnsupportedOperationException();
+    }
+
+    private void deleteLine(Long id) {
+        throw new UnsupportedOperationException();
     }
 
     private ExtractableResponse<Response> getAllLine() {
