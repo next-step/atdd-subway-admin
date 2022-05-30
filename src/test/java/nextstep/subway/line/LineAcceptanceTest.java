@@ -51,6 +51,6 @@ public class LineAcceptanceTest {
         //then
         String lineName = response.jsonPath().get("name");
         assertThat(lineName).isEqualTo("2호선");
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 }
