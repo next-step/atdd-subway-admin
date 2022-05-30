@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
@@ -46,31 +47,16 @@ public class LineAcceptanceTest {
     void createLine() {
         // when
 
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", "10");
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/lines")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = 지하철노선_생성("신분당선", "bg-red-600", upStationId, downStationId, "10");
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> lineNames = RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract().jsonPath().getList("name", String.class);
+        List<String> lineNames = 지하철노선_목록_조회().getList("name");
 
         assertThat(lineNames).containsAnyOf("신분당선");
     }
+
 
     /**
      * Given 2개의 지하철 노선을 생성하고
@@ -83,41 +69,41 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", "10");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
-
-        Map<String, String> params2 = new HashMap<>();
-        params.put("name", "분당선");
-        params.put("color", "bg-green-600");
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", "20");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
+        지하철노선_생성("신분당선", "bg-red-600", upStationId, downStationId, "10");
+        지하철노선_생성("분당선", "bg-green-600", upStationId, downStationId, "20");
 
         // when
-        List<String> lineNames = RestAssured.given().log().all()
+        List<String> lineNames = 지하철노선_목록_조회().getList("name");
+
+        // then
+        assertThat(lineNames).containsExactly("신분당선", "분당선");
+    }
+    
+    private ExtractableResponse<Response> 지하철노선_생성(String name, String color, String upStationId, String downStationId,
+                                                   String distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                        .body(params)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().post("/lines")
+                        .then().log().all()
+                        .extract();
+        return response;
+    }
+
+    private JsonPath 지하철노선_목록_조회() {
+        return RestAssured.given().log().all()
                 .when().get("/lines")
                 .then().log().all()
-                .extract().jsonPath().getList("name", String.class);
+                .extract().jsonPath();
 
-        assertThat(lineNames).containsExactly("신분당선", "분당선");
     }
 
     private ExtractableResponse<Response> 지하철역_생성(String stationName) {
