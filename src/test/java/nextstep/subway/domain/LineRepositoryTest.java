@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -107,6 +106,7 @@ class LineRepositoryTest {
                 .orElseThrow(LineNotFoundException::new);
 
         // then
-        assertThat(actual.getSections()).hasSize(1);
+        assertThat(actual.getSections()).isNotNull();
+        assertThat(actual.getSections().getList()).hasSize(1);
     }
 }

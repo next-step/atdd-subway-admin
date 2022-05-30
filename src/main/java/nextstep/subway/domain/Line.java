@@ -24,8 +24,8 @@ public class Line extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    @OneToMany(mappedBy = "line")
-    private List<Section> sections;
+    @Embedded
+    private Sections sections;
 
     protected Line() {
     }
@@ -75,7 +75,7 @@ public class Line extends BaseEntity {
         return downStation;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return sections;
     }
 

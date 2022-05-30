@@ -6,8 +6,10 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
+@Embeddable
 public class Sections {
 
+    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST)
     private List<Section> list;
 
     public Sections() {
