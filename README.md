@@ -57,5 +57,15 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ## Functional Requirements
 
 ### Step1 지하철역 인수테스트 완성
-[ ] 지하철역 목록 조회 인수 테스트
-[ ] 지하철역 삭제 인수 테스트
+[v] 지하철역 목록 조회 인수 테스트
+[v] 지하철역 삭제 인수 테스트
+
+
+### Step2 지하철 노선 기능 
+[v] 지하철노선 생성
+[v] 지하철노선 목록 조회
+[v] 특정 지하철노선 조회
+[v] 지하철노선 수정
+[v] 지하철노선 삭제
+[v] 인수 테스트들 서로 격리
+[v] 인수 테스트를 리팩터링(재사용성과 가독성, 그리고 빠른 테스트 의도 파악)
