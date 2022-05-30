@@ -182,8 +182,8 @@ class SectionAcceptanceTest {
     }
 
     /**
-     * When 등록 되어있지 않는 지하철역들로 생성하면
-     * Then 찾을 수 없기 때문에 생성에 실패한다.
+     * When 등록 되어있지 않는 지하철역들로 구간을 요청하면
+     * Then 찾을 수 없기 때문에 등록에 실패한다.
      */
     @DisplayName("상행&하행역이 둘 중 하나도 포함되어 있지 않으면 실패한다.")
     @Test
@@ -191,6 +191,21 @@ class SectionAcceptanceTest {
 
         //when
         ExtractableResponse<Response> createResponse = 구간_생성_요청(이호선, "신대방역", "사당역", 15);
+
+        //then
+        생성에_실패_했는지_상태_검증(createResponse);
+    }
+
+   /**
+     * When 이미 등록된 구간으로 요청하면
+     * Then 등록에 실패한다.
+     */
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 실패한다.")
+    @Test
+    void addSection_already_section() {
+
+        //when
+        ExtractableResponse<Response> createResponse = 구간_생성_요청(이호선, "신도림역", "봉천역", 10);
 
         //then
         생성에_실패_했는지_상태_검증(createResponse);
