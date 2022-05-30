@@ -114,5 +114,38 @@ public class SectionAcceptanceTest {
         );
     }
 
+    /**
+     * given 지하철역 2개와, 그를 포함하는 line이 주어지고(init) 미금-정자
+     * given 지하철역 2개를 추가 및 구간등록을 한 뒤
+     * when 신규 지하철역을 사이 구간에 삽입시
+     * then 지하철 구간이 정상적으로 확인된다.
+     * */
+    @Test
+    public void 구간등록_구간_앞에_추가_테스트() {
+        //given /* 성복 - 수지구청 - 미금 - 정자*/
+        String 수지구청_ID = 지하철역_만들기("수지구청역").jsonPath().get("id").toString();
+        String 성복_ID = 지하철역_만들기("성복역").jsonPath().get("id").toString();
+        지하철_구간_등록하기(수지구청_ID, 미금역_ID, "10",ID_신분당선);
+        지하철_구간_등록하기(성복_ID, 수지구청_ID, "10",ID_신분당선);
+        ExtractableResponse<Response> 지하철_노선_조회하기_response1 = 지하철_노선_조회하기(ID_신분당선);
 
+        //when /* 성복 - 수지구청 - 동천 - 미금 - 정자*/
+        String 동천_ID = 지하철역_만들기("동천역").jsonPath().get("id").toString();
+        지하철_구간_등록하기(수지구청_ID, 동천_ID, "5",ID_신분당선);
+        ExtractableResponse<Response> 지하철_구간_조회하기_response = 지하철_구간_조회하기(ID_신분당선);
+        ExtractableResponse<Response> 지하철_노선_조회하기_response = 지하철_노선_조회하기(ID_신분당선);
+
+
+        //then
+        assertAll(
+            () -> assertThat(지하철_노선_조회하기_response.jsonPath().getList("stations.name"))
+                .contains("성복역","정자역"),
+            () -> assertThat(지하철_구간_조회하기_response.jsonPath().getList("downStationInfo.name"))
+                .contains("성복역","수지구청역","동천역","미금역"), //동천 - 미금 - 정자
+            () -> assertThat(지하철_구간_조회하기_response.jsonPath().getList("upStationInfo.name"))
+                .contains("수지구청역","동천역","미금역","정자역"),
+            () -> assertThat(지하철_구간_조회하기_response.jsonPath().getList("distance"))
+                .contains(10, 10, 5,5)
+        );
+    }
 }
