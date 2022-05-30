@@ -190,6 +190,33 @@ class SectionAcceptanceTest {
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * When 기존 역 구간 길이보다 등록할 길이가 큰 경우
+     * Then 등록에 실패한다.
+     * When 기존 역 구간 길이와 등록할 길이가 같은 경우
+     * Then 등록에 실패한다.
+     */
+    @DisplayName("기존 역 구간 길이보다 크거나 같으면 실패한다.")
+    @Test
+    void addSection_equal_or_greater_distence() {
+
+        //when
+        ExtractableResponse<Response> createResponse = createSection((Long) 이호선.get("id"),
+                STATION_IDS.get("신도림역"),
+                STATION_IDS.get("신대방역"),
+                30);
+        //then
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        //when
+        ExtractableResponse<Response> createResponse2 = createSection((Long) 이호선.get("id"),
+                STATION_IDS.get("신대방역"),
+                STATION_IDS.get("봉천역"),
+                10);
+        //then
+        assertThat(createResponse2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> createSection(Long lineId,
                                                         long upStationId,
                                                         long downStationId,
