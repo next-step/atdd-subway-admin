@@ -11,6 +11,7 @@ import nextstep.subway.dto.LineRequestDTO;
 import nextstep.subway.dto.LineResponseDTO;
 import nextstep.subway.dto.LineResponsesDTO;
 import nextstep.subway.dto.SectionRequestDTO;
+import nextstep.subway.exception.CreateSectionException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,7 +69,7 @@ public class LineService {
         LineStations lineStations = line.getLineStations();
         boolean isCreatedSection = lineStations.addSection(line, upStation, downStation, sectionRequestDTO.getDistance());
         if(!isCreatedSection){
-            throw new IllegalArgumentException("[ERROR] 등록할 구간을 찾을 수 없습니다.");
+            throw new CreateSectionException("[ERROR] 등록할 구간을 찾을 수 없습니다.");
         }
     }
 }

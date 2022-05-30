@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @ExceptionHandler({IllegalArgumentException.class, DataIntegrityViolationException.class})
+    @ExceptionHandler({IllegalArgumentException.class, DataIntegrityViolationException.class, CreateSectionException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Void> badRequest(Exception e) {
         logger.error("Bad Request ", e);

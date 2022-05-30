@@ -12,6 +12,7 @@ import javax.persistence.OneToMany;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineStation;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.CreateSectionException;
 
 @Embeddable
 public class LineStations {
@@ -77,7 +78,7 @@ public class LineStations {
 
     private void validateAlreadySection(LineStation up, LineStation down) {
         if (up != null && down != null) {
-            throw new IllegalArgumentException("[ERROR] 이미 구간이 존재합니다.");
+            throw new CreateSectionException("[ERROR] 이미 구간이 존재합니다.");
         }
     }
 

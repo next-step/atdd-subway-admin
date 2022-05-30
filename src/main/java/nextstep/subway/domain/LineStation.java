@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import nextstep.subway.exception.CreateSectionException;
 
 @Entity
 public class LineStation extends BaseEntity {
@@ -49,13 +50,13 @@ public class LineStation extends BaseEntity {
 
     private void validateDistance(long distance) {
         if (this.distance < distance) {
-            throw new IllegalArgumentException("[ERROR] 이미 존재하는 구간보다 길이가 길 수 없습니다.");
+            throw new CreateSectionException("[ERROR] 이미 존재하는 구간보다 길이가 길 수 없습니다.");
         }
     }
 
     public long calcNewSectionDistance(long distance) {
         if(this.distance == distance){
-            throw new IllegalArgumentException("[ERROR] 이미 존재하는 구간과 길이가 동일 할 수 없습니다.");
+            throw new CreateSectionException("[ERROR] 이미 존재하는 구간과 길이가 동일 할 수 없습니다.");
         }
         return this.distance - distance;
     }
