@@ -44,6 +44,10 @@ public class Line {
     }
 
     private void validateUpDownStation(Station upStation, Station downStation) {
+        if (upStation == null || downStation == null) {
+            throw new IllegalArgumentException("상행종점역, 하행종점역이 존재하지 않습니다.");
+        }
+
         if (upStation.equals(downStation)) {
             throw new IllegalArgumentException("상행종점역과 하행종점역은 같을 수가 없습니다.");
         }
