@@ -3,9 +3,12 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -23,11 +26,20 @@ public class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
+    @Autowired
+    private StationRepository stationRepository;
+
+    private Station upStation;
+    private Station downStation;
+
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+
+        upStation = stationRepository.save(new Station("상행지하철역"));
+        downStation = stationRepository.save(new Station("하행지하철역"));
     }
 
     /**
@@ -38,7 +50,8 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     void createLine() {
         //when
-        ExtractableResponse<Response> response = createLine("신분당선", "bg-red-600", 1, 2, 10);
+        ExtractableResponse<Response> response = createLine("신분당선", "bg-red-600", upStation.getId(),
+                downStation.getId(), 10);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
