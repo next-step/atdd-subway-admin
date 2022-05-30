@@ -28,7 +28,7 @@ public class LineController {
 
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> getLines() {
-        return null;
+        return ResponseEntity.ok().body(lineService.getLines());
     }
 
 }

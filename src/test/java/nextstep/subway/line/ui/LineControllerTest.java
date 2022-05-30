@@ -12,6 +12,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -43,7 +47,12 @@ public class LineControllerTest {
     @DisplayName("지하철 노선 조회")
     @Test
     void getLines() throws Exception {
+        List<Line> lines = Arrays.asList(new Line("2호선"), new Line("1호선"));
+
+        when(lineService.getLines()).thenReturn(LineResponse.of(lines));
+
         mockMvc.perform(get("/lines"))
+                .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(status().isOk());
     }
 }
