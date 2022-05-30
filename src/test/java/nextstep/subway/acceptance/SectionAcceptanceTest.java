@@ -172,6 +172,24 @@ class SectionAcceptanceTest {
 
     }
 
+
+    /**
+     * When 등록 되어있지 않는 지하철역들로 생성하면
+     * Then 찾을 수 없기 때문에 생성에 실패한다.
+     */
+    @DisplayName("상행&하행역이 둘 중 하나도 포함되어 있지 않으면 실패한다.")
+    @Test
+    void addSection_not_found() {
+
+        //when
+        ExtractableResponse<Response> createResponse = createSection((Long) 이호선.get("id"),
+                STATION_IDS.get("신대방역"),
+                STATION_IDS.get("사당역"),
+                15);
+        //then
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> createSection(Long lineId,
                                                         long upStationId,
                                                         long downStationId,
