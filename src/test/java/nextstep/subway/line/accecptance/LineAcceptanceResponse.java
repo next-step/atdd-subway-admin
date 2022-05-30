@@ -13,8 +13,14 @@ public class LineAcceptanceResponse {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-    public static void 지하철노선_조회_성공(ExtractableResponse<Response> response) {
+    public static void 지하철노선_목록_조회_성공(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList(".")).hasSize(2);
+    }
+
+    public static void 지하철노선_조회_성공(ExtractableResponse<Response> response) {
+        String lineName = response.jsonPath().get("name");
+        assertThat(lineName).isEqualTo("2호선");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }
