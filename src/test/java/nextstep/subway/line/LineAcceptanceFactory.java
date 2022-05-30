@@ -23,6 +23,19 @@ public class LineAcceptanceFactory {
                 .extract();
 
     }
+
+    public static ExtractableResponse<Response> 지하철노선_생성(String lineName, Long upStationId, Long downStationId, String color, int distance) {
+        Map<String, Object> params = 지하철노선_정보_생성(lineName, upStationId, downStationId, color, distance);
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+    }
+
     private static Map<String, Object> 지하철노선_정보_생성(String lineName, String upStationName, String downStationName, String color) {
         Long upStationId = StationAcceptanceFactory.지하철역_생성(upStationName)
                 .jsonPath().getObject("id", Long.class);
@@ -36,6 +49,17 @@ public class LineAcceptanceFactory {
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);
         params.put("distance", 10);
+
+        return params;
+    }
+
+    private static Map<String, Object> 지하철노선_정보_생성(String lineName, Long upStationId, Long downStationId, String color, int distance) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", lineName);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
 
         return params;
     }
