@@ -2,6 +2,8 @@ package nextstep.subway.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface LineStationRepository extends JpaRepository<LineStation, Long> {
+import java.util.List;
 
+public interface LineStationRepository extends JpaRepository<LineStation, Long> {
+    List<LineStation> findByLine_Id(Long id);
 }

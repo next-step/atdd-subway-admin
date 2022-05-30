@@ -13,9 +13,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 class LineRepositoryTest {
-    private final Station aStation = new Station("잠실역");
-    private final Station bStation = new Station("강남역");
-    private final Line aLine = new Line("2호선", "#009D3E", 100);
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -32,7 +29,9 @@ class LineRepositoryTest {
     @Test
     void 생성() {
         // when
-        Line saved = repository.save(aLine);
+        Station upStation = stationRepository.save(new Station("잠실역"));
+        Station downStation = stationRepository.save(new Station("강남역"));
+        Line saved = repository.save(new Line("2호선", "#009D3E", 100, upStation, downStation));
 
         // then
         assertThat(saved).isNotNull();
@@ -41,7 +40,9 @@ class LineRepositoryTest {
     @Test
     void 조회() {
         // given
-        Line saved = repository.save(aLine);
+        Station upStation = stationRepository.save(new Station("잠실역"));
+        Station downStation = stationRepository.save(new Station("강남역"));
+        Line saved = repository.save(new Line("2호선", "#009D3E", 100, upStation, downStation));
 
         // when
         Optional<Line> line = repository.findById(saved.getId());
@@ -53,7 +54,9 @@ class LineRepositoryTest {
     @Test
     void 수정() {
         // given
-        Line saved = repository.save(aLine);
+        Station upStation = stationRepository.save(new Station("잠실역"));
+        Station downStation = stationRepository.save(new Station("강남역"));
+        Line saved = repository.save(new Line("2호선", "#009D3E", 100, upStation, downStation));
 
         // when
         saved.updateLine("1호선", "파랑색");
@@ -67,7 +70,9 @@ class LineRepositoryTest {
     @Test
     void 삭제() {
         // given
-        Line line = repository.save(aLine);
+        Station upStation = stationRepository.save(new Station("잠실역"));
+        Station downStation = stationRepository.save(new Station("강남역"));
+        Line line = repository.save(new Line("2호선", "#009D3E", 100, upStation, downStation));
 
         // when
         repository.delete(line);
@@ -80,9 +85,10 @@ class LineRepositoryTest {
     @Test
     void 상행종점역_하행종점역_조회() {
         // given
-        Station upStation = stationRepository.save(aStation);
-        Station downStation = stationRepository.save(bStation);
-        Line line = repository.save(aLine).setUpStation(upStation).setDownStation(downStation);
+        Station upStation = stationRepository.save(new Station("잠실역"));
+        Station downStation = stationRepository.save(new Station("강남역"));
+        Line line = repository.save(new Line("2호선", "#009D3E", 100, upStation, downStation));
+        entityManager.clear();
 
         // when
         Optional<Line> actual = repository.findById(line.getId());
@@ -90,23 +96,5 @@ class LineRepositoryTest {
         // then
         assertThat(actual.get().getUpStation()).isEqualTo(upStation);
         assertThat(actual.get().getDownStation()).isEqualTo(downStation);
-    }
-
-    @Test
-    void 노선내_연결정보_가져오기() {
-        // given
-        Station upStation = stationRepository.save(aStation);
-        Station downStation = stationRepository.save(bStation);
-        Line line = repository.save(aLine).setUpStation(upStation).setDownStation(downStation);
-        sectionRepository.save(new Section(100, upStation, downStation, aLine));
-        entityManager.clear();
-
-        // when
-        Line actual = repository.findById(line.getId())
-                .orElseThrow(LineNotFoundException::new);
-
-        // then
-        assertThat(actual.getSections()).isNotNull();
-        assertThat(actual.getSections().getList()).hasSize(1);
     }
 }
