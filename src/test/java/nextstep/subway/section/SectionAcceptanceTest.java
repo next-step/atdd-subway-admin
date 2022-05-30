@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.exception.ExceptionType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -126,6 +127,60 @@ class SectionAcceptanceTest extends AcceptanceTest {
                     () -> assertThat(ID가_상행역인_노선(강남역_id, result.getSections()).getDistance()).isEqualTo(10L),
                     () -> assertThat(toLineStationNames(result)).contains("대림역", "강남역", "신림역")
                 );
+            })
+        );
+    }
+
+    @DisplayName("노선 등록시 거리가 크거나 같으면 예외가 발생한다 ")
+    @TestFactory
+    Stream<DynamicTest> createSection_exception() {
+        return Stream.of(
+            dynamicTest("기존 노선의 길이보다 거리가 긴 노선을 역 사이에 등록하면 "
+                + "예외가 발생한다" , () -> {
+                Map<String, Object> params = new HashMap<>();
+                params.put("upStationId", 대림역_id);
+                params.put("downStationId", 신대방역_id);
+                params.put("distance", 30L);
+
+                ExtractableResponse<Response> response = 지하철_구간_등록(노선_id, params);
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                assertThat(response.asString()).contains(ExceptionType.IS_NOT_OVER_ORIGIN_DISTANCE.getMessage());
+            })
+        );
+    }
+
+    @DisplayName("노선 등록시 두 역이 이미 모두 존재하면 예외가 발생한다")
+    @TestFactory
+    Stream<DynamicTest> createSection_exception2() {
+        return Stream.of(
+            dynamicTest("신규 노선 등록시 기존 노선에 모두 존재하는 역을 등록하면 "
+                + "예외가 발생한다" , () -> {
+                Map<String, Object> params = new HashMap<>();
+                params.put("upStationId", 대림역_id);
+                params.put("downStationId", 강남역_id);
+                params.put("distance", 5L);
+
+                ExtractableResponse<Response> response = 지하철_구간_등록(노선_id, params);
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                assertThat(response.asString()).contains(ExceptionType.IS_EXIST_BOTH_STATIONS.getMessage());
+            })
+        );
+    }
+
+    @DisplayName("노선 등록시 두 역이 모두 존재하지 않으면 예외가 발생")
+    @TestFactory
+    Stream<DynamicTest> createSection_exception3() {
+        return Stream.of(
+            dynamicTest("신규 노선 등록시 기존 노선에 모두 존재하지 않는 역을 등록하면 "
+                + "예외가 발생한다" , () -> {
+                Map<String, Object> params = new HashMap<>();
+                params.put("upStationId", 신림역_id);
+                params.put("downStationId", 신대방역_id);
+                params.put("distance", 5L);
+
+                ExtractableResponse<Response> response = 지하철_구간_등록(노선_id, params);
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                assertThat(response.asString()).contains(ExceptionType.IS_NOT_EXIST_BOTH_STATIONS.getMessage());
             })
         );
     }
