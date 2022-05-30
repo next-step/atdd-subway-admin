@@ -26,4 +26,14 @@ class SectionTest {
         assertThat(section.getDistance()).isEqualTo(3);
     }
 
+    @Test
+    void 기존에_구간과_새로운_구간이_같은지_확인한다() {
+        // given
+        Section newSection = new Section(7, new Station("양재역"), new Station("정자역"));
+        // when
+        boolean result = section.isSame(newSection);
+        // then
+        assertThat(result).isTrue();
+    }
+
 }
