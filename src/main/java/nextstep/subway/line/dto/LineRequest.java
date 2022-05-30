@@ -49,6 +49,12 @@ public class LineRequest {
         Long downStationId,
         Long distance
     ) {
-        return new LineRequest(name, color, upStationId, downStationId, distance);
+        return new LineRequest(
+            name,
+            color,
+            upStationId,
+            downStationId,
+            distance
+        );
     }
 }
