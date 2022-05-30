@@ -43,20 +43,20 @@ public class LineStations {
     }
 
     private boolean addBetweenSection(SectionVO sectionVO) {
-        LineStation up = findSectionByUpStation(sectionVO.getUpStation());
-        LineStation down = findSectionByDownStation(sectionVO.getDownStation());
-        validateAlreadySection(up, down);
+        LineStation sectionByUpStation = findSectionByUpStation(sectionVO.getUpStation());
+        LineStation sectionByDownStation = findSectionByDownStation(sectionVO.getDownStation());
+        validateAlreadySection(sectionByUpStation, sectionByDownStation);
 
-        if (isExistSection(up)){
-            long newDistance = up.calcNewSectionDistance(sectionVO.getDistance());
-            Station copyDownStation = up.getDownStation().copy();
-            up.updateDownStation(sectionVO.getDownStation(), sectionVO.getDistance());
+        if (isExistSection(sectionByUpStation)){
+            long newDistance = sectionByUpStation.calcNewSectionDistance(sectionVO.getDistance());
+            Station copyDownStation = sectionByUpStation.getDownStation().copy();
+            sectionByUpStation.updateDownStation(sectionVO.getDownStation(), sectionVO.getDistance());
             lineStations.add(new LineStation(sectionVO.getLine(),sectionVO.getDownStation(), copyDownStation, newDistance));
             return true;
         }
-        if (isExistSection(down)) {
-            long newDistance = down.calcNewSectionDistance(sectionVO.getDistance());
-            down.updateDownStation(sectionVO.getUpStation(), newDistance);
+        if (isExistSection(sectionByDownStation)) {
+            long newDistance = sectionByDownStation.calcNewSectionDistance(sectionVO.getDistance());
+            sectionByDownStation.updateDownStation(sectionVO.getUpStation(), newDistance);
             lineStations.add(new LineStation(sectionVO.getLine(), sectionVO.getUpStation(), sectionVO.getDownStation(), sectionVO.getDistance()));
             return true;
         }
@@ -76,8 +76,8 @@ public class LineStations {
                 .findFirst().orElse(null);
     }
 
-    private void validateAlreadySection(LineStation up, LineStation down) {
-        if (up != null && down != null) {
+    private void validateAlreadySection(LineStation sectionByUpStation, LineStation sectionByDownStation) {
+        if (isExistSection(sectionByUpStation) && isExistSection(sectionByDownStation)){
             throw new CreateSectionException("[ERROR] 이미 구간이 존재합니다.");
         }
     }
