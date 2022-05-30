@@ -37,7 +37,9 @@ public class LineAcceptanceTest {
     }
 
     /**
-     * When 지하철 노선을 생성하면 Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
+     * When 지하철 노선을 생성하면
+     * <p>
+     * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
      */
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -68,6 +70,54 @@ public class LineAcceptanceTest {
                 .extract().jsonPath().getList("name", String.class);
 
         assertThat(lineNames).containsAnyOf("신분당선");
+    }
+
+    /**
+     * Given 2개의 지하철 노선을 생성하고
+     * <p>
+     * When 지하철 노선 목록을 조회하면
+     * <p>
+     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     */
+    @DisplayName("지하철 노선 목록을 조회한다.")
+    @Test
+    void getLines() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", "10");
+
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all()
+                .extract();
+
+        Map<String, String> params2 = new HashMap<>();
+        params.put("name", "분당선");
+        params.put("color", "bg-green-600");
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", "20");
+
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        List<String> lineNames = RestAssured.given().log().all()
+                .when().get("/lines")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
+
+        assertThat(lineNames).containsExactly("신분당선", "분당선");
     }
 
     private ExtractableResponse<Response> 지하철역_생성(String stationName) {
