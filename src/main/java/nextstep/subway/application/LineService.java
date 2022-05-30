@@ -30,20 +30,20 @@ public class LineService {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElse(null);
 
         Line persistLine = lineRepository.save(lineRequest.toLine(downStation, upStation));
-        return LineResponse.of(persistLine);
+        return LineResponse.from(persistLine);
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> lineList = lineRepository.findAll();
 
         return lineList.stream()
-            .map(LineResponse::of)
+            .map(LineResponse::from)
             .collect(Collectors.toList());
     }
 
     public LineResponse findLine(Long lineId) {
         Line line = lineRepository.findById(lineId).orElse(null);
-        return LineResponse.of(line);
+        return LineResponse.from(line);
     }
 
     @Transactional
