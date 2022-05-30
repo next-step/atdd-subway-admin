@@ -14,7 +14,6 @@ import javax.persistence.Id;
 import nextstep.subway.global.domain.BaseEntity;
 import nextstep.subway.global.exception.BadRequestException;
 import nextstep.subway.global.exception.ExceptionType;
-import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.section.dto.SectionResponse;
@@ -69,14 +68,16 @@ public class Line extends BaseEntity {
     }
 
     public static Line of(
-        LineRequest lineRequest,
+        String name,
+        String color,
+        Long distance,
         Station upStation,
         Station downStation
     ) {
         return new Line(
-            lineRequest.getName(),
-            lineRequest.getColor(),
-            lineRequest.getDistance(),
+            name,
+            color,
+            distance,
             upStation,
             downStation
         );
