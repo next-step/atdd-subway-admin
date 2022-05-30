@@ -109,7 +109,7 @@ public class LineAcceptanceTest {
         LineResponse 지하철2호선 = 응답_객체_생성(노선_등록("2호선", "초록", 10, 강남역.getId(), 잠실역.getId()), LineResponse.class);
 
         // when
-        ValidatableResponse response = 노선_수정(지하철2호선.getId(), "8호선", "분홍", 200, 모란역.getId(), 잠실역.getId());
+        ValidatableResponse response = 노선_수정(지하철2호선.getId(), "8호선", "분홍");
 
         // then
         응답_검증(response, HttpStatus.OK);
@@ -205,11 +205,11 @@ public class LineAcceptanceTest {
                 .then().log().all();
     }
 
-    private ValidatableResponse 노선_수정(Long id, String name, String color, Integer distance, Long upStreamId, Long downStreamId) {
-        LineRequest lineRequest = new LineRequest(name, color, distance, upStreamId, downStreamId);
+    private ValidatableResponse 노선_수정(Long id, String name, String color) {
+        LineUpdateRequest lineUpdateRequest = new LineUpdateRequest(name, color);
 
         return RestAssured.given().log().all()
-                .body(lineRequest)
+                .body(lineUpdateRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/lines/" + id)
                 .then().log().all();
