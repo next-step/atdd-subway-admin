@@ -112,12 +112,7 @@ public class LineAcceptanceTest {
         Integer id = 지하철노선_생성("신분당선", "bg-red-600", upStationId, downStationId, "10").jsonPath().get("id");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().get("/lines/{id}", id)
-                .then().log().all()
-                .extract();
-
-        String lineName = response.jsonPath().get("name");
+        String lineName = 지하철노선_한개_조회(id).get("name");
 
         // then
         assertThat(lineName).isEqualTo("신분당선");
@@ -149,13 +144,10 @@ public class LineAcceptanceTest {
                 .extract();
 
         // then
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().get("/lines/{id}", id)
-                .then().log().all()
-                .extract();
+        JsonPath jsonPath = 지하철노선_한개_조회(id);
 
-        String lineName = response.jsonPath().get("name");
-        String lineColor = response.jsonPath().get("color");
+        String lineName = jsonPath.get("name");
+        String lineColor = jsonPath.get("color");
         assertThat(lineName).isEqualTo("신분당선2");
         assertThat(lineColor).isEqualTo("bg-red-600");
     }
@@ -166,6 +158,14 @@ public class LineAcceptanceTest {
                 .then().log().all()
                 .extract().jsonPath();
 
+    }
+
+    private JsonPath 지하철노선_한개_조회(Integer id) {
+        return RestAssured.given().log().all()
+                .when().get("/lines/{id}", id)
+                .then().log().all()
+                .extract()
+                .jsonPath();
     }
 
     private ExtractableResponse<Response> 지하철역_생성(String stationName) {
