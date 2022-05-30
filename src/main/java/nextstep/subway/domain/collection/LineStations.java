@@ -35,7 +35,7 @@ public class LineStations {
     private boolean addStartOrEndSection(SectionVO sectionVO) {
         LineStation startStation = findSectionByUpStation(sectionVO.getDownStation());
         LineStation endStation = findSectionByDownStation(sectionVO.getUpStation());
-        if(startStation != null || endStation != null){
+        if(isStartOrEndStation(startStation, endStation)){
             lineStations.add(new LineStation(sectionVO.getLine(), sectionVO.getUpStation(), sectionVO.getDownStation(), sectionVO.getDistance()));
             return true;
         }
@@ -47,14 +47,14 @@ public class LineStations {
         LineStation down = findSectionByDownStation(sectionVO.getDownStation());
         validateAlreadySection(up, down);
 
-        if (up != null) {
+        if (isExistSection(up)){
             long newDistance = up.calcNewSectionDistance(sectionVO.getDistance());
             Station copyDownStation = up.getDownStation().copy();
             up.updateDownStation(sectionVO.getDownStation(), sectionVO.getDistance());
             lineStations.add(new LineStation(sectionVO.getLine(),sectionVO.getDownStation(), copyDownStation, newDistance));
             return true;
         }
-        if (down != null) {
+        if (isExistSection(down)) {
             long newDistance = down.calcNewSectionDistance(sectionVO.getDistance());
             down.updateDownStation(sectionVO.getUpStation(), newDistance);
             lineStations.add(new LineStation(sectionVO.getLine(), sectionVO.getUpStation(), sectionVO.getDownStation(), sectionVO.getDistance()));
@@ -103,8 +103,16 @@ public class LineStations {
         orderStations.add(cursor.getUpStation());
         orderStations.add(cursor.getDownStation());
         LineStation upStation = findSectionByUpStation(cursor.getDownStation());
-        if (upStation != null) {
+        if (isExistSection(upStation)) {
             addOrderStations(orderStations, upStation);
         }
+    }
+
+    private boolean isStartOrEndStation(LineStation startStation, LineStation endStation) {
+        return startStation != null || endStation != null;
+    }
+
+    private boolean isExistSection(LineStation lineStation) {
+        return lineStation != null;
     }
 }
