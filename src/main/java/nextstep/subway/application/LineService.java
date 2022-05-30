@@ -3,10 +3,7 @@ package nextstep.subway.application;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.LineUpdateRequest;
-import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,11 +62,11 @@ public class LineService {
     }
 
     @Transactional
-    public Long addSection(Long lineId, SectionRequest request) {
+    public Section addSection(Long lineId, SectionRequest request) {
         Line findLine = findById(lineId);
         Section section = sectionMapper.from(request);
 
         findLine.addSection(section);
-        return findLine.getId();
+        return section;
     }
 }

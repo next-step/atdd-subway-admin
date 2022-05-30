@@ -33,6 +33,14 @@ public class Section extends BaseEntity {
         this.downStation = downStation;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
     public void addLine(Line line) {
         this.line = line;
     }
@@ -43,6 +51,44 @@ public class Section extends BaseEntity {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void repair(Section section) {
+        if (Objects.isNull(section)) {
+            return;
+        }
+        repairUpStation(section);
+        repairDownStation(section);
+    }
+
+    private void repairUpStation(Section section) {
+        if (isSameUpStation(section.upStation)) {
+            this.upStation = section.downStation;
+            minusDistance(section.distance);
+        }
+    }
+
+    private void repairDownStation(Section section) {
+        if (isSameDownStation(section.downStation)) {
+            this.downStation = section.upStation;
+            minusDistance(section.distance);
+        }
+    }
+
+    private boolean isSameUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public void minusDistance(int distance) {
+        this.distance -= distance;
     }
 
     @Override

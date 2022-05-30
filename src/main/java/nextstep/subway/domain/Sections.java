@@ -14,7 +14,14 @@ public class Sections {
     private final List<Section> elements = new ArrayList<>();
 
     public void add(Section section) {
+        repairSections(section);
         elements.add(section);
+    }
+
+    private void repairSections(Section section) {
+        for (Section element : elements) {
+            element.repair(section);
+        }
     }
 
     public List<Section> getElements() {
