@@ -43,4 +43,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    public LineResponse findById(Long id) throws NotFoundException {
+        return LineResponse.of(lineRepository.findById(id).orElseThrow(NotFoundException::new));
+    }
 }
