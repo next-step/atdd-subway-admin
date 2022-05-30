@@ -39,9 +39,7 @@ public class LineService {
     }
 
     public List<LineResponse> findAllLines() {
-        List<Line> lines = lineRepository.findAll();
-
-        return lines.stream()
+        return lineRepository.findAll().stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
@@ -58,7 +56,7 @@ public class LineService {
         Optional<Line> line = lineRepository.findById(id);
         if (line.isPresent()) {
             line.get().clearRelatedLines();
-            lineRepository.deleteById(id);
+            lineRepository.delete(line.get());
         }
     }
 
