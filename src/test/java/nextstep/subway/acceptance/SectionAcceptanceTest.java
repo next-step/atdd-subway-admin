@@ -72,7 +72,7 @@ class SectionAcceptanceTest {
      */
     @DisplayName("구간 사이에 새로운 역을 등록한다.(상행기준)")
     @Test
-    void addSection() {
+    void addSection_between_up() {
 
         //when
         ExtractableResponse<Response> createResponse = createSection((Long) 이호선.get("id"),
@@ -99,7 +99,7 @@ class SectionAcceptanceTest {
      */
     @DisplayName("구간 사이에 새로운 역을 등록한다.(하행기준)")
     @Test
-    void addSection_standard_down() {
+    void addSection_between_down() {
 
         //when
         ExtractableResponse<Response> createResponse = createSection((Long) 이호선.get("id"),
@@ -126,7 +126,7 @@ class SectionAcceptanceTest {
      */
     @DisplayName("새로운 역을 상행 종점으로 등록한다.")
     @Test
-    void addSection_up_station() {
+    void addSection_start_station() {
 
         //when
         ExtractableResponse<Response> createResponse = createSection((Long) 이호선.get("id"),
@@ -153,7 +153,7 @@ class SectionAcceptanceTest {
      */
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
     @Test
-    void addSection_down_station() {
+    void addSection_end_station() {
 
         //when
         ExtractableResponse<Response> createResponse = createSection((Long) 이호선.get("id"),
@@ -171,7 +171,6 @@ class SectionAcceptanceTest {
         assertThat(extract).containsExactly("[신도림역, 봉천역, 사당역]");
 
     }
-
 
     /**
      * When 등록 되어있지 않는 지하철역들로 생성하면
