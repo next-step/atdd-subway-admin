@@ -92,6 +92,7 @@ public class LineService {
     public void deleteLine(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
         lineStationRepository.deleteAllByLine(line);
+        sectionRepository.deleteAllByLine(line);
         lineRepository.deleteById(line.getId());
     }
 

@@ -16,4 +16,6 @@ public interface SectionRepository extends JpaRepository<Section, Long> {
     Optional<Section> findAllByUpStationAndDownStationAndLine(Station upStation, Station downStation, Line line);
 
     List<Section> findAllByLine(Line line);
+
+    int deleteAllByLine(Line line);
 }
