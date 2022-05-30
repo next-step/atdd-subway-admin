@@ -58,6 +58,9 @@ public class Line extends BaseEntity {
         if (this.distance <= lineSectionRequest.getDistance()) {
             throw new IllegalArgumentException("기존 노선의 길이와 같거나 긴 노선을 추가할 수 없습니다.");
         }
+        if (isSameUpStation && isSameDownStation) {
+            throw new IllegalArgumentException("같은 상/하행역을 등록할 수 없습니다.");
+        }
     }
 
     public Line copyAndChangeBy(Long distance, Station upStation, Station downStation) {
