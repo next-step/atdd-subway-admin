@@ -59,22 +59,23 @@ public class Section {
     }
 
     public void update(Section newSection) {
-        updateUpStation(newSection);
-        updateDownStation(newSection);
+        if (isEqualUpStation(newSection.getUpStation())) {
+            updateUpStation(newSection);
+        }
+
+        if (isEqualDownStation(newSection.getDownStation())) {
+            updateDownStation(newSection);
+        }
     }
 
     private void updateUpStation(Section newSection) {
-        if (this.upStation.equals(newSection.getUpStation())) {
-            this.upStation = newSection.getDownStation();
-            updateDistance(newSection);
-        }
+        this.upStation = newSection.getDownStation();
+        updateDistance(newSection);
     }
 
     private void updateDownStation(Section newSection) {
-        if (this.downStation.equals(newSection.getDownStation())) {
-            this.downStation = newSection.getUpStation();
-            updateDistance(newSection);
-        }
+        this.downStation = newSection.getUpStation();
+        updateDistance(newSection);
     }
 
     private void updateDistance(Section newSection) {
@@ -83,5 +84,13 @@ public class Section {
 
     public List<Station> findStations() {
         return Arrays.asList(upStation, downStation);
+    }
+
+    private boolean isEqualUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    private boolean isEqualDownStation(Station station) {
+        return this.downStation.equals(station);
     }
 }
