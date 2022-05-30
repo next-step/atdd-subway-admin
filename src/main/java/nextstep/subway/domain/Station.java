@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "station")
 public class Station extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
