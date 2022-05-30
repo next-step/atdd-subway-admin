@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import java.util.Arrays;
 import java.util.List;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
@@ -18,7 +19,8 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_up_station"))
@@ -35,7 +37,7 @@ public class Section {
     private Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = Distance.from(distance);
     }
 
     protected Section() {}
@@ -56,15 +58,19 @@ public class Section {
         return downStation;
     }
 
-    /*
-    애오개----------마포 => 공덕-----마포(update)
-    애오개-----공덕(new)
-     */
     public void update(Section newSection) {
+        updateUpStation(newSection);
+        updateDownStation(newSection);
+    }
+
+    private void updateUpStation(Section newSection) {
         if (this.upStation.equals(newSection.getUpStation())) {
             this.upStation = newSection.getDownStation();
             updateDistance(newSection);
         }
+    }
+
+    private void updateDownStation(Section newSection) {
         if (this.downStation.equals(newSection.getDownStation())) {
             this.downStation = newSection.getUpStation();
             updateDistance(newSection);
@@ -72,10 +78,7 @@ public class Section {
     }
 
     private void updateDistance(Section newSection) {
-        if (this.distance <= newSection.distance) {
-            throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
-        }
-        this.distance -= newSection.distance;
+        this.distance.subtract(newSection.distance);
     }
 
     public List<Station> findStations() {
