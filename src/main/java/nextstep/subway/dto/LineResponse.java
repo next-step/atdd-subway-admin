@@ -10,7 +10,7 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private List<StationResponse> stationList;
+    private List<StationResponse> stations;
 
     public static LineResponse from(Line line) {
         if (Objects.isNull(line)) {
@@ -23,11 +23,11 @@ public class LineResponse {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stationList);
     }
 
-    public LineResponse(Long id, String name, String color, List<StationResponse> stationList) {
+    public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stationList = stationList;
+        this.stations = stations;
     }
 
     public Long getId() {
@@ -42,8 +42,8 @@ public class LineResponse {
         return color;
     }
 
-    public List<StationResponse> getStationList() {
-        return stationList;
+    public List<StationResponse> getStations() {
+        return stations;
     }
 
     @Override
@@ -56,12 +56,12 @@ public class LineResponse {
         }
         LineResponse that = (LineResponse) o;
         return Objects.equals(id, that.id) && Objects.equals(name, that.name)
-            && Objects.equals(color, that.color) && Objects.equals(stationList, that.stationList);
+            && Objects.equals(color, that.color) && Objects.equals(stations, that.stations);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, stationList);
+        return Objects.hash(id, name, color, stations);
     }
 
 }
