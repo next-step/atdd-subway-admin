@@ -7,6 +7,7 @@ import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineResponses;
+import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.exception.LineNotFoundException;
 import nextstep.subway.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;
@@ -38,19 +39,10 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    public LineResponse updateLine(Long id, LineRequest lineRequest) {
+    public LineResponse updateLine(Long id, LineUpdateRequest request) {
         Line persistLine = lineRepository.findById(id)
                 .orElseThrow(LineNotFoundException::new);
-
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
-                .orElseThrow(StationNotFoundException::new);
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId())
-                .orElseThrow(StationNotFoundException::new);
-
-        persistLine.updateLine(lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance());
-        persistLine.setUpStation(upStation);
-        persistLine.setDownStation(downStation);
-
+        persistLine.updateLine(request.getName(), request.getColor());
         return LineResponse.of(persistLine);
     }
 

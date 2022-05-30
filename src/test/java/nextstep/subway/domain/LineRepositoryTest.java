@@ -44,13 +44,12 @@ class LineRepositoryTest {
         Line saved = repository.save(new Line("2호선", "#009D3E", 10));
 
         // when
-        saved.updateLine("1호선", "파랑색", 100);
+        saved.updateLine("1호선", "파랑색");
 
         // then
         Optional<Line> line = repository.findById(saved.getId());
         assertThat(line.get().getName()).isEqualTo("1호선");
         assertThat(line.get().getColor()).isEqualTo("파랑색");
-        assertThat(line.get().getDistance().getDistance()).isEqualTo(100);
     }
 
     @Test
