@@ -3,6 +3,7 @@ package nextstep.subway.section.domain;
 import nextstep.subway.line.domain.Line;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -30,6 +31,10 @@ public class Section {
         return id;
     }
 
+    public Line getLine() {
+        return line;
+    }
+
     public Long getUpStationId() {
         return upStationId;
     }
@@ -40,6 +45,10 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public boolean hasStation(Long stationId) {
+        return upStationId == stationId || downStationId == stationId;
     }
 
     public boolean validateDistance(Section section) {
@@ -60,6 +69,19 @@ public class Section {
             return validateDistance(section);
         }
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return id.equals(section.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
 

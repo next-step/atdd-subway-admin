@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class SectionAcceptanceTest extends AcceptanceTest {
 
     private static final String SECTION_ADD_URI = "/lines/1/sections";
-    private static final String SECTION_REMOVE_URI = "/lines/1/sections";
+    private static final String SECTION_REMOVE_URI = "/lines/1/3/sections";
 
     @BeforeEach
     void setting() {
@@ -112,7 +112,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void removeLineStation() {
         // when
         // 구간이 하나 이상인 노선의 구간을 제거
-        지하철_구간("1", "2", "4");
+        지하철_구간("3", "2", "4");
         ExtractableResponse<Response> response = 지하철_구간_삭제(SECTION_REMOVE_URI);
 
         // then
