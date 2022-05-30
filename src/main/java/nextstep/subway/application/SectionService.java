@@ -1,6 +1,8 @@
 package nextstep.subway.application;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.LineStationRepository;
@@ -9,6 +11,7 @@ import nextstep.subway.domain.SectionRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.request.SectionRequest;
+import nextstep.subway.dto.response.SectionResponse;
 import nextstep.subway.exception.DupSectionException;
 import nextstep.subway.exception.LineNotFoundException;
 import nextstep.subway.exception.StationNotFoundException;
@@ -77,4 +80,12 @@ public class SectionService {
     }
 
 
+    public List<SectionResponse> findAllByLine(Long lineId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(LineNotFoundException::new);
+
+        return sectionRepository.findAllByLine(line)
+            .stream()
+            .map(Section::toResponse)
+            .collect(Collectors.toList());
+    }
 }

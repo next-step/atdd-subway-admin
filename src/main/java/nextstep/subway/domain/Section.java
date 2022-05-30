@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import nextstep.subway.dto.response.SectionResponse;
 import nextstep.subway.exception.SectionInvalidException;
 
 @Entity
@@ -45,6 +46,15 @@ public class Section {
         this.distance = distance;
         this.nextSection = nextSection;
         this.backSection = backSection;
+    }
+
+    public SectionResponse toResponse() {
+        Long nextSectionId = nextSection != null ? nextSection.getId() : -1;
+        Long backSectionId = backSection != null ? backSection.getId() : -1;
+
+        return new SectionResponse(this.id, this.upStation.toStationDTO(),
+            this.downStation.toStationDTO(),
+            line.getName(), this.distance, nextSectionId, backSectionId);
     }
 
     public void insertBackOfSection(Section insertSection) {
@@ -124,5 +134,7 @@ public class Section {
         return backSection;
     }
 
-
+    public Long getId() {
+        return id;
+    }
 }
