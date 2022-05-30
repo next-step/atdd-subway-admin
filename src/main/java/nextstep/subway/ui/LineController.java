@@ -2,6 +2,7 @@ package nextstep.subway.ui;
 
 import java.net.URI;
 import java.util.List;
+import java.util.NoSuchElementException;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -27,7 +28,7 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) throws NotFoundException {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) throws NoSuchElementException {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
@@ -45,7 +46,7 @@ public class LineController {
     @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity updateNameAndColor(@PathVariable Long id,
                                              @RequestBody LineUpdateNameAndColorRequest lineUpdateNameAndColorRequest)
-            throws NotFoundException {
+            throws NoSuchElementException {
         lineService.updateNameAndColor(id, lineUpdateNameAndColorRequest);
         return ResponseEntity.ok().build();
     }

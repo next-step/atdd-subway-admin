@@ -1,6 +1,7 @@
 package nextstep.subway.application;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Distance;
@@ -28,12 +29,12 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse saveLine(LineRequest lineRequest) throws NotFoundException {
+    public LineResponse saveLine(LineRequest lineRequest) throws NoSuchElementException {
 
         Station upStation = stationRepository.findById(lineRequest.getUpStationId())
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(NoSuchElementException::new);
         Station downStation = stationRepository.findById(lineRequest.getDownStationId())
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(NoSuchElementException::new);
 
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
@@ -53,9 +54,9 @@ public class LineService {
 
     @Transactional
     public void updateNameAndColor(Long id, LineUpdateNameAndColorRequest lineRequest)
-            throws NotFoundException {
+            throws NoSuchElementException {
 
-        Line line = lineRepository.findById(id).orElseThrow(NotFoundException::new);
+        Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
 
         line.updateNameAndColor(lineRequest.getName(), lineRequest.getColor());
     }
