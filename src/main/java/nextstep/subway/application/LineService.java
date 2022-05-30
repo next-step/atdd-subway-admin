@@ -26,9 +26,9 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Station downStation = stationRepository.findById(lineRequest.getDownStationId())
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 호선입니다."));
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 하행종점역입니다."));
         Station upStation = stationRepository.findById(lineRequest.getUpStationId())
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 호선입니다."));
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 상행종점역입니다."));
 
         Line persistLine = lineRepository.save(lineRequest.toLine(downStation, upStation));
         return LineResponse.from(persistLine);
@@ -44,7 +44,7 @@ public class LineService {
 
     public LineResponse findLine(Long lineId) {
         Line line = lineRepository.findById(lineId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 호선입니다."));
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 노선입니다."));
         return LineResponse.from(line);
     }
 
