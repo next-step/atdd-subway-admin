@@ -22,12 +22,46 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 노선 관련 기능")
 @Sql("/truncate.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class LineAcceptanceTest {
+public class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
     private Long firstStationId;
     private Long secondStationId;
+
+    private static Map<String, String> createLineRequestMap(String name, String color, Long distance, Long upStationId, Long downStationId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        if (distance != null) {
+            params.put("distance", String.valueOf(distance));
+        }
+        if (upStationId != null) {
+            params.put("upStationId", String.valueOf(upStationId));
+        }
+        if (downStationId != null) {
+            params.put("downStationId", String.valueOf(downStationId));
+        }
+
+        return params;
+    }
+
+    public static ExtractableResponse<Response> createLine(String name, String color, Long distance, Long upStationId, Long downStationId) {
+        Map<String, String> params = createLineRequestMap(name, color, distance, upStationId, downStationId);
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> getLine(Long id) {
+        return RestAssured.given().log().all()
+                .when().get("/lines/{id}", id)
+                .then().log().all()
+                .extract();
+    }
 
     @BeforeEach
     public void setUp() {
@@ -130,43 +164,9 @@ class LineAcceptanceTest {
         assertThat(getLine(lineId).statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-    private Map<String, String> createLineRequestMap(String name, String color, Long distance, Long upStationId, Long downStationId) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        if (distance != null) {
-            params.put("distance", String.valueOf(distance));
-        }
-        if (upStationId != null) {
-            params.put("upStationId", String.valueOf(upStationId));
-        }
-        if (downStationId != null) {
-            params.put("downStationId", String.valueOf(downStationId));
-        }
-
-        return params;
-    }
-
-    private ExtractableResponse<Response> createLine(String name, String color, Long distance, Long upStationId, Long downStationId) {
-        Map<String, String> params = createLineRequestMap(name, color, distance, upStationId, downStationId);
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
     private ExtractableResponse<Response> getLines() {
         return RestAssured.given().log().all()
                 .when().get("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> getLine(Long id) {
-        return RestAssured.given().log().all()
-                .when().get("/lines/{id}", id)
                 .then().log().all()
                 .extract();
     }

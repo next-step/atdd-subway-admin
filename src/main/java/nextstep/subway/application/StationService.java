@@ -36,9 +36,6 @@ public class StationService {
     }
 
     public Station getOrElseThrow(Long id) {
-        if (id == null) {
-            return null;
-        }
         return stationRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.STATION_NOT_FOUND));
     }

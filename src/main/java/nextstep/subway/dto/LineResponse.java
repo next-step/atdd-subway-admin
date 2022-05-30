@@ -1,27 +1,25 @@
 package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.LineStations;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class LineResponse {
     private final Long id;
     private final String name;
     private final String color;
-    private final List<StationResponse> stations = new ArrayList<>();
+    private final List<LineStationResponse> stations;
 
-    public LineResponse(Long id, String name, String color, Station upStation, Station downStation) {
+    public LineResponse(Long id, String name, String color, LineStations lineStations) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations.add(StationResponse.of(upStation));
-        this.stations.add(StationResponse.of(downStation));
+        this.stations = LineStationResponse.of(lineStations);
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getUpStation(), line.getDownStation());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getLineStations());
     }
 
     public Long getId() {
@@ -36,7 +34,7 @@ public class LineResponse {
         return color;
     }
 
-    public List<StationResponse> getStations() {
+    public List<LineStationResponse> getStations() {
         return stations;
     }
 }

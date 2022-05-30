@@ -3,15 +3,16 @@ package nextstep.subway.domain;
 import nextstep.subway.dto.LineRequest;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 @Entity
 public class Line extends BaseEntity {
+    @Embedded
+    private final LineStations lineStations = new LineStations();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,29 +20,17 @@ public class Line extends BaseEntity {
     private String name;
     @Column
     private String color;
-    @Column
-    private Long distance;
-
-    @ManyToOne
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-    @ManyToOne
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
 
     protected Line() {
     }
 
-    public Line(String name, String color, Long distance, Station upStation, Station downStation) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.distance = distance;
-        this.upStation = upStation;
-        this.downStation = downStation;
     }
 
-    public Line(LineRequest lineRequest, Station upStation, Station downStation) {
-        this(lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance(), upStation, downStation);
+    public Line(LineRequest lineRequest) {
+        this(lineRequest.getName(), lineRequest.getColor());
     }
 
     public Long getId() {
@@ -56,23 +45,16 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Long getDistance() {
-        return distance;
+    public LineStations getLineStations() {
+        return lineStations;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public void addLineStation(LineStation lineStation) {
+        lineStations.add(lineStation);
     }
 
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public void update(LineRequest lineRequest, Station upStation, Station downStation) {
+    public void update(LineRequest lineRequest) {
         name = lineRequest.getName();
         color = lineRequest.getColor();
-        distance = lineRequest.getDistance();
-        this.upStation = upStation;
-        this.downStation = downStation;
     }
 }
