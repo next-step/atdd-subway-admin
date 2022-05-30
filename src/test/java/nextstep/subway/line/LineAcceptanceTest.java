@@ -8,18 +8,24 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
+import nextstep.subway.helper.DatabaseCleaner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철 노선 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
+
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
 
     private Long upStationId;
     private Long downStationId;
@@ -28,7 +34,9 @@ public class LineAcceptanceTest {
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
+            databaseCleaner.afterPropertiesSet();
         }
+        databaseCleaner.cleanDatabase();
 
         upStationId = createStationRequest("강남역").jsonPath().getLong("id");
         downStationId = createStationRequest("잠실역").jsonPath().getLong("id");
