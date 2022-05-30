@@ -9,6 +9,7 @@ import nextstep.subway.dto.LineUpdateNameAndColorRequest;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,5 +48,11 @@ public class LineController {
             throws NotFoundException {
         lineService.updateNameAndColor(id, lineUpdateNameAndColorRequest);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/lines/{id}")
+    public ResponseEntity deleteStation(@PathVariable Long id) {
+        lineService.deleteLineById(id);
+        return ResponseEntity.noContent().build();
     }
 }

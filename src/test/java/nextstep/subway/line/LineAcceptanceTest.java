@@ -151,8 +151,32 @@ public class LineAcceptanceTest {
                 () -> assertThat(jsonPath.getString("name")).isEqualTo("신분당선2"),
                 () -> assertThat(jsonPath.getString("color")).isEqualTo("bg-red-600")
         );
+    }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * <p>
+     * When 생성한 지하철 노선을 삭제하면
+     * <p>
+     * Then 해당 지하철 노선 정보는 삭제된다.
+     */
+    @DisplayName("지하철노선을 삭제한다.")
+    @Test
+    void deleteLine() {
+        // given
+        Integer id = 지하철노선_생성("신분당선", "bg-red-600", upStationId, downStationId, "10").jsonPath().get("id");
 
+        // when
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                        .when().delete("/lines/{id}", id)
+                        .then().log().all()
+                        .extract();
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(지하철노선_목록_조회().getList("name")).doesNotContain("신분당선")
+        );
     }
 
     private JsonPath 지하철노선_목록_조회() {
