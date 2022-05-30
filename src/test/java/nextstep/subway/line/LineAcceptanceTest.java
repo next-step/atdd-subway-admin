@@ -14,9 +14,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import static nextstep.subway.line.accecptance.LineAcceptanceRequest.지하철노선_생성;
+import static nextstep.subway.line.accecptance.LineAcceptanceRequest.지하철노선_조회;
+import static nextstep.subway.line.accecptance.LineAcceptanceRequest.지하철노선_존재;
+import static nextstep.subway.line.accecptance.LineAcceptanceResponse.지하철노선_생성_성공;
+import static nextstep.subway.line.accecptance.LineAcceptanceResponse.지하철노선_조회_성공;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 기능")
@@ -46,20 +50,10 @@ public class LineAcceptanceTest {
     @Test
     void 지하철노선_생성_조회_성공() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철노선_생성();
 
         //then
-        String lineName = response.jsonPath().get("name");
-        assertThat(lineName).isEqualTo("2호선");
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        지하철노선_생성_성공(response);
     }
 
     /**
@@ -73,24 +67,8 @@ public class LineAcceptanceTest {
         지하철노선_존재("2호선");
         지하철노선_존재("1호선");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철노선_조회();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList(".")).hasSize(2);
-    }
-
-    private void 지하철노선_존재(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
+        지하철노선_조회_성공(response);
     }
 }
