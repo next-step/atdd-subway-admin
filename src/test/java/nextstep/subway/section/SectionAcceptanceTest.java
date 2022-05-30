@@ -128,6 +128,23 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         노선에_신규_구간이_등록되지_않는다(신규_구간이_등록되지_않음);
     }
 
+    /**
+     * Given 기존에 등록된 상행역과 하행역을 생성하고
+     * When 새로운 구간을 등록하면
+     * Then 지하철 노선에 구간이 등록되지 않는다.
+     */
+    @Test
+    void 상행역과_하행역이_이미_노선에_모두_등록되어_있으면_구간을_등록할_수_없다() {
+        // given
+        SectionRequest 신규_구간 = new SectionRequest(양재역_id, 정자역_id, 10);
+
+        // when
+        ExtractableResponse<Response> 신규_구간이_등록되지_않음 = 노선에_신규_구간을_등록(신분당선, 신규_구간);
+
+        // then
+        노선에_신규_구간이_등록되지_않는다(신규_구간이_등록되지_않음);
+    }
+
     public static class SectionAcceptanceTemplate {
         public static void 노선에_신규_구간이_정상_등록된다(ExtractableResponse<Response> 신규_구간이_등록된_노선) {
             assertThat(신규_구간이_등록된_노선.statusCode()).isEqualTo(HttpStatus.CREATED.value());
