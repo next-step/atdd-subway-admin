@@ -1,2 +1,4 @@
-package nextstep.subway.domain;public class LineTest {
+package nextstep.subway.domain;
+
+public class LineTest {
 }
