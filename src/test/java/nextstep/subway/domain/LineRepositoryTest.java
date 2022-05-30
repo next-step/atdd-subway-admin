@@ -10,6 +10,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 class LineRepositoryTest {
+    private final Station aStation = new Station("잠실역");
+    private final Station bStation = new Station("강남역");
+    private final Line aLine = new Line("2호선", "#009D3E", 10);
 
     @Autowired
     private LineRepository repository;
@@ -17,10 +20,13 @@ class LineRepositoryTest {
     @Autowired
     private StationRepository stationRepository;
 
+    @Autowired
+    private SectionRepository sectionRepository;
+
     @Test
     void 생성() {
         // when
-        Line saved = repository.save(new Line("2호선", "#009D3E", 10));
+        Line saved = repository.save(aLine);
 
         // then
         assertThat(saved).isNotNull();
@@ -29,7 +35,7 @@ class LineRepositoryTest {
     @Test
     void 조회() {
         // given
-        Line saved = repository.save(new Line("2호선", "#009D3E", 10));
+        Line saved = repository.save(aLine);
 
         // when
         Optional<Line> line = repository.findById(saved.getId());
@@ -41,7 +47,7 @@ class LineRepositoryTest {
     @Test
     void 수정() {
         // given
-        Line saved = repository.save(new Line("2호선", "#009D3E", 10));
+        Line saved = repository.save(aLine);
 
         // when
         saved.updateLine("1호선", "파랑색");
@@ -55,7 +61,7 @@ class LineRepositoryTest {
     @Test
     void 삭제() {
         // given
-        Line line = repository.save(new Line("2호선", "#009D3E", 10));
+        Line line = repository.save(aLine);
 
         // when
         repository.delete(line);
@@ -68,10 +74,9 @@ class LineRepositoryTest {
     @Test
     void 상행종점역_하행종점역_조회() {
         // given
-        Station upStation = stationRepository.save(new Station("잠실역"));
-        Station downStation = stationRepository.save(new Station("강남역"));
-        Line line = repository.save(new Line("2호선", "초록색", 10)
-                .setUpStation(upStation).setDownStation(downStation));
+        Station upStation = stationRepository.save(aStation);
+        Station downStation = stationRepository.save(bStation);
+        Line line = repository.save(aLine).setUpStation(upStation).setDownStation(downStation);
 
         // when
         Optional<Line> actual = repository.findById(line.getId());
