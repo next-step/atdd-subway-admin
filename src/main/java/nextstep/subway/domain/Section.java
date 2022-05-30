@@ -25,8 +25,8 @@ public class Section {
     protected Section() {
     }
 
-    public Section(Distance distance, Station upStation, Station downStation, Line line) {
-        this.distance = distance;
+    public Section(int distance, Station upStation, Station downStation, Line line) {
+        this.distance = new Distance(distance);
         this.upStation = upStation;
         this.downStation = downStation;
         this.line = line;

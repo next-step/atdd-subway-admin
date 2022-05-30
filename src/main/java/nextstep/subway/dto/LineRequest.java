@@ -39,6 +39,6 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(name, color, new Distance(distance));
+        return new Line(name, color, distance);
     }
 }

@@ -23,10 +23,10 @@ class SectionRepositoryTest {
         // given
         Station upStation = stationRepository.save(new Station("잠실역"));
         Station downStation = stationRepository.save(new Station("석촌역"));
-        Line line = lineRepository.save(new Line("2호선", "초록", new Distance(100)));
+        Line line = lineRepository.save(new Line("2호선", "초록", 100));
 
         // when
-        Section actual = sectionRepository.save(new Section(new Distance(100), upStation, downStation, line));
+        Section actual = sectionRepository.save(new Section(100, upStation, downStation, line));
 
         // then
         assertThat(actual).isNotNull();
