@@ -214,7 +214,7 @@ public class LinesAcceptanceTest {
 
         // when
         ExtractableResponse<Response> addLineResponse = RequestHelper
-                .postRequest(LINE_PATH + "/{id}" + "/sections", new HashMap<>(), addMiddleSectionLineRequest, createdLineId);
+                .postRequest(LINE_PATH + "/{id}/sections", new HashMap<>(), addMiddleSectionLineRequest, createdLineId);
         ExtractableResponse<Response> originalCreationLine = RequestHelper
                 .getRequest(LINE_PATH + "/{id}", new HashMap<>(), createdLineId);
 
@@ -237,7 +237,7 @@ public class LinesAcceptanceTest {
         // given
         Long upStationId = Long.parseLong(saveStationAndGetInfo("지하철역").get("id"));
         Long downStationId = Long.parseLong(saveStationAndGetInfo("새로운지하철역").get("id"));
-        Long newFirstStationId = Long.parseLong(saveStationAndGetInfo("또다른지하철역").get("id"));
+        Long newFirstStationId = Long.parseLong(saveStationAndGetInfo("다른지하철역").get("id"));
         Long newLastStationId = Long.parseLong(saveStationAndGetInfo("또다른지하철역").get("id"));
         Map<String, Object> lineRequest1 = createLineRequest(
                 "신분당선", "bg-red-600", upStationId, downStationId, 10L
@@ -245,24 +245,24 @@ public class LinesAcceptanceTest {
         Map<String, Object> lineRequest2 = createLineRequest(
                 "분당선", "bg-red-600", upStationId, downStationId, 10L
         );
-        Map<String, Object> sameDistanceLineRequest = createLineRequest(
+        Map<String, Object> newFirstLineRequest = createLineRequest(
                 null, null, newFirstStationId, upStationId, 4L
         );
-        Map<String, Object> longerDistanceLineRequest = createLineRequest(
+        Map<String, Object> newLastLineRequest = createLineRequest(
                 null, null, downStationId, newLastStationId, 4L
         );
-        String createdLine1Id = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest1)
+        Long createdLine1Id = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest1)
                 .jsonPath()
-                .get("id");
-        String createdLine2Id = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest2)
+                .getLong("id");
+        Long createdLine2Id = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest2)
                 .jsonPath()
-                .get("id");
+                .getLong("id");
 
         // when
         ExtractableResponse<Response> newFirstResponse = RequestHelper
-                .postRequest(LINE_PATH + "/{id}" + "/sections", new HashMap<>(), sameDistanceLineRequest, createdLine1Id);
+                .postRequest(LINE_PATH + "/{id}/sections", new HashMap<>(), newFirstLineRequest, createdLine1Id);
         ExtractableResponse<Response> newLastResponse = RequestHelper
-                .postRequest(LINE_PATH + "/{id}" + "/sections", new HashMap<>(), longerDistanceLineRequest, createdLine2Id);
+                .postRequest(LINE_PATH + "/{id}/sections", new HashMap<>(), newLastLineRequest, createdLine2Id);
         ExtractableResponse<Response> originalCreationLine1 = RequestHelper
                 .getRequest(LINE_PATH + "/{id}", new HashMap<>(), createdLine1Id);
         ExtractableResponse<Response> originalCreationLine2 = RequestHelper
@@ -272,14 +272,14 @@ public class LinesAcceptanceTest {
         assertThat(newFirstResponse.statusCode()).isEqualTo(HttpStatus.SC_CREATED);
         assertThat(newLastResponse.statusCode()).isEqualTo(HttpStatus.SC_CREATED);
 
-        assertThat(originalCreationLine1.jsonPath().getList("stations.name", Long.class))
+        assertThat(originalCreationLine1.jsonPath().getList("stations.id", Long.class))
                 .containsAnyOf(upStationId, downStationId);
-        assertThat(newFirstResponse.jsonPath().getList("stations.name", Long.class))
+        assertThat(newFirstResponse.jsonPath().getList("stations.id", Long.class))
                 .containsAnyOf(newFirstStationId, upStationId);
 
-        assertThat(originalCreationLine2.jsonPath().getList("stations.name", Long.class))
+        assertThat(originalCreationLine2.jsonPath().getList("stations.id", Long.class))
                 .containsAnyOf(upStationId, downStationId);
-        assertThat(originalCreationLine2.jsonPath().getList("stations.name", Long.class))
+        assertThat(originalCreationLine2.jsonPath().getList("stations.id", Long.class))
                 .containsAnyOf(downStationId, newLastStationId);
     }
 
@@ -304,19 +304,19 @@ public class LinesAcceptanceTest {
         Map<String, Object> longerDistanceLineRequest = createLineRequest(
                 null, null, upStationId, middleStationId, 11L
         );
-        String createdLineId = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest)
+        Long createdLineId = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest)
                 .jsonPath()
-                .get("id");
+                .getLong("id");
 
         // when
         ExtractableResponse<Response> sameDistanceResponse = RequestHelper
-                .postRequest(LINE_PATH + "/{id}" + "/sections", new HashMap<>(), sameDistanceLineRequest, createdLineId);
-        ExtractableResponse<Response> LongerDistanceResponse = RequestHelper
-                .postRequest(LINE_PATH + "/{id}" + "/sections", new HashMap<>(), longerDistanceLineRequest, createdLineId);
+                .postRequest(LINE_PATH + "/{id}/sections", new HashMap<>(), sameDistanceLineRequest, createdLineId);
+        ExtractableResponse<Response> longerDistanceResponse = RequestHelper
+                .postRequest(LINE_PATH + "/{id}/sections", new HashMap<>(), longerDistanceLineRequest, createdLineId);
 
         // then
         assertThat(sameDistanceResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
-        assertThat(LongerDistanceResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+        assertThat(longerDistanceResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
     }
 
     /**
@@ -336,9 +336,9 @@ public class LinesAcceptanceTest {
         Map<String, Object> sameLineStation = createLineRequest(
                 null, null, upStationId, downStationId, 7L
         );
-        String createdLineId = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest)
+        Long createdLineId = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest)
                 .jsonPath()
-                .get("id");
+                .getLong("id");
 
         // when
         ExtractableResponse<Response> sameStationLineResponse = RequestHelper

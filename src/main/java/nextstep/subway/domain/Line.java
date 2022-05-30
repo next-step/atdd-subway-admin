@@ -48,15 +48,15 @@ public class Line extends BaseEntity {
         if (this.downStation.isSameId(lineSectionRequest.getDownStationId())) {
             this.downStation = changeUpStation;
         }
-        this.distance -= lineSectionRequest.getUpStationId();
+        this.distance -= lineSectionRequest.getDistance();
     }
 
     public void checkPossibleAddSection(LineRequest.Section lineSectionRequest) {
         boolean isSameUpStation = this.upStation.getId().equals(lineSectionRequest.getUpStationId());
         boolean isSameDownStation = this.downStation.getId().equals(lineSectionRequest.getDownStationId());
 
-        if (this.distance < lineSectionRequest.getDistance()) {
-            throw new IllegalArgumentException("기존 노선의 길이보다 긴 노선을 추가할 수 없습니다.");
+        if (this.distance <= lineSectionRequest.getDistance()) {
+            throw new IllegalArgumentException("기존 노선의 길이와 같거나 긴 노선을 추가할 수 없습니다.");
         }
     }
 
