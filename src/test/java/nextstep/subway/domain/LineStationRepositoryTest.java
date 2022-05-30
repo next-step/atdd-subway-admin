@@ -22,7 +22,7 @@ class LineStationRepositoryTest {
     void createLineStation() {
         // given
         Station station = stationRepository.save(new Station("잠실역"));
-        Line line = lineRepository.save(new Line("2호선", "초록", 100));
+        Line line = lineRepository.save(new Line("2호선", "초록", new Distance(100)));
 
         // when
         LineStation actual = lineStationRepository.save(new LineStation(station, line));

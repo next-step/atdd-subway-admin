@@ -2,6 +2,7 @@ package nextstep.subway.station;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
+import nextstep.subway.domain.Distance;
 import nextstep.subway.dto.*;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
@@ -189,7 +190,7 @@ public class LineAcceptanceTest {
     }
 
     private ValidatableResponse 노선_등록(String name, String color, Integer distance, Long upStreamId, Long downStreamId) {
-        LineRequest lineRequest = new LineRequest(name, color, distance, upStreamId, downStreamId);
+        LineRequest lineRequest = new LineRequest(name, color, new Distance(distance), upStreamId, downStreamId);
 
         return RestAssured.given().log().all()
                     .body(lineRequest)

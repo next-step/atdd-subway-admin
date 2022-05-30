@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LineRepositoryTest {
     private final Station aStation = new Station("잠실역");
     private final Station bStation = new Station("강남역");
-    private final Line aLine = new Line("2호선", "#009D3E", 10);
+    private final Line aLine = new Line("2호선", "#009D3E", new Distance(100));
 
     @PersistenceContext
     private EntityManager entityManager;
