@@ -24,6 +24,7 @@ public class LineService {
     }
 
     public List<LineResponse> getLines() {
-        return null;
+        List<Line> lines = lineRepository.findAll();
+        return LineResponse.of(lines);
     }
 }
