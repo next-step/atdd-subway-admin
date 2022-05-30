@@ -6,8 +6,10 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.StationResponse;
 import org.springframework.http.MediaType;
 
 public class LineAcceptance {
@@ -83,5 +85,11 @@ public class LineAcceptance {
 
     public static List<LineResponse> toList(ExtractableResponse<Response> response) {
         return response.jsonPath().getList("", LineResponse.class);
+    }
+
+    public static List<String> toLineStationNames(LineResponse lineResponse) {
+        return lineResponse.getStations().stream()
+            .map(StationResponse::getName)
+            .collect(Collectors.toList());
     }
 }

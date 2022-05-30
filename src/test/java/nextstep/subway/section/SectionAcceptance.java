@@ -3,7 +3,9 @@ package nextstep.subway.section;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
 import java.util.Map;
+import nextstep.subway.dto.SectionResponse;
 import org.springframework.http.MediaType;
 
 public class SectionAcceptance {
@@ -15,5 +17,12 @@ public class SectionAcceptance {
             .when().post("/lines/{lineId}/sections" , 노선_id)
             .then().log().all()
             .extract();
+    }
+
+    public static SectionResponse ID가_상행역인_노선(Long id, List<SectionResponse> sections) {
+        return sections.stream()
+            .filter( x -> x.getUpStationId() == id)
+            .findAny()
+            .orElseThrow(null);
     }
 }
