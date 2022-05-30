@@ -53,18 +53,18 @@ public class SectionService {
             null, null);
 
         Optional<Section> section = null;
-        if ((section = sectionRepository.findAllByDownStationAndLine(upStation,
+        if ((section = sectionRepository.findAllByDownStationAndLine(downStation,
+            line)).isPresent()) {
+            section.get().insertFrontOfSection(appendSection);
+        } else if ((section = sectionRepository.findAllByUpStationAndLine(upStation,
+            line)).isPresent()) {
+            section.get().insertBackOfSection(appendSection);
+        } else if ((section = sectionRepository.findAllByDownStationAndLine(upStation,
             line)).isPresent()) { //기준이 Up인데 down에있다?
             section.get().appendBeforeSection(appendSection);
         } else if ((section = sectionRepository.findAllByUpStationAndLine(downStation,
             line)).isPresent()) {
             section.get().appendAfterSection(appendSection);
-        } else if ((section = sectionRepository.findAllByDownStationAndLine(downStation,
-            line)).isPresent()) {
-            section.get().insertBackOfSection(appendSection);
-        } else if ((section = sectionRepository.findAllByUpStationAndLine(upStation,
-            line)).isPresent()) {
-            section.get().insertFrontOfSection(appendSection);
         }
 
     }
