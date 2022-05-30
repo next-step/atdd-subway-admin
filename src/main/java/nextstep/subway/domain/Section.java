@@ -3,9 +3,11 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import nextstep.subway.dto.response.SectionResponse;
@@ -19,12 +21,15 @@ public class Section {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "UP_STATION_ID", foreignKey = @ForeignKey(name = "fk_section_up_station"))
     private Station upStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DOWN_STATION_ID", foreignKey = @ForeignKey(name = "fk_section_down_station"))
     private Station downStation;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "LINE_ID", foreignKey = @ForeignKey(name = "fk_section_line"))
     private Line line;
 
     private Integer distance;
