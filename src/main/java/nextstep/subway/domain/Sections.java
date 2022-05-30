@@ -22,7 +22,7 @@ public class Sections {
         sections.add(section);
     }
 
-    public void stationsCheck(Section newSection) {
+    public void sectionsCheck(Section newSection) {
         for (Section section : sections) {
             section.validateCheck(newSection);
         }

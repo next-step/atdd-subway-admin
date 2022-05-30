@@ -39,7 +39,6 @@ public class Section {
     }
 
     public void validateCheck(Section section) {
-        distanceValidateCheck(section);
         duplicateValidateCheck(section);
         mismatchValidateCheck(section);
 
@@ -61,6 +60,7 @@ public class Section {
 
     private void reregisterDownStation(Section section) {
         if (this.downStation.equals(section.getDownStation())) {
+            distanceValidateCheck(section);
             changeDistance(this.distance - section.getDistance());
             changeDownStation(section.getUpStation());
         }
@@ -68,6 +68,7 @@ public class Section {
 
     private void reregisterUpStation(Section section) {
         if (this.upStation.equals(section.getUpStation())) {
+            distanceValidateCheck(section);
             changeDistance(this.distance - section.getDistance());
             changeUpStation(section.getDownStation());
         }

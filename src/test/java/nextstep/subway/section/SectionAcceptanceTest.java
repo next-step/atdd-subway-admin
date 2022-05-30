@@ -129,7 +129,7 @@ public class SectionAcceptanceTest {
     @Test
     void 새로운_역을_하행_종점으로_지하철구간_생성() {
         // when
-        ExtractableResponse<Response> response = createSection(line.jsonPath().getLong("id"), downStation.jsonPath().getLong("id"), newStation.jsonPath().getLong("id"), 7);
+        ExtractableResponse<Response> response = createSection(line.jsonPath().getLong("id"), downStation.jsonPath().getLong("id"), newStation.jsonPath().getLong("id"), 20);
         List<Section> sections = response.jsonPath().getList("sections", Section.class);
 
         // then
@@ -151,7 +151,7 @@ public class SectionAcceptanceTest {
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
     void 지하철구간_생성_예외_1() {
         // when
-        ExtractableResponse<Response> response = createSection(line.jsonPath().getLong("id"), downStation.jsonPath().getLong("id"), newStation.jsonPath().getLong("id"), 10);
+        ExtractableResponse<Response> response = createSection(line.jsonPath().getLong("id"), upStation.jsonPath().getLong("id"), newStation.jsonPath().getLong("id"), 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
