@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
@@ -33,5 +34,34 @@ public class Distance {
 
     public int distance() {
         return distance;
+    }
+
+    public void minus(Distance distance) {
+        this.distance = Math.subtractExact(this.distance, distance.distance());
+        validateDistance(this.distance);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Distance distance1 = (Distance) o;
+        return distance == distance1.distance;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(distance);
+    }
+
+    @Override
+    public String toString() {
+        return "Distance{" +
+                "distance=" + distance +
+                '}';
     }
 }
