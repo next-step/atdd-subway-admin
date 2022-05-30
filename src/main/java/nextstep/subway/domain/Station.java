@@ -37,7 +37,7 @@ public class Station extends BaseEntity {
         if (!(o instanceof Station)) return false;
         Station station = (Station) o;
         if (getId() != null && Objects.equals(getId(), station.getId())) return true;
-        return Objects.equals(getId(), station.getId()) && Objects.equals(getName(), station.getName());
+        return Objects.equals(getName(), station.getName());
     }
 
     @Override
