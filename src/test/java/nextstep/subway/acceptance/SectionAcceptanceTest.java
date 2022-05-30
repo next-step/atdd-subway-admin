@@ -1,6 +1,5 @@
 package nextstep.subway.acceptance;
 
-import static nextstep.subway.test.RequestUtils.requestCreate;
 import static nextstep.subway.test.RequestUtils.requestGetAll;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -68,7 +67,7 @@ class SectionAcceptanceTest {
      * When 상행역과 하행역 사이에 새로운 구간을 등록하면(상행역 기준)
      * Then 새로운 구간이 생성 된다.
      * When 노선 목록 조회 시
-     * Then 새로등록한 구간의 지하철역을 확인할 수 있다.
+     * Then 새로등록한 구간의 지하철역을 구간순서에 맞게 확인할 수 있다.
      */
     @DisplayName("구간 사이에 새로운 역을 등록한다.(상행기준)")
     @Test
@@ -92,7 +91,7 @@ class SectionAcceptanceTest {
      * When 상행역과 하행역 사이에 새로운 구간을 등록하면(하행역 기준)
      * Then 새로운 구간이 생성 된다.
      * When 노선 목록 조회 시
-     * Then 새로등록한 구간의 지하철역을 확인할 수 있다.
+     * Then 새로등록한 구간의 지하철역을 구간순서에 맞게 확인할 수 있다.
      */
     @DisplayName("구간 사이에 새로운 역을 등록한다.(하행기준)")
     @Test
@@ -113,12 +112,12 @@ class SectionAcceptanceTest {
     }
 
    /**
-     * When 새로운 역을 상행 종점으로 등록하면
+     * When 새로운 구간을 상행 종점으로 등록하면
      * Then 새로운 역이 상행 좀점으로 추가 생성 된다.
      * When 노선 목록 조회 시
-     * Then 연결된 구간의 지하철역들을 확인할 수 있다.
+     * Then 연결된 구간의 지하철역들을 구간순서에 맞게 확인할 수 있다.
      */
-    @DisplayName("새로운 역을 상행 종점으로 등록한다.")
+    @DisplayName("새로운 구간을 상행 종점으로 등록한다.")
     @Test
     void addSection_start_station() {
 
@@ -137,12 +136,12 @@ class SectionAcceptanceTest {
     }
 
    /**
-     * When 새로운 역을 하행 종점으로 등록하면
+     * When 새로운 구간을 하행 종점으로 등록하면
      * Then 새로운 역이 하행 좀점으로 추가 생성 된다.
      * When 노선 목록 조회 시
-     * Then 연결된 구간의 지하철역들을 확인할 수 있다.
+     * Then 연결된 구간의 지하철역들을 구간순서에 맞게 확인할 수 있다.
      */
-    @DisplayName("새로운 역을 하행 종점으로 등록한다.")
+    @DisplayName("새로운 구간을 하행 종점으로 등록한다.")
     @Test
     void addSection_end_station() {
 
@@ -157,6 +156,28 @@ class SectionAcceptanceTest {
 
         //then
         추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(response, "[신도림역, 봉천역, 사당역]");
+
+    }
+
+    /**
+     * When 정상적인 여러개의 구간을 등록하고
+     * When 노선 목록 조회 시
+     * Then 연결된 구간의 지하철역들을 구간순서에 맞게 모두 확인할 수 있다.
+     */
+    @DisplayName("정상적인 여러개의 구간을 등록한다.")
+    @Test
+    void addSection_all() {
+
+        //when
+        구간_생성_요청(이호선, "봉천역", "사당역", 15);
+        구간_생성_요청(이호선, "신도림역", "신대방역", 5);
+        구간_생성_요청(이호선, "당산역", "신도림역", 15);
+
+        //when
+        ExtractableResponse<Response> response = requestGetAll(LineAcceptanceTest.LINE_PATH);
+
+        //then
+        추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(response, "[당산역, 신도림역, 신대방역, 봉천역, 사당역]");
 
     }
 
