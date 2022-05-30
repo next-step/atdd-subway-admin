@@ -28,6 +28,15 @@ public class AttdSectionHelper {
             .extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_구간_조회하기(String 노선_ID) {
+        String URI = stringAppender(Arrays.asList("/lines/", 노선_ID, "/sections"));
+
+        return RestAssured.given().log().all()
+            .when().get(URI)
+            .then().log().all()
+            .extract();
+    }
+
     private static String stringAppender(List<String> strings) {
         StringBuilder stringBuilder = new StringBuilder();
         for (String string : strings) {
