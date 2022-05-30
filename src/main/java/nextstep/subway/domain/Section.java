@@ -1,8 +1,7 @@
 package nextstep.subway.domain;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -30,7 +29,8 @@ public class Section extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Line line;
 
-    private Long distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
 
@@ -39,7 +39,7 @@ public class Section extends BaseEntity {
     private Section(Station upStation, Station downStation, Long distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public static Section of(Station upStation, Station downStation, Long distance) {
@@ -66,8 +66,8 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public Long getDistance() {
-        return distance;
+    public Long getDistanceValue() {
+        return distance.getValue();
     }
 
     @Override

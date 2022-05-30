@@ -1,19 +1,18 @@
 package nextstep.subway.domain;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import javax.persistence.CascadeType;
+import java.util.stream.Collectors;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.dto.StationResponse;
 
 @Entity
@@ -28,8 +27,8 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String color;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
 
@@ -77,17 +76,31 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return sections;
     }
 
-    public Set<StationResponse> getStations() {
+    public List<Section> getSectionItems() {
+        return sections.getItems();
+    }
+
+    public Set<StationResponse> getStationResponses() {
         Set<StationResponse> stations = new HashSet<>();
-        for (Section section : sections) {
+        for (Section section : sections.getItems()) {
             stations.add(StationResponse.of(section.getUpStation()));
             stations.add(StationResponse.of(section.getDownStation()));
         }
 
         return stations;
+    }
+
+    public List<SectionResponse> getSectionResponses() {
+        return this.sections.getItems().stream()
+            .map(SectionResponse::of)
+            .collect(Collectors.toList());
+    }
+
+    public void addSection(Section section) {
+
     }
 }
