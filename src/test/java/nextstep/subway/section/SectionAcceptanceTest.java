@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,8 +41,10 @@ public class SectionAcceptanceTest extends CustomExtractableResponse{
 	    노선_생성_요청("신분당선", "bg-red-600", stations.get("지하철역").toString(), stations.get("새로운지하철역").toString(), "10");
 	    
 	    lines.clear();
-	    for(LineResponse line: 노선_조회_요청()) {
-	    	lines.put(line.getName(), line.getId());
+	    ExtractableResponse<Response> response = 노선_조회_요청();
+	    List<Map<String, Object>> lines = response.jsonPath().getList("");
+	    for(int i=0;i<lines.size();i++) {
+	    	this.lines.put(lines.get(i).get("name").toString(), Long.parseLong(lines.get(i).get("id").toString()));
 	    }
 	}
 	
@@ -75,8 +79,8 @@ public class SectionAcceptanceTest extends CustomExtractableResponse{
 		return post(LineAcceptanceTest.BASIC_URL_LINES, params);
 	}
 
-	private List<LineResponse> 노선_조회_요청() {
-		return getList(get(LineAcceptanceTest.BASIC_URL_LINES), LineResponse.class);
+	private  ExtractableResponse<Response> 노선_조회_요청() {
+		return get(LineAcceptanceTest.BASIC_URL_LINES);
 	}
 	
 	private ExtractableResponse<Response> 구간_등록_요청(
