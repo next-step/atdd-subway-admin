@@ -22,7 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
-@DisplayName("구간 관련 기능 인수테스트 추가")
+@DisplayName("구간 관련 기능 인수테스트")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class SectionAcceptanceTest {
 

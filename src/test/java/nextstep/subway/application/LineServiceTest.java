@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+@DisplayName("노선 서비스 관련 기능 테스트")
 @DataJpaTest
 @Import({LineService.class, StationService.class})
 class LineServiceTest {
