@@ -1,7 +1,6 @@
 package nextstep.subway.application;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -44,18 +43,17 @@ public class LineService {
     }
 
     public LineResponse findLine(Long lineId) {
-        Line line = lineRepository.findById(lineId).orElse(null);
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 호선입니다."));
         return LineResponse.from(line);
     }
 
     @Transactional
     public void modifyLine(Long lineId, LineRequest lineRequest) {
-        Optional<Line> optionalLine = lineRepository.findById(lineId);
-        if (!optionalLine.isPresent()) {
-            throw new IllegalArgumentException("존재하지 않는 노선입니다.");
-        }
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
 
-        optionalLine.get().update(lineRequest);
+        line.update(lineRequest);
     }
 
     @Transactional
