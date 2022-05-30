@@ -22,27 +22,33 @@ public class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
+    String downStationId;
+    String upStationId;
+
+
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+
+        upStationId = Integer.toString(지하철역_생성("강남역").jsonPath().get("id"));
+        downStationId = Integer.toString(지하철역_생성("선릉역").jsonPath().get("id"));
     }
 
     /**
-     * When 지하철 노선을 생성하면
-     * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
+     * When 지하철 노선을 생성하면 Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
      */
     @DisplayName("지하철 노선을 생성한다.")
     @Test
-    void createLine(){
+    void createLine() {
         // when
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
-        params.put("upStationId", "1");
-        params.put("downStationId", "2");
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
         params.put("distance", "10");
 
         ExtractableResponse<Response> response =
@@ -62,5 +68,19 @@ public class LineAcceptanceTest {
                 .extract().jsonPath().getList("name", String.class);
 
         assertThat(lineNames).containsAnyOf("신분당선");
+    }
+
+    private ExtractableResponse<Response> 지하철역_생성(String stationName) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", stationName);
+
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                        .body(params)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().post("/stations")
+                        .then().log().all()
+                        .extract();
+        return response;
     }
 }
