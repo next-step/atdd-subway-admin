@@ -184,4 +184,19 @@ public class SectionAcceptanceTest {
                 .contains(10, 10, 5,5)
         );
     }
+
+    /**
+     * given 지하철역 2개와, 그를 포함하는 line이 주어지고(init) 미금-정자
+     * when 동일한 구간에 대해 재저장을 하면
+     * then 400 에러가 발생한다.
+     */
+    @Test
+    public void 중복저장_에러발생_테스트() {
+        //when
+        ExtractableResponse<Response> 지하철_구간_등록하기_response = 지하철_구간_등록하기(미금역_ID, 정자역_ID, "5",
+            ID_신분당선);
+
+        //then
+        assertThat(지하철_구간_등록하기_response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

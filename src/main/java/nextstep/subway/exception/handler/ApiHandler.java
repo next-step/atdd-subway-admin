@@ -1,5 +1,6 @@
 package nextstep.subway.exception.handler;
 
+import nextstep.subway.exception.DupSectionException;
 import nextstep.subway.exception.LineNotFoundException;
 import nextstep.subway.exception.StationNotFoundException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -24,6 +25,12 @@ public class ApiHandler {
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity EmptyResultDataAccessExceptionHandler(EmptyResultDataAccessException e){
+        return ResponseEntity.badRequest()
+            .build();
+    }
+
+    @ExceptionHandler(DupSectionException.class)
+    public ResponseEntity DupSectionExceptionHandler(DupSectionException e){
         return ResponseEntity.badRequest()
             .build();
     }
