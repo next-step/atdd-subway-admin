@@ -19,6 +19,7 @@ public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
     private final SectionRepository sectionRepository;
+    private final LineStationRepository lineStationRepository;
 
     public LineService(LineRepository lineRepository,
                        StationRepository stationRepository,
@@ -27,6 +28,7 @@ public class LineService {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
         this.sectionRepository = sectionRepository;
+        this.lineStationRepository = lineStationRepository;
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
@@ -39,6 +41,8 @@ public class LineService {
         persistLine.setDownStation(downStation);
 
         sectionRepository.save(new Section(lineRequest.getDistance(), upStation, downStation, persistLine));
+        lineStationRepository.save(new LineStation(upStation, persistLine));
+        lineStationRepository.save(new LineStation(downStation, persistLine));
 
         return LineResponse.of(persistLine);
     }
