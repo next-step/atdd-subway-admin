@@ -48,11 +48,6 @@ public class LineController {
         return lineService.findAllLines();
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Void> handleIllegalArgsException() {
-        return ResponseEntity.badRequest().build();
-    }
-
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Void> handleNotFoundException() {
         return ResponseEntity.notFound().build();
