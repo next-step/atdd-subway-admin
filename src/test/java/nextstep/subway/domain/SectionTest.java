@@ -1,12 +1,29 @@
 package nextstep.subway.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import nextstep.subway.exception.NotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class SectionTest {
+    Station upStation;
+    Station downStation;
+    Section section;
+
+    @BeforeEach
+    void setUp() {
+        upStation = Station.builder("양재")
+                .build();
+        downStation = Station.builder("판교")
+                .build();
+        section = Section.builder(upStation, downStation, Distance.valueOf(10))
+                .build();
+    }
+
     @DisplayName("상행 지하철역이 Null 일 경우 예외 테스트")
     @Test
     void createLineByNullUpStation() {
@@ -29,5 +46,37 @@ class SectionTest {
                 .build())
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("하행역 정보가 없습니다.");
+    }
+
+    @DisplayName("상행역이 같은 지하철 신규 구간 등록시 기존 케이스 구간 상행역 변경")
+    @Test
+    void changeSectionEqualToUpStation() {
+        Station upStation = Station.builder("양재")
+                .build();
+        Station downStation = Station.builder("청계산입구역")
+                .build();
+        Section newSection = Section.builder(upStation, downStation, Distance.valueOf(5))
+                .build();
+        section.changeUpSection(newSection);
+        assertAll(
+                () -> assertThat(section.upStation()).isEqualTo(downStation),
+                () -> assertThat(section.distance()).isEqualTo(Distance.valueOf(5))
+        );
+    }
+
+    @DisplayName("하행역이 같은 지하철 신규 구간 등록시 기존 케이스 구간 하행역 변경")
+    @Test
+    void changeSectionEqualToDownStation() {
+        Station upStation = Station.builder("청계산입구역")
+                .build();
+        Station downStation = Station.builder("판교")
+                .build();
+        Section newSection = Section.builder(upStation, downStation, Distance.valueOf(5))
+                .build();
+        section.changeDownSection(newSection);
+        assertAll(
+                () -> assertThat(section.downStation()).isEqualTo(upStation),
+                () -> assertThat(section.distance()).isEqualTo(Distance.valueOf(5))
+        );
     }
 }

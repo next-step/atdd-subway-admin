@@ -87,6 +87,16 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
+    public void changeUpSection(Section newSection) {
+        distance.minus(newSection.distance);
+        this.upStation = newSection.downStation();
+    }
+
+    public void changeDownSection(Section newSection) {
+        distance.minus(newSection.distance);
+        this.downStation = newSection.upStation();
+    }
+
     private void validateLineNotNull(Line line) {
         if (Objects.isNull(line)) {
             throw new NotFoundException("노선 정보가 없습니다.");
