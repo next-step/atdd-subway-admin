@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import java.util.Arrays;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
@@ -70,10 +72,13 @@ public class Section {
     }
 
     private void updateDistance(Section newSection) {
-        int newDistance = this.distance - newSection.distance;
-        if (newDistance <= 0) {
+        if (this.distance <= newSection.distance) {
             throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
         }
-        this.distance = newDistance;
+        this.distance -= newSection.distance;
+    }
+
+    public List<Station> findStations() {
+        return Arrays.asList(upStation, downStation);
     }
 }
