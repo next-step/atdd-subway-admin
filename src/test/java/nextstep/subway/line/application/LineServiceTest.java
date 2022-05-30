@@ -12,6 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -33,5 +36,15 @@ public class LineServiceTest {
         LineResponse lineResponse = lineService.create(LineRequest.of(lineName));
 
         assertThat(lineResponse.getName()).isEqualTo(lineName);
+    }
+
+    @DisplayName("지하철노선 조회한다")
+    @Test
+    void getLines() {
+        when(lineRepository.findAll()).thenReturn(Arrays.asList(new Line("2호선"), new Line("1호선")));
+
+        List<LineResponse> lineResponseList = lineService.getLines();
+
+        assertThat(lineResponseList).hasSize(2);
     }
 }
