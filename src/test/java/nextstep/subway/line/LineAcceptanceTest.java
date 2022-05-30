@@ -10,6 +10,7 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import nextstep.subway.utils.RestAssuredMethod;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -82,25 +83,6 @@ public class LineAcceptanceTest {
         assertThat(lineNames).containsExactly("신분당선", "분당선");
     }
 
-    private ExtractableResponse<Response> 지하철노선_생성(String name, String color, String upStationId, String downStationId,
-                                                   String distance) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", distance);
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/lines")
-                        .then().log().all()
-                        .extract();
-        return response;
-    }
-
     /**
      * Given 지하철 노선을 생성하고
      * <p>
@@ -138,13 +120,9 @@ public class LineAcceptanceTest {
         params.put("name", "신분당선2");
         params.put("color", "bg-red-600");
 
-        // when
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/{id}", id)
-                .then().log().all()
-                .extract();
+        RestAssuredMethod.put("/lines/{id}", new HashMap<String, Integer>() {{
+            put("id", id);
+        }}, params);
 
         // then
         JsonPath jsonPath = 지하철노선_한개_조회(id);
@@ -169,11 +147,10 @@ public class LineAcceptanceTest {
         Integer id = 지하철노선_생성("신분당선", "bg-red-600", upStationId, downStationId, "10").jsonPath().get("id");
 
         // when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .when().delete("/lines/{id}", id)
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = RestAssuredMethod.delete("/lines/{id}",
+                new HashMap<String, Integer>() {{
+                    put("id", id);
+                }});
 
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
@@ -181,33 +158,32 @@ public class LineAcceptanceTest {
         );
     }
 
-    private JsonPath 지하철노선_목록_조회() {
-        return RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract().jsonPath();
+    private ExtractableResponse<Response> 지하철노선_생성(String name, String color, String upStationId, String downStationId,
+                                                   String distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
 
+        return RestAssuredMethod.post("/lines", params);
+    }
+
+    private JsonPath 지하철노선_목록_조회() {
+        return RestAssuredMethod.get("/lines").jsonPath();
     }
 
     private JsonPath 지하철노선_한개_조회(Integer id) {
-        return RestAssured.given().log().all()
-                .when().get("/lines/{id}", id)
-                .then().log().all()
-                .extract()
-                .jsonPath();
+        return RestAssuredMethod.get("/lines/{id}", new HashMap<String, Integer>() {{
+            put("id", id);
+        }}).jsonPath();
     }
 
     private ExtractableResponse<Response> 지하철역_생성(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
-        return response;
+        return RestAssuredMethod.post("/stations", params);
     }
 }

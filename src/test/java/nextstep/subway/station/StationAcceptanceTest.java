@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.utils.RestAssuredMethod;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -92,12 +93,10 @@ public class StationAcceptanceTest {
         Integer id = 지하철역_생성("강남역").jsonPath().get("id");
 
         // when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .when().delete("/stations/{id}", id)
-                        .then().log().all()
-                        .extract();
-
+        ExtractableResponse<Response> response = RestAssuredMethod.delete("/stations/{id}",
+                new HashMap<String, Integer>() {{
+                    put("id", id);
+                }});
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         assertThat(지하철역_조회()).doesNotContain("강남역");
@@ -108,22 +107,10 @@ public class StationAcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
-        return response;
+        return RestAssuredMethod.post("/stations", params);
     }
 
     private List<String> 지하철역_조회() {
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
-        return stationNames;
+        return RestAssuredMethod.get("/stations").jsonPath().getList("name", String.class);
     }
 }
