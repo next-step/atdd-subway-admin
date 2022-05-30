@@ -9,10 +9,10 @@ import javax.persistence.Embeddable;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineStation;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.CreateSectionException;
+import nextstep.subway.vo.SectionVO;
 
 @Embeddable
 public class LineStations {
@@ -25,39 +25,39 @@ public class LineStations {
         lineStations.add(target);
     }
 
-    public boolean addSection(Line line, Station upStation, Station downStation, long distance) {
-        if (addBetweenSection(line, upStation, downStation, distance)) {
+    public boolean addSection(SectionVO sectionVO) {
+        if (addBetweenSection(sectionVO)) {
             return true;
         }
-        return addStartOrEndSection(line, upStation, downStation, distance);
+        return addStartOrEndSection(sectionVO);
     }
 
-    private boolean addStartOrEndSection(Line line, Station upStation, Station downStation, long distance) {
-        LineStation startStation = findSectionByUpStation(downStation);
-        LineStation endStation = findSectionByDownStation(upStation);
+    private boolean addStartOrEndSection(SectionVO sectionVO) {
+        LineStation startStation = findSectionByUpStation(sectionVO.getDownStation());
+        LineStation endStation = findSectionByDownStation(sectionVO.getUpStation());
         if(startStation != null || endStation != null){
-            lineStations.add(new LineStation(line, upStation, downStation, distance));
+            lineStations.add(new LineStation(sectionVO.getLine(), sectionVO.getUpStation(), sectionVO.getDownStation(), sectionVO.getDistance()));
             return true;
         }
         return false;
     }
 
-    private boolean addBetweenSection(Line line, Station upStation, Station downStation, long distance) {
-        LineStation up = findSectionByUpStation(upStation);
-        LineStation down = findSectionByDownStation(downStation);
+    private boolean addBetweenSection(SectionVO sectionVO) {
+        LineStation up = findSectionByUpStation(sectionVO.getUpStation());
+        LineStation down = findSectionByDownStation(sectionVO.getDownStation());
         validateAlreadySection(up, down);
 
         if (up != null) {
-            long newDistance = up.calcNewSectionDistance(distance);
+            long newDistance = up.calcNewSectionDistance(sectionVO.getDistance());
             Station copyDownStation = up.getDownStation().copy();
-            up.updateDownStation(downStation, distance);
-            lineStations.add(new LineStation(line, downStation, copyDownStation, newDistance));
+            up.updateDownStation(sectionVO.getDownStation(), sectionVO.getDistance());
+            lineStations.add(new LineStation(sectionVO.getLine(),sectionVO.getDownStation(), copyDownStation, newDistance));
             return true;
         }
         if (down != null) {
-            long newDistance = down.calcNewSectionDistance(distance);
-            down.updateDownStation(upStation, newDistance);
-            lineStations.add(new LineStation(line, upStation, downStation, distance));
+            long newDistance = down.calcNewSectionDistance(sectionVO.getDistance());
+            down.updateDownStation(sectionVO.getUpStation(), newDistance);
+            lineStations.add(new LineStation(sectionVO.getLine(), sectionVO.getUpStation(), sectionVO.getDownStation(), sectionVO.getDistance()));
             return true;
         }
         return false;
