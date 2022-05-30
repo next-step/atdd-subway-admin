@@ -64,7 +64,7 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Line findById(Long id) {
         return lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException("해당 지하철 노선을 찾을 수 없습니다."));
     }
