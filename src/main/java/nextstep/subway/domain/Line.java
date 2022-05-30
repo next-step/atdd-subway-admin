@@ -37,8 +37,6 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        this.sections.sectionsCheck(section);
-
         sections.addSection(section);
         section.setLine(this);
     }

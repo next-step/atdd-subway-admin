@@ -1,9 +1,6 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.SectionRepository;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
 import org.springframework.stereotype.Service;
@@ -28,10 +25,23 @@ public class SectionService {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
 
+        Sections sections = line.getSections();
         Section section = new Section(upStation, downStation, sectionRequest.getDistance());
+
+        for (Section lineSection : sections.getSections()) {
+            validateSections(lineSection, section);
+        }
 
         line.addSection(section);
 
         return LineResponse.of(line);
+    }
+
+    public void validateSections(Section lineSection, Section section) {
+        lineSection.duplicateValidateCheck(section);
+        lineSection.mismatchValidateCheck(section);
+
+        lineSection.reregisterUpStation(section);
+        lineSection.reregisterDownStation(section);
     }
 }

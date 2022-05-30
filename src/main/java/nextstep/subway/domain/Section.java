@@ -38,27 +38,19 @@ public class Section {
         this.distance = distance;
     }
 
-    public void validateCheck(Section section) {
-        duplicateValidateCheck(section);
-        mismatchValidateCheck(section);
-
-        reregisterUpStation(section);
-        reregisterDownStation(section);
-    }
-
-    private void mismatchValidateCheck(Section section) {
-        if (!this.upStation.isSame(section) && !this.downStation.isSame(section)) {
+    public void mismatchValidateCheck(Section section) {
+        if (!this.upStation.isSameStationInSection(section) && !this.downStation.isSameStationInSection(section)) {
             throw new IllegalArgumentException("상행역과 하행역 모두 현재 노선에 존재하지 않습니다.");
         }
     }
 
-    private void duplicateValidateCheck(Section section) {
+    public void duplicateValidateCheck(Section section) {
         if (this.upStation.equals(section.getUpStation()) && this.downStation.equals(section.getDownStation())) {
             throw new IllegalArgumentException("이미 등록된 정보 입니다.");
         }
     }
 
-    private void reregisterDownStation(Section section) {
+    public void reregisterDownStation(Section section) {
         if (this.downStation.equals(section.getDownStation())) {
             distanceValidateCheck(section);
             changeDistance(this.distance - section.getDistance());
@@ -66,7 +58,7 @@ public class Section {
         }
     }
 
-    private void reregisterUpStation(Section section) {
+    public void reregisterUpStation(Section section) {
         if (this.upStation.equals(section.getUpStation())) {
             distanceValidateCheck(section);
             changeDistance(this.distance - section.getDistance());

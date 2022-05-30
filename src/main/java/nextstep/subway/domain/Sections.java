@@ -22,12 +22,6 @@ public class Sections {
         sections.add(section);
     }
 
-    public void sectionsCheck(Section newSection) {
-        for (Section section : sections) {
-            section.validateCheck(newSection);
-        }
-    }
-
     public List<Section> getOrderSections() {
         List<Section> sections = new ArrayList<>();
         Section section = lineFirstSection();
