@@ -25,7 +25,7 @@ public class LineStations {
     }
 
     public boolean addSection(Line line, Station upStation, Station downStation, long distance) {
-        if (addBetween(line, upStation, downStation, distance)) {
+        if (addBetweenSection(line, upStation, downStation, distance)) {
             return true;
         }
         return addStartOrEndSection(line, upStation, downStation, distance);
@@ -41,20 +41,20 @@ public class LineStations {
         return false;
     }
 
-    private boolean addBetween(Line line, Station upStation, Station downStation, long distance) {
+    private boolean addBetweenSection(Line line, Station upStation, Station downStation, long distance) {
         LineStation up = findUpStation(upStation);
         LineStation down = findDownStation(downStation);
         validateAlreadySection(up, down);
 
         if (up != null) {
-            long newDistance = up.getDistance() - distance;
+            long newDistance = up.calcNewSectionDistance(distance);
             Station copyDownStation = up.getDownStation().copy();
-            up.updateUpStation(downStation, distance);
+            up.updateDownStation(downStation, distance);
             lineStations.add(new LineStation(line, downStation, copyDownStation, newDistance));
             return true;
         }
         if (down != null) {
-            long newDistance = down.getDistance() - distance;
+            long newDistance = down.calcNewSectionDistance(distance);
             down.updateDownStation(upStation, newDistance);
             lineStations.add(new LineStation(line, upStation, downStation, distance));
             return true;

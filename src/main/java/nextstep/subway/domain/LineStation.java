@@ -41,20 +41,23 @@ public class LineStation extends BaseEntity {
         this.distance = distance;
     }
 
-    public void updateUpStation(Station station,long distance) {
-        if(this.distance < distance){
-            throw new IllegalArgumentException("[ERROR] 구간이 깁니다.");
-        }
+    public void updateDownStation(Station station, long distance) {
+        validateDistance(distance);
         this.downStation = station;
         this.distance = distance;
     }
 
-    public void updateDownStation(Station station, long distance) {
-        if(this.distance < distance){
-            throw new IllegalArgumentException("[ERROR] 구간이 깁니다.");
+    private void validateDistance(long distance) {
+        if (this.distance < distance) {
+            throw new IllegalArgumentException("[ERROR] 이미 존재하는 구간보다 길이가 길 수 없습니다.");
         }
-        this.downStation = station;
-        this.distance = distance;
+    }
+
+    public long calcNewSectionDistance(long distance) {
+        if(this.distance == distance){
+            throw new IllegalArgumentException("[ERROR] 이미 존재하는 구간과 길이가 동일 할 수 없습니다.");
+        }
+        return this.distance - distance;
     }
 
     public Station getUpStation() {
@@ -63,10 +66,6 @@ public class LineStation extends BaseEntity {
 
     public Station getDownStation() {
         return downStation;
-    }
-
-    public long getDistance() {
-        return distance;
     }
 
     public void setLine(Line line) {
