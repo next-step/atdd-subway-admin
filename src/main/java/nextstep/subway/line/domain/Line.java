@@ -12,6 +12,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import nextstep.subway.global.domain.BaseEntity;
+import nextstep.subway.global.exception.BadRequestException;
+import nextstep.subway.global.exception.ExceptionType;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
@@ -38,7 +40,13 @@ public class Line extends BaseEntity {
 
     }
 
-    private Line(String name, String color, Long distance, Station upStation, Station downStation) {
+    private Line(
+        String name,
+        String color,
+        Long distance,
+        Station upStation,
+        Station downStation
+    ) {
         validateLine(name, color, distance);
         this.name = name;
         this.color = color;
@@ -48,20 +56,30 @@ public class Line extends BaseEntity {
 
     private void validateLine(String name, String color, Long distance) {
         if (Objects.isNull(name)) {
-            throw new IllegalArgumentException("지하철 노선명이 없습니다.");
+            throw new BadRequestException(ExceptionType.IS_EMPTY_LINE_NAME);
         }
 
         if (Objects.isNull(color)) {
-            throw new IllegalArgumentException("지하철 노선 색상이 없습니다.");
+            throw new BadRequestException(ExceptionType.IS_EMPTY_LINE_COLOR);
         }
 
         if (Objects.isNull(distance) || distance < 1) {
-            throw new IllegalArgumentException("노선사이의 거리가 없습니다.");
+            throw new BadRequestException(ExceptionType.IS_EMPTY_LINE_DISTANCE);
         }
     }
 
-    public static Line of(LineRequest lineRequest, Station upStation, Station downStation) {
-        return new Line(lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance(), upStation, downStation);
+    public static Line of(
+        LineRequest lineRequest,
+        Station upStation,
+        Station downStation
+    ) {
+        return new Line(
+            lineRequest.getName(),
+            lineRequest.getColor(),
+            lineRequest.getDistance(),
+            upStation,
+            downStation
+        );
     }
 
     public void update(String name, String color) {
@@ -83,10 +101,6 @@ public class Line extends BaseEntity {
 
     public Sections getSections() {
         return sections;
-    }
-
-    public List<Section> getSectionItems() {
-        return sections.getItems();
     }
 
     public Set<StationResponse> getStationResponses() {

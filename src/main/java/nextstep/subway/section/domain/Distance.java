@@ -2,7 +2,7 @@ package nextstep.subway.section.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import nextstep.subway.global.exception.CannotRegisterException;
+import nextstep.subway.global.exception.BadRequestException;
 import nextstep.subway.global.exception.ExceptionType;
 
 @Embeddable
@@ -12,7 +12,6 @@ public class Distance {
     private Long value;
 
     protected Distance() {
-
     }
 
     public Distance(Long value) {
@@ -22,7 +21,7 @@ public class Distance {
 
     private void validateDistance(Long value) {
         if (value <= 0) {
-            throw new IllegalArgumentException(ExceptionType.MUST_BE_AT_LEAST_LENGTH_ONE.getMessage());
+            throw new BadRequestException(ExceptionType.MUST_BE_AT_LEAST_LENGTH_ONE);
         }
     }
 
@@ -33,7 +32,7 @@ public class Distance {
 
     private void validateDistanceValue(Distance target) {
         if (target.getValue() >= value) {
-            throw new CannotRegisterException(ExceptionType.IS_NOT_OVER_ORIGIN_DISTANCE);
+            throw new BadRequestException(ExceptionType.IS_NOT_OVER_ORIGIN_DISTANCE);
         }
     }
 
