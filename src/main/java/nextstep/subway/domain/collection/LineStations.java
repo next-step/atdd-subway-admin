@@ -73,7 +73,8 @@ public class LineStations {
     private LineStation findSectionByDownStation(Station downStation) {
         return lineStations.stream()
                 .filter(lineStation -> lineStation.getDownStation().equals(downStation))
-                .findFirst().orElse(null);
+                .findFirst()
+                .orElse(null);
     }
 
     private void validateAlreadySection(LineStation sectionByUpStation, LineStation sectionByDownStation) {
