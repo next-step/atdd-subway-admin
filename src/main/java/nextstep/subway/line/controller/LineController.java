@@ -1,10 +1,10 @@
-package nextstep.subway.ui;
+package nextstep.subway.line.controller;
 
 import java.net.URI;
 import java.util.List;
-import nextstep.subway.application.LineService;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
+import nextstep.subway.line.service.LineService;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;

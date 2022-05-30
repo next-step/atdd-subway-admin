@@ -1,8 +1,7 @@
-package nextstep.subway.dto;
+package nextstep.subway.station.dto;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
-import nextstep.subway.domain.Station;
+import nextstep.subway.station.domain.Station;
 
 public class StationResponse {
 

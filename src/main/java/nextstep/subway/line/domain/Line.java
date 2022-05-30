@@ -1,4 +1,4 @@
-package nextstep.subway.domain;
+package nextstep.subway.line.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,7 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import nextstep.subway.dto.LineRequest;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line {
