@@ -77,8 +77,8 @@ public class LineAcceptanceTest {
     @DisplayName("지하철노선 1개를 생성하고 단건 조회 테스트")
     void createLineAndFindLine() {
         ExtractableResponse<Response> 지하철노선_생성_결과 = 지하철노선_생성("2호선", "bg-green-600");
-
         assertThat(지하철노선_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
         Long id = 지하철노선_생성_결과.jsonPath().getLong("id");
 
         ExtractableResponse<Response> 지하철노선_조회_결과 = 지하철노선_조회(id);
@@ -87,6 +87,38 @@ public class LineAcceptanceTest {
                 () -> assertThat(지하철노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(지하철노선_조회_결과.jsonPath().getString("name")).isEqualTo("2호선")
         );
+    }
+
+
+    @Test
+    @DisplayName("지하철 노선 수정 후 단건 조회 테스트")
+    void updateLineAndFindLine() {
+        ExtractableResponse<Response> 지하철노선_생성_결과 = 지하철노선_생성("2호선", "bg-green-600");
+        assertThat(지하철노선_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        Long id = 지하철노선_생성_결과.jsonPath().getLong("id");
+        ExtractableResponse<Response> 지하철노선_수정_결과 = 지하철노선_수정(id, "3호선", "bg-orange-600");
+        assertThat(지하철노선_수정_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> 지하철노선_조회_결과 = 지하철노선_조회(id);
+        assertAll(
+                () -> assertThat(지하철노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(지하철노선_조회_결과.jsonPath().getString("name")).isEqualTo("3호선")
+        );
+    }
+
+    @Test
+    @DisplayName("지하철 노선 삭제 후 단건 조회 테스트")
+    void deleteLine() {
+        ExtractableResponse<Response> 지하철노선_생성_결과 = 지하철노선_생성("2호선", "bg-green-600");
+        assertThat(지하철노선_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        Long id = 지하철노선_생성_결과.jsonPath().getLong("id");
+        ExtractableResponse<Response> 지하철노선_삭제_결과 = 지하철노선_삭제(id);
+        assertThat(지하철노선_삭제_결과.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        ExtractableResponse<Response> 지하철노선_조회_결과 = 지하철노선_조회(id);
+        assertThat(지하철노선_조회_결과.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     private ExtractableResponse<Response> 지하철노선_생성(String name, String color) {
@@ -101,7 +133,27 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/line")
+                .when().post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철노선_수정(Long id, String name, String color) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/{id}", id)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철노선_삭제(Long id) {
+        return RestAssured.given().log().all()
+                .when().delete("/lines/{id}", id)
                 .then().log().all()
                 .extract();
     }
