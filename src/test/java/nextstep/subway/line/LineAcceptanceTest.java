@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
@@ -146,10 +147,12 @@ public class LineAcceptanceTest {
         // then
         JsonPath jsonPath = 지하철노선_한개_조회(id);
 
-        String lineName = jsonPath.get("name");
-        String lineColor = jsonPath.get("color");
-        assertThat(lineName).isEqualTo("신분당선2");
-        assertThat(lineColor).isEqualTo("bg-red-600");
+        assertAll(
+                () -> assertThat(jsonPath.getString("name")).isEqualTo("신분당선2"),
+                () -> assertThat(jsonPath.getString("color")).isEqualTo("bg-red-600")
+        );
+
+
     }
 
     private JsonPath 지하철노선_목록_조회() {
