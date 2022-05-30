@@ -1,4 +1,4 @@
-package nextstep.subway.station;
+package nextstep.subway.acceptance;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -14,12 +14,22 @@ public abstract class AcceptanceTest {
                 .extract();
     }
 
-    protected ExtractableResponse<Response> sendPost(Map<String, String> bodyParams, String path,
+    protected ExtractableResponse<Response> sendPost(Map<String, Object> bodyParams, String path,
                                                      Object... pathParams) {
         return RestAssured.given().log().all()
                 .body(bodyParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post(path, pathParams)
+                .then().log().all()
+                .extract();
+    }
+
+    protected ExtractableResponse<Response> sendPut(Map<String, Object> bodyParams, String path,
+                                                    Object... pathParams) {
+        return RestAssured.given().log().all()
+                .body(bodyParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put(path, pathParams)
                 .then().log().all()
                 .extract();
     }
