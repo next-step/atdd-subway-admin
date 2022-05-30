@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
@@ -32,7 +33,8 @@ public class Section {
     @JoinColumn(name = "LINE_ID", foreignKey = @ForeignKey(name = "fk_section_line"))
     private Line line;
 
-    private Integer distance;
+    @Embedded
+    private Distance distance;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Section nextSection;
@@ -43,7 +45,7 @@ public class Section {
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, Line line, Integer distance,
+    public Section(Station upStation, Station downStation, Line line, Distance distance,
         Section nextSection, Section backSection) {
         this.upStation = upStation;
         this.downStation = downStation;
@@ -63,24 +65,21 @@ public class Section {
     }
 
     public void insertBackOfSection(Section insertSection) {
-        validDistance(this, insertSection);
-
         insertSection.setBackSection(this);
         insertSection.setNextSection(this.nextSection);
 
-        this.distance = distance - insertSection.getDistance();
+        this.distance.minus(insertSection.getDistance());
+
         this.upStation = insertSection.getDownStation();
         this.nextSection.setBackSection(insertSection);
         this.nextSection = insertSection;
     }
 
     public void insertFrontOfSection(Section insertSection) {
-        validDistance(this, insertSection);
-
         insertSection.setBackSection(this.backSection);
         insertSection.setNextSection(this);
 
-        this.distance = distance - insertSection.getDistance();
+        this.distance.minus(insertSection.getDistance());
         this.downStation = insertSection.getUpStation();
         this.backSection.setNextSection(insertSection);
         this.backSection = insertSection;
@@ -108,13 +107,6 @@ public class Section {
         this.backSection = backSection;
     }
 
-    private void validDistance(Section sourceSection, Section appendSection) {
-        if (sourceSection.getDistance()
-            <= appendSection.getDistance()) { //현재 섹션보다 신규 섹션의 길이가 같거나 크면 넣지못한다.
-            throw new SectionInvalidException();
-        }
-    }
-
     public Station getUpStation() {
         return upStation;
     }
@@ -127,7 +119,7 @@ public class Section {
         return line;
     }
 
-    public Integer getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 

@@ -2,6 +2,7 @@ package nextstep.subway.application;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.LineStation;
@@ -55,7 +56,7 @@ public class LineService {
         lineStationRepository.save(upLineStation);
         lineStationRepository.save(downLineStation);
 
-        Section section = new Section(upStation, downStation, line, lineRequest.getDistance(), null,
+        Section section = new Section(upStation, downStation, line, new Distance(lineRequest.getDistance()), null,
             null);
         sectionRepository.save(section);
 

@@ -3,6 +3,7 @@ package nextstep.subway.application;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.LineStationRepository;
@@ -44,13 +45,9 @@ public class SectionService {
         Station upStation = getStationOrThrow(sectionRequest.getUpStationId());
         Station downStation = getStationOrThrow(sectionRequest.getDownStationId());
 
-        if (sectionRepository.findAllByUpStationAndDownStationAndLine(upStation, downStation, line)
-            .isPresent()) {
-            throw new DupSectionException();
-        }
-        Section appendSection = new Section(upStation, downStation, line,
-            sectionRequest.getDistance(),
-            null, null);
+        validateDupSection(line, upStation, downStation);
+        Section appendSection =  new Section(upStation, downStation, line,
+            new Distance(sectionRequest.getDistance()), null, null);
 
         Optional<Section> section = null;
         if ((section = sectionRepository.findAllByDownStationAndLine(downStation,
@@ -67,6 +64,13 @@ public class SectionService {
             section.get().appendAfterSection(appendSection);
         }
 
+    }
+
+    private void validateDupSection(Line line, Station upStation, Station downStation) {
+        if (sectionRepository.findAllByUpStationAndDownStationAndLine(upStation, downStation, line)
+            .isPresent()) {
+            throw new DupSectionException();
+        }
     }
 
     private Station getStationOrThrow(long stationId) {

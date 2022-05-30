@@ -7,6 +7,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
@@ -31,7 +32,8 @@ public class Line extends BaseEntity {
     @Enumerated(STRING)
     private LineColor lineColor;
 
-    private Integer distsnce;
+    @Embedded
+    private Distance distance;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "UP_STATION_ID", foreignKey = @ForeignKey(name = "fk_line_up_station"))
@@ -46,13 +48,13 @@ public class Line extends BaseEntity {
 
 
     public Line(Long id, String name, LineColor lineColor, Station upStation, Station downStation,
-        Integer distsnce) {
+        Distance distance) {
         this.id = id;
         this.name = name;
         this.lineColor = lineColor;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distsnce = distsnce;
+        this.distance = distance;
     }
 
     protected Line() {
@@ -82,12 +84,12 @@ public class Line extends BaseEntity {
     }
 
     public void changeUpStation(Section section) {
-        this.distsnce = this.distsnce + section.getDistance();
+        this.distance.plus(section.getDistance());
         this.upStation = section.getUpStation();
     }
 
     public void changeDownStation(Section section) {
-        this.distsnce = distsnce + section.getDistance();
+        this.distance.plus(section.getDistance());
         this.downStation = section.getDownStation();
     }
 

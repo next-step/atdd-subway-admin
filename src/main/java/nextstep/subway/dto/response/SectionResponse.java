@@ -1,5 +1,6 @@
 package nextstep.subway.dto.response;
 
+import nextstep.subway.domain.Distance;
 import nextstep.subway.dto.StationDTO;
 
 
@@ -13,12 +14,12 @@ public class SectionResponse {
     private Long backSectionId;
 
     public SectionResponse(Long id, StationDTO upStationDTO, StationDTO downStationDTO,
-        String lineName, int distance, Long nextSectionId, Long backSectionId) {
+        String lineName, Distance distance, Long nextSectionId, Long backSectionId) {
         this.id = id;
         this.upStationInfo = upStationDTO;
         this.downStationInfo = downStationDTO;
         this.lineName = lineName;
-        this.distance = distance;
+        this.distance = distance.getDistance();
         this.nextSectionId = nextSectionId;
         this.backSectionId = backSectionId;
     }
