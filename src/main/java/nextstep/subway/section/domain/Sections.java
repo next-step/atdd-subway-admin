@@ -38,7 +38,7 @@ public class Sections {
 
     private void registerSection(Section newSection) {
         Section connectedSection = getConnectedSection(newSection);
-        Section createdSection = connectedSection.addSection(newSection);
+        Section createdSection = connectedSection.addBetweenSection(newSection);
         items.add(createdSection);
     }
 

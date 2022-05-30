@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import nextstep.subway.global.domain.BaseEntity;
+import nextstep.subway.global.exception.CannotRegisterException;
+import nextstep.subway.global.exception.ExceptionType;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
@@ -54,12 +56,16 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
-    public Section addSection(Section newSection) {
+    public Section addBetweenSection(Section newSection) {
         if (isEqualsUpStation(newSection)) {
             return rePositionUpStation(newSection);
         }
 
-        return rePositionDownStation(newSection);
+        if (isEqualsDownStation(newSection)) {
+            return rePositionDownStation(newSection);
+        }
+
+        throw new CannotRegisterException(ExceptionType.IS_ADD_BETWEEN_STATION);
     }
 
     private Section rePositionUpStation(Section section) {
@@ -83,11 +89,11 @@ public class Section extends BaseEntity {
     }
 
     public boolean isEqualsUpStation(Section section) {
-        return upStation == section.getUpStation();
+        return upStation.equals(section.getUpStation());
     }
 
     public boolean isEqualsDownStation(Section section) {
-        return downStation == section.getDownStation();
+        return downStation.equals(section.getDownStation());
     }
 
     public Long getId() {
