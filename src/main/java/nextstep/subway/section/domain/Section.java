@@ -11,8 +11,8 @@ import java.util.Objects;
 
 @Entity
 public class Section extends BaseEntity {
-    private static final String UP_DOWN_STATION_NOT_NULL = "상/하행 방향 역은 빈값일 수 없습니다.";
-    private static final String UP_DOWN_STATION_NOT_EQUALS = "상/하행 방향 역은 동일할 수 없습니다.";
+    private static final String UP_DOWN_STATION_NOT_NULL = "상/하행역은 빈값일 수 없습니다.";
+    private static final String UP_DOWN_STATION_NOT_EQUALS = "상/하행역은 동일할 수 없습니다.";
     private static final String DISTANCE_NOT_NULL = "지하철 구간 길이는 빈값일 수 없습니다.";
 
     @Id

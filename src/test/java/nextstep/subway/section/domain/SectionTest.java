@@ -18,21 +18,21 @@ class SectionTest {
         assertThat(newSection).isNotNull();
     }
 
-    @DisplayName("상행 방향 역은 null 일 수 없다.")
+    @DisplayName("상행역은 null 일 수 없다.")
     @Test
     void test_up_station_not_null() {
         assertThatThrownBy(() -> new Section(null, downStation, distance))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("하행 방향 역은 null 일 수 없다.")
+    @DisplayName("하행역은 null 일 수 없다.")
     @Test
     void test_down_station_not_null() {
         assertThatThrownBy(() -> new Section(upStation, null, distance))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("상/하행 방향 역은 동일할 수 없다.")
+    @DisplayName("상/하행역은 동일할 수 없다.")
     @Test
     void test_up_down_station_not_equals() {
         assertThatThrownBy(() -> new Section(upStation, upStation, distance))
