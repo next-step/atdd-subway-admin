@@ -92,6 +92,24 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         노선에_신규_구간이_정상_등록된다(신규_구간이_등록된_노선);
     }
 
+    /**
+     * Given 새로운 역을 하행 종점으로 등록하고
+     * When 새로운 구간을 등록하면
+     * Then 지하철 노선에 구간이 등록된다.
+     */
+    @Test
+    void 새로운_역을_하행_종점으로_등록한다() {
+        // given
+        Long 광교역_id = id_추출(지하철역_생성("광교역"));
+        SectionRequest 신규_구간 = new SectionRequest(정자역_id, 광교역_id, 3);
+
+        // when
+        ExtractableResponse<Response> 신규_구간이_등록된_노선 = 노선에_신규_구간을_등록(신분당선, 신규_구간);
+
+        // then
+        노선에_신규_구간이_정상_등록된다(신규_구간이_등록된_노선);
+    }
+
     public static class SectionAcceptanceTemplate {
         public static void 노선에_신규_구간이_정상_등록된다(ExtractableResponse<Response> 신규_구간이_등록된_노선) {
             assertThat(신규_구간이_등록된_노선.statusCode()).isEqualTo(HttpStatus.CREATED.value());
