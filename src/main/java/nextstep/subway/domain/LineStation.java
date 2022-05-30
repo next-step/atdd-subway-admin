@@ -22,11 +22,11 @@ public class LineStation extends BaseEntity {
     private Line line;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id")
+    @JoinColumn(name = "up_station_id",foreignKey = @ForeignKey(name = "fk_linestation_to_upstation"))
     private Station upStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id")
+    @JoinColumn(name = "down_station_id",foreignKey = @ForeignKey(name = "fk_linestation_to_downstation"))
     private Station downStation;
 
     private Long distance;
