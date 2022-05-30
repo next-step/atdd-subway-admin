@@ -33,8 +33,8 @@ public class LineStations {
     }
 
     private boolean addStartOrEndSection(Line line, Station upStation, Station downStation, long distance) {
-        LineStation startStation = findUpStation(downStation);
-        LineStation endStation = findDownStation(upStation);
+        LineStation startStation = findSectionByUpStation(downStation);
+        LineStation endStation = findSectionByDownStation(upStation);
         if(startStation != null || endStation != null){
             lineStations.add(new LineStation(line, upStation, downStation, distance));
             return true;
@@ -43,8 +43,8 @@ public class LineStations {
     }
 
     private boolean addBetweenSection(Line line, Station upStation, Station downStation, long distance) {
-        LineStation up = findUpStation(upStation);
-        LineStation down = findDownStation(downStation);
+        LineStation up = findSectionByUpStation(upStation);
+        LineStation down = findSectionByDownStation(downStation);
         validateAlreadySection(up, down);
 
         if (up != null) {
@@ -63,14 +63,14 @@ public class LineStations {
         return false;
     }
 
-    private LineStation findUpStation(Station upStation) {
+    private LineStation findSectionByUpStation(Station upStation) {
         return lineStations.stream()
                 .filter(lineStation -> lineStation.getUpStation().equals(upStation))
                 .findFirst()
                 .orElse(null);
     }
 
-    private LineStation findDownStation(Station downStation) {
+    private LineStation findSectionByDownStation(Station downStation) {
         return lineStations.stream()
                 .filter(lineStation -> lineStation.getDownStation().equals(downStation))
                 .findFirst().orElse(null);
@@ -92,7 +92,7 @@ public class LineStations {
     }
 
     private LineStation findStartSection(LineStation cursor) {
-        LineStation downLineStation = findDownStation(cursor.getUpStation());
+        LineStation downLineStation = findSectionByDownStation(cursor.getUpStation());
         if (downLineStation == null) {
             return cursor;
         }
@@ -102,7 +102,7 @@ public class LineStations {
     private void addOrderStations(Set<Station> orderStations, LineStation cursor) {
         orderStations.add(cursor.getUpStation());
         orderStations.add(cursor.getDownStation());
-        LineStation upStation = findUpStation(cursor.getDownStation());
+        LineStation upStation = findSectionByUpStation(cursor.getDownStation());
         if (upStation != null) {
             addOrderStations(orderStations, upStation);
         }
