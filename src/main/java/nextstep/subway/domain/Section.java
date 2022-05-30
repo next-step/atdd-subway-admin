@@ -39,7 +39,7 @@ public class Section {
     }
 
     public void mismatchValidateCheck(Section section) {
-        if (!this.upStation.isSameStationInSection(section) && !this.downStation.isSameStationInSection(section)) {
+        if (!isSameStation(section.upStation) && !isSameStation(section.downStation)) {
             throw new IllegalArgumentException("상행역과 하행역 모두 현재 노선에 존재하지 않습니다.");
         }
     }
@@ -70,6 +70,11 @@ public class Section {
         if (this.distance <= section.getDistance()) {
             throw new IllegalArgumentException("기존 역 사이 길이 보다 크거나 같으면 등록을 할 수 없습니다.");
         }
+    }
+
+    public boolean isSameStation(Station station){
+        return this.upStation.equals(station) || this.downStation.equals(station);
+
     }
 
     public void changeDistance(int distance) {
