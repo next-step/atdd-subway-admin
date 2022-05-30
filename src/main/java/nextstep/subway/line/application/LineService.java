@@ -2,6 +2,7 @@ package nextstep.subway.line.application;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -73,6 +74,14 @@ public class LineService {
             .orElseThrow(() -> new NoSuchElementException(String.format(NOT_FOUND_LINE, lineId)));
 
         line.addSection(sectionRequest.toSection());
+    }
+
+    @Transactional
+    public void removeStation(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(() -> new NoSuchElementException(String.format(NOT_FOUND_LINE, lineId)));
+
+        line.removeStation(Station.from(stationId));
     }
 
     private List<StationResponse> generateStationResponse(Line line) {

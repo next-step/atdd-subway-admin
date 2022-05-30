@@ -29,6 +29,10 @@ public class Distance {
         this.distance -= distance.distance;
     }
 
+    public void plus(Distance distance) {
+        this.distance += distance.distance;
+    }
+
     private static void validateDistance(int distance) {
         if (distance < 1) {
             throw new IllegalArgumentException(DISTANCE_IS_MUST_BE_GREATER_THAN_1.getMessage());
@@ -51,5 +55,4 @@ public class Distance {
     public int hashCode() {
         return Objects.hash(distance);
     }
-
 }

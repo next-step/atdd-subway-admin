@@ -2,6 +2,8 @@ package nextstep.subway.line.domain;
 
 import static nextstep.subway.line.domain.exception.LineExceptionMessage.ALREADY_ADDED_SECTION;
 import static nextstep.subway.line.domain.exception.LineExceptionMessage.ALREADY_ADDED_UP_DOWN_STATION;
+import static nextstep.subway.line.domain.exception.LineExceptionMessage.CANNOT_DELETE_WHEN_NO_EXIST_STATION;
+import static nextstep.subway.line.domain.exception.LineExceptionMessage.CANNOT_DELETE_WHEN_ONLY_ONE_SECTION;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -11,6 +13,7 @@ import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line extends BaseEntity {
@@ -50,6 +53,43 @@ public class Line extends BaseEntity {
         section.registerLine(this);
     }
 
+    public void removeStation(Station station) {
+        validateLastSectionDeleteStation();
+        validateNotIncludeStation(station);
+
+        if (this.sections.isEndStation(station)) {
+            this.sections.removeEndStation(station);
+            return;
+        }
+
+        this.sections.removeMiddleStation(station);
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void update(Line updateLine) {
+        this.name = updateLine.getName();
+        this.color = updateLine.getColor();
+    }
+
+    public LineStations findSortedLineStations() {
+        return this.sections.findSortedStations();
+    }
+
+    private void validateLastSectionDeleteStation() {
+        if (this.sections.isOnlyOneSection()) {
+            throw new IllegalArgumentException(CANNOT_DELETE_WHEN_ONLY_ONE_SECTION.getMessage());
+        }
+    }
+
+    private void validateNotIncludeStation(Station station) {
+        if (!this.sections.hasStation(station)) {
+            throw new IllegalArgumentException(CANNOT_DELETE_WHEN_NO_EXIST_STATION.getMessage());
+        }
+    }
+
     private void validateAddableStation(Section section) {
         if (this.sections.isEmpty()) {
             return;
@@ -64,18 +104,5 @@ public class Line extends BaseEntity {
         if (this.sections.contains(section)) {
             throw new IllegalStateException(ALREADY_ADDED_SECTION.getMessage());
         }
-    }
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public void update(Line updateLine) {
-        this.name = updateLine.getName();
-        this.color = updateLine.getColor();
-    }
-
-    public LineStations findSortedLineStations() {
-        return this.sections.findSortedStations();
     }
 }

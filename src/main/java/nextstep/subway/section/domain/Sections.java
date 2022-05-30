@@ -78,6 +78,56 @@ public class Sections {
         return this.sections.isEmpty();
     }
 
+    public boolean isEndStation(Station station) {
+        Section firstSection = this.findFirstSection();
+        Section lastSection = this.findLastSection();
+
+        return firstSection.isEqualsUpStation(station)
+            || lastSection.isEqualsDownStation(station);
+    }
+
+    public void removeEndStation(Station station) {
+        if (isFirstEndStation(station)) {
+            removeStation(this.findFirstSection());
+            return;
+        }
+
+        removeStation(this.findLastSection());
+    }
+
+    public void removeMiddleStation(Station station) {
+        Section prevSection = findByDownStation(station);
+        Section postSection = findByUpStation(station);
+
+        rearrangeSection(prevSection, postSection);
+        removeSection(postSection);
+    }
+
+    public boolean hasStation(Station station) {
+        return this.findSortedStations().contains(station);
+    }
+
+    public boolean isOnlyOneSection() {
+        return this.sections.size() == 1;
+    }
+
+    private void removeSection(Section section) {
+        this.sections.remove(section);
+    }
+
+    private void rearrangeSection(Section prevSection, Section postSection) {
+        prevSection.changeDownStation(postSection.getDownStation());
+        prevSection.plusDistanceByDistance(postSection.getDistance());
+    }
+
+    private void removeStation(Section section) {
+        this.sections.remove(section);
+    }
+
+    private boolean isFirstEndStation(Station station) {
+        return this.findFirstSection().isEqualsUpStation(station);
+    }
+
     private boolean isEndOfStation(Section section) {
         Section firstSection = this.findFirstSection();
         Section lastSection = this.findLastSection();
@@ -150,4 +200,15 @@ public class Sections {
     private boolean isExistStation(Station station) {
         return this.findSortedStations().contains(station);
     }
+
+    private Section findByUpStation(Station station) {
+        return this.findSectionByUpStation(station)
+            .orElseThrow(() -> new IllegalStateException(NOT_FOUND_UP_STATION_BY_SECTION.getMessage()));
+    }
+
+    private Section findByDownStation(Station station) {
+        return this.findSectionByDownStation(station)
+            .orElseThrow(() -> new IllegalStateException(NOT_FOUND_UP_STATION_BY_SECTION.getMessage()));
+    }
+
 }
