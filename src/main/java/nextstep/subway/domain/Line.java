@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import nextstep.subway.dto.LineUpdateRequest;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @Entity
 public class Line extends BaseEntity {
@@ -12,7 +11,7 @@ public class Line extends BaseEntity {
     private Long id;
     @Column(unique = true)
     private String name;
-    @NotNull
+    @Column(nullable = false)
     private String color;
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Section section;
