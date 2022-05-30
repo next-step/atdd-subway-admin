@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,13 +14,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
 
-@Controller
+@RestController
 @RequestMapping(value = "/lines")
 public class LineController {
 
@@ -61,16 +61,16 @@ public class LineController {
 		return ResponseEntity.noContent().build();
 	}
 	
-	@PostMapping("/{lineId}/sections")
-	public ResponseEntity addSection(
+	@PostMapping(value = "/{lineId}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LineResponse> addSection(
 	        @PathVariable Long lineId, 
 	        @RequestBody SectionRequest sectionRequest) {
 		lineService.addSection(lineId, sectionRequest);
 		return ResponseEntity.ok().build();
 	}
 
-	@ExceptionHandler(DataIntegrityViolationException.class)
-	public ResponseEntity handleIllegalArgsException() {
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<LineResponse> handleIllegalArgsException() {
 		return ResponseEntity.badRequest().build();
 	}
 }

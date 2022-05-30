@@ -69,7 +69,15 @@ public class LineService {
 	public void addSection(Long lineId, SectionRequest sectionRequest) {
 		Optional<Station> upStation = stationRepository.findById(sectionRequest.getUpStationId());
 		Optional<Station> downStation = stationRepository.findById(sectionRequest.getDownStationId());
+		validationStaion(upStation, downStation);
+		Section section = sectionRepository.save(sectionRequest.toSection(upStation.get(), downStation.get()));
 		Line line = lineRepository.getById(lineId);
-		line.add(sectionRequest.toSection(upStation.get(), downStation.get()));
+		line.add(section);
+	}
+
+	private void validationStaion(Optional<Station> upStation, Optional<Station> downStation) {
+		if(!upStation.isPresent() || !downStation.isPresent()) {
+			throw new RuntimeException("역 정보를 찾지 못했습니다.");
+		}
 	}
 }

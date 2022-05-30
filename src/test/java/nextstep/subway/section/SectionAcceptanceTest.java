@@ -1,26 +1,26 @@
 package nextstep.subway.section;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.CustomExtractableResponse;
-import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
 import nextstep.subway.line.LineAcceptanceTest;
 import nextstep.subway.station.StationAcceptanceTest;
 
 @DisplayName("구간 관련 기능")
 public class SectionAcceptanceTest extends CustomExtractableResponse{
-	private static final String BASIC_URL_SECTIONS = "/sections";
+	private static final String BASIC_URL_SECTIONS = "sections";
 
 	public Map<String, Long> stations = new HashMap<>();
 	public Map<String, Long> lines = new HashMap<>();
@@ -47,11 +47,54 @@ public class SectionAcceptanceTest extends CustomExtractableResponse{
 	    	this.lines.put(lines.get(i).get("name").toString(), Long.parseLong(lines.get(i).get("id").toString()));
 	    }
 	}
-	
-	@DisplayName("역 사이에 새로운 역을 등록한다.")
+
+	@DisplayName("역 사이에 새로운 구간을 등록한다.")
 	@Test
 	void addSection() {
-		구간_등록_요청(lines.get("신분당선"), stations.get("지하철역").toString(), stations.get("새로운지하철역").toString(), "4");
+		ExtractableResponse<Response> CreateResponse = 
+				구간_등록_요청(lines.get("신분당선"), stations.get("지하철역").toString(), stations.get("또다른지하철역").toString(), "4");
+		
+		assertThat(CreateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+	}
+
+	@DisplayName("출발구간으로 등록한다.")
+	@Test
+	void addFirstSection() {
+		ExtractableResponse<Response> CreateResponse = 
+				구간_등록_요청(lines.get("신분당선"), stations.get("또다른지하철역").toString(), stations.get("지하철역").toString(), "4");
+		assertThat(CreateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+	}
+
+	@DisplayName("마지막구간으로 등록한다.")
+	@Test
+	void addLastSection() {
+		ExtractableResponse<Response> CreateResponse = 
+				구간_등록_요청(lines.get("신분당선"), stations.get("새로운지하철역").toString(), stations.get("또다른지하철역").toString(), "4");
+		assertThat(CreateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+	}
+
+	@DisplayName("구간길이가 같거나 큰 구간을 등록할수없다.")
+	@Test
+	void addSectionSameOrBigDistance() {
+		ExtractableResponse<Response> CreateResponse = 
+				구간_등록_요청(lines.get("신분당선"), stations.get("지하철역").toString(), stations.get("또다른지하철역").toString(), "10");
+		assertThat(CreateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+	
+	@DisplayName("상행역과 하행역이 모두 같으면 등록할수없다.")
+	@Test
+	void addSectionSameSection() {
+		ExtractableResponse<Response> CreateResponse = 
+				구간_등록_요청(lines.get("신분당선"), stations.get("지하철역").toString(), stations.get("새로운지하철역").toString(), "4");
+		assertThat(CreateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+	
+	@DisplayName("정보를 알수없는 지하철역은 등록할수없다.")
+	@Test
+	void addSectionNotFoundStation() {
+		ExtractableResponse<Response> CreateResponse = 
+				구간_등록_요청(lines.get("신분당선"), stations.get("지하철역").toString(), "15", "4");
+		assertThat(CreateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 	
 	private ExtractableResponse<Response> 지하철_생성_요청(String name) {
@@ -92,13 +135,10 @@ public class SectionAcceptanceTest extends CustomExtractableResponse{
 		params.put("upStationId", upStationId);
 		params.put("downStationId", downStationId);
 		params.put("distance", distance);
-		return post(basicUrlSection(id), params);
+		return post(requestUrl(id), params);
 	}
-
-	private String basicUrlSection(Long id) {
-		return joinUrl(
-				joinUrl(LineAcceptanceTest.BASIC_URL_LINES, 
-						id), 
-				BASIC_URL_SECTIONS);
+	
+	private String requestUrl(Long id) {
+		return LineAcceptanceTest.BASIC_URL_LINES + "/" + id + "/" + BASIC_URL_SECTIONS;
 	}
 }

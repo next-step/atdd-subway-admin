@@ -29,10 +29,14 @@ public class LineResponse {
 	
 	private void setStations(Sections sections) {
 		stations = new ArrayList<StationResponse>();
+
 		for (Section section: sections.getSections()) {
 			this.stations.add(StationResponse.of(section.getUpStation()));
 		}
-		this.stations.add(StationResponse.of(sections.getSections().get(sections.lastIndex()).getDownStation()));
+		this.stations.add(
+				StationResponse.of(sections
+						.lastSection()
+						.getDownStation()));
 	}
 
 	public Long getId() {
