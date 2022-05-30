@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,5 +38,12 @@ public class LineControllerTest {
                         .content("{\"name\":\"2호선\"}"))
                 .andExpect(jsonPath("name").value("2호선"))
                 .andExpect(status().isCreated());
+    }
+
+    @DisplayName("지하철 노선 조회")
+    @Test
+    void getLines() throws Exception {
+        mockMvc.perform(get("/lines"))
+                .andExpect(status().isOk());
     }
 }
