@@ -59,11 +59,7 @@ public class LineAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> lineNames =
-                RestAssured.given().log().all()
-                        .when().get("/lines")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        final List<String> lineNames = findLinesRequest();
         assertThat(lineNames).containsAnyOf("1호선");
     }
 
@@ -78,10 +74,7 @@ public class LineAcceptanceTest {
         createLineRequest("2호선", "bg-green-600", upStationId, downStationId);
 
         //when
-        final List<String> lineNames = RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract().jsonPath().getList("name", String.class);
+        final List<String> lineNames = findLinesRequest();
 
         //then
         assertThat(lineNames.size()).isEqualTo(2);
@@ -101,10 +94,7 @@ public class LineAcceptanceTest {
                 .getLong("id");
 
         //when
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().get("/lines/" + lineId)
-                .then().log().all()
-                .extract();
+        final ExtractableResponse<Response> response = findLineRequest(lineId);
 
         //then
         assertThat(response.jsonPath().getLong("id")).isEqualTo(lineId);
@@ -137,10 +127,7 @@ public class LineAcceptanceTest {
         //then
         assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        final ExtractableResponse<Response> selectResponse = RestAssured.given().log().all()
-                .when().get("/lines/" + lineId)
-                .then().log().all()
-                .extract();
+        final ExtractableResponse<Response> selectResponse = findLineRequest(lineId);
 
         assertThat(selectResponse.jsonPath().getString("name")).isEqualTo("다른1호선");
         assertThat(selectResponse.jsonPath().getString("color")).isEqualTo("bg-blue-700");
@@ -163,14 +150,25 @@ public class LineAcceptanceTest {
                 .then().log().all();
 
         //then
-        final List<String> lineNames = RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract().jsonPath().getList("name", String.class);
+        final List<String> lineNames = findLinesRequest();
 
         //then
         assertThat(lineNames.size()).isEqualTo(1);
         assertThat(lineNames).containsAnyOf("1호선");
         assertThat(lineNames).doesNotContain("2호선");
+    }
+
+    private List<String> findLinesRequest() {
+        return RestAssured.given().log().all()
+                .when().get("/lines")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
+    }
+
+    private ExtractableResponse<Response> findLineRequest(Long lineId) {
+        return RestAssured.given().log().all()
+                .when().get("/lines/" + lineId)
+                .then().log().all()
+                .extract();
     }
 }
