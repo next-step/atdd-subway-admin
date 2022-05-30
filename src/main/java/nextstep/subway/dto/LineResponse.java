@@ -13,10 +13,6 @@ public class LineResponse {
     private List<StationResponse> stations;
 
     public static LineResponse from(Line line) {
-        if (Objects.isNull(line)) {
-            throw new IllegalArgumentException("존재하지 않은 호선입니다.");
-        }
-
         List<StationResponse> stationList =
             Arrays.asList(StationResponse.from(line.getDownStation()), StationResponse.from(line.getUpStation()));
 

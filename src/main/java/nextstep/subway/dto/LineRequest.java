@@ -21,10 +21,6 @@ public class LineRequest {
     }
 
     public Line toLine(Station downStation, Station upStation) {
-        if (Objects.isNull(downStation) || Objects.isNull(upStation)) {
-            throw new IllegalArgumentException("종점역이 존재하지 않습니다.");
-        }
-
         return new Line(name, color, downStation, upStation);
     }
 
