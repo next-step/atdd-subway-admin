@@ -1,8 +1,9 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import nextstep.subway.global.exception.BadRequestException;
+import nextstep.subway.global.exception.ExceptionType;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -27,7 +28,14 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = findStationById(lineRequest.getUpStationId());
         Station downStation = findStationById(lineRequest.getDownStationId());
-        Line line = lineRepository.save(Line.of(lineRequest, upStation, downStation));
+        Line line = lineRepository.save(
+            Line.of(
+                lineRequest.getName(),
+                lineRequest.getColor(),
+                lineRequest.getDistance(),
+                upStation, downStation
+            )
+        );
 
         return LineResponse.from(line);
     }
@@ -49,7 +57,7 @@ public class LineService {
     @Transactional(readOnly = true)
     public Line findOne(Long id) {
         return lineRepository.findLineAndStationsById(id)
-            .orElseThrow(() -> new NoSuchElementException("지하철 노선을 찾을 수 없습니다."));
+            .orElseThrow(() -> new BadRequestException(ExceptionType.INVALID_LINE_ID));
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
@@ -64,7 +72,7 @@ public class LineService {
 
     private Line findLineById(Long id) {
         return lineRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("지하철 노선을 찾을 수 없습니다."));
+            .orElseThrow(() -> new BadRequestException(ExceptionType.INVALID_LINE_ID));
     }
 
     private Station findStationById(Long id) {

@@ -1,6 +1,8 @@
 package nextstep.subway.station.application;
 
 import java.util.NoSuchElementException;
+import nextstep.subway.global.exception.BadRequestException;
+import nextstep.subway.global.exception.ExceptionType;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
@@ -29,7 +31,7 @@ public class StationService {
 
     public Station findById(Long id) {
         return stationRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("해당 지하철역을 찾을 수 없습니다."));
+            .orElseThrow(() -> new BadRequestException(ExceptionType.INVALID_STATION_ID));
     }
 
 
