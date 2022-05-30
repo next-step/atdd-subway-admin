@@ -47,6 +47,13 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
+    public LineResponse findLine(Long id) {
+        Line persisLine = lineRepository.findById(id)
+                .orElseThrow(LineNotFoundException::new);
+        return LineResponse.of(persisLine);
+    }
+
+    @Transactional(readOnly = true)
     public LineResponses findAllLines() {
         List<Line> lines = lineRepository.findAll();
         List<LineResponse> list = lines.stream()

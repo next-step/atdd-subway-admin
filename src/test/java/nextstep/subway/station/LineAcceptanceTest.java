@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import static nextstep.subway.station.StationAcceptanceTest.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -76,6 +77,24 @@ public class LineAcceptanceTest {
 
         // then
         응답_검증(response, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Given 노선을 생성하고
+     * When 생성한 노선을 조회하면
+     * Then 노선이 조회된다
+     */
+    @DisplayName("등록된 지하철역을 조회한다. (1건)")
+    @Test
+    void getLine() {
+        // given
+        LineResponse expected = 응답_객체_생성(노선_등록("2호선", "초록", 10, 강남역.getId(), 잠실역.getId()), LineResponse.class);
+
+        // when
+        LineResponse actual = 응답_객체_생성(노선_조회(expected.getId()), LineResponse.class);
+
+        // then
+        assertThat(expected).isEqualTo(actual);
     }
 
     /**
@@ -177,6 +196,13 @@ public class LineAcceptanceTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .when().post("/lines")
                     .then().log().all();
+    }
+
+    private ValidatableResponse 노선_조회(Long id) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines/" + id)
+                .then().log().all();
     }
 
     private ValidatableResponse 노선_수정(Long id, String name, String color, Integer distance, Long upStreamId, Long downStreamId) {
