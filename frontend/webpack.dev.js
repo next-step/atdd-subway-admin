@@ -10,11 +10,8 @@ module.exports = {
     filename: '[name].js'
   },
   devServer: {
-    static: {
-       directory: path.join(outputPath, '/'),
-    },
-//    contentBase: outputPath,
-//    publicPath: '/',
+    contentBase: outputPath,
+    publicPath: '/',
     host: '0.0.0.0',
     port: 8081,
     proxy: {
@@ -24,6 +21,7 @@ module.exports = {
       },
       '**': 'http://127.0.0.1:8080'
     },
+    inline: true,
     hot: false
-  },
+  }
 }
