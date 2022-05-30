@@ -31,7 +31,6 @@ public class SectionService {
         Section section = new Section(upStation, downStation, sectionRequest.getDistance());
 
         line.addSection(section);
-        lineService.flush();
 
         return LineResponse.of(line);
     }
