@@ -8,10 +8,10 @@
       - [X] 추가되는 역이 각각 상행 하행 끝 점인 경우 종점으로 등록
       - [X] 추가되는 역이 각각 상행 하행 끝 점인 경우 종점으로 등록
     
-    * [ ] 예외 상황
+    * [X] 예외 상황
         
         |내용   |Exception|
         |---|---|
-        | 추가되는 구간의 길이가 같은 경우 |IllegalArgumentException|
-        | 상행&하행 역이 이미 등록되어 있는 경우 |IllegalArgumentException|
-        | 상행&하행 역이 둘 중 하나도 포함되어 있지 않은 경우 |IllegalArgumentException|
+        | 추가되는 구간의 길이가 크거나 같은 경우 |CreateSectionException|
+        | 상행&하행 역이 이미 등록되어 있는 경우 |CreateSectionException|
+        | 상행&하행 역이 둘 중 하나도 포함되어 있지 않은 경우 |CreateSectionException|
