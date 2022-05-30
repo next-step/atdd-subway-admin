@@ -1,10 +1,14 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.dto.LineUpdateRequest;
+import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+@DynamicUpdate
 @Entity
 @Table(name = "line")
 public class Line extends BaseEntity {
@@ -49,6 +53,11 @@ public class Line extends BaseEntity {
 
     public List<Station> getStations() {
         return Arrays.asList(this.upStation, this.downStation);
+    }
+
+    public void update(LineUpdateRequest request) {
+        this.name = request.getName();
+        this.color = request.getColor();
     }
 
     @Override
