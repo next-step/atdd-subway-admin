@@ -9,6 +9,7 @@ import nextstep.subway.exception.ResourceNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,6 +46,12 @@ public class LineController {
     public <T> ResponseEntity<T> updateLine(@PathVariable final Long id, @RequestBody final LineRequest lineRequest) {
         lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(value = "/lines/{id}")
+    public <T> ResponseEntity<T> deleteLine(@PathVariable final Long id) {
+        lineService.deleteLine(id);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

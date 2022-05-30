@@ -145,4 +145,32 @@ public class LineAcceptanceTest {
         assertThat(selectResponse.jsonPath().getString("name")).isEqualTo("다른1호선");
         assertThat(selectResponse.jsonPath().getString("color")).isEqualTo("bg-blue-700");
     }
+
+    /**
+     * Given 지하철 노선을 생성하고 When 생성한 지하철 노선을 삭제하면 Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철 노선을 삭제한다.")
+    @Test
+    void deleteLine() {
+        // given
+        createLineRequest("1호선", "bg-blue-600", upStationId, downStationId);
+        final Long lineId = createLineRequest("2호선", "bg-green-600", upStationId, downStationId).jsonPath()
+                .getLong("id");
+
+        //when
+        RestAssured.given().log().all()
+                .when().delete("/lines/" + lineId)
+                .then().log().all();
+
+        //then
+        final List<String> lineNames = RestAssured.given().log().all()
+                .when().get("/lines")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
+
+        //then
+        assertThat(lineNames.size()).isEqualTo(1);
+        assertThat(lineNames).containsAnyOf("1호선");
+        assertThat(lineNames).doesNotContain("2호선");
+    }
 }

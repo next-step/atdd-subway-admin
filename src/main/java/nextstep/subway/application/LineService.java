@@ -60,4 +60,9 @@ public class LineService {
                 .orElseThrow(() -> new ResourceNotFoundException(Line.class, RESOURCE_NOT_FOUND));
         line.update(lineRequest);
     }
+
+    @Transactional
+    public void deleteLine(final Long id) {
+        lineRepository.deleteById(id);
+    }
 }
