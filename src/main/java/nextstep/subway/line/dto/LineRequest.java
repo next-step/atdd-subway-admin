@@ -5,6 +5,9 @@ import nextstep.subway.line.domain.Line;
 public class LineRequest {
     private String name;
 
+    public LineRequest() {
+    }
+
     private LineRequest(String name) {
         this.name = name;
     }
@@ -13,11 +16,11 @@ public class LineRequest {
         return new LineRequest(name);
     }
 
-    public Line toLine() {
-        return new Line(name);
-    }
-
     public String getName() {
         return name;
+    }
+
+    public Line toLine() {
+        return new Line(name);
     }
 }
