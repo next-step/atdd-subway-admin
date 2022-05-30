@@ -63,12 +63,6 @@ public class LineService {
     public void addSection(Long id, Station upStation, Station downStation, SectionRequestDTO sectionRequestDTO) {
         Line line = getLine(id);
         line.addSection(new SectionDTO(line, upStation, downStation, sectionRequestDTO.getDistance()));
-        LineStations lineStations = line.getLineStations();
-        boolean isCreatedSection = lineStations
-                .addSection(new SectionDTO(line, upStation, downStation, sectionRequestDTO.getDistance()));
-        if(!isCreatedSection){
-            throw new CreateSectionException("[ERROR] 등록할 구간을 찾을 수 없습니다.");
-        }
     }
 
     private Line getLine(Long lineId) {

@@ -25,44 +25,44 @@ public class LineStations {
         lineStations.add(target);
     }
 
-    public boolean addSection(SectionDTO sectionDTO) {
-        if (addBetweenSection(sectionDTO)) {
-            return true;
+    public void addSection(SectionDTO sectionDTO) {
+        boolean isExistSectionByUpSation = isExistSectionByUpSation(sectionDTO.getUpStation());
+        boolean isExistSectionByDownSataion = isExistSectionByDownSataion(sectionDTO.getDownStation());
+        validateAlreadySection(isExistSectionByUpSation, isExistSectionByDownSataion);
+
+        if (isExistSectionByUpSation) {
+            addBetweenSectionByUpStation(sectionDTO);
         }
-        return addStartOrEndSection(sectionDTO);
+        if (isExistSectionByDownSataion) {
+            addBetweenSectionByDownStation(sectionDTO);
+        }
+        if (!isExistSectionByUpSation && !isExistSectionByDownSataion) {
+            addStartOrEndSection(sectionDTO);
+        }
     }
 
-    private boolean addStartOrEndSection(SectionDTO sectionDTO) {
+    private void addBetweenSectionByUpStation(SectionDTO sectionDTO){
+        LineStation sectionByUpStation = findSectionByUpStation(sectionDTO.getUpStation());
+
+        long newDistance = sectionByUpStation.calcNewSectionDistance(sectionDTO.getDistance());
+        Station linkDownStation = sectionByUpStation.getDownStation().copy();
+        sectionByUpStation.updateDownStation(sectionDTO.getDownStation(), sectionDTO.getDistance());
+        lineStations.add(sectionDTO.toLineStationLinkByDownStation(linkDownStation, newDistance));
+    }
+
+    private void addBetweenSectionByDownStation(SectionDTO sectionDTO) {
+        LineStation sectionByDownStation = findSectionByDownStation(sectionDTO.getDownStation());
+
+        long newDistance = sectionByDownStation.calcNewSectionDistance(sectionDTO.getDistance());
+        sectionByDownStation.updateDownStation(sectionDTO.getUpStation(), newDistance);
+        lineStations.add(sectionDTO.toLineStation());
+    }
+
+    private void addStartOrEndSection(SectionDTO sectionDTO) {
         LineStation startStation = findSectionByUpStation(sectionDTO.getDownStation());
         LineStation endStation = findSectionByDownStation(sectionDTO.getUpStation());
-        if(isStartOrEndStation(startStation, endStation)){
-            lineStations.add(new LineStation(sectionDTO.getLine(), sectionDTO.getUpStation(), sectionDTO.getDownStation(), sectionDTO
-                    .getDistance()));
-            return true;
-        }
-        return false;
-    }
-
-    private boolean addBetweenSection(SectionDTO sectionDTO) {
-        LineStation sectionByUpStation = findSectionByUpStation(sectionDTO.getUpStation());
-        LineStation sectionByDownStation = findSectionByDownStation(sectionDTO.getDownStation());
-        validateAlreadySection(sectionByUpStation, sectionByDownStation);
-
-        if (isExistSection(sectionByUpStation)){
-            long newDistance = sectionByUpStation.calcNewSectionDistance(sectionDTO.getDistance());
-            Station copyDownStation = sectionByUpStation.getDownStation().copy();
-            sectionByUpStation.updateDownStation(sectionDTO.getDownStation(), sectionDTO.getDistance());
-            lineStations.add(new LineStation(sectionDTO.getLine(), sectionDTO.getDownStation(), copyDownStation, newDistance));
-            return true;
-        }
-        if (isExistSection(sectionByDownStation)) {
-            long newDistance = sectionByDownStation.calcNewSectionDistance(sectionDTO.getDistance());
-            sectionByDownStation.updateDownStation(sectionDTO.getUpStation(), newDistance);
-            lineStations.add(new LineStation(sectionDTO.getLine(), sectionDTO.getUpStation(), sectionDTO.getDownStation(), sectionDTO
-                    .getDistance()));
-            return true;
-        }
-        return false;
+        validateNotFound(startStation, endStation);
+        lineStations.add(sectionDTO.toLineStation());
     }
 
     private LineStation findSectionByUpStation(Station upStation) {
@@ -72,6 +72,11 @@ public class LineStations {
                 .orElse(null);
     }
 
+    private boolean isExistSectionByUpSation(Station upStation) {
+        return lineStations.stream()
+                .anyMatch(lineStation -> lineStation.getUpStation().equals(upStation));
+    }
+
     private LineStation findSectionByDownStation(Station downStation) {
         return lineStations.stream()
                 .filter(lineStation -> lineStation.getDownStation().equals(downStation))
@@ -79,10 +84,9 @@ public class LineStations {
                 .orElse(null);
     }
 
-    private void validateAlreadySection(LineStation sectionByUpStation, LineStation sectionByDownStation) {
-        if (isExistSection(sectionByUpStation) && isExistSection(sectionByDownStation)){
-            throw new CreateSectionException("[ERROR] 이미 구간이 존재합니다.");
-        }
+    private boolean isExistSectionByDownSataion(Station downStation) {
+        return lineStations.stream()
+                .anyMatch(lineStation -> lineStation.getDownStation().equals(downStation));
     }
 
     public Set<Station> orderStations() {
@@ -108,6 +112,18 @@ public class LineStations {
         LineStation upStation = findSectionByUpStation(cursor.getDownStation());
         if (isExistSection(upStation)) {
             addOrderStations(orderStations, upStation);
+        }
+    }
+
+    private void validateAlreadySection(boolean isExistSectionByUpSation, boolean isExistSectionByDownSataion) {
+        if (isExistSectionByUpSation && isExistSectionByDownSataion) {
+            throw new CreateSectionException("[ERROR] 이미 구간이 존재합니다.");
+        }
+    }
+
+    private void validateNotFound(LineStation startStation, LineStation endStation) {
+        if (!isStartOrEndStation(startStation, endStation)) {
+            throw new CreateSectionException("[ERROR] 등록할 구간을 찾을 수 없습니다.");
         }
     }
 
