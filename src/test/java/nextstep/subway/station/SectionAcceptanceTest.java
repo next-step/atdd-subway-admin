@@ -6,6 +6,7 @@ import static nextstep.subway.utils.AttdSectionHelper.지하철_구간_등록하
 import static nextstep.subway.utils.AttdSectionHelper.지하철_구간_조회하기;
 import static nextstep.subway.utils.AttdStationHelper.지하철역_만들기;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -51,8 +52,8 @@ public class SectionAcceptanceTest {
 
     /**
      * given 지하철역 2개와, 그를 포함하는 line이 주어지고(init) 미금-정자
-     * given 지하철역 1개를 추가하고, 해당 지하철역을 line 상향종착지를 변경했을때
-     * when 지하철 구간 전체조회 및 지하철 노선 조회시
+     * given 지하철역 1개를 추가하고
+     * when 해당 지하철역을 line 상향종착지를 변경했을때
      * then 지하철 구간이 정상적으로 확인되고, 지하철 노선의 상향종착지가 변경된다.
      */
     @Test
@@ -60,22 +61,26 @@ public class SectionAcceptanceTest {
     public void 구간등록_상향종착지변경_테스트() {
         //given
         String 판교역_ID = 지하철역_만들기("판교역").jsonPath().get("id").toString();
-        ExtractableResponse<Response> 지하철_구간_등록하기_response = 지하철_구간_등록하기(정자역_ID, 판교역_ID, "5",ID_신분당선);
+        ExtractableResponse<Response> 지하철_구간_등록하기_response = 지하철_구간_등록하기(정자역_ID, 판교역_ID, "5",
+            ID_신분당선);
 
         //when
         ExtractableResponse<Response> 지하철_구간_조회하기_response = 지하철_구간_조회하기(ID_신분당선);
         ExtractableResponse<Response> 지하철_노선_조회하기_response = 지하철_노선_조회하기(ID_신분당선);
 
         //then
-        assertThat(지하철_구간_등록하기_response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(지하철_노선_조회하기_response.jsonPath().getList("stations.name"))
-            .containsExactly("판교역", "미금역");
-        assertThat(지하철_구간_조회하기_response.jsonPath().getList("downStationInfo.name"))
-            .containsExactly("미금역","정자역");
-        assertThat(지하철_구간_조회하기_response.jsonPath().getList("upStationInfo.name"))
-            .containsExactly("정자역","판교역");
-        assertThat(지하철_구간_조회하기_response.jsonPath().getList("distance"))
-            .containsExactly(10,5);
+        assertAll(
+            () -> assertThat(지하철_구간_등록하기_response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(지하철_노선_조회하기_response.jsonPath().getList("stations.name"))
+                .contains("판교역", "미금역"),
+            () -> assertThat(지하철_구간_조회하기_response.jsonPath().getList("downStationInfo.name"))
+                .contains("미금역", "정자역"),
+            () -> assertThat(지하철_구간_조회하기_response.jsonPath().getList("upStationInfo.name"))
+                .contains("정자역", "판교역"),
+            () -> assertThat(지하철_구간_조회하기_response.jsonPath().getList("distance"))
+                .contains(10, 5)
+        );
+
     }
 
 
