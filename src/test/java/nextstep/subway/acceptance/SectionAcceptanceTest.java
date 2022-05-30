@@ -75,10 +75,7 @@ class SectionAcceptanceTest {
     void addSection_between_up() {
 
         //when
-        ExtractableResponse<Response> createResponse = createSection((Long) 이호선.get("id"),
-                STATION_IDS.get("신도림역"),
-                STATION_IDS.get("신대방역"),
-                3);
+        ExtractableResponse<Response> createResponse = 구간_생성_요청(이호선, "신도림역", "신대방역", 3);
 
         //then
         생성_되었는지_상태_검증(createResponse);
@@ -87,7 +84,7 @@ class SectionAcceptanceTest {
         ExtractableResponse<Response> response = requestGetAll(LineAcceptanceTest.LINE_PATH);
 
         //then
-        추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(response,"[신도림역, 신대방역, 봉천역]");
+        추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(response, "[신도림역, 신대방역, 봉천역]");
 
     }
 
@@ -102,10 +99,7 @@ class SectionAcceptanceTest {
     void addSection_between_down() {
 
         //when
-        ExtractableResponse<Response> createResponse = createSection((Long) 이호선.get("id"),
-                STATION_IDS.get("신대방역"),
-                STATION_IDS.get("봉천역"),
-                3);
+        ExtractableResponse<Response> createResponse = 구간_생성_요청(이호선, "신대방역", "봉천역", 3);
 
         //then
         생성_되었는지_상태_검증(createResponse);
@@ -114,7 +108,7 @@ class SectionAcceptanceTest {
         ExtractableResponse<Response> response = requestGetAll(LineAcceptanceTest.LINE_PATH);
 
         //then
-        추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(response,"[신도림역, 신대방역, 봉천역]");
+        추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(response, "[신도림역, 신대방역, 봉천역]");
 
     }
 
@@ -129,10 +123,7 @@ class SectionAcceptanceTest {
     void addSection_start_station() {
 
         //when
-        ExtractableResponse<Response> createResponse = createSection((Long) 이호선.get("id"),
-                STATION_IDS.get("당산역"),
-                STATION_IDS.get("신도림역"),
-                10);
+        ExtractableResponse<Response> createResponse = 구간_생성_요청(이호선, "당산역", "신도림역", 10);
 
         //then
         생성_되었는지_상태_검증(createResponse);
@@ -141,7 +132,7 @@ class SectionAcceptanceTest {
         ExtractableResponse<Response> response = requestGetAll(LineAcceptanceTest.LINE_PATH);
 
         //then
-        추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(response,"[당산역, 신도림역, 봉천역]");
+        추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(response, "[당산역, 신도림역, 봉천역]");
 
     }
 
@@ -156,10 +147,7 @@ class SectionAcceptanceTest {
     void addSection_end_station() {
 
         //when
-        ExtractableResponse<Response> createResponse = createSection((Long) 이호선.get("id"),
-                STATION_IDS.get("봉천역"),
-                STATION_IDS.get("사당역"),
-                15);
+        ExtractableResponse<Response> createResponse = 구간_생성_요청(이호선, "봉천역", "사당역", 15);
 
         //then
         생성_되었는지_상태_검증(createResponse);
@@ -168,7 +156,7 @@ class SectionAcceptanceTest {
         ExtractableResponse<Response> response = requestGetAll(LineAcceptanceTest.LINE_PATH);
 
         //then
-        추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(response,"[신도림역, 봉천역, 사당역]");
+        추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(response, "[신도림역, 봉천역, 사당역]");
 
     }
 
@@ -181,10 +169,8 @@ class SectionAcceptanceTest {
     void addSection_not_found() {
 
         //when
-        ExtractableResponse<Response> createResponse = createSection((Long) 이호선.get("id"),
-                STATION_IDS.get("신대방역"),
-                STATION_IDS.get("사당역"),
-                15);
+        ExtractableResponse<Response> createResponse = 구간_생성_요청(이호선, "신대방역", "사당역", 15);
+
         //then
         생성에_실패_했는지_상태_검증(createResponse);
     }
@@ -200,38 +186,36 @@ class SectionAcceptanceTest {
     void addSection_equal_or_greater_distence() {
 
         //when
-        ExtractableResponse<Response> createResponse = createSection((Long) 이호선.get("id"),
-                STATION_IDS.get("신도림역"),
-                STATION_IDS.get("신대방역"),
-                30);
+        ExtractableResponse<Response> createResponse = 구간_생성_요청(이호선, "신도림역", "신대방역", 30);
+
         //then
         생성에_실패_했는지_상태_검증(createResponse);
 
         //when
-        ExtractableResponse<Response> createResponse2 = createSection((Long) 이호선.get("id"),
-                STATION_IDS.get("신대방역"),
-                STATION_IDS.get("봉천역"),
-                10);
+        ExtractableResponse<Response> createResponse2 = 구간_생성_요청(이호선, "신대방역", "봉천역", 10);
+
         //then
         생성에_실패_했는지_상태_검증(createResponse2);
     }
 
-    private ExtractableResponse<Response> createSection(Long lineId,
-                                                        long upStationId,
-                                                        long downStationId,
-                                                        long distance) {
+    private ExtractableResponse<Response> 구간_생성_요청(
+            Map<String, Object> line,
+            String upStationName,
+            String downStationName,
+            long distance) {
+
         Map<String, Object> sectionParams = new HashMap<>();
-        sectionParams.put("upStationId", upStationId);
-        sectionParams.put("downStationId", downStationId);
+        sectionParams.put("upStationId", STATION_IDS.get(upStationName));
+        sectionParams.put("downStationId", STATION_IDS.get(downStationName));
         sectionParams.put("distance", distance);
-        return RequestUtils.requestCreate(lineId, sectionParams, path);
+        return RequestUtils.requestCreate((Long) line.get("id"), sectionParams, path);
     }
 
     private void 생성_되었는지_상태_검증(ExtractableResponse<Response> createResponse) {
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-    private void 추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(ExtractableResponse<Response> response,String orderStations) {
+    private void 추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(ExtractableResponse<Response> response, String orderStations) {
         List<String> extract = ExtractUtils.extract("stations.name", response, String.class);
         assertThat(extract).containsExactly(orderStations);
     }
