@@ -3,10 +3,9 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.dto.LineUpdateRequest;
-import nextstep.subway.utils.DatabaseCleaner;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.utils.DatabaseCleaner;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -61,16 +60,18 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     void updateLine() {
         // given
-        ExtractableResponse<Response> response =
+        ExtractableResponse<Response> created =
                 createLine("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(created.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Long id = created.jsonPath().getLong("id");
 
         //when
-        updateLine(new LineUpdateRequest());
+        ExtractableResponse<Response> updated = updateLine(id, "신분당선 수정", "bg-red-500");
+        assertThat(updated.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
-        ExtractableResponse<Response> actual = getOne(response.jsonPath().getLong("id"));
-        assertThat(actual.jsonPath().getString("name")).isEqualTo("신분당선");
+        ExtractableResponse<Response> actual = getOne(id);
+        assertThat(actual.jsonPath().getString("name")).isEqualTo("신분당선 수정");
     }
 
     /**
@@ -82,16 +83,18 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 삭제한다.")
     void deleteLine() {
         // given
-        ExtractableResponse<Response> response =
+        ExtractableResponse<Response> created =
                 createLine("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(created.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Long id = created.jsonPath().getLong("id");
 
         //when
-        deleteLine(response.jsonPath().getLong("id"));
+        ExtractableResponse<Response> deleted = deleteLine(id);
+        assertThat(deleted.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
-        ExtractableResponse<Response> actual = getOne(response.jsonPath().getLong("id"));
-        assertThat(actual.jsonPath().getString("name")).isEqualTo("신분당선");
+        ExtractableResponse<Response> actual = getOne(id);
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     /**
@@ -154,17 +157,21 @@ public class LineAcceptanceTest {
         assertThat(actual.jsonPath().getString("name")).isEqualTo("신분당선");
     }
 
-
-    private  ExtractableResponse<Response> getOne(Long id) {
-        throw new UnsupportedOperationException();
+    private ExtractableResponse<Response> getOne(Long id) {
+        return RestAssured.given().log().all().when().get("/lines/{id}", id).then().log().all().extract();
     }
 
-    private void updateLine(LineUpdateRequest lineUpdateRequest) {
-        throw new UnsupportedOperationException();
+    private ExtractableResponse<Response> updateLine(Long id, String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
+        return RestAssured.given().log().all().body(params).contentType(MediaType.APPLICATION_JSON_VALUE).when()
+                .put("/lines/{id}", id).then().log().all().extract();
     }
 
-    private void deleteLine(Long id) {
-        throw new UnsupportedOperationException();
+    private ExtractableResponse<Response> deleteLine(Long id) {
+        return RestAssured.given().log().all().when().delete("/lines/{id}", id).then().log().all().extract();
     }
 
     private ExtractableResponse<Response> getAllLine() {
