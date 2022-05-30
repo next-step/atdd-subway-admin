@@ -61,6 +61,9 @@ public class Line extends BaseEntity {
         if (isSameUpStation && isSameDownStation) {
             throw new IllegalArgumentException("같은 상/하행역을 등록할 수 없습니다.");
         }
+        if (!isSameUpStation && !isSameDownStation) {
+            throw new IllegalArgumentException("상/하행역 중 같은 역이 존재해야 합니다.");
+        }
     }
 
     public Line copyAndChangeBy(Long distance, Station upStation, Station downStation) {

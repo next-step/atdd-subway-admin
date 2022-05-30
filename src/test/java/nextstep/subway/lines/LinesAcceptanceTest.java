@@ -367,9 +367,9 @@ public class LinesAcceptanceTest {
         Map<String, Object> nothingMatchedStationLineRequest = createLineRequest(
                 null, null, newStationId1, newStationId2, 7L
         );
-        String createdLineId = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest)
+        Long createdLineId = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest)
                 .jsonPath()
-                .get("id");
+                .getLong("id");
 
         // when
         ExtractableResponse<Response> sameStationLineResponse = RequestHelper
