@@ -53,14 +53,14 @@ public class Section extends BaseEntity {
     }
 
     private void updateUpStation(Section section) {
-        if (this.upStation.equals(section.upStation)) {
+        if (isSameUpStation(section.upStation)) {
             this.upStation = section.downStation;
             minus(section);
         }
     }
 
     private void updateDownStation(Section section) {
-        if (this.downStation.equals(section.downStation)) {
+        if (isSameDownStation(section.downStation)) {
             this.downStation = section.upStation;
             minus(section);
         }
@@ -68,6 +68,14 @@ public class Section extends BaseEntity {
 
     private void minus(Section section) {
         this.distance.minus(section.distance);
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    public boolean isSameUpStation(Station station) {
+        return upStation.equals(station);
     }
 
     public Station upStation() {

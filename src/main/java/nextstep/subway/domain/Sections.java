@@ -87,14 +87,14 @@ public class Sections {
 
     private Section findPreviousSection(Section section) {
         return this.sections.stream()
-                .filter(it -> it.downStation().equals(section.upStation()))
+                .filter(it -> it.isSameDownStation(section.upStation()))
                 .findFirst()
                 .orElse(null);
     }
 
     private Section findNextSection(Section section) {
         return this.sections.stream()
-                .filter(it -> it.upStation().equals(section.downStation()))
+                .filter(it -> it.isSameUpStation(section.downStation()))
                 .findFirst()
                 .orElse(null);
     }
