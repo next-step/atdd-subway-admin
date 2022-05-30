@@ -22,16 +22,16 @@ public class LineStation extends BaseEntity {
     private Line line;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id",foreignKey = @ForeignKey(name = "fk_linestation_to_upstation"))
+    @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_linestation_to_upstation"))
     private Station upStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id",foreignKey = @ForeignKey(name = "fk_linestation_to_downstation"))
+    @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_linestation_to_downstation"))
     private Station downStation;
 
     private Long distance;
 
-    protected LineStation(){
+    protected LineStation() {
 
     }
 
@@ -55,7 +55,7 @@ public class LineStation extends BaseEntity {
     }
 
     public long calcNewSectionDistance(long distance) {
-        if(this.distance == distance){
+        if (this.distance == distance) {
             throw new CreateSectionException("[ERROR] 이미 존재하는 구간과 길이가 동일 할 수 없습니다.");
         }
         return this.distance - distance;

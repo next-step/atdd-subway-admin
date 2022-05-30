@@ -58,11 +58,6 @@ public class LineService {
         line.update(lineRequestDTO.getName(), lineRequestDTO.getColor());
     }
 
-    private Line getLine(Long lineId) {
-        return lineRepository.findByIdAndDeletedFalse(lineId)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] ID에 해당하는 노선이 없습니다."));
-    }
-
     @Transactional
     public void addSection(Long id, Station upStation, Station downStation, SectionRequestDTO sectionRequestDTO) {
         Line line = getLine(id);
@@ -72,4 +67,10 @@ public class LineService {
             throw new CreateSectionException("[ERROR] 등록할 구간을 찾을 수 없습니다.");
         }
     }
+
+    private Line getLine(Long lineId) {
+        return lineRepository.findByIdAndDeletedFalse(lineId)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] ID에 해당하는 노선이 없습니다."));
+    }
+
 }

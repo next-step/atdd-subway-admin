@@ -32,7 +32,7 @@ public class Station extends BaseEntity {
     }
 
     public Station copy() {
-        return new Station(id,name);
+        return new Station(id, name);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class Station extends BaseEntity {
         if (o == null) {
             return false;
         }
-        if(o instanceof Station){
+        if (o instanceof Station) {
             Station station = (Station) o;
             return Objects.equals(id, station.getId());
         }
