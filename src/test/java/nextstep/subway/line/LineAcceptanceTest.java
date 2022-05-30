@@ -123,6 +123,43 @@ public class LineAcceptanceTest {
         assertThat(lineName).isEqualTo("신분당선");
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * <p>
+     * When 생성한 지하철 노선을 수정하면
+     * <p>
+     * Then 해당 지하철 노선 정보는 수정된다.
+     */
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        Integer id = 지하철노선_생성("신분당선", "bg-red-600", upStationId, downStationId, "10").jsonPath().get("id");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선2");
+        params.put("color", "bg-red-600");
+
+        // when
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/{id}", id)
+                .then().log().all()
+                .extract();
+
+        // then
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when().get("/lines/{id}", id)
+                .then().log().all()
+                .extract();
+
+        String lineName = response.jsonPath().get("name");
+        String lineColor = response.jsonPath().get("color");
+        assertThat(lineName).isEqualTo("신분당선2");
+        assertThat(lineColor).isEqualTo("bg-red-600");
+    }
+
     private JsonPath 지하철노선_목록_조회() {
         return RestAssured.given().log().all()
                 .when().get("/lines")

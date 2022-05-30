@@ -5,12 +5,15 @@ import java.util.List;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateNameAndColorRequest;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,5 +39,13 @@ public class LineController {
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) throws NotFoundException {
         return ResponseEntity.ok().body(lineService.findById(id));
+    }
+
+    @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity updateNameAndColor(@PathVariable Long id,
+                                             @RequestBody LineUpdateNameAndColorRequest lineUpdateNameAndColorRequest)
+            throws NotFoundException {
+        lineService.updateNameAndColor(id, lineUpdateNameAndColorRequest);
+        return ResponseEntity.ok().build();
     }
 }

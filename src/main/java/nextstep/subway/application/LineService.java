@@ -1,13 +1,17 @@
 package nextstep.subway.application;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateNameAndColorRequest;
+import nextstep.subway.dto.StationResponse;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,5 +49,14 @@ public class LineService {
 
     public LineResponse findById(Long id) throws NotFoundException {
         return LineResponse.of(lineRepository.findById(id).orElseThrow(NotFoundException::new));
+    }
+
+    @Transactional
+    public void updateNameAndColor(Long id, LineUpdateNameAndColorRequest lineRequest)
+            throws NotFoundException {
+
+        Line line = lineRepository.findById(id).orElseThrow(NotFoundException::new);
+
+        line.updateNameAndColor(lineRequest.getName(), lineRequest.getColor());
     }
 }
