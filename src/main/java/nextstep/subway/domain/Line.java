@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,20 +32,28 @@ public class Line extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
+    @Embedded
+    private Distance distance;
+
     protected Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation) {
-        this(null, name, color, upStation, downStation);
+    public Line(String name, String color, Distance distance) {
+        this(null, name, color, null, null, distance);
     }
 
-    public Line(Long id, String name, String color, Station upStation, Station downStation) {
+    public Line(String name, String color, Station upStation, Station downStation, Distance distance) {
+        this(null, name, color, upStation, downStation, distance);
+    }
+
+    public Line(Long id, String name, String color, Station upStation, Station downStation, Distance distance) {
         validate(name, color, upStation, downStation);
         this.id = id;
         this.name = name;
         this.color = color;
         this.upStation = upStation;
         this.downStation = downStation;
+        this.distance = distance;
     }
 
     public Long getId() {

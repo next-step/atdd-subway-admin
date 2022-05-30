@@ -51,8 +51,8 @@ Then 해당 지하철 노선 정보는 삭제된다
 - [x] name, color, distance, 상행종점역, 하행종점역을 갖는다.
 - [x] Line과 상행종점역은 ManyToOne 관계
 - [x] Line과 하행종점역은 ManyToOne 관계
-- [ ] Distance vo 추가
-- [ ] Line에 Distance Embedded로 추가
+- [x] Distance vo 추가
+- [x] Line에 Distance Embedded로 추가
 
 ## step1
 
