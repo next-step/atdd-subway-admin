@@ -1,9 +1,11 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.domain.BaseEntity;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -43,17 +45,27 @@ public class Line extends BaseEntity {
         section.toLine(this);
     }
 
-    public List<Station> allStations() {
+    public void update(Line line) {
+        this.name = line.name;
+        this.color = line.color;
+    }
+
+    public LineResponse toLineResponse() {
+        return LineResponse.of(this, allStationResponses());
+    }
+
+    private List<StationResponse> allStationResponses() {
+        return allStations().stream()
+                .map(Station::toStationResponse)
+                .collect(Collectors.toList());
+    }
+
+    private List<Station> allStations() {
         List<Station> allStations = new ArrayList<>();
         getSections().forEach(section -> {
             allStations.addAll(section.getStations());
         });
         return allStations.stream().distinct().collect(Collectors.toList());
-    }
-
-    public void update(Line line) {
-        this.name = line.name;
-        this.color = line.color;
     }
 
     public Long getId() {
