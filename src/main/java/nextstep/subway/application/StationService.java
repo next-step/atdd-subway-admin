@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(readOnly = true)
 public class StationService {
     private final StationRepository stationRepository;
 
@@ -26,6 +25,7 @@ public class StationService {
         return StationResponse.of(persistStation);
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
 
@@ -34,9 +34,10 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public Station findStationById(Long id) {
         return stationRepository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("지하철역이 없습니다."));
     }
 
     @Transactional

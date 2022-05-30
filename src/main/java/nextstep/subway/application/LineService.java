@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
 public class LineService {
     private final LineRepository lineRepository;
     private final StationService stationService;
@@ -30,21 +29,16 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Line persistLine = lineRepository.save(lineRequest.toLine());
-
         Section section = generateSection(lineRequest);
-        persistLine.addSection(section);
         sectionRepository.save(section);
+
+        Line persistLine = lineRepository.save(lineRequest.toLine());
+        persistLine.addSection(section);
 
         return LineResponse.of(persistLine);
     }
 
-    private Section generateSection(LineRequest lineRequest) {
-        Station upStation = stationService.findStationById(lineRequest.getUpStationId());
-        Station downStation = stationService.findStationById(lineRequest.getDownStationId());
-        return new Section(upStation, downStation, lineRequest.getDistance());
-    }
-
+    @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
@@ -53,21 +47,28 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLineById(Long id) {
         return lineRepository.findById(id)
                 .map(LineResponse::of)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("지하철노선이 없습니다."));
     }
 
     @Transactional
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("지하철노선이 없습니다."));
         line.update(lineUpdateRequest.toLine());
     }
 
     @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    private Section generateSection(LineRequest lineRequest) {
+        Station upStation = stationService.findStationById(lineRequest.getUpStationId());
+        Station downStation = stationService.findStationById(lineRequest.getDownStationId());
+        return new Section(upStation, downStation, lineRequest.getDistance());
     }
 }

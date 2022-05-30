@@ -5,12 +5,12 @@
 
 ## TODO
 - 2단계 피드백 반영
-  - [] 클래스 대신 메서드에 @Transactional 선언
-  - [] 접근제어자에 따른 메서드 정렬
-  - [] Exception에 메시지 추가
-  - [] Repository에서 findAll 제거
-  - [] LineService.saveLine 로직 순서 수정
-  - [] Section - Station 연관관계 수정
+  - [X] 클래스 대신 메서드에 @Transactional 선언
+  - [X] 접근제어자에 따른 메서드 정렬
+  - [X] Exception에 메시지 추가
+  - [X] Repository에서 findAll 제거
+  - [X] LineService.saveLine 로직 순서 수정
+  - [X] Section - Station 연관관계 수정
 - [] 지하철 구간 추가 기능 구현
 - [] 인수 테스트 격리
 - [] 인수 테스트 리팩터링
