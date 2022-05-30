@@ -72,16 +72,16 @@ public class Section {
         }
     }
 
-    public boolean isSameStation(Station station){
+    private boolean isSameStation(Station station){
         return this.upStation.equals(station) || this.downStation.equals(station);
 
     }
 
-    public void changeDistance(int distance) {
+    private void changeDistance(int distance) {
         this.distance = distance;
     }
 
-    public void changeUpStation(Station downStation) {
+    private void changeUpStation(Station downStation) {
         this.upStation = downStation;
     }
 
