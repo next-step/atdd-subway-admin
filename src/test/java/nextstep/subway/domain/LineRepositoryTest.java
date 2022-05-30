@@ -1,9 +1,13 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.LineNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,6 +17,9 @@ class LineRepositoryTest {
     private final Station aStation = new Station("잠실역");
     private final Station bStation = new Station("강남역");
     private final Line aLine = new Line("2호선", "#009D3E", 10);
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     private LineRepository repository;
@@ -84,5 +91,22 @@ class LineRepositoryTest {
         // then
         assertThat(actual.get().getUpStation()).isEqualTo(upStation);
         assertThat(actual.get().getDownStation()).isEqualTo(downStation);
+    }
+
+    @Test
+    void 노선내_연결정보_가져오기() {
+        // given
+        Station upStation = stationRepository.save(aStation);
+        Station downStation = stationRepository.save(bStation);
+        Line line = repository.save(aLine).setUpStation(upStation).setDownStation(downStation);
+        sectionRepository.save(new Section(new Distance(100), upStation, downStation, aLine));
+        entityManager.clear();
+
+        // when
+        Line actual = repository.findById(line.getId())
+                .orElseThrow(LineNotFoundException::new);
+
+        // then
+        assertThat(actual.getSections()).hasSize(1);
     }
 }

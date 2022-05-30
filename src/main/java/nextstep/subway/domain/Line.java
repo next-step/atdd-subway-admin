@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -22,6 +23,9 @@ public class Line extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "down_station_id")
     private Station downStation;
+
+    @OneToMany(mappedBy = "line")
+    private List<Section> sections;
 
     protected Line() {
     }
@@ -69,6 +73,10 @@ public class Line extends BaseEntity {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 
     @Override
