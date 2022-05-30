@@ -170,7 +170,12 @@ public class LineAcceptanceTest extends CustomExtractableResponse{
 		return getObject(get(url), LineResponse.class);
 	}
 
-	private ExtractableResponse<Response> 노선_생성_요청(String name, String color, String upStationId, String downStationId, String distance) {
+	private ExtractableResponse<Response> 노선_생성_요청(
+			String name, 
+			String color, 
+			String upStationId, 
+			String downStationId, 
+			String distance) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);
 		params.put("color", color);
@@ -180,7 +185,10 @@ public class LineAcceptanceTest extends CustomExtractableResponse{
 		return post(BASIC_URL_LINES, params);
 	}
 
-	private ExtractableResponse<Response> 노선_수정_요청(LineResponse createdLine, String name, String color) {
+	private ExtractableResponse<Response> 노선_수정_요청(
+			LineResponse createdLine, 
+			String name, 
+			String color) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);
 		params.put("color", color);

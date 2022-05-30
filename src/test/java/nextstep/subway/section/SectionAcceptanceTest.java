@@ -44,7 +44,7 @@ public class SectionAcceptanceTest extends CustomExtractableResponse{
 	    
 	    lines.clear();
 	    for(LineResponse line: 노선_조회_요청()) {
-	    	stations.put(line.getName(), line.getId());
+	    	lines.put(line.getName(), line.getId());
 	    }
 	}
 	
@@ -64,7 +64,12 @@ public class SectionAcceptanceTest extends CustomExtractableResponse{
 		return getList(get(StationAcceptanceTest.BASIC_URL_STATIONS), StationResponse.class);
 	}
 
-	private ExtractableResponse<Response> 노선_생성_요청(String name, String color, String upStationId, String downStationId, String distance) {
+	private ExtractableResponse<Response> 노선_생성_요청(
+			String name, 
+			String color, 
+			String upStationId, 
+			String downStationId, 
+			String distance) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);
 		params.put("color", color);
@@ -78,7 +83,11 @@ public class SectionAcceptanceTest extends CustomExtractableResponse{
 		return getList(get(LineAcceptanceTest.BASIC_URL_LINES), LineResponse.class);
 	}
 	
-	private ExtractableResponse<Response> 구간_등록_요청(Long id, String upStationId, String downStationId, String distance) {
+	private ExtractableResponse<Response> 구간_등록_요청(
+			Long id, 
+			String upStationId, 
+			String downStationId, 
+			String distance) {
 		Map<String, String> params = new HashMap<>();
 		params.put("upStationId", upStationId);
 		params.put("downStationId", downStationId);
@@ -88,8 +97,8 @@ public class SectionAcceptanceTest extends CustomExtractableResponse{
 
 	private String basicUrlSection(Long id) {
 		return joinUrl(
-				joinUrl(
-						LineAcceptanceTest.BASIC_URL_LINES, id
-				), BASIC_URL_SECTIONS);
+				joinUrl(LineAcceptanceTest.BASIC_URL_LINES, 
+						id), 
+				BASIC_URL_SECTIONS);
 	}
 }

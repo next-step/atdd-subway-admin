@@ -13,6 +13,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 
 @Service
 @Transactional(readOnly = true)
@@ -54,5 +55,10 @@ public class LineService {
 
 	public void deleteLine(Long id) {
 		lineRepository.deleteById(id);
+	}
+
+	public void addSection(Long lineId, SectionRequest sectionRequest) {
+		Line line = lineRepository.getById(lineId);
+		line.addSection(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
 	}
 }

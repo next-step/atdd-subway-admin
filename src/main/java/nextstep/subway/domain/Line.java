@@ -53,6 +53,11 @@ public class Line extends BaseEntity {
 		this(id, name, color, null, null, 0);
 	}
 
+	public void addSection(Long upStationId, Long downStationId, int distance) {
+		// TODO
+		// section 로직 생성
+	}
+
 	public Long getId() {
 		return id;
 	}

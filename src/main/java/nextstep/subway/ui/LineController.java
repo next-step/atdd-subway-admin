@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 
 @Controller
 @RequestMapping(value = "/lines")
@@ -47,7 +48,9 @@ public class LineController {
 	}
 
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+	public ResponseEntity<LineResponse> updateLine(
+			@PathVariable Long id, 
+			@RequestBody LineRequest lineRequest) {
 		lineService.updateNameAndColor(id, lineRequest);
 		return ResponseEntity.ok().build();
 	}
@@ -56,6 +59,14 @@ public class LineController {
 	public ResponseEntity<LineResponse> updateLine(@PathVariable Long id) {
 		lineService.deleteLine(id);
 		return ResponseEntity.noContent().build();
+	}
+	
+	@PostMapping("/{lineId}/sections")
+	public ResponseEntity addSection(
+	        @PathVariable Long lineId, 
+	        @RequestBody SectionRequest sectionRequest) {
+		lineService.addSection(lineId, sectionRequest);
+		return ResponseEntity.ok().build();
 	}
 
 	@ExceptionHandler(DataIntegrityViolationException.class)
