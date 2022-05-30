@@ -38,7 +38,7 @@ public class LineService {
         persistLine.setUpStation(upStation);
         persistLine.setDownStation(downStation);
 
-        sectionRepository.save(new Section(lineRequest.getDistance(), upStation, downStation, persistLine));
+        sectionRepository.save(new Section(new Distance(lineRequest.getDistance()), upStation, downStation, persistLine));
 
         return LineResponse.of(persistLine);
     }

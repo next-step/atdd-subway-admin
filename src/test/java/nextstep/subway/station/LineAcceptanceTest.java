@@ -189,8 +189,8 @@ public class LineAcceptanceTest {
         응답_검증(response2, HttpStatus.BAD_REQUEST);
     }
 
-    private ValidatableResponse 노선_등록(String name, String color, Integer distance, Long upStreamId, Long downStreamId) {
-        LineRequest lineRequest = new LineRequest(name, color, new Distance(distance), upStreamId, downStreamId);
+    private ValidatableResponse 노선_등록(String name, String color, int distance, Long upStreamId, Long downStreamId) {
+        LineRequest lineRequest = new LineRequest(name, color, distance, upStreamId, downStreamId);
 
         return RestAssured.given().log().all()
                     .body(lineRequest)

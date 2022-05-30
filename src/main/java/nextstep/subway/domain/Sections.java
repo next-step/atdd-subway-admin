@@ -9,7 +9,7 @@ import java.util.List;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> list;
 
     public Sections() {
