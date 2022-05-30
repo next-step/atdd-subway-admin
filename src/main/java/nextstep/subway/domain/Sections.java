@@ -39,14 +39,13 @@ public class Sections {
     }
 
     private void validateSection(Section section) {
-        Set<Station> stations = getInOrderStations();
         Station upStation = section.upStation();
         Station downStation = section.downStation();
 
-        if (stations.contains(upStation) && stations.contains(downStation)) {
+        if (hasAlreadyBothStations(upStation, downStation)) {
             throw new IllegalArgumentException("상행, 하행역 모두 존재하는 노선입니다.");
         }
-        if (!stations.contains(upStation) && !stations.contains(downStation)) {
+        if (hasNothingBothStations(upStation, downStation)) {
             throw new IllegalArgumentException("상행, 하행역 모두 존재하지 않는 노선입니다.");
         }
     }
@@ -98,6 +97,16 @@ public class Sections {
                 .filter(it -> it.upStation().equals(section.downStation()))
                 .findFirst()
                 .orElse(null);
+    }
+
+    private boolean hasNothingBothStations(Station upStation, Station downStation) {
+        Set<Station> stations = getInOrderStations();
+        return !stations.contains(upStation) && !stations.contains(downStation);
+    }
+
+    private boolean hasAlreadyBothStations(Station upStation, Station downStation) {
+        Set<Station> stations = getInOrderStations();
+        return stations.contains(upStation) && stations.contains(downStation);
     }
 
     public int size() {
