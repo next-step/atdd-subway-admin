@@ -199,4 +199,36 @@ public class SectionAcceptanceTest {
         //then
         assertThat(지하철_구간_등록하기_response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * given distance가 10인 지하철역 2개와, 그를 포함하는 line이 주어지고(init) 미금-정자
+     * when 미금역과 정자역 사이에 거리 11인 역을 추가하면
+     * then 400 에러가 발생한다.
+     */
+    @Test
+    public void 거리초과_에러발생_구간뒤에추가_테스트() {
+        //when
+        String 미금정자사이_ID = 지하철역_만들기("미금정자사이역").jsonPath().get("id").toString();
+        ExtractableResponse<Response> 지하철_구간_등록하기_response = 지하철_구간_등록하기(미금정자사이_ID, 정자역_ID, "11",
+            ID_신분당선);
+
+        //then
+        assertThat(지하철_구간_등록하기_response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * given distance가 10인 지하철역 2개와, 그를 포함하는 line이 주어지고(init) 미금-정자
+     * when 미금역과 정자역 사이에 거리 11인 역을 추가하면
+     * then 400 에러가 발생한다.
+     */
+    @Test
+    public void 거리초과_에러발생_구간앞에추가_테스트() {
+        //when
+        String 미금정자사이_ID = 지하철역_만들기("미금정자사이역").jsonPath().get("id").toString();
+        ExtractableResponse<Response> 지하철_구간_등록하기_response = 지하철_구간_등록하기(미금역_ID, 미금정자사이_ID, "11",
+            ID_신분당선);
+
+        //then
+        assertThat(지하철_구간_등록하기_response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
