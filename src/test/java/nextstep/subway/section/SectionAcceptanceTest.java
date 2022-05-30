@@ -21,7 +21,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     private ExtractableResponse<Response> 신분당선_생성_응답;
 
     @BeforeEach
-    public void setUp() {
+    void createLine() {
         // given
         this.강남역_ID = 지하철역_생성("강남역").jsonPath().getLong(ID_KEY);
         this.판교역_ID = 지하철역_생성("판교역").jsonPath().getLong(ID_KEY);
@@ -40,7 +40,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void addSection() {
         // when
-        SectionRequest 새로운역_구간_요청 = null;
+        SectionRequest 새로운역_구간_요청 = SectionRequest.of(this.강남역_ID, this.새로운역_ID, 4);
         ExtractableResponse<Response> 새로운역_추가_응답 = 지하철_구간_추가(this.신분당선_생성_응답, 새로운역_구간_요청);
 
         // then

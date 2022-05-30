@@ -6,37 +6,32 @@ import nextstep.subway.line.domain.Lines;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 public class LineService {
     private final LineRepository lineRepository;
-    private final SectionRepository sectionRepository;
     private final StationService stationService;
 
-    public LineService(LineRepository lineRepository, SectionRepository sectionRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
-        this.sectionRepository = sectionRepository;
         this.stationService = stationService;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Line persistLine = lineRepository.save(lineRequest.toLine());
-
         Section section = generateSection(lineRequest);
         persistLine.addSection(section);
-        sectionRepository.save(section);
 
         return persistLine.toLineResponse();
     }
@@ -66,9 +61,34 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
+    @Transactional
+    public SectionResponse addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = findLineById(lineId);
+        Section section = generateSection(sectionRequest);
+        line.addSection(section);
+
+        return section.toSectionResponse();
+    }
+
     private Section generateSection(LineRequest lineRequest) {
-        Station upStation = stationService.findStationById(lineRequest.getUpStationId());
-        Station downStation = stationService.findStationById(lineRequest.getDownStationId());
-        return new Section(upStation, downStation, lineRequest.getDistance());
+        return generateSection(
+                lineRequest.getUpStationId(),
+                lineRequest.getDownStationId(),
+                lineRequest.getDistance()
+        );
+    }
+
+    private Section generateSection(SectionRequest sectionRequest) {
+        return generateSection(
+                sectionRequest.getUpStationId(),
+                sectionRequest.getDownStationId(),
+                sectionRequest.getDistance()
+        );
+    }
+
+    private Section generateSection(Long upStationId, Long downStationId, int distance) {
+        Station upStation = stationService.findStationById(upStationId);
+        Station downStation = stationService.findStationById(downStationId);
+        return new Section(upStation, downStation, distance);
     }
 }

@@ -25,6 +25,10 @@ public class Distance {
         return new Distance(distance);
     }
 
+    public int get() {
+        return this.distance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

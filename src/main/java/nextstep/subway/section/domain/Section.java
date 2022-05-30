@@ -1,7 +1,7 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.common.domain.BaseEntity;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-public class Section extends BaseEntity {
+public class Section {
     private static final String UP_DOWN_STATION_NOT_NULL = "상/하행역은 빈값일 수 없습니다.";
     private static final String UP_DOWN_STATION_NOT_EQUALS = "상/하행역은 동일할 수 없습니다.";
     private static final String DISTANCE_NOT_NULL = "지하철 구간 길이는 빈값일 수 없습니다.";
@@ -61,12 +61,28 @@ public class Section extends BaseEntity {
         }
     }
 
-    public void toLine(Line line) {
+    public void assignLine(Line line) {
         this.line = line;
+    }
+
+    public SectionResponse toSectionResponse() {
+        return SectionResponse.from(this);
     }
 
     public List<Station> getStations() {
         return Arrays.asList(this.upStation, this.downStation);
+    }
+
+    public Long getUpStationId() {
+        return this.upStation.getId();
+    }
+
+    public Long getDownStationId() {
+        return this.downStation.getId();
+    }
+
+    public int getDistance() {
+        return this.distance.get();
     }
 
     @Override

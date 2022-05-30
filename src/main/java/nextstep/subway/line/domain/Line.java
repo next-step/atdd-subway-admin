@@ -42,7 +42,7 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section) {
         this.sections.add(section);
-        section.toLine(this);
+        section.assignLine(this);
     }
 
     public void update(Line line) {
