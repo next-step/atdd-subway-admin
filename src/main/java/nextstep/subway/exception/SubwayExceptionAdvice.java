@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class SubwayExceptionAdvice {
 
     @ExceptionHandler({IllegalArgumentException.class, DataIntegrityViolationException.class})
-    protected ResponseEntity handleIllegalArgumentException(IllegalArgumentException e) {
+    protected ResponseEntity handleIllegalArgumentException(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(e.getMessage());

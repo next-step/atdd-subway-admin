@@ -1,11 +1,13 @@
 package nextstep.subway.application;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,10 +22,12 @@ public class StationService {
 
     @Transactional
     public StationResponse saveStation(StationRequest stationRequest) {
+        validateExistStationByName(stationRequest);
         Station persistStation = stationRepository.save(stationRequest.toStation());
         return StationResponse.of(persistStation);
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
 
@@ -35,5 +39,13 @@ public class StationService {
     @Transactional
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
+    }
+
+    private void validateExistStationByName(StationRequest stationRequest) {
+        Optional<Station> optionalStation = stationRepository.findByName(stationRequest.getName());
+
+        if (optionalStation.isPresent()) {
+            throw new DataIntegrityViolationException("이미 존재하는 역입니다.");
+        }
     }
 }
