@@ -53,4 +53,11 @@ public class LineService {
                 .orElseThrow(() -> new ResourceNotFoundException(Line.class, RESOURCE_NOT_FOUND));
         return LineResponse.of(line);
     }
+
+    @Transactional
+    public void updateLine(final Long id, final LineRequest lineRequest) {
+        final Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(Line.class, RESOURCE_NOT_FOUND));
+        line.update(lineRequest);
+    }
 }

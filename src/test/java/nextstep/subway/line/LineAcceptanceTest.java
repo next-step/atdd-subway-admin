@@ -7,7 +7,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import nextstep.subway.helper.DatabaseCleaner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -109,4 +112,37 @@ public class LineAcceptanceTest {
         assertThat(response.jsonPath().getString("color")).isEqualTo("bg-green-600");
     }
 
+    /**
+     * 지하철 노선을 생성하고 When 생성한 지하철 노선을 수정하면 Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        final Long lineId = createLineRequest("1호선", "bg-blue-600", upStationId, downStationId).jsonPath()
+                .getLong("id");
+
+        //when
+        final Map<String, Object> params = new HashMap<>();
+        params.put("name", "다른1호선");
+        params.put("color", "bg-blue-700");
+
+        final ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/" + lineId)
+                .then().log().all()
+                .extract();
+
+        //then
+        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        final ExtractableResponse<Response> selectResponse = RestAssured.given().log().all()
+                .when().get("/lines/" + lineId)
+                .then().log().all()
+                .extract();
+
+        assertThat(selectResponse.jsonPath().getString("name")).isEqualTo("다른1호선");
+        assertThat(selectResponse.jsonPath().getString("color")).isEqualTo("bg-blue-700");
+    }
 }

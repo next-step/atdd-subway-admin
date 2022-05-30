@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import java.util.Optional;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -76,5 +77,11 @@ public class Line extends BaseEntity {
 
     public Long getDistance() {
         return distance;
+    }
+
+    public void update(final LineRequest lineRequest) {
+        Optional.ofNullable(lineRequest.getName()).ifPresent(name -> this.name = name);
+        Optional.ofNullable(lineRequest.getColor()).ifPresent(color -> this.color = color);
+        Optional.ofNullable(lineRequest.getDistance()).ifPresent(distance -> this.distance = distance);
     }
 }
