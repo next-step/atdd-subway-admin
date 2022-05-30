@@ -5,7 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
 import java.util.Map;
-import nextstep.subway.dto.SectionResponse;
+import nextstep.subway.section.dto.SectionResponse;
 import org.springframework.http.MediaType;
 
 public class SectionAcceptance {

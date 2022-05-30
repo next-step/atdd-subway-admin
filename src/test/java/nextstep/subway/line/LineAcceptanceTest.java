@@ -22,7 +22,7 @@ import io.restassured.response.Response;
 import java.util.List;
 import java.util.stream.Stream;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.dto.LineResponse;
+import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

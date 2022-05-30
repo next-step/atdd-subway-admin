@@ -6,7 +6,7 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import nextstep.subway.dto.StationResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.MediaType;
 
 public class StationAcceptance {
