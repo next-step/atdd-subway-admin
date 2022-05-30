@@ -43,7 +43,7 @@ public class StationAcceptanceTest {
     void createStation() {
         // when
         String testStationName = "강남역";
-        ExtractableResponse<Response> response = createStation(requestParamStationName(testStationName));
+        ExtractableResponse<Response> response = createStation(testStationName);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -61,11 +61,11 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = requestParamStationName("강남역");
-        createStation(params);
+        String testStationName = "강남역";
+        createStation(testStationName);
 
         // when
-        ExtractableResponse<Response> response = createStation(params);
+        ExtractableResponse<Response> response = createStation(testStationName);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -81,9 +81,8 @@ public class StationAcceptanceTest {
     void getStations() {
         // given
         String[] testStationNames = {"선릉역", "삼성역"};
-        for (String givenStationName : testStationNames) {
-            createStation(requestParamStationName(givenStationName));
-        }
+        createStation(testStationNames[0]);
+        createStation(testStationNames[1]);
 
         // when
         List<String> stationNames = getStationNames();
@@ -102,20 +101,13 @@ public class StationAcceptanceTest {
     void deleteStation() {
         // given
         String testStationName = "삼성역";
-        Map<String, String> params = requestParamStationName(testStationName);
-        long stationId = createStation(params).jsonPath().getLong("id");
+        long stationId = createStation(testStationName).jsonPath().getLong("id");
 
         // when
         assertThat(deleteStation(stationId).statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         // then
         assertThat(getStationNames()).doesNotContain(testStationName);
-    }
-
-    private Map<String, String> requestParamStationName(String stationName) {
-        Map<String, String> params = new HashMap<>();
-        params.put(KEY_NAME, stationName);
-        return params;
     }
 
     private List<String> getStationNames() {
@@ -125,7 +117,9 @@ public class StationAcceptanceTest {
                 .extract().jsonPath().getList(KEY_NAME, String.class);
     }
 
-    private ExtractableResponse<Response> createStation(Map<String, String> params) {
+    private ExtractableResponse<Response> createStation(String stationName) {
+        Map<String, String> params = new HashMap<>();
+        params.put(KEY_NAME, stationName);
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
