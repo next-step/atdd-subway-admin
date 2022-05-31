@@ -37,7 +37,7 @@ public class Sections {
         Station upStation = newSection.getUpStation();
         Station downStation = newSection.getDownStation();
         if (upStation.getId().equals(downStation.getId())) {
-            throw new CannotAddSectionException("구간 추가 불가능");
+            throw new CannotAddSectionException("지하철구간의 시작역과 종착역이 동일할 수 없습니다.");
         }
         SectionOperation sectionOperation = getSectionOperation(upStation, downStation);
         sectionOperation.insert(newSection);
@@ -50,16 +50,15 @@ public class Sections {
         verifyAlreadyExistSection(upMatch.isPresent(), downMatch.isPresent());
 
         if (upMatch.isPresent()) {
-            return new SectionOperation(upMatch.get(), SectionMatchType.UP_STATION);
+            return new UpStationMatchSectionOperation(upMatch.get());
         }
         if (downMatch.isPresent()) {
-            return new SectionOperation(downMatch.get(), SectionMatchType.DOWN_STATION);
+            return new DownStationMatchSectionOperation(downMatch.get());
         }
         if (isInsertHead(downStation.getId())) {
-            return new SectionOperation(sectionList.get(0), SectionMatchType.INSERT_HEAD);
+            return new InsertHeadSectionOperation(sectionList.get(0));
         }
-        throw new CannotAddSectionException("대상 역을 찾을 수 없음");
-
+        throw new CannotAddSectionException("구간 등록 기준점을 찾을 수 없음");
     }
 
     private Optional<Section> matchUpStation(Station upStation) {
@@ -78,7 +77,7 @@ public class Sections {
 
     private void verifyAlreadyExistSection(boolean isUpStationMatch, boolean isDownStationMatch) {
         if (isUpStationMatch && isDownStationMatch) {
-            throw new CannotAddSectionException("이미 있는 구간입니다.");
+            throw new CannotAddSectionException("이미 존재하는 구간입니다.");
         }
     }
 
@@ -92,67 +91,75 @@ public class Sections {
         }
     }
 
-    private enum SectionMatchType {
-        UP_STATION {
-            @Override
-            void insert(Section targetSection, Section newSection, List<Section> sectionList) {
-                int targetIndex = sectionList.indexOf(targetSection);
-                boolean isLastSection = targetIndex == sectionList.size() - 1;
-                if (isLastSection) {
-                    sectionList.set(targetIndex, newSection);
-                    sectionList.add(SectionFactory.createSectionAtLastOfLine(newSection.getDownStation()));
-                    return;
-                }
-                insertForward(targetSection, newSection, sectionList);
-            }
+    private abstract class SectionOperation {
+        protected Section targetSection;
 
-            void insertForward(Section targetSection, Section newSection, List<Section> sectionList) {
-                int targetIndex = sectionList.indexOf(targetSection);
-                Long diffDistance = targetSection.getDistance() - newSection.getDistance();
-                if (diffDistance <= 0) {
-                    throw new CannotAddSectionException("새 구간의 길이는 기존 역사이의 거리보다 길수 없습니다.");
-                }
-                Section nextSection = sectionList.get(targetIndex + 1);
-                sectionList.set(targetIndex, newSection);
-                sectionList.add(targetIndex + 1, SectionFactory.createSectionAtMiddleOfLine(newSection.getDownStation(),
-                        nextSection.getUpStation(), diffDistance));
-            }
-        }, DOWN_STATION {
-            @Override
-            void insert(Section targetSection, Section newSection, List<Section> sectionList) {
-                int targetIndex = sectionList.indexOf(targetSection);
-                Long diffDistance = targetSection.getDistance() - newSection.getDistance();
-                if (diffDistance <= 0) {
-                    throw new CannotAddSectionException("구간 추가 불가능");
-                }
-                sectionList.set(targetIndex, SectionFactory.createSectionAtMiddleOfLine(targetSection.getUpStation(),
-                        newSection.getUpStation(), diffDistance));
-                sectionList.add(targetIndex + 1, newSection);
-            }
-        }, INSERT_HEAD {
-            @Override
-            void insert(Section targetSection, Section newSection, List<Section> sectionList) {
-                sectionList.add(0, newSection);
-            }
-        };
-
-        void insert(Section targetSection, Section newSection, List<Section> sectionList) {
+        public SectionOperation(Section targetSection) {
+            this.targetSection = targetSection;
         }
 
-        ;
+        public abstract void insert(Section newSection);
+
+        public void verifyDiffDistance(Long diffDistance){
+            if (diffDistance <= 0) {
+                throw new CannotAddSectionException("새 구간의 길이는 기존 역사이의 거리보다 길수 없습니다.");
+            }
+        }
     }
 
-    private class SectionOperation {
-        private Section targetSection;
-        private SectionMatchType sectionMatchType;
-
-        public SectionOperation(Section targetSection, SectionMatchType sectionMatchType) {
-            this.targetSection = targetSection;
-            this.sectionMatchType = sectionMatchType;
+    private class UpStationMatchSectionOperation extends SectionOperation{
+        public UpStationMatchSectionOperation(Section targetSection) {
+            super(targetSection);
         }
 
         public void insert(Section newSection) {
-            sectionMatchType.insert(targetSection, newSection, sectionList);
+            int targetIndex = sectionList.indexOf(targetSection);
+            boolean isLastSection = targetIndex == sectionList.size() - 1;
+            if (isLastSection) {
+                sectionList.set(targetIndex, newSection);
+                sectionList.add(SectionFactory.createSectionAtLastOfLine(newSection.getDownStation()));
+                return;
+            }
+            insertForward(newSection);
+        }
+
+        void insertForward(Section newSection) {
+            Long diffDistance = targetSection.getDistance() - newSection.getDistance();
+            verifyDiffDistance(diffDistance);
+
+            int targetIndex = sectionList.indexOf(targetSection);
+            int nextSectionIndex = targetIndex + 1;
+            Section nextSection = sectionList.get(nextSectionIndex);
+            sectionList.set(targetIndex, newSection);
+            sectionList.add(nextSectionIndex, SectionFactory.createSectionAtMiddleOfLine(newSection.getDownStation(),
+                    nextSection.getUpStation(), diffDistance));
+        }
+    }
+
+    private class DownStationMatchSectionOperation extends SectionOperation{
+        public DownStationMatchSectionOperation(Section targetSection) {
+            super(targetSection);
+        }
+
+        public void insert(Section newSection) {
+            Long diffDistance = targetSection.getDistance() - newSection.getDistance();
+            verifyDiffDistance(diffDistance);
+
+            int targetIndex = sectionList.indexOf(targetSection);
+            int nextSectionIndex = targetIndex + 1;
+            sectionList.set(targetIndex, SectionFactory.createSectionAtMiddleOfLine(targetSection.getUpStation(),
+                    newSection.getUpStation(), diffDistance));
+            sectionList.add(nextSectionIndex, newSection);
+        }
+    }
+
+    private class InsertHeadSectionOperation extends SectionOperation{
+        public InsertHeadSectionOperation(Section targetSection) {
+            super(targetSection);
+        }
+
+        public void insert(Section newSection) {
+            sectionList.add(0, newSection);
         }
     }
 }
