@@ -68,6 +68,19 @@ public class LineRepositoryTest {
                 .isInstanceOf(LineNotFoundException.class);
     }
 
+    @DisplayName("지하철노선이 존재한다면 삭제한다")
+    @Test
+    void deleteLineWithValidLine() {
+        Line line = new Line("2호선");
+        lineRepository.save(line);
+        entityManager.close();
+
+        lineRepository.delete(line);
+
+        List<Line> lines = lineRepository.findAll();
+        assertThat(lines).hasSize(0);
+    }
+
     @AfterEach
     void tearDown() {
         lineRepository.deleteAll();

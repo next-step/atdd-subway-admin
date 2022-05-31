@@ -20,6 +20,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -85,6 +86,23 @@ public class LineServiceTest {
         LineRequest lineRequest = LineRequest.of("3호선");
 
         assertThatThrownBy(() -> lineService.updateLine(1L, lineRequest))
+                .isInstanceOf(LineNotFoundException.class);
+    }
+
+    @DisplayName("id값이 존재한다면 지하철노선을 삭제한다")
+    @Test
+    void deleteLineWithValidId() {
+        when(lineRepository.findById(1L)).thenReturn(Optional.of(new Line("2호선")));
+
+        lineService.deleteLine(1L);
+
+        verify(lineRepository).delete(any(Line.class));
+    }
+
+    @DisplayName("id값이 존재하지 않는다면 예외를 던진다")
+    @Test
+    void deleteLineWithInvalidId() {
+        assertThatThrownBy(() -> lineService.deleteLine(1L))
                 .isInstanceOf(LineNotFoundException.class);
     }
 }

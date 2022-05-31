@@ -40,6 +40,11 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    public void deleteLine(Long id) {
+        Line line = findLineById(id);
+        lineRepository.delete(line);
+    }
+
     private Line findLineById(Long id) {
         return lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
     }
