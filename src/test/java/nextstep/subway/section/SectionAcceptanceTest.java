@@ -166,4 +166,16 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> 지하철_노선_구간_삭제_응답_결과 = 지하철_노선_구간_삭제_요청(애오개역_마포역_노선_ID, 여의도역_ID);
         수정_성공_확인(지하철_노선_구간_삭제_응답_결과);
     }
+
+    /**
+     * Given: 지하철 노선이 생성되어 있다.
+     * When: 사용자는 지하철 노선의 중간역 제거를 요청한다.
+     * Then: 중간역이 삭제된다.
+     */
+    @Test
+    @DisplayName("중간역을 제거하면 역이 재배치된다.")
+    void deleteMiddleStation() {
+        ExtractableResponse<Response> 지하철_노선_구간_삭제_응답_결과 = 지하철_노선_구간_삭제_요청(애오개역_마포역_노선_ID, 마포역_ID);
+        수정_성공_확인(지하철_노선_구간_삭제_응답_결과);
+    }
 }
