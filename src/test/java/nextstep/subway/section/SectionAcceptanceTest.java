@@ -186,6 +186,46 @@ public class SectionAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /*
+     * Given 역이 3개인 지하철 노선을 생성하고
+     * When 중간 구간 역을 삭제하면
+     * Then 첫번째 역과 마지막 역이 상행역과 하행역이 된다.
+     * Then 해당 구간의 길이가 기존 구간의 합이 된다.
+     */
+    @Test
+    void 지하철노선_구간_삭제() {
+        // given
+        createSection(line.jsonPath().getLong("id"), upStation.jsonPath().getLong("id"), newStation.jsonPath().getLong("id"), 7);
+
+        // when
+        ExtractableResponse<Response> response = deleteSection(line.jsonPath().getLong("id"), newStation.jsonPath().getLong("id"));
+        ExtractableResponse<Response> findLine = lineAcceptanceTest.findLineById(line.jsonPath().getLong("id"));
+        List<Section> sections = findLine.jsonPath().getList("sections", Section.class);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT),
+                () -> assertThat(sections.get(0).getUpStation().getName()).isEqualTo("강남역"),
+                () -> assertThat(sections.get(0).getDownStation().getName()).isEqualTo("판교역"),
+                () -> assertThat(sections.get(0).getDistance()).isEqualTo(10)
+        );
+    }
+
+    /*
+     * Given 구간이 1개인 지하철 노선을 생성하고
+     * When 역을 삭제하면
+     * Then 예외가 발생한다
+     */
+    @Test
+    @DisplayName("구간이 하나인 노선일 경우 마지막 구간을 제거할 수 없음")
+    void 지하철노선_구간_삭제_예외() {
+        // when
+        ExtractableResponse<Response> response = deleteSection(line.jsonPath().getLong("id"), upStation.jsonPath().getLong("id"));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
     private ExtractableResponse<Response> createSection(Long lineId, Long upStationId, Long downStationId, int distance) {
         Map<String, Object> param = new HashMap<>();
         param.put("upStationId", upStationId);
@@ -196,6 +236,18 @@ public class SectionAcceptanceTest {
                 .body(param)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines/{id}/sections", lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> deleteSection(long lineId, long stationId) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("stationId", stationId);
+
+        return RestAssured.given().log().all()
+                .body(param)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/{id}/sections", lineId)
                 .then().log().all()
                 .extract();
     }
