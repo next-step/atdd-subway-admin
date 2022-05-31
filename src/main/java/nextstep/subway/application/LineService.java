@@ -1,18 +1,14 @@
 package nextstep.subway.application;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -29,9 +25,10 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(final LineRequest lineRequest) {
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).get();
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).get();
-        return LineResponse.of(lineRepository.save(lineRequest.toLine(upStation, downStation)));
+        final Line line = lineRequest.toLine()
+                .upStationBy(stationRepository.findById(lineRequest.getUpStationId()).get())
+                .downStationBy(stationRepository.findById(lineRequest.getDownStationId()).get());
+        return LineResponse.of(lineRepository.save(line));
     }
 
     public List<LineResponse> findAllLine() {
