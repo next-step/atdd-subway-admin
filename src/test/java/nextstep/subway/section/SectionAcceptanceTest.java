@@ -38,6 +38,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
     void addSectionAtBackward() {
 
         // given 지하철 노선에 지하철역 등록 요청
+        // 등록 지하철 역 순서: 강남역 - 광교역 - 양재역
         long 양재역_id = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
 
         // when 신분당선 지하철 노선에 새로운 구간을 등록 요청(하행 신규)
@@ -53,6 +54,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
     void addSectionAtFront() {
 
         // given 지하철 노선에 지하철역 등록 요청
+        // 등록 지하철 역 순서: 양재역 - 강남역 - 광교역
         long 양재역_id = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
 
         // when 신분당선 지하철 노선에 새로운 구간 등록 요청(상행 신규)
@@ -68,6 +70,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
     void addSectionAtMiddle() {
 
         // given 지하철 노선에 지하철역 등록 요청
+        // 등록 지하철 역 순서: 강남역 - 양재역 - 광교역
         long 양재역_id = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
 
         // 지하철 노션에 지하철 역사이에 구간 등록 요청
@@ -114,11 +117,64 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         long 양재역_id = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
 
         //when 중간 노선에 길이가 10인 새로운 구간을 등록한다.
-        SectionRequest 새로운_구간 = SectionRequest.of(강남역_id, 양재역_id, 10);
+        SectionRequest 새로운_구간 = SectionRequest.of(광교역_id, 양재역_id, 5);
         ExtractableResponse<Response> 구간_생성_요청_응답 = 구간_생성_요청(새로운_구간, 신분당선_id);
 
         //then 등록 할 수 없다.
         노선_생성_실패_확인(구간_생성_요청_응답);
+    }
+
+    @DisplayName("가장 앞쪽의 지하철 역 삭제 하는 경우")
+    @Test
+    void deleteStationAtFront() {
+
+        // given 지하철 노선에 지하철역 등록 요청 후
+        // 등록 지하철 역 순서: 강남역 - 광교역 - 양재역
+        long 양재역_id = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+        // given 신분당선 지하철 노선에 새로운 구간을 등록 요청
+        SectionRequest 새로운_구간 = SectionRequest.of(광교역_id, 양재역_id, 5);
+        구간_생성_요청(새로운_구간, 신분당선_id);
+
+        //when 해당 노선의 가장 앞의 강남역 역 삭제 요청
+        ExtractableResponse<Response> 노선의_지하철_삭제_요청_응답 = 노선의_지하철_삭제_요청(신분당선_id, 강남역_id);
+
+        //then 삭제 완료
+        지하철_삭제_성공_확인(노선의_지하철_삭제_요청_응답);
+    }
+
+    @DisplayName("가장 뒤쪽의 지하철 역 삭제 하는 경우")
+    @Test
+    void deleteStationAtBackward() {
+
+        // given 등록 지하철 역 순서: 강남역 - 광교역 - 양재역
+        long 양재역_id = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+        // given 신분당선 지하철 노선에 새로운 구간을 등록 요청
+        SectionRequest 새로운_구간 = SectionRequest.of(광교역_id, 양재역_id, 5);
+        구간_생성_요청(새로운_구간, 신분당선_id);
+
+        //when 해당 노선의 가장 앞의 양재역 역 삭제 요청
+        ExtractableResponse<Response> 노선의_지하철_삭제_요청_응답 = 노선의_지하철_삭제_요청(신분당선_id, 양재역_id);
+
+        //then 삭제 완료
+        지하철_삭제_성공_확인(노선의_지하철_삭제_요청_응답);
+    }
+
+    @DisplayName("가장 뒤쪽의 지하철 역 삭제 하는 경우")
+    @Test
+    void deleteStationAtMiddle() {
+
+        // given 지하철 노선에 지하철역 등록 요청 후
+        // 등록 지하철 역 순서: 강남역 - 광교역 - 양재역
+        long 양재역_id = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+        // given 신분당선 지하철 노선에 새로운 구간을 등록 요청
+        SectionRequest 새로운_구간 = SectionRequest.of(광교역_id, 양재역_id, 5);
+        구간_생성_요청(새로운_구간, 신분당선_id);
+
+        //when 해당 노선의 가장 앞의 광교역 역 삭제 요청
+        ExtractableResponse<Response> 노선의_지하철_삭제_요청_응답 = 노선의_지하철_삭제_요청(신분당선_id, 광교역_id);
+
+        //then 삭제 완료
+        지하철_삭제_성공_확인(노선의_지하철_삭제_요청_응답);
     }
 
 
@@ -130,11 +186,28 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    private ExtractableResponse<Response> 구간_생성_요청(SectionRequest sectionRequest, Long lindId) {
+    private void 지하철_삭제_성공_확인(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철_삭제_실패_확인(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ExtractableResponse<Response> 구간_생성_요청(SectionRequest sectionRequest, Long lineId) {
         return RestAssured.given().log().all()
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("lines/{lindId}/sections", lindId)
+                .when().post("lines/{lindId}/sections", lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 노선의_지하철_삭제_요청(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .param("stationId", stationId)
+                .when().delete("lines/{lindId}/sections", lineId)
                 .then().log().all()
                 .extract();
     }
