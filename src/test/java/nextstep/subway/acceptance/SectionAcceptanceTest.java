@@ -1,7 +1,10 @@
 package nextstep.subway.acceptance;
 
+import static nextstep.subway.test.RequestUtils.requestDeleteById;
 import static nextstep.subway.test.RequestUtils.requestGetAll;
+import static nextstep.subway.test.RequestUtils.requestGetById;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.PATH;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -234,6 +237,33 @@ class SectionAcceptanceTest {
         생성에_실패_했는지_상태_검증(createResponse2);
     }
 
+    /**
+    * Given 구간을 등록하고
+    * When  해당 구간에 대한 지하철역 삭제 요청 하면
+    * Then  해당 지하철역을 포함하는 구간이 삭제 된다.
+    * When  노선에 대한 구간을 조회하면
+    * Then  삭제된 구간에 대한 지하철역을 찾을 수 없다.
+    */
+    @DisplayName("지하철 노선을 삭제한다.")
+    @Test
+    void deleteSection() {
+        //given
+        구간_생성_요청(이호선, "신대방역", "봉천역", 3);
+
+        //when
+        ExtractableResponse<Response> deleteResponse = 구간_삭제_요청((Long) 이호선.get("id"), STATION_IDS.get("봉천역"));
+
+        //then
+        구간_삭제_되었는지_상태_검증(deleteResponse);
+
+        //when
+        ExtractableResponse<Response> response = requestGetById(LineAcceptanceTest.LINE_PATH, (Long) 이호선.get("id"));
+
+        //then
+        구간에서_지하철역이_삭제되었는지_검증(response, "봉천역");
+
+    }
+
     private ExtractableResponse<Response> 구간_생성_요청(
             Map<String, Object> line,
             String upStationName,
@@ -247,6 +277,12 @@ class SectionAcceptanceTest {
         return RequestUtils.requestCreate((Long) line.get("id"), sectionParams, path);
     }
 
+    private ExtractableResponse<Response> 구간_삭제_요청(long lineId, long stationId) {
+        Map<String, Object> queryParam = new HashMap<>();
+        queryParam.put("stationId", stationId);
+        return requestDeleteById(path, queryParam, lineId);
+    }
+
     private void 생성_되었는지_상태_검증(ExtractableResponse<Response> createResponse) {
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -258,6 +294,15 @@ class SectionAcceptanceTest {
 
     private void 생성에_실패_했는지_상태_검증(ExtractableResponse<Response> createResponse) {
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 구간_삭제_되었는지_상태_검증(ExtractableResponse<Response> deleteResponse) {
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 구간에서_지하철역이_삭제되었는지_검증(ExtractableResponse<Response> response, String stationName) {
+        assertThat(ExtractUtils.extract("stations.name", response, String.class))
+                .doesNotContain(stationName);
     }
 
 }
