@@ -25,4 +25,24 @@ public class LineRequest {
     public static LineRequest of(String name, String color, Long upStationId, Long downStationId, Integer distance) {
         return new LineRequest(name, color, upStationId, downStationId, distance);
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public Long getUpStationId() {
+        return upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
+    }
+
+    public Integer getDistance() {
+        return distance;
+    }
 }
