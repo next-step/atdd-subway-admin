@@ -73,6 +73,10 @@ public class Line extends BaseEntity {
         }
     }
 
+    public void update(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
     public void addSection(Section section) {
         sections.addSection(section);
         section.addLine(this);
@@ -96,14 +100,6 @@ public class Line extends BaseEntity {
 
     public Distance distance() {
         return sections.distance();
-    }
-
-    public Station upStation() {
-        return sections.upStation();
-    }
-
-    public Station downStation() {
-        return sections.downStation();
     }
 
     @Override

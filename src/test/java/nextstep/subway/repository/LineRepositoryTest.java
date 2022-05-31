@@ -50,8 +50,7 @@ class LineRepositoryTest {
         assertAll(
                 () -> assertThat(save.id()).isNotNull(),
                 () -> assertThat(save.color()).isEqualTo("bg-red-600"),
-                () -> assertThat(save.name()).isEqualTo("신분당선"),
-                () -> assertThat(save.upStation().name()).isEqualTo(upStation.name())
+                () -> assertThat(save.name()).isEqualTo("신분당선")
         );
     }
 
@@ -63,8 +62,7 @@ class LineRepositoryTest {
         assertAll(
                 () -> assertThat(line.id()).isNotNull(),
                 () -> assertThat(line.color()).isEqualTo("bg-red-600"),
-                () -> assertThat(line.name()).isEqualTo("신분당선"),
-                () -> assertThat(line.upStation().name()).isEqualTo(upStation.name())
+                () -> assertThat(line.name()).isEqualTo("신분당선")
         );
     }
 }

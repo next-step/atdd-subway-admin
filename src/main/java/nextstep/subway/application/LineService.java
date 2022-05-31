@@ -39,15 +39,8 @@ public class LineService {
     @Transactional
     public LineResponse updateLine(long id, LineRequest lineRequest) {
         Line line = getLine(id);
-        Station upStation = getStation(line.upStation().id());
-        Station downStation = getStation(line.downStation().id());
-        Section section = Section.builder(upStation, downStation, line.distance())
-                .build();
-        Line newLine = Line.builder(lineRequest.getName(), lineRequest.getColor())
-                .id(line.id())
-                .build();
-        newLine.addSection(section);
-        Line persistStation = lineRepository.save(newLine);
+        line.update(lineRequest.getName(), lineRequest.getColor());
+        Line persistStation = lineRepository.save(line);
         return LineResponse.of(persistStation);
     }
 

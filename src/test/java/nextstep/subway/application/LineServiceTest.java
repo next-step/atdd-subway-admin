@@ -76,8 +76,7 @@ class LineServiceTest {
         LineResponse lineResponse = lineService.saveLine(lineRequest);
         assertAll(
                 () -> assertThat(lineResponse.getId()).isNotNull(),
-                () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
-                () -> assertThat(lineResponse.getStations().get(0)).isEqualTo(StationResponse.of(upStation))
+                () -> assertThat(lineResponse.getName()).isEqualTo("신분당선")
         );
     }
 
@@ -95,8 +94,6 @@ class LineServiceTest {
     @Test
     void updateLine() {
         when(lineRepository.findById(line.id())).thenReturn(Optional.of(line));
-        when(stationRepository.findById(lineRequest2.getUpStationId())).thenReturn(Optional.of(upStation));
-        when(stationRepository.findById(lineRequest2.getDownStationId())).thenReturn(Optional.of(downStation));
         Line line = Line.builder(lineRequest2.getName(), lineRequest2.getColor())
                 .id(1L)
                 .build();
