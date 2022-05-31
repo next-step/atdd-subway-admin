@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -105,10 +104,9 @@ public class StationAcceptanceTest {
         // given
         final String name = "강남역";
         final ExtractableResponse<Response> createResponse = 지하철역을_생성한다(name);
-        final Long id = createResponse.as(StationResponse.class).getId();
 
         // when
-        final ExtractableResponse<Response> deleteResponse = 지하철역을_삭제한다(id);
+        final ExtractableResponse<Response> deleteResponse = 지하철역을_삭제한다(createResponse.jsonPath().getLong("id"));
 
         // then
         응답_코드를_검증한다(deleteResponse, HttpStatus.NO_CONTENT);
