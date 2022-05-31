@@ -187,7 +187,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     private void 지하철_삭제_성공_확인(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private void 지하철_삭제_실패_확인(ExtractableResponse<Response> response) {
