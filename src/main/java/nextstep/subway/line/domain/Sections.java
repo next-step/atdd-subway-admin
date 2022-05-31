@@ -64,8 +64,16 @@ public class Sections {
         Optional<Section> upStationOptional = findUpStation(station);
         Optional<Section> downStationOptional = findDownStation(station);
 
+        if (upStationOptional.isPresent() && downStationOptional.isPresent()) {
+            addRearrangedSection(downStationOptional.get(), upStationOptional.get());
+        }
+
         upStationOptional.ifPresent(sections::remove);
         downStationOptional.ifPresent(sections::remove);
+    }
+
+    private void addRearrangedSection(Section upSection, Section downSection) {
+        sections.add(upSection.rearrange(downSection));
     }
 
     private Optional<Section> findUpStation(Station station) {

@@ -28,6 +28,10 @@ public class Distance implements Comparable<Distance> {
         this.distance -= distanceObject.distance;
     }
 
+    public void add(Distance distanceObject) {
+        this.distance += distanceObject.distance;
+    }
+
     @Override
     public int compareTo(Distance distanceObject) {
         return this.distance - distanceObject.distance;

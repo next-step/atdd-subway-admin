@@ -34,15 +34,15 @@ public class Section {
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_line"))
     private Line line;
 
-    private Section(Station upStation, Station downStation, int distance) {
+    private Section(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = Distance.from(distance);
+        this.distance = distance;
     }
 
     protected Section() {}
 
-    public static Section of(Station upStation, Station downStation, int distance) {
+    public static Section of(Station upStation, Station downStation, Distance distance) {
         return new Section(upStation, downStation, distance);
     }
 
@@ -82,6 +82,10 @@ public class Section {
         this.distance.subtract(newSection.distance);
     }
 
+    public void addDistance(Section downSection) {
+        this.distance.add(downSection.distance);
+    }
+
     public List<Station> findStations() {
         return Arrays.asList(upStation, downStation);
     }
@@ -92,5 +96,10 @@ public class Section {
 
     public boolean isEqualDownStation(Station station) {
         return this.downStation.equals(station);
+    }
+
+    public Section rearrange(Section downSection) {
+        this.distance.add(downSection.distance);
+        return Section.of(this.upStation, downSection.downStation, this.distance);
     }
 }

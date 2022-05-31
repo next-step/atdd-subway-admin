@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
@@ -63,7 +64,7 @@ public class LineService {
     private Section mapToSection(Long upStationId, Long downStationId, int distance) {
         Station upStation = stationService.findById(upStationId);
         Station downStation = stationService.findById(downStationId);
-        return Section.of(upStation, downStation, distance);
+        return Section.of(upStation, downStation, Distance.from(distance));
     }
 
     private Line findById(Long id) {
@@ -76,7 +77,7 @@ public class LineService {
         Line line = findById(id);
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        line.addSection(Section.of(upStation, downStation, sectionRequest.getDistance()));
+        line.addSection(Section.of(upStation, downStation, Distance.from(sectionRequest.getDistance())));
         return LineResponse.of(line);
     }
 
