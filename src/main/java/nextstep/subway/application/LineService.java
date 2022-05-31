@@ -1,7 +1,8 @@
 package nextstep.subway.application;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.List;
-import static java.util.stream.Collectors.*;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -27,7 +28,7 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = stationRepository.getById(lineRequest.getUpStationId());
         Station downStation = stationRepository.getById(lineRequest.getDownStationId());
-        Line newLine = LineFactory.createNewLine(lineRequest.getName(), lineRequest.getColor(), upStation, downStation);
+        Line newLine = LineFactory.createNewLine(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
         return LineResponse.of(lineRepository.save(newLine));
     }
 

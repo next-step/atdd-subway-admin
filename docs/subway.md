@@ -34,9 +34,9 @@
     - [X] 지하철노선 수정
     - [X] 지하철노선 삭제
 ## 3단계
-  - [ ] 요구사항을 충족시키기 위해 DB스키마 변경 
-    - [ ] LineStation 엔티티 생성 및 연관관계 매핑 (https://ict-nroo.tistory.com/127)
-    - [ ] LineStations 일급 컬렉션 작성 
+  - [X] 요구사항을 충족시키기 위해 DB스키마 변경 
+    - [X] Section 엔티티 생성 및 연관관계 매핑 (https://ict-nroo.tistory.com/127)
+    - [X] Sections 일급 컬렉션 작성 
   - [ ] 구간 추가 인수테스트 작성
   - [ ] 구간 추가 기능구현
 
