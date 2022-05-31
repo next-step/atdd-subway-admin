@@ -6,6 +6,8 @@ import nextstep.subway.dto.SectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class SectionService {
     private final LineService lineService;
@@ -39,24 +41,25 @@ public class SectionService {
     @Transactional
     public void removeSectionByStationId(Long lineId, Long stationId) {
         Line line = lineService.findByIdWithSections(lineId);
-
         if (line.getSections().size() == 1) {
-            new IllegalArgumentException("단일 구간인 노선입니다. 구간을 삭제할 수 없습니다.");
+            throw new IllegalArgumentException("단일 구간인 노선입니다. 구간을 삭제할 수 없습니다.");
         }
 
-        line.addSection(reappropriateSection(line.getSections(), stationId));
+        reappropriateSection(line, stationId);
     }
 
-    private Section reappropriateSection(Sections sections, Long stationId) {
-        Section prevSection = sections.getPrevSectionByStationId(stationId);
-        Section nextSection = sections.getNextSectionByStationId(stationId);
+    private void reappropriateSection(Line line, Long stationId) {
+        Sections sections = line.getSections();
 
-        Section resultSection = new Section(prevSection.getUpStation(), nextSection.getDownStation(), prevSection.getDistance() + nextSection.getDistance());
+        Optional<Section> prevSection = sections.getPrevSectionByStationId(stationId);
+        Optional<Section> nextSection = sections.getNextSectionByStationId(stationId);
 
         sections.removeSection(prevSection);
         sections.removeSection(nextSection);
 
-        return resultSection;
+        if (prevSection.isPresent() && nextSection.isPresent()) {
+            line.addSection(new Section(prevSection.get().getUpStation(), nextSection.get().getDownStation(), prevSection.get().getDistance() + nextSection.get().getDistance()));
+        }
     }
 
     private void validateSections(Section lineSection, Section section) {

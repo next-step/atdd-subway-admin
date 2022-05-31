@@ -193,7 +193,7 @@ public class SectionAcceptanceTest {
      * Then 해당 구간의 길이가 기존 구간의 합이 된다.
      */
     @Test
-    void 지하철노선_구간_삭제() {
+    void 지하철노선_구간의_중간역_삭제() {
         // given
         createSection(line.jsonPath().getLong("id"), upStation.jsonPath().getLong("id"), newStation.jsonPath().getLong("id"), 7);
 
@@ -208,6 +208,54 @@ public class SectionAcceptanceTest {
                 () -> assertThat(sections.get(0).getUpStation().getName()).isEqualTo("강남역"),
                 () -> assertThat(sections.get(0).getDownStation().getName()).isEqualTo("판교역"),
                 () -> assertThat(sections.get(0).getDistance()).isEqualTo(10)
+        );
+    }
+
+    /*
+     * Given 역이 3개인 지하철 노선을 생성하고
+     * When 첫번째 출발역을 삭제하면
+     * Then 중간 역과 마지막 역이 상행역과 하행역이 된다.
+     */
+    @Test
+    void 지하철노선_구간의_첫번째역_삭제() {
+        // given
+        createSection(line.jsonPath().getLong("id"), upStation.jsonPath().getLong("id"), newStation.jsonPath().getLong("id"), 7);
+
+        // when
+        ExtractableResponse<Response> response = deleteSection(line.jsonPath().getLong("id"), upStation.jsonPath().getLong("id"));
+        ExtractableResponse<Response> findLine = lineAcceptanceTest.findLineById(line.jsonPath().getLong("id"));
+        List<Section> sections = findLine.jsonPath().getList("sections", Section.class);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(sections.get(0).getUpStation().getName()).isEqualTo("새로운역"),
+                () -> assertThat(sections.get(0).getDownStation().getName()).isEqualTo("판교역"),
+                () -> assertThat(sections.get(0).getDistance()).isEqualTo(3)
+        );
+    }
+
+    /*
+     * Given 역이 3개인 지하철 노선을 생성하고
+     * When 마지막 종착역을 삭제하면
+     * Then 첫번째 역과 중간 역이 상행역과 하행역이 된다.
+     */
+    @Test
+    void 지하철노선_구간의_마지막역_삭제() {
+        // given
+        createSection(line.jsonPath().getLong("id"), upStation.jsonPath().getLong("id"), newStation.jsonPath().getLong("id"), 7);
+
+        // when
+        ExtractableResponse<Response> response = deleteSection(line.jsonPath().getLong("id"), downStation.jsonPath().getLong("id"));
+        ExtractableResponse<Response> findLine = lineAcceptanceTest.findLineById(line.jsonPath().getLong("id"));
+        List<Section> sections = findLine.jsonPath().getList("sections", Section.class);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(sections.get(0).getUpStation().getName()).isEqualTo("강남역"),
+                () -> assertThat(sections.get(0).getDownStation().getName()).isEqualTo("새로운역"),
+                () -> assertThat(sections.get(0).getDistance()).isEqualTo(7)
         );
     }
 
