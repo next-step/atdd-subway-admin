@@ -2,11 +2,13 @@ package nextstep.subway.application;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import nextstep.subway.domain.LineStationRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.request.StationRequest;
 import nextstep.subway.dto.response.StationResponse;
 import nextstep.subway.exception.StationNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,10 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class StationService {
 
-    private StationRepository stationRepository;
-
-    public StationService(StationRepository stationRepository) {
+    private final StationRepository stationRepository;
+    private final LineStationRepository lineStationRepository;
+    @Autowired
+    public StationService(StationRepository stationRepository, LineStationRepository lineStationRepository) {
         this.stationRepository = stationRepository;
+        this.lineStationRepository = lineStationRepository;
     }
 
     @Transactional
@@ -36,12 +40,16 @@ public class StationService {
 
     @Transactional
     public void deleteStationById(Long id) {
+        Station station = stationRepository.findById(id)
+            .orElseThrow(StationNotFoundException::new);
+        lineStationRepository.deleteAllByStation(station);
         stationRepository.deleteById(id);
     }
 
     public StationResponse findStationById(Long id) {
         Station station = stationRepository.findById(id)
             .orElseThrow(StationNotFoundException::new);
+
         return StationResponse.of(station);
     }
 

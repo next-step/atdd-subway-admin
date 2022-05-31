@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.MediaType;
 
-public class AttdStationUtils {
+public class AttdStationHelper {
     public static ExtractableResponse<Response> 지하철역_지우기(long 지하철역_id) {
         return RestAssured.given().log().all()
             .body("")

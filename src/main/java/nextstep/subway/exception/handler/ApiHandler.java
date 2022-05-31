@@ -1,6 +1,8 @@
 package nextstep.subway.exception.handler;
 
+import nextstep.subway.exception.DupSectionException;
 import nextstep.subway.exception.LineNotFoundException;
+import nextstep.subway.exception.SectionInvalidException;
 import nextstep.subway.exception.StationNotFoundException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -12,16 +14,31 @@ public class ApiHandler {
 
     @ExceptionHandler(StationNotFoundException.class)
     public ResponseEntity StationNotfoundExceptionHandler(StationNotFoundException e){
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest()
+            .build();
     }
 
     @ExceptionHandler(LineNotFoundException.class)
     public ResponseEntity LineNotfoundExceptionHandler(LineNotFoundException e){
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest()
+            .build();
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity EmptyResultDataAccessExceptionHandler(EmptyResultDataAccessException e){
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest()
+            .build();
+    }
+
+    @ExceptionHandler(DupSectionException.class)
+    public ResponseEntity DupSectionExceptionHandler(DupSectionException e){
+        return ResponseEntity.badRequest()
+            .build();
+    }
+
+    @ExceptionHandler(SectionInvalidException.class)
+    public ResponseEntity SectionInvalidExceptionHandler(SectionInvalidException e){
+        return ResponseEntity.badRequest()
+            .build();
     }
 }

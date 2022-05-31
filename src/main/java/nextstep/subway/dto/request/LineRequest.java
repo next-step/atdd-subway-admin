@@ -1,5 +1,6 @@
 package nextstep.subway.dto.request;
 
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import nextstep.subway.enums.LineColor;
@@ -15,7 +16,7 @@ public class LineRequest {
 
 
     public Line toLine(Station upStation, Station downStation) {
-        return new Line(id, name, LineColor.getLineColorByName(color), upStation, downStation);
+        return new Line(id, name, LineColor.getLineColorByName(color), upStation, downStation, new Distance(distance));
     }
 
     public Long getId() {

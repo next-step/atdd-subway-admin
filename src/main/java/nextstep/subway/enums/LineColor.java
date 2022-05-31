@@ -13,14 +13,16 @@ public enum LineColor {
         this.colorName = colorName;
     }
 
-    public String getColorName() {
-        return colorName;
-    }
-
-    public static LineColor getLineColorByName(String colorName){
+    public static LineColor getLineColorByName(String colorName) {
         return Arrays.stream(LineColor.values())
             .filter(lineColor -> lineColor.getColorName().equals(colorName))
             .findFirst()
             .orElseThrow(LineNotFoundException::new);
     }
+
+    public String getColorName() {
+        return colorName;
+    }
+
+
 }

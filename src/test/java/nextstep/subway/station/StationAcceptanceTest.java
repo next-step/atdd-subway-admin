@@ -1,10 +1,10 @@
 package nextstep.subway.station;
 
-import static nextstep.subway.utils.AttdStationUtils.지하철목록_조회하기;
-import static nextstep.subway.utils.AttdStationUtils.지하철상세_조회하기;
-import static nextstep.subway.utils.AttdStationUtils.지하철역_만들기;
-import static nextstep.subway.utils.AttdStationUtils.지하철역_수정하기;
-import static nextstep.subway.utils.AttdStationUtils.지하철역_지우기;
+import static nextstep.subway.utils.AttdStationHelper.지하철목록_조회하기;
+import static nextstep.subway.utils.AttdStationHelper.지하철상세_조회하기;
+import static nextstep.subway.utils.AttdStationHelper.지하철역_만들기;
+import static nextstep.subway.utils.AttdStationHelper.지하철역_수정하기;
+import static nextstep.subway.utils.AttdStationHelper.지하철역_지우기;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -14,32 +14,37 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+//@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class StationAcceptanceTest {
 
     @LocalServerPort
     int port;
+    private final DatabaseCleanup databaseCleanup;
+
+    @Autowired
+    public StationAcceptanceTest(DatabaseCleanup databaseCleanup) {
+        this.databaseCleanup = databaseCleanup;
+    }
 
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
+        databaseCleanup.execute();
     }
 
     /**
-     * When 지하철역을 생성하면
-     * Then 지하철역이 생성된다
-     * Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
+     * When 지하철역을 생성하면 Then 지하철역이 생성된다 Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
      */
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -57,9 +62,7 @@ public class StationAcceptanceTest {
     }
 
     /**
-     * Given 지하철역을 생성하고
-     * When 기존에 존재하는 지하철역 이름으로 지하철역을 생성하면
-     * Then 지하철역 생성이 안된다
+     * Given 지하철역을 생성하고 When 기존에 존재하는 지하철역 이름으로 지하철역을 생성하면 Then 지하철역 생성이 안된다
      */
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
@@ -75,9 +78,7 @@ public class StationAcceptanceTest {
     }
 
     /**
-     * Given 2개의 지하철역을 생성하고
-     * When 지하철역 목록을 조회하면
-     * Then 2개의 지하철역을 응답 받는다
+     * Given 2개의 지하철역을 생성하고 When 지하철역 목록을 조회하면 Then 2개의 지하철역을 응답 받는다
      */
     @DisplayName("지하철역들을 조회한다.")
     @Test
@@ -93,19 +94,17 @@ public class StationAcceptanceTest {
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
             () -> assertThat(response.jsonPath().getList("$"))
-                    .extracting("id")
-                    .containsExactly(1, 2),
+                .extracting("id")
+                .containsExactly(1, 2),
             () -> assertThat(response.jsonPath().getList("$"))
-                    .extracting("name")
-                    .containsExactly("강남역", "양재역")
+                .extracting("name")
+                .containsExactly("강남역", "양재역")
         );
     }
 
 
     /**
-     * Given 지하철역을 생성하고
-     * When 그 지하철역을 삭제하면
-     * Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
+     * Given 지하철역을 생성하고 When 그 지하철역을 삭제하면 Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
      */
     @DisplayName("지하철역을 제거한다.")
     @Test
@@ -132,13 +131,11 @@ public class StationAcceptanceTest {
 
 
     /**
-     * Given 지하철역을 생성하고
-     * When 똑같은 이름의 지하철을 생성하면
-     * Then 생성이 되지 않고 에러(400)이 발생한다
-     * */
+     * Given 지하철역을 생성하고 When 똑같은 이름의 지하철을 생성하면 Then 생성이 되지 않고 에러(400)이 발생한다
+     */
     @Test
     @DisplayName("중복된 지하철이름을 저장시 에러가 발생한다")
-    public void 지하철_중복_저장하기_테스트(){
+    public void 지하철_중복_저장하기_테스트() {
         //given
         ExtractableResponse<Response> responseOk = 지하철역_만들기("강남역");
 
@@ -153,12 +150,11 @@ public class StationAcceptanceTest {
     }
 
     /**
-     * when 없는 지하철을 삭제하면
-     * then 에러가 발생한다.
-     * */
+     * when 없는 지하철을 삭제하면 then 에러가 발생한다.
+     */
     @Test
     @DisplayName("저장되지 않은 지하철역을 삭제시 에러 발생한다.")
-    public void 없는_지하철역_삭제하기_테스트(){
+    public void 없는_지하철역_삭제하기_테스트() {
         //when
         ExtractableResponse<Response> response = 지하철역_지우기(10);
 
@@ -167,10 +163,8 @@ public class StationAcceptanceTest {
     }
 
     /**
-    * given 지하철을 생성하고
-    * when 지하철을 수정하면
-    * then 수정된 지하철이 확인가능하다.
-    * */
+     * given 지하철을 생성하고 when 지하철을 수정하면 then 수정된 지하철이 확인가능하다.
+     */
     @Test
     @DisplayName("지하철 저장 후 수정이 가능해야한다")
     public void 지하철_수정하기_테스트() {
@@ -188,9 +182,7 @@ public class StationAcceptanceTest {
     }
 
     /**
-     * given 지하철을 생성하고
-     * when 지하철ID를 통해 조회하면
-     * then 상세 정보를 받을수 있다.
+     * given 지하철을 생성하고 when 지하철ID를 통해 조회하면 then 상세 정보를 받을수 있다.
      */
     @Test
     @DisplayName("지하철 번호를 통해 상세 정보 조회가 가능하다")
