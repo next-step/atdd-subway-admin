@@ -21,13 +21,13 @@ public class Distance {
         return distance;
     }
 
+    public boolean isValidDistance(long newDistance) {
+        return this.distance > newDistance;
+    }
+
     private void invalidInputCheck(long distance) {
         if (distance < MIN_DISTANCE) {
             throw new IllegalArgumentException("구간은 최소 " + MIN_DISTANCE + " 이상의 값이어야 합니다.");
         }
-    }
-
-    public void changeDistance(long distance) {
-        this.distance -= distance;
     }
 }

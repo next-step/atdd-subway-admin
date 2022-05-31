@@ -61,11 +61,12 @@ public class Section {
         this.line = line;
     }
 
-    public long getDistance() {
-        return this.distance.getDistance();
+    public Distance getDistance() {
+        return distance;
     }
 
     public void changeStationInfo(Section section) {
+        validDistanceCheck(section.getDistance());
         if (upStation.equals(section.getUpStation())) {
             changeUpStation(section.getDownStation());
             changeDistance(section.getDistance());
@@ -73,6 +74,12 @@ public class Section {
         if (downStation.equals(section.getDownStation())) {
             changeDownStation(section.getUpStation());
             changeDistance(section.getDistance());
+        }
+    }
+
+    private void validDistanceCheck(Distance newDistance) {
+        if (!distance.isValidDistance(newDistance.getDistance())) {
+            throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같으면 추가할 수 없음");
         }
     }
 
@@ -84,8 +91,8 @@ public class Section {
         this.downStation = upStation;
     }
 
-    private void changeDistance(long distance) {
-        this.distance.changeDistance(distance);
+    private void changeDistance(Distance newDistance) {
+        this.distance = new Distance(this.distance.getDistance() - newDistance.getDistance());
     }
 
     @Override
