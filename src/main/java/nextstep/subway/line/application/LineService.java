@@ -55,14 +55,14 @@ public class LineService {
     }
 
     public List<LineResponse> findAllLines() {
-        List<Line> findLines = lineRepository.findAll();
+        List<Line> findLines = lineRepository.findLineFetchJoin();
         return findLines.stream().
                 map(line -> LineResponse.of(line.getId(), line.getName().getValue(), line.getColor().getValue(), line.getAllStations())).
                 collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(
+        Line line = lineRepository.findLineFetchJoinById(id).orElseThrow(
                 () -> new NoSuchElementException(NO_LINE_ERROR)
         );
         return LineResponse.of(line.getId(), line.getName().getValue(), line.getColor().getValue(), line.getAllStations());
