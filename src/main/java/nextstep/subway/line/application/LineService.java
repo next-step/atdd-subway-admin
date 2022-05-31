@@ -34,7 +34,8 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Line line = convertToLine(request);
         Line savedLine = lineRepository.save(line);
-        return LineResponse.of(savedLine);
+        return LineResponse.of(savedLine.getId(), savedLine.getName().getValue(), savedLine.getColor().getValue(),
+                savedLine.getAllStations());
     }
 
     private Line convertToLine(LineRequest request) {
@@ -56,7 +57,7 @@ public class LineService {
     public List<LineResponse> findAllLines() {
         List<Line> findLines = lineRepository.findAll();
         return findLines.stream().
-                map(LineResponse::of).
+                map(line -> LineResponse.of(line.getId(), line.getName().getValue(), line.getColor().getValue(), line.getAllStations())).
                 collect(Collectors.toList());
     }
 
@@ -64,7 +65,7 @@ public class LineService {
         Line line = lineRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException(NO_LINE_ERROR)
         );
-        return LineResponse.of(line);
+        return LineResponse.of(line.getId(), line.getName().getValue(), line.getColor().getValue(), line.getAllStations());
     }
 
     @Transactional
