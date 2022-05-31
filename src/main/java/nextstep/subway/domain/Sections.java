@@ -16,6 +16,7 @@ public class Sections {
 
     public void add(Section section) {
         validateDuplicate(section);
+        validateNotingMatch(section);
 
         repairSections(section);
         elements.add(section);
@@ -28,6 +29,18 @@ public class Sections {
 
         if (duplicate.isPresent()) {
             throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 등록되어 있으면 구간을 추가할 수 없습니다.");
+        }
+    }
+
+    private void validateNotingMatch(Section section) {
+        if (elements.isEmpty()) {
+            return;
+        }
+        boolean anyMatch = elements.stream()
+                        .anyMatch(element -> element.isAnyMatch(section));
+
+        if (!anyMatch) {
+            throw new IllegalArgumentException("노선에 상행선과 하행선이 둘 다 포함되어 있지 않으면 구간을 추가할 수 없습니다.");
         }
     }
 

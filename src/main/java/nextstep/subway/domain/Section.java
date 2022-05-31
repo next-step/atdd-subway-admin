@@ -91,14 +91,25 @@ public class Section extends BaseEntity {
     }
 
     public boolean isSame(Section section) {
+        if (Objects.isNull(section)) {
+            return false;
+        }
         return isSameUpStation(section.upStation) && isSameDownStation(section.downStation);
+    }
+
+    public boolean isAnyMatch(Section section) {
+        if (Objects.isNull(section)) {
+            return false;
+        }
+        return isSameUpStation(section.upStation) || isSameDownStation(section.downStation)
+                || isSameUpStation(section.downStation) || isSameDownStation(section.upStation);
     }
 
     private boolean isSameUpStation(Station station) {
         return this.upStation.equals(station);
     }
 
-    public boolean isSameDownStation(Station station) {
+    private boolean isSameDownStation(Station station) {
         return this.downStation.equals(station);
     }
 
