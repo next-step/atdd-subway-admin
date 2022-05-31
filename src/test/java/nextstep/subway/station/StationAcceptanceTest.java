@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,6 +31,33 @@ public class StationAcceptanceTest {
         }
     }
 
+    private ExtractableResponse<Response> createStationWithStationName(String stationName){
+        Map<String, String> params = new HashMap<>();
+        params.put("name", stationName);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> getStationList() {
+        return RestAssured
+            .given().log().all()
+            .when().get("/stations")
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> deleteStationWithStationName(Long stationId) {
+        return RestAssured.given().log().all()
+            .when().delete("/stations/{id}", stationId)
+            .then().log().all()
+            .extract();
+    }
+
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다
@@ -39,26 +67,13 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = createStationWithStationName("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = getStationList().jsonPath().getList("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -71,23 +86,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
+        createStationWithStationName("강남역");
 
         // when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = createStationWithStationName("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -101,6 +103,16 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        createStationWithStationName("강남역");
+        createStationWithStationName("교대역");
+
+        // when
+        List<String> stationNames = getStationList().jsonPath().getList("name", String.class);
+
+        // then
+        assertThat(stationNames).hasSize(2);
+        assertThat(stationNames).containsExactly("강남역", "교대역");
     }
 
     /**
@@ -111,5 +123,15 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        Long stationId = createStationWithStationName("강남역").jsonPath().getLong("id");
+
+        // when
+        deleteStationWithStationName(stationId);
+
+        // then
+        List<String> stationNames = getStationList().jsonPath().getList("id", String.class);
+        assertThat(stationNames).hasSize(0);
+        assertThat(stationNames).doesNotContain("강남역");
     }
 }
