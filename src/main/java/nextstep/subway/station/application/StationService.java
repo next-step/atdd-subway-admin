@@ -40,9 +40,4 @@ public class StationService {
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
     }
-
-    public Station findById(Long id) {
-        return stationRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(NO_EXISTS_STATION_ERROR.getMessage()));
-    }
 }

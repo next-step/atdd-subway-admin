@@ -6,7 +6,8 @@ public enum ErrorMessage {
     SECTIONS_SIZE_ERROR("노선의 구간이 1개인 경우, 지하철 역을 제거할 수 없습니다."),
     NO_EXISTS_STATION_REMOVE_ERROR("노선에 등록되어 있지 않은 역은 제거할 수 없습니다."),
     OVER_SIZED_DISTANCE_ERROR("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다."),
-    NO_EXISTS_STATION_ERROR("해당 지하철 역이 존재하지 않습니다.");
+    NO_EXISTS_STATION_ERROR("해당 지하철 역이 존재하지 않습니다."),
+    NO_EXISTS_LINE_ERROR("해당 노선은 존재하지 않습니다.");
 
     private final String message;
 

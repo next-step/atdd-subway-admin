@@ -1,5 +1,8 @@
 package nextstep.subway.line.application;
 
+import static nextstep.subway.common.exception.ErrorMessage.NO_EXISTS_LINE_ERROR;
+import static nextstep.subway.common.exception.ErrorMessage.NO_EXISTS_STATION_ERROR;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -9,11 +12,10 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.SectionRequest;
-import nextstep.subway.station.application.StationService;
-import nextstep.subway.station.domain.Station;
-
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.domain.Station;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,14 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class LineService {
-    private static final String NO_EXIST_LINE_ERROR_MESSAGE = "해당 노선은 존재하지 않습니다.";
-
     private final LineRepository lineRepository;
-    private final StationService stationService;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
-        this.stationService = stationService;
+        this.stationRepository = stationRepository;
     }
 
     @Transactional
@@ -62,21 +62,21 @@ public class LineService {
     }
 
     private Section mapToSection(Long upStationId, Long downStationId, int distance) {
-        Station upStation = stationService.findById(upStationId);
-        Station downStation = stationService.findById(downStationId);
+        Station upStation = findStationById(upStationId);
+        Station downStation = findStationById(downStationId);
         return Section.of(upStation, downStation, Distance.from(distance));
     }
 
     private Line findById(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(NO_EXIST_LINE_ERROR_MESSAGE));
+                .orElseThrow(() -> new NoSuchElementException(NO_EXISTS_LINE_ERROR.getMessage()));
     }
 
     @Transactional
     public LineResponse addSection(Long id, SectionRequest sectionRequest) {
         Line line = findById(id);
-        Station upStation = stationService.findById(sectionRequest.getUpStationId());
-        Station downStation = stationService.findById(sectionRequest.getDownStationId());
+        Station upStation = findStationById(sectionRequest.getUpStationId());
+        Station downStation = findStationById(sectionRequest.getDownStationId());
         line.addSection(Section.of(upStation, downStation, Distance.from(sectionRequest.getDistance())));
         return LineResponse.of(line);
     }
@@ -84,8 +84,13 @@ public class LineService {
     @Transactional
     public LineResponse removeSection(Long lineId, Long stationId) {
         Line line = findById(lineId);
-        Station station = stationService.findById(stationId);
+        Station station = findStationById(stationId);
         line.remove(station);
         return LineResponse.of(line);
+    }
+
+    public Station findStationById(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(NO_EXISTS_STATION_ERROR.getMessage()));
     }
 }
