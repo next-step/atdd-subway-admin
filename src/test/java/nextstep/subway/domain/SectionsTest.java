@@ -17,6 +17,7 @@ class SectionsTest {
     Station 양재역;
     Station 판교역;
     Station 양재시민의숲역;
+    Station 미정역;
     Section section1;
     Section section2;
     List<Section> sections = new ArrayList<>();
@@ -35,6 +36,9 @@ class SectionsTest {
                 .build();
         양재시민의숲역 = Station.builder("양재시민의숲역")
                 .id(4L)
+                .build();
+        미정역 = Station.builder("미정역")
+                .id(5L)
                 .build();
         section1 = Section.builder(강남역, 양재역, Distance.valueOf(10))
                 .build();
@@ -108,5 +112,25 @@ class SectionsTest {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> sections1.addSection(newSection))
                 .withMessage("구간 길이는 0 이하가 될 수 없습니다.");
+    }
+
+    @DisplayName("구간들에 구간 등록시 상행역과 하행역이 이미 노선에 모두 등록되어 있는 경우 예외")
+    @Test
+    void addSectionContainsUpStationAndDownStation() {
+        Section newSection = Section.builder(양재역, 양재시민의숲역, Distance.valueOf(3))
+                .build();
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> sections1.addSection(newSection))
+                .withMessage("이미 등록된 구간 요청입니다.");
+    }
+
+    @DisplayName("구간들에 구간 등록시 상행역과 하행역 둘 중 하나도 노선에 포함되어있지 않으면 예외 발생")
+    @Test
+    void addSectionContainsNoneOfUpStationAndDownStation() {
+        Section newSection = Section.builder(판교역, 미정역, Distance.valueOf(3))
+                .build();
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> sections1.addSection(newSection))
+                .withMessage("등록을 위해 필요한 상행역과 하행역이 모두 등록되어 있지 않습니다.");
     }
 }
