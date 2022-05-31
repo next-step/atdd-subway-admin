@@ -48,11 +48,15 @@ public class Section {
         return new Section(null, section.upStation, section.distance);
     }
 
-    public boolean isDownStation(Section preSection) {
+    public boolean containDownStation(Station station) {
+        return station.equals(downStation);
+    }
+
+    public boolean isDownSection(Section preSection) {
         return upStation != null && upStation.getId().equals(preSection.getDownStation().getId());
     }
 
-    public boolean isFirstStation() {
+    public boolean isFirstSection() {
         return this.upStation == null;
     }
 
