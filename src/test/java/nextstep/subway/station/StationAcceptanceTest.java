@@ -51,6 +51,13 @@ public class StationAcceptanceTest {
             .extract();
     }
 
+    private ExtractableResponse<Response> deleteStationWithStationName(Long stationId) {
+        return RestAssured.given().log().all()
+            .when().delete("/stations/{id}", stationId)
+            .then().log().all()
+            .extract();
+    }
+
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다
@@ -96,6 +103,16 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        createStationWithStationName("강남역");
+        createStationWithStationName("교대역");
+
+        // when
+        List<String> stationNames = getStationList().jsonPath().getList("name", String.class);
+
+        // then
+        assertThat(stationNames).hasSize(2);
+        assertThat(stationNames).containsExactly("강남역", "교대역");
     }
 
     /**
@@ -106,5 +123,15 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        Long stationId = createStationWithStationName("강남역").jsonPath().getLong("id");
+
+        // when
+        deleteStationWithStationName(stationId);
+
+        // then
+        List<String> stationNames = getStationList().jsonPath().getList("id", String.class);
+        assertThat(stationNames).hasSize(0);
+        assertThat(stationNames).doesNotContain("강남역");
     }
 }
