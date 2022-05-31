@@ -100,6 +100,16 @@ public class Line extends BaseEntity{
         }
     }
 
+    public Line upStationBy(final Station upStation) {
+        this.upStation = upStation;
+        return this;
+    }
+
+    public Line downStationBy(Station downStation) {
+        this.downStation = downStation;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
