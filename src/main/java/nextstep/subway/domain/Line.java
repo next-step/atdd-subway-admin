@@ -1,13 +1,13 @@
 package nextstep.subway.domain;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -24,14 +24,15 @@ public class Line extends BaseEntity {
     @Column
     private String color;
 
-    @OneToMany(mappedBy = "line", orphanRemoval = true)
-    private final List<Section> sections = new ArrayList<>();
-
-    public Line(String name) {
-        this(name, null);
-    }
+    @Embedded
+    private final Sections sections = new Sections();
 
     public Line(String name, String color) {
+        this(null, name, color);
+    }
+
+    public Line(Long id, String name, String color) {
+        this.id = id;
         this.name = name;
         this.color = color;
     }
@@ -52,12 +53,15 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public List<Station> getLineStations() {
+        return sections.getSections().stream()
+                .flatMap(s -> s.getLineStations().stream())
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     public void addSection(Section section) {
-        sections.add(section);
+        sections.addSection(section);
         section.setLine(this);
     }
 

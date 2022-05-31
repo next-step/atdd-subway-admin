@@ -1,44 +1,30 @@
-package nextstep.subway.station;
+package nextstep.subway.acceptance;
 
-import static nextstep.subway.station.StationAcceptanceTest.지하철역을_생성한다;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-import nextstep.common.RestAssuredTemplate;
-import nextstep.subway.application.DatabaseCleanup;
+import nextstep.subway.common.AcceptanceTest;
+import nextstep.subway.common.RestAssuredTemplate;
 import nextstep.subway.dto.LineRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("acceptance")
-public class LineAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    private DatabaseCleanup dataBaseCleanUp;
-
+public class LineAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-            dataBaseCleanUp.afterPropertiesSet();
-        }
-        dataBaseCleanUp.execute();
+        super.setUp();
 
-        지하철역을_생성한다("강남역");
-        지하철역을_생성한다("잠실역");
+        StationAcceptanceTest.지하철역을_생성한다("강남역");
+        StationAcceptanceTest.지하철역을_생성한다("잠실역");
     }
 
     /**
@@ -133,7 +119,7 @@ public class LineAcceptanceTest {
     }
 
     public static ExtractableResponse<Response> 지하철_노선을_생성한다(String name, String color) {
-        return RestAssuredTemplate.post("/lines", new LineRequest(name, color));
+        return RestAssuredTemplate.post("/lines", new LineRequest(name, color, 1, 2, 10));
     }
 
     public static List<String> 모든_지하철_노선을_조회한다() {
@@ -145,7 +131,7 @@ public class LineAcceptanceTest {
     }
 
     public static ExtractableResponse<Response> 지하철_노선을_수정한다(long lineId, String name, String color) {
-        return RestAssuredTemplate.put("/lines/" + lineId, new LineRequest(name, color));
+        return RestAssuredTemplate.put("/lines/" + lineId, new LineRequest(name, color, 1, 2, 10));
     }
 
     public static ExtractableResponse<Response> 지하철_노선을_삭제한다(long lineId) {

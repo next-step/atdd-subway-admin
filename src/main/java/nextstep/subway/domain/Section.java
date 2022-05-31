@@ -3,7 +3,7 @@ package nextstep.subway.domain;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,14 +22,14 @@ public class Section {
 
     @OneToOne
     @JoinColumn(name = "upstation_id")
-    private Station upStationId;
+    private Station upStation;
 
     @OneToOne
     @JoinColumn(name = "downstation_id")
-    private Station downStationId;
+    private Station downStation;
 
-    @Column
-    private long distance;
+    @Embedded
+    private Distance distance;
 
     @ManyToOne
     @JoinColumn(name = "line_id")
@@ -39,30 +39,65 @@ public class Section {
 
     }
 
-    public Section(Station upStationId, Station downStationId, long distance) {
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+    public Section(Station upStation, Station downStation, long distance) {
+        this(null, upStation, downStation, distance);
     }
 
-    public List<Station> getStations() {
-        return Arrays.asList(upStationId, downStationId);
+    public Section(Long id, Station upStation, Station downStation, long distance) {
+        this.id = id;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = new Distance(distance);
     }
 
-    public Station getUpStationId() {
-        return upStationId;
+    public List<Station> getLineStations() {
+        return Arrays.asList(upStation, downStation);
     }
 
-    public Station getDownStationId() {
-        return downStationId;
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 
     public void setLine(final Line line) {
-        if (Objects.nonNull(this.line)) {
-            this.line.getSections().remove(this);
-        }
         this.line = line;
-        line.getSections().add(this);
+    }
+
+    public Distance getDistance() {
+        return distance;
+    }
+
+    public void changeStationInfo(Section section) {
+        if (upStation.equals(section.getUpStation())) {
+            changeUpStation(section.getDownStation());
+            changeDistance(section.getDistance());
+        }
+        if (downStation.equals(section.getDownStation())) {
+            changeDownStation(section.getUpStation());
+            changeDistance(section.getDistance());
+        }
+    }
+
+    private void changeUpStation(Station downStation) {
+        this.upStation = downStation;
+    }
+
+    private void changeDownStation(Station upStation) {
+        this.downStation = upStation;
+    }
+
+    private void changeDistance(Distance newDistance) {
+        validDistanceCheck(newDistance);
+        this.distance = new Distance(this.distance.getDistance() - newDistance.getDistance());
+    }
+
+    private void validDistanceCheck(Distance newDistance) {
+        if (!distance.isValidDistance(newDistance.getDistance())) {
+            throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같으면 추가할 수 없음");
+        }
     }
 
     @Override
@@ -75,12 +110,12 @@ public class Section {
         }
         Section section = (Section) o;
         return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(
-                upStationId, section.upStationId) && Objects.equals(downStationId, section.downStationId)
+                upStation, section.upStation) && Objects.equals(downStation, section.downStation)
                 && Objects.equals(line, section.line);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(upStationId, downStationId, distance, line);
+        return Objects.hash(upStation, downStation, distance, line);
     }
 }

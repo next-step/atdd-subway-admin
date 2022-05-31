@@ -1,9 +1,9 @@
-package nextstep.common;
+package nextstep.subway.common;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.dto.RequestEntity;
+import nextstep.subway.dto.RequestDTO;
 import org.springframework.http.MediaType;
 
 public class RestAssuredTemplate {
@@ -14,7 +14,7 @@ public class RestAssuredTemplate {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> post(String path, RequestEntity request) {
+    public static ExtractableResponse<Response> post(String path, RequestDTO request) {
         return RestAssured.given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -23,7 +23,16 @@ public class RestAssuredTemplate {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> put(String path, RequestEntity request) {
+    public static ExtractableResponse<Response> post(String path, Object param, RequestDTO request) {
+        return RestAssured.given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(path, param)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> put(String path, RequestDTO request) {
         return RestAssured.given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

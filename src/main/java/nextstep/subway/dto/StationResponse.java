@@ -3,17 +3,14 @@ package nextstep.subway.dto;
 import nextstep.subway.domain.Station;
 
 public class StationResponse {
-    private Long id;
-    private String name;
+    private final Long id;
+    private final String name;
 
     public static StationResponse of(Station station) {
         return new StationResponse(station.getId(), station.getName());
     }
 
-    public StationResponse() {
-    }
-
-    public StationResponse(Long id, String name) {
+    private StationResponse(Long id, String name) {
         this.id = id;
         this.name = name;
     }
