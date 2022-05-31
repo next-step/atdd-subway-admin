@@ -8,14 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SectionService {
-    private final LineRepository lineRepository;
-    private final SectionRepository sectionRepository;
     private final LineService lineService;
     private final StationService stationService;
 
-    public SectionService(LineRepository lineRepository, SectionRepository sectionRepository, LineService lineService, StationService stationService) {
-        this.lineRepository = lineRepository;
-        this.sectionRepository = sectionRepository;
+    public SectionService(LineService lineService, StationService stationService) {
         this.lineService = lineService;
         this.stationService = stationService;
     }
@@ -43,19 +39,17 @@ public class SectionService {
     @Transactional
     public void removeSectionByStationId(Long lineId, Long stationId) {
         Line line = lineService.findByIdWithSections(lineId);
-        line.getSections().addSection(reappropriateSection(line, stationId));
+        line.addSection(reappropriateSection(line.getSections(), stationId));
     }
 
-    private Section reappropriateSection(Line line, Long stationId) {
-        Sections sections = line.getSections();
-
+    private Section reappropriateSection(Sections sections, Long stationId) {
         Section prevSection = sections.getPrevSectionByStationId(stationId);
         Section nextSection = sections.getNextSectionByStationId(stationId);
 
-        Section resultSection = new Section(line, prevSection.getUpStation(), nextSection.getDownStation(), prevSection.getDistance() + nextSection.getDistance());
+        Section resultSection = new Section(prevSection.getUpStation(), nextSection.getDownStation(), prevSection.getDistance() + nextSection.getDistance());
 
-        line.getSections().removeSection(prevSection);
-        line.getSections().removeSection(nextSection);
+        sections.removeSection(prevSection);
+        sections.removeSection(nextSection);
 
         return resultSection;
     }
