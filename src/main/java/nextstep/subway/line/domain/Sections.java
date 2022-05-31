@@ -38,7 +38,7 @@ public class Sections {
 
     public List<StationResponse> getAllStations() {
         return findAllStations().stream().
-                map(StationResponse::of).
+                map(station -> StationResponse.of(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate())).
                 collect(Collectors.toList());
     }
 
