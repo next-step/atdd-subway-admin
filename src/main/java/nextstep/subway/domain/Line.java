@@ -26,20 +26,29 @@ public class Line extends BaseEntity {
     @JoinColumn(name = "DOWNSTATION_ID")
     private Station downStation;
 
+    @Embedded
     @Column(nullable = false)
-    private Long distance;
+    private Distance distance;
 
     protected Line() {
     }
 
-    public Line(final String name, final String color, final Long distance) {
+    public Line(final String name, final String color, final Distance distance) {
         this(name, color, null, null, distance);
     }
 
-    public Line(final String name, final String color, final Station upStation, final Station downStation, final Long distance) {
+    public Line(final String name, final String color, final Station upStation, final Station downStation, final Distance distance) {
         this(null, name, color, upStation, downStation, distance);
     }
 
+    public Line(Long id, String name, String color, Station upStation, Station downStation, Distance distance) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
 
     public Line(Long id, String name, String color, Station upStation, Station downStation, Long distance) {
         this.id = id;
@@ -47,7 +56,7 @@ public class Line extends BaseEntity {
         this.color = color;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public Long getId() {
@@ -70,7 +79,7 @@ public class Line extends BaseEntity {
         return downStation;
     }
 
-    public Long getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
