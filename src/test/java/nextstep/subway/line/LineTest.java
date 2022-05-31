@@ -29,13 +29,9 @@ public class LineTest extends EntityTest {
     void updateTest() {
         Line savedLine = lineRepository.save(line);
         LineRequest request = new LineRequest("test", null, null, null, null);
-        savedLine.setName(request.getName());
-        savedLine.setDistance(request.getDistance());
-        savedLine.setColor(request.getColor());
-
-       assertThat(lineRepository.findById(savedLine.getId()).get().getName()).isEqualTo(request.getName());
-       assertThat(lineRepository.findById(savedLine.getId()).get().getColor()).isNotEqualTo(request.getName());
-       assertThat(lineRepository.findById(savedLine.getId()).get().getDistance()).isNotEqualTo(request.getDistance());
+        savedLine.updateBy(request);
+        assertThat(savedLine.getName()).isEqualTo(request.getName());
+        assertThat(savedLine.getColor()).isNotEqualTo(request.getColor());
     }
 
 }

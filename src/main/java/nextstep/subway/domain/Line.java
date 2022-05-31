@@ -1,12 +1,15 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.dto.LineRequest;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-public class Line extends BaseEntity{
+public class Line extends BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -26,12 +29,13 @@ public class Line extends BaseEntity{
     @Column(nullable = false)
     private Long distance;
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(final String name, final String color, final Long distance) {
         this(name, color, null, null, distance);
     }
+
     public Line(final String name, final String color, final Station upStation, final Station downStation, final Long distance) {
         this(null, name, color, upStation, downStation, distance);
     }
@@ -70,39 +74,26 @@ public class Line extends BaseEntity{
         return distance;
     }
 
-    public void setName(String name) {
+    public void updateName(String name) {
         if (!name.isEmpty() && !Objects.equals(this.name, name)) {
             this.name = name;
         }
     }
 
-    public void setColor(String color) {
+    public void updateColor(String color) {
         if (Objects.nonNull(color) && !color.isEmpty() && !Objects.equals(this.color, color)) {
             this.color = color;
-        }
-    }
-
-    public void setUpStation(Station upStation) {
-        if (Objects.nonNull(upStation) && !Objects.equals(this.getUpStation(), upStation)) {
-            this.upStation = upStation;
-        }
-    }
-
-    public void setDownStation(Station downStation) {
-        if (Objects.nonNull(downStation) && !Objects.equals(this.getDownStation(), downStation)) {
-            this.downStation = downStation;
-        }
-    }
-
-    public void setDistance(Long distance) {
-        if (Objects.nonNull(distance) && distance > 0) {
-            this.distance = distance;
         }
     }
 
     public Line upStationBy(final Station upStation) {
         this.upStation = upStation;
         return this;
+    }
+
+    public void updateBy(LineRequest request) {
+        this.updateName(request.getName());
+        this.updateColor(request.getColor());
     }
 
     public Line downStationBy(Station downStation) {

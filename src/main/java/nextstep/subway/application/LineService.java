@@ -49,19 +49,8 @@ public class LineService {
 
     @Transactional
     public void updateLine(final Long id, final LineRequest updateLine) {
-        update(lineRepository.findById(id).get(), updateLine);
-    }
-
-    private void update(Line line, LineRequest updateLine) {
-        if (Objects.nonNull(updateLine.getUpStationId()) && updateLine.getUpStationId() > 0) {
-            line.setUpStation(stationRepository.findById(updateLine.getUpStationId()).get());
-        }
-        if (Objects.nonNull(updateLine.getDownStationId()) && updateLine.getDownStationId() > 0) {
-            line.setDownStation(stationRepository.findById(updateLine.getDownStationId()).get());
-        }
-        line.setName(updateLine.getName());
-        line.setColor(updateLine.getColor());
-        line.setDistance(updateLine.getDistance());
+        final Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        line.updateBy(updateLine);
     }
 
     @Override
