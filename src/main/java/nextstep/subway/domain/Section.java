@@ -13,20 +13,22 @@ public class Section {
     private Long id;
 
     @ManyToOne(optional = false)
-    private Station startStation;
+    private Station upStation;
 
     @ManyToOne
-    private Station endStation;
+    private Station downStation;
 
     private Long distance;
+
+    private int sectionOrder;
 
     protected Section(){
 
     }
 
-    public Section(Station startStation, Station endStation, Long distance){
-        this.startStation=startStation;
-        this.endStation=endStation;
+    public Section(Station upStation, Station downStation, Long distance){
+        this.upStation =upStation;
+        this.downStation = downStation;
         this.distance=distance;
     }
 
@@ -34,15 +36,19 @@ public class Section {
         return id;
     }
 
-    public Station getStartStation() {
-        return startStation;
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public Station getEndStation() {
-        return endStation;
+    public Station getDownStation() {
+        return downStation;
     }
 
     public Long getDistance() {
         return distance;
+    }
+
+    void setSectionOrder(int sectionOrder) {
+        this.sectionOrder = sectionOrder;
     }
 }

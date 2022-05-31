@@ -7,6 +7,7 @@ import static nextstep.subway.SubwayAppBehaviors.지하철역을_생성하고_�
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import nextstep.subway.annotation.SubwayAcceptanceTest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,8 +56,10 @@ public class SectionAcceptanceTest {
 
         Optional<LineResponse> optionalLineResponse = 지하철노선을_조회한다(lineId);
         assertThat(optionalLineResponse.isPresent()).isTrue();
-        LineResponse line = optionalLineResponse.get();
-        List<String> stationNames = line.getStations().stream().map((station) -> station.getName()).collect(toList());
+
+        LineResponse lineResponse = optionalLineResponse.get();
+        List<SectionResponse> sectionResponses = lineResponse.getSectionResponses();
+        List<String> stationNames = sectionResponses.stream().map((sectionResponse) -> sectionResponse.getStartStationName()).collect(toList());
         assertThat(stationNames).containsExactly("강남역", "신촌역", "충정로역");
     }
 
@@ -65,7 +69,7 @@ public class SectionAcceptanceTest {
         params.put("downStationId", downStationId);
         params.put("distance", distance);
         return RestAssured
-                .given().body(params).log().all()
+                .given().contentType(ContentType.JSON).body(params).log().all()
                 .when().post(String.format("/lines/%d/sections", lineId))
                 .then().log().all()
                 .extract();

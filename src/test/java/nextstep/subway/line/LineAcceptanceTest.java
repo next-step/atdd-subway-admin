@@ -10,7 +10,9 @@ import io.restassured.response.Response;
 import java.util.List;
 import java.util.Optional;
 import nextstep.subway.annotation.SubwayAcceptanceTest;
+import nextstep.subway.domain.Section;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -86,13 +88,13 @@ public class LineAcceptanceTest {
         // then
         assertThat(optionalLine.isPresent()).isTrue();
 
-        LineResponse line = optionalLine.get();
-        List<StationResponse> stations = line.getStations();
-        List<String> stationNames = stations.stream().map((station) -> station.getName()).collect(toList());
+        LineResponse lineResponse = optionalLine.get();
+        List<SectionResponse> sectionResponses = lineResponse.getSectionResponses();
+        List<String> stationNames = sectionResponses.stream().map((sectionResponse) -> sectionResponse.getStartStationName()).collect(toList());
 
-        assertThat(line).isNotNull();
-        assertThat(line.getName()).isEqualTo("1호선");
-        assertThat(line.getColor()).isEqualTo("color1");
+        assertThat(lineResponse).isNotNull();
+        assertThat(lineResponse.getName()).isEqualTo("1호선");
+        assertThat(lineResponse.getColor()).isEqualTo("color1");
         assertThat(stationNames).containsExactly("서울역", "인천역");
     }
 
