@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 @Entity
 public class Section extends BaseEntity {
 	private static final int MIN_DISTANCE = 0;
+	private static final int INIT_SECTION_ORDER = 0;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,8 +26,10 @@ public class Section extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "down_station_id")
 	private Station downStation;
-	
+
 	private int distance;
+
+	private int sectionOrder;
 	
 	protected Section() {
 	}
@@ -37,6 +40,7 @@ public class Section extends BaseEntity {
 		this.upStation = upStation;
 		this.downStation = downStation;
 		this.distance = distance;
+		this.sectionOrder = INIT_SECTION_ORDER;
 	}
 
 	private void validation(Station upStation, Station downStation, int distance) {
@@ -74,7 +78,12 @@ public class Section extends BaseEntity {
 	public void addNextSection(Section section) {
 		this.distance -= section.getDistance();
 		this.upStation = section.downStation;
+		this.sectionOrder += 1;
 	}
+
+	public void addCompleted(int index) {
+		this.sectionOrder = index;
+	}	
 
 	public Long getId() {
 		return id;
@@ -92,9 +101,7 @@ public class Section extends BaseEntity {
 		return distance;
 	}
 
-	@Override
-	public String toString() {
-		return "Section [id=" + id + ", upStation=" + upStation + ", downStation=" + downStation + ", distance="
-				+ distance + "]";
+	public int getSectionOrder() {
+		return sectionOrder;
 	}
 }

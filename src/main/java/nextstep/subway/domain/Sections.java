@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.OptionalInt;
@@ -21,6 +22,18 @@ public class Sections {
 	}
 	
 	public List<Section> getSections() {
+		sections.sort(new Comparator<Section>() {
+			@Override
+			public int compare(Section s1, Section s2) {
+				if (s1.getSectionOrder() > s2.getSectionOrder()) {
+					return 1;
+				}
+				if (s1.getSectionOrder() < s2.getSectionOrder()) {
+					return -1;
+				}
+				return 0;
+			}
+		});
 		return sections;
 	}
 	
@@ -39,29 +52,41 @@ public class Sections {
 			return;
 		}
 		
-		OptionalInt findSectionIndex = findSectionIndex(section);
+		findAdd(section, findSectionIndex(section));
+	}
+
+	private void findAdd(Section section, OptionalInt findSectionIndex) {
 		validationFindIndex(findSectionIndex);
 		sections.get(findSectionIndex.getAsInt()).addNextSection(section);
-		sections.add(findSectionIndex.getAsInt(), section);
+		sectionsAdd(findSectionIndex.getAsInt(), section);
 	}
 
 	private boolean defaultAdd(Section section) {
 		if(sections.isEmpty()) {
-			sections.add(section);
+			sectionsAdd(section);
 			return true;
 		}
 
 		if(isFirstSection(section)) {
-			sections.add(0, section);
+			sectionsAdd(0, section);
 			return true;
 		}
 		
 		if(isLastSection(section)) {
-			sections.add(section);
+			sectionsAdd(section);
 			return true;
 		}
 		
 		return false;
+	}
+	
+	private void sectionsAdd(Section section) {
+		this.sectionsAdd(sections.size(), section);
+	}
+	
+	private void sectionsAdd(int index, Section section) {
+		sections.add(section);
+		section.addCompleted(index);
 	}
 	
 	private void validationFindIndex(OptionalInt findSectionIndex) {
