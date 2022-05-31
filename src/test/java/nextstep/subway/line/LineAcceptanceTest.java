@@ -18,6 +18,7 @@ import static nextstep.subway.line.accecptance.LineAcceptanceRequest.지하철�
 import static nextstep.subway.line.accecptance.LineAcceptanceResponse.지하철노선_목록_조회_성공;
 import static nextstep.subway.line.accecptance.LineAcceptanceResponse.지하철노선_생성_성공;
 import static nextstep.subway.line.accecptance.LineAcceptanceResponse.지하철노선_조회_성공;
+import static nextstep.subway.line.accecptance.LineAcceptanceResponse.지하철노선_조회_실패;
 
 @DisplayName("지하철 노선 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -73,7 +74,7 @@ public class LineAcceptanceTest {
      * When 생성한 지하철 노선을 조회하면
      * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
      */
-    @DisplayName("지하철노선 조회한다")
+    @DisplayName("지하철 노선이 존재한다면 조회한다")
     @Test
     void 지하철노선_조회() {
         지하철노선_존재("2호선");
@@ -81,5 +82,17 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> response = 지하철노선_조회_요청();
 
         지하철노선_조회_성공(response);
+    }
+
+    /**
+     * When 존재하지 않는 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("지하철 노선이 존재하지 않는다면 조회한다")
+    @Test
+    void 지하철노선_조회_예외() {
+        ExtractableResponse<Response> response = 지하철노선_조회_요청();
+
+        지하철노선_조회_실패(response);
     }
 }
