@@ -17,8 +17,10 @@ class SectionTest {
     @BeforeEach
     void setUp() {
         upStation = Station.builder("양재")
+                .id(1L)
                 .build();
         downStation = Station.builder("판교")
+                .id(2L)
                 .build();
         section = Section.builder(upStation, downStation, Distance.valueOf(10))
                 .build();
@@ -52,8 +54,10 @@ class SectionTest {
     @Test
     void changeSectionEqualToUpStation() {
         Station upStation = Station.builder("양재")
+                .id(1L)
                 .build();
         Station downStation = Station.builder("청계산입구역")
+                .id(3L)
                 .build();
         Section newSection = Section.builder(upStation, downStation, Distance.valueOf(5))
                 .build();
@@ -68,8 +72,10 @@ class SectionTest {
     @Test
     void changeSectionEqualToDownStation() {
         Station upStation = Station.builder("청계산입구역")
+                .id(3L)
                 .build();
         Station downStation = Station.builder("판교")
+                .id(2L)
                 .build();
         Section newSection = Section.builder(upStation, downStation, Distance.valueOf(5))
                 .build();

@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,24 +40,6 @@ class SectionsTest {
         sections.add(section2);
     }
 
-    @DisplayName("빈 구간들로부터 구간들의 상행 지하철역을 구할때 예외 테스트")
-    @Test
-    void upStationFromEmptySections() {
-        Sections sections = new Sections();
-        assertThatIllegalStateException()
-                .isThrownBy(sections::upStation)
-                .withMessage("지하철 구간이 비어있습니다.");
-    }
-
-    @DisplayName("빈 구간들로부터 구간들의 하행 지하철역을 구할때 예외 테스트")
-    @Test
-    void downStationFromEmptySections() {
-        Sections sections = new Sections();
-        assertThatIllegalStateException()
-                .isThrownBy(sections::downStation)
-                .withMessage("지하철 구간이 비어있습니다.");
-    }
-
     @DisplayName("구간들 사이에 새로운 구간 등록 테스트 (상행역 일치)")
     @Test
     void addSectionIfEqualUpStation() {
@@ -66,10 +47,10 @@ class SectionsTest {
                 .build();
         Sections sections = Sections.valueOf(this.sections);
         sections.addSection(newSection);
-        List<String> upStationNames = sections.sections().stream()
-                .map(section -> section.upStation().name())
+        List<String> stationNames = sections.stations().stream()
+                .map(Station::name)
                 .collect(Collectors.toList());
-        assertThat(upStationNames).containsOnly("강남역", "양재역", "판교역");
+        assertThat(stationNames).containsOnly("강남역", "양재역", "판교역", "양재시민의숲역");
         //assertThat(upStationNames).containsExactly("강남역", "양재역", "판교역");
     }
 
@@ -80,10 +61,10 @@ class SectionsTest {
                 .build();
         Sections sections = Sections.valueOf(this.sections);
         sections.addSection(newSection);
-        List<String> upStationNames = sections.sections().stream()
-                .map(section -> section.upStation().name())
+        List<String> stationNames = sections.stations().stream()
+                .map(Station::name)
                 .collect(Collectors.toList());
-        assertThat(upStationNames).containsOnly("강남역", "양재역", "판교역");
+        assertThat(stationNames).containsOnly("강남역", "양재역", "판교역", "양재시민의숲역");
         //assertThat(upStationNames).containsExactly("강남역", "양재역", "판교역");
     }
 }

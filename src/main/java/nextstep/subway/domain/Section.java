@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
@@ -96,14 +98,11 @@ public class Section extends BaseEntity {
         }
     }
 
-    private void updateUpStationByNewSection(Section newSection) {
-        distance.minus(newSection.distance);
-        this.upStation = newSection.downStation();
-    }
-
-    public void updateDownStationByNewSection(Section newSection) {
-        distance.minus(newSection.distance);
-        this.downStation = newSection.upStation();
+    public List<Station> stations() {
+        List<Station> stations = new ArrayList<>();
+        stations.add(this.upStation);
+        stations.add(this.downStation);
+        return stations;
     }
 
     public Station upStation() {
@@ -118,6 +117,15 @@ public class Section extends BaseEntity {
         return distance;
     }
 
+    private void updateUpStationByNewSection(Section newSection) {
+        distance.minus(newSection.distance);
+        this.upStation = newSection.downStation();
+    }
+
+    private void updateDownStationByNewSection(Section newSection) {
+        distance.minus(newSection.distance);
+        this.downStation = newSection.upStation();
+    }
     private boolean isEqualsUpStation(Section newSection) {
         return this.upStation().equals(newSection.upStation());
     }
