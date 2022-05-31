@@ -2,11 +2,13 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +42,7 @@ public class LineService {
         List<Line> allLines = lineRepository.findAll();
 
         return allLines.stream()
-                .map(line -> LineResponse.of(line))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
@@ -60,5 +62,19 @@ public class LineService {
     @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    @Transactional
+    public LineResponse addSection(Long id, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("존재하지 않는 노선입니다."));
+        Station upStation = stationRepository.findById(sectionRequest.getUpStationId())
+                .orElseThrow(() -> new IllegalStateException("상행종점역이 존재하지 않습니다."));
+        Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
+                .orElseThrow(() -> new IllegalStateException("하행종점역이 존재하지 않습니다."));
+
+        line.addSection(Section.of(upStation, downStation, sectionRequest.getDistance()));
+
+        return LineResponse.of(line);
     }
 }

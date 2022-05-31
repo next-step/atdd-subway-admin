@@ -14,7 +14,6 @@ public class SectionAcceptanceFactory {
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);
         params.put("distance", distance);
-        System.out.println(params);
 
         return RestAssured.given().log().all()
                 .body(params)

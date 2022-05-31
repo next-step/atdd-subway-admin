@@ -52,7 +52,30 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
+    public int getDistance() {
+        return distance;
+    }
+
     public void setLine(Line line) {
         this.line = line;
+    }
+
+    public void calculate(Section newSection) {
+        if (this.upStation.equals(newSection.getUpStation())) {
+            this.upStation = newSection.getDownStation();
+            calculateDistance(newSection);
+        }
+        if (this.downStation.equals(newSection.getDownStation())) {
+            this.downStation = newSection.getUpStation();
+            calculateDistance(newSection);
+        }
+    }
+
+    private void calculateDistance(Section newSection) {
+        int newDistance = this.distance - newSection.distance;
+        if (newDistance <= 0) {
+            throw new IllegalArgumentException("기존 역 사이 거리보다 작을 수 없습니다.");
+        }
+        this.distance = newDistance;
     }
 }

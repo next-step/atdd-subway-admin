@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
@@ -8,18 +9,28 @@ import java.util.List;
 
 @Embeddable
 public class Sections implements Iterable<Section> {
-    @OneToMany(mappedBy = "line")
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
     public Sections() {
     }
 
-    public void add(Section section) {
-        sections.add(section);
+    public void add(Section newSection) {
+        if (sections.isEmpty()) {
+            this.sections.add(newSection);
+            return;
+        }
+        sections.forEach(section -> section.calculate(newSection));
+
+        sections.add(newSection);
     }
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public int countSection() {
+        return sections.size();
     }
 
     @Override
