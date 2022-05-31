@@ -29,9 +29,13 @@ public class Line extends BaseEntity{
     public Line() {
     }
 
+    public Line(final String name, final String color, final Long distance) {
+        this(name, color, null, null, distance);
+    }
     public Line(final String name, final String color, final Station upStation, final Station downStation, final Long distance) {
         this(null, name, color, upStation, downStation, distance);
     }
+
 
     public Line(Long id, String name, String color, Station upStation, Station downStation, Long distance) {
         this.id = id;
