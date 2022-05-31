@@ -25,14 +25,6 @@ public class Sections implements Iterable<Section> {
         sections.add(newSection);
     }
 
-    public List<Section> getSections() {
-        return sections;
-    }
-
-    public int countSection() {
-        return sections.size();
-    }
-
     @Override
     public Iterator<Section> iterator() {
         return sections.iterator();
