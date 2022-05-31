@@ -223,7 +223,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = deleteSection(line.jsonPath().getLong("id"), upStation.jsonPath().getLong("id"));
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> createSection(Long lineId, Long upStationId, Long downStationId, int distance) {

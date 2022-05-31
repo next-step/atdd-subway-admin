@@ -39,6 +39,11 @@ public class SectionService {
     @Transactional
     public void removeSectionByStationId(Long lineId, Long stationId) {
         Line line = lineService.findByIdWithSections(lineId);
+
+        if (line.getSections().size() == 1) {
+            new IllegalArgumentException("단일 구간인 노선입니다. 구간을 삭제할 수 없습니다.");
+        }
+
         line.addSection(reappropriateSection(line.getSections(), stationId));
     }
 
