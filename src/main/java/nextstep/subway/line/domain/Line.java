@@ -8,8 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line_station.domain.LineStation;
-import nextstep.subway.line_station.domain.LineStations;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -23,15 +23,15 @@ public class Line {
     private String color;
 
     @Embedded
-    private final LineStations lineStations = new LineStations();
+    private final Sections sections = new Sections();
 
     protected Line() {
     }
 
-    public Line(String name, String color, LineStation lineStation) {
+    public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        this.lineStations.add(lineStation, this);
+        this.sections.add(section, this);
     }
 
     public void update(LineRequest lineRequest) {
@@ -40,7 +40,7 @@ public class Line {
     }
 
     public List<Station> orderStationsOfLine() {
-        return lineStations.orderStationsOfLine();
+        return sections.orderStationsOfLine();
     }
 
     public Long getId() {

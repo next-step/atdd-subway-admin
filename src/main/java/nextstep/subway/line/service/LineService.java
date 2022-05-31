@@ -6,7 +6,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.repository.LineRepository;
-import nextstep.subway.line_station.domain.LineStation;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.repository.StationRepository;
 import org.springframework.stereotype.Service;
@@ -31,8 +31,8 @@ public class LineService {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId())
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 상행종점역입니다."));
 
-        LineStation lineStation = new LineStation(upStation, downStation, lineRequest.getDistance());
-        Line persistLine = lineRepository.save(lineRequest.toLine(lineStation));
+        Section section = new Section(upStation, downStation, lineRequest.getDistance());
+        Line persistLine = lineRepository.save(lineRequest.toLine(section));
 
         return LineResponse.from(persistLine);
     }

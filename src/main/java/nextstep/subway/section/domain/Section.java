@@ -1,4 +1,4 @@
-package nextstep.subway.line_station.domain;
+package nextstep.subway.section.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,7 +12,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 @Entity
-public class LineStation {
+public class Section {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,10 +33,10 @@ public class LineStation {
     @Column(nullable = false)
     private Long distance;
 
-    protected LineStation() {
+    protected Section() {
     }
 
-    public LineStation(Station upStation, Station downStation, Long distance) {
+    public Section(Station upStation, Station downStation, Long distance) {
         validateUpDownStation(upStation, downStation);
 
         this.upStation = upStation;
@@ -44,12 +44,12 @@ public class LineStation {
         this.distance = distance;
     }
 
-    public LineStation upStationEndPoint(LineStation lineStation) {
-        return new LineStation(null, lineStation.upStation, lineStation.distance);
+    public Section upStationEndPoint(Section section) {
+        return new Section(null, section.upStation, section.distance);
     }
 
-    public boolean isDownStation(LineStation preLineStation) {
-        return upStation != null && upStation.getId().equals(preLineStation.getDownStation().getId());
+    public boolean isDownStation(Section preSection) {
+        return upStation != null && upStation.getId().equals(preSection.getDownStation().getId());
     }
 
     public boolean isFirstStation() {
