@@ -1,6 +1,6 @@
 package nextstep.subway.dto;
 
-public class LineRequest {
+public class LineRequest implements CreateLineStationRequest {
 
     private final String name;
     private final String color;

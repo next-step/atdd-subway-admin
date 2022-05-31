@@ -2,7 +2,6 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.LineStation;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineStationRequest;
@@ -28,8 +27,7 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Line line = lineRepository.save(new Line(lineRequest));
-        LineStation lineStation = lineStationService.saveLineStation(lineRequest);
-        line.addLineStation(lineStation);
+        lineStationService.saveLineStation(lineRequest, line);
 
         return LineResponse.of(line);
     }
@@ -62,10 +60,9 @@ public class LineService {
     @Transactional
     public void createStations(Long id, LineStationRequest lineStationRequest) {
         Line line = getOrElseThrow(id);
-//        lineStationService.saveLineStation()
-
-//        line.addLineStation(lineStation);
+        lineStationService.saveLineStation(lineStationRequest, line);
     }
+
 
     private Line getOrElseThrow(Long id) {
         return lineRepository.findById(id)

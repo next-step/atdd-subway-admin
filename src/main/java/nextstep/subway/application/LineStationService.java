@@ -1,9 +1,10 @@
 package nextstep.subway.application;
 
+import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineStation;
 import nextstep.subway.domain.LineStationRepository;
 import nextstep.subway.domain.Station;
-import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.CreateLineStationRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,13 +20,13 @@ public class LineStationService {
     }
 
     @Transactional
-    public LineStation saveLineStation(Long distance, Station upStation, Station downStation) {
-        return null;
-    }
+    public LineStation saveLineStation(CreateLineStationRequest request, Line line) {
+        Station upStation = stationService.getOrElseThrow(request.getUpStationId());
+        Station downStation = stationService.getOrElseThrow(request.getDownStationId());
 
-    public LineStation saveLineStation(LineRequest lineRequest) {
-        Station upStation = stationService.getOrElseThrow(lineRequest.getUpStationId());
-        Station downStation = stationService.getOrElseThrow(lineRequest.getDownStationId());
-        return lineStationRepository.save(new LineStation(lineRequest.getDistance(), upStation, downStation));
+        LineStation lineStation = lineStationRepository.save(new LineStation(request.getDistance(), upStation, downStation));
+
+        line.addLineStation(lineStation);
+        return lineStation;
     }
 }

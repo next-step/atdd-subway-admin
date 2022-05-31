@@ -1,6 +1,6 @@
 package nextstep.subway.dto;
 
-public class LineStationRequest {
+public class LineStationRequest implements CreateLineStationRequest {
 
     private final Long distance;
     private final Long upStationId;

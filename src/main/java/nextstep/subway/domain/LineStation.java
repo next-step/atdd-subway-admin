@@ -47,5 +47,24 @@ public class LineStation extends BaseEntity {
         return downStation;
     }
 
+    public void patch(Long distance, Station upStation, Station downStation) {
+        if (distance != null) {
+            this.distance = distance;
+        }
+        if (upStation != null) {
+            this.upStation = upStation;
+        }
+        if (downStation != null) {
+            this.downStation = downStation;
+        }
+    }
+
+    public boolean equalsUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean equalsDownStation(Station station) {
+        return downStation.equals(station);
+    }
 
 }

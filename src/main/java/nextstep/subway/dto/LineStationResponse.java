@@ -1,12 +1,11 @@
 package nextstep.subway.dto;
 
-import nextstep.subway.domain.LineStation;
 import nextstep.subway.domain.LineStations;
 import nextstep.subway.domain.Station;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineStationResponse {
     private final Long id;
@@ -22,13 +21,9 @@ public class LineStationResponse {
             return Collections.emptyList();
         }
 
-        List<LineStationResponse> result = new ArrayList<>();
-
-        result.add(of(lineStations.getFirst().getUpStation()));
-        for (LineStation lineStation : lineStations.getLineStations()) {
-            result.add(of(lineStation.getDownStation()));
-        }
-        return result;
+        return lineStations.getSortedStations().stream()
+                .map(LineStationResponse::of)
+                .collect(Collectors.toList());
     }
 
     public static LineStationResponse of(Station station) {
