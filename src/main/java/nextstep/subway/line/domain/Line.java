@@ -61,9 +61,6 @@ public class Line extends BaseEntity {
     }
 
     public void remove(Station station) {
-        if (sections.hasNot(station)) {
-            throw new IllegalArgumentException("노선에 등록되어 있지 않은 역은 제거할 수 없습니다.");
-        }
         sections.remove(station);
     }
 }
