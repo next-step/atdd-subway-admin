@@ -1,38 +1,24 @@
 package nextstep.subway.station;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.BasicAcceptance;
 import nextstep.subway.domain.Station;
-import nextstep.subway.utils.RequestUtil;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.*;
 
 import static nextstep.subway.utils.RequestUtil.요청_성공_실패_여부_확인;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Sql("classpath:truncate.sql")
-@DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
 
-    @LocalServerPort
-    int port;
+public class StationAcceptanceTest extends BasicAcceptance {
 
-    private static RequestUtil requestStation = new RequestUtil();
+    @Override
+    protected void beforeEachInit() {
 
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
     }
 
     /**
@@ -146,15 +132,15 @@ public class StationAcceptanceTest {
     }
 
      public static ExtractableResponse<Response> 지하철역_생성(final String stationName) {
-        return requestStation.createStation(stationName);
+        return BasicAcceptance.requestUtil.createStation(stationName);
     }
 
     public static ExtractableResponse<Response> 지하철역_검색() {
-        return requestStation.getStations();
+        return requestUtil.getStations();
     }
 
     public static ExtractableResponse<Response> 지하철역_삭제(final Long index) {
-        return requestStation.deleteStation(index);
+        return requestUtil.deleteStation(index);
     }
 
     public static List<Station> 역_객체_리스트로_변환(ExtractableResponse<Response> response) {
@@ -182,4 +168,5 @@ public class StationAcceptanceTest {
     public static Station 역_객체로_변환(ExtractableResponse<Response> response) {
         return response.as(Station.class);
     }
+
 }

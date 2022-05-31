@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.BasicAcceptance;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -11,10 +12,8 @@ import nextstep.subway.utils.RequestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 import java.util.Map;
@@ -25,24 +24,16 @@ import static nextstep.subway.station.StationAcceptanceTest.지하철역_생성;
 import static nextstep.subway.utils.RequestUtil.요청_성공_실패_여부_확인;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-@Sql("classpath:truncate.sql")
-@DisplayName("노선 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest {
-    @LocalServerPort
-    int port;
 
-    private static RequestUtil requestUtil = new RequestUtil();
+@DisplayName("노선 관련 기능")
+public class LineAcceptanceTest extends BasicAcceptance {
 
     private Station savedOldStation;
     private Station savedNewStation;
     private Station savedOtherStation;
 
-    @BeforeEach
-    void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
+    @Override
+    protected void beforeEachInit() {
         savedOldStation = 역_객체로_변환(지하철역_생성("지하철역"));
         savedNewStation = 역_객체로_변환(지하철역_생성(("새로운지하철역")));
         savedOtherStation = 역_객체로_변환(지하철역_생성(("또다른지하철역")));
@@ -149,7 +140,7 @@ public class LineAcceptanceTest {
         요청_성공_실패_여부_확인(
                 지하철_노선_정보_업데이트(
                         lineResponse.getId(),
-                        new LineRequest("다른분당선", "bg-red-600",0L, 0L,0L)
+                        new LineRequest("다른분당선", "bg-red-600", 0L, 0L, 0L)
                 ), HttpStatus.OK);
 
         // Then
@@ -183,7 +174,7 @@ public class LineAcceptanceTest {
 
     }
 
-    private ExtractableResponse<Response> 지하철_노선_정보_업데이트(final Long id ,final LineRequest lineRequest) {
+    private ExtractableResponse<Response> 지하철_노선_정보_업데이트(final Long id, final LineRequest lineRequest) {
         return requestUtil.updateLine(id, convertMapBy(lineRequest));
     }
 
