@@ -87,20 +87,23 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
-    public void changeUpSection(Section newSection) {
+    public void update(Section newSection) {
+        if(isEqualsUpStation(newSection)) {
+            updateUpStationByNewSection(newSection);
+        }
+        if(isEqualsDownStation(newSection)) {
+            updateDownStationByNewSection(newSection);
+        }
+    }
+
+    private void updateUpStationByNewSection(Section newSection) {
         distance.minus(newSection.distance);
         this.upStation = newSection.downStation();
     }
 
-    public void changeDownSection(Section newSection) {
+    public void updateDownStationByNewSection(Section newSection) {
         distance.minus(newSection.distance);
         this.downStation = newSection.upStation();
-    }
-
-    private void validateLineNotNull(Line line) {
-        if (Objects.isNull(line)) {
-            throw new NotFoundException("노선 정보가 없습니다.");
-        }
     }
 
     public Station upStation() {
@@ -113,5 +116,19 @@ public class Section extends BaseEntity {
 
     public Distance distance() {
         return distance;
+    }
+
+    private boolean isEqualsUpStation(Section newSection) {
+        return this.upStation().equals(newSection.upStation());
+    }
+
+    private boolean isEqualsDownStation(Section newSection) {
+        return this.downStation().equals(newSection.downStation());
+    }
+
+    private void validateLineNotNull(Line line) {
+        if (Objects.isNull(line)) {
+            throw new NotFoundException("노선 정보가 없습니다.");
+        }
     }
 }

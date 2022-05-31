@@ -24,12 +24,10 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-        if (isSectionsEmpty()) {
-            sections.add(section);
-        }
         if (!isSectionsEmpty()) {
-            registerSection(section);
+            update(section);
         }
+        sections.add(section);
     }
 
     public Distance distance() {
@@ -52,21 +50,9 @@ public class Sections {
         return sections;
     }
 
-    private void registerSection(Section newSection) {
-        for (int i = 0; i < sections.size(); i++) {
-            registerSectionIfEqualsUpStation(newSection, i);
-        }
-    }
-
-    private void registerSectionIfEqualsUpStation(Section newSection, int index) {
-        if (isEqualsUpStation(sections.get(index), newSection)) {
-            sections.get(index).changeUpSection(newSection);
-            sections.add(index, newSection);
-        }
-    }
-
-    private boolean isEqualsUpStation(Section targetSection, Section newSection) {
-        return targetSection.upStation().equals(newSection.upStation());
+    private void update(Section newSection) {
+        sections.forEach(section -> section.update(newSection));
+        sections.add(newSection);
     }
 
     private void validateSections() {

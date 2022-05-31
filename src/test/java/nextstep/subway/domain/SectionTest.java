@@ -57,7 +57,7 @@ class SectionTest {
                 .build();
         Section newSection = Section.builder(upStation, downStation, Distance.valueOf(5))
                 .build();
-        section.changeUpSection(newSection);
+        section.update(newSection);
         assertAll(
                 () -> assertThat(section.upStation()).isEqualTo(downStation),
                 () -> assertThat(section.distance()).isEqualTo(Distance.valueOf(5))
@@ -73,7 +73,7 @@ class SectionTest {
                 .build();
         Section newSection = Section.builder(upStation, downStation, Distance.valueOf(5))
                 .build();
-        section.changeDownSection(newSection);
+        section.update(newSection);
         assertAll(
                 () -> assertThat(section.downStation()).isEqualTo(upStation),
                 () -> assertThat(section.distance()).isEqualTo(Distance.valueOf(5))
