@@ -61,12 +61,22 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        Optional<Section> upStation = sections.stream()
+        Optional<Section> upStationOptional = findUpStation(station);
+        Optional<Section> downStationOptional = findDownStation(station);
+
+        upStationOptional.ifPresent(sections::remove);
+        downStationOptional.ifPresent(sections::remove);
+    }
+
+    private Optional<Section> findUpStation(Station station) {
+        return sections.stream()
                 .filter(section -> section.isEqualUpStation(station))
                 .findFirst();
+    }
 
-        if (upStation.isPresent()) {
-            upStation.ifPresent(sections::remove);
-        }
+    private Optional<Section> findDownStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isEqualDownStation(station))
+                .findFirst();
     }
 }

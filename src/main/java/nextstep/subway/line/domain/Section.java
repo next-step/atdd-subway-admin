@@ -90,7 +90,7 @@ public class Section {
         return this.upStation.equals(station);
     }
 
-    private boolean isEqualDownStation(Station station) {
+    public boolean isEqualDownStation(Station station) {
         return this.downStation.equals(station);
     }
 }
