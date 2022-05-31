@@ -71,5 +71,9 @@
     ]
 }
 ```
-
+* response header
+  * Location : /lines/{lineId}/sections/{sectionId}
+* status code
+  * 201 : created (성공)
+  * 400 : bad request (실패)
                   
