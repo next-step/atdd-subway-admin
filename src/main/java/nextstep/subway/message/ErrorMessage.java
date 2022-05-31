@@ -10,7 +10,10 @@ public enum ErrorMessage {
     LINE_CHANGE_IS_NO_NAME("변경할 이름이 없습니다."),
     LINE_CHANGE_IS_NO_COLOR("변경할 색상명이 없습니다."),
     LINE_NAME_IS_ESSENTIAL("노선의 이름은 필수 입니다."),
-    LINE_COLOR_IS_ESSENTIAL("노선의 색상은 필수 입니다.");
+    LINE_COLOR_IS_ESSENTIAL("노선의 색상은 필수 입니다."),
+    LINE_STATION_HAS_LINE_ESSENTIAL("노선은 필수입니다."),
+    LINE_STATION_HAS_STATION_ESSENTIAL("역은 필수입니다.");
+
     private final String message;
 
     ErrorMessage(String message) {
