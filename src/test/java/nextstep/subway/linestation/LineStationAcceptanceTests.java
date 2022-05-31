@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -77,6 +78,20 @@ public class LineStationAcceptanceTests {
     void validateDistance_createSection(Long distance) {
         // Given
         int statusCode = createSection(lineId, distance, upStationId, newStationId).statusCode();
+
+        // Then
+        assertThat(statusCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 새로운 역을 구간등록 하면
+     * Then 등록될 수 없다
+     */
+    @DisplayName("상,하행선이 이미 노선에 모두 등록되어 있으면 등록할 수 없다")
+    @Test
+    void validateDuplicate_createSection() {
+        // Given
+        int statusCode = createSection(lineId, 5L, upStationId, downStationId).statusCode();
 
         // Then
         assertThat(statusCode).isEqualTo(HttpStatus.BAD_REQUEST.value());

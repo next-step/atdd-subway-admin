@@ -30,6 +30,10 @@ public class LineStations {
             return;
         }
 
+        if (hasMatchedSameStation(lineStation)) {
+            throw new CustomException(ErrorCode.NON_VALID_LINE_STATION);
+        }
+
         Optional<LineStation> matchedMiddle = getMatchedMiddle(lineStation);
         if (matchedMiddle.isPresent()) {
             updateMatchedMiddle(lineStation, matchedMiddle.get());
@@ -59,6 +63,12 @@ public class LineStations {
 
     public int size() {
         return lineStations.size();
+    }
+
+    private boolean hasMatchedSameStation(LineStation lineStation) {
+        return lineStations.stream()
+                .anyMatch(item -> item.equalsUpStation(lineStation.getUpStation())
+                        && item.equalsDownStation(lineStation.getDownStation()));
     }
 
     private Optional<LineStation> getMatchedStartOrEnd(LineStation lineStation) {
