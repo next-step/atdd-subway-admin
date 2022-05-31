@@ -46,7 +46,7 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
         assertAll(
                 () -> assertThat(lineNames).containsAnyOf("신분당선"),
                 () -> assertThat(colors).containsAnyOf("bg-red-600"),
-                () -> assertThat(stations).containsExactly("지하철역","새로운지하철역")
+                () -> assertThat(stations).containsOnly("지하철역","새로운지하철역")
         );
     }
 
@@ -92,8 +92,8 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
                 () -> assertThat(lineNames).containsExactly("신분당선", "5호선"),
                 () -> assertThat(lineNames).hasSize(2),
                 () -> assertThat(colors).containsExactly("bg-red-600", "bg-blue-600"),
-                () -> assertThat(stations1).containsExactly("지하철역", "새로운지하철역"),
-                () -> assertThat(stations2).containsExactly("지하철역", "새로운지하철역")
+                () -> assertThat(stations1).containsOnly("지하철역", "새로운지하철역"),
+                () -> assertThat(stations2).containsOnly("지하철역", "새로운지하철역")
         );
     }
 
@@ -118,7 +118,7 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
         assertAll(
                 () -> assertThat(lineNames).isEqualTo("신분당선"),
                 () -> assertThat(colors).isEqualTo("bg-red-600"),
-                () -> assertThat(stations).containsExactly("지하철역", "새로운지하철역")
+                () -> assertThat(stations).containsOnly("지하철역", "새로운지하철역")
         );
     }
 
