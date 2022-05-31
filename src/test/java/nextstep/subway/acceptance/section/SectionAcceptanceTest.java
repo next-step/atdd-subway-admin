@@ -160,6 +160,24 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 지하철 노선의 구간 사이에 새로운 구간을 등록하고
+     * When 상행역과 하행역이 둘 중 하나라도 노선에 포함이 안된 구간을 등록하면
+     * Then 구간 등록에 실패한다.
+     */
+    @DisplayName("지하철 노선의 구간 등록시 상행역과 하행역 둘 중 하나도 노선에 포함되어있지 않으면 등록할 수 없음")
+    @Test
+    void addSectionAtLineHasNotUpStationAndDownStation() {
+        // given
+        지하철구간_추가_요청(신분당선.getId(), 청계산입구역.getId(), 판교역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> response = 지하철구간_추가_요청(신분당선.getId(), 정자역.getId(), 미금역.getId(), 4);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     ExtractableResponse<Response> 지하철구간_추가_요청(long lineId, long upStationId, long downStationId, int distance) {
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", upStationId);
