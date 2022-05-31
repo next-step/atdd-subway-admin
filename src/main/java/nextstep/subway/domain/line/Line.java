@@ -1,4 +1,4 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.line;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -6,7 +6,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import nextstep.subway.domain.collection.Stations;
+import nextstep.subway.domain.BaseEntity;
+import nextstep.subway.domain.collection.LineStations;
+import nextstep.subway.dto.line.SectionDTO;
 import org.apache.commons.lang3.StringUtils;
 
 @Entity
@@ -21,7 +23,7 @@ public class Line extends BaseEntity {
     private boolean deleted = false;
 
     @Embedded
-    private Stations stations = new Stations();
+    private LineStations lineStations = new LineStations();
 
     protected Line() {
     }
@@ -38,6 +40,15 @@ public class Line extends BaseEntity {
         if (StringUtils.isNoneEmpty(color)) {
             this.color = color;
         }
+    }
+
+    public void addLineStation(LineStation lineStation) {
+        lineStations.add(lineStation);
+        lineStation.setLine(this);
+    }
+
+    public void addSection(SectionDTO sectionDTO) {
+        lineStations.addSection(sectionDTO);
     }
 
     public Long getId() {
@@ -60,11 +71,7 @@ public class Line extends BaseEntity {
         return deleted;
     }
 
-    public Stations getStations() {
-        return stations;
-    }
-
-    public void addStation(Station station) {
-        stations.addStaion(station);
+    public LineStations getLineStations() {
+        return lineStations;
     }
 }

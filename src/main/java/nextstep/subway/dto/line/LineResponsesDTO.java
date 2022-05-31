@@ -1,8 +1,8 @@
-package nextstep.subway.dto;
+package nextstep.subway.dto.line;
 
 import java.util.ArrayList;
 import java.util.List;
-import nextstep.subway.domain.Line;
+import nextstep.subway.domain.line.Line;
 
 public class LineResponsesDTO {
     List<LineResponseDTO> lineResponsesDTO;

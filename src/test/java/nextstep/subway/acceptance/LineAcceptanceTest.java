@@ -60,13 +60,17 @@ class LineAcceptanceTest {
         setStationIds(중앙선,"청량리역","망우역");
     }
 
-    private void setStationIds(Map<String,Object> line, String upStationName, String downStationName) {
-        Map<String, Object> upStation = new HashMap<>();
-        Map<String, Object> downStation = new HashMap<>();
-        upStation.put("name", upStationName);
-        downStation.put("name", downStationName);
-        line.put("upStationId", ExtractUtils.extractId(requestCreate(upStation, StationAcceptanceTest.STATION_PATH)));
-        line.put("downStationId", ExtractUtils.extractId(requestCreate(downStation, StationAcceptanceTest.STATION_PATH)));
+    static ExtractableResponse<Response> creatLine(Map<String, Object> lineParams) {
+        return requestCreate(lineParams, LINE_PATH);
+    }
+    static ExtractableResponse<Response> createLine(Map<String, Object> lineParams, String upStationName, String downStationName) {
+        setStationIds(lineParams,upStationName,downStationName);
+        return requestCreate(lineParams, LINE_PATH);
+    }
+
+    private static void setStationIds(Map<String,Object> line, String upStationName, String downStationName) {
+        line.put("upStationId", ExtractUtils.extractId(StationAcceptanceTest.createStation(upStationName)));
+        line.put("downStationId", ExtractUtils.extractId(StationAcceptanceTest.createStation(downStationName)));
     }
 
     /**
@@ -92,17 +96,6 @@ class LineAcceptanceTest {
         목록_조회에서_생성한_노선이_있는지_검증(getResponse);
     }
 
-
-    private void 노선_생성_및_지하철역들이_노선에_연결되었는지_검증(ExtractableResponse<Response> createResponse) {
-        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(ExtractUtils.extract("stations.name", createResponse, String.class)).contains("판교역", "정자역");
-    }
-
-    private void 목록_조회에서_생성한_노선이_있는지_검증(ExtractableResponse<Response> getResponse) {
-        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(ExtractUtils.extractNames(getResponse)).contains("신분당선");
-    }
-
     /**
      * Given 2개의 지하철 노선을 생성하고
      * When 지하철 노선 목록을 조회하면
@@ -123,11 +116,6 @@ class LineAcceptanceTest {
 
     }
 
-    private void 노선_목록_조회_검증(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(ExtractUtils.extractNames(response)).contains("신분당선", "분당선");
-    }
-
     /**
      * Given 지하철 노선을 생성하고
      * When 생성한 지하철 노선을 조회하면
@@ -144,11 +132,6 @@ class LineAcceptanceTest {
 
         //then
         노선_개별_조회_검증(response);
-    }
-
-    private void 노선_개별_조회_검증(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(ExtractUtils.extractName(response)).contains("신분당선");
     }
 
     /**
@@ -169,10 +152,6 @@ class LineAcceptanceTest {
         삭제된_노선_조회시_오류_응답_검증(response);
     }
 
-    private void 삭제된_노선_조회시_오류_응답_검증(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        assertThat(requestGetById(LINE_PATH, 1L).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
 
     /**
      * Given 지하철 노선을 생성하고
@@ -195,6 +174,31 @@ class LineAcceptanceTest {
 
         //then
         업데이트한_노선_정보가_변경되었는지_검증(createResponse, updateParams);
+    }
+
+    private void 노선_목록_조회_검증(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(ExtractUtils.extractNames(response)).contains("신분당선", "분당선");
+    }
+
+    private void 노선_생성_및_지하철역들이_노선에_연결되었는지_검증(ExtractableResponse<Response> createResponse) {
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(ExtractUtils.extract("stations.name", createResponse, String.class)).contains("판교역", "정자역");
+    }
+
+    private void 목록_조회에서_생성한_노선이_있는지_검증(ExtractableResponse<Response> getResponse) {
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(ExtractUtils.extractNames(getResponse)).contains("신분당선");
+    }
+
+    private void 노선_개별_조회_검증(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(ExtractUtils.extractName(response)).contains("신분당선");
+    }
+
+    private void 삭제된_노선_조회시_오류_응답_검증(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(requestGetById(LINE_PATH, 1L).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private void 업데이트한_노선_정보가_변경되었는지_검증(ExtractableResponse<Response> createResponse, Map<String, Object> expect) {

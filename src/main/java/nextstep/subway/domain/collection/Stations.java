@@ -8,7 +8,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.station.Station;
 
 @Embeddable
 public class Stations {

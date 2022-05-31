@@ -40,6 +40,12 @@ class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
+    static ExtractableResponse<Response> createStation(String stationName) {
+        Map<String,Object> params = new HashMap<>();
+        params.put("name",stationName);
+        return requestCreate(params,STATION_PATH);
+    }
+
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {

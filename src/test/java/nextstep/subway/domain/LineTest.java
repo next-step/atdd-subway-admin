@@ -2,14 +2,15 @@ package nextstep.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
 import javax.persistence.EntityManager;
-import nextstep.subway.domain.collection.Stations;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.line.LineRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+@DisplayName("노선 도메인 관련 단위테스트")
 @DataJpaTest
 class LineTest {
 
@@ -53,22 +54,4 @@ class LineTest {
         assertThat(actual.isDeleted()).isTrue();
     }
 
-    @DisplayName("노선에 지하철역을 추가한다.")
-    @Test
-    void addStation() {
-        //given
-        Station pangyo = new Station("판교");
-        Station jeongja = new Station("정자");
-        Line line = lineRepository.save(SIN_BOUN_DANG_LINE);
-
-        //when
-        line.addStation(pangyo);
-        line.addStation(jeongja);
-        entityManager.flush();
-        entityManager.clear();
-
-        //then
-        Line actual = lineRepository.findById(line.getId()).get();
-        assertThat(actual.getStations()).isEqualTo(new Stations(Arrays.asList(pangyo, jeongja)));
-    }
 }

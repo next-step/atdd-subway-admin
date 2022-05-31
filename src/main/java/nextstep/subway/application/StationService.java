@@ -1,9 +1,9 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
-import nextstep.subway.dto.StationRequestDTO;
-import nextstep.subway.dto.StationResponseDTO;
+import nextstep.subway.domain.station.Station;
+import nextstep.subway.domain.station.StationRepository;
+import nextstep.subway.dto.station.StationRequestDTO;
+import nextstep.subway.dto.station.StationResponseDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,4 +37,11 @@ public class StationService {
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
     }
+
+    @Transactional
+    public Station findStation(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] ID에 해당하는 지하철역이 없습니다."));
+    }
+
 }

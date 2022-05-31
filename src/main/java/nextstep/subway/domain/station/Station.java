@@ -1,7 +1,8 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.station;
 
 import java.util.Objects;
 import javax.persistence.*;
+import nextstep.subway.domain.BaseEntity;
 
 @Entity
 public class Station extends BaseEntity {
@@ -18,6 +19,11 @@ public class Station extends BaseEntity {
         this.name = name;
     }
 
+    public Station(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }
@@ -26,16 +32,23 @@ public class Station extends BaseEntity {
         return name;
     }
 
+    public Station copy() {
+        return new Station(id, name);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (o == null) {
             return false;
         }
-        Station station = (Station) o;
-        return Objects.equals(id, station.id);
+        if (o instanceof Station) {
+            Station station = (Station) o;
+            return Objects.equals(id, station.getId());
+        }
+        return false;
     }
 
     @Override

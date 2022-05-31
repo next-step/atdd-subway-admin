@@ -37,6 +37,15 @@ public class RequestUtils {
                 .then().log().all()
                 .extract();
     }
+    public static ExtractableResponse<Response> requestCreate(long lineId, Map<String, Object> sectionParams, String path) {
+        return RestAssured.given().log().all()
+                .body(sectionParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.ALL_VALUE)
+                .when().post(path,lineId)
+                .then().log().all()
+                .extract();
+    }
 
     public static ExtractableResponse<Response> requestGetAll(String path) {
         return RestAssured.given().log().all()
