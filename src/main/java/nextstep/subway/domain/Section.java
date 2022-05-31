@@ -40,6 +40,11 @@ public class Section {
     }
 
     public Section(Station upStation, Station downStation, long distance) {
+        this(null, upStation, downStation, distance);
+    }
+
+    public Section(Long id, Station upStation, Station downStation, long distance) {
+        this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = new Distance(distance);

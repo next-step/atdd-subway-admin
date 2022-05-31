@@ -27,11 +27,12 @@ public class Line extends BaseEntity {
     @Embedded
     private final Sections sections = new Sections();
 
-    public Line(String name) {
-        this(name, null);
+    public Line(String name, String color) {
+        this(null, name, color);
     }
 
-    public Line(String name, String color) {
+    public Line(Long id, String name, String color) {
+        this.id = id;
         this.name = name;
         this.color = color;
     }
