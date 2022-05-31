@@ -47,4 +47,9 @@
   - [X] LineResponse 작성 및 코드 리팩토링
     - [X] Line.distance 제거
     - [X] Line 엔티티의 @JsonIgnoreProperties 제거
-  - [ ] @DirtiesContext 속도 개선 
+  - [X] 단위테스트 실행 속도 개선
+    - @DirtiesContext는 Spring Application 전체를 reload하는 거라 시간이 오래 걸림  
+    - 필요한 부분은 Database의 초기화
+    - @DirtiesContext, @Sql은 모두 org.springframework.test.context.TestExecutionListener기반으로 구현되어있음
+    - 모든 테이블 및 시퀀스를 초기화하는 TestExecutionListener 구현체 작성 
+    - 참고자료 : https://stackoverflow.com/questions/56712707/springboottest-vs-contextconfiguration-vs-import-in-spring-boot-unit-test
