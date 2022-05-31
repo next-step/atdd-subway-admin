@@ -13,7 +13,7 @@ public class Sections {
 
     public List<Section> getSections() {
         return sections.stream()
-                .sorted((s1, s2) -> s1.getUpStation().getName().compareTo(s2.getDownStation().getName()))
+                .sorted((s1, s2) -> s1.getUpStation().getName().equals(s2.getDownStation().getName()) ? 0 : -1)
                 .collect(Collectors.toList());
     }
 
