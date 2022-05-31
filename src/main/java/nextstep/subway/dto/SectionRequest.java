@@ -28,7 +28,7 @@ public class SectionRequest {
     }
 
     public Section toSection(Station upStation, Station downStation) {
-        Distance distance = Distance.valueOf(this.distance);
-        return Section.builder(upStation, downStation, distance).build();
+        return Section.builder(upStation, downStation, Distance.valueOf(this.distance))
+                .build();
     }
 }
