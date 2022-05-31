@@ -24,11 +24,13 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> getLines() {
         List<Line> lines = lineRepository.findAll();
         return LineResponse.of(lines);
     }
 
+    @Transactional(readOnly = true)
     public LineResponse getLine(Long id) {
         Line line = findLineById(id);
         return LineResponse.of(line);
