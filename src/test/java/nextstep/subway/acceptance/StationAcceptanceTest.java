@@ -1,12 +1,12 @@
-package nextstep.subway.station;
+package nextstep.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
+import nextstep.common.AcceptanceTest;
 import nextstep.common.RestAssuredTemplate;
-import nextstep.subway.AcceptanceTest;
 import nextstep.subway.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

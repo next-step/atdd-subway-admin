@@ -1,7 +1,6 @@
-package nextstep.subway;
+package nextstep.common;
 
 import io.restassured.RestAssured;
-import nextstep.subway.common.DatabaseCleanup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.LocalServerPort;
 
