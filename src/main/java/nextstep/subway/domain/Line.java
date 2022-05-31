@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,6 +27,9 @@ public class Line extends BaseEntity {
 
     @Embedded
     private Sections sections;
+
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    private List<LineStation> lineStations = new ArrayList<>();
 
     protected Line() {
     }
