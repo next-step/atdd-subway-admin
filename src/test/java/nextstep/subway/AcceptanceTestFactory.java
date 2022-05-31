@@ -6,15 +6,16 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import java.util.stream.Collectors;
-import nextstep.subway.line.dto.LineRequest;
+
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.dto.StationResponse;
+
 import org.springframework.http.HttpStatus;
 
 public class AcceptanceTestFactory {
@@ -65,7 +66,7 @@ public class AcceptanceTestFactory {
     }
 
     public static ExtractableResponse<Response> 지하철_노선_조회(Long id) {
-        return RestAssuredTemplate.sendGetWithId("/lines/{id}", id);
+        return RestAssuredTemplate.sendGet(URI.create("/lines/" + id).getPath());
     }
 
     public static ExtractableResponse<Response> 지하철_노선_수정(Long id, String name, String color) {
@@ -133,12 +134,17 @@ public class AcceptanceTestFactory {
         params.put("distance", distance);
         return params;
     }
+
     public static Long 지하철_노선_생성_ID_추출(Map<String, Object> params) {
         return RestAssuredTemplate.sendPost("/lines", params)
                 .jsonPath().getObject("id", Long.class);
     }
 
     public static ExtractableResponse<Response> 지하철_노선_구간_추가_요청(Long lineId, Map<String, Object> params) {
-        return RestAssuredTemplate.sendPostWithId("/lines/{id}/sections", lineId, params);
+        return RestAssuredTemplate.sendPost(URI.create("/lines/" + lineId + "/sections").getPath(), params);
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_구간_삭제_요청(Long lineId, Long stationId) {
+        return RestAssuredTemplate.sendDeleteWithQuery("/lines/{id}/sections", lineId, stationId);
     }
 }
