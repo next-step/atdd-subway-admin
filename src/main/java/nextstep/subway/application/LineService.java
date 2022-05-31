@@ -10,14 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 public class LineService {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -27,8 +26,8 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(final LineRequest lineRequest) {
         final Line line = lineRequest.toLine()
-                .upStationBy(stationRepository.findById(lineRequest.getUpStationId()).get())
-                .downStationBy(stationRepository.findById(lineRequest.getDownStationId()).get());
+                .upStationBy(stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(EntityNotFoundException::new))
+                .downStationBy(stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(EntityNotFoundException::new));
         return LineResponse.of(lineRepository.save(line));
     }
 
@@ -51,18 +50,5 @@ public class LineService {
     public void updateLine(final Long id, final LineRequest updateLine) {
         final Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         line.updateBy(updateLine);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LineService that = (LineService) o;
-        return Objects.equals(lineRepository, that.lineRepository);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(lineRepository);
     }
 }
