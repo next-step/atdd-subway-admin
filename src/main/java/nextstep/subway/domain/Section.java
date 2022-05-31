@@ -46,7 +46,7 @@ public class Section {
 
     public void duplicateValidateCheck(Section section) {
         if (this.upStation.equals(section.getUpStation()) && this.downStation.equals(section.getDownStation())) {
-            throw new IllegalArgumentException("이미 등록된 정보 입니다.");
+            throw new IllegalArgumentException(String.format("[%s-%s]으로 이루어진 구간은 이미 등록된 정보 입니다.", section.getUpStation().getName(), section.getDownStation().getName()));
         }
     }
 
