@@ -33,6 +33,11 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    public LineResponse findById(Long id) {
+        Line line = lineRepository.findById(id).get();
+        return LineResponse.of(line);
+    }
+
     @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);

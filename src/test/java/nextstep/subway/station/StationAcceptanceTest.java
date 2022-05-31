@@ -135,7 +135,7 @@ public class StationAcceptanceTest {
         assertThat(response_delete.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private ExtractableResponse<Response> 지하철역을_생성한다(String name) {
+    public static ExtractableResponse<Response> 지하철역을_생성한다(String name) {
         StationRequest stationRequest = new StationRequest(name);
 
         return RestAssured.given().log().all()
@@ -146,7 +146,7 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 전체_지하철역_목록을_조회한다() {
+    public static ExtractableResponse<Response> 전체_지하철역_목록을_조회한다() {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/stations")
@@ -154,7 +154,7 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 특정_지하철역을_제거한다(Long id) {
+    public static ExtractableResponse<Response> 특정_지하철역을_제거한다(Long id) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/stations/" + id)

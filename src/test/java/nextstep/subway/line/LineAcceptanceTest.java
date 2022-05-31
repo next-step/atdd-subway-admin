@@ -106,6 +106,25 @@ public class LineAcceptanceTest {
 
     /**
      * Given 노선을 생성하고
+     * When 해당 노선을 조회하면
+     * Then 해당 노선을 응답 받는다
+     */
+    @DisplayName("특정 노선을 조회한다.")
+    @Test
+    void getLine() {
+        //given
+        ExtractableResponse<Response> response_create = 노선을_생성한다("7호선", "#EEEEEE");
+
+        //when
+        ExtractableResponse<Response> response = 특정_노선목록을_조회한다(response_create.as(LineResponse.class).getId());
+
+        //then
+        LineResponse lineResponse = response.as(LineResponse.class);
+        assertThat(lineResponse.getName()).isEqualTo("7호선");
+    }
+
+    /**
+     * Given 노선을 생성하고
      * When 그 노선을 삭제하면
      * Then 그 노선 목록 조회 시 생성한 노선을 찾을 수 없다
      */
@@ -135,7 +154,7 @@ public class LineAcceptanceTest {
         assertThat(response_delete.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private ExtractableResponse<Response> 노선을_생성한다(String name, String color) {
+    public static ExtractableResponse<Response> 노선을_생성한다(String name, String color) {
         LineRequest lineRequest = new LineRequest(name, color);
         return RestAssured.given().log().all()
                 .body(lineRequest)
@@ -145,7 +164,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 전체_노선목록을_조회한다() {
+    public static ExtractableResponse<Response> 전체_노선목록을_조회한다() {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines")
@@ -153,7 +172,15 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 해당_노선을_제거한다(Long id) {
+    public static ExtractableResponse<Response> 특정_노선목록을_조회한다(Long id) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines/" + id)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 해당_노선을_제거한다(Long id) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/lines/" + id)
