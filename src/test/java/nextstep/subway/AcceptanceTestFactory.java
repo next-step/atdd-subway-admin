@@ -85,7 +85,7 @@ public class AcceptanceTestFactory {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-    public static void 생성_실패_확인(ExtractableResponse<Response> response) {
+    public static void 실패_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 

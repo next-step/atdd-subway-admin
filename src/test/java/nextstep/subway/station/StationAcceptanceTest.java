@@ -64,7 +64,7 @@ public class StationAcceptanceTest {
         // when
         ExtractableResponse<Response> 지하철_역_생성_요청_결과 = 지하철_역_생성("강남역");
         // then
-        생성_실패_확인(지하철_역_생성_요청_결과);
+        실패_확인(지하철_역_생성_요청_결과);
     }
 
     /**

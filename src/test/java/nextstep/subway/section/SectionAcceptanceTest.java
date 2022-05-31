@@ -108,7 +108,7 @@ public class SectionAcceptanceTest {
         Long 공덕역_ID = 지하철_역_생성_ID_추출("공덕역");
         Map<String, Object> 공덕역_마포역_구간_정보 = 지하철_구간_정보_생성(공덕역_ID, 마포역_ID, 10);
         ExtractableResponse<Response> 지하철_노선_구간_추가_응답_결과 = 지하철_노선_구간_추가_요청(애오개역_마포역_노선_ID, 공덕역_마포역_구간_정보);
-        생성_실패_확인(지하철_노선_구간_추가_응답_결과);
+        실패_확인(지하철_노선_구간_추가_응답_결과);
     }
 
     /**
@@ -121,11 +121,11 @@ public class SectionAcceptanceTest {
     void addAlreadyRegisteredSection() {
         Map<String, Object> 애오개역_여의도역_구간_정보 = 지하철_구간_정보_생성(애오개역_ID, 여의도역_ID, 5);
         ExtractableResponse<Response> 애오개역_여의도역_구간_추가_응답_결과 = 지하철_노선_구간_추가_요청(애오개역_마포역_노선_ID, 애오개역_여의도역_구간_정보);
-        생성_실패_확인(애오개역_여의도역_구간_추가_응답_결과);
+        실패_확인(애오개역_여의도역_구간_추가_응답_결과);
 
         Map<String, Object> 마포역_여의나루역_구간_정보 = 지하철_구간_정보_생성(마포역_ID, 여의나루역_ID, 5);
         ExtractableResponse<Response> 마포역_여의나루역_구간_추가_응답_결과 = 지하철_노선_구간_추가_요청(애오개역_마포역_노선_ID, 마포역_여의나루역_구간_정보);
-        생성_실패_확인(마포역_여의나루역_구간_추가_응답_결과);
+        실패_확인(마포역_여의나루역_구간_추가_응답_결과);
     }
 
     /**
@@ -140,7 +140,7 @@ public class SectionAcceptanceTest {
         Long 영등포시장역_ID = 지하철_역_생성_ID_추출("영등포시장역");
         Map<String, Object> 신길역_영등포시장역_구간_정보 = 지하철_구간_정보_생성(신길역_ID, 영등포시장역_ID, 10);
         ExtractableResponse<Response> 지하철_노선_구간_추가_응답_결과 = 지하철_노선_구간_추가_요청(애오개역_마포역_노선_ID, 신길역_영등포시장역_구간_정보);
-        생성_실패_확인(지하철_노선_구간_추가_응답_결과);
+        실패_확인(지하철_노선_구간_추가_응답_결과);
     }
 
     /**
@@ -177,5 +177,18 @@ public class SectionAcceptanceTest {
     void deleteMiddleStation() {
         ExtractableResponse<Response> 지하철_노선_구간_삭제_응답_결과 = 지하철_노선_구간_삭제_요청(애오개역_마포역_노선_ID, 마포역_ID);
         수정_성공_확인(지하철_노선_구간_삭제_응답_결과);
+    }
+
+    /**
+     * Given: 지하철 노선이 생성되어 있다.
+     * When: 사용자는 기존 노선에 없는 지하철 역 제거를 요청한다.
+     * Then: 구간 삭제에 실패한다.
+     */
+    @Test
+    @DisplayName("삭제하고자 하는 지하철 역이 기존 노선에 포함되어 있지 않으면 제거할 수 없다.")
+    void deleteNoExistsStation() {
+        Long 신길역_ID = 지하철_역_생성_ID_추출("신길역");
+        ExtractableResponse<Response> 지하철_노선_구간_삭제_응답_결과 = 지하철_노선_구간_삭제_요청(애오개역_마포역_노선_ID, 신길역_ID);
+        실패_확인(지하철_노선_구간_삭제_응답_결과);
     }
 }
