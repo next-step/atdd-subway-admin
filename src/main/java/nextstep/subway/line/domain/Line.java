@@ -50,4 +50,8 @@ public class Line extends BaseEntity {
     public int hashCode() {
         return Objects.hash(id, name);
     }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
 }

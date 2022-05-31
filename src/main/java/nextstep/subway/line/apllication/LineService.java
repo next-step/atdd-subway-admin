@@ -30,7 +30,17 @@ public class LineService {
     }
 
     public LineResponse getLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+        Line line = findLineById(id);
         return LineResponse.of(line);
+    }
+
+    public LineResponse updateLine(Long id, LineRequest lineRequest) {
+        Line line = findLineById(id);
+        line.updateName(lineRequest.getName());
+        return LineResponse.of(line);
+    }
+
+    private Line findLineById(Long id) {
+        return lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
     }
 }
