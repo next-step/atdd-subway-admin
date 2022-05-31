@@ -11,7 +11,8 @@ import javax.persistence.EntityNotFoundException;
 import java.net.URI;
 import java.util.List;
 
-@RestController
+@RestController()
+@RequestMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
 public class LineController {
 
     private final LineService lineService;
@@ -20,29 +21,29 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createStation(@RequestBody LineRequest lineRequest) {
+    @PostMapping()
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse lineResponse = lineService.saveLine(lineRequest);
-        return ResponseEntity.created(URI.create("/liens/" + lineResponse.getId())).body(lineResponse);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
-    @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<List<LineResponse>> showLines() {
         return ResponseEntity.ok().body(lineService.findAllLine());
     }
 
-    @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         return ResponseEntity.ok().body(lineService.findLine(id));
     }
 
-    @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}")
     public ResponseEntity<?> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/lines/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
