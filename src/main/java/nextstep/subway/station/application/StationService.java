@@ -1,5 +1,7 @@
 package nextstep.subway.station.application;
 
+import static nextstep.subway.common.exception.ErrorMessage.NO_EXISTS_STATION_ERROR;
+
 import java.util.NoSuchElementException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -14,8 +16,6 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class StationService {
-    private static final String NO_EXIST_STATION_ERROR_MESSAGE = "해당 지하철 역이 존재하지 않습니다.";
-
     private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
@@ -43,6 +43,6 @@ public class StationService {
 
     public Station findById(Long id) {
         return stationRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(NO_EXIST_STATION_ERROR_MESSAGE));
+                .orElseThrow(() -> new NoSuchElementException(NO_EXISTS_STATION_ERROR.getMessage()));
     }
 }

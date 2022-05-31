@@ -1,22 +1,22 @@
 package nextstep.subway.line.domain;
 
+import static nextstep.subway.common.exception.ErrorMessage.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
-    private static final String ALREADY_REGISTERED_ERROR_MESSAGE = "상행 역과 하행 역이 이미 모두 등록되어 있어 구간 추가할 수 없습니다.";
-    private static final String NO_EXISTS_ERROR_MESSAGE = "상행 역과 하행 역 둘 중 하나라도 등록되어 있지 않으면 구간 추가할 수 없습니다.";
     private static final int MINIMUM_SECTIONS_SIZE = 2;
-    private static final String SECTIONS_SIZE_ERROR_MESSAGE = "노선의 구간이 1개인 경우, 지하철 역을 제거할 수 없습니다.";
-    private static final String NO_EXISTS_STATION_ERROR_MESSAGE = "노선에 등록되어 있지 않은 역은 제거할 수 없습니다.";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
@@ -33,11 +33,11 @@ public class Sections {
 
     private void validateSection(Section newSection) {
         if (hasUpStationAndDownStation(newSection)) {
-            throw new IllegalArgumentException(ALREADY_REGISTERED_ERROR_MESSAGE);
+            throw new IllegalArgumentException(ALREADY_REGISTERED_ERROR.getMessage());
         }
 
         if(hasNotUpStationAndDownStation(newSection)) {
-            throw new IllegalArgumentException(NO_EXISTS_ERROR_MESSAGE);
+            throw new IllegalArgumentException(NO_EXISTS_STATION_ADD_ERROR.getMessage());
         }
     }
 
@@ -59,11 +59,6 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public boolean hasNot(Station station) {
-        List<Station> stations = findAllStations();
-        return !stations.contains(station);
-    }
-
     public List<Section> getSections() {
         return sections;
     }
@@ -83,15 +78,20 @@ public class Sections {
 
     private void validateStation(Station station) {
         if (isLessThan(MINIMUM_SECTIONS_SIZE)) {
-            throw new IllegalArgumentException(SECTIONS_SIZE_ERROR_MESSAGE);
+            throw new IllegalArgumentException(SECTIONS_SIZE_ERROR.getMessage());
         }
         if (hasNot(station)) {
-            throw new IllegalArgumentException(NO_EXISTS_STATION_ERROR_MESSAGE);
+            throw new IllegalArgumentException(NO_EXISTS_STATION_REMOVE_ERROR.getMessage());
         }
     }
 
-    private void addRearrangedSection(Section upSection, Section downSection) {
-        sections.add(upSection.rearrange(downSection));
+    public boolean isLessThan(int size) {
+        return sections.size() < size;
+    }
+
+    public boolean hasNot(Station station) {
+        List<Station> stations = findAllStations();
+        return !stations.contains(station);
     }
 
     private Optional<Section> findUpStation(Station station) {
@@ -106,7 +106,7 @@ public class Sections {
                 .findFirst();
     }
 
-    public boolean isLessThan(int size) {
-        return sections.size() < size;
+    private void addRearrangedSection(Section upSection, Section downSection) {
+        sections.add(upSection.rearrange(downSection));
     }
 }

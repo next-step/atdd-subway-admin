@@ -1,11 +1,12 @@
 package nextstep.subway.line.domain;
 
+import static nextstep.subway.common.exception.ErrorMessage.OVER_SIZED_DISTANCE_ERROR;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
 public class Distance implements Comparable<Distance> {
-    private static final String OVER_SIZED_DISTANCE_ERROR_MESSAGE = "기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.";
     private static final int ZERO_VALUE = 0;
 
     @Column
@@ -23,7 +24,7 @@ public class Distance implements Comparable<Distance> {
 
     public void subtract(Distance distanceObject) {
         if (this.compareTo(distanceObject) <= ZERO_VALUE) {
-            throw new IllegalArgumentException(OVER_SIZED_DISTANCE_ERROR_MESSAGE);
+            throw new IllegalArgumentException(OVER_SIZED_DISTANCE_ERROR.getMessage());
         }
         this.distance -= distanceObject.distance;
     }
