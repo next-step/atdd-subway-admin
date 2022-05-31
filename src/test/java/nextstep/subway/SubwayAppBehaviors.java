@@ -1,5 +1,8 @@
 package nextstep.subway;
 
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
@@ -8,11 +11,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import nextstep.subway.domain.exception.CannotAddSectionException;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 public class SubwayAppBehaviors {
+    public static List<String> 지하철노선에_속한_지하철역_이름목록을_반환한다(Long lineId){
+        Optional<LineResponse> optionalLineResponse = 지하철노선을_조회한다(lineId);
+        assertThat(optionalLineResponse.isPresent()).isTrue();
+
+        LineResponse lineResponse = optionalLineResponse.get();
+        List<SectionResponse> sectionResponses = lineResponse.getSectionResponses();
+        return sectionResponses.stream().map((sectionResponse) -> sectionResponse.getStartStationName()).collect(toList());
+    }
+
+    public static ExtractableResponse<Response> 지하철구간을_생성한다(Long lineId, Long upStationId, Long downStationId, Long distance) throws CannotAddSectionException {
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+        return RestAssured
+                .given().contentType(ContentType.JSON).body(params).log().all()
+                .when().post(String.format("/lines/%d/sections", lineId))
+                .then().log().all()
+                .extract();
+    }
 
     public static ExtractableResponse<Response> 지하철노선을_삭제한다(Long lineId) {
         return RestAssured

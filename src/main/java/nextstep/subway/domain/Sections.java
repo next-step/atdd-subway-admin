@@ -53,7 +53,7 @@ public class Sections {
             return new SectionOperation(upMatch.get(), SectionMatchType.UP_STATION);
         }
         if (downMatch.isPresent()) {
-            return new SectionOperation(upMatch.get(), SectionMatchType.DOWN_STATION);
+            return new SectionOperation(downMatch.get(), SectionMatchType.DOWN_STATION);
         }
         if (isInsertHead(downStation.getId())) {
             return new SectionOperation(sectionList.get(0), SectionMatchType.INSERT_HEAD);
@@ -110,7 +110,7 @@ public class Sections {
                 int targetIndex = sectionList.indexOf(targetSection);
                 Long diffDistance = targetSection.getDistance() - newSection.getDistance();
                 if (diffDistance <= 0) {
-                    throw new CannotAddSectionException("구간 추가 불가능");
+                    throw new CannotAddSectionException("새 구간의 길이는 기존 역사이의 거리보다 길수 없습니다.");
                 }
                 Section nextSection = sectionList.get(targetIndex + 1);
                 sectionList.set(targetIndex, newSection);
