@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class SectionsTest {
     Station 강남역;
@@ -18,6 +21,7 @@ class SectionsTest {
     Section section2;
     List<Section> sections = new ArrayList<>();
     Sections sections1;
+
     @BeforeEach
     void setUp() {
         강남역 = Station.builder("강남역")
@@ -75,5 +79,34 @@ class SectionsTest {
     @Test
     void getStations() {
         assertThat(sections1.stations()).containsOnly(강남역, 양재역, 양재시민의숲역);
+    }
+
+    @DisplayName("구간들에 있는 하행역이 일치하는 구간 사이에 구간 추가")
+    @Test
+    void addSectionInside() {
+        Section newSection = Section.builder(판교역, 양재시민의숲역, Distance.valueOf(4))
+                .build();
+        sections1.addSection(newSection);
+        assertThat(sections1.stations()).containsOnly(강남역, 양재역, 양재시민의숲역, 판교역);
+    }
+
+    @DisplayName("구간들에 하행 종점에 구간 추가")
+    @Test
+    void addSectionAtDownStation() {
+        Section newSection = Section.builder(양재시민의숲역, 판교역, Distance.valueOf(12))
+                .build();
+        sections1.addSection(newSection);
+        assertThat(sections1.stations()).containsOnly(강남역, 양재역, 양재시민의숲역, 판교역);
+    }
+
+    @DisplayName("구간들에 있는 하행역이 일치하는 구간 사이에 구간길이가 같거나 큰 구간 추가하면 예외 발생")
+    @ParameterizedTest(name = "구간들에 있는 하행역이 일치하는 구간 사이에 {0}의 구간길이가 같거나 큰 구간 추가하면 예외 발생")
+    @ValueSource(ints = {10, 12})
+    void addSectionInsideByEqualOrLongerDistance(int input) {
+        Section newSection = Section.builder(판교역, 양재시민의숲역, Distance.valueOf(input))
+                .build();
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> sections1.addSection(newSection))
+                .withMessage("구간 길이는 0 이하가 될 수 없습니다.");
     }
 }

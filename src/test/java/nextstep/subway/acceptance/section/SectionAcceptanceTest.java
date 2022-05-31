@@ -131,7 +131,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
      */
     @DisplayName("구간 사이에 새로운 구간을 등록할 경우 기존 구간 사이 길이보다 크거나 같으면 등록을 할 수 없음")
     @ParameterizedTest(name = "구간 10 사이에 새로운 구간 {0}을 등록할 경우 기존 구간 사이 길이보다 크거나 같아 등록을 할 수 없음")
-    @ValueSource(strings = {"10", "12"})
+    @ValueSource(ints = {10, 12})
     void addSectionInsideByEqualOrLongerDistance(int input) {
         // when
         ExtractableResponse<Response> response = SectionRestAssured.지하철구간_추가_요청(신분당선.getId(), 양재역.getId(), 청계산입구역.getId(), input);
