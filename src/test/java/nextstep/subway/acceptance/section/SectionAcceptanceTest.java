@@ -26,6 +26,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
     StationResponse 청계산입구역;
     StationResponse 판교역;
     StationResponse 정자역;
+    StationResponse 미금역;
     LineResponse 신분당선;
     @BeforeEach
     protected void setUp() {
@@ -35,6 +36,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         청계산입구역 = 지하철역_생성_요청("청계산입구역").as(StationResponse.class);
         판교역 = 지하철역_생성_요청("판교역").as(StationResponse.class);
         정자역 = 지하철역_생성_요청("정자역").as(StationResponse.class);
+        미금역 = 지하철역_생성_요청("미금역").as(StationResponse.class);
         신분당선 = 지하철노선_생성_요청("신분당선", "bg-red-600", 양재역.getId(), 판교역.getId(), 10).as(LineResponse.class);
     }
 
@@ -140,6 +142,23 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 지하철 노선의 구간 사이에 새로운 구간을 등록하고
+     * When 상행역과 하행역이 이미 노선에 모두 등록되어 있는 구간을 등록하면
+     * Then 구간 등록에 실패한다.
+     */
+    @DisplayName("지하철 노선의 구간 등록시 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 등록할 수 없음")
+    @Test
+    void addSectionAtLineAddedSection() {
+        // given
+        지하철구간_추가_요청(신분당선.getId(), 청계산입구역.getId(), 판교역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> response = 지하철구간_추가_요청(신분당선.getId(), 양재역.getId(), 청계산입구역.getId(), 4);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 
     ExtractableResponse<Response> 지하철구간_추가_요청(long lineId, long upStationId, long downStationId, int distance) {
         Map<String, Object> params = new HashMap<>();

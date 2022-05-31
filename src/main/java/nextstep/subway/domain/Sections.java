@@ -26,6 +26,8 @@ public class Sections {
 
     public void addSection(Section section) {
         if (!isSectionsEmpty()) {
+            validNotAddedSection(section);
+            validContainsUpStationOrDownStation(section);
             update(section);
         }
         sections.add(section);
@@ -45,12 +47,28 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public List<Section> sections() {
-        return sections;
-    }
-
     private void update(Section newSection) {
         sections.forEach(section -> section.update(newSection));
+    }
+
+    private void validNotAddedSection(Section section) {
+        if (containsUpStationAndDownStation(section)) {
+            throw new IllegalArgumentException("이미 등록된 구간 요청입니다.");
+        }
+    }
+
+    private void validContainsUpStationOrDownStation(Section section) {
+        if (containsNoneOfUpStationAndDownStation(section)) {
+            throw new IllegalArgumentException("등록을 위해 필요한 상행역과 하행역이 모두 등록되어 있지 않습니다.");
+        }
+    }
+
+    private boolean containsUpStationAndDownStation(Section section) {
+        return this.stations().contains(section.upStation()) && this.stations().contains(section.downStation());
+    }
+
+    private boolean containsNoneOfUpStationAndDownStation(Section section) {
+        return !this.stations().contains(section.upStation()) && !this.stations().contains(section.downStation());
     }
 
     private boolean isSectionsEmpty() {
