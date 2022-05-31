@@ -38,17 +38,11 @@ npm run dev
 ```
 <br>
 
-## ✏️ Code Review Process
-[텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
-<br>
+## 요구사항 정의
+#### 인수 테스트 작성
 
-## 🐞 Bug Report
+  - [x] 지하철역 목록 조회 인수 테스트 작성하기
+  - [x] 지하철역 삭제 인수 테스트 작성하기
 
-버그를 발견한다면, [Issues](https://github.com/next-step/atdd-subway-admin/issues) 에 등록해주세요 :)
 
-<br>
-
-## 📝 License
-
-This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
