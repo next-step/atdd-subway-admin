@@ -45,7 +45,7 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * When 지하철노선에 구간에 새로운 구간을 추가하면
+     * When 지하철 구간에 새로운 구간을 추가하면
      * Then 노선에 구간을 등록한다.
      */
     @Test
@@ -53,5 +53,22 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> 일호선_구간 = 지하철구간_생성(일호선.getId(), 소요산역.getId(), 서울역.getId(), 10);
 
         assertThat(일호선_구간.statusCode()).isEqualTo(HttpStatus.OK.value());
+        //TODO 구간이 적절하게 설정되었는지에 대한 테스트 추가
+
+    }
+
+    /**
+     * When 지하철 구간에 상행 종점역이 추가하여 노선이 연장되면
+     * Then 신규 상행 구간이 추가된다.
+     */
+    @Test
+    void 새로운_역을_상행_종점으로_등록() {
+        StationResponse 신규_상행역 = 지하철역_생성("신규상행역").as(StationResponse.class);
+        ExtractableResponse<Response> 상행역_연장구간 = 지하철구간_생성(일호선.getId(), 신규_상행역.getId(), 소요산역.getId(), 5);
+
+        assertThat(상행역_연장구간.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        //TODO 구간의 길이가 추가되었는지에 대한 테스트 추가
+
     }
 }
