@@ -28,7 +28,8 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = stationRepository.getById(lineRequest.getUpStationId());
         Station downStation = stationRepository.getById(lineRequest.getDownStationId());
-        Line newLine = LineFactory.createNewLine(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
+        Line newLine = LineFactory.createNewLine(lineRequest.getName(), lineRequest.getColor(), upStation, downStation,
+                lineRequest.getDistance());
         return LineResponse.of(lineRepository.save(newLine));
     }
 
@@ -43,7 +44,7 @@ public class LineService {
     @Transactional
     public void updateLine(Long lineId, LineRequest lineRequest) {
         Line line = lineRepository.getById(lineId);
-        line.updateLine(lineRequest.getName(),lineRequest.getColor());
+        line.updateLine(lineRequest.getName(), lineRequest.getColor());
         lineRepository.save(line);
     }
 

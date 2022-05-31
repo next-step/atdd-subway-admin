@@ -22,14 +22,14 @@ public class Section {
 
     private int sectionOrder;
 
-    protected Section(){
+    protected Section() {
 
     }
 
-    public Section(Station upStation, Station downStation, Long distance){
-        this.upStation =upStation;
+    public Section(Station upStation, Station downStation, Long distance) {
+        this.upStation = upStation;
         this.downStation = downStation;
-        this.distance=distance;
+        this.distance = distance;
     }
 
     public Long getId() {

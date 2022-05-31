@@ -14,7 +14,7 @@ public class SectionResponse {
         this.distanceToNextStation = distanceToNextStation;
     }
 
-    public static SectionResponse of(Section section){
+    public static SectionResponse of(Section section) {
         return new SectionResponse(section.getUpStation().getName(), section.getDistance());
     }
 

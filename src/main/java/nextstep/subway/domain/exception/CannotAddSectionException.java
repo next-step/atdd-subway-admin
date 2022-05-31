@@ -1,6 +1,6 @@
 package nextstep.subway.domain.exception;
 
-public class CannotAddSectionException extends RuntimeException{
+public class CannotAddSectionException extends RuntimeException {
     public CannotAddSectionException() {
     }
 
