@@ -31,7 +31,7 @@ public class Line {
     public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        this.sections.add(section, this);
+        this.addSection(section);
     }
 
     public void update(LineRequest lineRequest) {
@@ -41,6 +41,10 @@ public class Line {
 
     public List<Station> orderStationsOfLine() {
         return sections.orderStationsOfLine();
+    }
+
+    public void addSection(Section section) {
+        this.sections.add(section, this);
     }
 
     public Long getId() {
