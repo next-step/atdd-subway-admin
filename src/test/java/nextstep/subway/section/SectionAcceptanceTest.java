@@ -191,4 +191,21 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> 지하철_노선_구간_삭제_응답_결과 = 지하철_노선_구간_삭제_요청(애오개역_마포역_노선_ID, 신길역_ID);
         실패_확인(지하철_노선_구간_삭제_응답_결과);
     }
+
+    /**
+     * Given: 구간이 1개인 지하철 노선이 생성되어 있다.
+     * When: 사용자는 지하철 역 제거를 요청한다.
+     * Then: 구간 삭제에 실패한다.
+     */
+    @Test
+    @DisplayName("노선의 구간이 하나인 경우, 지하철 역을 제거할 수 없다.")
+    void deleteOneSection() {
+        Long 강남역_ID = 지하철_역_생성_ID_추출("강남역");
+        Long 양재역_ID = 지하철_역_생성_ID_추출("양재역");
+        Map<String, Object> 신분당선_노선_정보 = 지하철_노선_정보_생성("신분당선", "bg-red-600", 강남역_ID, 양재역_ID, 10);
+        Long 강남역_양재역_노선_ID = 지하철_노선_생성_ID_추출(신분당선_노선_정보);
+
+        ExtractableResponse<Response> 지하철_노선_구간_삭제_응답_결과 = 지하철_노선_구간_삭제_요청(강남역_양재역_노선_ID, 양재역_ID);
+        실패_확인(지하철_노선_구간_삭제_응답_결과);
+    }
 }
