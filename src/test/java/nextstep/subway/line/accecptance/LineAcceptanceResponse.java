@@ -27,4 +27,10 @@ public class LineAcceptanceResponse {
     public static void 지하철노선_조회_실패(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
+
+    public static void 지하철노선_수정_조회_성공(ExtractableResponse<Response> response, String updatedName) {
+        String lineName = response.jsonPath().get("name");
+        assertThat(lineName).isEqualTo(updatedName);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 }

@@ -46,4 +46,16 @@ public class LineAcceptanceRequest {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철노선_수정_요청_성공(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when().patch("/lines/1")
+                .then().log().all()
+                .extract();
+    }
 }
