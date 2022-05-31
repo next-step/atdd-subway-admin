@@ -29,7 +29,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void createLine() {
         // given
-        지하철역과_노선_동시_생성("강남역", "양재역", "신분당선", "bg-red-600", 10);
+        지하철역과_노선_동시_생성("강남역", "양재역", "신분당선", "bg-red-600", 10L);
 
         // then
         List<String> lineList = 노션_목록_조회().jsonPath().getList("name", String.class);
@@ -47,8 +47,8 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철역과_노선_동시_생성("신사역", "광교역", "신분당선", "bg-red-600", 10);
-        지하철역과_노선_동시_생성("신림역", "봉천역", "2호선", "bg-blue-600", 10);
+        지하철역과_노선_동시_생성("신사역", "광교역", "신분당선", "bg-red-600", 10L);
+        지하철역과_노선_동시_생성("신림역", "봉천역", "2호선", "bg-blue-600", 10L);
 
         // when
         List<Object> stationList = 노션_목록_조회().jsonPath().getList("$");
@@ -68,7 +68,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         // given
         StationResponse downStation = 지하철역_생성("신사역").extract().as(StationResponse.class);
         StationResponse upStation = 지하철역_생성("광교역").extract().as(StationResponse.class);
-        Long createLineId = 노선_생성("신분당선", "bg-red-600", downStation.getId(), upStation.getId(), 10)
+        Long createLineId = 노선_생성("신분당선", "bg-red-600", downStation.getId(), upStation.getId(), 10L)
             .extract().jsonPath().getLong("id");
 
         // when
@@ -91,11 +91,11 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         // given
         StationResponse downStation = 지하철역_생성("신사역").extract().as(StationResponse.class);
         StationResponse upStation = 지하철역_생성("광교역").extract().as(StationResponse.class);
-        Long createLineId = 노선_생성("신분당선", "bg-red-600", downStation.getId(), upStation.getId(), 10)
+        Long createLineId = 노선_생성("신분당선", "bg-red-600", downStation.getId(), upStation.getId(), 10L)
             .extract().jsonPath().getLong("id");
 
         // when
-        LineRequest lineRequest = new LineRequest("구분당선", "bg-blue-600", downStation.getId(), upStation.getId(), 10);
+        LineRequest lineRequest = new LineRequest("구분당선", "bg-blue-600", downStation.getId(), upStation.getId(), 10L);
         ExtractableResponse<Response> lineResponse = 노션_수정(createLineId, lineRequest);
 
         // then
@@ -112,7 +112,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     void deleteLine() {
         // given
         ValidatableResponse validatableResponse =
-            지하철역과_노선_동시_생성("신사역", "광교역", "신분당선", "bg-red-600", 10);
+            지하철역과_노선_동시_생성("신사역", "광교역", "신분당선", "bg-red-600", 10L);
         Long createLineId = validatableResponse.extract().jsonPath().getLong("id");
 
         // when
@@ -153,7 +153,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
             .extract();
     }
 
-    private ValidatableResponse 노선_생성(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public static ValidatableResponse 노선_생성(String name, String color, Long upStationId, Long downStationId, Long distance) {
         LineRequest lineRequest = new LineRequest(name, color, upStationId, downStationId, distance);
 
         return RestAssured
@@ -164,7 +164,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
             .then().log().all();
     }
 
-    private ValidatableResponse 지하철역과_노선_동시_생성(String stationName1, String stationName2, String lineName, String lineColor, int distance) {
+    public static ValidatableResponse 지하철역과_노선_동시_생성(String stationName1, String stationName2, String lineName, String lineColor, Long distance) {
         Long downStationId = 지하철역_생성(stationName1).extract().jsonPath().getLong("id");
         Long upStationId = 지하철역_생성(stationName2).extract().jsonPath().getLong("id");
 
