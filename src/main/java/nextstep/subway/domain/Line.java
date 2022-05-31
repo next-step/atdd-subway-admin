@@ -24,10 +24,10 @@ public class Line extends BaseEntity {
     private Station downStation;
 
     @Embedded
-    private Sections sections;
+    private Sections sections = new Sections();
 
     @Embedded
-    private LineStations lineStations;
+    private LineStations lineStations = new LineStations();
 
     protected Line() {
     }
@@ -87,6 +87,10 @@ public class Line extends BaseEntity {
 
     public Sections getSections() {
         return sections;
+    }
+
+    public LineStations getLineStations() {
+        return lineStations;
     }
 
     @Override

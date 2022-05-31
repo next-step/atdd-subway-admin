@@ -23,4 +23,8 @@ public class LineStation {
         this.station = station;
         this.line = line;
     }
+
+    public Station getStation() {
+        return station;
+    }
 }

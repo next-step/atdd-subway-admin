@@ -20,6 +20,10 @@ public class Sections {
         this.list = list;
     }
 
+    public void add(Section section) {
+        list.add(section);
+    }
+
     public List<Section> getList() {
         return list;
     }

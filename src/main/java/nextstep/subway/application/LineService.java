@@ -1,16 +1,14 @@
 package nextstep.subway.application;
 
 import nextstep.subway.domain.*;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.LineResponses;
-import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.*;
 import nextstep.subway.exception.LineNotFoundException;
 import nextstep.subway.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,13 +34,17 @@ public class LineService {
                 .orElseThrow(StationNotFoundException::new);
         Station downStation = stationRepository.findById(lineRequest.getDownStationId())
                 .orElseThrow(StationNotFoundException::new);
+
         Line persistLine = lineRepository.save(lineRequest.toLine());
         persistLine.setUpStation(upStation);
         persistLine.setDownStation(downStation);
 
-        sectionRepository.save(new Section(lineRequest.getDistance(), upStation, downStation, persistLine));
-        lineStationRepository.save(new LineStation(upStation, persistLine));
-        lineStationRepository.save(new LineStation(downStation, persistLine));
+        Sections sections = persistLine.getSections();
+        sections.add(new Section(lineRequest.getDistance(), upStation, downStation, persistLine));
+
+        LineStations lineStations = persistLine.getLineStations();
+        lineStations.add(new LineStation(upStation, persistLine));
+        lineStations.add(new LineStation(downStation, persistLine));
 
         return LineResponse.of(persistLine);
     }

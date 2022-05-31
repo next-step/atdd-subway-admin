@@ -31,4 +31,26 @@ public class Section {
         this.downStation = downStation;
         this.line = line;
     }
+
+    public void updateSection(Station upStation, Station downStation, Integer distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = new Distance(distance);
+    }
+
+    public Integer getDistance() {
+        return distance.getDistance();
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public Line getLine() {
+        return line;
+    }
 }
