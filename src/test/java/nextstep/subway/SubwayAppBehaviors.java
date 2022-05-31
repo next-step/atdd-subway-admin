@@ -55,16 +55,25 @@ public class SubwayAppBehaviors {
 
     public static Long 지하철노선을_생성하고_ID를_반환한다(
             String name, String color,
-            String upStationName, String downStationName, int distance) {
+            String upStationName, String downStationName, Long distance) {
 
         ExtractableResponse<Response> response = 지하철노선을_생성한다(name,color,upStationName,downStationName,distance);
 
         return response.jsonPath().getLong("id");
     }
 
+    public static Long 지하철노선을_생성하고_ID를_반환한다(
+            String name, String color,
+            Long upStationId, Long downStationId, Long distance) {
+
+        ExtractableResponse<Response> response = 지하철노선을_생성한다(name,color,upStationId,downStationId,distance);
+
+        return response.jsonPath().getLong("id");
+    }
+
     public static ExtractableResponse<Response> 지하철노선을_생성한다(
             String name, String color,
-            String upStationName, String downStationName, int distance) {
+            String upStationName, String downStationName, Long distance) {
 
         Long upStationId = 지하철역을_생성하고_생성된_ID를_반환한다(upStationName);
         Long downStationId = 지하철역을_생성하고_생성된_ID를_반환한다(downStationName);
@@ -85,7 +94,27 @@ public class SubwayAppBehaviors {
                 .extract();
     }
 
-    private static Long 지하철역을_생성하고_생성된_ID를_반환한다(String 역이름) {
+    private static ExtractableResponse<Response> 지하철노선을_생성한다(
+            String name, String color,
+            Long upStationId, Long downStationId, Long distance) {
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+
+        return RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    public static Long 지하철역을_생성하고_생성된_ID를_반환한다(String 역이름) {
         ExtractableResponse<Response> response = 지하철역을_생성한다(역이름);
         return response.jsonPath().getLong("id");
     }

@@ -39,7 +39,7 @@ public class LineAcceptanceTest {
         // given
         // when
         ExtractableResponse<Response> response = 지하철노선을_생성한다(
-                "2호선", "color", "강남역", "충정로역", 100
+                "2호선", "color", "강남역", "충정로역", 100L
         );
 
         // then
@@ -59,8 +59,8 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철노선을_생성한다("1호선", "color1", "서울역", "인천역", 100);
-        지하철노선을_생성한다("2호선", "color2", "강남역", "충정로역", 100);
+        지하철노선을_생성한다("1호선", "color1", "서울역", "인천역", 100L);
+        지하철노선을_생성한다("2호선", "color2", "강남역", "충정로역", 100L);
 
         // when
         List<LineResponse> lines = 지하철노선목록을_조회한다();
@@ -78,7 +78,7 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         // given
-        Long lineId = 지하철노선을_생성하고_ID를_반환한다("1호선", "color1", "서울역", "인천역", 100);
+        Long lineId = 지하철노선을_생성하고_ID를_반환한다("1호선", "color1", "서울역", "인천역", 100L);
 
         // when
         Optional<LineResponse> optionalLine = 지하철노선을_조회한다(lineId);
@@ -105,7 +105,7 @@ public class LineAcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Long lineId = 지하철노선을_생성하고_ID를_반환한다("1호선", "color1", "서울역", "인천역", 100);
+        Long lineId = 지하철노선을_생성하고_ID를_반환한다("1호선", "color1", "서울역", "인천역", 100L);
         String newName = "1호선수정";
         String newColor = "color2";
 
@@ -130,7 +130,7 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Long lineId = 지하철노선을_생성하고_ID를_반환한다("1호선", "color1", "서울역", "인천역", 100);
+        Long lineId = 지하철노선을_생성하고_ID를_반환한다("1호선", "color1", "서울역", "인천역", 100L);
 
         // when
         지하철노선을_삭제한다(lineId);
