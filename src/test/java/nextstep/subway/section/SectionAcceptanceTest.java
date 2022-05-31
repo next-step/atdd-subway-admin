@@ -34,7 +34,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
      * Given 지하철 노선을 생성하고
      * When 새로운 역을 지하철 구간에 추가하면
      * Then 새로운 역이 구간에 추가되고
-     * Then 기존 역과 새로운 역에 설정된 구간 길이를 조회할 수 있다
+     * Then 노선에 추가된 새로운 역 조회할 수 있다
      */
     @DisplayName("역 사이에 새로운 역을 등록한다.")
     @Test
@@ -44,17 +44,17 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> 새로운역_추가_응답 = 지하철_구간_추가(this.신분당선_생성_응답, 새로운역_구간_요청);
 
         // then
-        추가된_지하철구간_확인(새로운역_추가_응답);
+        지하철구간_추가됨(새로운역_추가_응답, 새로운역_구간_요청);
 
         // then
-        추가된_지하철구간_길이_조회(새로운역_구간_요청);
+        추가된_지하철구간_조회(this.신분당선_생성_응답, 새로운역_구간_요청);
     }
 
     /**
      * Given 지하철 노선을 생성하고
      * When 새로운 상행 종점을 등록하면
      * Then 새로운 상행 종점이 구간에 추가되고
-     * Then 이전 상행 종점과의 구간 길이를 조회할 수 있다
+     * Then 노선에 추가된 새로운 상행 종점을 조회할 수 있다
      */
     @DisplayName("새로운 역을 상행 종점으로 등록한다.")
     @Test
@@ -64,17 +64,17 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> 새로운역_상행종점_추가_응답 = 지하철_구간_추가(this.신분당선_생성_응답, 새로운역_상행종점_요청);
 
         // then
-        추가된_지하철구간_확인(새로운역_상행종점_추가_응답);
+        지하철구간_추가됨(새로운역_상행종점_추가_응답, 새로운역_상행종점_요청);
 
         // then
-        추가된_지하철구간_길이_조회(새로운역_상행종점_요청);
+        추가된_지하철구간_조회(this.신분당선_생성_응답, 새로운역_상행종점_요청);
     }
 
     /**
      * Given 지하철 노선을 생성하고
      * When 새로운 하행 종점을 등록하면
      * Then 새로운 하행 종점이 구간에 추가되고
-     * Then 이전 하행 종점과의 구간 길이를 조회할 수 있다
+     * Then 노선에 추가된 새로운 하행 종점을 조회할 수 있다
      */
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
     @Test
@@ -84,10 +84,10 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> 새로운역_하행종점_추가_응답 = 지하철_구간_추가(this.신분당선_생성_응답, 새로운역_하행종점_요청);
 
         // then
-        추가된_지하철구간_확인(새로운역_하행종점_추가_응답);
+        지하철구간_추가됨(새로운역_하행종점_추가_응답, 새로운역_하행종점_요청);
 
         // then
-        추가된_지하철구간_길이_조회(새로운역_하행종점_요청);
+        추가된_지하철구간_조회(this.신분당선_생성_응답, 새로운역_하행종점_요청);
     }
 
     /**

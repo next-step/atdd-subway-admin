@@ -4,14 +4,9 @@ import nextstep.subway.common.domain.BaseEntity;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
-import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "line")
@@ -51,21 +46,7 @@ public class Line extends BaseEntity {
     }
 
     public LineResponse toLineResponse() {
-        return LineResponse.of(this, allStationResponses());
-    }
-
-    private List<StationResponse> allStationResponses() {
-        return allStations().stream()
-                .map(Station::toStationResponse)
-                .collect(Collectors.toList());
-    }
-
-    private List<Station> allStations() {
-        List<Station> allStations = new ArrayList<>();
-        getSections().forEach(section -> {
-            allStations.addAll(section.getStations());
-        });
-        return allStations.stream().distinct().collect(Collectors.toList());
+        return LineResponse.of(this, this.sections.allStationResponses());
     }
 
     public Long getId() {
@@ -78,10 +59,6 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return this.color.get();
-    }
-
-    public List<Section> getSections() {
-        return this.sections.get();
     }
 
     @Override

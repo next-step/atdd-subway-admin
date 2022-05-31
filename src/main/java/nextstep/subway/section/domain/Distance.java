@@ -25,6 +25,10 @@ public class Distance {
         return new Distance(distance);
     }
 
+    public void decrease(Distance distance) {
+        this.distance -= distance.distance;
+    }
+
     public int get() {
         return this.distance;
     }

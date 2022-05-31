@@ -73,16 +73,36 @@ public class Section {
         return Arrays.asList(this.upStation, this.downStation);
     }
 
-    public Long getUpStationId() {
-        return this.upStation.getId();
+    public boolean isEqualsUpStation(Station station) {
+        return this.upStation.equals(station);
     }
 
-    public Long getDownStationId() {
-        return this.downStation.getId();
+    public boolean isEqualsDownStation(Station station) {
+        return this.downStation.equals(station);
     }
 
-    public int getDistance() {
-        return this.distance.get();
+    public void updateUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void updateDownStation(Station station) {
+        this.downStation = station;
+    }
+
+    public void decreaseDistance(Distance distance) {
+        this.distance.decrease(distance);
+    }
+
+    public Station getUpStation() {
+        return this.upStation;
+    }
+
+    public Station getDownStation() {
+        return this.downStation;
+    }
+
+    public Distance getDistance() {
+        return this.distance;
     }
 
     @Override
