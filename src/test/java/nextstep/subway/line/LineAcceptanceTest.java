@@ -12,11 +12,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import static nextstep.subway.line.accecptance.LineAcceptanceRequest.지하철노선_목록_조회_요청;
+import static nextstep.subway.line.accecptance.LineAcceptanceRequest.지하철노선_삭제_요청_성공;
 import static nextstep.subway.line.accecptance.LineAcceptanceRequest.지하철노선_생성_요청;
 import static nextstep.subway.line.accecptance.LineAcceptanceRequest.지하철노선_수정_요청_성공;
 import static nextstep.subway.line.accecptance.LineAcceptanceRequest.지하철노선_조회_요청;
 import static nextstep.subway.line.accecptance.LineAcceptanceRequest.지하철노선_존재;
 import static nextstep.subway.line.accecptance.LineAcceptanceResponse.지하철노선_목록_조회_성공;
+import static nextstep.subway.line.accecptance.LineAcceptanceResponse.지하철노선_삭제_성공;
+import static nextstep.subway.line.accecptance.LineAcceptanceResponse.지하철노선_삭제_실패;
 import static nextstep.subway.line.accecptance.LineAcceptanceResponse.지하철노선_생성_성공;
 import static nextstep.subway.line.accecptance.LineAcceptanceResponse.지하철노선_수정_조회_성공;
 import static nextstep.subway.line.accecptance.LineAcceptanceResponse.지하철노선_수정_조회_실패;
@@ -120,7 +123,7 @@ public class LineAcceptanceTest {
      * When 존재하지 않는 지하철 노선을 수정하면
      * Then 예외를 던진다
      */
-    @DisplayName("지하철 노선 수정한다")
+    @DisplayName("노선이 존재하지 않는다면 지하철 노선 수정는 실패한다")
     @Test
     void 지하철노선_수정_예외() {
         String updatedName = "3호선";
@@ -128,5 +131,32 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> response = 지하철노선_수정_요청_성공(updatedName);
 
         지하철노선_수정_조회_실패(response, updatedName);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 생성한 지하철 노선의 정보가 삭제
+     */
+    @DisplayName("지하철 노선 삭제한다")
+    @Test
+    void 지하철노선_삭제() {
+        지하철노선_존재("2호선");
+
+        ExtractableResponse<Response> response = 지하철노선_삭제_요청_성공("2호선");
+
+        지하철노선_삭제_성공(response);
+    }
+
+    /**
+     * When 존재하지 않는 지하철 노선을 삭제하면
+     * Then 예외를 던진다
+     */
+    @DisplayName("노선이 존재하지 않는다면 지하철 노선 삭제는 실패한다")
+    @Test
+    void 지하철노선_삭제_예외() {
+        ExtractableResponse<Response> response = 지하철노선_삭제_요청_성공("2호선");
+
+        지하철노선_삭제_실패(response);
     }
 }
