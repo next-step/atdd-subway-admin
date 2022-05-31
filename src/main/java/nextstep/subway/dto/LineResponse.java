@@ -26,4 +26,20 @@ public class LineResponse {
         stations.add(StationResponse.of(line.downStation()));
         return new LineResponse(line.id(), line.name(), line.color(), stations);
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public List<StationResponse> getStations() {
+        return stations;
+    }
 }
