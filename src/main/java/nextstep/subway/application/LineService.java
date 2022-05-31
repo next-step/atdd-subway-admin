@@ -27,9 +27,8 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = getStation(lineRequest.getUpStationId());
-        Station downStation = getStation(lineRequest.getDownStationId());
-        Line line = lineRequest.toLine(upStation, downStation);
+        Line line = lineRequest.toLine(getStation(lineRequest.getUpStationId()),
+                getStation(lineRequest.getDownStationId()));
         Line persistStation = lineRepository.save(line);
         return LineResponse.of(persistStation);
     }
@@ -50,9 +49,8 @@ public class LineService {
     @Transactional
     public Line addSection(Long id, SectionRequest sectionRequest) {
         Line line = getLine(id);
-        Station upStation = getStation(sectionRequest.getUpStationId());
-        Station downStation = getStation(sectionRequest.getDownStationId());
-        line.addSection(sectionRequest.toSection(upStation, downStation));
+        line.addSection(sectionRequest.toSection(getStation(sectionRequest.getUpStationId()),
+                getStation(sectionRequest.getDownStationId())));
         lineRepository.save(line);
         return line;
     }
