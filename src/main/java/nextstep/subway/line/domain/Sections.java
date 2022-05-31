@@ -56,6 +56,11 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    public boolean hasNot(Station station) {
+        List<Station> stations = findAllStations();
+        return !stations.contains(station);
+    }
+
     public List<Section> getSections() {
         return sections;
     }
