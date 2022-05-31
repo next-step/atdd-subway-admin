@@ -18,7 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철구간 관련 기능")
-public class SectionAcceptanceTest extends BaseAcceptanceTest {
+class SectionAcceptanceTest extends BaseAcceptanceTest {
     StationResponse 양재역;
     StationResponse 청계산입구역;
     StationResponse 판교역;
@@ -37,7 +37,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
      * When 지하철 노선에 사이에 새로운 구간을 등록하면
      * Then 지하철 노선에 사이에 새로운 역이 등록된다.
      */
-    @DisplayName("지하철노선 생성")
+    @DisplayName("지하철 노선에 지하철구간 생성")
     @Test
     void addSection() {
         // when
@@ -48,8 +48,8 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         List<String> stationNames = response.jsonPath().getList("stations.name", String.class);
-        assertThat(stationNames).hasSize(2);
-        assertThat(stationNames).containsExactly(양재역.getName(), 청계산입구역.getName(), 판교역.getName());
+        assertThat(stationNames).hasSize(3);
+        assertThat(stationNames).containsOnly(양재역.getName(), 청계산입구역.getName(), 판교역.getName());
     }
 
     ExtractableResponse<Response> 지하철구간_추가_요청(long lineId, long upStationId, long downStationId, int distance) {

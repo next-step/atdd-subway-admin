@@ -51,7 +51,6 @@ class SectionsTest {
                 .map(Station::name)
                 .collect(Collectors.toList());
         assertThat(stationNames).containsOnly("강남역", "양재역", "판교역", "양재시민의숲역");
-        //assertThat(upStationNames).containsExactly("강남역", "양재역", "판교역");
     }
 
     @DisplayName("구간들 사이에 새로운 구간 등록 테스트 (하행역 일치)")
@@ -65,6 +64,5 @@ class SectionsTest {
                 .map(Station::name)
                 .collect(Collectors.toList());
         assertThat(stationNames).containsOnly("강남역", "양재역", "판교역", "양재시민의숲역");
-        //assertThat(upStationNames).containsExactly("강남역", "양재역", "판교역");
     }
 }
