@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import nextstep.subway.common.domain.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 @Entity
@@ -30,13 +31,20 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    private Line(LineName name, LineColor color) {
+    private Line(final LineName name, final LineColor color, final Section section) {
         this.name = name;
         this.color = color;
+        addSection(section);
     }
 
-    public static Line of(LineName name, LineColor color) {
-        return new Line(name, color);
+    public static Line of(final String name, final String color, final Station upStation, final Station downStation,
+                          final int distance) {
+        Section section = Section.of(upStation, downStation, distance);
+        return new Line(LineName.from(name), LineColor.from(color), section);
+    }
+
+    public static Line of(final String name, final String color, final Section section) {
+        return new Line(LineName.from(name), LineColor.from(color), section);
     }
 
     public Long getId() {
