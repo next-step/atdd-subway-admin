@@ -201,6 +201,58 @@ public class LineAcceptanceTest {
         assertThat(find.getStations()).hasSize(3);
     }
 
+    @DisplayName("역 사이에 새로운 역을 등록할 경우")
+    @Test
+    void addSectionCase2() {
+        // given
+        LineResponse line = 응답_객체_생성(노선_등록("2호선", "초록", 7, A역.getId(), C역.getId()), LineResponse.class);
+
+        // when
+        구간_추가(B역.getId(), C역.getId(), 4, line.getId());
+
+        // then
+        LineResponse find = 응답_객체_생성(노선_조회(line.getId()), LineResponse.class);
+        assertThat(find.getStations()).hasSize(3);
+    }
+
+    /**
+     * Given 노선을 생성하고
+     * When 구간을 추가하면
+     * Then 노선에 속한 지하철역의 숫자가 증가한다
+     */
+    @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
+    @Test
+    void addSectionCase3() {
+        // given
+        LineResponse line = 응답_객체_생성(노선_등록("2호선", "초록", 7, A역.getId(), C역.getId()), LineResponse.class);
+
+        // when
+        구간_추가(B역.getId(), A역.getId(), 4, line.getId());
+
+        // then
+        LineResponse find = 응답_객체_생성(노선_조회(line.getId()), LineResponse.class);
+        assertThat(find.getStations()).hasSize(3);
+    }
+
+    /**
+     * Given 노선을 생성하고
+     * When 구간을 추가하면
+     * Then 노선에 속한 지하철역의 숫자가 증가한다
+     */
+    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
+    @Test
+    void addSectionCase4() {
+        // given
+        LineResponse line = 응답_객체_생성(노선_등록("2호선", "초록", 7, A역.getId(), C역.getId()), LineResponse.class);
+
+        // when
+        구간_추가(C역.getId(), B역.getId(), 3, line.getId());
+
+        // then
+        LineResponse find = 응답_객체_생성(노선_조회(line.getId()), LineResponse.class);
+        assertThat(find.getStations()).hasSize(3);
+    }
+
     /**
      * When 존재하지 않는 지하철역으로 노선을 등록하면
      * Then 노선 등록이 불가하다.

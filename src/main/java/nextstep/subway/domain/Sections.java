@@ -29,9 +29,15 @@ public class Sections {
         return list;
     }
 
-    public Optional<Section> findUpStation(Station upStation) {
+    public Optional<Section> findSectionWithUpStation(Station upStation) {
         return list.stream()
                 .filter(section -> section.getUpStation().equals(upStation))
+                .findFirst();
+    }
+
+    public Optional<Section> findSectionWithDownStation(Station downStation) {
+        return list.stream()
+                .filter(section -> section.getDownStation().equals(downStation))
                 .findFirst();
     }
 }

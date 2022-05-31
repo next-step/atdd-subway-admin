@@ -16,17 +16,10 @@ import java.util.stream.Collectors;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    private final SectionRepository sectionRepository;
-    private final LineStationRepository lineStationRepository;
 
-    public LineService(LineRepository lineRepository,
-                       StationRepository stationRepository,
-                       SectionRepository sectionRepository,
-                       LineStationRepository lineStationRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.sectionRepository = sectionRepository;
-        this.lineStationRepository = lineStationRepository;
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
@@ -79,31 +72,11 @@ public class LineService {
     public void addSection(Long id, SectionRequest request) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(LineNotFoundException::new);
-
-        Station upStation = stationRepository.findById(request.getUpStationId())
+        Station insertUpStation = stationRepository.findById(request.getUpStationId())
                 .orElseThrow(StationNotFoundException::new);
-        Station downStation = stationRepository.findById(request.getDownStationId())
+        Station insertDownStation = stationRepository.findById(request.getDownStationId())
                 .orElseThrow(StationNotFoundException::new);
 
-        Sections sections = line.getSections();
-        LineStations lineStations = line.getLineStations();
-
-        // A역이 상행종점역
-        Optional<Section> findByUpStation = sections.findUpStation(upStation);
-        if (findByUpStation.isPresent()) {
-            Section section = findByUpStation.get();
-            int restDistance = section.getDistance() - request.getDistance();
-            section.updateSection(line.getUpStation(), downStation, section.getDistance());
-            sections.add(new Section(restDistance, downStation, line.getDownStation(), line));
-            lineStations.add(new LineStation(downStation, line));
-        }
-
-        // B역이 하행종점역
-
-        // B역이 상행종점역 * (상행종점역 바뀜)
-
-        // A역이 하행종점역 * (하행종점역 바뀜)
-
-        // 그 외
+        line.insertSection(insertUpStation, insertDownStation, request.getDistance());
     }
 }

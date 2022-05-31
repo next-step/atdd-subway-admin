@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
@@ -61,6 +62,66 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    public void insertSection(Station insertUpStation, Station insertDownStation, Integer distance) {
+        if (isSameUpStation(insertDownStation)) {
+            insertSectionToHead(new Section(distance, insertUpStation, getUpStation(), this));
+            return;
+        }
+
+        if (isSameDownStation(insertUpStation)) {
+            insertSectionToTail(new Section(distance, getDownStation(), insertDownStation, this));
+            return;
+        }
+
+        Optional<Section> findUpStream = sections.findSectionWithUpStation(insertUpStation);
+        if (findUpStream.isPresent()) {
+            Section section = findUpStream.get();
+            insertSectionFromUpStation(insertDownStation, distance, section);
+            return;
+        }
+
+        Optional<Section> findDownStream = sections.findSectionWithDownStation(insertDownStation);
+        if (findDownStream.isPresent()) {
+            Section section = findDownStream.get();
+            insertSectionFromDownStation(insertUpStation, distance, section);
+            return;
+        }
+    }
+
+    private void insertSectionFromUpStation(Station insertDownStation, Integer distance, Section section) {
+        int restDistance = section.getDistance() - distance;
+        sections.add(new Section(restDistance, insertDownStation, section.getDownStation(), this));
+        section.updateSection(section.getUpStation(), insertDownStation, getDistance());
+        lineStations.add(new LineStation(insertDownStation, this));
+    }
+
+    private void insertSectionFromDownStation(Station insertUpStation, Integer distance, Section section) {
+        int restDistance = section.getDistance() - distance;
+        sections.add(new Section(getDistance(), insertUpStation, section.getDownStation(), this));
+        section.updateSection(section.getUpStation(), insertUpStation, restDistance);
+        lineStations.add(new LineStation(insertUpStation, this));
+    }
+
+    public void insertSectionToHead(Section section) {
+        sections.add(section);
+        setUpStation(section.getUpStation());
+        lineStations.add(new LineStation(section.getUpStation(), section.getLine()));
+    }
+
+    public void insertSectionToTail(Section section) {
+        sections.add(section);
+        setDownStation(section.getDownStation());
+        lineStations.add(new LineStation(section.getDownStation(), section.getLine()));
+    }
+
+    public boolean isSameUpStation(Station station) {
+        return getUpStation().equals(station);
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return getDownStation().equals(station);
+    }
+
     public Long getId() {
         return id;
     }
@@ -73,8 +134,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Distance getDistance() {
-        return distance;
+    public Integer getDistance() {
+        return distance.getDistance();
     }
 
     public Station getUpStation() {
