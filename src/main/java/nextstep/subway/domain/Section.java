@@ -79,6 +79,7 @@ public class Section extends BaseEntity {
                 throw new NotFoundException("하행역 정보가 없습니다.");
             }
         }
+
         public Section build() {
             return new Section(this);
         }
@@ -90,10 +91,10 @@ public class Section extends BaseEntity {
     }
 
     public void update(Section newSection) {
-        if(isEqualsUpStation(newSection)) {
+        if (isEqualsUpStation(newSection)) {
             updateUpStationByNewSection(newSection);
         }
-        if(isEqualsDownStation(newSection)) {
+        if (isEqualsDownStation(newSection)) {
             updateDownStationByNewSection(newSection);
         }
     }
@@ -126,6 +127,7 @@ public class Section extends BaseEntity {
         distance.minus(newSection.distance);
         this.downStation = newSection.upStation();
     }
+
     private boolean isEqualsUpStation(Section newSection) {
         return this.upStation().equals(newSection.upStation());
     }

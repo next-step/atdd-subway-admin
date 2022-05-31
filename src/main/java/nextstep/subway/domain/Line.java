@@ -20,7 +20,7 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private String color;
     @Embedded
-    private Sections sections = new Sections();
+    private final Sections sections = new Sections();
 
     protected Line() {
     }
@@ -77,6 +77,7 @@ public class Line extends BaseEntity {
         this.name = name;
         this.color = color;
     }
+
     public void addSection(Section section) {
         sections.addSection(section);
         section.addLine(this);
