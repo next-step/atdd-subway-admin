@@ -86,7 +86,7 @@ public class Section {
         return Arrays.asList(upStation, downStation);
     }
 
-    private boolean isEqualUpStation(Station station) {
+    public boolean isEqualUpStation(Station station) {
         return this.upStation.equals(station);
     }
 
