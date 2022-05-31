@@ -15,7 +15,7 @@ class LineTest {
     private final static Section section2 = new Section(2L, station2, station3, 5);
 
     @Test
-    @DisplayName("addSection의 결과 구간 정보가 저장된다")
+    @DisplayName("노선은 구간 정보를 저장한다")
     void addSection() {
         // given
         Line line = new Line("2호선", "green");
@@ -29,7 +29,7 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("getLineStations의 결과 상행종착역 부터 하행종착역 순서대로 반환된다")
+    @DisplayName("노선은 역 정보 출력시 상행종착역 부터 하행종착역 순서대로 반환한다")
     void getLineStations() {
         // given
         Line line = new Line("2호선", "green");

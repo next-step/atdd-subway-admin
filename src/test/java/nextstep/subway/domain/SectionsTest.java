@@ -17,7 +17,7 @@ class SectionsTest {
     private final static Section section2 = new Section(2L, station2, station3, 5);
 
     @Test
-    @DisplayName("getSections의 결과 구간 정보를 가지는 리스트가 구간 순서대로 반환된다")
+    @DisplayName("특정 노선의 구간 정보들을 출력시 상행종착역 부터 하행종착역 순서대로 출력한다")
     void getSections() {
         // given
         final Sections sections = new Sections();
@@ -32,7 +32,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("addSection의 결과 기 등록된 역 사이에 구간 등록시 구간보다 같거나 긴 구간을 추가하는 경우 오류를 반환한다")
+    @DisplayName("이미 등록된 역 사이에 구간 등록시 구간의 길이와 같거나 긴 구간을 추가할 수 없다")
     void addSectionInvalidDistanceError() {
         // given
         final Sections sections = new Sections();
@@ -47,7 +47,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("addSection의 결과 동일한 구간을 추가하는 경우 오류를 반환한다")
+    @DisplayName("동일한 구간을 다시 추가할 수 없다")
     void addSectionSameSectionError() {
         // given
         final Sections sections = new Sections();
@@ -61,7 +61,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("addSection의 결과 기존 구간에 속하지 않는 구간을 추가하는 경우 오류를 반환한다")
+    @DisplayName("기존 구간에 어떤 역도 속하지 않는 구간은 추가할 수 없다")
     void addSectionNonExistSectionError() {
         // given
         final Sections sections = new Sections();

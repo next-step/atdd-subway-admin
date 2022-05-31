@@ -13,7 +13,7 @@ class SectionTest {
     private final static Station station3 = new Station(3L, "잠실역");
 
     @Test
-    @DisplayName("changeStationInfo의 결과 현재 저장된 구간 정보가 변경된다")
+    @DisplayName("특정 구간에 중간역이 추가되는 경우 현재 저장된 구간 정보를 변경한다")
     void changeStationInfo() {
         // given
         final Section section = new Section(1L, station1, station3, 10);
@@ -27,7 +27,7 @@ class SectionTest {
     }
 
     @Test
-    @DisplayName("changeStationInfo의 결과 현재 저장된 구간보다 변경하려는 구간의 길이가 같거나 긴 경우 오류를 반환한다")
+    @DisplayName("현재 저장된 구간보다 변경하려는 구간의 길이가 더 작아야 한다")
     void changeStationInfoError() {
         // given
         final Section section = new Section(1L, station1, station3, 5);
