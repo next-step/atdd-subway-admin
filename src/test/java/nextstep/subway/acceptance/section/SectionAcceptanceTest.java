@@ -19,27 +19,50 @@ import org.springframework.http.MediaType;
 
 @DisplayName("지하철구간 관련 기능")
 class SectionAcceptanceTest extends BaseAcceptanceTest {
+    StationResponse 강남역;
     StationResponse 양재역;
     StationResponse 청계산입구역;
     StationResponse 판교역;
+    StationResponse 정자역;
     LineResponse 신분당선;
     @BeforeEach
     protected void setUp() {
         super.setUp();
         // Given
+        강남역 = 지하철역_생성_요청("강남역").as(StationResponse.class);
         양재역 = 지하철역_생성_요청("양재역").as(StationResponse.class);
         청계산입구역 = 지하철역_생성_요청("청계산입구역").as(StationResponse.class);
         판교역 = 지하철역_생성_요청("판교역").as(StationResponse.class);
+        정자역 = 지하철역_생성_요청("정자역").as(StationResponse.class);
         신분당선 = 지하철노선_생성_요청("신분당선", "bg-red-600", 양재역.getId(), 판교역.getId(), 10).as(LineResponse.class);
     }
 
     /**
-     * When 지하철 노선에 사이에 새로운 구간을 등록하면
+     * When 지하철 노선에 사이에 새로운 구간을 등록하면 (상행역 일치)
      * Then 지하철 노선에 사이에 새로운 역이 등록된다.
      */
-    @DisplayName("지하철 노선에 지하철구간 생성")
+    @DisplayName("지하철 노선 사이에 지하철구간 생성 (상행역 일치)")
     @Test
-    void addSection() {
+    void addSectionInsideIfEqualUpStation() {
+        // when
+        ExtractableResponse<Response> response = 지하철구간_추가_요청(신분당선.getId(), 양재역.getId(), 청계산입구역.getId(), 7);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then
+        List<String> stationNames = response.jsonPath().getList("stations.name", String.class);
+        assertThat(stationNames).hasSize(3);
+        assertThat(stationNames).containsOnly(양재역.getName(), 청계산입구역.getName(), 판교역.getName());
+    }
+
+    /**
+     * When 지하철 노선에 사이에 새로운 구간을 등록하면 (하행역 일치)
+     * Then 지하철 노선에 사이에 새로운 역이 등록된다.
+     */
+    @DisplayName("지하철 노선 사이에 지하철구간 생성 (하행역 일치)")
+    @Test
+    void addSectionInsideIfEqualDownStation() {
         // when
         ExtractableResponse<Response> response = 지하철구간_추가_요청(신분당선.getId(), 청계산입구역.getId(), 판교역.getId(), 7);
 
