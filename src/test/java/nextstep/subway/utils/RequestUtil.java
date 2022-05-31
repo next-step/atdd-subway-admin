@@ -20,6 +20,7 @@ public class RequestUtil {
     private static final BiFunction<RequestSpecification, String, Response> GET = RequestSenderOptions::get;
     private static final BiFunction<RequestSpecification,String, Response> DELETE = RequestSenderOptions::delete;
 
+    private static final BiFunction<RequestSpecification, String, Response> PUT = RequestSenderOptions::put;
     private static final String STATION_URL = "/stations";
     private static final String LINE_URL = "/lines";
 
@@ -42,7 +43,7 @@ public class RequestUtil {
     }
 
     public ExtractableResponse<Response> updateLine(Long id, Map<String, String> body) {
-        return  this.request(()->body, POST, String.format(LINE_URL+"/%d",id));
+        return  this.request(()->body, PUT, String.format(LINE_URL+"/%d",id));
     }
 
     public ExtractableResponse<Response> deleteLine(final Long index) {
