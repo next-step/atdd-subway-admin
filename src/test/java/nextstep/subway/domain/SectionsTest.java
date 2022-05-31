@@ -17,7 +17,7 @@ class SectionsTest {
     Section section1;
     Section section2;
     List<Section> sections = new ArrayList<>();
-
+    Sections sections1;
     @BeforeEach
     void setUp() {
         강남역 = Station.builder("강남역")
@@ -38,6 +38,7 @@ class SectionsTest {
                 .build();
         sections.add(section1);
         sections.add(section2);
+        sections1 = Sections.valueOf(this.sections);
     }
 
     @DisplayName("구간들 사이에 새로운 구간 등록 테스트 (상행역 일치)")
@@ -45,9 +46,8 @@ class SectionsTest {
     void addSectionIfEqualUpStation() {
         Section newSection = Section.builder(양재역, 판교역, Distance.valueOf(5))
                 .build();
-        Sections sections = Sections.valueOf(this.sections);
-        sections.addSection(newSection);
-        List<String> stationNames = sections.stations().stream()
+        sections1.addSection(newSection);
+        List<String> stationNames = sections1.stations().stream()
                 .map(Station::name)
                 .collect(Collectors.toList());
         assertThat(stationNames).containsOnly("강남역", "양재역", "판교역", "양재시민의숲역");
@@ -58,9 +58,8 @@ class SectionsTest {
     void addSectionIfEqualDownStation() {
         Section newSection = Section.builder(판교역, 양재시민의숲역, Distance.valueOf(4))
                 .build();
-        Sections sections = Sections.valueOf(this.sections);
-        sections.addSection(newSection);
-        List<String> stationNames = sections.stations().stream()
+        sections1.addSection(newSection);
+        List<String> stationNames = sections1.stations().stream()
                 .map(Station::name)
                 .collect(Collectors.toList());
         assertThat(stationNames).containsOnly("강남역", "양재역", "판교역", "양재시민의숲역");
@@ -69,7 +68,12 @@ class SectionsTest {
     @DisplayName("구간들 길이(합) 테스트")
     @Test
     void getDistance() {
-        Sections sections = Sections.valueOf(this.sections);
-        assertThat(sections.distance()).isEqualTo(Distance.valueOf(20));
+        assertThat(sections1.distance()).isEqualTo(Distance.valueOf(20));
+    }
+
+    @DisplayName("구간들에 포함된 역 정보들 조회 테스트")
+    @Test
+    void getStations() {
+        assertThat(sections1.stations()).containsOnly(강남역, 양재역, 양재시민의숲역);
     }
 }
