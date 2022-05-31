@@ -32,11 +32,13 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
-        Line line = request.convertToLine();
-        Section section = makeSectionFromLineRequest(request);
-        line.addSection(section);
+        Line line = convertToLine(request);
         Line savedLine = lineRepository.save(line);
         return LineResponse.of(savedLine);
+    }
+
+    private Line convertToLine(LineRequest request) {
+        return Line.of(request.getName(), request.getColor(), makeSectionFromLineRequest(request));
     }
 
     private Section makeSectionFromLineRequest(LineRequest request) {

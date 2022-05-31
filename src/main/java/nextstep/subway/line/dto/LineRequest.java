@@ -1,9 +1,5 @@
 package nextstep.subway.line.dto;
 
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineColor;
-import nextstep.subway.line.domain.LineName;
-
 public class LineRequest {
 
     private String name;
@@ -47,7 +43,4 @@ public class LineRequest {
         return distance;
     }
 
-    public Line convertToLine() {
-        return Line.of(LineName.from(this.name), LineColor.from(this.color));
-    }
 }
