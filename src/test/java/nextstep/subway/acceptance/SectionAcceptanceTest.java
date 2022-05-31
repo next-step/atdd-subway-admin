@@ -1,13 +1,14 @@
-package nextstep.subway.station;
+package nextstep.subway.acceptance;
 
-import static nextstep.subway.station.LineAcceptanceTest.지하철_노선을_생성한다;
-import static nextstep.subway.station.StationAcceptanceTest.지하철역을_생성한다;
+import static nextstep.subway.acceptance.LineAcceptanceTest.지하철_노선을_생성한다;
+import static nextstep.subway.acceptance.StationAcceptanceTest.지하철역을_생성한다;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.common.RestAssuredTemplate;
-import nextstep.subway.AcceptanceTest;
+import java.util.List;
+import nextstep.subway.common.AcceptanceTest;
+import nextstep.subway.common.RestAssuredTemplate;
 import nextstep.subway.dto.SectionRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -44,6 +45,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_지하철_구간_등록됨(response);
+        지하철_노선에_지하철_구간_조회됨(new String[]{"강남역", "삼성역", "잠실역"});
     }
 
     /**
@@ -72,6 +74,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_지하철_구간_등록됨(response);
+        지하철_노선에_지하철_구간_조회됨(new String[]{"강남역", "삼성역", "잠실역"});
     }
 
     /**
@@ -100,6 +103,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_지하철_구간_등록됨(response);
+        지하철_노선에_지하철_구간_조회됨(new String[]{"사당역", "강남역", "잠실역"});
     }
 
     /**
@@ -114,6 +118,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_지하철_구간_등록됨(response);
+        지하철_노선에_지하철_구간_조회됨(new String[]{"강남역", "잠실역", "건대입구역"});
     }
 
     /**
@@ -150,11 +155,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 new SectionRequest(upStationId, downStationId, distance));
     }
 
+    public static List<String> 지하철_노선의_구간을_조회한다(long lineId) {
+        return RestAssuredTemplate.get("/lines/" + lineId).jsonPath().getList("stations.name");
+    }
+
     void 지하철_노선에_지하철_구간_등록됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     void 지하철_노선에_지하철_구간_등록안됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    void 지하철_노선에_지하철_구간_조회됨(String[] expected) {
+        List<String> actual = 지하철_노선의_구간을_조회한다(1);
+        assertThat(actual).containsExactly(expected);
     }
 }
