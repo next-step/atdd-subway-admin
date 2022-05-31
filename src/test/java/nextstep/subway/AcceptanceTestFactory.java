@@ -11,8 +11,10 @@ import java.util.List;
 import java.util.Map;
 
 import java.util.stream.Collectors;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.StationResponse;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.HttpStatus;
 
 public class AcceptanceTestFactory {
@@ -112,5 +114,31 @@ public class AcceptanceTestFactory {
 
     public static void 삭제_성공_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    public static Map<String, Object> 지하철_구간_정보_생성(Long upStationId, Long downStationId, int distance) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+        return params;
+    }
+
+    public static Map<String, Object> 지하철_노선_정보_생성(String name, String color, Long upStationId, Long downStationId, int distance) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+        return params;
+    }
+    public static Long 지하철_노선_생성_ID_추출(Map<String, Object> params) {
+        return RestAssuredTemplate.sendPost("/lines", params)
+                .jsonPath().getObject("id", Long.class);
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_구간_추가_요청(Long lineId, Map<String, Object> params) {
+        return RestAssuredTemplate.sendPostWithId("/lines/{id}/sections", lineId, params);
     }
 }

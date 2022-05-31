@@ -1,11 +1,12 @@
-package nextstep.subway.dto;
+package nextstep.subway.line.dto;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 public class LineResponse {
     private final Long id;
@@ -22,7 +23,9 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         List<Station> stations = mapToStations(line);
-        List<StationResponse> stationResponses = stations.stream().map(StationResponse::of)
+        List<StationResponse> stationResponses = stations.stream()
+                .distinct()
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
