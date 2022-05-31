@@ -29,12 +29,24 @@ public class Sections {
         return sections;
     }
 
+    public Section getPrevSectionByStationId(Long stationId) {
+        return sections.stream().filter(section -> section.getDownStation().getId() == stationId).findFirst().orElseThrow(() -> new IllegalArgumentException("해당 ID를 가진 지하철 역은 존재하지 않습니다"));
+    }
+
+    public Section getNextSectionByStationId(Long stationId) {
+        return sections.stream().filter(section -> section.getUpStation().getId() == stationId).findFirst().orElseThrow(() -> new IllegalArgumentException("해당 ID를 가진 지하철 역은 존재하지 않습니다"));
+    }
+
     public int size() {
         return this.sections.size();
     }
 
     public boolean isEmpty() {
         return this.sections.isEmpty();
+    }
+
+    public void removeSection(Section section) {
+        sections.remove(section);
     }
 
     @Override

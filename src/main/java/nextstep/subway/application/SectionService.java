@@ -8,11 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SectionService {
+    private final LineRepository lineRepository;
     private final SectionRepository sectionRepository;
     private final LineService lineService;
     private final StationService stationService;
 
-    public SectionService(SectionRepository sectionRepository, LineService lineService, StationService stationService) {
+    public SectionService(LineRepository lineRepository, SectionRepository sectionRepository, LineService lineService, StationService stationService) {
+        this.lineRepository = lineRepository;
         this.sectionRepository = sectionRepository;
         this.lineService = lineService;
         this.stationService = stationService;
@@ -36,6 +38,26 @@ public class SectionService {
         line.addSection(section);
 
         return LineResponse.of(line);
+    }
+
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = lineService.findByIdWithSections(lineId);
+        line.getSections().addSection(reappropriateSection(line, stationId));
+    }
+
+    private Section reappropriateSection(Line line, Long stationId) {
+        Sections sections = line.getSections();
+
+        Section prevSection = sections.getPrevSectionByStationId(stationId);
+        Section nextSection = sections.getNextSectionByStationId(stationId);
+
+        Section resultSection = new Section(line, prevSection.getUpStation(), nextSection.getDownStation(), prevSection.getDistance() + nextSection.getDistance());
+
+        line.getSections().removeSection(prevSection);
+        line.getSections().removeSection(nextSection);
+
+        return resultSection;
     }
 
     private void validateSections(Section lineSection, Section section) {

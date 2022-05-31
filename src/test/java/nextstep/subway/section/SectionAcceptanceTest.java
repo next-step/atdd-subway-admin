@@ -204,7 +204,7 @@ public class SectionAcceptanceTest {
 
         // then
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT),
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
                 () -> assertThat(sections.get(0).getUpStation().getName()).isEqualTo("강남역"),
                 () -> assertThat(sections.get(0).getDownStation().getName()).isEqualTo("판교역"),
                 () -> assertThat(sections.get(0).getDistance()).isEqualTo(10)
@@ -241,11 +241,8 @@ public class SectionAcceptanceTest {
     }
 
     private ExtractableResponse<Response> deleteSection(long lineId, long stationId) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("stationId", stationId);
-
         return RestAssured.given().log().all()
-                .body(param)
+                .param("stationId", stationId)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/lines/{id}/sections", lineId)
                 .then().log().all()

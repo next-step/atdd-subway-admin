@@ -66,4 +66,9 @@ public class LineService {
     public Line findById(Long id) {
         return lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException("해당 지하철 노선을 찾을 수 없습니다."));
     }
+
+    @Transactional(readOnly = true)
+    public Line findByIdWithSections(Long id) {
+        return lineRepository.findByIdWithSections(id).orElseThrow(() -> new NoSuchElementException("해당 지하철 노선을 찾을 수 없습니다."));
+    }
 }
