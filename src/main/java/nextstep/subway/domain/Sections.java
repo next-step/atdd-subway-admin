@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
@@ -11,7 +12,9 @@ public class Sections {
     private final List<Section> sections = new ArrayList<>();
 
     public List<Section> getSections() {
-        return sections;
+        return sections.stream()
+                .sorted((s1, s2) -> s1.getUpStation().getName().compareTo(s2.getDownStation().getName()))
+                .collect(Collectors.toList());
     }
 
     public void addSection(Section section) {
@@ -30,29 +33,18 @@ public class Sections {
         if (isContainAllStation(section)) {
             throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있으면 추가할 수 없음");
         }
-
-        if (isLongerThanStation(section)) {
-            throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같으면 추가할 수 없음");
-        }
     }
 
-    private boolean isContainAnyStation(Section section) {
+    private boolean isContainAnyStation(Section newSection) {
         return sections.stream()
-                .anyMatch(x -> x.getLineStations().contains(section.getUpStation())
-                        || x.getLineStations().contains(section.getDownStation()));
+                .anyMatch(currentSection -> currentSection.getLineStations().contains(newSection.getUpStation())
+                        || currentSection.getLineStations().contains(newSection.getDownStation()));
     }
 
-    private boolean isContainAllStation(Section section) {
+    private boolean isContainAllStation(Section newSection) {
         return sections.stream()
-                .anyMatch(x -> x.getLineStations().contains(section.getUpStation())
-                        && x.getLineStations().contains(section.getDownStation()));
-    }
-
-    private boolean isLongerThanStation(Section section) {
-        return sections.stream()
-                .filter(x -> x.getUpStation().equals(section.getUpStation())
-                        || x.getDownStation().equals(section.getDownStation()))
-                .anyMatch(x -> x.getDistance() <= section.getDistance());
+                .anyMatch(currentSection -> currentSection.getLineStations().contains(newSection.getUpStation())
+                        && currentSection.getLineStations().contains(newSection.getDownStation()));
     }
 
     private void updateSection(Section section) {
@@ -60,10 +52,10 @@ public class Sections {
         targetSection.changeStationInfo(section);
     }
 
-    private Section findTargetSection(Section section) {
+    private Section findTargetSection(Section newSection) {
         return sections.stream()
-                .filter(x -> x.getLineStations().contains(section.getUpStation())
-                        || x.getLineStations().contains(section.getDownStation()))
+                .filter(currentSection -> currentSection.getLineStations().contains(newSection.getUpStation())
+                        || currentSection.getLineStations().contains(newSection.getDownStation()))
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("조건에 부합하는 데이터가 없습니다."));
     }
 }
