@@ -1,34 +1,22 @@
 package nextstep.subway.station;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import nextstep.subway.BaseAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.HashMap;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-    }
+public class StationAcceptanceTest extends BaseAcceptanceTest {
 
     /**
      * When 지하철역을 생성하면
@@ -80,7 +68,7 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        지하철역_생성("깅님역");
+        지하철역_생성("강남역");
         지하철역_생성("선릉역");
 
         // when
@@ -117,12 +105,15 @@ public class StationAcceptanceTest {
 
         // then
         List<String> selectResponse = 지하철역_전체_조회().jsonPath().getList("$");
-        assertThat(selectResponse).hasSize(0);
+        assertThat(selectResponse).isEmpty();
     }
 
-    private ValidatableResponse 지하철역_생성(String name) {
+    public static ValidatableResponse 지하철역_생성(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
         return RestAssured.given().log().all()
-            .body(new HashMap<String,String>(){{put("name", name);}})
+            .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/stations")
             .then().log().all();
