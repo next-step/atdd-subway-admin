@@ -1,13 +1,10 @@
-package nextstep.subway.line;
+package nextstep.subway.domain;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import nextstep.subway.domain.Distance;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
