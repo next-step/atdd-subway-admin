@@ -59,7 +59,7 @@ public class LineController {
         return ResponseEntity.ok().body(LineResponse.of(lineService.addSection(id, sectionRequest)));
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }

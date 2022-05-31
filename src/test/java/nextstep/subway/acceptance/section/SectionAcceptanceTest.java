@@ -14,6 +14,8 @@ import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -122,6 +124,22 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(stationNames).hasSize(4);
         assertThat(stationNames).containsOnly(양재역.getName(), 청계산입구역.getName(), 판교역.getName(), 정자역.getName());
     }
+
+    /**
+     * When 지하철 노선의 구간 사이에 구간 길이가 크거나 같은 새로운 구간을 등록하면
+     * Then 구간 등록에 실패한다.
+     */
+    @DisplayName("구간 사이에 새로운 구간을 등록할 경우 기존 구간 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @ParameterizedTest(name = "구간 10 사이에 새로운 구간 {0}을 등록할 경우 기존 구간 사이 길이보다 크거나 같아 등록을 할 수 없음")
+    @ValueSource(strings = {"10", "12"})
+    void addSectionInsideByEqualOrLongerDistance(int input) {
+        // when
+        ExtractableResponse<Response> response = 지하철구간_추가_요청(신분당선.getId(), 양재역.getId(), 청계산입구역.getId(), input);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
 
     ExtractableResponse<Response> 지하철구간_추가_요청(long lineId, long upStationId, long downStationId, int distance) {
         Map<String, Object> params = new HashMap<>();
