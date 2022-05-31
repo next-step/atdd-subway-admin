@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import nextstep.subway.domain.Line;
+import nextstep.subway.dto.LineResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -33,7 +33,7 @@ public class SubwayAppBehaviors {
                     .then().log().all()
                     .extract();
         }
-    public static Optional<Line> 지하철노선을_조회한다(Long id) {
+    public static Optional<LineResponse> 지하철노선을_조회한다(Long id) {
         ExtractableResponse<Response> response = RestAssured
                 .given().accept(ContentType.JSON).log().all()
                 .when().get("/lines/" + id)
@@ -42,15 +42,15 @@ public class SubwayAppBehaviors {
         if(response.statusCode() == HttpStatus.NOT_FOUND.value()){
             return Optional.empty();
         }
-        return Optional.of(response.jsonPath().getObject(".", Line.class));
+        return Optional.of(response.jsonPath().getObject(".", LineResponse.class));
     }
 
-    public static List<Line> 지하철노선목록을_조회한다() {
+    public static List<LineResponse> 지하철노선목록을_조회한다() {
         return RestAssured
                 .given().accept(ContentType.JSON).log().all()
                 .when().get("/lines")
                 .then().log().all()
-                .extract().jsonPath().getList(".", Line.class);
+                .extract().jsonPath().getList(".", LineResponse.class);
     }
 
     public static Long 지하철노선을_생성하고_ID를_반환한다(

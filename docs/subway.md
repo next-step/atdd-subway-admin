@@ -34,8 +34,7 @@
     - [X] 지하철노선 수정
     - [X] 지하철노선 삭제
 ## 3단계
-  - [ ] 요구사항을 충족시키기 위해 DB스키마 변경
-    - [ ] Line.distance 제거   
+  - [ ] 요구사항을 충족시키기 위해 DB스키마 변경 
     - [ ] LineStation 엔티티 생성 및 연관관계 매핑 (https://ict-nroo.tistory.com/127)
     - [ ] LineStations 일급 컬렉션 작성 
   - [ ] 구간 추가 인수테스트 작성
@@ -45,5 +44,7 @@
 ## 2단계 리뷰
   - [X] Setting > Editor > Global > Ensure every saved file ends with a line break 설정
   - [X] @JsonIgnoreProperties의 ignoreUnknown 속성 제거 
-  - [ ] Response용 객체 생성 및 @JsonIgnoreProperties 제거 
+  - [X] LineResponse 작성 및 코드 리팩토링
+    - [X] Line.distance 제거
+    - [X] Line 엔티티의 @JsonIgnoreProperties 제거
   - [ ] @DirtiesContext 속도 개선 

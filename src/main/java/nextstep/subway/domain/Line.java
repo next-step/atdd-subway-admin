@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -14,7 +13,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer"})
 public class Line extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,9 +21,6 @@ public class Line extends BaseEntity{
     private String name;
     @Column(unique = true,nullable = false)
     private String color;
-
-    @Column(nullable = false)
-    private Long distance;
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinTable(name = "line_station"
@@ -37,10 +32,9 @@ public class Line extends BaseEntity{
     protected Line() {
     }
 
-    public Line(String name, String color, Long distance, List<Station> stations) {
+    public Line(String name, String color, List<Station> stations) {
         this.name = name;
         this.color = color;
-        this.distance = distance;
         this.stations.addAll(stations);
     }
 
@@ -54,10 +48,6 @@ public class Line extends BaseEntity{
 
     public String getColor() {
         return color;
-    }
-
-    public Long getDistance() {
-        return distance;
     }
 
     public List<Station> getStations() {
@@ -75,7 +65,6 @@ public class Line extends BaseEntity{
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
-                ", distance=" + distance +
                 ", stations=" + stations +
                 '}';
     }
