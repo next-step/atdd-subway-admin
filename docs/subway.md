@@ -9,6 +9,10 @@
   - 지하철노선 조회 인수테스트 작성 및 기능 구현
   - 지하철노선 수정 인수테스트 작성 및 기능 구현
   - 지하철노선 삭제 인수테스트 작성 및 기능 구현
+## 3단계
+  - 구간 추가 인수테스트 작성 및 기능 구현
+    - 예외상황도 테스트 할 것 
+
 # 작업 로그 
 ## 1단계 
   - [X] 지하철역 목록 조회 인수 테스트 작성하기
@@ -29,3 +33,17 @@
     - [X] 지하철노선 조회
     - [X] 지하철노선 수정
     - [X] 지하철노선 삭제
+## 3단계
+  - [ ] 요구사항을 충족시키기 위해 DB스키마 변경
+    - [ ] Line.distance 제거   
+    - [ ] LineStation 엔티티 생성 및 연관관계 매핑 (https://ict-nroo.tistory.com/127)
+    - [ ] LineStations 일급 컬렉션 작성 
+  - [ ] 구간 추가 인수테스트 작성
+  - [ ] 구간 추가 기능구현
+
+#리뷰 내용 반영
+## 2단계 리뷰
+  - [ ] Setting > Editor > Global > Ensure every saved file ends with a line break 설정
+  - [ ] @JsonIgnoreProperties의 ignoreUnknown 속성 제거 
+  - [ ] Response용 객체 생성 및 @JsonIgnoreProperties 제거 
+  - [ ] @DirtiesContext 속도 개선 
