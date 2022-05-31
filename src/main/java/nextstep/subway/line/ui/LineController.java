@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -45,25 +46,29 @@ public class LineController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Void> showLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity showLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
+    public ResponseEntity deleteLine(@PathVariable Long id) {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("{lineId}/sections")
-    public ResponseEntity<Void> addSection(
+    public ResponseEntity addSection(
             @PathVariable Long lineId,
             @RequestBody SectionRequest sectionRequest) {
         lineService.addSection(lineId, sectionRequest);
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("{lineId}/sections")
+    public ResponseEntity deleteStationOnLine(@PathVariable Long lineId, @RequestParam Long stationId) {
+        return ResponseEntity.noContent().build();
+    }
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Void> handleIllegalArgumentException() {
         return ResponseEntity.badRequest().build();
