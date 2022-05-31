@@ -18,6 +18,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -81,8 +82,8 @@ public class LineControllerTest {
     @DisplayName("id값이 존재한다면 지하철노선을 변경한다")
     @Test
     void updateLineWithValidId() throws Exception {
-        Line line = new Line("2호선");
-        when(lineService.getLine(1L)).thenReturn(LineResponse.of(line));
+        Line line = new Line("3호선");
+        when(lineService.updateLine(eq(1L), any(LineRequest.class) )).thenReturn(LineResponse.of(line));
 
         mockMvc.perform(patch("/lines/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -94,7 +95,7 @@ public class LineControllerTest {
     @DisplayName("id값이 존재하지 않는다면 예외를 던진다")
     @Test
     void updateLineWithInvalidId() throws Exception {
-        when(lineService.getLine(1L)).thenThrow(new LineNotFoundException());
+        when(lineService.updateLine(eq(1L), any(LineRequest.class) )).thenThrow(new LineNotFoundException());
 
         mockMvc.perform(patch("/lines/1")
                         .contentType(MediaType.APPLICATION_JSON)
