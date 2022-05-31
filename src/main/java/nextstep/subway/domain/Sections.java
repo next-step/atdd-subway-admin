@@ -5,6 +5,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
@@ -26,5 +27,11 @@ public class Sections {
 
     public List<Section> getList() {
         return list;
+    }
+
+    public Optional<Section> findUpStation(Station upStation) {
+        return list.stream()
+                .filter(section -> section.getUpStation().equals(upStation))
+                .findFirst();
     }
 }

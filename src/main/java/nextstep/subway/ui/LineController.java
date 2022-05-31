@@ -4,6 +4,7 @@ import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,12 @@ public class LineController {
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+    }
+
+    @PostMapping("/lines/{id}/sections")
+    public ResponseEntity createSection(@PathVariable Long id, @RequestBody SectionRequest request) {
+        lineService.addSection(id, request);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/lines/{id}")

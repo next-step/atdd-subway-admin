@@ -75,4 +75,35 @@ public class LineService {
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
+
+    public void addSection(Long id, SectionRequest request) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(LineNotFoundException::new);
+
+        Station upStation = stationRepository.findById(request.getUpStationId())
+                .orElseThrow(StationNotFoundException::new);
+        Station downStation = stationRepository.findById(request.getDownStationId())
+                .orElseThrow(StationNotFoundException::new);
+
+        Sections sections = line.getSections();
+        LineStations lineStations = line.getLineStations();
+
+        // A역이 상행종점역
+        Optional<Section> findByUpStation = sections.findUpStation(upStation);
+        if (findByUpStation.isPresent()) {
+            Section section = findByUpStation.get();
+            int restDistance = section.getDistance() - request.getDistance();
+            section.updateSection(line.getUpStation(), downStation, section.getDistance());
+            sections.add(new Section(restDistance, downStation, line.getDownStation(), line));
+            lineStations.add(new LineStation(downStation, line));
+        }
+
+        // B역이 하행종점역
+
+        // B역이 상행종점역 * (상행종점역 바뀜)
+
+        // A역이 하행종점역 * (하행종점역 바뀜)
+
+        // 그 외
+    }
 }

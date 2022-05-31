@@ -3,6 +3,8 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
 import nextstep.subway.domain.Distance;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Station;
 import nextstep.subway.dto.*;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +29,10 @@ public class LineAcceptanceTest {
     private StationResponse 잠실역;
     private StationResponse 모란역;
 
+    private StationResponse A역;
+    private StationResponse B역;
+    private StationResponse C역;
+
     @Autowired
     private DatabaseCleanup databaseCleanup;
 
@@ -41,6 +47,10 @@ public class LineAcceptanceTest {
         강남역 = 응답_객체_생성(지하철역_등록("강남역"), StationResponse.class);
         잠실역 = 응답_객체_생성(지하철역_등록("잠실역"), StationResponse.class);
         모란역 = 응답_객체_생성(지하철역_등록("모란역"), StationResponse.class);
+
+        A역 = 응답_객체_생성(지하철역_등록("A역"), StationResponse.class);
+        B역 = 응답_객체_생성(지하철역_등록("B역"), StationResponse.class);
+        C역 = 응답_객체_생성(지하철역_등록("C역"), StationResponse.class);
     }
 
     /**
@@ -173,6 +183,25 @@ public class LineAcceptanceTest {
     }
 
     /**
+     * Given 노선을 생성하고
+     * When 구간을 추가하면
+     * Then 노선에 속한 지하철역의 숫자가 증가한다
+     */
+    @DisplayName("역 사이에 새로운 역을 등록할 경우")
+    @Test
+    void addSectionCase1() {
+        // given
+        LineResponse line = 응답_객체_생성(노선_등록("2호선", "초록", 7, A역.getId(), C역.getId()), LineResponse.class);
+
+        // when
+        구간_추가(A역.getId(), B역.getId(), 4, line.getId());
+
+        // then
+        LineResponse find = 응답_객체_생성(노선_조회(line.getId()), LineResponse.class);
+        assertThat(find.getStations()).hasSize(3);
+    }
+
+    /**
      * When 존재하지 않는 지하철역으로 노선을 등록하면
      * Then 노선 등록이 불가하다.
      */
@@ -213,6 +242,16 @@ public class LineAcceptanceTest {
                 .body(lineUpdateRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/lines/" + id)
+                .then().log().all();
+    }
+
+    private ValidatableResponse 구간_추가(long upStationId, long downStationId, int distance, long lineId) {
+        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
+
+        return RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines/" + lineId + "/sections")
                 .then().log().all();
     }
 }
