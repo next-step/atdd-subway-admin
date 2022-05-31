@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,9 @@ public class LineAcceptanceTest {
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
+        StationAcceptanceTest.createStation("지하철역");
+        StationAcceptanceTest.createStation("새로운지하철역");
+        StationAcceptanceTest.createStation("또다른지하철역");
     }
 
     /**
@@ -42,15 +46,15 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_생성_조회() {
         // when
-        ExtractableResponse<Response> response = createLine("분당선", "노란색");
+        ExtractableResponse<Response> response = createLine("신분당선", "bg-red-600", 1L, 2L, 10L);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
         List<String> lineNames = getLinesIn("name", String.class);
-        assertThat(lineNames).containsAnyOf("분당선");
+        assertThat(lineNames).containsAnyOf("신분당선");
         List<String> lineColors = getLinesIn("color", String.class);
-        assertThat(lineColors).containsAnyOf("노란색");
+        assertThat(lineColors).containsAnyOf("bg-red-600");
     }
 
     /**
@@ -62,14 +66,14 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_목록_조회() {
         // when
-        createLine("분당선", "노란색");
-        createLine("3호선", "주황색");
+        createLine("신분당선", "bg-red-600", 1L, 2L, 10L);
+        createLine("분당선", "bg-green-600", 1L, 3L, 13L);
 
         // when
         List<String> lineNames = getLinesIn("name", String.class);
 
         // then
-        assertThat(lineNames).containsExactly("분당선", "3호선");
+        assertThat(lineNames).containsExactly("신분당선", "분당선");
     }
 
     /**
@@ -81,15 +85,15 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_조회() {
         // when
-        ExtractableResponse<Response> response = createLine("분당선", "노란색");
+        ExtractableResponse<Response> response = createLine("신분당선", "bg-red-600", 1L, 2L, 10L);
         Long lineId = response.body().jsonPath().getLong("id");
 
         // when
         LineResponse line = getLine(lineId);
 
         // then
-        assertThat(line.getName()).isEqualTo("분당선");
-        assertThat(line.getColor()).isEqualTo("노란색");
+        assertThat(line.getName()).isEqualTo("신분당선");
+        assertThat(line.getColor()).isEqualTo("bg-red-600");
     }
 
     /**
@@ -100,17 +104,17 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void 지하철_노선_수정() {
-        ExtractableResponse<Response> response = createLine("분당선", "노란색");
+        ExtractableResponse<Response> response = createLine("신분당선", "bg-red-600", 1L, 2L, 10L);
         Long lineId = response.body().jsonPath().getLong("id");
 
         Map<String, String> params = new HashMap<>();
-        params.put("name", "구분당선");
-        params.put("color", "노란색");
+        params.put("name", "다른분당선");
+        params.put("color", "bg-red-600");
 
         editLine(lineId, params);
 
         LineResponse line = getLine(lineId);
-        assertThat(line.getName()).isEqualTo("구분당선");
+        assertThat(line.getName()).isEqualTo("다른분당선");
     }
 
     /**
@@ -122,7 +126,7 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_삭제() {
         // given
-        ExtractableResponse<Response> response = createLine("분당선", "노란색");
+        ExtractableResponse<Response> response = createLine("신분당선", "bg-red-600", 1L, 2L, 10L);
         Long lineId = response.body().jsonPath().getLong("id");
 
         // when
@@ -130,7 +134,7 @@ public class LineAcceptanceTest {
 
         // then
         List<String> lineNames = getLinesIn("name", String.class);
-        assertThat(lineNames).doesNotContain("분당선");
+        assertThat(lineNames).doesNotContain("신분당선");
     }
 
     private void deleteLine(Long lineId) {
@@ -147,10 +151,13 @@ public class LineAcceptanceTest {
                 .then().log().all();
     }
 
-    private ExtractableResponse<Response> createLine(String name, String color) {
-        Map<String, String> params = new HashMap<>();
+    private ExtractableResponse<Response> createLine(String name, String color, Long upStationId, Long downStationId, Long distance) {
+        Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
 
         return RestAssured.given().log().all()
                 .body(params)

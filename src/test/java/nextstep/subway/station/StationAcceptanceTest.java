@@ -109,7 +109,7 @@ public class StationAcceptanceTest {
         assertThat(stationNames).doesNotContain("여의나루역");
     }
 
-    private ExtractableResponse<Response> createStation(String name) {
+    public static ExtractableResponse<Response> createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
