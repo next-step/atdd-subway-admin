@@ -51,6 +51,10 @@ public class Sections {
             throw new IllegalArgumentException("종점역이 노선에 등록되어있지 않습니다.");
         }
 
+        if (optionalUpSection.isPresent() && optionalDownSection.isPresent()) {
+            throw new IllegalArgumentException("이미 상하행종점역이 모두 노선에 존재합니다.");
+        }
+
     }
 
     private void initEndPoint(Section section, Line line) {

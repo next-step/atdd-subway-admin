@@ -64,20 +64,20 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
             })
-//            ,
-//            DynamicTest.dynamicTest("상행역과 하행역이 노선에 이미 등록된 역일 경우 실패", () -> {
-//                SectionRequest sectionRequest =
-//                    new SectionRequest(newNotLineStationResponse.getId(), newStationResponse.getId(), 10L);
-//
-//                ExtractableResponse<Response> response = RestAssured.given().log().all()
-//                    .body(sectionRequest)
-//                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                    .when().post("/lines/{lineId}/sections")
-//                    .then().log().all()
-//                    .extract();
-//
-//                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-//            })
+            ,
+            DynamicTest.dynamicTest("상행역과 하행역이 노선에 이미 등록된 역일 경우 실패", () -> {
+                SectionRequest sectionRequest =
+                    new SectionRequest(newNotLineStationResponse.getId(), newStationResponse.getId(), 10L);
+
+                ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .body(sectionRequest)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().post("/lines/{lineId}/sections", lineResponse.getId())
+                    .then().log().all()
+                    .extract();
+
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            })
         );
     }
 
