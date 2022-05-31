@@ -14,7 +14,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 
 @Entity
-@JsonIgnoreProperties(value={"hibernateLazyInitializer"}, ignoreUnknown= true)
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 public class Line extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

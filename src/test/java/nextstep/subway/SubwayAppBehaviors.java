@@ -7,7 +7,9 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import nextstep.subway.domain.Line;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 public class SubwayAppBehaviors {
@@ -31,12 +33,16 @@ public class SubwayAppBehaviors {
                     .then().log().all()
                     .extract();
         }
-    public static Line 지하철노선을_조회한다(Long id) {
-        return RestAssured
+    public static Optional<Line> 지하철노선을_조회한다(Long id) {
+        ExtractableResponse<Response> response = RestAssured
                 .given().accept(ContentType.JSON).log().all()
                 .when().get("/lines/" + id)
                 .then().log().all()
-                .extract().jsonPath().getObject(".", Line.class);
+                .extract();
+        if(response.statusCode() == HttpStatus.NOT_FOUND.value()){
+            return Optional.empty();
+        }
+        return Optional.of(response.jsonPath().getObject(".", Line.class));
     }
 
     public static List<Line> 지하철노선목록을_조회한다() {

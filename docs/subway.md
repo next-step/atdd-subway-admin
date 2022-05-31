@@ -43,7 +43,7 @@
 
 #리뷰 내용 반영
 ## 2단계 리뷰
-  - [ ] Setting > Editor > Global > Ensure every saved file ends with a line break 설정
-  - [ ] @JsonIgnoreProperties의 ignoreUnknown 속성 제거 
+  - [X] Setting > Editor > Global > Ensure every saved file ends with a line break 설정
+  - [X] @JsonIgnoreProperties의 ignoreUnknown 속성 제거 
   - [ ] Response용 객체 생성 및 @JsonIgnoreProperties 제거 
   - [ ] @DirtiesContext 속도 개선 

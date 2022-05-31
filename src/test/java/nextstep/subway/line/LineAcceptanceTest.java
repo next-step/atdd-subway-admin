@@ -8,6 +8,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
+import java.util.Optional;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
@@ -83,11 +84,15 @@ public class LineAcceptanceTest {
         Long lineId = 지하철노선을_생성하고_ID를_반환한다("1호선", "color1", "서울역", "인천역", 100);
 
         // when
-        Line line = 지하철노선을_조회한다(lineId);
+        Optional<Line> optionalLine = 지하철노선을_조회한다(lineId);
+
+        // then
+        assertThat(optionalLine.isPresent()).isTrue();
+
+        Line line = optionalLine.get();
         List<Station> stations = line.getStations();
         List<String> stationNames = stations.stream().map((station) -> station.getName()).collect(toList());
 
-        // then
         assertThat(line).isNotNull();
         assertThat(line.getName()).isEqualTo("1호선");
         assertThat(line.getColor()).isEqualTo("color1");
@@ -110,9 +115,11 @@ public class LineAcceptanceTest {
 
         // when
         지하철노선을_수정한다(newName,newColor,lineId);
-        Line line = 지하철노선을_조회한다(lineId);
+        Optional<Line> optionalLine = 지하철노선을_조회한다(lineId);
 
         // then
+        assertThat(optionalLine.isPresent()).isTrue();
+        Line line = optionalLine.get();
         assertThat(line).isNotNull();
         assertThat(line.getName()).isEqualTo(newName);
         assertThat(line.getColor()).isEqualTo(newColor);
@@ -131,12 +138,9 @@ public class LineAcceptanceTest {
 
         // when
         지하철노선을_삭제한다(lineId);
-        Line line = 지하철노선을_조회한다(lineId);
+        Optional<Line> optionalLine = 지하철노선을_조회한다(lineId);
+
         // then
-        assertThat(line.getId()).isNull();
-        assertThat(line.getName()).isNull();
-        assertThat(line.getColor()).isNull();
-        assertThat(line.getDistance()).isNull();
-        assertThat(line.getStations().isEmpty()).isTrue();
+        assertThat(optionalLine.isPresent()).isFalse();
     }
 }
