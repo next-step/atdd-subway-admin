@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.dto.LineRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -13,7 +14,7 @@ public class LineTest extends EntityTest {
     @Test
     void createTest() {
         assertThat(line)
-                .isEqualTo(new Line("신분당선", "bg-red-600", S1, S2, 10L));
+                .isEqualTo(new Line("신분당선", "bg-red-600", S1, S2, new Distance(10L)));
     }
 
 

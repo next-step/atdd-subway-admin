@@ -1,10 +1,16 @@
-package nextstep.subway.line;
+package nextstep.subway.domain;
 
+import javax.persistence.Embeddable;
 import java.util.Objects;
 
+@Embeddable
 public class Distance {
     private static final Long ZERO = 0L;
     private final Long distance;
+
+    protected Distance() {
+        this(0L);
+    }
 
     public Distance(final Long distance) {
         if (ZERO > distance) {

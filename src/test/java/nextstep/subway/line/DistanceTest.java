@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import nextstep.subway.domain.Distance;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
