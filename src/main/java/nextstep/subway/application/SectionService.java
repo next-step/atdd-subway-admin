@@ -30,6 +30,7 @@ public class SectionService {
 
         for (Section lineSection : sections.getSections()) {
             validateSections(lineSection, section);
+            reregisterStations(lineSection, section);
         }
 
         line.addSection(section);
@@ -37,10 +38,12 @@ public class SectionService {
         return LineResponse.of(line);
     }
 
-    public void validateSections(Section lineSection, Section section) {
+    private void validateSections(Section lineSection, Section section) {
         lineSection.duplicateValidateCheck(section);
         lineSection.mismatchValidateCheck(section);
+    }
 
+    private void reregisterStations(Section lineSection, Section section) {
         lineSection.reregisterUpStation(section);
         lineSection.reregisterDownStation(section);
     }
