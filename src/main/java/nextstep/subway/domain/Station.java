@@ -16,7 +16,7 @@ public class Station extends BaseEntity {
 
     private boolean deleted = false;
 
-    public Station() {
+    protected Station() {
     }
 
     public Station(String name) {

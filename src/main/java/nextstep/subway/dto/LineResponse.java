@@ -1,6 +1,7 @@
 package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 
 import java.util.ArrayList;
@@ -21,8 +22,12 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         List<StationResponse> stationResponses = new ArrayList<>();
-        stationResponses.add(toStationResponse(line.getUpStation()));
-        stationResponses.add(toStationResponse(line.getDownStation()));
+        Sections lineSections = line.getSections();
+
+        lineSections.getSections().forEach(section -> {
+            stationResponses.add(toStationResponse(section.getUpStation()));
+            stationResponses.add(toStationResponse(section.getDownStation()));
+        });
 
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }

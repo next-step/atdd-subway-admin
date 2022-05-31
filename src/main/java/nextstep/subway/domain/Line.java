@@ -18,13 +18,8 @@ public class Line {
     @Column(nullable = false)
     private String color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
+    @Embedded
+    private final Sections sections = new Sections();
 
     private Boolean deleted = false;
 
@@ -32,15 +27,19 @@ public class Line {
 
     }
 
-    public Line(String name, String color, Station upStation, Station downStation) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
     }
 
-    public static Line of(String name, String color, Station upStation, Station downStation) {
-        return new Line(name, color, upStation, downStation);
+    public static Line of(String name, String color, Section section) {
+        Line line = new Line(name, color);
+        line.addSections(section);
+        return line;
+    }
+
+    public void addSections(Section section) {
+        this.sections.addSections(section);
     }
 
     public void update(String name, String color) {
@@ -68,11 +67,11 @@ public class Line {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public Sections getSections() {
+        return this.sections;
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public Boolean getDeleted() {
+        return deleted;
     }
 }

@@ -9,12 +9,15 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private int distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "up_station_id")
     private Station upStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "down_station_id")
     private Station downStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
