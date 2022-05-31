@@ -52,7 +52,7 @@ class SectionTest {
 
     @DisplayName("상행역이 같은 지하철 신규 구간 등록시 기존 케이스 구간 상행역 변경")
     @Test
-    void changeSectionEqualToUpStation() {
+    void updateSectionEqualToUpStation() {
         Station upStation = Station.builder("양재")
                 .id(1L)
                 .build();
@@ -70,7 +70,7 @@ class SectionTest {
 
     @DisplayName("하행역이 같은 지하철 신규 구간 등록시 기존 케이스 구간 하행역 변경")
     @Test
-    void changeSectionEqualToDownStation() {
+    void updateSectionEqualToDownStation() {
         Station upStation = Station.builder("청계산입구역")
                 .id(3L)
                 .build();

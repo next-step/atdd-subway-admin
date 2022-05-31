@@ -65,4 +65,11 @@ class SectionsTest {
                 .collect(Collectors.toList());
         assertThat(stationNames).containsOnly("강남역", "양재역", "판교역", "양재시민의숲역");
     }
+
+    @DisplayName("구간들 길이(합) 테스트")
+    @Test
+    void getDistance() {
+        Sections sections = Sections.valueOf(this.sections);
+        assertThat(sections.distance()).isEqualTo(Distance.valueOf(20));
+    }
 }

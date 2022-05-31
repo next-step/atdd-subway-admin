@@ -10,7 +10,6 @@ public class LineResponse extends BaseDto {
     private final Long id;
     private final String name;
     private final String color;
-
     private final int distance;
 
     private final List<StationResponse> stations;
