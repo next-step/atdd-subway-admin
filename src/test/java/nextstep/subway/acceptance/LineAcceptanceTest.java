@@ -1,13 +1,12 @@
 package nextstep.subway.acceptance;
 
-import static nextstep.subway.acceptance.StationAcceptanceTest.지하철역을_생성한다;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-import nextstep.common.AcceptanceTest;
-import nextstep.common.RestAssuredTemplate;
+import nextstep.subway.common.AcceptanceTest;
+import nextstep.subway.common.RestAssuredTemplate;
 import nextstep.subway.dto.LineRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,8 +23,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
-        지하철역을_생성한다("강남역");
-        지하철역을_생성한다("잠실역");
+        StationAcceptanceTest.지하철역을_생성한다("강남역");
+        StationAcceptanceTest.지하철역을_생성한다("잠실역");
     }
 
     /**

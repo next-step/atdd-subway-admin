@@ -2,7 +2,7 @@ package nextstep.subway.ui;
 
 import java.net.URI;
 import java.util.List;
-import nextstep.subway.NotFoundException;
+import nextstep.subway.common.NotFoundException;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;

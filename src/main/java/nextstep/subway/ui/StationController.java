@@ -1,6 +1,6 @@
 package nextstep.subway.ui;
 
-import nextstep.subway.NotFoundException;
+import nextstep.subway.common.NotFoundException;
 import nextstep.subway.application.StationService;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
