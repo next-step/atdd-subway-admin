@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +79,18 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        final String gangnam = "강남역";
+        지하철역을_생성한다(gangnam);
+
+        final String dongjak = "동작역";
+        지하철역을_생성한다(dongjak);
+
+        // when
+        final List<String> stationNames = 지하철역_목록을_조회한다();
+
+        // then
+        assertThat(stationNames).containsAll(Arrays.asList(gangnam, dongjak));
     }
 
     /**
@@ -88,6 +101,7 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+
     }
 
     private ExtractableResponse<Response> 지하철역을_생성한다(final String name) {
@@ -106,6 +120,7 @@ public class StationAcceptanceTest {
     private List<String> 지하철역_목록을_조회한다() {
         return RestAssured
                 .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/stations")
                 .then().log().all()
                 .extract()
