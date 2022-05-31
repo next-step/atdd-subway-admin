@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -101,7 +102,18 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        final String name = "강남역";
+        final ExtractableResponse<Response> createResponse = 지하철역을_생성한다(name);
+        final Long id = createResponse.as(StationResponse.class).getId();
 
+        // when
+        final ExtractableResponse<Response> deleteResponse = 지하철역을_삭제한다(id);
+
+        // then
+        응답_코드를_검증한다(deleteResponse, HttpStatus.NO_CONTENT);
+        final List<String> stationNames = 지하철역_목록을_조회한다();
+        assertThat(stationNames).doesNotContain(name);
     }
 
     private ExtractableResponse<Response> 지하철역을_생성한다(final String name) {
@@ -125,6 +137,14 @@ public class StationAcceptanceTest {
                 .then().log().all()
                 .extract()
                 .jsonPath().getList("name", String.class);
+    }
+
+    private ExtractableResponse<Response> 지하철역을_삭제한다(final Long id) {
+        return RestAssured
+                .given().log().all()
+                .when().delete("/stations/{id}", id)
+                .then().log().all()
+                .extract();
     }
 
     private void 응답_코드를_검증한다(final ExtractableResponse<Response> response, final HttpStatus created) {
