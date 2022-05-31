@@ -44,22 +44,6 @@ public class LineService {
         return LineResponse.of(persistStation);
     }
 
-    private Line getLine(long id) {
-        return lineRepository.findById(id).orElseThrow(() -> new NotFoundException("등록된 노선이 없습니다."));
-    }
-
-    @Transactional(readOnly = true)
-    public List<LineResponse> findAllLines() {
-        return lineRepository.findAll().stream()
-                .map(LineResponse::of)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public LineResponse findLineById(Long id) {
-        return LineResponse.of(getLine(id));
-    }
-
     @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
@@ -76,7 +60,20 @@ public class LineService {
         return line;
     }
 
-    @Transactional(readOnly = true)
+    public List<LineResponse> findAllLines() {
+        return lineRepository.findAll().stream()
+                .map(LineResponse::of)
+                .collect(Collectors.toList());
+    }
+
+    public LineResponse findLineById(Long id) {
+        return LineResponse.of(getLine(id));
+    }
+
+    private Line getLine(long id) {
+        return lineRepository.findById(id).orElseThrow(() -> new NotFoundException("등록된 노선이 없습니다."));
+    }
+
     private Station getStation(Long line) {
         return stationRepository.findById(line)
                 .orElseThrow(() -> new NotFoundException("등록된 지하철역이 없습니다."));

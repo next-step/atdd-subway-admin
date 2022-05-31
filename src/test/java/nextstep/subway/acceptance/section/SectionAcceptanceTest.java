@@ -28,7 +28,6 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
     @BeforeEach
     protected void setUp() {
         super.setUp();
-        // Given
         강남역 = 지하철역_생성_요청("강남역").as(StationResponse.class);
         양재역 = 지하철역_생성_요청("양재역").as(StationResponse.class);
         청계산입구역 = 지하철역_생성_요청("청계산입구역").as(StationResponse.class);
@@ -38,14 +37,14 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     /**
-     * When 지하철 노선에 사이에 새로운 구간을 등록하면 (상행역 일치)
+     * When 지하철 노선의 구간 사이에 새로운 구간을 등록하면 (상행역 일치)
      * Then 지하철 노선에 사이에 새로운 역이 등록된다.
      */
-    @DisplayName("지하철 노선 사이에 지하철구간 생성 (상행역 일치)")
+    @DisplayName("지하철 노선의 구간 사이에 지하철구간 생성 (상행역 일치)")
     @Test
     void addSectionInsideIfEqualUpStation() {
         // when
-        ExtractableResponse<Response> response = 지하철구간_추가_요청(신분당선.getId(), 양재역.getId(), 청계산입구역.getId(), 7);
+        ExtractableResponse<Response> response = 지하철구간_추가_요청(신분당선.getId(), 양재역.getId(), 청계산입구역.getId(), 5);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -57,14 +56,15 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     /**
-     * When 지하철 노선에 사이에 새로운 구간을 등록하면 (하행역 일치)
-     * Then 지하철 노선에 사이에 새로운 역이 등록된다.
+     * When 지하철 노선의 구간 사이에 새로운 구간을 등록하면 (하행역 일치)
+     * Then 새로운 구간이 등록된다.
+     * Then 새로운 역이 등록된다.
      */
-    @DisplayName("지하철 노선 사이에 지하철구간 생성 (하행역 일치)")
+    @DisplayName("지하철 노선의 구간 사이에 지하철구간 생성 (하행역 일치)")
     @Test
     void addSectionInsideIfEqualDownStation() {
         // when
-        ExtractableResponse<Response> response = 지하철구간_추가_요청(신분당선.getId(), 청계산입구역.getId(), 판교역.getId(), 7);
+        ExtractableResponse<Response> response = 지하철구간_추가_요청(신분당선.getId(), 청계산입구역.getId(), 판교역.getId(), 3);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -73,6 +73,54 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         List<String> stationNames = response.jsonPath().getList("stations.name", String.class);
         assertThat(stationNames).hasSize(3);
         assertThat(stationNames).containsOnly(양재역.getName(), 청계산입구역.getName(), 판교역.getName());
+    }
+
+    /**
+     * Given 지하철 노선의 구간 사이에 새로운 구간을 등록하고
+     * When 새로운 구간을 상행 종점에 등록하면
+     * Then 새로운 구간이 등록된다.
+     * Then 새로운 역이 등록된다.
+     */
+    @DisplayName("새로운 구간을 상행 종점에 등록한다.")
+    @Test
+    void addSectionAtUpStation() {
+        // given
+        지하철구간_추가_요청(신분당선.getId(), 청계산입구역.getId(), 판교역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> response = 지하철구간_추가_요청(신분당선.getId(), 강남역.getId(), 양재역.getId(), 7);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then
+        List<String> stationNames = response.jsonPath().getList("stations.name", String.class);
+        assertThat(stationNames).hasSize(4);
+        assertThat(stationNames).containsOnly(강남역.getName(), 양재역.getName(), 청계산입구역.getName(), 판교역.getName());
+    }
+
+    /**
+     * Given 지하철 노선의 구간 사이에 새로운 구간을 등록하고
+     * When 새로운 구간을 하행 종점에 등록하면
+     * Then 새로운 구간이 등록된다.
+     * Then 새로운 역이 등록된다.
+     */
+    @DisplayName("새로운 구간을 하행 종점에 등록한다.")
+    @Test
+    void addSectionAtDownStation() {
+        // given
+        지하철구간_추가_요청(신분당선.getId(), 청계산입구역.getId(), 판교역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> response = 지하철구간_추가_요청(신분당선.getId(), 판교역.getId(), 정자역.getId(), 7);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then
+        List<String> stationNames = response.jsonPath().getList("stations.name", String.class);
+        assertThat(stationNames).hasSize(4);
+        assertThat(stationNames).containsOnly(양재역.getName(), 청계산입구역.getName(), 판교역.getName(), 정자역.getName());
     }
 
     ExtractableResponse<Response> 지하철구간_추가_요청(long lineId, long upStationId, long downStationId, int distance) {
