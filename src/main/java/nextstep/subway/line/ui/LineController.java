@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/lines")
 public class LineController {
 
-    public final LineService lineService;
+    private final LineService lineService;
 
     public LineController(LineService service) {
         this.lineService = service;
