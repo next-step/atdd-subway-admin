@@ -97,6 +97,24 @@ public class LineStationAcceptanceTests {
         assertThat(statusCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 신규 역을 등록하고
+     * Given 새로운 역을 구간등록 하면
+     * Then 등록될 수 없다
+     */
+    @DisplayName("상,하행선이 모두 노선에 없으면 등록할 수 없다")
+    @Test
+    void validateNoMatch_createSection() {
+        // Given
+        Long otherStationId = createTestStation("신규지하철역").jsonPath().getLong("id");
+
+        // Given
+        int statusCode = createSection(lineId, 5L, newStationId, otherStationId).statusCode();
+
+        // Then
+        assertThat(statusCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> createSection(Long lineId, Long distance, Long upStationId, Long downStationId) {
         Map<String, String> params = createStationRequestMap(distance, upStationId, downStationId);
 
