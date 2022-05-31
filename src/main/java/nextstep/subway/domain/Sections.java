@@ -6,12 +6,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
@@ -52,7 +51,6 @@ public class Sections {
 
     private void update(Section newSection) {
         sections.forEach(section -> section.update(newSection));
-        sections.add(newSection);
     }
 
     private boolean isSectionsEmpty() {
