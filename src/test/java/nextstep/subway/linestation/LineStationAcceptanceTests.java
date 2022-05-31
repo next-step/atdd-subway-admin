@@ -7,8 +7,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -63,6 +65,21 @@ public class LineStationAcceptanceTests {
         // Then
         List<Long> result = getLine(lineId).jsonPath().getList("stations.id", Long.class);
         assertThat(result).containsExactly(stationIds.get(firstId), stationIds.get(secondId), stationIds.get(thirdId));
+    }
+
+    /**
+     * Given 새로운 역을 구간등록 하면
+     * Then 등록될 수 없다
+     */
+    @DisplayName("노선 추가시 거리가 크거나 같으면 등록할 수 없다")
+    @ParameterizedTest
+    @ValueSource(longs = {10L, 11L})
+    void validateDistance_createSection(Long distance) {
+        // Given
+        int statusCode = createSection(lineId, distance, upStationId, newStationId).statusCode();
+
+        // Then
+        assertThat(statusCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> createSection(Long lineId, Long distance, Long upStationId, Long downStationId) {
