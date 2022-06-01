@@ -3,7 +3,9 @@ package nextstep.subway.section;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +16,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static nextstep.subway.line.LineAcceptanceFactory.ID값으로_지하철노선_조회;
 import static nextstep.subway.line.LineAcceptanceFactory.지하철노선_생성;
 import static nextstep.subway.section.SectionAcceptanceFactory.지하철구간_생성;
 import static nextstep.subway.station.StationAcceptanceFactory.지하철역_생성;
@@ -49,11 +56,17 @@ public class SectionAcceptanceTest {
      * Then 노선에 구간을 등록한다.
      */
     @Test
+    @Transactional
     void 역_사이에_새로운_역을_등록한다() {
         ExtractableResponse<Response> 일호선_구간 = 지하철구간_생성(일호선.getId(), 소요산역.getId(), 서울역.getId(), 10);
 
+        Line line = lineRepository.findById(일호선.getId())
+                .orElseThrow(() -> new IllegalStateException("존재하지 않는 노선입니다."));
+
         assertThat(일호선_구간.statusCode()).isEqualTo(HttpStatus.OK.value());
-        //TODO 구간이 적절하게 설정되었는지에 대한 테스트 추가
+        line.getSections().forEach(section ->
+                assertThat(section.getDistance()).isEqualTo(10)
+        );
 
     }
 
@@ -68,7 +81,13 @@ public class SectionAcceptanceTest {
 
         assertThat(상행역_연장구간.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        //TODO 구간의 길이가 추가되었는지에 대한 테스트 추가
+        LineResponse 일호선_노선 = ID값으로_지하철노선_조회(일호선.getId());
+
+        List<String> stationNames = 일호선_노선.getStations().stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+
+        assertThat(stationNames).contains("신규상행역");
 
     }
 }
