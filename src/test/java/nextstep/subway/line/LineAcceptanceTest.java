@@ -3,8 +3,10 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
+import static nextstep.subway.station.StationAcceptanceTest.지하철역을_생성한다;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선 관련 인수테스트")
@@ -82,6 +85,22 @@ public class LineAcceptanceTest {
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 상행, 하행이 포함된 노선을 생성하면
+     * Then 해당 노선과 구간이 등록된다.
+     */
+    @DisplayName("상행/하행이 포함된 새로운 노선을 생성한다.")
+    @Test
+    void createLineWithSection() {
+        //given
+        StationResponse 건대역 = 지하철역을_생성한다("건대역").as(StationResponse.class);
+        StationResponse 뚝섬유원지역 = 지하철역을_생성한다("뚝섬유원지역").as(StationResponse.class);
+
+        //when
+        ExtractableResponse<Response> response_create = 노선을_생성한다("7호선", "#EEEEEE", 건대역.getId(), 뚝섬유원지역.getId(), 10);
+        assertThat(response_create.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     /**
@@ -156,6 +175,16 @@ public class LineAcceptanceTest {
 
     public static ExtractableResponse<Response> 노선을_생성한다(String name, String color) {
         LineRequest lineRequest = new LineRequest(name, color);
+        return RestAssured.given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 노선을_생성한다(String name, String color, Long upstationId, Long downStationId, Integer distance) {
+        LineRequest lineRequest = new LineRequest(name, color, upstationId, downStationId, distance);
         return RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
