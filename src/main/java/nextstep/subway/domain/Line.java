@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.dto.LineRequest;
+
 import javax.persistence.*;
 
 @Entity
@@ -39,6 +41,15 @@ public class Line {
 
     public Line(String name, String color, Station upStation, Station downStation, Long distance) {
         this(null, name, color, upStation, downStation, distance);
+    }
+
+    public static Line of(LineRequest lineRequest, Station upStation, Station downStation) {
+        return new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
+    }
+
+    public void update(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 
     public Long getId() {

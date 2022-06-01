@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
@@ -24,23 +24,42 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    @Transactional
-    public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
-                .orElseThrow(() -> new NotFoundException("상행역을 찾을 수 없습니다."));
+    public LineResponse createLine(LineRequest lineRequest) {
+        Station upStation = findStationById(lineRequest.getUpStationId());
+        Station downStation = findStationById(lineRequest.getDownStationId());
 
-        Station downStation = stationRepository.findById(lineRequest.getUpStationId())
-                .orElseThrow(() -> new NotFoundException("하행역을 찾을 수 없습니다."));
+        Line line = lineRepository.save(Line.of(lineRequest, upStation, downStation));
 
-        Line line = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance()));
-
-        return LineResponse.from(line);
+        return LineResponse.of(line);
     }
 
-    public List<LineResponse> selectLine() {
+    @Transactional(readOnly = true)
+    public List<LineResponse> getLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
-                .map(LineResponse::from)
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public LineResponse updateLine(Long id, LineRequest lineRequest) {
+        Line line = findLineById(id);
+        line.update(lineRequest.getName(), lineRequest.getColor());
+
+        return LineResponse.of(line);
+    }
+
+    public LineResponse getLine(Long id) {
+        Line line = findLineById(id);
+        return LineResponse.of(line);
+    }
+
+    private Line findLineById(Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new NotFoundException("노선을 찾을 수 없습니다."));
+    }
+
+    private Station findStationById(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new NotFoundException("지하철역을 찾을 수 없습니다."));
     }
 }

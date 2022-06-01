@@ -91,7 +91,7 @@ public class LineAcceptanceTest {
     @DisplayName("지하철노선 수정 테스트")
     void 지하철노선_수정_테스트() {
         // when
-        ExtractableResponse<Response> 분당선_수정_응답 = 지하철노선_수정(분당선Id, new LineRequest("3호선", "purple"));
+        ExtractableResponse<Response> 분당선_수정_응답 = 지하철노선_수정(분당선Id, new LineRequest("분당선", "purple"));
         // given
         ExtractableResponse<Response> 분당선_상세_응답 = 지하철노선_상세_조회(분당선Id);
 
@@ -138,7 +138,7 @@ public class LineAcceptanceTest {
                 RestAssured.given().log().all()
                         .body(lineRequest)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().put("/line")
+                        .when().put("/line/" + lineId)
                         .then().log().all()
                         .extract();
 

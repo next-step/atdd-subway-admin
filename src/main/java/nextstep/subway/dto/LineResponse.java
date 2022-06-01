@@ -24,7 +24,7 @@ public class LineResponse {
         this.downStation = downStation;
     }
 
-    public static LineResponse from(Line line) {
+    public static LineResponse of(Line line) {
         StationResponse upStationResponse = StationResponse.of(line.getUpStation());
         StationResponse downStationResponse = StationResponse.of(line.getDownStation());
 
