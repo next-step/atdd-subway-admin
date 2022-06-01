@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import static nextstep.subway.domain.Section.linkTwoSection;
+import static nextstep.subway.domain.Section.mergeTwoSection;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -47,20 +47,21 @@ public class Sections {
         final Section downStation = findSameDownStation(station);
 
         if (isMiddleSection(upStation, downStation)) {
-            this.sections.add(linkTwoSection(upStation, downStation));
+            this.sections.add(mergeTwoSection(upStation, downStation));
         }
+
         this.sections.remove(upStation);
         this.sections.remove(downStation);
+    }
+
+    private boolean isMiddleSection(Section upStation, Section downStation) {
+        return upStation != null && downStation != null;
     }
 
     private void validateSizeOnlyOne() {
         if (size() == 1) {
             throw new UniqueSectionException("해당 노선의 유일한 구간이라 지울 수 없습니다.");
         }
-    }
-
-    private boolean isMiddleSection(Section upStation, Section downStation) {
-        return upStation != null && downStation != null;
     }
 
     private void validateSection(Section section) {

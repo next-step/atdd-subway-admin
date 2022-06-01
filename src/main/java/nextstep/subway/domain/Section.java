@@ -74,7 +74,7 @@ public class Section extends BaseEntity {
         }
     }
 
-    public static Section linkTwoSection(Section upStation, Section downStation) {
+    public static Section mergeTwoSection(Section upStation, Section downStation) {
         Distance distance = Distance.add(upStation.distance, downStation.distance);
         return new Section(upStation.line, downStation.upStation, upStation.downStation, distance);
     }

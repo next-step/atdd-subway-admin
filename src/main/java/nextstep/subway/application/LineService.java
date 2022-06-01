@@ -6,7 +6,6 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Lines;
 import nextstep.subway.domain.Section;
-import nextstep.subway.domain.SectionRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
@@ -20,13 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    private final SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository,
-                       SectionRepository sectionRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.sectionRepository = sectionRepository;
     }
 
     @Transactional
@@ -70,6 +66,14 @@ public class LineService {
         line.addSection(new Section(line, upStation, downStation, distance));
     }
 
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        Station station = findStationById(stationId);
+
+        line.deleteSection(station);
+    }
+
     private Line findLineById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("라인 정보가 존재하지 않습니다."));
@@ -78,13 +82,5 @@ public class LineService {
     private Station findStationById(Long id) {
         return stationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("역 정보가 존재하지 않습니다."));
-    }
-
-    @Transactional
-    public void deleteSection(Long lineId, Long stationId) {
-        Line line = findLineById(lineId);
-        Station station = findStationById(stationId);
-
-        line.deleteSection(station);
     }
 }
