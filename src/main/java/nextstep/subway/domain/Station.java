@@ -12,7 +12,7 @@ public class Station extends BaseEntity {
     @Column(name = "line_id")
     private Long lineId;
 
-    public Station() {
+    protected Station() {
     }
 
     public Station(String name) {

@@ -25,7 +25,7 @@ public class Line extends BaseEntity {
     @JoinColumn(name = "line_id")
     private List<Station> stations = new ArrayList<>();
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color) {
