@@ -99,6 +99,10 @@ public class Section extends BaseEntity {
         return line;
     }
 
+    public Distance distance() {
+        return distance;
+    }
+
     public List<Station> stations() {
         return Arrays.asList(this.upStation, this.downStation);
     }
