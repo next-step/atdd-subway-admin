@@ -27,7 +27,7 @@ public class LineService {
 
     public void updateLine(Long lineId, LineUpdateRequest lineUpdateRequest) {
         Line line = findLineById(lineId);
-        line.update(lineUpdateRequest);
+        line.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
     }
 
     public void deleteLine(Long lineId) {

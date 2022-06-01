@@ -55,9 +55,9 @@ public class Line extends BaseEntity {
         return Arrays.asList(this.upStation, this.downStation);
     }
 
-    public void update(LineUpdateRequest request) {
-        this.name = request.getName();
-        this.color = request.getColor();
+    public void update(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 
     @Override
