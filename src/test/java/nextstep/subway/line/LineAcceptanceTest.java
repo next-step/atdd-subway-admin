@@ -8,7 +8,6 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
 import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.StationResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,10 +25,15 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
+    ExtractableResponse<Response> lineCreateResponse;
 
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
+
+        Long upStationId = StationAcceptanceTest.createOneStation("강남역").jsonPath().getLong("id");
+        Long downStationId = StationAcceptanceTest.createOneStation("광교중앙역").jsonPath().getLong("id");
+        lineCreateResponse = createOneLine("신분당선", "red", upStationId, downStationId, 10);
     }
 
     /**
@@ -39,12 +43,10 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        Long upStationId = StationAcceptanceTest.createOneStation("강남역").jsonPath().getLong("id");
-        Long downStationId = StationAcceptanceTest.createOneStation("광교중앙역").jsonPath().getLong("id");
-        ExtractableResponse<Response> createResponse = createOneLine("신분당선", "red", upStationId, downStationId, 10);
+        // BeforeEach 에서 실행
 
         // then
-        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(lineCreateResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
         ExtractableResponse<Response> response = getAllLines();
@@ -58,10 +60,6 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        Long upStationId_sb = StationAcceptanceTest.createOneStation("강남역").jsonPath().getLong("id");
-        Long downStationId_sb = StationAcceptanceTest.createOneStation("광교중앙역").jsonPath().getLong("id");
-        createOneLine("신분당선", "red", upStationId_sb, downStationId_sb, 10);
-
         Long upStationId_b = StationAcceptanceTest.createOneStation("수원역").jsonPath().getLong("id");
         Long downStationId_b = StationAcceptanceTest.createOneStation("압구정로데오").jsonPath().getLong("id");
         createOneLine("분당선", "yellow", upStationId_b, downStationId_b, 10);
@@ -81,13 +79,10 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         // given
-        Long upStationId_sb = StationAcceptanceTest.createOneStation("강남역").jsonPath().getLong("id");
-        Long downStationId_sb = StationAcceptanceTest.createOneStation("광교중앙역").jsonPath().getLong("id");
-        ExtractableResponse<Response> createResponse = createOneLine("신분당선", "red", upStationId_sb, downStationId_sb,
-                10);
+        // BeforeEach 에서 실행
 
         // when
-        LineResponse lineResponse = getOneLine(createResponse.jsonPath().getLong("id")).jsonPath()
+        LineResponse lineResponse = getOneLine(lineCreateResponse.jsonPath().getLong("id")).jsonPath()
                 .getObject("$", LineResponse.class);
 
         // then
@@ -95,24 +90,19 @@ public class LineAcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선을 생성하고
-     * When 생성한 지하철 노선을 수정하면
-     * Then 해당 지하철 노선 정보는 수정된다
+     * Given 지하철 노선을 생성하고 When 생성한 지하철 노선을 수정하면 Then 해당 지하철 노선 정보는 수정된다
      */
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
         // given
-        Long upStationId_sb = StationAcceptanceTest.createOneStation("강남역").jsonPath().getLong("id");
-        Long downStationId_sb = StationAcceptanceTest.createOneStation("광교중앙역").jsonPath().getLong("id");
-        ExtractableResponse<Response> createResponse = createOneLine("신분당선", "red", upStationId_sb, downStationId_sb,
-                10);
+        // BeforeEach 에서 실행
 
         // when
-        updateOneLine(createResponse.jsonPath().getLong("id"), "짱비싼선", "black");
+        updateOneLine(lineCreateResponse.jsonPath().getLong("id"), "짱비싼선", "black");
 
         // then
-        LineResponse lineResponse = getOneLine(createResponse.jsonPath().getLong("id")).jsonPath()
+        LineResponse lineResponse = getOneLine(lineCreateResponse.jsonPath().getLong("id")).jsonPath()
                 .getObject("$", LineResponse.class);
         assertThat(lineResponse.getName()).isEqualTo("짱비싼선");
         assertThat(lineResponse.getColor()).isEqualTo("black");
@@ -125,12 +115,10 @@ public class LineAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Long upStationId = StationAcceptanceTest.createOneStation("강남역").jsonPath().getLong("id");
-        Long downStationId = StationAcceptanceTest.createOneStation("광교중앙역").jsonPath().getLong("id");
-        ExtractableResponse<Response> createResponse = createOneLine("신분당선", "red", upStationId, downStationId, 10);
+        // BeforeEach에서 실행
 
         // when
-        deleteOneLine(createResponse.jsonPath().getLong("id"));
+        deleteOneLine(lineCreateResponse.jsonPath().getLong("id"));
 
         // then
         ExtractableResponse<Response> response = getAllLines();
@@ -162,7 +150,7 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/" + id  )
+                .when().put("/lines/" + id)
                 .then().log().all()
                 .extract();
     }
