@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import nextstep.subway.DatabaseCleanUp;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
@@ -49,9 +49,12 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선 생성")
     @Test
     void createLineTest() {
+        StationResponse 강남역 = StationAcceptanceTest.createStation("강남역").as(StationResponse.class);
+        StationResponse 대림역 = StationAcceptanceTest.createStation("대림역").as(StationResponse.class);
+
         //when 지하철 노선 생성
         String lineName = "2호선";
-        ExtractableResponse<Response> createdLine = createLine(lineName, "bg-green-200", "강남역", "대림역",10);
+        ExtractableResponse<Response> createdLine = createLine(lineName, "bg-green-200", 강남역.getId(), 대림역.getId(),10);
 
         //then 지하철 노선 목록 조회 시 createdLine의 name을 찾을 수 있다.
         ExtractableResponse<Response> lines = fetchAllLines();
@@ -70,9 +73,14 @@ public class LineAcceptanceTest {
         String line2Name = "2호선";
         String line9Name = "9호선";
 
+        StationResponse 강남역 = StationAcceptanceTest.createStation("강남역").as(StationResponse.class);
+        StationResponse 대림역 = StationAcceptanceTest.createStation("대림역").as(StationResponse.class);
+        StationResponse 당산역 = StationAcceptanceTest.createStation("당산역").as(StationResponse.class);
+        StationResponse 올림픽공원역 = StationAcceptanceTest.createStation("올림픽공원역").as(StationResponse.class);
+
         //given : 2개의 지하철 노선 생성
-        ExtractableResponse<Response> line2 = createLine(line2Name, "bg-green-200", "강남역", "대림역",10);
-        ExtractableResponse<Response> line9 = createLine(line9Name, "bg-gold-200", "당산역", "올림픽공원역",20);
+        ExtractableResponse<Response> line2 = createLine(line2Name, "bg-green-200", 강남역.getId(), 대림역.getId(),10);
+        ExtractableResponse<Response> line9 = createLine(line9Name, "bg-gold-200", 당산역.getId(), 올림픽공원역.getId(),20);
 
         //when : 지하철 노선 목록을 조회
         ExtractableResponse<Response> lines = fetchAllLines();
@@ -93,7 +101,10 @@ public class LineAcceptanceTest {
     void getLineTest() {
         String line2Name = "2호선";
         // given : 지하철 노선을 생성
-        ExtractableResponse<Response> line2 = createLine(line2Name, "bg-green-200", "강남역", "대림역",10);
+        StationResponse 강남역 = StationAcceptanceTest.createStation("강남역").as(StationResponse.class);
+        StationResponse 대림역 = StationAcceptanceTest.createStation("대림역").as(StationResponse.class);
+
+        ExtractableResponse<Response> line2 = createLine(line2Name, "bg-green-200", 강남역.getId(), 대림역.getId(),10);
         Long createdLineId = (long) (int) line2.jsonPath().get("id");
 
         // when : 생성한 지하철 노선을 조회
@@ -102,8 +113,7 @@ public class LineAcceptanceTest {
         //then 지하철 노선의 정보를 응답 받는다.
         assertAll(
                 () -> assertThat((String) createdLine.jsonPath().get("name")).isEqualTo(line2Name),
-                () -> assertThat((String) createdLine.jsonPath().get("color")).isEqualTo("bg-green-200"),
-                () -> assertThat(createdLine.jsonPath().getList("stations", StationResponse.class).size()).isEqualTo(2)
+                () -> assertThat((String) createdLine.jsonPath().get("color")).isEqualTo("bg-green-200")
         );
     }
 
@@ -117,7 +127,10 @@ public class LineAcceptanceTest {
     void updateLineTest() {
         //given : 지하철 노선 생성
         String line2Name = "2호선";
-        ExtractableResponse<Response> line2 = createLine(line2Name, "bg-green-200", "충정로역", "왕십리역",10);
+        StationResponse 충정로역 = StationAcceptanceTest.createStation("충정로역").as(StationResponse.class);
+        StationResponse 왕십리역 = StationAcceptanceTest.createStation("왕십리역").as(StationResponse.class);
+
+        ExtractableResponse<Response> line2 = createLine(line2Name, "bg-green-200", 충정로역.getId(), 왕십리역.getId(),10);
 
         //when : 생성한 지하철 노선을 수정
         Long id = (long) (int) line2.jsonPath().get("id");
@@ -141,7 +154,10 @@ public class LineAcceptanceTest {
     void deleteLineTest() {
         //given : 지하철 노선 생성
         String line2Name = "2호선";
-        ExtractableResponse<Response> line2 = createLine(line2Name, "bg-green-200", "강남역", "대림역",10);
+        StationResponse 강남역 = StationAcceptanceTest.createStation("강남역").as(StationResponse.class);
+        StationResponse 대림역 = StationAcceptanceTest.createStation("대림역").as(StationResponse.class);
+
+        ExtractableResponse<Response> line2 = createLine(line2Name, "bg-green-200", 강남역.getId(), 대림역.getId(),10);
 
         //when : 생성한 지하철 노선 삭제
         Long lineId = (long) (int) line2.jsonPath().get("id");
@@ -189,10 +205,7 @@ public class LineAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(404);
     }
 
-    private ExtractableResponse<Response> createLine(String name, String color, String upStationName, String downStationName, int distance) {
-        Long upStationId = createStation(upStationName);
-        Long downStationId = createStation(downStationName);
-
+    public static ExtractableResponse<Response> createLine(String name, String color, Long upStationId, Long downStationId, int distance) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
@@ -241,7 +254,7 @@ public class LineAcceptanceTest {
         return (long) id;
     }
 
-    private ExtractableResponse<Response> post(String path, Map<String, Object> params) {
+    private static ExtractableResponse<Response> post(String path, Map<String, Object> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
