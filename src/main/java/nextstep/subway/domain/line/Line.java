@@ -81,6 +81,10 @@ public class Line extends BaseEntity {
         section.setLine(this);
     }
 
+    public Sections getSections() {
+        return sections;
+    }
+
     public void setTerminus(Station upStation, Station downStation) {
         validateDuplicateStation(upStation);
         validateDuplicateStation(downStation);
@@ -100,16 +104,12 @@ public class Line extends BaseEntity {
 
     private boolean isExistSameStation(Station station) {
         return lineStations.stream()
-                .map(lineStation -> lineStation.getStation())
+                .map(LineStation::getStation)
                 .anyMatch(storedStation -> storedStation.equals(station));
     }
 
     public void modify(String name, String color) {
         this.name = LineName.of(name);
         this.color = LineColor.of(color);
-    }
-
-    public void delete() {
-        lineStations.clear();
     }
 }
