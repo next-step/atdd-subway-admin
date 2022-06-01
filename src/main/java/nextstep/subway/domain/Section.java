@@ -58,10 +58,6 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public int getDistance() {
-        return distance.getDistance();
-    }
-
     public void setLine(Line line) {
         this.line = line;
     }

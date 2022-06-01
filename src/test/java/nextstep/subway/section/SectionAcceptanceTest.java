@@ -3,15 +3,12 @@ package nextstep.subway.section;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -40,9 +37,6 @@ public class SectionAcceptanceTest {
     private StationResponse 소요산역;
     private LineResponse 일호선;
 
-    @Autowired
-    private LineRepository lineRepository;
-
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
@@ -61,14 +55,7 @@ public class SectionAcceptanceTest {
     void 역_사이에_새로운_역을_등록한다() {
         ExtractableResponse<Response> 일호선_구간 = 지하철구간_생성(일호선.getId(), 소요산역.getId(), 서울역.getId(), 10);
 
-        Line line = lineRepository.findById(일호선.getId())
-                .orElseThrow(() -> new IllegalStateException("존재하지 않는 노선입니다."));
-
         assertThat(일호선_구간.statusCode()).isEqualTo(HttpStatus.OK.value());
-        line.getSections().forEach(section ->
-                assertThat(section.getDistance()).isEqualTo(10)
-        );
-
     }
 
     /**
