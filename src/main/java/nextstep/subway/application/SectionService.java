@@ -16,7 +16,6 @@ import nextstep.subway.dto.response.SectionResponse;
 import nextstep.subway.exception.DupSectionException;
 import nextstep.subway.exception.LineNotFoundException;
 import nextstep.subway.exception.StationNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,8 +45,8 @@ public class SectionService {
         Station downStation = getStationOrThrow(sectionRequest.getDownStationId());
 
         validateDupSection(line, upStation, downStation);
-        Section appendSection =  new Section(upStation, downStation, line,
-            new Distance(sectionRequest.getDistance()), null, null);
+        Section appendSection = Section.of(upStation, downStation, line,
+            new Distance(sectionRequest.getDistance()));
 
         Optional<Section> section = null;
         if ((section = sectionRepository.findAllByDownStationAndLine(downStation,

@@ -12,7 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import nextstep.subway.dto.response.SectionResponse;
-import nextstep.subway.exception.SectionInvalidException;
 
 @Entity
 public class Section {
@@ -45,7 +44,7 @@ public class Section {
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, Line line, Distance distance,
+    protected Section(Station upStation, Station downStation, Line line, Distance distance,
         Section nextSection, Section backSection) {
         this.upStation = upStation;
         this.downStation = downStation;
@@ -53,6 +52,10 @@ public class Section {
         this.distance = distance;
         this.nextSection = nextSection;
         this.backSection = backSection;
+    }
+
+    public static Section of(Station upStation, Station downStation, Line line, Distance distance) {
+        return new Section(upStation, downStation, line, distance, null, null);
     }
 
     public SectionResponse toResponse() {

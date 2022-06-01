@@ -56,8 +56,7 @@ public class LineService {
         lineStationRepository.save(upLineStation);
         lineStationRepository.save(downLineStation);
 
-        Section section = new Section(upStation, downStation, line, new Distance(lineRequest.getDistance()), null,
-            null);
+        Section section = Section.of(upStation, downStation, line, new Distance(lineRequest.getDistance()));
         sectionRepository.save(section);
 
         return LineResponse.of(line);
