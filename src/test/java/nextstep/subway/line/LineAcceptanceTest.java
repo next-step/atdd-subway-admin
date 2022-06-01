@@ -177,7 +177,7 @@ public class LineAcceptanceTest {
     public static ExtractableResponse<Response> getOneLine(Long id) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines/ + id")
+                .when().get("/lines/" + id)
                 .then().log().all()
                 .extract();
     }
