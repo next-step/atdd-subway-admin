@@ -7,9 +7,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("노선에 속한 구간 관련 테스트")
 class SectionsTest {
+    private static final int DEFAULT_DISTANCE = 10;
+
     Station stationA;
     Station stationB;
     Line line;
@@ -20,7 +23,7 @@ class SectionsTest {
         stationA = new Station("강남역");
         stationB = new Station("교대역");
         line = new Line("2호선", "green");
-        line.addSection(stationA, stationB, 10);
+        line.addSection(stationA, stationB, DEFAULT_DISTANCE);
     }
 
     @DisplayName("구간 중간에 구간을 추가한다.")
@@ -67,5 +70,29 @@ class SectionsTest {
         line.addSection(stationB, station3, 4); // A 1 2 B 3
         line.addSection(station4, stationA, 1); // 4 A 1 2 B 3
         assertThat(line.stations()).containsSequence(station4, stationA, station1, station2, stationB, station3);
+    }
+
+    @DisplayName("구간 추가 시 기존 역 사이보다 길거나 같으면 등록할 수 없다")
+    @Test
+    void addTooLongSection() {
+        Station station = new Station("서초역");
+        assertThatThrownBy(() -> line.addSection(stationA, station, DEFAULT_DISTANCE))
+                        .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> line.addSection(stationA, station, DEFAULT_DISTANCE + 1))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("등록하는 구간의 상행역과 하행역이 이미 등록되어 있다면 등록할 수 없다")
+    @Test
+    void addSameSection() {
+        assertThatThrownBy(() -> line.addSection(stationA, stationB, 3))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("등록하는 구간의 상행역과 하행역이 하나도 등록되어있지 않다면 등록할 수 없다")
+    @Test
+    void addUnknownSection() {
+        assertThatThrownBy(() -> line.addSection(new Station("서초역"), new Station("낙성대역"), 3))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class SectionAcceptanceTest {
-    private static int 초기구간길이 = 10;
+    private static final int 초기구간길이 = 10;
 
     @LocalServerPort
     int port;

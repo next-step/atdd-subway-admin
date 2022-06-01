@@ -29,32 +29,45 @@ public class Section {
         this.distance = distance;
     }
 
-    public boolean add(Section section) {
-        if (this.upStation == section.upStation) {
-            addPrevious(section);
+    public boolean modifyBy(Section section) {
+        if (upStation == section.upStation) {
+            modifyUpStation(section);
             return true;
         }
-        if (this.downStation == section.downStation) {
-            addNext(section);
+        if (downStation == section.downStation) {
+            modifyDownStation(section);
             return true;
         }
         return false;
     }
 
-    private void addPrevious(Section section) {
-        if (this.distance <= section.distance) {
-            throw new IllegalArgumentException();
-        }
-        this.upStation = section.downStation;
-        this.distance -= section.distance;
+    private void modifyUpStation(Section section) {
+        decreaseBy(section.distance);
+        upStation = section.downStation;
     }
 
-    private void addNext(Section section) {
-        if (this.distance <= section.distance) {
-            throw new IllegalArgumentException();
+    private void modifyDownStation(Section section) {
+        decreaseBy(section.distance);
+        downStation = section.upStation;
+    }
+
+    private void decreaseBy(int length) {
+        if (distance <= length) {
+            throw new IllegalArgumentException("구간의 길이가 너무 깁니다.");
         }
-        this.downStation = section.upStation;
-        this.distance -= section.distance;
+        distance -= length;
+    }
+
+    public boolean matchOutside(Section section) {
+        return upStation == section.downStation || downStation == section.upStation;
+    }
+
+    public boolean matchInside(Section section) {
+        return upStation == section.upStation || downStation == section.downStation;
+    }
+
+    public boolean contains(Station station) {
+        return upStation == station || downStation == station;
     }
 
     public Station getUpStation() {
@@ -63,5 +76,9 @@ public class Section {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }

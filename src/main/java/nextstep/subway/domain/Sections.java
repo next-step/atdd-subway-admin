@@ -3,9 +3,8 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.*;
-
-import static java.util.Collections.emptyList;
+import java.util.LinkedList;
+import java.util.List;
 
 @Embeddable
 public class Sections {
@@ -13,88 +12,49 @@ public class Sections {
     private List<Section> sections = new LinkedList<>();
 
     public void add(Section section) {
-        if (addInitial(section)) {
+        if (sections.isEmpty()) {
+            sections.add(section);
             return;
         }
-        if (exist(section)) {
-            throw new IllegalArgumentException();
+        if (containsAll(section) || containsNothing(section)) {
+            throw new IllegalArgumentException("적합하지 않은 구간입니다");
         }
-        if (addToInside(section)) {
+        if (matchOutside(section)) {
+            sections.add(section);
             return;
         }
-        if (addToOutside(section)) {
-            return;
+        if (modifyBy(section)) {
+            sections.add(section);
         }
-        throw new IllegalArgumentException();
+    }
+
+    private boolean containsAll(Section section) {
+        return contains(section.getUpStation()) && contains(section.getDownStation());
+    }
+
+    private boolean containsNothing(Section section) {
+        return !contains(section.getUpStation()) && !contains(section.getDownStation());
+    }
+
+    private boolean contains(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.contains(station));
+    }
+
+    private boolean matchInside(Section section) {
+        return sections.stream().anyMatch(section::matchInside);
+    }
+
+    private boolean matchOutside(Section section) {
+        return !matchInside(section) && sections.stream().anyMatch(section::matchOutside);
+    }
+
+    private boolean modifyBy(Section newSection) {
+        return sections.stream()
+                .anyMatch(section -> section.modifyBy(newSection));
     }
 
     public List<Station> stations() {
-        if (sections.isEmpty()) {
-            return emptyList();
-        }
-        Map<Station, Station> sectionMap = sectionMap();
-
-        List<Station> stations = new ArrayList<>();
-        stations.add(beginStation(sectionMap));
-        Station upStation = stations.get(0);
-        while (sectionMap.containsKey(upStation)) {
-            Station downStation = sectionMap.get(upStation);
-            stations.add(downStation);
-            upStation = downStation;
-        }
-        return stations;
-    }
-
-    private Map<Station, Station> sectionMap() {
-        return sections.stream()
-                .collect(HashMap::new,
-                        (map, section) -> map.put(section.getUpStation(), section.getDownStation()),
-                        HashMap::putAll);
-    }
-
-    private Station beginStation(Map<Station, Station> sectionMap) {
-        Set<Station> upStations = sectionMap.keySet();
-        Set<Station> downStations = new HashSet<>(sectionMap.values());
-        return upStations.stream()
-                .filter(station -> !downStations.contains(station))
-                .findAny()
-                .orElseThrow(IllegalArgumentException::new);
-    }
-
-    private boolean addInitial(Section section) {
-        if (sections.isEmpty()) {
-            sections.add(section);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean exist(Section section) {
-        Map<Station, Station> sectionMap = sectionMap();
-        Set<Station> stations = new HashSet<>();
-        stations.addAll(sectionMap.keySet());
-        stations.addAll(sectionMap.values());
-        return stations.contains(section.getUpStation()) && stations.contains(section.getDownStation());
-    }
-
-    private boolean addToInside(Section newSection) {
-        for (Section section : sections) {
-            if (section.add(newSection)) {
-                sections.add(newSection);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean addToOutside(Section newSection) {
-        for (Section section : sections) {
-            if (section.getUpStation() == newSection.getDownStation() ||
-                    section.getDownStation() == newSection.getUpStation()) {
-                sections.add(newSection);
-                return true;
-            }
-        }
-        return false;
+        return new SectionNavigator(sections).orderedStations();
     }
 }
