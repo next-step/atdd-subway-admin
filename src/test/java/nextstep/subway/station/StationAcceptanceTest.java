@@ -1,5 +1,8 @@
 package nextstep.subway.station;
 
+import static nextstep.subway.ui.UrlConstant.CREATE_STATIONS;
+import static nextstep.subway.ui.UrlConstant.DELETE_STATIONS;
+import static nextstep.subway.ui.UrlConstant.SHOW_STATIONS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
@@ -101,7 +104,7 @@ public class StationAcceptanceTest {
         RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .delete("/stations/{id}", stationResponse.body().jsonPath().getInt("id"))
+                .delete(DELETE_STATIONS, stationResponse.body().jsonPath().getInt("id"))
                 .then().log().all();
 
         // then
@@ -114,7 +117,7 @@ public class StationAcceptanceTest {
         return RestAssured.given().log().all()
                 .body(Collections.singletonMap("name", name))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
+                .when().post(CREATE_STATIONS)
                 .then().log().all()
                 .extract();
     }
@@ -123,7 +126,7 @@ public class StationAcceptanceTest {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .get("/stations")
+                .get(SHOW_STATIONS)
                 .then().log().all()
                 .extract();
     }
