@@ -2,10 +2,13 @@ package nextstep.subway.section.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import nextstep.subway.global.exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.global.exception.CannotRegisterException;
 import nextstep.subway.global.exception.ExceptionType;
@@ -69,5 +72,36 @@ public class Sections {
 
     public List<Section> getItems() {
         return items;
+    }
+
+    public Section getFirstSection() {
+        Station firstStation = getFirstStation();
+
+        return items.stream()
+            .filter(item -> item.isEqualsUpStation(firstStation))
+            .findAny()
+            .orElseThrow(() -> new NotFoundException(ExceptionType.NOT_FOUND_LINE_STATION));
+    }
+
+    private Station getFirstStation() {
+        List<Station> upStations = this.items.stream()
+            .map(Section::getUpStation)
+            .collect(Collectors.toList());
+
+        return upStations.stream()
+            .filter(station -> isNoneMatchedStation(this.items, station))
+            .findAny()
+            .orElseThrow(() -> new NotFoundException(ExceptionType.NOT_FOUND_LINE_STATION));
+    }
+
+    private boolean isNoneMatchedStation(List<Section> sections, Station upStation) {
+        return sections.stream()
+            .noneMatch(section -> section.isEqualsDownStation(upStation));
+    }
+
+    public Optional<Section> getNextSection(Section section) {
+        return this.items.stream()
+            .filter(item -> item.isEqualsUpStation(section.getDownStation()))
+            .findAny();
     }
 }

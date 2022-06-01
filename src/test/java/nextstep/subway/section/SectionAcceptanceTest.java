@@ -5,7 +5,6 @@ import static nextstep.subway.line.LineAcceptance.toLineId;
 import static nextstep.subway.line.LineAcceptance.toLineStationNames;
 import static nextstep.subway.line.LineAcceptance.지하철_노선_생성;
 import static nextstep.subway.line.LineAcceptance.지하철_노선_조회;
-import static nextstep.subway.section.SectionAcceptance.ID가_상행역인_노선;
 import static nextstep.subway.section.SectionAcceptance.지하철_구간_등록;
 import static nextstep.subway.station.StationAcceptance.toStationId;
 import static nextstep.subway.station.StationAcceptance.지하철역_생성;
@@ -15,8 +14,6 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Stream;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
@@ -59,7 +56,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> createSection() {
         return Stream.of(
             dynamicTest("역 사이에 새로운 역을 등록한다" , () -> {
-                SectionRequest sectionRequest = new SectionRequest(대림역_id, 신대방역_id, 7L);
+//                SectionRequest sectionRequest = new SectionRequest(대림역_id, 신대방역_id, 7L);
+                SectionRequest sectionRequest = new SectionRequest(대림역_id, 강남역_id, 7L);
                 ExtractableResponse<Response> saveResponse = 지하철_구간_등록(노선_id, sectionRequest);
                 assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
             }),
@@ -67,10 +65,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 ExtractableResponse<Response> response = 지하철_노선_조회(노선_id);
                 LineResponse result = toLine(response);
                 assertAll(
-                    () -> assertThat(result.getSections()).hasSize(2),
-                    () -> assertThat(ID가_상행역인_노선(대림역_id, result.getSections()).getDistance()).isEqualTo(7L),
-                    () -> assertThat(ID가_상행역인_노선(신대방역_id, result.getSections()).getDistance()).isEqualTo(13L),
-                    () -> assertThat(toLineStationNames(result)).contains("대림역", "신대방역", "강남역")
+                    () -> assertThat(result.getStations()).hasSize(3),
+                    () -> assertThat(toLineStationNames(result)).containsExactly("대림역", "신대방역", "강남역")
                 );
             })
         );
@@ -89,10 +85,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 ExtractableResponse<Response> response = 지하철_노선_조회(노선_id);
                 LineResponse result = toLine(response);
                 assertAll(
-                    () -> assertThat(result.getSections()).hasSize(2),
-                    () -> assertThat(ID가_상행역인_노선(신도림역_id, result.getSections()).getDistance()).isEqualTo(10L),
-                    () -> assertThat(ID가_상행역인_노선(대림역_id, result.getSections()).getDistance()).isEqualTo(20L),
-                    () -> assertThat(toLineStationNames(result)).contains("신도림역", "대림역", "강남역")
+                    () -> assertThat(result.getStations()).hasSize(3),
+                    () -> assertThat(toLineStationNames(result)).containsExactly("신도림역", "대림역", "강남역")
                 );
             })
         );
@@ -111,10 +105,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 ExtractableResponse<Response> response = 지하철_노선_조회(노선_id);
                 LineResponse result = toLine(response);
                 assertAll(
-                    () -> assertThat(result.getSections()).hasSize(2),
-                    () -> assertThat(ID가_상행역인_노선(대림역_id, result.getSections()).getDistance()).isEqualTo(20L),
-                    () -> assertThat(ID가_상행역인_노선(강남역_id, result.getSections()).getDistance()).isEqualTo(10L),
-                    () -> assertThat(toLineStationNames(result)).contains("대림역", "강남역", "신림역")
+                    () -> assertThat(result.getStations()).hasSize(3),
+                    () -> assertThat(toLineStationNames(result)).containsExactly("대림역", "강남역", "신림역")
                 );
             })
         );

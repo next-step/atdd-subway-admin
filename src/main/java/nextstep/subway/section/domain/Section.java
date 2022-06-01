@@ -96,6 +96,14 @@ public class Section extends BaseEntity {
         return downStation.equals(section.getDownStation());
     }
 
+    public boolean isEqualsUpStation(Station station) {
+        return upStation == station;
+    }
+
+    public boolean isEqualsDownStation(Station station) {
+        return downStation == station;
+    }
+
     public Long getId() {
         return id;
     }

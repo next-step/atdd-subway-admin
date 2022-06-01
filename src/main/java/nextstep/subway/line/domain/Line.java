@@ -1,10 +1,9 @@
 package nextstep.subway.line.domain;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Optional;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -16,9 +15,7 @@ import nextstep.subway.global.exception.BadRequestException;
 import nextstep.subway.global.exception.ExceptionType;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
-import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 @Entity
 public class Line extends BaseEntity {
@@ -103,21 +100,20 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    // todo: 순서 지키기, response 모르게 하기
-    public Set<StationResponse> getStationResponses() {
-        Set<StationResponse> stations = new HashSet<>();
-        for (Section section : sections.getItems()) {
-            stations.add(StationResponse.of(section.getUpStation()));
-            stations.add(StationResponse.of(section.getDownStation()));
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+        Section section = this.sections.getFirstSection();
+        stations.add(section.getUpStation());
+        stations.add(section.getDownStation());
+
+        Optional<Section> optionalNextSection = this.sections.getNextSection(section);
+        while (optionalNextSection.isPresent()) {
+            Section nextSection = optionalNextSection.get();
+            stations.add(nextSection.getDownStation());
+            optionalNextSection = this.sections.getNextSection(nextSection);
         }
 
         return stations;
-    }
-
-    public List<SectionResponse> getSectionResponses() {
-        return this.sections.getItems().stream()
-            .map(SectionResponse::of)
-            .collect(Collectors.toList());
     }
 
     public void registerSection(Section section) {
