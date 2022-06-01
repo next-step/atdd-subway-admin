@@ -18,22 +18,17 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, List<Station> stations, LocalDateTime createdDate, LocalDateTime modifiedDate) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-        this.stations = stations;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
+    public LineResponse(Line line, List<Station> stations) {
+        this.id = line.getId();
+        this.name = line.getName();
+        this.color = line.getColor();
+        this.stations = new LinkedList<>(stations);
+        this.createdDate = line.getCreatedDate();
+        this.modifiedDate = line.getModifiedDate();
     }
 
     public static LineResponse of(Line line, List<Station> stations) {
-        return new LineResponse(line.getId(),
-                                line.getName(),
-                                line.getColor(),
-                                new LinkedList<>(stations),
-                                line.getCreatedDate(),
-                                line.getModifiedDate());
+        return new LineResponse(line, stations);
     }
 
     public Long getId() {
