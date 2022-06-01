@@ -9,13 +9,13 @@ public class LineResponse {
     private final Long id;
     private final String name;
     private final String color;
-    private final List<LineStationResponse> stations;
+    private final List<StationResponse> stations;
 
     public LineResponse(Long id, String name, String color, LineStations lineStations) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = LineStationResponse.of(lineStations);
+        this.stations = StationResponse.of(lineStations);
     }
 
     public static LineResponse of(Line line) {
@@ -34,7 +34,7 @@ public class LineResponse {
         return color;
     }
 
-    public List<LineStationResponse> getStations() {
+    public List<StationResponse> getStations() {
         return stations;
     }
 }
