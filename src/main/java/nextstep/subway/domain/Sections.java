@@ -50,6 +50,7 @@ public class Sections {
     private boolean isSectionsEmpty() {
         return sections.isEmpty();
     }
+
     private void validNotAddedSection(Section section) {
         if (containsUpStationAndDownStation(section)) {
             throw new IllegalArgumentException("이미 등록된 구간 요청입니다.");
