@@ -1,36 +1,21 @@
 package nextstep.subway.station;
 
-import static nextstep.subway.ui.UrlConstant.CREATE_STATIONS;
 import static nextstep.subway.ui.UrlConstant.DELETE_STATIONS;
-import static nextstep.subway.ui.UrlConstant.SHOW_STATIONS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.subway.BaseSubwayTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-    }
+public class StationAcceptanceTest extends BaseSubwayTest {
 
     /**
      * When 지하철역을 생성하면
@@ -116,21 +101,4 @@ public class StationAcceptanceTest {
         assertThat(getStationsResponse.body().jsonPath().getList("$")).hasSize(0);
     }
 
-    private ExtractableResponse<Response> 지하철_생성(final String name) {
-        return RestAssured.given().log().all()
-                .body(Collections.singletonMap("name", name))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(CREATE_STATIONS)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철_목록_조회() {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get(SHOW_STATIONS)
-                .then().log().all()
-                .extract();
-    }
 }
