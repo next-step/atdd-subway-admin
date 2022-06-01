@@ -12,6 +12,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.exception.UniqueSectionException;
 
 @Embeddable
 public class Sections {
@@ -41,6 +42,7 @@ public class Sections {
     }
 
     public void deleteSection(Station station) {
+        validateSizeOnlyOne();
         final Section upStation = findSameUpStation(station);
         final Section downStation = findSameDownStation(station);
 
@@ -49,6 +51,12 @@ public class Sections {
         }
         this.sections.remove(upStation);
         this.sections.remove(downStation);
+    }
+
+    private void validateSizeOnlyOne() {
+        if (size() == 1) {
+            throw new UniqueSectionException("해당 노선의 유일한 구간이라 지울 수 없습니다.");
+        }
     }
 
     private boolean isMiddleSection(Section upStation, Section downStation) {

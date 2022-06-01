@@ -16,6 +16,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,9 +43,7 @@ class SectionSubtractionAcceptanceTest {
     }
 
     /**
-     * Given 노선과 구간이 주어지고
-     * When 가운데 구간을 제거하면
-     * Then 해당 역을 찾을 수 없다
+     * Given 노선과 구간이 주어지고 When 가운데 구간을 제거하면 Then 해당 역을 찾을 수 없다
      */
     @Test
     @DisplayName("가운데 구간 삭제 후 해당 노선 검색시 해당 구간은 찾을 수 없다.")
@@ -60,16 +59,11 @@ class SectionSubtractionAcceptanceTest {
 
         // then
         LineResponse 노선_조회_결과 = 노선_조회(생성된_신분당선.getId());
-        assertAll(
-                () -> assertThat(노선_조회_결과.getStations()).hasSize(2),
-                () -> assertThat(노선_조회_결과.getStations()).doesNotContain(생성된_양재시민의숲역)
-        );
+        verifyLineResult(노선_조회_결과, 생성된_양재시민의숲역);
     }
 
     /**
-     * Given 노선과 구간이 주어지고
-     * When 첫번째 구간을 제거하면
-     * Then 해당 역을 찾을 수 없다
+     * Given 노선과 구간이 주어지고 When 첫번째 구간을 제거하면 Then 해당 역을 찾을 수 없다
      */
     @Test
     @DisplayName("첫번째 구간 삭제 후 해당 노선 검색시 해당 구간은 찾을 수 없다.")
@@ -85,16 +79,11 @@ class SectionSubtractionAcceptanceTest {
 
         // then
         LineResponse 노선_조회_결과 = 노선_조회(생성된_신분당선.getId());
-        assertAll(
-                () -> assertThat(노선_조회_결과.getStations()).hasSize(2),
-                () -> assertThat(노선_조회_결과.getStations()).doesNotContain(생성된_양재역)
-        );
+        verifyLineResult(노선_조회_결과, 생성된_양재역);
     }
 
     /**
-     * Given 노선과 구간이 주어지고
-     * When 마지막 구간을 제거하면
-     * Then 해당 역을 찾을 수 없다
+     * Given 노선과 구간이 주어지고 When 마지막 구간을 제거하면 Then 해당 역을 찾을 수 없다
      */
     @Test
     @DisplayName("마지막 구간 삭제 후 해당 노선 검색시 해당 구간은 찾을 수 없다.")
@@ -110,10 +99,7 @@ class SectionSubtractionAcceptanceTest {
 
         // then
         LineResponse 노선_조회_결과 = 노선_조회(생성된_신분당선.getId());
-        assertAll(
-                () -> assertThat(노선_조회_결과.getStations()).hasSize(2),
-                () -> assertThat(노선_조회_결과.getStations()).doesNotContain(생성된_양재역)
-        );
+        verifyLineResult(노선_조회_결과, 생성된_양재역);
     }
 
     /**
@@ -154,5 +140,12 @@ class SectionSubtractionAcceptanceTest {
                 .when().delete("/lines/{lineId}/sections", 라인_아이디)
                 .then().log().all()
                 .extract();
+    }
+
+    private void verifyLineResult(LineResponse 노선_조회_결과, StationResponse 삭제된_역) {
+        assertAll(
+                () -> assertThat(노선_조회_결과.getStations()).hasSize(2),
+                () -> assertThat(노선_조회_결과.getStations()).doesNotContain(삭제된_역)
+        );
     }
 }
