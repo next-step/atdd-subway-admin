@@ -1,6 +1,5 @@
 package nextstep.subway.application;
 
-import nextstep.subway.NotFoundException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,8 +35,8 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(NotFoundException::new);
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(NotFoundException::new);
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(NoSuchElementException::new);
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(NoSuchElementException::new);
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
@@ -54,6 +54,6 @@ public class LineService {
     }
 
     private Line findById(Long lineId) {
-        return lineRepository.findById(lineId).orElseThrow(NotFoundException::new);
+        return lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
     }
 }

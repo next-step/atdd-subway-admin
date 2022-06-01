@@ -1,17 +1,16 @@
 package nextstep.subway.ui;
 
-import nextstep.subway.NotFoundException;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/lines")
@@ -48,8 +47,8 @@ public class LineController {
         return lineService.findAllLines();
     }
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<Void> handleNotFoundException() {
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<Void> handleNoSuchElementException() {
         return ResponseEntity.notFound().build();
     }
 }
