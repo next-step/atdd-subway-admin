@@ -15,7 +15,9 @@ class SectionTest {
     @DisplayName("지하철 구간 생성")
     @Test
     void test_create() {
+        // given & when
         Section newSection = new Section(강남역, 역삼역, distance);
+        // then
         assertThat(newSection).isNotNull();
     }
 

@@ -34,14 +34,14 @@ public class Sections {
     }
 
     public void add(Section section) {
-        if (!this.sections.isEmpty()) {
+        if (!this.sections.isEmpty() && !isEdgeSection(section)) {
             relocateConnectSection(section);
         }
         this.sections.add(section);
     }
 
     public boolean containsStation(Station station) {
-        return allStations().contains(station);
+        return lineStations().contains(station);
     }
 
     public int size() {
@@ -53,17 +53,45 @@ public class Sections {
     }
 
     public List<StationResponse> allStationResponses() {
-        return allStations().stream()
-                .map(Station::toStationResponse)
-                .collect(Collectors.toList());
+        return lineStations().toStationResponses();
     }
 
-    private List<Station> allStations() {
+    private LineStations lineStations() {
         List<Station> allStations = new ArrayList<>();
         this.sections.forEach(section -> {
             allStations.addAll(section.getStations());
         });
-        return allStations.stream().distinct().collect(Collectors.toList());
+        return LineStations.from(allStations);
+    }
+
+    private boolean isEdgeSection(Section addedSection) {
+        return isEdgeUpSection(addedSection) || isEdgeDownSection(addedSection);
+    }
+
+    private boolean isEdgeUpSection(Section addedSection) {
+        return findEdgeUpSection().getUpStation().equals(addedSection.getDownStation());
+    }
+
+    private boolean isEdgeDownSection(Section addedSection) {
+        return findEdgeDownSection().getDownStation().equals(addedSection.getUpStation());
+    }
+
+    private Section findEdgeUpSection() {
+        List<Station> downStations = this.sections.stream()
+                .map(Section::getDownStation).collect(Collectors.toList());
+        return this.sections.stream()
+                .filter(section -> !downStations.contains(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Section findEdgeDownSection() {
+        List<Station> upStations = this.sections.stream()
+                .map(Section::getUpStation).collect(Collectors.toList());
+        return this.sections.stream()
+                .filter(section -> !upStations.contains(section.getDownStation()))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     private void relocateConnectSection(Section addedSection) {

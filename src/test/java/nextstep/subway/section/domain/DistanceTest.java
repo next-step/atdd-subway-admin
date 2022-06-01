@@ -19,10 +19,8 @@ class DistanceTest {
         // given
         Distance distance = Distance.from(10);
         Distance addedDistance = Distance.from(4);
-
         // when
         distance.decrease(addedDistance);
-
         // then
         assertThat(distance.get()).isEqualTo(6);
     }

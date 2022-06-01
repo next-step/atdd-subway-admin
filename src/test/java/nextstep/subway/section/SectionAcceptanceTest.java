@@ -60,7 +60,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void newUpStation() {
         // when
-        SectionRequest 새로운역_상행종점_요청 = null;
+        SectionRequest 새로운역_상행종점_요청 = SectionRequest.of(this.새로운역_ID, this.강남역_ID, 4);
         ExtractableResponse<Response> 새로운역_상행종점_추가_응답 = 지하철_구간_추가(this.신분당선_생성_응답, 새로운역_상행종점_요청);
 
         // then
@@ -80,7 +80,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void newDownStation() {
         // when
-        SectionRequest 새로운역_하행종점_요청 = null;
+        SectionRequest 새로운역_하행종점_요청 = SectionRequest.of(this.판교역_ID, this.새로운역_ID, 4);;
         ExtractableResponse<Response> 새로운역_하행종점_추가_응답 = 지하철_구간_추가(this.신분당선_생성_응답, 새로운역_하행종점_요청);
 
         // then
