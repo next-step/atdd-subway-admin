@@ -47,6 +47,10 @@ public class Line {
         this.sections.add(section, this);
     }
 
+    public void removeSection(Station station) {
+        this.sections.remove(station, this);
+    }
+
     public Long getId() {
         return id;
     }

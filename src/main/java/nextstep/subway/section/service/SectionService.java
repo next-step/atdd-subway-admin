@@ -27,7 +27,7 @@ public class SectionService {
 
     @Transactional
     public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
+        Line line = findLineById(lineId);
         List<Station> stations = stationRepository.findAllById(
             Arrays.asList(sectionRequest.getDownStationId(), sectionRequest.getUpStationId()));
 
@@ -42,6 +42,19 @@ public class SectionService {
         line.addSection(new Section(upStation, downStation, sectionRequest.getDistance()));
 
         return LineResponse.from(line);
+    }
+
+    @Transactional
+    public void removeSection(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        Station station = stationRepository.findById(stationId)
+            .orElseThrow(() -> new IllegalArgumentException("삭제하려는 지하철역이 존재하지 않습니다."));
+
+        line.removeSection(station);
+    }
+
+    private Line findLineById(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
     }
 
 }

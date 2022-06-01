@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -64,6 +65,12 @@ public class LineController {
         @RequestBody SectionRequest sectionRequest) {
         LineResponse lineResponse = sectionService.addSection(lineId, sectionRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections")).body(lineResponse);
+    }
+
+    @DeleteMapping("/lines/{line_id}/sections")
+    public ResponseEntity addSection(@PathVariable(name = "line_id") Long lineId, @RequestParam Long stationId) {
+        sectionService.removeSection(lineId, stationId);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

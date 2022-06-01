@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
@@ -72,7 +71,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("노선이 하나일 경우 삭제에 실패한다.")
     void deleteSection_fail() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선_구간_삭제(2L);
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제(lineResponse.getStations().get(0).getId());
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -80,17 +79,16 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
 
 
-    @ParameterizedTest
-    @DisplayName("구간 삭제가 정상적으로 이루어지는 경우")
+    @ParameterizedTest(name = "구간 삭제가 정상적으로 이루어지는 경우")
     @ValueSource(longs = {1,2,3})
-    void deleteSection_success(Long sectionId) {
+    void deleteSection_success(Long stationId) {
         // given
         List<StationResponse> preStations = lineResponse.getStations();
         SectionRequest sectionRequest = new SectionRequest(preStations.get(0).getId(), newStationResponse.getId(), 5L);
         지하철_구간_등록(sectionRequest, lineResponse.getId());
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_구간_삭제(sectionId);
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제(stationId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -118,9 +116,9 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         );
     }
 
-    private ExtractableResponse<Response> 지하철_노선_구간_삭제(Long sectionId) {
+    private ExtractableResponse<Response> 지하철_노선_구간_삭제(Long stationId) {
         return RestAssured.given().log().all()
-            .when().delete("/lines/{lineId}/sections/{sectionId}", lineResponse.getId(), sectionId)
+            .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineResponse.getId(), stationId)
             .then().log().all()
             .extract();
     }
