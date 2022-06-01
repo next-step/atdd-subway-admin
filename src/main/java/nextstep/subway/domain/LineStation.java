@@ -52,30 +52,34 @@ public class LineStation {
     }
 
     public LineStation addStation(Station upStation, Station downStation, Long distance) {
+        LineStation addResult = new LineStation(distance, upStation, downStation, false);
+
         if (isAddNewFirst(downStation)) {
-            LineStation addResult = new LineStation(distance, upStation, downStation, false);
             this.isStart = false;
             addResult.isStart = true;
 
             return addResult;
         }
         if (isAddNewLast(upStation)) {
-            LineStation addResult = new LineStation(distance, upStation, downStation, false);
             this.isLast = false;
             addResult.isLast = true;
 
             return addResult;
         }
         if (this.upStation.isSameId(upStation.getId())) {
+            addResult.isStart = this.isStart;
+            this.isStart = false;
             this.distance -= distance;
-            this.downStation = downStation;
+            this.upStation = downStation;
         }
         if (this.downStation.isSameId(downStation.getId())) {
+            addResult.isLast = this.isLast;
+            this.isLast = false;
             this.distance -= distance;
             this.downStation = upStation;
         }
 
-        return new LineStation(distance, upStation, downStation, false);
+        return addResult;
     }
 
     private void validation(Long distance, Station upStation, Station downStation) {

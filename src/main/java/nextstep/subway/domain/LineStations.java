@@ -14,7 +14,7 @@ public class LineStations {
     private List<LineStation> lineStations = new ArrayList<>();
 
     public void add(Station upStation, Station downStation, Long distance) {
-        if (this.lineStations.size() == 0)  {
+        if (this.lineStations.isEmpty())  {
             lineStations.add(new LineStation(distance, upStation, downStation, true));
             return;
         }

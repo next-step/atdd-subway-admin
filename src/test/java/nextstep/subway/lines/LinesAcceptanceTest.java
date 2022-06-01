@@ -141,10 +141,12 @@ public class LinesAcceptanceTest {
     @Test
     void updateLinesTest() {
         // given
+        Long upStationId = Long.parseLong(saveStationAndGetInfo("지하철역").get("id"));
+        Long downStationId = Long.parseLong(saveStationAndGetInfo("새로운지하철역").get("id"));
         String createdLineId = RequestHelper.postRequest(
                 LINE_PATH,
                 new HashMap<>(),
-                createLineRequest("신분당선", "bg-red-600", null, null, 10L)
+                createLineRequest("신분당선", "bg-red-600", upStationId, downStationId, 10L)
         ).jsonPath()
                 .getString("id");
         Map<String, Object> updateRequest = updateLineRequest("다른분당선", "bg-red-600");
@@ -171,10 +173,12 @@ public class LinesAcceptanceTest {
     @Test
     void deleteLinesTest() {
         // given
+        Long upStationId = Long.parseLong(saveStationAndGetInfo("지하철역").get("id"));
+        Long downStationId = Long.parseLong(saveStationAndGetInfo("새로운지하철역").get("id"));
         String createdLineId = RequestHelper.postRequest(
                 LINE_PATH,
                 new HashMap<>(),
-                createLineRequest("신분당선", "bg-red-600", null, null, 10L)
+                createLineRequest("신분당선", "bg-red-600", upStationId, downStationId, 10L)
         ).jsonPath()
                 .getString("id");
 
@@ -205,9 +209,7 @@ public class LinesAcceptanceTest {
         Map<String, Object> lineRequest = createLineRequest(
                 "신분당선", "bg-red-600", upStationId, downStationId, 10L
         );
-        Map<String, Object> addMiddleSectionLineRequest = createLineRequest(
-                null, null, upStationId, middleStationId, 4L
-        );
+        Map<String, Long> addMiddleSectionLineRequest = addSectionRequest(upStationId, middleStationId, 4L);
         Long createdLineId = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest)
                 .jsonPath()
                 .getLong("id");
@@ -215,15 +217,11 @@ public class LinesAcceptanceTest {
         // when
         ExtractableResponse<Response> addLineResponse = RequestHelper
                 .postRequest(LINE_PATH + "/{id}/sections", new HashMap<>(), addMiddleSectionLineRequest, createdLineId);
-        ExtractableResponse<Response> originalCreationLine = RequestHelper
-                .getRequest(LINE_PATH + "/{id}", new HashMap<>(), createdLineId);
 
         // then
         assertThat(addLineResponse.statusCode()).isEqualTo(HttpStatus.SC_CREATED);
-        assertThat(originalCreationLine.jsonPath().getList("stations.id", Long.class))
-                .containsExactly(middleStationId, downStationId);
         assertThat(addLineResponse.jsonPath().getList("stations.id", Long.class))
-                .containsExactly(upStationId, middleStationId);
+                .containsExactly(upStationId, middleStationId, downStationId);
     }
 
     /**
@@ -245,42 +243,28 @@ public class LinesAcceptanceTest {
         Map<String, Object> lineRequest2 = createLineRequest(
                 "분당선", "bg-red-600", upStationId, downStationId, 10L
         );
-        Map<String, Object> newFirstLineRequest = createLineRequest(
-                null, null, newFirstStationId, upStationId, 4L
-        );
-        Map<String, Object> newLastLineRequest = createLineRequest(
-                null, null, downStationId, newLastStationId, 4L
-        );
         Long createdLine1Id = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest1)
                 .jsonPath()
                 .getLong("id");
         Long createdLine2Id = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest2)
                 .jsonPath()
                 .getLong("id");
+        Map<String, Long> newFirstLineRequest = addSectionRequest(newFirstStationId, upStationId, 4L);
+        Map<String, Long> newLastLineRequest = addSectionRequest(downStationId, newLastStationId, 4L);
 
         // when
         ExtractableResponse<Response> newFirstResponse = RequestHelper
                 .postRequest(LINE_PATH + "/{id}/sections", new HashMap<>(), newFirstLineRequest, createdLine1Id);
         ExtractableResponse<Response> newLastResponse = RequestHelper
                 .postRequest(LINE_PATH + "/{id}/sections", new HashMap<>(), newLastLineRequest, createdLine2Id);
-        ExtractableResponse<Response> originalCreationLine1 = RequestHelper
-                .getRequest(LINE_PATH + "/{id}", new HashMap<>(), createdLine1Id);
-        ExtractableResponse<Response> originalCreationLine2 = RequestHelper
-                .getRequest(LINE_PATH + "/{id}", new HashMap<>(), createdLine2Id);
 
         // then
         assertThat(newFirstResponse.statusCode()).isEqualTo(HttpStatus.SC_CREATED);
         assertThat(newLastResponse.statusCode()).isEqualTo(HttpStatus.SC_CREATED);
-
-        assertThat(originalCreationLine1.jsonPath().getList("stations.id", Long.class))
-                .containsAnyOf(upStationId, downStationId);
         assertThat(newFirstResponse.jsonPath().getList("stations.id", Long.class))
-                .containsAnyOf(newFirstStationId, upStationId);
-
-        assertThat(originalCreationLine2.jsonPath().getList("stations.id", Long.class))
-                .containsAnyOf(upStationId, downStationId);
-        assertThat(originalCreationLine2.jsonPath().getList("stations.id", Long.class))
-                .containsAnyOf(downStationId, newLastStationId);
+                .containsExactly(newFirstStationId, upStationId, downStationId);
+        assertThat(newLastResponse.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(upStationId, downStationId, newLastStationId);
     }
 
     /**
@@ -298,15 +282,11 @@ public class LinesAcceptanceTest {
         Map<String, Object> lineRequest = createLineRequest(
                 "신분당선", "bg-red-600", upStationId, downStationId, 10L
         );
-        Map<String, Object> sameDistanceLineRequest = createLineRequest(
-                null, null, upStationId, middleStationId, 10L
-        );
-        Map<String, Object> longerDistanceLineRequest = createLineRequest(
-                null, null, upStationId, middleStationId, 11L
-        );
         Long createdLineId = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest)
                 .jsonPath()
                 .getLong("id");
+        Map<String, Long> sameDistanceLineRequest = addSectionRequest(upStationId, middleStationId, 10L);
+        Map<String, Long> longerDistanceLineRequest = addSectionRequest(upStationId, middleStationId, 11L);
 
         // when
         ExtractableResponse<Response> sameDistanceResponse = RequestHelper
@@ -333,16 +313,14 @@ public class LinesAcceptanceTest {
         Map<String, Object> lineRequest = createLineRequest(
                 "신분당선", "bg-red-600", upStationId, downStationId, 10L
         );
-        Map<String, Object> sameLineStation = createLineRequest(
-                null, null, upStationId, downStationId, 7L
-        );
         Long createdLineId = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest)
                 .jsonPath()
                 .getLong("id");
+        Map<String, Long> sameLineStation = addSectionRequest(upStationId, downStationId, 7L);
 
         // when
         ExtractableResponse<Response> sameStationLineResponse = RequestHelper
-                .postRequest(LINE_PATH + "/{id}" + "/sections", new HashMap<>(), sameLineStation, createdLineId);
+                .postRequest(LINE_PATH + "/{id}/sections", new HashMap<>(), sameLineStation, createdLineId);
 
         // then
         assertThat(sameStationLineResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
@@ -350,7 +328,7 @@ public class LinesAcceptanceTest {
 
     /**
      * Given 지하철 노선을 생성하고
-     * When 해당 노선의 상행과 하행 노선 모두 같지 않은 노선을 추가하면
+     * When 해당 노선에 존재하지 않는 상/하행을 추가하면
      * Then 해당 지하철 노선 추가가 실패된다
      */
     @DisplayName("추가하려는 노선의 상행, 하행 노선이 추가되는 노선의 상행, 하행의 모든 노선과 다른 노선을 추가하면 실패한다")
@@ -360,20 +338,23 @@ public class LinesAcceptanceTest {
         Long upStationId = Long.parseLong(saveStationAndGetInfo("지하철역").get("id"));
         Long downStationId = Long.parseLong(saveStationAndGetInfo("새로운지하철역").get("id"));
         Long newStationId1 = Long.parseLong(saveStationAndGetInfo("다른지하철역").get("id"));
-        Long newStationId2 = Long.parseLong(saveStationAndGetInfo("또다른지하철역").get("id"));
+        Long notInLineStation1 = Long.parseLong(saveStationAndGetInfo("노선에 없는 지하철 1").get("id"));
+        Long notInLineStation2 = Long.parseLong(saveStationAndGetInfo("노선에 없는 지하철 2").get("id"));
         Map<String, Object> lineRequest = createLineRequest(
                 "신분당선", "bg-red-600", upStationId, downStationId, 10L
         );
-        Map<String, Object> nothingMatchedStationLineRequest = createLineRequest(
-                null, null, newStationId1, newStationId2, 7L
-        );
+        Map<String, Long> addLineStationRequest = addSectionRequest(downStationId, newStationId1, 10L);
         Long createdLineId = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest)
                 .jsonPath()
                 .getLong("id");
+        RequestHelper.postRequest(
+                LINE_PATH + "/{id}/sections", new HashMap<>(), addLineStationRequest, createdLineId
+        );
 
         // when
+        Map<String, Long> addLineStationRequestAnyNotHaveStation = addSectionRequest(notInLineStation1, notInLineStation2, 10L);
         ExtractableResponse<Response> sameStationLineResponse = RequestHelper
-                .postRequest(LINE_PATH + "/{id}" + "/sections", new HashMap<>(), nothingMatchedStationLineRequest, createdLineId);
+                .postRequest(LINE_PATH + "/{id}/sections", new HashMap<>(), addLineStationRequestAnyNotHaveStation, createdLineId);
 
         // then
         assertThat(sameStationLineResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
@@ -423,5 +404,15 @@ public class LinesAcceptanceTest {
         }
 
         return updateRequest;
+    }
+
+    private Map<String, Long> addSectionRequest(Long upStationId, Long downStationId, Long distance) {
+        Map<String, Long> sectionRequest = new HashMap<>();
+
+        sectionRequest.put("upStationId", upStationId);
+        sectionRequest.put("downStationId", downStationId);
+        sectionRequest.put("distance", distance);
+
+        return sectionRequest;
     }
 }
