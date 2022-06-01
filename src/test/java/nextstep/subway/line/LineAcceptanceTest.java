@@ -8,20 +8,20 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
+import java.util.Optional;
+import nextstep.subway.annotation.SubwayAcceptanceTest;
+import nextstep.subway.domain.Section;
+import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionResponse;
+import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @DisplayName("지하철노선 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@SubwayAcceptanceTest
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
@@ -41,13 +41,13 @@ public class LineAcceptanceTest {
         // given
         // when
         ExtractableResponse<Response> response = 지하철노선을_생성한다(
-                "2호선", "color", "강남역", "충정로역", 100
+                "2호선", "color", "강남역", "충정로역", 100L
         );
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        List<Line> lines = 지하철노선목록을_조회한다();
+        List<LineResponse> lines = 지하철노선목록을_조회한다();
         List<String> lineNames = lines.stream().map((line) -> line.getName()).collect(toList());
         assertThat(lineNames.contains("2호선")).isTrue();
     }
@@ -61,11 +61,11 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철노선을_생성한다("1호선", "color1", "서울역", "인천역", 100);
-        지하철노선을_생성한다("2호선", "color2", "강남역", "충정로역", 100);
+        지하철노선을_생성한다("1호선", "color1", "서울역", "인천역", 100L);
+        지하철노선을_생성한다("2호선", "color2", "강남역", "충정로역", 100L);
 
         // when
-        List<Line> lines = 지하철노선목록을_조회한다();
+        List<LineResponse> lines = 지하철노선목록을_조회한다();
 
         // then
         assertThat(lines.size()).isEqualTo(2);
@@ -80,18 +80,21 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         // given
-        Long lineId = 지하철노선을_생성하고_ID를_반환한다("1호선", "color1", "서울역", "인천역", 100);
+        Long lineId = 지하철노선을_생성하고_ID를_반환한다("1호선", "color1", "서울역", "인천역", 100L);
 
         // when
-        Line line = 지하철노선을_조회한다(lineId);
-        List<Station> stations = line.getStations();
-        List<String> stationNames = stations.stream().map((station) -> station.getName()).collect(toList());
+        Optional<LineResponse> optionalLine = 지하철노선을_조회한다(lineId);
 
         // then
-        assertThat(line).isNotNull();
-        assertThat(line.getName()).isEqualTo("1호선");
-        assertThat(line.getColor()).isEqualTo("color1");
-        assertThat(line.getDistance()).isEqualTo(100);
+        assertThat(optionalLine.isPresent()).isTrue();
+
+        LineResponse lineResponse = optionalLine.get();
+        List<SectionResponse> sectionResponses = lineResponse.getSectionResponses();
+        List<String> stationNames = sectionResponses.stream().map((sectionResponse) -> sectionResponse.getStartStationName()).collect(toList());
+
+        assertThat(lineResponse).isNotNull();
+        assertThat(lineResponse.getName()).isEqualTo("1호선");
+        assertThat(lineResponse.getColor()).isEqualTo("color1");
         assertThat(stationNames).containsExactly("서울역", "인천역");
     }
 
@@ -104,15 +107,17 @@ public class LineAcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Long lineId = 지하철노선을_생성하고_ID를_반환한다("1호선", "color1", "서울역", "인천역", 100);
+        Long lineId = 지하철노선을_생성하고_ID를_반환한다("1호선", "color1", "서울역", "인천역", 100L);
         String newName = "1호선수정";
         String newColor = "color2";
 
         // when
         지하철노선을_수정한다(newName,newColor,lineId);
-        Line line = 지하철노선을_조회한다(lineId);
+        Optional<LineResponse> optionalLine = 지하철노선을_조회한다(lineId);
 
         // then
+        assertThat(optionalLine.isPresent()).isTrue();
+        LineResponse line = optionalLine.get();
         assertThat(line).isNotNull();
         assertThat(line.getName()).isEqualTo(newName);
         assertThat(line.getColor()).isEqualTo(newColor);
@@ -127,16 +132,13 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Long lineId = 지하철노선을_생성하고_ID를_반환한다("1호선", "color1", "서울역", "인천역", 100);
+        Long lineId = 지하철노선을_생성하고_ID를_반환한다("1호선", "color1", "서울역", "인천역", 100L);
 
         // when
         지하철노선을_삭제한다(lineId);
-        Line line = 지하철노선을_조회한다(lineId);
+        Optional<LineResponse> optionalLine = 지하철노선을_조회한다(lineId);
+
         // then
-        assertThat(line.getId()).isNull();
-        assertThat(line.getName()).isNull();
-        assertThat(line.getColor()).isNull();
-        assertThat(line.getDistance()).isNull();
-        assertThat(line.getStations().isEmpty()).isTrue();
+        assertThat(optionalLine.isPresent()).isFalse();
     }
 }

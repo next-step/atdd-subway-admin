@@ -1,5 +1,8 @@
 package nextstep.subway;
 
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
@@ -7,10 +10,34 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import nextstep.subway.domain.Line;
+import java.util.Optional;
+import nextstep.subway.domain.exception.CannotAddSectionException;
+import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 public class SubwayAppBehaviors {
+    public static List<String> 지하철노선에_속한_지하철역_이름목록을_반환한다(Long lineId){
+        Optional<LineResponse> optionalLineResponse = 지하철노선을_조회한다(lineId);
+        assertThat(optionalLineResponse.isPresent()).isTrue();
+
+        LineResponse lineResponse = optionalLineResponse.get();
+        List<SectionResponse> sectionResponses = lineResponse.getSectionResponses();
+        return sectionResponses.stream().map((sectionResponse) -> sectionResponse.getStartStationName()).collect(toList());
+    }
+
+    public static ExtractableResponse<Response> 지하철구간을_생성한다(Long lineId, Long upStationId, Long downStationId, Long distance) throws CannotAddSectionException {
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+        return RestAssured
+                .given().contentType(ContentType.JSON).body(params).log().all()
+                .when().post(String.format("/lines/%d/sections", lineId))
+                .then().log().all()
+                .extract();
+    }
 
     public static ExtractableResponse<Response> 지하철노선을_삭제한다(Long lineId) {
         return RestAssured
@@ -31,34 +58,47 @@ public class SubwayAppBehaviors {
                     .then().log().all()
                     .extract();
         }
-    public static Line 지하철노선을_조회한다(Long id) {
-        return RestAssured
+    public static Optional<LineResponse> 지하철노선을_조회한다(Long id) {
+        ExtractableResponse<Response> response = RestAssured
                 .given().accept(ContentType.JSON).log().all()
                 .when().get("/lines/" + id)
                 .then().log().all()
-                .extract().jsonPath().getObject(".", Line.class);
+                .extract();
+        if(response.statusCode() == HttpStatus.NOT_FOUND.value()){
+            return Optional.empty();
+        }
+        return Optional.of(response.jsonPath().getObject(".", LineResponse.class));
     }
 
-    public static List<Line> 지하철노선목록을_조회한다() {
+    public static List<LineResponse> 지하철노선목록을_조회한다() {
         return RestAssured
                 .given().accept(ContentType.JSON).log().all()
                 .when().get("/lines")
                 .then().log().all()
-                .extract().jsonPath().getList(".", Line.class);
+                .extract().jsonPath().getList(".", LineResponse.class);
     }
 
     public static Long 지하철노선을_생성하고_ID를_반환한다(
             String name, String color,
-            String upStationName, String downStationName, int distance) {
+            String upStationName, String downStationName, Long distance) {
 
         ExtractableResponse<Response> response = 지하철노선을_생성한다(name,color,upStationName,downStationName,distance);
 
         return response.jsonPath().getLong("id");
     }
 
+    public static Long 지하철노선을_생성하고_ID를_반환한다(
+            String name, String color,
+            Long upStationId, Long downStationId, Long distance) {
+
+        ExtractableResponse<Response> response = 지하철노선을_생성한다(name,color,upStationId,downStationId,distance);
+
+        return response.jsonPath().getLong("id");
+    }
+
     public static ExtractableResponse<Response> 지하철노선을_생성한다(
             String name, String color,
-            String upStationName, String downStationName, int distance) {
+            String upStationName, String downStationName, Long distance) {
 
         Long upStationId = 지하철역을_생성하고_생성된_ID를_반환한다(upStationName);
         Long downStationId = 지하철역을_생성하고_생성된_ID를_반환한다(downStationName);
@@ -79,7 +119,27 @@ public class SubwayAppBehaviors {
                 .extract();
     }
 
-    private static Long 지하철역을_생성하고_생성된_ID를_반환한다(String 역이름) {
+    private static ExtractableResponse<Response> 지하철노선을_생성한다(
+            String name, String color,
+            Long upStationId, Long downStationId, Long distance) {
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+
+        return RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    public static Long 지하철역을_생성하고_생성된_ID를_반환한다(String 역이름) {
         ExtractableResponse<Response> response = 지하철역을_생성한다(역이름);
         return response.jsonPath().getLong("id");
     }
