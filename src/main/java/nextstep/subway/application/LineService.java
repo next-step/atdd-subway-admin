@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.LineStation;
 import nextstep.subway.domain.LineStationRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.SectionRepository;
@@ -16,7 +15,6 @@ import nextstep.subway.dto.response.LineResponse;
 import nextstep.subway.exception.LineNotFoundException;
 import nextstep.subway.exception.StationNotFoundException;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,15 +46,12 @@ public class LineService {
         Station downStation = getStationOrThrow(lineRequest.getDownStationId());
         Line line = lineRequest.toLine(upStation, downStation);
 
+        line.addStation(upStation);
+        line.addStation(downStation);
         lineRepository.save(line);
 
-        LineStation upLineStation = new LineStation(line, upStation);
-        LineStation downLineStation = new LineStation(line, downStation);
-
-        lineStationRepository.save(upLineStation);
-        lineStationRepository.save(downLineStation);
-
-        Section section = Section.of(upStation, downStation, line, new Distance(lineRequest.getDistance()));
+        Section section = Section.of(upStation, downStation, line,
+            new Distance(lineRequest.getDistance()));
         sectionRepository.save(section);
 
         return LineResponse.of(line);
@@ -90,7 +85,8 @@ public class LineService {
 
     @Transactional
     public void deleteLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+        Line line = lineRepository.findById(id)
+            .orElseThrow(LineNotFoundException::new);
         lineStationRepository.deleteAllByLine(line);
         sectionRepository.deleteAllByLine(line);
         lineRepository.deleteById(line.getId());
