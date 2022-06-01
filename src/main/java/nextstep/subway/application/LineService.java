@@ -1,12 +1,10 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.exception.NoSuchElementFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,10 +27,12 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = findStationById(lineRequest.getUpStationId());
-        Station downStation = findStationById(lineRequest.getDownStationId());
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(() -> new NoSuchElementFoundException("해당 역을 찾을 수 없습니다."));
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(() -> new NoSuchElementFoundException("해당 역을 찾을 수 없습니다."));
 
-        Line persistLine = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation));
+        Line persistLine = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+        persistLine.addFirstSection(new Section(upStation, downStation, lineRequest.getDistance()));
+
         return LineResponse.of(persistLine);
     }
 
@@ -65,5 +65,17 @@ public class LineService {
 
     private Station findStationById(Long id) {
         return stationRepository.findById(id).orElseThrow(() -> new NoSuchElementFoundException("해당 역을 찾을 수 없습니다."));
+    }
+
+    @Transactional
+    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchElementFoundException("라인을 찾을 수 없습니다."));
+
+        Station upStation = findStationById(sectionRequest.getUpStationId());
+        Station downStation = findStationById(sectionRequest.getDownStationId());
+
+        line.addSection(new Section(upStation, downStation, sectionRequest.getDistance()));
+
+        return LineResponse.of(line);
     }
 }
