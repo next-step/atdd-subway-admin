@@ -18,6 +18,8 @@ import nextstep.subway.exception.DeleteSectionException;
 @Embeddable
 public class LineStations {
 
+    private static final int CANT_DELETE_SIZE = 1;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_line_station_to_line"))
     private List<LineStation> lineStations = new ArrayList<>();
@@ -119,6 +121,7 @@ public class LineStations {
     public void delete(Station station) {
         boolean isExistSectionByUpSation = isExistSectionByUpSation(station);
         boolean isExistSectionByDownSation = isExistSectionByDownSataion(station);
+        validateOnlyOneSection();
         validateDeleteSectionNotFound(isExistSectionByUpSation, isExistSectionByDownSation);
 
         LineStation sectionByUpStation = findSectionByUpStation(station);
@@ -129,12 +132,11 @@ public class LineStations {
         if (!isExistSectionByUpSation) {
             lineStations.remove(sectionByDownStation);
         }
-        if(isExistSectionByUpSation && isExistSectionByDownSation){
+        if (isExistSectionByUpSation && isExistSectionByDownSation) {
             sectionByUpStation.merge(sectionByDownStation);
             lineStations.remove(sectionByDownStation);
         }
     }
-
 
     private void validateAlreadySection(boolean isExistSectionByUpSation, boolean isExistSectionByDownSataion) {
         if (isExistSectionByUpSation && isExistSectionByDownSataion) {
@@ -151,6 +153,12 @@ public class LineStations {
     private void validateNotFound(LineStation startStation, LineStation endStation) {
         if (!isStartOrEndStation(startStation, endStation)) {
             throw new CreateSectionException("[ERROR] 등록할 구간을 찾을 수 없습니다.");
+        }
+    }
+
+    private void validateOnlyOneSection() {
+        if(lineStations.size() == CANT_DELETE_SIZE){
+            throw new DeleteSectionException("[ERROR] 구간이 하나인 경우 삭제할 수 없습니다.");
         }
     }
 
