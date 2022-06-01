@@ -1,7 +1,6 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.consts.ErrorMessage;
-import nextstep.subway.station.domain.Station;
 
 public class Distance {
     private int distance;
