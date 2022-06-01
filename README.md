@@ -112,7 +112,14 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     ```
   
 
-*[x] 구현목록
-  *[x] 요구사항 설명 목록
-  *[x] @sql 애너테이션 사용
-    *[x] truncate.sql, data.sql
+* [x] 구현목록
+  * [x] 요구사항 설명 목록
+  * [x] @sql 애너테이션 사용
+    * [x] truncate.sql, data.sql
+  * [x] find, delete 시 데이터가 없으면 예외발생 및 404 에러 반환
+
+* 리뷰 피드백(리뷰어: 김석홍 님)
+  * 필드 컬럼 설정, 변수명, 의미없는 오버라이드 삭제, 미사용 테스트 클래스 삭제, spring 어노테이션 사용 등
+  * Request 필드를 따로 받도록
+  * repository.find 시 null 리턴 대신 예외가 발생하도록
+  * 특정 상황에서 dto 내부 메소드로 새로운 객체 생성 방법 부적절

@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 
+
 @Entity
 public class Line {
     @Id
@@ -20,6 +21,7 @@ public class Line {
     @ManyToOne(fetch = FetchType.LAZY)
     private Station downStation;
 
+    @Column(nullable = false)
     private int distance;
 
     protected Line() {
@@ -39,12 +41,12 @@ public class Line {
         changeColor(color);
     }
 
-    private void changeColor(String color) {
-        this.color = color;
-    }
-
     private void changeName(String name) {
         this.name = name;
+    }
+
+    private void changeColor(String color) {
+        this.color = color;
     }
 
     public Long getId() {

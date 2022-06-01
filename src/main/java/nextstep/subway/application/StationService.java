@@ -4,10 +4,12 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.exception.DataNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +33,14 @@ public class StationService {
         return stations.stream()
                 .map(station -> StationResponse.of(station))
                 .collect(Collectors.toList());
+    }
+
+    public Station findStationById(Long id) {
+        Optional<Station> station = stationRepository.findById(id);
+        if (!station.isPresent()) {
+            throw new DataNotFoundException("지하철 역이 존재하지 않습니다.");
+        }
+        return station.get();
     }
 
     @Transactional

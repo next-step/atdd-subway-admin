@@ -135,7 +135,7 @@ public class LineAcceptanceTest {
     }
 
     @Test
-    @DisplayName("생성되지 않은 역으로 지하철 노선을 생성하면 400 에러가 발생한다")
+    @DisplayName("생성되지 않은 역으로 지하철 노선을 생성하면 404 에러가 발생한다")
     void createLineIfStationNotExists() {
         //when
         ExtractableResponse<Response> response =
@@ -146,10 +146,10 @@ public class LineAcceptanceTest {
 
     /**
      * When 생성되지 않은 지하철 노선을 수정하면
-     * Then 400 에러가 발생한다
+     * Then 404 에러가 발생한다
      */
     @Test
-    @DisplayName("생성하지 않은 지하철 노선정보를 수정하면 400 에러가 발생한다")
+    @DisplayName("생성하지 않은 지하철 노선정보를 수정하면 404 에러가 발생한다")
     void changeLineException() {
         //when
         Map<String, String> params = new HashMap<>();
@@ -191,7 +191,7 @@ public class LineAcceptanceTest {
 
     /**
      * When 생성되지 않은 지하철 노선을 삭제하면
-     * Then 400 에러가 발생한다
+     * Then 404 에러가 발생한다
      */
     @Test
     @DisplayName("지하철 노선을 제거한다")

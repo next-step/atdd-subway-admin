@@ -1,7 +1,6 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.LineService;
-import nextstep.subway.domain.Line;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -35,25 +34,19 @@ public class LineController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> lines(@PathVariable Long id) {
-        LineResponse lines = lineService.findById(id);
-        if (lines == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok().body(lines);
+        LineResponse line = lineService.getLineResponseById(id);
+        return ResponseEntity.ok().body(line);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity changeLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        Line line = lineService.changeLineById(id, lineRequest);
-        if (line == null) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity changeLine(@PathVariable Long id, String name, String color) {
+        lineService.changeLineById(id, name, color);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteLine(@PathVariable Long id) {
-        lineService.deleteLineById(id);
+        lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -61,4 +54,5 @@ public class LineController {
     public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }
+
 }
