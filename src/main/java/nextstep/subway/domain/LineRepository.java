@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface LineRepository extends JpaRepository<Line, Long> {
-    @Query(value = "select l from Line l join fetch l.sections")
+    @Query(value = "select l from Line l join fetch l.sections.sections")
     Optional<Line> findByIdWithSections(Long id);
 }
