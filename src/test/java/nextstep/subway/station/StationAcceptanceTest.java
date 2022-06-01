@@ -39,17 +39,17 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // given
-        final String name = "강남역";
+        final String stationName = "강남역";
 
         // when
-        final ExtractableResponse<Response> response = 지하철역을_생성한다(name);
+        final ExtractableResponse<Response> response = 지하철역을_생성한다(stationName);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
         final List<String> stationNames = 지하철역_목록을_조회한다();
-        assertThat(stationNames).containsAnyOf(name);
+        assertThat(stationNames).containsAnyOf(stationName);
     }
 
     /**
@@ -61,11 +61,11 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        final String name = "강남역";
-        지하철역을_생성한다(name);
+        final String stationName = "강남역";
+        지하철역을_생성한다(stationName);
 
         // when
-        final ExtractableResponse<Response> response = 지하철역을_생성한다(name);
+        final ExtractableResponse<Response> response = 지하철역을_생성한다(stationName);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -102,8 +102,8 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        final String name = "강남역";
-        final ExtractableResponse<Response> createResponse = 지하철역을_생성한다(name);
+        final String stationName = "강남역";
+        final ExtractableResponse<Response> createResponse = 지하철역을_생성한다(stationName);
 
         // when
         final ExtractableResponse<Response> deleteResponse = 지하철역을_삭제한다(createResponse.jsonPath().getLong("id"));
@@ -112,7 +112,7 @@ public class StationAcceptanceTest {
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         final List<String> stationNames = 지하철역_목록을_조회한다();
-        assertThat(stationNames).doesNotContain(name);
+        assertThat(stationNames).doesNotContain(stationName);
     }
 
     private ExtractableResponse<Response> 지하철역을_생성한다(final String name) {
