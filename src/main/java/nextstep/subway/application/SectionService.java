@@ -63,7 +63,8 @@ public class SectionService {
 
 
     public List<SectionResponse> findAllByLine(Long lineId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(LineNotFoundException::new);
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(LineNotFoundException::new);
 
         return sectionRepository.findAllByLine(line)
             .stream()
