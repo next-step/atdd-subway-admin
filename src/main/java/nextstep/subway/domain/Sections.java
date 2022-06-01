@@ -47,10 +47,9 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    private void update(Section newSection) {
-        sections.forEach(section -> section.update(newSection));
+    private boolean isSectionsEmpty() {
+        return sections.isEmpty();
     }
-
     private void validNotAddedSection(Section section) {
         if (containsUpStationAndDownStation(section)) {
             throw new IllegalArgumentException("이미 등록된 구간 요청입니다.");
@@ -63,15 +62,15 @@ public class Sections {
         }
     }
 
+    private void update(Section newSection) {
+        sections.forEach(section -> section.update(newSection));
+    }
+
     private boolean containsUpStationAndDownStation(Section section) {
         return this.stations().contains(section.upStation()) && this.stations().contains(section.downStation());
     }
 
     private boolean containsNoneOfUpStationAndDownStation(Section section) {
         return !this.stations().contains(section.upStation()) && !this.stations().contains(section.downStation());
-    }
-
-    private boolean isSectionsEmpty() {
-        return sections.isEmpty();
     }
 }
