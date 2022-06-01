@@ -75,7 +75,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //when
         ExtractableResponse<Response> deleted = deleteLine(id);
-        assertThat(deleted.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(deleted.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         // then
         ExtractableResponse<Response> actual = getOne(id);
