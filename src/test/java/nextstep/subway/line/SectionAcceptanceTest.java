@@ -25,6 +25,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class SectionAcceptanceTest {
+    private static long 초기구간길이 = 10;
+
     @LocalServerPort
     int port;
     StationResponse 상행선;
@@ -40,7 +42,7 @@ class SectionAcceptanceTest {
         // given
         상행선 = 지하철역_생성("상행선");
         하행선 = 지하철역_생성("하행선");
-        노선 = 노선_생성("2호선", "green", 상행선, 하행선, 10);
+        노선 = 노선_생성("2호선", "green", 상행선, 하행선, 초기구간길이);
     }
 
     /**
@@ -115,6 +117,23 @@ class SectionAcceptanceTest {
         노선_하행종점역_조회_성공(노선, 신규역);
     }
 
+    /**
+     * Given 신규역을 생성하고
+     * When 구간(상행선-신규역)을 기존역보다 길거나 같게 추가하면
+     * Then 실패한다
+     */
+    @DisplayName("역과 역 사이에 새로운 역 추가 시 기존 역 사이보다 길거나 같으면 등록할 수 없다")
+    @Test
+    void createTooLong() {
+        // given
+        StationResponse 신규역 = 지하철역_생성("신규역");
+
+        // when
+        // then
+        구간추가_실패(노선, 상행선, 신규역, 초기구간길이);
+        구간추가_실패(노선, 상행선, 신규역, 초기구간길이 + 1);
+    }
+
     StationResponse 지하철역_생성(String name) {
         return StationApi.create(name)
                 .as(StationResponse.class);
@@ -128,6 +147,11 @@ class SectionAcceptanceTest {
     void 구간추가_성공(String lineLocation, StationResponse upStation, StationResponse downStation, long distance) {
         ExtractableResponse<Response> response = LineApi.addSection(lineLocation, new AddSectionRequest(upStation.getId(), downStation.getId(), distance));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    void 구간추가_실패(String lineLocation, StationResponse upStation, StationResponse downStation, long distance) {
+        ExtractableResponse<Response> response = LineApi.addSection(lineLocation, new AddSectionRequest(upStation.getId(), downStation.getId(), distance));
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     void 노선_순서대로_조회_성공(String lineLocation, StationResponse... stations) {

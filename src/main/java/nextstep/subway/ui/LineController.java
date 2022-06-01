@@ -54,7 +54,11 @@ public class LineController {
 
     @PostMapping("/{id}/sections")
     public ResponseEntity addSection(@PathVariable Long id, @RequestBody AddSectionRequest sectionRequest) {
-        lineService.addSection(id, sectionRequest);
+        try {
+            lineService.addSection(id, sectionRequest);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok().build();
     }
 }
