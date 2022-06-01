@@ -27,12 +27,12 @@ public class LineController {
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        return ResponseEntity.ok().body(lineService.findAllLines());
+        return ResponseEntity.ok(lineService.findAllLines());
     }
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLineById(@PathVariable Long id) {
-        return ResponseEntity.ok().body(lineService.findLineById(id));
+        return ResponseEntity.ok(lineService.findLineById(id));
     }
 
     @PutMapping("/lines/{id}")
