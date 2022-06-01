@@ -43,7 +43,7 @@ class LineStationRepositoryTest {
         lineStationRepository.save(new LineStation(downStation, line));
 
         // when
-        List<LineStation> lineStations = lineStationRepository.findByLine_Id(line.getId());
+        List<LineStation> lineStations = lineStationRepository.findByLine(line);
 
         // then
         assertThat(lineStations).hasSize(2);
