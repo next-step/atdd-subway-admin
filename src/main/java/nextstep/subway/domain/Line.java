@@ -29,6 +29,18 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
+    private Line(String name, String color, Station upStation, Station downStation, Integer distance) {
+        this.name = name;
+        this.color = color;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
+    public static Line of(String name, String color, Station upStation, Station downStation, Integer distance) {
+        return new Line(name, color, upStation, downStation, distance);
+    }
+
     public Long id() {
         return id;
     }
