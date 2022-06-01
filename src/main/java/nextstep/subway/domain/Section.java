@@ -3,7 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 
 @Entity
-public class Section {
+public class Section{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,7 +16,8 @@ public class Section {
     @JoinColumn(name = "downStation_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
@@ -28,7 +29,7 @@ public class Section {
     public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public Station getUpStation() {
@@ -39,7 +40,7 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
@@ -49,5 +50,16 @@ public class Section {
 
     public void setLine(Line line) {
         this.line = line;
+    }
+
+    public void updateIfAdjacentSection(Section newSection) {
+        if (upStation.equals(newSection.getUpStation())) {
+            upStation = newSection.getDownStation();
+            distance.subtract(newSection.getDistance());
+        }
+        if (downStation.equals(newSection.getDownStation())) {
+            downStation = newSection.getUpStation();
+            distance.subtract(newSection.getDistance());
+        }
     }
 }

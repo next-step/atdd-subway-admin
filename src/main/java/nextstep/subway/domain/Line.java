@@ -59,4 +59,8 @@ public class Line {
     private void updateColor(String color) {
         this.color = color;
     }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
+    }
 }

@@ -1,14 +1,8 @@
 package nextstep.subway.application;
 
 import nextstep.subway.consts.ErrorMessage;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.LineUpdateRequest;
-import nextstep.subway.dto.StationResponse;
+import nextstep.subway.domain.*;
+import nextstep.subway.dto.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +57,15 @@ public class LineService {
 
     private List<StationResponse> generateStationResponses(Line line) {
         return StationResponse.from(line.getSections());
+    }
+
+    @Transactional
+    public void addSection(Long id, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.ERROR_LINE_NOT_EXIST));
+        Station upStation = findStation(sectionRequest.getUpStationId());
+        Station downStation = findStation(sectionRequest.getDownStationId());
+        line.addSection(new Section(upStation, downStation, sectionRequest.getDistance()));
     }
 
     private Station findStation(Long id) {
