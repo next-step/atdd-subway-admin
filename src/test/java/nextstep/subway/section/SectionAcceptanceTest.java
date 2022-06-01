@@ -3,6 +3,7 @@ package nextstep.subway.section;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.AcceptanceTest;
 import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.testutils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,23 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("구간 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SectionAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-            databaseCleanup.afterPropertiesSet();
-        }
-        databaseCleanup.execute();
-    }
-
+public class SectionAcceptanceTest extends AcceptanceTest {
     /**
      * Given 상행종점역, 하행종점역을 가진 노선을 등록하고
      * When 상행종점역, 새로운역 구간을 추가하고 노선을 조회하면
