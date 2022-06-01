@@ -11,12 +11,10 @@ import java.util.Optional;
 @Service
 public class SectionService {
     private final SectionRepository sectionRepository;
-    private final LineService lineService;
     private final StationService stationService;
 
-    public SectionService(SectionRepository sectionRepository, LineService lineService, StationService stationService) {
+    public SectionService(SectionRepository sectionRepository, StationService stationService) {
         this.sectionRepository = sectionRepository;
-        this.lineService = lineService;
         this.stationService = stationService;
     }
 
@@ -26,9 +24,7 @@ public class SectionService {
     }
 
     @Transactional
-    public LineResponse saveSection(Long lineId, SectionRequest sectionRequest) {
-        Line line = lineService.findById(lineId);
-
+    public LineResponse saveSection(Line line, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
 
