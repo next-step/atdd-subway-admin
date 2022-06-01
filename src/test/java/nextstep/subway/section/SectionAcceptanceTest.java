@@ -56,8 +56,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> createSection() {
         return Stream.of(
             dynamicTest("역 사이에 새로운 역을 등록한다" , () -> {
-//                SectionRequest sectionRequest = new SectionRequest(대림역_id, 신대방역_id, 7L);
-                SectionRequest sectionRequest = new SectionRequest(대림역_id, 강남역_id, 7L);
+                SectionRequest sectionRequest = new SectionRequest(대림역_id, 신대방역_id, 7L);
                 ExtractableResponse<Response> saveResponse = 지하철_구간_등록(노선_id, sectionRequest);
                 assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
             }),
