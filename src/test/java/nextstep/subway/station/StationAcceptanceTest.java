@@ -128,7 +128,7 @@ public class StationAcceptanceTest {
                 .extract().jsonPath().getList("name", String.class);
     }
 
-    private ExtractableResponse<Response> 지하철역을_생성_한다(String name) {
+    public static ExtractableResponse<Response> 지하철역을_생성_한다(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 

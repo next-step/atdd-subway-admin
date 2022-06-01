@@ -1,15 +1,20 @@
 package nextstep.subway.domain;
 
-import static nextstep.subway.message.ErrorMessage.*;
+import static nextstep.subway.message.ErrorMessage.LINE_CHANGE_IS_NO_COLOR;
+import static nextstep.subway.message.ErrorMessage.LINE_CHANGE_IS_NO_NAME;
+import static nextstep.subway.message.ErrorMessage.LINE_COLOR_IS_ESSENTIAL;
+import static nextstep.subway.message.ErrorMessage.LINE_NAME_IS_ESSENTIAL;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import nextstep.subway.message.ErrorMessage;
 import org.springframework.util.ObjectUtils;
 
@@ -22,13 +27,9 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "upStationId")
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "downStationId")
-    private Station downStation;
+    @OneToMany(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "sectionId")
+    private List<Section> sections = new ArrayList<>();
 
     @Embedded
     private Distance distance;
@@ -52,20 +53,14 @@ public class Line extends BaseEntity {
         valid(name, color);
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+        sections.add(Section.builder()
+                    .upStation(upStation)
+                    .downStation(downStation)
+                    .distance(distance)
+                    .build());
     }
 
-    public Line withUpStation(Station upStation) {
-        this.upStation = upStation;
-        return this;
-    }
 
-    public Line withDownStation(Station downStation) {
-        this.downStation = downStation;
-        return this;
-    }
 
     public void changeColor(String color) {
         validEmpty(color, LINE_CHANGE_IS_NO_COLOR);
@@ -96,21 +91,19 @@ public class Line extends BaseEntity {
         return name;
     }
 
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
     public int getDistance() {
-        return distance.getDistance();
+        return distance.value();
     }
 
     public String getColor() {
         return color;
     }
 
+    public List<Section> getSections() {
+        return sections;
+    }
 
+    public void setSections(List<Section> sections) {
+        this.sections = sections;
+    }
 }

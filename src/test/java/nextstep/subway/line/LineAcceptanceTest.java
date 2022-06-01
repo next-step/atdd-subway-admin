@@ -211,7 +211,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 노선을_생성한다(LineRequest lineRequest) {
+    public static ExtractableResponse<Response> 노선을_생성한다(LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

@@ -9,8 +9,51 @@ import org.springframework.test.context.jdbc.Sql;
 @DisplayName("노선 구간 관련 기능")
 @Sql("/truncate.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineStationAcceptanceTest {
+public class SectionAcceptanceTest {
+    @LocalServerPort
+    int port;
+    StationResponse 인천역;
+    StationResponse 동인천역;
+    LineResponse 호선_1;
+    LineRequest 생성_요청한_1호선;
 
+    //초기 거리
+    private final static int INIT_DISTANCE = 10;
+
+
+    @BeforeEach
+    void setUp() {
+        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
+            RestAssured.port = port;
+        }
+
+        //given 지하철 역을 생성하고 지하철 노선을 생성한다.
+        인천역 = 지하철역을_생성_한다("인천역").as(StationResponse.class);
+        동인천역 = 지하철역을_생성_한다("동인천역").as(StationResponse.class);
+        LineRequest 생성_요청한_1호선 = new LineRequest("1호선", "파랑색",INIT_DISTANCE, 인천역.getId(), 동인천역.getId());
+
+        호선_1 = 노선을_생성한다(생성_요청한_1호선).as(LineResponse.class);
+
+    }
+
+    /**
+     * given 지하철 역을 생성하고 지하철 노선을 생성한다.
+     * when 노선의 구간을 조회한다.
+     * then 구간의 정보를 얻는다.
+     * */
+    @Test
+    @DisplayName("노선에 구간을 조회")
+    void searchSection() {
+        //when 노선의 구간을 조회한다.
+        final JsonPath 노선의_구간을_조회 = 노선의_구간을_조회(호선_1.getId(), 1).jsonPath();
+
+        //then 구간의 정보를 얻는다.
+        assertAll(
+                () -> assertThat(노선의_구간을_조회.getInt("distance")).isEqualTo(10),
+                () -> assertThat(노선의_구간을_조회.getString("upStation.name")).isEqualTo("인천역"),
+                () -> assertThat(노선의_구간을_조회.getString("downStation.name")).isEqualTo("동인천역")
+        );
+    }
 
     @Test
     @DisplayName("노선에 구간 등록")

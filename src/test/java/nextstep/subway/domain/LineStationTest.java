@@ -10,19 +10,35 @@ public class LineStationTest {
 
 
     @Test
-    @DisplayName("노선은 필수이다.")
-    void isNotNullLine() {
-        Station station = new Station("주안역");
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> new LineStation(null, station));
+    @DisplayName("상행 노선 필수이다.")
+    void isNotNullUpstationLine() {
+        assertThatIllegalArgumentException().isThrownBy(() -> Section.builder()
+                .upStation(Station.createStation("주안역"))
+                .distance(Distance.of(3))
+                .build());
 
     }
 
     @Test
-    @DisplayName("역은 필수이다.")
-    void isNotNullStation() {
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> new LineStation(new Line("1호선", "파란색", 10),null));
+    @DisplayName("하행 노선 필수이다.")
+    void isNotNullDowuStation() {
+        assertThatIllegalArgumentException().isThrownBy(() -> Section.builder()
+                .upStation(Station.createStation("인천역"))
+                .downStation(Station.createStation("주안역"))
+                .distance(3).build());
 
     }
+
+    @Test
+    @DisplayName("거리는 필수이다.")
+    void isNotNullLine() {
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> Section.builder()
+                        .upStation(Station.createStation("주안역"))
+                        .downStation(Station.createStation("인천역"))
+                        .build());
+
+    }
+
+
 }

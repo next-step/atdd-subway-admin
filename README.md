@@ -164,6 +164,13 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   ```
 
 ### 인수 조건 
+- [X] 구간의 노선을 조회
+  ```text
+     given 지하철 역을 생성하고 지하철 노선을 생성한다.
+     when 노선의 구간을 조회한다.
+     then 구간의 정보를 얻는다.
+  ```
+
 - [ ] 노선에 구간 등록
   ```text
     given 지하철 역을 생성하고 지하철 노선을 추가한다.

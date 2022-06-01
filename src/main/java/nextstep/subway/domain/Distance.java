@@ -31,7 +31,7 @@ public class Distance {
         }
     }
 
-    public int getDistance() {
+    public int value() {
         return distance;
     }
 }
