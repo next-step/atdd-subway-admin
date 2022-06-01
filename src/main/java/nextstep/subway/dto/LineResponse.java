@@ -5,6 +5,7 @@ import nextstep.subway.domain.Station;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineResponse {
     private final Long id;
@@ -30,7 +31,9 @@ public class LineResponse {
         return new LineResponse(line.getId(),
                 line.getName(),
                 line.getColor(),
-                stations
+                stations.stream()
+                        .distinct()
+                        .collect(Collectors.toList())
         );
     }
 
