@@ -43,12 +43,9 @@ public class LineService {
         Line line = findById(id);
         Station upStation = stationService.getStationByIdIfNotNull(lineSectionRequest.getUpStationId());
         Station downStation = stationService.getStationByIdIfNotNull(lineSectionRequest.getDownStationId());
-        line.addSection(lineSectionRequest, upStation, downStation);
+        line.addSection(upStation, downStation, lineSectionRequest.getDistance());
 
-        this.lineRepository.save(line);
-        return lineRepository.save(
-                line.copyAndChangeBy(lineSectionRequest.getDistance(), upStation, downStation)
-        );
+        return this.lineRepository.save(line);
     }
 
     @Transactional

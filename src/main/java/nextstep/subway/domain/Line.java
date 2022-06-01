@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.dto.LineRequest;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -14,22 +15,16 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    private Long distance;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Station downStation;
+    @Embedded
+    private LineStations lineStations = new LineStations();
 
     protected Line() {}
 
     public Line(String name, String color, Long distance, Station upStation, Station downStation) {
         this.name = name;
         this.color = color;
-        this.distance = distance;
-        this.upStation = upStation;
-        this.downStation = downStation;
+
+        addSection(upStation, downStation, distance);
     }
 
     public Line modify(LineRequest.Modification modify) {
@@ -39,35 +34,8 @@ public class Line extends BaseEntity {
         return this;
     }
 
-    public void addSection(LineRequest.Section lineSectionRequest, Station changeUpStation, Station changeDownStation) {
-        checkPossibleAddSection(lineSectionRequest);
-
-        if (this.upStation.isSameId(lineSectionRequest.getUpStationId())) {
-            this.upStation = changeDownStation;
-        }
-        if (this.downStation.isSameId(lineSectionRequest.getDownStationId())) {
-            this.downStation = changeUpStation;
-        }
-        this.distance -= lineSectionRequest.getDistance();
-    }
-
-    public void checkPossibleAddSection(LineRequest.Section lineSectionRequest) {
-        boolean isSameUpStation = this.upStation.getId().equals(lineSectionRequest.getUpStationId());
-        boolean isSameDownStation = this.downStation.getId().equals(lineSectionRequest.getDownStationId());
-
-        if (this.distance <= lineSectionRequest.getDistance()) {
-            throw new IllegalArgumentException("기존 노선의 길이와 같거나 긴 노선을 추가할 수 없습니다.");
-        }
-        if (isSameUpStation && isSameDownStation) {
-            throw new IllegalArgumentException("같은 상/하행역을 등록할 수 없습니다.");
-        }
-        if (!isSameUpStation && !isSameDownStation) {
-            throw new IllegalArgumentException("상/하행역 중 같은 역이 존재해야 합니다.");
-        }
-    }
-
-    public Line copyAndChangeBy(Long distance, Station upStation, Station downStation) {
-        return new Line(this.name, this.color, distance, upStation, downStation);
+    public void addSection(Station upStation, Station downStation, Long distance) {
+        lineStations.add(upStation, downStation, distance);
     }
 
     public Long getId() {
@@ -82,11 +50,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
+    public List<Station> getStationOrderedUpToDown() {
+        return this.lineStations.getStationsSortedByUpToDown();
     }
 }
