@@ -9,6 +9,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Section extends BaseEntity {
@@ -79,5 +82,22 @@ public class Section extends BaseEntity {
             throw new SectionLengthOverException("기존 역 사이 거리보다 작을 수 없습니다.");
         }
         this.distance = newDistance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return Objects.equals(id, section.id) && Objects.equals(getUpStation(), section.getUpStation()) && Objects.equals(getDownStation(), section.getDownStation()) && Objects.equals(line, section.line);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, getUpStation(), getDownStation(), line);
+    }
+
+    public List<Station> upDownStationPair() {
+        return Arrays.asList(upStation,downStation);
     }
 }

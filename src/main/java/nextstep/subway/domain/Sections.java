@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.SameSectionRegistrationException;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -20,9 +22,22 @@ public class Sections implements Iterable<Section> {
             this.sections.add(newSection);
             return;
         }
-        sections.forEach(section -> section.calculate(newSection));
 
+        duplicateRegistrationValidate(newSection);
+
+        sections.forEach(section -> section.calculate(newSection));
         sections.add(newSection);
+    }
+
+    private void duplicateRegistrationValidate(Section newSection) {
+        sections.forEach(
+                section -> {
+                    List<Station> upDownStations = section.upDownStationPair();
+                    if (upDownStations.contains(newSection.getUpStation()) && upDownStations.contains(newSection.getDownStation())) {
+                        throw new SameSectionRegistrationException("상행역과 하행역이 이미 등록되어있습니다.");
+                    }
+                }
+        );
     }
 
     @Override
