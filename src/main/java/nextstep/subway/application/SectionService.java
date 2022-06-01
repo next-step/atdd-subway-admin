@@ -10,12 +10,19 @@ import java.util.Optional;
 
 @Service
 public class SectionService {
+    private final SectionRepository sectionRepository;
     private final LineService lineService;
     private final StationService stationService;
 
-    public SectionService(LineService lineService, StationService stationService) {
+    public SectionService(SectionRepository sectionRepository, LineService lineService, StationService stationService) {
+        this.sectionRepository = sectionRepository;
         this.lineService = lineService;
         this.stationService = stationService;
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Section> findById(Long id) {
+        return sectionRepository.findById(id);
     }
 
     @Transactional
@@ -39,27 +46,8 @@ public class SectionService {
     }
 
     @Transactional
-    public void removeSectionByStationId(Long lineId, Long stationId) {
-        Line line = lineService.findByIdWithSections(lineId);
-        if (line.getSections().size() == 1) {
-            throw new IllegalArgumentException("단일 구간인 노선입니다. 구간을 삭제할 수 없습니다.");
-        }
-
-        reappropriateSection(line, stationId);
-    }
-
-    private void reappropriateSection(Line line, Long stationId) {
-        Sections sections = line.getSections();
-
-        Optional<Section> prevSection = sections.getPrevSectionByStationId(stationId);
-        Optional<Section> nextSection = sections.getNextSectionByStationId(stationId);
-
-        sections.removeSection(prevSection);
-        sections.removeSection(nextSection);
-
-        if (prevSection.isPresent() && nextSection.isPresent()) {
-            line.addSection(new Section(prevSection.get().getUpStation(), nextSection.get().getDownStation(), prevSection.get().getDistance() + nextSection.get().getDistance()));
-        }
+    public Section reappropriateSection(Section prevSection, Section nextSection) {
+        return new Section(prevSection.getUpStation(), nextSection.getDownStation(), prevSection.getDistance() + nextSection.getDistance());
     }
 
     private void validateSections(Section lineSection, Section section) {

@@ -29,26 +29,12 @@ public class Sections {
         return sections;
     }
 
-    public Optional<Section> getPrevSectionByStationId(Long stationId) {
-        return sections.stream().filter(section -> section.getDownStation().getId() == stationId).findFirst();
-    }
-
-    public Optional<Section> getNextSectionByStationId(Long stationId) {
-        return sections.stream().filter(section -> section.getUpStation().getId() == stationId).findFirst();
-    }
-
     public int size() {
         return this.sections.size();
     }
 
-    public boolean isEmpty() {
-        return this.sections.isEmpty();
-    }
-
-    public void removeSection(Optional<Section> section) {
-        if (section.isPresent()) {
-            sections.remove(section.get());
-        }
+    public void removeSection(Section section) {
+        sections.remove(section);
     }
 
     @Override

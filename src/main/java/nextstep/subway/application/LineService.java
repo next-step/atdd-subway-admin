@@ -11,16 +11,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class LineService {
     private final LineRepository lineRepository;
     private final StationService stationService;
+    private final SectionService sectionService;
 
-    public LineService(LineRepository lineRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, StationService stationService, SectionService sectionService) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
+        this.sectionService = sectionService;
     }
 
     @Transactional
@@ -57,18 +60,39 @@ public class LineService {
         line.modifyColor(lineRequest.getColor());
     }
 
-    @Transactional
-    public void deleteLineById(Long id) {
-        lineRepository.deleteById(id);
-    }
-
     @Transactional(readOnly = true)
     public Line findById(Long id) {
         return lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException("해당 지하철 노선을 찾을 수 없습니다."));
     }
 
-    @Transactional(readOnly = true)
-    public Line findByIdWithSections(Long id) {
+    @Transactional
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = findByIdWithSections(lineId);
+        if (line.getSections().size() == 1) {
+            throw new IllegalArgumentException("단일 구간인 노선입니다. 구간을 삭제할 수 없습니다.");
+        }
+
+        Optional<Section> prevSection = sectionService.findById(stationId);
+        Optional<Section> nextSection = sectionService.findById(stationId);
+
+        removeSection(line, prevSection);
+        removeSection(line, nextSection);
+
+        if (prevSection.isPresent() && nextSection.isPresent()) {
+            line.addSection(sectionService.reappropriateSection(prevSection.get(), nextSection.get()));
+        }
+    }
+
+    private void removeSection(Line line, Optional<Section> prevSection) {
+        prevSection.ifPresent(section -> line.getSections().removeSection(section));
+    }
+
+    private Line findByIdWithSections(Long id) {
         return lineRepository.findByIdWithSections(id).orElseThrow(() -> new NoSuchElementException("해당 지하철 노선을 찾을 수 없습니다."));
     }
 }

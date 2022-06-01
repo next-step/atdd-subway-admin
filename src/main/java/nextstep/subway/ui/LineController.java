@@ -2,6 +2,8 @@ package nextstep.subway.ui;
 
 import nextstep.subway.application.LineService;
 import nextstep.subway.application.SectionService;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class LineController {
@@ -59,7 +62,8 @@ public class LineController {
 
     @DeleteMapping("/lines/{id}/sections")
     public ResponseEntity<LineResponse> removeLineStation(@PathVariable Long id, @RequestParam Long stationId) {
-        sectionService.removeSectionByStationId(id, stationId);
+        lineService.removeSectionByStationId(id, stationId);
+
         return ResponseEntity.noContent().build();
     }
 
