@@ -4,10 +4,9 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.api.LineApi;
+import nextstep.subway.api.StationApi;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,25 +14,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Sql("classpath:/test-truncate.sql")
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
     private final LineApi lineApi = new LineApi();
+    private final StationApi stationApi = new StationApi();
     static final String KEY_NAME = "name";
 
     @LocalServerPort
     int port;
+
     @Autowired
     StationRepository stationRepository;
+
     @Autowired
     LineRepository lineRepository;
 
-    Station upStation1, upStation2, downStation1, downStation2;
+
+    Long upStationId1, upStationId2, downStationId1, downStationId2;
     String lineName1, lineName2, lineColor1, lineColor2;
 
     @BeforeEach
@@ -41,19 +46,14 @@ public class LineAcceptanceTest {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
-        upStation1 = stationRepository.save(new Station(1L, "광교역"));
-        upStation2 = stationRepository.save(new Station(2L, "신사역"));
-        downStation1 = stationRepository.save(new Station(3L, "석남역"));
-        downStation2 = stationRepository.save(new Station(4L, "장암역"));
+        upStationId1 = stationApi.createId("광교역");
+        downStationId1 = stationApi.createId("신사역");
+        upStationId2 = stationApi.createId("석남역");
+        downStationId2 = stationApi.createId("장암역");
         lineName1 = "신분당선";
         lineName2 = "분당선";
         lineColor1 = "bg-red-600";
         lineColor2 = "bg-green-600";
-    }
-
-    @AfterEach
-    void setDown() {
-        lineRepository.deleteAll();
     }
 
     /**
@@ -65,7 +65,7 @@ public class LineAcceptanceTest {
     void createLine() {
         // when
         ExtractableResponse<Response> response
-                = lineApi.create(lineName1, lineColor1, upStation1.getId(), downStation1.getId());
+                = lineApi.create(lineName1, lineColor1, upStationId1, downStationId1);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
@@ -81,8 +81,8 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        lineApi.create(lineName1, lineColor1, upStation1.getId(), downStation1.getId());
-        lineApi.create(lineName2, lineColor2, upStation2.getId(), downStation2.getId());
+        lineApi.create(lineName1, lineColor1, upStationId1, downStationId1);
+        lineApi.create(lineName2, lineColor2, upStationId2, downStationId2);
 
         // when
         List<String> lineNames = lineApi.findNames();
@@ -100,7 +100,7 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         // given
-        long lineId = lineApi.createId(lineName1, lineColor1, upStation1.getId(), downStation1.getId());
+        long lineId = lineApi.createId(lineName1, lineColor1, upStationId1, downStationId1);
 
         // when
         String lineName = lineApi.findName(lineId);
@@ -118,7 +118,7 @@ public class LineAcceptanceTest {
     @Test
     void updateLine() {
         // given
-        long lineId = lineApi.createId(lineName1, lineColor1, upStation1.getId(), downStation1.getId());
+        long lineId = lineApi.createId(lineName1, lineColor1, upStationId1, downStationId1);
 
         // when
         String updateLineName = "뉴분당선";
@@ -138,7 +138,7 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        long lineId = lineApi.createId(lineName1, lineColor1, upStation1.getId(), downStation1.getId());
+        long lineId = lineApi.createId(lineName1, lineColor1, upStationId1, downStationId1);
 
         // when
         assertThat(lineApi.delete(lineId).statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());

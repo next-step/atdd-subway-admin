@@ -19,6 +19,10 @@ public class StationApi extends BaseApi {
         return super.create(StationRequest.createParams(name));
     }
 
+    public Long createId(String name) {
+        return super.create(StationRequest.createParams(name)).jsonPath().getLong("id");
+    }
+
     public List<String> findNames() {
         return super.findAll().jsonPath().getList("name", String.class);
     }
