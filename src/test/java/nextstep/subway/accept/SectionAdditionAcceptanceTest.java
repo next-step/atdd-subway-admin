@@ -2,6 +2,9 @@ package nextstep.subway.accept;
 
 import static nextstep.subway.accept.LineAcceptanceTest.노선_생성;
 import static nextstep.subway.accept.LineAcceptanceTest.노선_조회;
+import static nextstep.subway.accept.SectionParameterHelper.강남역_양재역_구간;
+import static nextstep.subway.accept.SectionParameterHelper.양재시민의숲역_양재역_구간;
+import static nextstep.subway.accept.SectionParameterHelper.양재역_강남역_구간;
 import static nextstep.subway.accept.StationAcceptanceTest.강남역;
 import static nextstep.subway.accept.StationAcceptanceTest.교대역;
 import static nextstep.subway.accept.StationAcceptanceTest.서초역;
@@ -40,8 +43,8 @@ class SectionAdditionAcceptanceTest {
     @LocalServerPort
     int port;
 
-    private StationResponse 생성된_강남역, 생성된_양재시민의숲역, 생성된_양재역, 생성된_서초역, 생성된_교대역;
-    private LineResponse 생성된_신분당선, 생성된_이호선;
+    public static StationResponse 생성된_강남역, 생성된_양재시민의숲역, 생성된_양재역, 생성된_서초역, 생성된_교대역;
+    public static LineResponse 생성된_신분당선, 생성된_이호선;
 
     @BeforeEach
     void setUp() {
@@ -163,7 +166,7 @@ class SectionAdditionAcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private void saveStationAndLine() {
+    public static void saveStationAndLine() {
         생성된_강남역 = 지하철역_생성(강남역);
         생성된_양재역 = 지하철역_생성(양재역);
         생성된_양재시민의숲역 = 지하철역_생성(양재시민의숲역);
