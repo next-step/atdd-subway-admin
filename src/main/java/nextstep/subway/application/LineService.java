@@ -48,7 +48,7 @@ public class LineService {
     @Transactional
     public void editLineById(Long id, LineRequest lineRequest) {
         Line line = lineRepository.getById(id);
-        line.update(lineRequest.toLine());
+        line.updateNameColor(lineRequest.getName(), lineRequest.getColor());
     }
 
     @Transactional

@@ -30,10 +30,6 @@ public class LineRequest {
         return distance;
     }
 
-    public Line toLine() {
-        return new Line(name, color);
-    }
-
     public Line toLine(Station upStation, Station downStation) {
         return new Line(name, color, upStation, downStation, distance);
     }

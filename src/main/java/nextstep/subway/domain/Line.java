@@ -60,8 +60,8 @@ public class Line extends BaseEntity {
         return downStation;
     }
 
-    public void update(Line newLine) {
-        this.name = newLine.name;
-        this.color = newLine.color;
+    public void updateNameColor(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 }
