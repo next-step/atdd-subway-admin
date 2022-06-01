@@ -84,7 +84,7 @@ class SectionAcceptanceTest {
      * When 구간(신규역-상행선)을 추가하면
      * Then 신규역이 상행종점역으로 조회된다
      */
-    @DisplayName("구간(신규역-상행선)을 추가한다.")
+    @DisplayName("상행종점역을 추가한다.")
     @Test
     void createOutsideLeft() {
         // given
@@ -95,6 +95,24 @@ class SectionAcceptanceTest {
 
         // then
         노선_상행종점역_조회_성공(노선, 신규역);
+    }
+
+    /**
+     * Given 신규역을 생성하고
+     * When 구간(하행선-신규역)을 추가하면
+     * Then 신규역이 하행종점역으로 조회된다
+     */
+    @DisplayName("하행종점역을 추가한다.")
+    @Test
+    void createOutsideRight() {
+        // given
+        StationResponse 신규역 = 지하철역_생성("신규역");
+
+        // when
+        구간추가_성공(노선, 하행선, 신규역, 3);
+
+        // then
+        노선_하행종점역_조회_성공(노선, 신규역);
     }
 
     StationResponse 지하철역_생성(String name) {
@@ -126,6 +144,13 @@ class SectionAcceptanceTest {
         Long findBeginId = LineApi.find(lineLocation)
                 .jsonPath()
                 .getLong("stations[0].id");
+        assertThat(findBeginId).isEqualTo(station.getId());
+    }
+
+    void 노선_하행종점역_조회_성공(String lineLocation, StationResponse station) {
+        Long findBeginId = LineApi.find(lineLocation)
+                .jsonPath()
+                .getLong("stations[-1].id");
         assertThat(findBeginId).isEqualTo(station.getId());
     }
 }
