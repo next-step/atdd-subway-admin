@@ -1,8 +1,10 @@
 package nextstep.subway.section.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
@@ -17,35 +19,39 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section, Line line) {
-        initEndPoint(section, line);
-
         validateSection(section);
+        addAndChangeSection(section, line);
+    }
+
+    public void addForInit(Section section, Line line) {
         addSection(section, line);
     }
 
-    public List<Station> orderStationsOfLine() {
-        Optional<Section> section = sections.stream()
-            .filter(Section::isFirstSection)
-             .findFirst();
+    public Set<Station> orderStationsOfLine() {
+        Section section = sections.stream()
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("구간이 존재하지 않습니다."));
 
-        List<Station> stations = new ArrayList<>();
-        while (section.isPresent()) {
-            Section preSection = section.get();
+        Section preSection = this.findStartSection(section);
+        Set<Station> stations = new HashSet<>();
+        stations.add(preSection.getUpStation());
+
+        while (preSection != null) {
             stations.add(preSection.getDownStation());
-            section = this.downStationOfLine(preSection);
+            preSection = this.findPostSection(preSection);
         }
 
         return stations;
     }
 
-    private void validateSection(Section section) {
-        Optional<Section> optionalUpSection = this.sections.stream()
-            .filter(s -> s.containDownStation(section.getUpStation()))
-            .findFirst();
+    private Section findStartSection(Section section) {
+        Optional<Section> optionalSection = findByDownStation(section.getUpStation());
+        return optionalSection.map(this::findStartSection).orElse(section);
+    }
 
-        Optional<Section> optionalDownSection = this.sections.stream()
-            .filter(s -> s.containDownStation(section.getDownStation()))
-            .findFirst();
+    private void validateSection(Section section) {
+        Optional<Section> optionalUpSection = findByUpStation(section.getUpStation());
+        Optional<Section> optionalDownSection = findByDownStation(section.getDownStation());
 
         if (!optionalUpSection.isPresent() && !optionalDownSection.isPresent()) {
             throw new IllegalArgumentException("종점역이 노선에 등록되어있지 않습니다.");
@@ -54,13 +60,26 @@ public class Sections {
         if (optionalUpSection.isPresent() && optionalDownSection.isPresent()) {
             throw new IllegalArgumentException("이미 상하행종점역이 모두 노선에 존재합니다.");
         }
-
     }
 
-    private void initEndPoint(Section section, Line line) {
-        if (sections.size() == 0) {
-            addSection(section.upStationEndPoint(section), line);
-        }
+    private Optional<Section> findByDownStation(Station station) {
+        return this.sections.stream()
+            .filter(s -> s.containDownStation(station))
+            .findFirst();
+    }
+
+    private Optional<Section> findByUpStation(Station station) {
+        return this.sections.stream()
+            .filter(s -> s.containUpStation(station))
+            .findFirst();
+    }
+
+    private void addAndChangeSection(Section section, Line line) {
+        Section currentSection = findCurrentSection(section);
+        validateDistance(section, currentSection);
+
+        currentSection.changeDownStation(section.getUpStation(), currentSection.getDistance() - section.getDistance());
+        addSection(section, line);
     }
 
     private void addSection(Section section, Line line) {
@@ -68,10 +87,24 @@ public class Sections {
         section.changeLine(line);
     }
 
-    private Optional<Section> downStationOfLine(Section preSection) {
+    private void validateDistance(Section section, Section currentSection) {
+        if (currentSection.checkDistance(section.getDistance())) {
+            throw new IllegalArgumentException("구간의 거리는 기존 구간보다 작아야 합니다.");
+        }
+    }
+
+    private Section findCurrentSection(Section section) {
+        Optional<Section> optionalUpSection = findByUpStation(section.getUpStation());
+        Optional<Section> optionalDownSection = findByDownStation(section.getDownStation());
+
+        return optionalUpSection.orElseGet(() -> optionalDownSection.orElse(null));
+    }
+
+    private Section findPostSection(Section preSection) {
         return sections.stream()
-            .filter(section -> section.isDownSection(preSection))
-            .findFirst();
+            .filter(section -> section.isPostSection(preSection))
+            .findFirst()
+            .orElse(null);
     }
 
 }

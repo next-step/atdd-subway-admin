@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
 import java.util.stream.Stream;
 import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
@@ -37,20 +38,20 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @TestFactory
     Stream<DynamicTest> createSection_fail() {
         return Stream.of(
-//            DynamicTest.dynamicTest("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같다면 실패", () -> {
-//                List<StationResponse> preStations = lineResponse.getStations();
-//                SectionRequest sectionRequest =
-//                    new SectionRequest(preStations.get(0).getId(), preStations.get(preStations.size() -1).getId(), 11L);
-//
-//                ExtractableResponse<Response> response = RestAssured.given().log().all()
-//                    .body(sectionRequest)
-//                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                    .when().post("/lines/{lineId}/sections")
-//                    .then().log().all()
-//                    .extract();
-//
-//                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-//            }),
+            DynamicTest.dynamicTest("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같다면 실패", () -> {
+                List<StationResponse> preStations = lineResponse.getStations();
+                SectionRequest sectionRequest =
+                    new SectionRequest(preStations.get(0).getId(), preStations.get(preStations.size() -1).getId(), 11L);
+
+                ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .body(sectionRequest)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().post("/lines/{lineId}/sections", lineResponse.getId())
+                    .then().log().all()
+                    .extract();
+
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            }),
             DynamicTest.dynamicTest("상행역과 하행역이 노선에 등록되어있는 있지 않은 역일 경우 실패", () -> {
                 SectionRequest sectionRequest =
                     new SectionRequest(newNotLineStationResponse.getId(), newStationResponse.getId(), 10L);

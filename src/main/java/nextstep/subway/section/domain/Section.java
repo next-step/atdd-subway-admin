@@ -23,11 +23,11 @@ public class Section {
     private Line line;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id")
+    @JoinColumn(name = "up_station_id", nullable = false)
     private Station upStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id")
+    @JoinColumn(name = "down_station_id", nullable = false)
     private Station downStation;
 
     @Column(nullable = false)
@@ -44,24 +44,29 @@ public class Section {
         this.distance = distance;
     }
 
-    public Section upStationEndPoint(Section section) {
-        return new Section(null, section.upStation, section.distance);
-    }
-
     public boolean containDownStation(Station station) {
         return station.equals(downStation);
     }
 
-    public boolean isDownSection(Section preSection) {
-        return upStation != null && upStation.getId().equals(preSection.getDownStation().getId());
+    public boolean containUpStation(Station station) {
+        return station.equals(upStation);
     }
 
-    public boolean isFirstSection() {
-        return this.upStation == null;
+    public boolean isPostSection(Section preSection) {
+        return upStation != null && upStation.equals(preSection.getDownStation());
     }
 
     public void changeLine(Line line) {
         this.line = line;
+    }
+
+    public void changeDownStation(Station downStation, Long distance) {
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
+    public boolean checkDistance(Long distance) {
+        return this.distance > distance;
     }
 
     private void validateUpDownStation(Station upStation, Station downStation) {
@@ -80,6 +85,10 @@ public class Section {
 
     public Station getDownStation() {
         return this.downStation;
+    }
+
+    public Long getDistance() {
+        return distance;
     }
 
 }

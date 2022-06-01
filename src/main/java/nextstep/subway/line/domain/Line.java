@@ -1,6 +1,6 @@
 package nextstep.subway.line.domain;
 
-import java.util.List;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -31,7 +31,7 @@ public class Line {
     public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        this.addSection(section);
+        this.sections.addForInit(section, this);
     }
 
     public void update(LineRequest lineRequest) {
@@ -39,7 +39,7 @@ public class Line {
         this.color = lineRequest.getColor();
     }
 
-    public List<Station> orderStationsOfLine() {
+    public Set<Station> orderStationsOfLine() {
         return sections.orderStationsOfLine();
     }
 
