@@ -105,17 +105,17 @@ public class LineService {
     private void validateDuplicatedName(String name) {
         Optional<Line> lineByName = lineRepository.findByName(LineName.of(name));
 
-        if (lineByName.isPresent()) {
+        lineByName.ifPresent(line -> {
             throw new IllegalArgumentException("중복된 지하철 노선 이름입니다.");
-        }
+        });
     }
 
 
     private void validateDuplicatedColor(String color) {
         Optional<Line> lineByColor = lineRepository.findByColor(LineColor.of(color));
 
-        if (lineByColor.isPresent()) {
-            throw new IllegalArgumentException("중복된 지하철 노선 색갈입니다.");
-        }
+        lineByColor.ifPresent(line -> {
+            throw new IllegalArgumentException("중복된 지하철 노선 이름입니다.");
+        });
     }
 }

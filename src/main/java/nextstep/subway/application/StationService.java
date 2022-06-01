@@ -32,9 +32,9 @@ public class StationService {
     private void validateDuplicatedName(String name) {
         Optional<Station> stationByName = stationRepository.findByName(StationName.of(name));
 
-        if (stationByName.isPresent()) {
+        stationByName.ifPresent(station -> {
             throw new IllegalArgumentException("중복된 지하철역 이름입니다.");
-        }
+        });
     }
 
     public List<StationResponse> findAllStations() {
