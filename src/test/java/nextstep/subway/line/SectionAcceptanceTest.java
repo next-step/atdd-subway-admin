@@ -134,6 +134,25 @@ class SectionAcceptanceTest {
         구간추가_실패(노선, 상행선, 신규역, 초기구간길이 + 1);
     }
 
+    /**
+     * Given 구간을 추가하고
+     * When 이미 등록되어 있는 구간을 추가하면
+     * Then 실패한다
+     */
+    @DisplayName("등록하는 구간의 상행역과 하행역이 이미 등록되어 있다면 등록할 수 없다")
+    @Test
+    void createSameSection() {
+        // given
+        StationResponse 중간역 = 지하철역_생성("중간역");
+        구간추가_성공(노선, 상행선, 중간역, 5);
+
+        // when
+        // then
+        구간추가_실패(노선, 중간역, 상행선, 3);
+        구간추가_실패(노선, 중간역, 하행선, 3);
+        구간추가_실패(노선, 하행선, 상행선, 3);
+    }
+
     StationResponse 지하철역_생성(String name) {
         return StationApi.create(name)
                 .as(StationResponse.class);

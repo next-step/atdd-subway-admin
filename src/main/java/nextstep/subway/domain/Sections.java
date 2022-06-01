@@ -16,6 +16,9 @@ public class Sections {
         if (addInitial(section)) {
             return;
         }
+        if (exist(section)) {
+            throw new IllegalArgumentException();
+        }
         if (addToInside(section)) {
             return;
         }
@@ -29,13 +32,10 @@ public class Sections {
         if (sections.isEmpty()) {
             return emptyList();
         }
-        Map<Station, Station> sectionMap = sections.stream()
-                .collect(HashMap::new,
-                        (map, section) -> map.put(section.getUpStation(), section.getDownStation()),
-                        HashMap::putAll);
+        Map<Station, Station> sectionMap = sectionMap();
 
         List<Station> stations = new ArrayList<>();
-        stations.add(getBeginStation(sectionMap));
+        stations.add(beginStation(sectionMap));
         Station upStation = stations.get(0);
         while (sectionMap.containsKey(upStation)) {
             Station downStation = sectionMap.get(upStation);
@@ -45,7 +45,14 @@ public class Sections {
         return stations;
     }
 
-    private Station getBeginStation(Map<Station, Station> sectionMap) {
+    private Map<Station, Station> sectionMap() {
+        return sections.stream()
+                .collect(HashMap::new,
+                        (map, section) -> map.put(section.getUpStation(), section.getDownStation()),
+                        HashMap::putAll);
+    }
+
+    private Station beginStation(Map<Station, Station> sectionMap) {
         Set<Station> upStations = sectionMap.keySet();
         Set<Station> downStations = new HashSet<>(sectionMap.values());
         return upStations.stream()
@@ -60,6 +67,14 @@ public class Sections {
             return true;
         }
         return false;
+    }
+
+    private boolean exist(Section section) {
+        Map<Station, Station> sectionMap = sectionMap();
+        Set<Station> stations = new HashSet<>();
+        stations.addAll(sectionMap.keySet());
+        stations.addAll(sectionMap.values());
+        return stations.contains(section.getUpStation()) && stations.contains(section.getDownStation());
     }
 
     private boolean addToInside(Section newSection) {
