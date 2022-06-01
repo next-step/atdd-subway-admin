@@ -1,6 +1,6 @@
 package nextstep.subway.line.domain;
 
-import java.util.Set;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -39,7 +39,7 @@ public class Line {
         this.color = lineRequest.getColor();
     }
 
-    public Set<Station> orderStationsOfLine() {
+    public List<Station> orderStationsOfLine() {
         return sections.orderStationsOfLine();
     }
 

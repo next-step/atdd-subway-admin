@@ -27,13 +27,13 @@ public class Sections {
         addSection(section, line);
     }
 
-    public Set<Station> orderStationsOfLine() {
+    public List<Station> orderStationsOfLine() {
         Section section = sections.stream()
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException("구간이 존재하지 않습니다."));
 
         Section preSection = this.findStartSection(section);
-        Set<Station> stations = new HashSet<>();
+        List<Station> stations = new ArrayList<>();
         stations.add(preSection.getUpStation());
 
         while (preSection != null) {
@@ -45,8 +45,8 @@ public class Sections {
     }
 
     private void validateSection(Section section) {
-        Optional<Section> optionalUpSection = findByUpStation(section.getUpStation());
-        Optional<Section> optionalDownSection = findByDownStation(section.getDownStation());
+        Optional<Section> optionalUpSection = findByStation(section.getUpStation());
+        Optional<Section> optionalDownSection = findByStation(section.getDownStation());
 
         if (!optionalUpSection.isPresent() && !optionalDownSection.isPresent()) {
             throw new IllegalArgumentException("종점역이 노선에 등록되어있지 않습니다.");
@@ -59,7 +59,9 @@ public class Sections {
 
     private void addAndChangeSection(Section section, Line line) {
         Section currentSection = findCurrentSection(section);
-        currentSection.changeSection(section);
+        if (currentSection != null) {
+            currentSection.changeSection(section);
+        }
         addSection(section, line);
     }
 
@@ -82,6 +84,12 @@ public class Sections {
     private Optional<Section> findByUpStation(Station station) {
         return this.sections.stream()
             .filter(s -> s.containUpStation(station))
+            .findFirst();
+    }
+
+    private Optional<Section> findByStation(Station station) {
+        return this.sections.stream()
+            .filter(s -> s.containUpStation(station) || s.containDownStation(station))
             .findFirst();
     }
 

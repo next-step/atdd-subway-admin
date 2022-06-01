@@ -72,8 +72,40 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     @DisplayName("역 사이에 새로운 역이 등록될 경우")
     void createSection_BetweenStation() {
-//        SectionRequest sectionRequest =
-//            new SectionRequest()
+        List<StationResponse> preStations = lineResponse.getStations();
+        SectionRequest sectionRequest =
+            new SectionRequest(preStations.get(0).getId(), newStationResponse.getId(), 5L);
+
+        LineResponse response = 지하철_구간_등록(sectionRequest, lineResponse.getId())
+            .as(LineResponse.class);
+
+        assertThat(response.getStations()).hasSize(3);
+    }
+
+    @Test
+    @DisplayName("새로운 역이 상행종점역으로 등록될 경우")
+    void createSection_NewStartSection() {
+        List<StationResponse> preStations = lineResponse.getStations();
+        SectionRequest sectionRequest =
+            new SectionRequest(newStationResponse.getId(), preStations.get(0).getId(), 10L);
+
+        LineResponse response = 지하철_구간_등록(sectionRequest, lineResponse.getId())
+            .as(LineResponse.class);
+
+        assertThat(response.getStations()).hasSize(3);
+    }
+
+    @Test
+    @DisplayName("새로운 역이 하행종점역으로 등록될 경우")
+    void createSection_NewEndSection() {
+        List<StationResponse> preStations = lineResponse.getStations();
+        SectionRequest sectionRequest =
+            new SectionRequest(preStations.get(preStations.size() -1).getId(), newStationResponse.getId(), 10L);
+
+        LineResponse response = 지하철_구간_등록(sectionRequest, lineResponse.getId())
+            .as(LineResponse.class);
+
+        assertThat(response.getStations()).hasSize(3);
     }
 
     private ExtractableResponse<Response> 지하철_구간_등록(SectionRequest sectionRequest, Long lineId) {
