@@ -43,6 +43,7 @@ public class SectionService {
         Line line = getLineOrThrow(lineId);
         Station upStation = getStationOrThrow(sectionRequest.getUpStationId());
         Station downStation = getStationOrThrow(sectionRequest.getDownStationId());
+        sectionRepository.findAllByLine(line);
 
         validateDupSection(line, upStation, downStation);
         Section appendSection = Section.of(upStation, downStation, line,
