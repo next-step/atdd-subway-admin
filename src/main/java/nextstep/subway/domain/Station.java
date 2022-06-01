@@ -1,6 +1,9 @@
 package nextstep.subway.domain;
 
+import java.util.Objects;
 import javax.persistence.*;
+import nextstep.subway.message.ErrorMessage;
+import org.springframework.util.ObjectUtils;
 
 @Entity
 public class Station extends BaseEntity {
@@ -10,10 +13,15 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    public Station() {
+    protected Station() {
     }
 
-    public Station(String name) {
+    public static Station createStation(String name) {
+        return new Station(name);
+    }
+
+    private Station(String name) {
+        valid(name);
         this.name = name;
     }
 
@@ -23,5 +31,28 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    private void valid(String name) {
+        if (ObjectUtils.isEmpty(name)) {
+            throw new IllegalArgumentException(ErrorMessage.STATION_NAME_IS_ESSENTIAL.toMessage());
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Station station = (Station) o;
+        return Objects.equals(name, station.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }
