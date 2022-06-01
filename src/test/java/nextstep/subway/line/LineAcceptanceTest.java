@@ -9,10 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nextstep.subway.BaseAcceptanceTest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
@@ -20,16 +18,10 @@ import org.springframework.test.context.jdbc.Sql;
 @DisplayName("노선 관련 기능")
 @Sql({"classpath:stations.sql"})
 public class LineAcceptanceTest extends BaseAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-    }
-
+    /**
+     * When 지하철 노선을 생성하면
+     * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
+     */
     @DisplayName("노선을 생성한다.")
     @Test
     void createLine() {
@@ -45,6 +37,28 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         // then
         final List<String> lineNames = 지하철_노선_목록을_조회한다();
         assertThat(lineNames).contains(lineName);
+    }
+
+
+    /**
+     * Given 2개의 지하철 노선을 생성하고
+     * When 지하철 노선 목록을 조회하면
+     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     */
+    @DisplayName("지하철 노선 목록을 조회한다.")
+    @Test
+    void getLines() {
+        // given
+        final String lineName1 = "신분당선";
+        final String lineName2 = "2호선";
+        지하철_노선을_생성한다(lineName1);
+        지하철_노선을_생성한다(lineName2);
+
+        // when
+        final List<String> lineNames = 지하철_노선_목록을_조회한다();
+
+        // then
+        assertThat(lineNames).containsExactly(lineName1, lineName2);
     }
 
     private ExtractableResponse<Response> 지하철_노선을_생성한다(final String name) {
