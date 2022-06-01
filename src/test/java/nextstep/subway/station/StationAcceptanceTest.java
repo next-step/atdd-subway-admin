@@ -37,17 +37,17 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = createStationAndReturnResponse("강남역");
+        ExtractableResponse<Response> response = 지하철_생성("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames = getStationsAndReturnResponse().jsonPath().getList("name", String.class);
+        List<String> stationNames = 지하철_목록_조회().jsonPath().getList("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
-    private ExtractableResponse<Response> createStationAndReturnResponse(final String name) {
+    private ExtractableResponse<Response> 지하철_생성(final String name) {
         return RestAssured.given().log().all()
                 .body(Collections.singletonMap("name", name))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -65,10 +65,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        createStationAndReturnResponse("강남역");
+        지하철_생성("강남역");
 
         // when
-        ExtractableResponse<Response> response = createStationAndReturnResponse("강남역");
+        ExtractableResponse<Response> response = 지하철_생성("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -83,11 +83,11 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        createStationAndReturnResponse("강남역");
-        createStationAndReturnResponse("역삼역");
+        지하철_생성("강남역");
+        지하철_생성("역삼역");
 
         // when
-        final ExtractableResponse<Response> response = getStationsAndReturnResponse();
+        final ExtractableResponse<Response> response = 지하철_목록_조회();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -95,7 +95,7 @@ public class StationAcceptanceTest {
         assertThat(response.body().jsonPath().getList("name")).contains("강남역", "역삼역");
     }
 
-    private ExtractableResponse<Response> getStationsAndReturnResponse() {
+    private ExtractableResponse<Response> 지하철_목록_조회() {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -113,7 +113,7 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        final ExtractableResponse<Response> stationResponse = createStationAndReturnResponse("강남역");
+        final ExtractableResponse<Response> stationResponse = 지하철_생성("강남역");
 
         // when
         RestAssured.given().log().all()
@@ -123,7 +123,7 @@ public class StationAcceptanceTest {
                 .then().log().all();
 
         // then
-        final ExtractableResponse<Response> getStationsResponse = getStationsAndReturnResponse();
+        final ExtractableResponse<Response> getStationsResponse = 지하철_목록_조회();
 
         assertThat(getStationsResponse.body().jsonPath().getList("$")).hasSize(0);
     }
