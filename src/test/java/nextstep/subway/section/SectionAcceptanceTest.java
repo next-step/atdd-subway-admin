@@ -111,12 +111,36 @@ public class SectionAcceptanceTest {
         assertThat(일호선_역이름들).contains("신규하행역");
     }
 
+    /**
+     * When 구간내에 추가되는 구간의 길이가 기존 구간보다 크거나 같은면
+     * Then 구간추가가 실패한다.
+     */
     @Test
     void 역사이에_신규역등록실패_기존구간의_길이보다_신규길이가_크거나같은경우() {
         int 기존구간과_동일한_구간길이 = 소요산_신창구간_길이;
         ExtractableResponse<Response> 동일한_길이의_구간등록_결과 = 지하철구간_생성(일호선.getId(), 소요산역.getId(), 서울역.getId(), 기존구간과_동일한_구간길이);
 
         assertThat(동일한_길이의_구간등록_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 상행역과 하행역이 이미 등록되어 있고
+     * When 동일한 구간을 등록하면
+     * Then 구간추가가 실패한다.
+     */
+    @Test
+    void 상행역과_하행역이_모두_등록되어_있으면_추가할_수_없다() {
+//        given
+        ExtractableResponse<Response> 일호선_소요산_서울_구간등록 = 지하철구간_생성(일호선.getId(), 소요산역.getId(), 신창역.getId(), 10);
+        ExtractableResponse<Response> 일호선_서울_신창_구간등록 = 지하철구간_생성(일호선.getId(), 서울역.getId(), 신창역.getId(), 10);
+
+//        when
+        ExtractableResponse<Response> 일호선_소요산_서울_구간_재등록 = 지하철구간_생성(일호선.getId(), 소요산역.getId(), 서울역.getId(), 5);
+        ExtractableResponse<Response> 일호선_서울_신창_구간_재등록 = 지하철구간_생성(일호선.getId(), 서울역.getId(), 신창역.getId(), 5);
+
+//        then
+        assertThat(일호선_소요산_서울_구간_재등록.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(일호선_서울_신창_구간_재등록.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
 }
