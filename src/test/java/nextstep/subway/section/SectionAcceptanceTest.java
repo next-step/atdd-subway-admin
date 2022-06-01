@@ -16,10 +16,13 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -64,6 +67,35 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(response.getStations()).hasSize(resultSize);
     }
 
+
+    @Test
+    @DisplayName("노선이 하나일 경우 삭제에 실패한다.")
+    void deleteSection_fail() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제(2L);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+
+
+    @ParameterizedTest
+    @DisplayName("구간 삭제가 정상적으로 이루어지는 경우")
+    @ValueSource(longs = {1,2,3})
+    void deleteSection_success(Long sectionId) {
+        // given
+        List<StationResponse> preStations = lineResponse.getStations();
+        SectionRequest sectionRequest = new SectionRequest(preStations.get(0).getId(), newStationResponse.getId(), 5L);
+        지하철_구간_등록(sectionRequest, lineResponse.getId());
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제(sectionId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
     static Stream<Arguments> providerCreateSectionCase() {
         List<StationResponse> preStations = lineResponse.getStations();
 
@@ -84,6 +116,13 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
                 3
             )
         );
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_구간_삭제(Long sectionId) {
+        return RestAssured.given().log().all()
+            .when().delete("/lines/{lineId}/sections/{sectionId}", lineResponse.getId(), sectionId)
+            .then().log().all()
+            .extract();
     }
 
     private ExtractableResponse<Response> 지하철_구간_등록(SectionRequest sectionRequest, Long lineId) {
