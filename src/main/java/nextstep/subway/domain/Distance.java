@@ -6,7 +6,7 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class Distance {
-    public static final int ZERO_NUM = 0;
+    public static final int MIN = 0;
     @Column(nullable = false)
     private int distance;
 
@@ -29,7 +29,7 @@ public class Distance {
     }
 
     private boolean isZeroOrLess(int distance) {
-        return distance <= ZERO_NUM;
+        return distance <= MIN;
     }
 
     public int distance() {
