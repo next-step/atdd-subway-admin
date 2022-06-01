@@ -68,17 +68,17 @@ public class Line extends BaseEntity {
             this.lineColor = line.getLineColor();
         }
         if (ObjectUtils.isNotEmpty(line.getDownStation())) {
-            addLineStation(line.getDownStation());
+            addStation(line.getDownStation());
             this.downStation = line.getDownStation();
         }
         if (ObjectUtils.isNotEmpty(line.getUpStation())) {
-            addLineStation(line.getUpStation());
+            addStation(line.getUpStation());
             this.upStation = line.getUpStation();
         }
     }
 
-    private void addLineStation(Station station) {
-        if (this.downStation != station) {
+    public void addStation(Station station) {
+        if (!lineStationList.contains(station)) {
             lineStationList.add(new LineStation(this, station));
         }
     }
