@@ -6,6 +6,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 public class InvalidDistanceException extends RuntimeException {
     public InvalidDistanceException() {
-        super("구간 길이에 오류가 발생했습니다.");
+        super("추가할 수 없는 구간 거리입니다.");
     }
 }
