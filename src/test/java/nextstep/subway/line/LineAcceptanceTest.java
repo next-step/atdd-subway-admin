@@ -105,8 +105,6 @@ public class LineAcceptanceTest {
         assertAll(
                 () -> assertThat(지하철노선_1호선.getName()).isEqualTo(LINE1_NAME),
                 () -> assertThat(지하철노선_1호선.getColor()).isEqualTo(LINE1_COLOR)
-//                () -> assertThat(stationNames).contains(LINE1_UP_STATION_NAME)
-//                () -> assertThat(stationNames).contains(LINE1_DOWN_STATION_NAME)
         );
 
     }
