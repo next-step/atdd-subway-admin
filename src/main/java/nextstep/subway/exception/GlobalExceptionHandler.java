@@ -14,11 +14,17 @@ public class GlobalExceptionHandler {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @ExceptionHandler({IllegalArgumentException.class, DataIntegrityViolationException.class, CreateSectionException.class})
+    @ExceptionHandler({IllegalArgumentException.class, DataIntegrityViolationException.class,
+            CreateSectionException.class, DeleteSectionException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<Void> badRequest(Exception e) {
+    public void badRequest(Exception e) {
         logger.error("Bad Request ", e);
-        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler({Exception.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public void uncatchedExpection(Exception e) {
+        logger.error("Uncatched ", e);
     }
 
 }
