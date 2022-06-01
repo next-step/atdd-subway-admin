@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.criteria.CriteriaBuilder.In;
 
 @Entity
 public class Line extends BaseEntity {
@@ -19,6 +20,7 @@ public class Line extends BaseEntity {
     private String name;
     @Column(nullable = false)
     private String color;
+    private Integer distance;
     @OneToMany
     @JoinColumn(name = "line_id")
     private List<Station> stations = new ArrayList<>();
@@ -41,6 +43,10 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public Integer getDistance() {
+        return distance;
     }
 
     public List<Station> getStations() {
