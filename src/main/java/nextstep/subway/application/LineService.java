@@ -6,7 +6,6 @@ import nextstep.subway.dto.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -40,13 +39,13 @@ public class LineService {
     public LineResponse findLineById(Long id) {
         return lineRepository.findById(id)
                 .map(line -> LineResponse.of(line, generateStationResponses(line)))
-                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.ERROR_LINE_NOT_EXIST));
+                .orElseThrow(() -> new NoSuchElementException(String.format(ErrorMessage.ERROR_LINE_NOT_FOUND, id)));
     }
 
     @Transactional
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.ERROR_LINE_NOT_EXIST));
+                .orElseThrow(() -> new NoSuchElementException(String.format(ErrorMessage.ERROR_LINE_NOT_FOUND, id)));
         line.update(lineUpdateRequest.toLine(line.getSections()));
     }
 
@@ -58,7 +57,7 @@ public class LineService {
     @Transactional
     public void addSection(Long id, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.ERROR_LINE_NOT_EXIST));
+                .orElseThrow(() -> new NoSuchElementException(String.format(ErrorMessage.ERROR_LINE_NOT_FOUND, id)));
         Station upStation = findStation(sectionRequest.getUpStationId());
         Station downStation = findStation(sectionRequest.getDownStationId());
         line.addSection(new Section(upStation, downStation, sectionRequest.getDistance()));
@@ -70,6 +69,6 @@ public class LineService {
 
     private Station findStation(Long id) {
         return stationRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.ERROR_STATION_NOT_EXIST));
+                .orElseThrow(() -> new NoSuchElementException(String.format(ErrorMessage.ERROR_STATION_NOT_FOUND, id)));
     }
 }

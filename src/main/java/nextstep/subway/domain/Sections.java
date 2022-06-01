@@ -1,12 +1,13 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.consts.ErrorMessage;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 @Embeddable
 public class Sections{
@@ -41,10 +42,16 @@ public class Sections{
 
     private void validateSectionToAdd(Section section) {
         if (containStation(section.getUpStation()) && containStation(section.getDownStation())) {
-            throw new IllegalArgumentException("[ERROR] UpStation to DownStation : 이미 존재하는 구간입니다. ");
+            throw new IllegalArgumentException(
+                    String.format(ErrorMessage.ERROR_SECTION_ALREADY_EXISTING_STATIONS,
+                            section.getUpStation().getName(), section.getDownStation().getName())
+            );
         }
         if (!containStation(section.getUpStation()) && !containStation(section.getDownStation())) {
-            throw new IllegalArgumentException("[ERROR] UpStation to DownStation : 존재하지 않습니다. ");
+            throw new IllegalArgumentException(
+                    String.format(ErrorMessage.ERROR_SECTION_UNKNOWN_STATIONS,
+                            section.getUpStation().getName(), section.getDownStation().getName())
+            );
         }
     }
 

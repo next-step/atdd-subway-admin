@@ -1,7 +1,11 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.consts.ErrorMessage;
+
 public class Distance {
     private int distance;
+
+    public static final int MINIMUM_DISTANCE = 1;
 
     protected Distance() {
     }
@@ -12,8 +16,10 @@ public class Distance {
     }
 
     private void validateDistance(int distance) {
-        if (distance < 1) {
-            throw new IllegalArgumentException("Distance는 최소 1 이상이어야 합니다.");
+        if (distance < MINIMUM_DISTANCE) {
+            throw new IllegalArgumentException(
+                    String.format(ErrorMessage.ERROR_DISTANCE_TOO_SMALL, MINIMUM_DISTANCE)
+            );
         }
     }
 
