@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.InvalidDistanceException;
+import nextstep.subway.exception.InvalidSectionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -151,5 +152,29 @@ class LineTest {
         assertThatThrownBy(() -> {
             line.insertSection(B역, C역, 13);
         }).isInstanceOf(InvalidDistanceException.class);
+    }
+
+    @Test
+    void 노선에_이미_추가된_지하철역_구간_추가() {
+        // given
+        Line line = new Line("2호선", "초록", 10);
+        line.initStation(A역, C역);
+
+        // when
+        assertThatThrownBy(() -> {
+            line.insertSection(A역, C역, 10);
+        }).isInstanceOf(InvalidSectionException.class);
+    }
+
+    @Test
+    void 노선에_모두_추가안된_지하철역_구간_추가() {
+        // given
+        Line line = new Line("2호선", "초록", 10);
+        line.initStation(A역, B역);
+
+        // when
+        assertThatThrownBy(() -> {
+            line.insertSection(C역, D역, 10);
+        }).isInstanceOf(InvalidSectionException.class);
     }
 }

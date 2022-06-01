@@ -24,6 +24,10 @@ public class LineStation {
         this.line = line;
     }
 
+    public boolean isSamsStation(Station station) {
+        return this.station.equals(station);
+    }
+
     public Station getStation() {
         return station;
     }

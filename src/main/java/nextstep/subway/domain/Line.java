@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.InvalidSectionException;
+
 import javax.persistence.*;
 import java.util.Objects;
 import java.util.Optional;
@@ -71,6 +73,10 @@ public class Line extends BaseEntity {
     }
 
     public void insertSection(Station insertUpStation, Station insertDownStation, Integer distance) {
+        if (!validateInsertStation(insertUpStation, insertDownStation)) {
+            throw new InvalidSectionException();
+        }
+
         if (isSameUpStation(insertDownStation)) {
             insertSectionToHead(new Section(distance, insertUpStation, getUpStation(), this));
             return;
@@ -94,6 +100,17 @@ public class Line extends BaseEntity {
             insertSectionFromDownStation(insertUpStation, distance, section);
             return;
         }
+    }
+
+    private boolean validateInsertStation(Station insertUpStation, Station insertDownStation) {
+        boolean isExistUpStation = lineStations.containStation(insertUpStation);
+        boolean isExistDownStation = lineStations.containStation(insertDownStation);
+
+        if (isExistUpStation && isExistDownStation) {
+            return false;
+        }
+
+        return isExistUpStation || isExistDownStation;
     }
 
     private void insertSectionFromUpStation(Station insertDownStation, Integer distance, Section section) {

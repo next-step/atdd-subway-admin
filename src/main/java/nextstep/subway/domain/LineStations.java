@@ -24,6 +24,11 @@ public class LineStations {
         list.add(lineStation);
     }
 
+    public boolean containStation(Station station) {
+        return list.stream()
+                .anyMatch(lineStation -> lineStation.isSamsStation(station));
+    }
+
     public List<LineStation> getList() {
         return list;
     }
