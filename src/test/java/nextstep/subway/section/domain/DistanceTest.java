@@ -17,7 +17,7 @@ class DistanceTest {
     @Test
     void isBiggerTest() {
         Distance distance = Distance.from(10);
-        assertThat(distance.isBiggerAndEqual(Distance.from(11))).isTrue();
+        assertThat(distance.isBiggerAndEqual(Distance.from(9))).isTrue();
     }
 
     @Test
