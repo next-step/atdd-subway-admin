@@ -28,7 +28,7 @@ class SectionTest {
 
     @DisplayName("상행 지하철역이 Null 일 경우 예외 테스트")
     @Test
-    void createLineByNullUpStation() {
+    void createSectionByNullUpStation() {
         Station downStation = Station.builder("새로운지하철역")
                 .id(1L)
                 .build();
@@ -40,7 +40,7 @@ class SectionTest {
 
     @DisplayName("하행 지하철역이 Null 일 경우 예외 테스트")
     @Test
-    void createLineByNullDownStation() {
+    void createSectionByNullDownStation() {
         Station upStation = Station.builder("지하철역")
                 .id(1L)
                 .build();
