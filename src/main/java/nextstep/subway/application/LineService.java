@@ -41,16 +41,21 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        Line line = findLineById(id);
+    public LineResponse updateLine(Long lineId, LineRequest lineRequest) {
+        Line line = findLineById(lineId);
         line.update(lineRequest.getName(), lineRequest.getColor());
 
         return LineResponse.of(line);
     }
 
-    public LineResponse getLine(Long id) {
-        Line line = findLineById(id);
+    public LineResponse getLine(Long lineId) {
+        Line line = findLineById(lineId);
         return LineResponse.of(line);
+    }
+
+    public void deleteLine(Long lineId) {
+        Line line = findLineById(lineId);
+        lineRepository.delete(line);
     }
 
     private Line findLineById(Long lineId) {

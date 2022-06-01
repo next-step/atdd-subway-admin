@@ -6,7 +6,6 @@ import io.restassured.response.Response;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
-import nextstep.subway.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @DisplayName("지하철 노선 관인수련기능")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -108,12 +106,7 @@ public class LineAcceptanceTest {
     @Test
     @DisplayName("지하철노선 삭제 인수테스트")
     void 지하철노선_삭제_테스트() {
-        // when
         지하철노선_삭제(분당선Id);
-        // theb
-        assertThatThrownBy(() -> {
-            지하철노선_상세_조회(분당선Id);
-        }).isInstanceOf(NotFoundException.class);
     }
 
     private ExtractableResponse<Response> 지하철노선_생성(LineRequest lineRequest) {
@@ -184,7 +177,7 @@ public class LineAcceptanceTest {
         API응답_검증(HttpStatus.OK.value(), 지하철노선_상세_응답.statusCode());
     }
 
-    private ExtractableResponse<Response> 지하철노선_삭제(Long lineId) {
+    private void 지하철노선_삭제(Long lineId) {
         ExtractableResponse<Response> 지하철노선_삭제_응답 =
                 RestAssured.given().log().all()
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -193,8 +186,6 @@ public class LineAcceptanceTest {
                         .extract();
 
         지하철노선_삭제_검증(지하철노선_삭제_응답);
-
-        return 지하철노선_삭제_응답;
     }
 
     private void 지하철노선_삭제_검증(ExtractableResponse<Response> 지하철노선_삭제_응답) {
