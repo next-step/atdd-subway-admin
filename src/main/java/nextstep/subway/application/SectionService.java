@@ -55,4 +55,12 @@ public class SectionService {
         lineSection.reregisterUpStation(section);
         lineSection.reregisterDownStation(section);
     }
+
+    public Optional<Section> findByUpStationId(Long stationId) {
+        return sectionRepository.findByUpStationId(stationId);
+    }
+
+    public Optional<Section> findByDownStationId(Long stationId) {
+        return sectionRepository.findByDownStationId(stationId);
+    }
 }

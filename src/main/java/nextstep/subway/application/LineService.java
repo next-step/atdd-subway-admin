@@ -77,8 +77,8 @@ public class LineService {
             throw new IllegalArgumentException("단일 구간인 노선입니다. 구간을 삭제할 수 없습니다.");
         }
 
-        Optional<Section> prevSection = sectionService.findById(stationId);
-        Optional<Section> nextSection = sectionService.findById(stationId);
+        Optional<Section> prevSection = sectionService.findByDownStationId(stationId);
+        Optional<Section> nextSection = sectionService.findByUpStationId(stationId);
 
         removeSection(line, prevSection);
         removeSection(line, nextSection);
