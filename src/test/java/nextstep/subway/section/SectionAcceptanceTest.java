@@ -143,4 +143,20 @@ public class SectionAcceptanceTest {
         assertThat(일호선_서울_신창_구간_재등록.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 노선에 상행역과 하행역이 등록되어 있고
+     * When 상행, 하행을 포함하지 않는 구간을 등록하면
+     * Then 구간추가가 실패한다.
+     */
+    @Test
+    void 상행역과_하행역중_하나도_포함되어있지_않으면_추가할_수_없다() {
+//        given
+        StationResponse 인천역 = 지하철역_생성("인천역").as(StationResponse.class);
+        StationResponse 동인천 = 지하철역_생성("동인천").as(StationResponse.class);
+
+//          when
+        ExtractableResponse<Response> 일호선_수원_신창_구간등록 = 지하철구간_생성(일호선.getId(), 인천역.getId(), 동인천.getId(), 10);
+
+        assertThat(일호선_수원_신창_구간등록.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
