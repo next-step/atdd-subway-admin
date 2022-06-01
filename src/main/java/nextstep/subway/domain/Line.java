@@ -1,5 +1,9 @@
 package nextstep.subway.domain;
 
+import static nextstep.subway.domain.ErrorMessage.LINE_COLOR_EMPTY;
+import static nextstep.subway.domain.ErrorMessage.LINE_NAME_EMPTY;
+import static nextstep.subway.domain.ErrorMessage.UP_STATION_DOWN_STATION_SAME;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
@@ -83,17 +87,17 @@ public class Line extends BaseEntity {
 
     private void validate(String name, String color, Station upStation, Station downStation) {
         if (StringUtils.isEmpty(name)) {
-            throw new IllegalArgumentException("지하철 노선의 이름은 필수입니다.");
+            throw new IllegalArgumentException(LINE_NAME_EMPTY.toString());
         }
         if (StringUtils.isEmpty(color)) {
-            throw new IllegalArgumentException("지하철 노선의 색깔은 필수입니다.");
+            throw new IllegalArgumentException(LINE_COLOR_EMPTY.toString());
         }
         validateStation(upStation, downStation);
     }
 
     private void validateStation(Station upStation, Station downStation) {
         if (upStation.equals(downStation)) {
-            throw new IllegalArgumentException("상행종점역과 하행종점역은 같을 수 없습니다.");
+            throw new IllegalArgumentException(UP_STATION_DOWN_STATION_SAME.toString());
         }
     }
 }
