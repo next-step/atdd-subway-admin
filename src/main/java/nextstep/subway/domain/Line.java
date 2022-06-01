@@ -91,13 +91,13 @@ public class Line extends BaseEntity {
     private void insertSectionFromUpStation(Station insertDownStation, Integer distance, Section section) {
         int restDistance = section.getDistance() - distance;
         sections.add(new Section(restDistance, insertDownStation, section.getDownStation(), this));
-        section.updateSection(section.getUpStation(), insertDownStation, getDistance());
+        section.updateSection(section.getUpStation(), insertDownStation, distance);
         lineStations.add(new LineStation(insertDownStation, this));
     }
 
     private void insertSectionFromDownStation(Station insertUpStation, Integer distance, Section section) {
         int restDistance = section.getDistance() - distance;
-        sections.add(new Section(getDistance(), insertUpStation, section.getDownStation(), this));
+        sections.add(new Section(distance, insertUpStation, section.getDownStation(), this));
         section.updateSection(section.getUpStation(), insertUpStation, restDistance);
         lineStations.add(new LineStation(insertUpStation, this));
     }
@@ -105,12 +105,14 @@ public class Line extends BaseEntity {
     public void insertSectionToHead(Section section) {
         sections.add(section);
         setUpStation(section.getUpStation());
+        addLineDistance(section.getDistance());
         lineStations.add(new LineStation(section.getUpStation(), section.getLine()));
     }
 
     public void insertSectionToTail(Section section) {
         sections.add(section);
         setDownStation(section.getDownStation());
+        addLineDistance(section.getDistance());
         lineStations.add(new LineStation(section.getDownStation(), section.getLine()));
     }
 
@@ -120,6 +122,10 @@ public class Line extends BaseEntity {
 
     public boolean isSameDownStation(Station station) {
         return getDownStation().equals(station);
+    }
+
+    private void addLineDistance(Integer distance) {
+        this.distance = new Distance(getDistance() + distance);
     }
 
     public Long getId() {

@@ -32,6 +32,9 @@ public class LineAcceptanceTest {
     private StationResponse A역;
     private StationResponse B역;
     private StationResponse C역;
+    private StationResponse D역;
+    private StationResponse E역;
+    private StationResponse F역;
 
     @Autowired
     private DatabaseCleanup databaseCleanup;
@@ -51,6 +54,9 @@ public class LineAcceptanceTest {
         A역 = 응답_객체_생성(지하철역_등록("A역"), StationResponse.class);
         B역 = 응답_객체_생성(지하철역_등록("B역"), StationResponse.class);
         C역 = 응답_객체_생성(지하철역_등록("C역"), StationResponse.class);
+        D역 = 응답_객체_생성(지하철역_등록("D역"), StationResponse.class);
+        E역 = 응답_객체_생성(지하철역_등록("E역"), StationResponse.class);
+        F역 = 응답_객체_생성(지하철역_등록("F역"), StationResponse.class);
     }
 
     /**
@@ -251,6 +257,26 @@ public class LineAcceptanceTest {
         // then
         LineResponse find = 응답_객체_생성(노선_조회(line.getId()), LineResponse.class);
         assertThat(find.getStations()).hasSize(3);
+    }
+
+    /**
+     * Given 노선을 생성하고
+     * When 구간을 추가하면
+     * Then 노선에 속한 지하철역의 숫자가 증가한다
+     */
+    @DisplayName("다양한 패턴으로 노선에 지하철역 등록할 경우")
+    @Test
+    void addSectionCase5() {
+        LineResponse line = 응답_객체_생성(노선_등록("2호선", "초록", 15, A역.getId(), D역.getId()), LineResponse.class);
+
+        구간_추가(A역.getId(), B역.getId(), 4, line.getId());
+        구간_추가(C역.getId(), D역.getId(), 3, line.getId());
+        구간_추가(E역.getId(), A역.getId(), 15, line.getId());
+        구간_추가(D역.getId(), F역.getId(), 30, line.getId());
+
+        // then
+        LineResponse find = 응답_객체_생성(노선_조회(line.getId()), LineResponse.class);
+        assertThat(find.getStations()).hasSize(6);
     }
 
     /**
