@@ -47,7 +47,17 @@ public class Section {
         this.distance = Distance.from(distance);
     }
 
+    private Section(Station upStation, Station downStation, Distance distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
     public static Section of(Station upStation, Station downStation, int distance) {
+        return new Section(upStation, downStation, distance);
+    }
+
+    public static Section of(Station upStation, Station downStation, Distance distance) {
         return new Section(upStation, downStation, distance);
     }
 
@@ -95,6 +105,10 @@ public class Section {
         this.distance.update(newDistance);
     }
 
+    public Section merge(Section nextSection) {
+        return Section.of(this.upStation, nextSection.getDownStation(), distance.merge(nextSection.distance));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -113,4 +127,5 @@ public class Section {
     public int hashCode() {
         return Objects.hash(id, upStation, downStation, distance, line);
     }
+
 }

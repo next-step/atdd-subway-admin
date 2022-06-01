@@ -59,4 +59,7 @@ public class Distance {
         return Objects.hash(distance);
     }
 
+    public Distance merge(Distance other) {
+        return new Distance(this.distance + other.distance);
+    }
 }

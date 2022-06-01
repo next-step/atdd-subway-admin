@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,7 +39,8 @@ public class Sections {
 
     public List<StationResponse> getAllStations() {
         return findAllStations().stream().
-                map(station -> StationResponse.of(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate())).
+                map(station -> StationResponse.of(station.getId(), station.getName(), station.getCreatedDate(),
+                        station.getModifiedDate())).
                 collect(Collectors.toList());
     }
 
@@ -74,6 +76,74 @@ public class Sections {
 
     private boolean isNotAddedStation(Station station) {
         return !findAllStations().contains(station);
+    }
+
+    public void delete(Station station) {
+        Section firstSection = getFirstSection();
+        Section lastSection = getLastSection();
+        if (firstSection.getUpStation().equals(station)) {
+            this.sections.remove(firstSection);
+            return;
+        }
+
+        if (lastSection.getDownStation().equals(station)) {
+            this.sections.remove(lastSection);
+            return;
+        }
+
+        deleteMiddleSection(station);
+    }
+
+    private void deleteMiddleSection(Station station) {
+        Section prevSection = getPrevSection(station);
+        Section nextSection = getNextSection(station);
+
+        Section mergedSection = mergeSections(prevSection, nextSection);
+        sections.add(mergedSection);
+        sections.remove(prevSection);
+        sections.remove(nextSection);
+    }
+
+    private Section mergeSections(Section prevSection, Section nextSection) {
+        return prevSection.merge(nextSection);
+    }
+
+    private Section getPrevSection(Station station) {
+        return this.sections.stream().
+                filter(section -> section.getDownStation().equals(station)).
+                findFirst().
+                orElseThrow(NoSuchElementException::new);
+    }
+
+    private Section getNextSection(Station station) {
+        return this.sections.stream().
+                filter(section -> section.getUpStation().equals(station)).
+                findFirst().
+                orElseThrow(NoSuchElementException::new);
+    }
+
+    private Section getLastSection() {
+        List<Station> upStations = getUpStations();
+        return sections.stream().filter(section -> !upStations.contains(section.getDownStation())).
+                findAny().orElseThrow(() -> new IllegalStateException("마지막 섹션이 없습니다."));
+    }
+
+    private List<Station> getUpStations() {
+        return sections.stream().
+                map(Section::getUpStation).
+                collect(Collectors.toList());
+    }
+
+    private Section getFirstSection() {
+        List<Station> downStations = getDownStations();
+        return sections.stream().filter(section -> !downStations.contains(section.getUpStation())).
+                findAny().orElseThrow(() -> new IllegalStateException("첫번째 섹션이 없습니다."));
+    }
+
+    private List<Station> getDownStations() {
+        return sections.stream().
+                map(Section::getDownStation).
+                collect(Collectors.toList());
     }
 
     @Override
