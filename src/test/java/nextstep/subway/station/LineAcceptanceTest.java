@@ -5,7 +5,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,8 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,17 +39,18 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     void createLine() {
         // when
         StationResponse upStation = createStationRequest("강남역").jsonPath().getObject("", StationResponse.class);
-        StationResponse donwStation = createStationRequest("광교역").jsonPath().getObject("", StationResponse.class);
+        StationResponse downStation = createStationRequest("광교역").jsonPath().getObject("", StationResponse.class);
 
-        LineRequest lineRequest = LineRequest.of("신분당선", "bg-red-600", upStation.getId(), donwStation.getId(), 10);
+        LineRequest lineRequest = LineRequest.of("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
         ExtractableResponse<Response> response = createLineRequest(lineRequest);
+        int lineId = response.jsonPath().get("id");
 
         // then
         assertThat(response.statusCode())
                 .isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        LineResponse lineResponse = findLineRequest(1L).jsonPath().getObject("", LineResponse.class);
+        LineResponse lineResponse = findLineRequest(lineId).jsonPath().getObject("", LineResponse.class);
         assertThat(lineResponse)
                 .satisfies(line -> {
                     assertThat(line.getName())
@@ -60,7 +58,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
                     assertThat(line.getColor())
                             .isEqualTo(lineRequest.getColor());
                     assertThat(line.getStations())
-                            .containsExactly(upStation, donwStation);
+                            .containsExactly(upStation, downStation);
                 });
     }
 
@@ -74,9 +72,10 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> findLineRequest(long lineId) {
+    private ExtractableResponse<Response> findLineRequest(int lineId) {
         return RestAssured.given().log().all()
-                .when().get("/lines")
+                .pathParam("id", lineId)
+                .when().get("/lines/{id}")
                 .then().log().all()
                 .extract();
     }
