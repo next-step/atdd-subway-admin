@@ -26,7 +26,7 @@ public class SubwayApi {
     public static ExtractableResponse<Response> 지하철역_삭제(Long stationId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/stations/" + stationId)
+                .when().delete("/stations/{stationId}", stationId)
                 .then().log().all()
                 .extract();
     }
@@ -66,7 +66,7 @@ public class SubwayApi {
 
     public static ExtractableResponse<Response> 지하철역_노선_정보_조회(Long lineId) {
         return RestAssured.given().log().all()
-                .when().get("/lines/" + lineId)
+                .when().get("/lines/{lineId}", lineId)
                 .then().log().all()
                 .extract();
     }
@@ -79,7 +79,7 @@ public class SubwayApi {
         return RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/" + lineId)
+                .when().put("/lines/{lineId}", lineId)
                 .then().log().all()
                 .extract();
     }
@@ -87,7 +87,7 @@ public class SubwayApi {
     public static ExtractableResponse<Response> 지하철_노선_삭제(Long lineId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/lines/" + lineId)
+                .when().delete("/lines/{lineId}", lineId)
                 .then().log().all()
                 .extract();
     }
