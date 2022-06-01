@@ -1,4 +1,4 @@
-package nextstep.subway.station;
+package nextstep.subway.acceptanceTest.station;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -10,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql(scripts={"classpath:/db/truncate.sql"})
 public class StationAcceptanceTest {
     @LocalServerPort
     int port;
@@ -104,7 +107,7 @@ public class StationAcceptanceTest {
         assertThat(getStations("name")).doesNotContain("강남역").hasSize(0);
     }
 
-    private ExtractableResponse<Response> createStation(String name) {
+    public static ExtractableResponse<Response> createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
@@ -116,7 +119,7 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
-    private List<String> getStations(String path) {
+    public static List<String> getStations(String path) {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
