@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.util.DatabaseCleaner;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,19 +13,21 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@DisplayName("지하철노선 서비스 관련 기능")
+@DisplayName("지하철노선 관련 기능")
+@Sql(value = {"classpath:db/data.sql"})
 @ActiveProfiles(value = "acceptance")
 @SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @TestPropertySource(locations = "classpath:application-test.properties")
 class LineServiceTest {
     @Autowired
@@ -33,8 +36,8 @@ class LineServiceTest {
     @Autowired
     DatabaseCleaner cleaner;
 
-    @BeforeEach
-    public void setUp() {
+    @AfterEach
+    void afterEach() {
         cleaner.execute();
     }
 
@@ -55,14 +58,8 @@ class LineServiceTest {
     @Test
     void getLines() {
         // given
-        List<LineRequest> requests = Arrays.asList(
-                new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10),
-                new LineRequest("2호선", "bg-blue-200", 3L, 4L, 80)
-        );
-
-        for (LineRequest request : requests) {
-            service.createLine(request);
-        }
+        service.createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10));
+        service.createLine(new LineRequest("2호선", "bg-blue-200", 3L, 4L, 80));
 
         // when
         List<LineResponse> lines = service.getLines();
@@ -75,8 +72,7 @@ class LineServiceTest {
     @Test
     void getLine() {
         // given
-        LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
-        LineResponse response = service.createLine(request);
+        LineResponse response = service.createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10));
 
         // when
         LineResponse line = service.getLineById(response.getId());
@@ -89,8 +85,7 @@ class LineServiceTest {
     @Test
     void deleteLine() {
         // given
-        LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
-        LineResponse response = service.createLine(request);
+        LineResponse response = service.createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10));
 
         // when
         service.deleteLineById(response.getId());
@@ -103,8 +98,7 @@ class LineServiceTest {
     @Test
     void updateLine() {
         // given
-        LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
-        LineResponse response = service.createLine(request);
+        LineResponse response = service.createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10));
 
         // when
         service.updateLineById(response.getId(), new Line("다른분당선", "bg-blue-100"));
