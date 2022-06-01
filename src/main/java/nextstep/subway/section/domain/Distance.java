@@ -1,4 +1,4 @@
-package nextstep.subway.domain;
+package nextstep.subway.section.domain;
 
 import nextstep.subway.consts.ErrorMessage;
 

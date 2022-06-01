@@ -1,6 +1,7 @@
-package nextstep.subway.domain;
+package nextstep.subway.section.domain;
 
 import nextstep.subway.consts.ErrorMessage;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;

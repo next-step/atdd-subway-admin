@@ -2,7 +2,7 @@ package nextstep.subway.section;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionRequest;
 
 import static nextstep.subway.testutils.RestAssuredMethods.post;
 

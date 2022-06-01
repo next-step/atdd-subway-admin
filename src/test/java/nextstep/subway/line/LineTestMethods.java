@@ -2,8 +2,8 @@ package nextstep.subway.line;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineUpdateRequest;
 
 import static nextstep.subway.testutils.RestAssuredMethods.*;
 
