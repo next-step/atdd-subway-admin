@@ -27,7 +27,6 @@ import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철 노선")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-//@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class LineAcceptanceTest {
 
     @LocalServerPort
