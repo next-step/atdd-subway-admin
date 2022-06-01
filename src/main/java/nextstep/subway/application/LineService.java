@@ -1,6 +1,5 @@
 package nextstep.subway.application;
 
-import nextstep.subway.NotFoundException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -27,8 +26,8 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(NotFoundException::new);
-        Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(NotFoundException::new);
+        Station upStation = stationRepository.getById(request.getUpStationId());
+        Station downStation = stationRepository.getById(request.getDownStationId());
         Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
@@ -42,19 +41,19 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long id) {
-        Line line = lineRepository.findById(id).get();
-
+        Line line = lineRepository.getById(id);
         return LineResponse.of(line);
     }
 
     @Transactional
     public void editLineById(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).get();
+        Line line = lineRepository.getById(id);
         line.update(lineRequest.toLine());
     }
 
     @Transactional
     public void deleteLineById(Long id) {
-        lineRepository.deleteById(id);
+        Line line = lineRepository.getById(id);
+        lineRepository.delete(line);
     }
 }
