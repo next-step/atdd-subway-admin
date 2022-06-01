@@ -21,6 +21,10 @@ public class Sections {
     private static final String SECTION_DUPLICATION_ERROR = "상, 하행 지하철역이 같은 구간 이미 등록 되어 있습니다.";
     private static final String UNDER_SECTIONS_SIZE_ERROR = "구간 적어 지하철역을 삭제 할 수 없습니다.";
     private static final String NO_ADDED_STATION_ERROR = "삭제 하려는 역이 존재 하지 않습니다.";
+    private static final String NO_PREV_SECTION_ERROR = "이전 구간이 없습니다.";
+    private static final String NO_NEXT_SECTION_ERROR = "다음 구간이 없습니다.";
+    private static final String NO_LAST_SECTION_ERROR = "마지막 섹션이 없습니다.";
+    private static final String NO_FIRST_SECTION_ERROR = "첫번째 섹션이 없습니다.";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -129,20 +133,20 @@ public class Sections {
         return this.sections.stream().
                 filter(section -> section.getDownStation().equals(station)).
                 findFirst().
-                orElseThrow(NoSuchElementException::new);
+                orElseThrow(() -> new NoSuchElementException(NO_PREV_SECTION_ERROR));
     }
 
     private Section getNextSection(Station station) {
         return this.sections.stream().
                 filter(section -> section.getUpStation().equals(station)).
                 findFirst().
-                orElseThrow(NoSuchElementException::new);
+                orElseThrow(() -> new NoSuchElementException(NO_NEXT_SECTION_ERROR));
     }
 
     private Section getLastSection() {
         List<Station> upStations = getUpStations();
         return sections.stream().filter(section -> !upStations.contains(section.getDownStation())).
-                findAny().orElseThrow(() -> new IllegalStateException("마지막 섹션이 없습니다."));
+                findAny().orElseThrow(() -> new NoSuchElementException(NO_LAST_SECTION_ERROR));
     }
 
     private List<Station> getUpStations() {
@@ -154,7 +158,7 @@ public class Sections {
     private Section getFirstSection() {
         List<Station> downStations = getDownStations();
         return sections.stream().filter(section -> !downStations.contains(section.getUpStation())).
-                findAny().orElseThrow(() -> new IllegalStateException("첫번째 섹션이 없습니다."));
+                findAny().orElseThrow(() -> new NoSuchElementException(NO_FIRST_SECTION_ERROR));
     }
 
     private List<Station> getDownStations() {
