@@ -7,6 +7,7 @@ import nextstep.subway.common.AcceptanceTest;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관리 기능 구현")
 public class LineAcceptanceTest extends AcceptanceTest {
+    private LineRequest _2호선;
+    private LineRequest _4호선;
+
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+
+        Long 강남역_id = id_추출(지하철역_생성("강남역"));
+        Long 잠실역_id = id_추출(지하철역_생성("잠실역"));
+
+        Long 사당역_id = id_추출(지하철역_생성("사당역"));
+        Long 안산역_id = id_추출(지하철역_생성("안산역"));
+
+        _2호선 = new LineRequest("2호선", "green", 강남역_id, 잠실역_id, 10);
+        _4호선 = new LineRequest("4호선", "blue", 사당역_id, 안산역_id, 10);
+
+    }
 
     /**
      * When 지하철 노선을 생성하면
@@ -28,7 +46,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선을_생성한다() {
         // when
-        지하철_노선_생성("2호선", "green", "강남역", "잠실역");
+        지하철_노선_생성(_2호선);
 
         // then
         List<String> 지하철_노선_목록 = 지하철_노선_목록_조회();
@@ -43,8 +61,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_목록을_조회한다() {
         // given
-        지하철_노선_생성("2호선", "green", "강남역", "잠실역");
-        지하철_노선_생성("4호선", "blue", "사당역", "안산역");
+        지하철_노선_생성(_2호선);
+        지하철_노선_생성(_4호선);
         
         // when
         List<String> 지하철_노선_목록 = 지하철_노선_목록_조회();
@@ -61,10 +79,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선을_조회한다() {
         // given
-        ExtractableResponse<Response> _2호선 = 지하철_노선_생성("2호선", "green", "강남역", "잠실역");
+        ExtractableResponse<Response> 생성된_노선_정보 = 지하철_노선_생성(_2호선);
 
         // when
-        LineResponse 조회된_지하철_노선 = 지하철_노선_단건_조회(_2호선);
+        LineResponse 조회된_지하철_노선 = 지하철_노선_단건_조회(생성된_노선_정보);
 
         // then
         노선_정상_응답을_확인한다(조회된_지하철_노선);
@@ -78,7 +96,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선을_수정한다() {
         // given
-        ExtractableResponse<Response> 지하철_노선 = 지하철_노선_생성("2호선", "green", "강남역", "잠실역");
+        ExtractableResponse<Response> 지하철_노선 = 지하철_노선_생성(_2호선);
 
         // when
         ExtractableResponse<Response> 수정된_노선_응답 = 지하철_노선_수정(지하철_노선, "4호선", "blue");
@@ -95,7 +113,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선을_삭제한다() {
         // given
-        ExtractableResponse<Response> 지하철_노선 = 지하철_노선_생성("2호선", "green", "강남역", "잠실역");
+        ExtractableResponse<Response> 지하철_노선 = 지하철_노선_생성(_2호선);
 
         // when
         ExtractableResponse<Response> 지하철_삭제_응답 = 지하철_노선_삭제(지하철_노선);
@@ -105,11 +123,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     public static class LineAcceptanceTemplate {
-        public static ExtractableResponse<Response> 지하철_노선_생성(String line, String color, String upStationName, String downStationName) {
-            Long 상행역_id = id_추출(지하철역_생성(upStationName));
-            Long 하행역_id = id_추출(지하철역_생성(downStationName));
-            LineRequest request = new LineRequest(line, color, 상행역_id, 하행역_id, 10);
-
+        public static ExtractableResponse<Response> 지하철_노선_생성(LineRequest request) {
             return RestAssured
                     .given().log().all()
                     .body(request)

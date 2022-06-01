@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section extends BaseEntity {
@@ -8,7 +9,9 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer distance;
+    @Column(nullable = false)
+    @Embedded
+    private Distance distance = new Distance();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_up_station"))
@@ -25,18 +28,22 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    public Section(Integer distance, Station upStation, Station downStation) {
-        this.distance = distance;
+    public Section(int distance, Station upStation, Station downStation) {
+        this.distance = new Distance(distance);
         this.upStation = upStation;
         this.downStation = downStation;
     }
 
-    public void addLine(Line line) {
-        this.line = line;
+    public Long getId() {
+        return id;
     }
 
-    public Integer getDistance() {
-        return distance;
+    public Line getLine() {
+        return line;
+    }
+
+    public void addLine(Line line) {
+        this.line = line;
     }
 
     public Station getUpStation() {
@@ -47,7 +54,75 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public Line getLine() {
-        return line;
+    public int getDistance() {
+        return distance.value();
+    }
+
+    public void repair(Section section) {
+        if (Objects.isNull(section)) {
+            return;
+        }
+        repairStation(section);
+    }
+
+    private void repairStation(Section section) {
+        if (isSameUpStation(section.upStation)) {
+            repairUpStation(section);
+            return;
+        }
+
+        if (isSameDownStation(section.downStation)) {
+            repairDownStation(section);
+        }
+    }
+
+    private void repairUpStation(Section section) {
+        this.upStation = section.downStation;
+        changeDistance(section.distance);
+    }
+
+    private void repairDownStation(Section section) {
+        this.downStation = section.upStation;
+        changeDistance(section.distance);
+    }
+
+    private void changeDistance(Distance distance) {
+        this.distance.minus(distance);
+    }
+
+    public boolean isSame(Section section) {
+        if (Objects.isNull(section)) {
+            return false;
+        }
+        return isSameUpStation(section.upStation) && isSameDownStation(section.downStation);
+    }
+
+    public boolean isAnyMatch(Section section) {
+        if (Objects.isNull(section)) {
+            return false;
+        }
+        return isSameUpStation(section.upStation) || isSameDownStation(section.downStation)
+                || isSameUpStation(section.downStation) || isSameDownStation(section.upStation);
+    }
+
+    private boolean isSameUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    private boolean isSameDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return Objects.equals(id, section.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

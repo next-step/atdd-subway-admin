@@ -9,9 +9,9 @@ public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column(nullable = false)
     private String name;
-
+    @Column(nullable = false)
     private String color;
 
     @Embedded
@@ -49,10 +49,23 @@ public class Line extends BaseEntity {
     }
 
     // 연관 관계 편의 메서드
-    private void addSection(Section section) {
+    public void addSection(Section section) {
         Objects.requireNonNull(section, "구간 정보가 필요합니다.");
 
         sections.add(section);
         section.addLine(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Line line = (Line) o;
+        return Objects.equals(id, line.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
