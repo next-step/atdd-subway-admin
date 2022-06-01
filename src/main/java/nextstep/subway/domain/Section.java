@@ -69,8 +69,8 @@ public class Section {
     }
 
     public boolean insert(Section insertSection) {
-        boolean insertFail = true;
-        boolean insertSuccess = false;
+        boolean insertFail = false;
+        boolean insertSuccess = true;
         if (this.downStation == insertSection.getDownStation()) {
             insertFrontOfSection(insertSection);
             return insertSuccess;
