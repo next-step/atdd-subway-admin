@@ -1,6 +1,7 @@
 package nextstep.subway.acceptance.section;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -53,8 +54,10 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         List<String> stationNames = response.jsonPath().getList("stations.name", String.class);
-        assertThat(stationNames).hasSize(3);
-        assertThat(stationNames).containsOnly(양재역.getName(), 청계산입구역.getName(), 판교역.getName());
+        assertAll(
+                () -> assertThat(stationNames).hasSize(3),
+                () -> assertThat(stationNames).containsOnly(양재역.getName(), 청계산입구역.getName(), 판교역.getName())
+        );
     }
 
     /**
@@ -73,8 +76,10 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         List<String> stationNames = response.jsonPath().getList("stations.name", String.class);
-        assertThat(stationNames).hasSize(3);
-        assertThat(stationNames).containsOnly(양재역.getName(), 청계산입구역.getName(), 판교역.getName());
+        assertAll(
+                () -> assertThat(stationNames).hasSize(3),
+                () -> assertThat(stationNames).containsOnly(양재역.getName(), 청계산입구역.getName(), 판교역.getName())
+        );
     }
 
     /**
@@ -97,8 +102,10 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         List<String> stationNames = response.jsonPath().getList("stations.name", String.class);
-        assertThat(stationNames).hasSize(4);
-        assertThat(stationNames).containsOnly(강남역.getName(), 양재역.getName(), 청계산입구역.getName(), 판교역.getName());
+        assertAll(
+                () -> assertThat(stationNames).hasSize(4),
+                () -> assertThat(stationNames).containsOnly(강남역.getName(), 양재역.getName(), 청계산입구역.getName(), 판교역.getName())
+        );
     }
 
     /**
@@ -121,8 +128,10 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         List<String> stationNames = response.jsonPath().getList("stations.name", String.class);
-        assertThat(stationNames).hasSize(4);
-        assertThat(stationNames).containsOnly(양재역.getName(), 청계산입구역.getName(), 판교역.getName(), 정자역.getName());
+        assertAll(
+                () -> assertThat(stationNames).hasSize(4),
+                () -> assertThat(stationNames).containsOnly(양재역.getName(), 청계산입구역.getName(), 판교역.getName(), 정자역.getName())
+        );
     }
 
     /**
