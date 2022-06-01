@@ -88,17 +88,7 @@ public class Line extends BaseEntity {
         }
     }
 
-    private void changeUpStation(Section originSection, Section appendSection) {
-        this.distance.plus(appendSection.getDistance());
-        this.upStation = appendSection.getUpStation();
-        originSection.appendAfterSection(appendSection);
-    }
 
-    private void changeDownStation(Section originSection, Section appendSection) {
-        this.distance.plus(appendSection.getDistance());
-        this.downStation = appendSection.getDownStation();
-        originSection.appendBeforeSection(appendSection);
-    }
 
     public void addSection(Section section) {
         int first = 0;
@@ -121,6 +111,17 @@ public class Line extends BaseEntity {
         }
     }
 
+    private void changeUpStation(Section originSection, Section appendSection) {
+        this.distance.plus(appendSection.getDistance());
+        this.upStation = appendSection.getUpStation();
+        originSection.appendAfterSection(appendSection);
+    }
+
+    private void changeDownStation(Section originSection, Section appendSection) {
+        this.distance.plus(appendSection.getDistance());
+        this.downStation = appendSection.getDownStation();
+        originSection.appendBeforeSection(appendSection);
+    }
 
     private List<Section> getSectionsByOrder() {
         List<Section> sectionOrdered = new LinkedList<>();
