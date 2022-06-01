@@ -49,6 +49,7 @@ public class LineService {
 
         line.addSection(section);
         line.setTerminus(upStation, downStation);
+
         return line;
     }
 
