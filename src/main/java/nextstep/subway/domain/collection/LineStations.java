@@ -9,10 +9,10 @@ import javax.persistence.Embeddable;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.line.LineStation;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.exception.CreateSectionException;
-import nextstep.subway.dto.line.SectionDTO;
 import nextstep.subway.exception.DeleteSectionException;
 
 @Embeddable
@@ -28,44 +28,44 @@ public class LineStations {
         lineStations.add(target);
     }
 
-    public void addSection(SectionDTO sectionDTO) {
-        boolean isExistSectionByUpSation = isExistSectionByUpSation(sectionDTO.getUpStation());
-        boolean isExistSectionByDownSataion = isExistSectionByDownSataion(sectionDTO.getDownStation());
+    public void addSection(Line line, Station upStation, Station downStation, Long distance) {
+        boolean isExistSectionByUpSation = isExistSectionByUpSation(upStation);
+        boolean isExistSectionByDownSataion = isExistSectionByDownSataion(downStation);
         validateAlreadySection(isExistSectionByUpSation, isExistSectionByDownSataion);
 
         if (isExistSectionByUpSation) {
-            addBetweenSectionByUpStation(sectionDTO);
+            addBetweenSectionByUpStation(line, upStation, downStation, distance);
         }
         if (isExistSectionByDownSataion) {
-            addBetweenSectionByDownStation(sectionDTO);
+            addBetweenSectionByDownStation(line, upStation, downStation, distance);
         }
         if (!isExistSectionByUpSation && !isExistSectionByDownSataion) {
-            addStartOrEndSection(sectionDTO);
+            addStartOrEndSection(line, upStation, downStation, distance);
         }
     }
 
-    private void addBetweenSectionByUpStation(SectionDTO sectionDTO) {
-        LineStation sectionByUpStation = findSectionByUpStation(sectionDTO.getUpStation());
+    private void addBetweenSectionByUpStation(Line line, Station upStation, Station downStation, Long distance) {
+        LineStation sectionByUpStation = findSectionByUpStation(upStation);
 
-        long newDistance = sectionByUpStation.calcNewSectionDistance(sectionDTO.getDistance());
+        long newDistance = sectionByUpStation.calcNewSectionDistance(distance);
         Station linkDownStation = sectionByUpStation.getDownStation().copy();
-        sectionByUpStation.updateDownStation(sectionDTO.getDownStation(), sectionDTO.getDistance());
-        lineStations.add(sectionDTO.toLineStationLinkByDownStation(linkDownStation, newDistance));
+        sectionByUpStation.updateDownStation(downStation, distance);
+        lineStations.add(new LineStation(line, downStation, linkDownStation, newDistance));
     }
 
-    private void addBetweenSectionByDownStation(SectionDTO sectionDTO) {
-        LineStation sectionByDownStation = findSectionByDownStation(sectionDTO.getDownStation());
+    private void addBetweenSectionByDownStation(Line line, Station upStation, Station downStation, Long distance) {
+        LineStation sectionByDownStation = findSectionByDownStation(downStation);
 
-        long newDistance = sectionByDownStation.calcNewSectionDistance(sectionDTO.getDistance());
-        sectionByDownStation.updateDownStation(sectionDTO.getUpStation(), newDistance);
-        lineStations.add(sectionDTO.toLineStation());
+        long newDistance = sectionByDownStation.calcNewSectionDistance(distance);
+        sectionByDownStation.updateDownStation(upStation, newDistance);
+        lineStations.add(new LineStation(line, upStation, downStation, distance));
     }
 
-    private void addStartOrEndSection(SectionDTO sectionDTO) {
-        LineStation startStation = findSectionByUpStation(sectionDTO.getDownStation());
-        LineStation endStation = findSectionByDownStation(sectionDTO.getUpStation());
+    private void addStartOrEndSection(Line line, Station upStation, Station downStation, Long distance) {
+        LineStation startStation = findSectionByUpStation(downStation);
+        LineStation endStation = findSectionByDownStation(upStation);
         validateNotFound(startStation, endStation);
-        lineStations.add(sectionDTO.toLineStation());
+        lineStations.add((new LineStation(line, upStation, downStation, distance)));
     }
 
     private LineStation findSectionByUpStation(Station upStation) {
@@ -157,7 +157,7 @@ public class LineStations {
     }
 
     private void validateOnlyOneSection() {
-        if(lineStations.size() == CANT_DELETE_SIZE){
+        if (lineStations.size() == CANT_DELETE_SIZE) {
             throw new DeleteSectionException("[ERROR] 구간이 하나인 경우 삭제할 수 없습니다.");
         }
     }

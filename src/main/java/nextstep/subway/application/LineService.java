@@ -10,7 +10,6 @@ import nextstep.subway.dto.line.LineRequestDTO;
 import nextstep.subway.dto.line.LineResponseDTO;
 import nextstep.subway.dto.line.LineResponsesDTO;
 import nextstep.subway.dto.line.SectionRequestDTO;
-import nextstep.subway.dto.line.SectionDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,7 +59,7 @@ public class LineService {
     @Transactional
     public void addSection(Long id, Station upStation, Station downStation, SectionRequestDTO sectionRequestDTO) {
         Line line = getLine(id);
-        line.addSection(new SectionDTO(line, upStation, downStation, sectionRequestDTO.getDistance()));
+        line.addSection(upStation, downStation, sectionRequestDTO.getDistance());
     }
 
     @Transactional
