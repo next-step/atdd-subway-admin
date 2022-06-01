@@ -31,33 +31,6 @@ public class StationAcceptanceTest {
         }
     }
 
-    private ExtractableResponse<Response> createStationWithStationName(String stationName){
-        Map<String, String> params = new HashMap<>();
-        params.put("name", stationName);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> getStationList() {
-        return RestAssured
-            .given().log().all()
-            .when().get("/stations")
-            .then().log().all()
-            .extract();
-    }
-
-    private ExtractableResponse<Response> deleteStationWithStationName(Long stationId) {
-        return RestAssured.given().log().all()
-            .when().delete("/stations/{id}", stationId)
-            .then().log().all()
-            .extract();
-    }
-
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다
@@ -130,8 +103,35 @@ public class StationAcceptanceTest {
         deleteStationWithStationName(stationId);
 
         // then
-        List<String> stationNames = getStationList().jsonPath().getList("id", String.class);
+        List<String> stationNames = getStationList().jsonPath().getList("name", String.class);
         assertThat(stationNames).hasSize(0);
         assertThat(stationNames).doesNotContain("강남역");
+    }
+
+    private ExtractableResponse<Response> createStationWithStationName(String stationName){
+        Map<String, String> params = new HashMap<>();
+        params.put("name", stationName);
+
+        return RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().post("/stations")
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> getStationList() {
+        return RestAssured
+            .given().log().all()
+            .when().get("/stations")
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> deleteStationWithStationName(Long stationId) {
+        return RestAssured.given().log().all()
+            .when().delete("/stations/{id}", stationId)
+            .then().log().all()
+            .extract();
     }
 }
