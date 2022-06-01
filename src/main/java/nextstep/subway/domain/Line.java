@@ -129,7 +129,7 @@ public class Line extends BaseEntity {
             .filter(Section::isFirstSection)
             .findFirst()
             .orElseThrow(LineNotFoundException::new);
-        while (ObjectUtils.isNotEmpty(section.getNextSection())) {
+        while (ObjectUtils.isNotEmpty(section)) {
             sectionOrdered.add(section);
             section = section.getNextSection();
         }
