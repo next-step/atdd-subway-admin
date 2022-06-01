@@ -47,15 +47,6 @@ public class StationAcceptanceTest {
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
-    private ExtractableResponse<Response> 지하철_생성(final String name) {
-        return RestAssured.given().log().all()
-                .body(Collections.singletonMap("name", name))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
     /**
      * Given 지하철역을 생성하고
      * When 기존에 존재하는 지하철역 이름으로 지하철역을 생성하면
@@ -95,15 +86,6 @@ public class StationAcceptanceTest {
         assertThat(response.body().jsonPath().getList("name")).contains("강남역", "역삼역");
     }
 
-    private ExtractableResponse<Response> 지하철_목록_조회() {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
-    }
-
     /**
      * Given 지하철역을 생성하고
      * When 그 지하철역을 삭제하면
@@ -126,5 +108,23 @@ public class StationAcceptanceTest {
         final ExtractableResponse<Response> getStationsResponse = 지하철_목록_조회();
 
         assertThat(getStationsResponse.body().jsonPath().getList("$")).hasSize(0);
+    }
+
+    private ExtractableResponse<Response> 지하철_생성(final String name) {
+        return RestAssured.given().log().all()
+                .body(Collections.singletonMap("name", name))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_목록_조회() {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/stations")
+                .then().log().all()
+                .extract();
     }
 }
