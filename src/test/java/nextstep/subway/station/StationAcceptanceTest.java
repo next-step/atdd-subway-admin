@@ -6,7 +6,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -98,7 +97,7 @@ public class StationAcceptanceTest {
         assertThat(response.jsonPath().getList("name", String.class)).doesNotContain("강남역");
     }
 
-    private ExtractableResponse<Response> createOneStation(String stationName) {
+    public static ExtractableResponse<Response> createOneStation(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
@@ -110,7 +109,7 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> deleteOneStation(Long id) {
+    public static ExtractableResponse<Response> deleteOneStation(Long id) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/stations/" + id)
@@ -118,7 +117,7 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> getAllStations() {
+    public static ExtractableResponse<Response> getAllStations() {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/stations/")
