@@ -7,6 +7,7 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.util.DatabaseCleaner;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("지하철노선 관련 기능")
+@Sql(value = {"classpath:db/data.sql"})
 @ActiveProfiles(value = "acceptance")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestPropertySource(locations = "classpath:application-test.properties")
@@ -40,10 +43,14 @@ public class LineAcceptanceTest {
     DatabaseCleaner cleaner;
 
     @BeforeEach
-    public void setUp() {
+    public void beforeEach() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+    }
+
+    @AfterEach
+    public void afterEach() {
         cleaner.execute();
     }
 
@@ -61,7 +68,6 @@ public class LineAcceptanceTest {
 
         // when
         ExtractableResponse<Response> created = createLine(request);
-        assertThat(created.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
         // - 노선에 역을 매핑하진 않지만 조회 시 포함된 역 목록이 함께 반환된다
@@ -84,15 +90,8 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        List<LineRequest> requests = Arrays.asList(
-                new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10),
-                new LineRequest("2호선", "bg-blue-200", 3L, 4L, 80)
-        );
-
-        for (LineRequest request : requests) {
-            ExtractableResponse<Response> created = createLine(request);
-            assertThat(created.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        }
+        createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10));
+        createLine(new LineRequest("2호선", "bg-blue-200", 3L, 4L, 80));
 
         // when
         List<String> lineNames = getLineNames();
@@ -117,13 +116,11 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         // given
-        LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
-        ExtractableResponse<Response> created = createLine(request);
-        assertThat(created.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Long id = createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10))
+                .body().jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> response = getLineById(created.body().jsonPath().getLong("id"));
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> response = getLineById(id);
 
         // then
         Arrays.stream(response.as(LineResponse[].class))
@@ -140,28 +137,22 @@ public class LineAcceptanceTest {
     }
 
     /**
-     * When 지하철역을 생성하면
-     * Then 생성한 지하철 노선을 수정하면
+     * Given 지하철역을 생성하고
+     * When 생성한 지하철 노선을 수정하면
      * Then 해당 지하철 노선 정보는 수정된다.
      */
     @DisplayName("지하철노선을 수정한다.")
     @Test
     void updateLine() {
         // given
-        LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
-        ExtractableResponse<Response> created = createLine(request);
-        assertThat(created.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Long id = createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10))
+                .body().jsonPath().getLong("id");
 
         // when
-        Long id = created.body().jsonPath().getLong("id");
-        ExtractableResponse<Response> changed = updateLineById(id, new LineRequest("뉴신분당선", "bg-white-400"));
-        assertThat(changed.statusCode()).isEqualTo(HttpStatus.OK.value());
+        updateLineById(id, new LineRequest("뉴신분당선", "bg-white-400"));
 
         // then
-        ExtractableResponse<Response> response = getLineById(id);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        Arrays.stream(response.as(LineResponse[].class))
+        Arrays.stream(getLineById(id).as(LineResponse[].class))
               .forEach(
                       line -> assertAll(
                               () -> assertEquals(line.getName(), "뉴신분당선"),
@@ -170,12 +161,12 @@ public class LineAcceptanceTest {
               );
     }
 
-    ExtractableResponse<Response> updateLineById(Long id, LineRequest request) {
-        return RestAssured.given().log().all()
-                          .body(request).contentType(MediaType.APPLICATION_JSON_VALUE)
-                          .when().put("/lines/{id}", id)
-                          .then().log().all()
-                          .extract();
+    void updateLineById(Long id, LineRequest request) {
+        RestAssured.given().log().all()
+                   .body(request).contentType(MediaType.APPLICATION_JSON_VALUE)
+                   .when().put("/lines/{id}", id)
+                   .then().log().all()
+                   .extract();
     }
 
     /**
@@ -187,12 +178,11 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
-        ExtractableResponse<Response> created = createLine(request);
-        assertThat(created.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Long id = createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10))
+                .body().jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> response = deleteLineById(created.jsonPath().getLong("id"));
+        ExtractableResponse<Response> response = deleteLineById(id);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
