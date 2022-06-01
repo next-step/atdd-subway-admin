@@ -113,7 +113,7 @@ public class LineAcceptanceTest {
     }
 
     private void 지하철노선_생성_검증(ExtractableResponse<Response> 지하철노선_생성_응답) {
-        assertThat(지하철노선_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        API응답_검증(HttpStatus.CREATED.value(), 지하철노선_생성_응답.statusCode());
     }
 
     private ExtractableResponse<Response> 지하철노선_조회() {
@@ -130,7 +130,7 @@ public class LineAcceptanceTest {
     }
 
     private void 지하철노선_조회_검증(ExtractableResponse<Response> 지하철노선_조회_응답) {
-        assertThat(지하철노선_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
+        API응답_검증(HttpStatus.OK.value(), 지하철노선_조회_응답.statusCode());
     }
 
     private ExtractableResponse<Response> 지하철노선_수정(Long lineId, LineRequest lineRequest) {
@@ -148,7 +148,7 @@ public class LineAcceptanceTest {
     }
 
     private void 지하철노선_수정_검증(ExtractableResponse<Response> 지하철노선_수정_응답) {
-        assertThat(지하철노선_수정_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
+        API응답_검증(HttpStatus.OK.value(), 지하철노선_수정_응답.statusCode());
     }
 
     private ExtractableResponse<Response> 지하철노선_상세_조회(Long lineId) {
@@ -163,6 +163,10 @@ public class LineAcceptanceTest {
     }
 
     private void 지하철노선_상세_검증(ExtractableResponse<Response> 지하철노선_상세_응답) {
-        assertThat(지하철노선_상세_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
+        API응답_검증(HttpStatus.OK.value(), 지하철노선_상세_응답.statusCode());
+    }
+
+    private void API응답_검증(int givenStatusCode, int whenStatusCode) {
+        assertThat(givenStatusCode).isEqualTo(whenStatusCode);
     }
 }
