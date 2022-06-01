@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.exception.NotFoundException;
 
 @Entity
 public class Line extends BaseEntity {
@@ -68,7 +69,9 @@ public class Line extends BaseEntity {
     }
 
     public void deleteSection(Station station) {
-        // TODO : 해당 노선에 있는지 확인
+        if (!sections.contains(station)) {
+            throw new NotFoundException("노선에 존재하지 않는 역이라 지울 수 없습니다.");
+        }
         sections.deleteSection(station);
     }
 

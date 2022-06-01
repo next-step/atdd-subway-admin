@@ -142,6 +142,10 @@ public class Sections {
         return this.sections.isEmpty();
     }
 
+    public boolean contains(Station station) {
+        return getInOrderStations().contains(station);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
