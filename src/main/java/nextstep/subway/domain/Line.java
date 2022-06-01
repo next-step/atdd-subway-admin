@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.dto.LineUpdateRequest;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -13,8 +14,8 @@ public class Line extends BaseEntity {
     private String name;
     @Column(nullable = false)
     private String color;
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    private Section section;
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
     }
@@ -36,8 +37,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Section getSection() {
-        return section;
+    public List<Station> stations() {
+        return sections.stations();
     }
 
     public void modifyBy(LineUpdateRequest request) {
@@ -45,7 +46,7 @@ public class Line extends BaseEntity {
         this.color = request.getColor();
     }
 
-    public void addSection(Station upStation, Station downStation) {
-        this.section = new Section(this, upStation, downStation);
+    public void addSection(Station upStation, Station downStation, long distance) {
+        sections.add(new Section(this, upStation, downStation, distance));
     }
 }

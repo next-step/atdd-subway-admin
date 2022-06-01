@@ -5,7 +5,6 @@ import nextstep.subway.domain.Station;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class LineResponse {
     private Long id;
@@ -24,7 +23,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        List<LineStation> stations = Stream.of(line.getSection().getUpStation(), line.getSection().getDownStation())
+        List<LineStation> stations = line.stations().stream()
                 .map(LineStation::of)
                 .collect(Collectors.toList());
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
