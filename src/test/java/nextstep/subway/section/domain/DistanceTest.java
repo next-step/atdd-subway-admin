@@ -24,4 +24,26 @@ class DistanceTest {
         // then
         assertThat(distance.get()).isEqualTo(6);
     }
+
+    @DisplayName("기존 역 사이의 길이보다 큰 값으로 길이를 감소할 수 없다.")
+    @Test
+    void test_not_greater_then_distance() {
+        // given
+        Distance distance = Distance.from(10);
+        Distance addedDistance = Distance.from(11);
+        // when & then
+        assertThatThrownBy(() -> distance.decrease(addedDistance))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("기존 역 사이의 길이와 같은 값으로 길이를 감소할 수 없다.")
+    @Test
+    void test_not_equals_distance() {
+        // given
+        Distance distance = Distance.from(10);
+        Distance addedDistance = Distance.from(10);
+        // when & then
+        assertThatThrownBy(() -> distance.decrease(addedDistance))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

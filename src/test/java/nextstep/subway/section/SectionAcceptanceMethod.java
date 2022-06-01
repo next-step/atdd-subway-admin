@@ -4,8 +4,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
-import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -34,6 +34,7 @@ public class SectionAcceptanceMethod {
         assertThat(stationNames).contains(지하철구간_요청.getUpStationId(), 지하철구간_요청.getDownStationId());
     }
 
-    public static void 새로운역_추가_안됨(ExtractableResponse<Response> 구간_추가_응답) {
+    public static void 새로운_구간_추가_안됨(ExtractableResponse<Response> 구간_추가_응답) {
+        assertThat(구간_추가_응답.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }

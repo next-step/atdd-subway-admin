@@ -8,6 +8,7 @@ import java.util.Objects;
 public class Distance {
     private static final int MIN_DISTANCE = 1;
     private static final String GREATER_THEN_MIN_DISTANCE = "지하철 구간은 최소 1 이상이어야 합니다.";
+    private static final String LESS_THEN_AlREADY_DISTANCE = "기존 역 사이의 길이보다 크거나 같을 수 없습니다.";
 
     @Column(nullable = false)
     private int distance;
@@ -26,6 +27,9 @@ public class Distance {
     }
 
     public void decrease(Distance distance) {
+        if (this.distance <= distance.distance) {
+            throw new IllegalArgumentException(LESS_THEN_AlREADY_DISTANCE);
+        }
         this.distance -= distance.distance;
     }
 

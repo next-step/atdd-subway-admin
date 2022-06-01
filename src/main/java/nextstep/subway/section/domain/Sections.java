@@ -13,6 +13,12 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+    private static final String ALREADY_EXIST_UP_DOWN_STATION = "추가할 상/하행역이 이미 등록되어 있습니다.";
+    private static final String NOT_FOUND_SORTED_NEXT_STATION = "정렬할 다음 역을 찾을 수 없습니다.";
+    private static final String NOT_FOUND_EDGE_UP_SECTION = "상행 종점을 찾을 수 없습니다.";
+    private static final String NOT_FOUND_EDGE_DOWN_SECTION = "하행 종점을 찾을 수 없습니다.";
+    private static final String NOT_CONTAINS_CONNECT_SECTION = "기존 구간과 연결된 역을 찾을 수 없습니다.";
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections;
 
@@ -33,6 +39,7 @@ public class Sections {
     }
 
     public void add(Section section) {
+        validateContainsUpDownStation(section);
         if (!this.sections.isEmpty() && !isEdgeSection(section)) {
             relocateConnectSection(section);
         }
@@ -59,13 +66,28 @@ public class Sections {
         return sortedLineStations().toStationResponses();
     }
 
+    private void validateContainsUpDownStation(Section section) {
+        if (this.sections.isEmpty()) return;
+        if (containsStation(section.getUpStation()) && containsStation(section.getDownStation())) {
+            throw new IllegalArgumentException(ALREADY_EXIST_UP_DOWN_STATION);
+        }
+    }
+
+//    private LineStations allLineStations() {
+//        List<Station> allStations = new ArrayList<>();
+//        this.sections.forEach(section -> {
+//            allStations.addAll(section.getStations());
+//        });
+//        return LineStations.from(allStations);
+//    }
+
     private LineStations sortedLineStations() {
         List<Station> sortedAllStations = new ArrayList<>();
         sortedAllStations.add(findEdgeUpSection().getUpStation());
         for (int i = 0; i < this.sections.size(); i++) {
             Station nextStation = findSectionByUpStation(sortedAllStations.get(i))
                     .map(Section::getDownStation)
-                    .orElseThrow(IllegalArgumentException::new);
+                    .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_SORTED_NEXT_STATION));
             sortedAllStations.add(nextStation);
         }
         return LineStations.from(sortedAllStations);
@@ -89,7 +111,7 @@ public class Sections {
         return this.sections.stream()
                 .filter(section -> !downStations.contains(section.getUpStation()))
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_EDGE_UP_SECTION));
     }
 
     private Section findEdgeDownSection() {
@@ -98,7 +120,7 @@ public class Sections {
         return this.sections.stream()
                 .filter(section -> !upStations.contains(section.getDownStation()))
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_EDGE_DOWN_SECTION));
     }
 
     private void relocateConnectSection(Section addedSection) {
@@ -124,7 +146,7 @@ public class Sections {
     private Section findConnectSection(Section section) {
         return findSectionByUpStation(section.getUpStation())
                 .orElseGet(() -> findSectionByDownStation(section.getDownStation())
-                        .orElseThrow(IllegalArgumentException::new)
+                        .orElseThrow(() -> new IllegalArgumentException(NOT_CONTAINS_CONNECT_SECTION))
                 );
     }
 

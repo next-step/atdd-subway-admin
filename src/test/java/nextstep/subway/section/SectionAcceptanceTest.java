@@ -80,7 +80,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void newDownStation() {
         // when
-        SectionRequest 새로운역_하행종점_요청 = SectionRequest.of(this.판교역_ID, this.새로운역_ID, 4);;
+        SectionRequest 새로운역_하행종점_요청 = SectionRequest.of(this.판교역_ID, this.새로운역_ID, 4);
         ExtractableResponse<Response> 새로운역_하행종점_추가_응답 = 지하철_구간_추가(this.신분당선_생성_응답, 새로운역_하행종점_요청);
 
         // then
@@ -92,65 +92,66 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
     /**
      * Given 지하철 노선을 생성하고
-     * When 기존 역 사이 길이보다 큰 길이의 새로운 역을 등록하면
-     * Then 새로운 역을 등록할 수 없다
+     * When 기존 역 사이 길이보다 큰 길이의 새로운 구간을 등록하면
+     * Then 새로운 구간을 등록할 수 없다
      */
     @DisplayName("기존 역 사이 길이보다 크면 등록할 수 없다.")
     @Test
     void greaterThenDistance() {
         // when
-        SectionRequest 길이가_더_큰_구간_요청 = null;
+        SectionRequest 길이가_더_큰_구간_요청 = SectionRequest.of(this.강남역_ID, this.새로운역_ID, 11);
         ExtractableResponse<Response> 길이가_더_큰_구간_추가_응답 = 지하철_구간_추가(this.신분당선_생성_응답, 길이가_더_큰_구간_요청);
 
         // then
-        새로운역_추가_안됨(길이가_더_큰_구간_추가_응답);
+        새로운_구간_추가_안됨(길이가_더_큰_구간_추가_응답);
     }
 
     /**
      * Given 지하철 노선을 생성하고
-     * When 기존 역 사이 길이와 같은 새로운 역을 등록하면
-     * Then 새로운 역을 등록할 수 없다
+     * When 기존 역 사이 길이와 같은 새로운 구간을 등록하면
+     * Then 새로운 구간을 등록할 수 없다
      */
     @DisplayName("기존 역 사이 길이와 같으면 등록할 수 없다.")
     @Test
     void equalsDistance() {
         // when
-        SectionRequest 길이가_같은_구간_요청 = null;
+        SectionRequest 길이가_같은_구간_요청 = SectionRequest.of(this.강남역_ID, this.새로운역_ID, 10);
         ExtractableResponse<Response> 길이가_같은_구간_추가_응답 = 지하철_구간_추가(this.신분당선_생성_응답, 길이가_같은_구간_요청);
 
         // then
-        새로운역_추가_안됨(길이가_같은_구간_추가_응답);
+        새로운_구간_추가_안됨(길이가_같은_구간_추가_응답);
     }
 
     /**
      * Given 지하철 노선을 생성하고
-     * When 새로운 역의 상/하행역이 모두 기존 노선에 있으면
-     * Then 새로운 역을 등록할 수 없다
+     * When 새로운 구간의 상/하행역이 모두 기존 노선에 있으면
+     * Then 새로운 구간을 등록할 수 없다
      */
     @DisplayName("상/하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
     @Test
     void existAllStations() {
         // when
-        SectionRequest 기존_노선에_있는_구간_요청 = null;
+        SectionRequest 기존_노선에_있는_구간_요청 = SectionRequest.of(this.강남역_ID, this.판교역_ID, 4);
         ExtractableResponse<Response> 기존_노선에_있는_구간_추가_응답 = 지하철_구간_추가(this.신분당선_생성_응답, 기존_노선에_있는_구간_요청);
 
         // then
-        새로운역_추가_안됨(기존_노선에_있는_구간_추가_응답);
+        새로운_구간_추가_안됨(기존_노선에_있는_구간_추가_응답);
     }
 
     /**
      * Given 지하철 노선을 생성하고
-     * When 새로운 역의 상/하행역이 모두 기존 노선에 없으면
-     * Then 새로운 역을 등록할 수 없다
+     * When 새로운 구간의 상/하행역이 모두 기존 노선에 없으면
+     * Then 새로운 구간을 등록할 수 없다
      */
     @DisplayName("상/하행역 둘 중 하나도 포함되어 있지 않으면 추가할 수 없다.")
     @Test
     void notExistAllStations() {
         // when
-        SectionRequest 기존_노선에_없는_구간_요청 = null;
+        Long 없는역_ID = 지하철역_생성("없는역").jsonPath().getLong(ID_KEY);
+        SectionRequest 기존_노선에_없는_구간_요청 = SectionRequest.of(this.새로운역_ID, 없는역_ID, 4);
         ExtractableResponse<Response> 기존_노선에_없는_구간_추가_응답 = 지하철_구간_추가(this.신분당선_생성_응답, 기존_노선에_없는_구간_요청);
 
         // then
-        새로운역_추가_안됨(기존_노선에_없는_구간_추가_응답);
+        새로운_구간_추가_안됨(기존_노선에_없는_구간_추가_응답);
     }
 }
