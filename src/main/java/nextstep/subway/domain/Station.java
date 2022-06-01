@@ -1,8 +1,5 @@
 package nextstep.subway.domain;
 
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.validation.annotation.Validated;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.Objects;
@@ -17,10 +14,15 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    public Station() {
+    protected Station() {
     }
 
     public Station(String name) {
+        this(null, name);
+    }
+
+    public Station(final Long id, final String name) {
+        this.id = id;
         this.name = name;
     }
 
