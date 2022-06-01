@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,8 +20,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-@DisplayName("지하철 노선 관련기능")
+@DisplayName("지하철 노선 관인수련기능")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
@@ -54,7 +56,7 @@ public class LineAcceptanceTest {
      */
     @ParameterizedTest
     @ValueSource(strings = {"1호선__blue__1000"})
-    @DisplayName("지하철 노선 생성 테스트")
+    @DisplayName("지하철 노선 생성 인수테스트")
     void 지하철노선_생성_테스트(String paramsText) {
         String[] params = paramsText.split("__");
         // given
@@ -74,7 +76,7 @@ public class LineAcceptanceTest {
      * then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
      */
     @Test
-    @DisplayName("지하철노선 목록 조회 테스트")
+    @DisplayName("지하철노선 목록 조회 인수테스트")
     void 지하철노선_목록_조회_테스트() {
         // when
         final ExtractableResponse<Response> 지하철목록_응답 = 지하철노선_조회();
@@ -88,7 +90,7 @@ public class LineAcceptanceTest {
      * then 해당 지하철 노선 정보는 수정된다.
      */
     @Test
-    @DisplayName("지하철노선 수정 테스트")
+    @DisplayName("지하철노선 수정 인수테스트")
     void 지하철노선_수정_테스트() {
         // when
         ExtractableResponse<Response> 분당선_수정_응답 = 지하철노선_수정(분당선Id, new LineRequest("분당선", "purple"));
@@ -96,6 +98,22 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> 분당선_상세_응답 = 지하철노선_상세_조회(분당선Id);
 
         assertThat(분당선_수정_응답.jsonPath().getString("color")).isEqualTo(분당선_상세_응답.jsonPath().getString("color"));
+    }
+
+    /**
+     * given 지하철 노선을 생성하고
+     * when 생성한 지하철 노선을 삭제하면
+     * then 해당 지하철 노선 정보는 삭제된다
+     */
+    @Test
+    @DisplayName("지하철노선 삭제 인수테스트")
+    void 지하철노선_삭제_테스트() {
+        // when
+        지하철노선_삭제(분당선Id);
+        // theb
+        assertThatThrownBy(() -> {
+            지하철노선_상세_조회(분당선Id);
+        }).isInstanceOf(NotFoundException.class);
     }
 
     private ExtractableResponse<Response> 지하철노선_생성(LineRequest lineRequest) {
@@ -164,6 +182,23 @@ public class LineAcceptanceTest {
 
     private void 지하철노선_상세_검증(ExtractableResponse<Response> 지하철노선_상세_응답) {
         API응답_검증(HttpStatus.OK.value(), 지하철노선_상세_응답.statusCode());
+    }
+
+    private ExtractableResponse<Response> 지하철노선_삭제(Long lineId) {
+        ExtractableResponse<Response> 지하철노선_삭제_응답 =
+                RestAssured.given().log().all()
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().delete("/line/" + lineId)
+                        .then().log().all()
+                        .extract();
+
+        지하철노선_삭제_검증(지하철노선_삭제_응답);
+
+        return 지하철노선_삭제_응답;
+    }
+
+    private void 지하철노선_삭제_검증(ExtractableResponse<Response> 지하철노선_삭제_응답) {
+        API응답_검증(HttpStatus.NO_CONTENT.value(), 지하철노선_삭제_응답.statusCode());
     }
 
     private void API응답_검증(int givenStatusCode, int whenStatusCode) {
