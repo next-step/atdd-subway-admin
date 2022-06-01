@@ -21,7 +21,7 @@ public class Sections implements Iterable<Section> {
     public void add(Section newSection) {
         if (!sections.isEmpty()) {
             sectionValidate(newSection);
-            sections.forEach(section -> section.calculate(newSection));
+            sections.forEach(section -> section.separate(newSection));
         }
 
         sections.add(newSection);
