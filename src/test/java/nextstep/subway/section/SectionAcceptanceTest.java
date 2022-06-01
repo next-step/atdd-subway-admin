@@ -16,6 +16,7 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -41,14 +42,9 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
             DynamicTest.dynamicTest("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같다면 실패", () -> {
                 List<StationResponse> preStations = lineResponse.getStations();
                 SectionRequest sectionRequest =
-                    new SectionRequest(preStations.get(0).getId(), preStations.get(preStations.size() -1).getId(), 11L);
+                    new SectionRequest(preStations.get(0).getId(), newStationResponse.getId(), 11L);
 
-                ExtractableResponse<Response> response = RestAssured.given().log().all()
-                    .body(sectionRequest)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .when().post("/lines/{lineId}/sections", lineResponse.getId())
-                    .then().log().all()
-                    .extract();
+                ExtractableResponse<Response> response = 지하철_구간_등록(sectionRequest, lineResponse.getId());
 
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
             }),
@@ -56,30 +52,37 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
                 SectionRequest sectionRequest =
                     new SectionRequest(newNotLineStationResponse.getId(), newStationResponse.getId(), 10L);
 
-                ExtractableResponse<Response> response = RestAssured.given().log().all()
-                    .body(sectionRequest)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .when().post("/lines/{lineId}/sections", lineResponse.getId())
-                    .then().log().all()
-                    .extract();
+                ExtractableResponse<Response> response = 지하철_구간_등록(sectionRequest, lineResponse.getId());
 
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
             })
             ,
             DynamicTest.dynamicTest("상행역과 하행역이 노선에 이미 등록된 역일 경우 실패", () -> {
+                List<StationResponse> preStations = lineResponse.getStations();
                 SectionRequest sectionRequest =
-                    new SectionRequest(newNotLineStationResponse.getId(), newStationResponse.getId(), 10L);
+                    new SectionRequest(preStations.get(0).getId(), preStations.get(preStations.size() -1).getId(), 11L);
 
-                ExtractableResponse<Response> response = RestAssured.given().log().all()
-                    .body(sectionRequest)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .when().post("/lines/{lineId}/sections", lineResponse.getId())
-                    .then().log().all()
-                    .extract();
+                ExtractableResponse<Response> response = 지하철_구간_등록(sectionRequest, lineResponse.getId());
 
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
             })
         );
+    }
+
+    @Test
+    @DisplayName("역 사이에 새로운 역이 등록될 경우")
+    void createSection_BetweenStation() {
+//        SectionRequest sectionRequest =
+//            new SectionRequest()
+    }
+
+    private ExtractableResponse<Response> 지하철_구간_등록(SectionRequest sectionRequest, Long lineId) {
+        return RestAssured.given().log().all()
+            .body(sectionRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().post("/lines/{lineId}/sections", lineId)
+            .then().log().all()
+            .extract();
     }
 
 }

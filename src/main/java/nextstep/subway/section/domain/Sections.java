@@ -44,11 +44,6 @@ public class Sections {
         return stations;
     }
 
-    private Section findStartSection(Section section) {
-        Optional<Section> optionalSection = findByDownStation(section.getUpStation());
-        return optionalSection.map(this::findStartSection).orElse(section);
-    }
-
     private void validateSection(Section section) {
         Optional<Section> optionalUpSection = findByUpStation(section.getUpStation());
         Optional<Section> optionalDownSection = findByDownStation(section.getDownStation());
@@ -62,6 +57,22 @@ public class Sections {
         }
     }
 
+    private void addAndChangeSection(Section section, Line line) {
+        Section currentSection = findCurrentSection(section);
+        currentSection.changeSection(section);
+        addSection(section, line);
+    }
+
+    private void addSection(Section section, Line line) {
+        sections.add(section);
+        section.changeLine(line);
+    }
+
+    private Section findStartSection(Section section) {
+        Optional<Section> optionalSection = findByDownStation(section.getUpStation());
+        return optionalSection.map(this::findStartSection).orElse(section);
+    }
+
     private Optional<Section> findByDownStation(Station station) {
         return this.sections.stream()
             .filter(s -> s.containDownStation(station))
@@ -72,25 +83,6 @@ public class Sections {
         return this.sections.stream()
             .filter(s -> s.containUpStation(station))
             .findFirst();
-    }
-
-    private void addAndChangeSection(Section section, Line line) {
-        Section currentSection = findCurrentSection(section);
-        validateDistance(section, currentSection);
-
-        currentSection.changeDownStation(section.getUpStation(), currentSection.getDistance() - section.getDistance());
-        addSection(section, line);
-    }
-
-    private void addSection(Section section, Line line) {
-        sections.add(section);
-        section.changeLine(line);
-    }
-
-    private void validateDistance(Section section, Section currentSection) {
-        if (currentSection.checkDistance(section.getDistance())) {
-            throw new IllegalArgumentException("구간의 거리는 기존 구간보다 작아야 합니다.");
-        }
     }
 
     private Section findCurrentSection(Section section) {
