@@ -74,6 +74,10 @@ public class Line extends BaseEntity {
         section.setLine(this);
     }
 
+    public void deleteStation(Station station) {
+        this.sections.delete(station);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -90,9 +94,5 @@ public class Line extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, color);
-    }
-
-    public void deleteStation(Station station) {
-        this.sections.delete(station);
     }
 }

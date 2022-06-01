@@ -16,8 +16,11 @@ import nextstep.subway.station.dto.StationResponse;
 @Embeddable
 public class Sections {
 
+    private static final int REMOVABLE_SIZE = 2;
     private static final String NOT_LINKABLE_SECTION = "둘중 하나의 역이 등록이 되어 있어야 합니다.";
     private static final String SECTION_DUPLICATION_ERROR = "상, 하행 지하철역이 같은 구간 이미 등록 되어 있습니다.";
+    private static final String UNDER_SECTIONS_SIZE_ERROR = "구간 적어 지하철역을 삭제 할 수 없습니다.";
+    private static final String NO_ADDED_STATION_ERROR = "삭제 하려는 역이 존재 하지 않습니다.";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -79,6 +82,8 @@ public class Sections {
     }
 
     public void delete(Station station) {
+        validateSectionSize();
+        validateContainStation(station);
         Section firstSection = getFirstSection();
         Section lastSection = getLastSection();
         if (firstSection.getUpStation().equals(station)) {
@@ -92,6 +97,18 @@ public class Sections {
         }
 
         deleteMiddleSection(station);
+    }
+
+    private void validateContainStation(Station station) {
+        if (isNotAddedStation(station)) {
+            throw new IllegalArgumentException(NO_ADDED_STATION_ERROR);
+        }
+    }
+
+    private void validateSectionSize() {
+        if (sections.size() < REMOVABLE_SIZE) {
+            throw new IllegalArgumentException(UNDER_SECTIONS_SIZE_ERROR);
+        }
     }
 
     private void deleteMiddleSection(Station station) {
