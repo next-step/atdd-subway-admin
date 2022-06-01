@@ -24,6 +24,10 @@ public class LineStations {
     protected LineStations() {
     }
 
+    public int size() {
+        return lineStations.size();
+    }
+
     public void add(LineStation lineStation) {
         if (lineStations.isEmpty()) {
             lineStations.add(lineStation);
@@ -34,6 +38,16 @@ public class LineStations {
             throw new CustomException(ErrorCode.NON_VALID_LINE_STATION);
         }
 
+        addAboutMatchStation(lineStation);
+    }
+
+    private boolean hasMatchedSameStation(LineStation lineStation) {
+        return lineStations.stream()
+                .anyMatch(item -> item.equalsUpStation(lineStation.getUpStation())
+                        && item.equalsDownStation(lineStation.getDownStation()));
+    }
+
+    private void addAboutMatchStation(LineStation lineStation) {
         Optional<LineStation> matchedMiddle = getMatchedMiddle(lineStation);
         if (matchedMiddle.isPresent()) {
             updateMatchedMiddle(lineStation, matchedMiddle.get());
@@ -50,31 +64,10 @@ public class LineStations {
         throw new CustomException(ErrorCode.NON_VALID_LINE_STATION);
     }
 
-    public List<Station> getSortedStations() {
-        sort();
-        List<Station> stations = new ArrayList<>();
-
-        stations.add(lineStations.get(0).getUpStation());
-        for (LineStation lineStation : lineStations) {
-            stations.add(lineStation.getDownStation());
-        }
-        return stations;
-    }
-
-    public int size() {
-        return lineStations.size();
-    }
-
-    private boolean hasMatchedSameStation(LineStation lineStation) {
+    private Optional<LineStation> getMatchedMiddle(LineStation lineStation) {
         return lineStations.stream()
-                .anyMatch(item -> item.equalsUpStation(lineStation.getUpStation())
-                        && item.equalsDownStation(lineStation.getDownStation()));
-    }
-
-    private Optional<LineStation> getMatchedStartOrEnd(LineStation lineStation) {
-        return lineStations.stream()
-                .filter(item -> item.equalsUpStation(lineStation.getDownStation()) ||
-                        item.equalsDownStation(lineStation.getUpStation()))
+                .filter(item -> item.equalsUpStation(lineStation.getUpStation())
+                        || item.equalsDownStation(lineStation.getDownStation()))
                 .findAny();
     }
 
@@ -95,11 +88,22 @@ public class LineStations {
         return matchedStation.getDistance() - lineStation.getDistance();
     }
 
-    private Optional<LineStation> getMatchedMiddle(LineStation lineStation) {
+    private Optional<LineStation> getMatchedStartOrEnd(LineStation lineStation) {
         return lineStations.stream()
-                .filter(item -> item.equalsUpStation(lineStation.getUpStation())
-                        || item.equalsDownStation(lineStation.getDownStation()))
+                .filter(item -> item.equalsUpStation(lineStation.getDownStation())
+                        || item.equalsDownStation(lineStation.getUpStation()))
                 .findAny();
+    }
+
+    public List<Station> getSortedStations() {
+        sort();
+        List<Station> stations = new ArrayList<>();
+
+        stations.add(lineStations.get(0).getUpStation());
+        for (LineStation lineStation : lineStations) {
+            stations.add(lineStation.getDownStation());
+        }
+        return stations;
     }
 
     private void sort() {
