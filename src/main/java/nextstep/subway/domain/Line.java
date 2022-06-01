@@ -100,17 +100,27 @@ public class Line extends BaseEntity {
         originSection.appendBeforeSection(appendSection);
     }
 
-    public void addSection(Section section){
+    public void addSection(Section section) {
         int first = 0;
-        int last = sections.size() -1;
+        int last = sections.size() - 1;
 
         List<Section> sections = getSectionsByOrder();
-        if(sections.get(first).getDownStation() == section.getUpStation()){
+        if (sections.get(first).getDownStation() == section.getUpStation()) {
             changeDownStation(sections.get(first), section);
-        }else if(sections.get(last).getUpStation() == section.getDownStation()){
+            return;
+        }
+        if (sections.get(last).getUpStation() == section.getDownStation()) {
             changeUpStation(sections.get(last), section);
+            return;
+        }
+
+        for (Section curSection : sections) {
+            if (curSection.insert(section)) {
+                return;
+            }
         }
     }
+
 
     private List<Section> getSectionsByOrder() {
         List<Section> sectionOrdered = new LinkedList<>();

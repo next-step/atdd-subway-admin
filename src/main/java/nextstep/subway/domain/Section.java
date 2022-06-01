@@ -68,7 +68,20 @@ public class Section {
             line.getName(), this.distance, nextSectionId, backSectionId);
     }
 
-    public void insertBackOfSection(Section insertSection) {
+    public boolean insert(Section insertSection) {
+        boolean insertFail = true;
+        boolean insertSuccess = false;
+        if (this.downStation == insertSection.getDownStation()) {
+            insertFrontOfSection(insertSection);
+            return insertSuccess;
+        } else if (this.upStation == insertSection.getUpStation()) {
+            insertBackOfSection(insertSection);
+            return insertSuccess;
+        }
+        return insertFail;
+    }
+
+    private void insertBackOfSection(Section insertSection) {
         insertSection.setBackSection(this);
         insertSection.setNextSection(this.nextSection);
 
@@ -79,7 +92,7 @@ public class Section {
         this.nextSection = insertSection;
     }
 
-    public void insertFrontOfSection(Section insertSection) {
+    private void insertFrontOfSection(Section insertSection) {
         insertSection.setBackSection(this.backSection);
         insertSection.setNextSection(this);
 
