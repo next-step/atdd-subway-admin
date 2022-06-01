@@ -2,7 +2,11 @@ package nextstep.subway.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.LineStation;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
@@ -50,5 +54,29 @@ class LineServiceTest {
         assertThat(lineResponse.getName()).isEqualTo(lineName);
         assertThat(lineResponse.getStations())
                 .containsExactly(StationResponse.of(gangnam), StationResponse.of(yangjae));
+    }
+
+    @Test
+    void 노선_목록을_조회하면_모든_노선에_대해_LineResponse_객체_목록이_반환되어야_한다() {
+        // given
+        final Line line1 = new Line("신분당선", "bg-red-600");
+        line1.relateToStation(new LineStation(line1, gangnam));
+        line1.relateToStation(new LineStation(line1, yangjae));
+        lineRepository.save(line1);
+
+        final Line line2 = new Line("2호선", "bg-green-600");
+        line2.relateToStation(new LineStation(line2, gangnam));
+        lineRepository.save(line2);
+
+        final Line line3 = new Line("3호선", "bg-orange-600");
+        line3.relateToStation(new LineStation(line3, yangjae));
+        lineRepository.save(line3);
+
+        // when
+        List<LineResponse> lines = lineService.findAllLines();
+
+        // then
+        assertThat(lines.stream().map(LineResponse::getName).collect(Collectors.toList()))
+                .containsExactly(line1.getName(), line2.getName(), line3.getName());
     }
 }
