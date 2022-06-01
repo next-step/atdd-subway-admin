@@ -4,6 +4,7 @@ import static nextstep.subway.ui.UrlConstant.CREATE_STATIONS;
 import static nextstep.subway.ui.UrlConstant.DELETE_STATIONS;
 import static nextstep.subway.ui.UrlConstant.SHOW_STATIONS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -84,9 +85,11 @@ public class StationAcceptanceTest {
         final ExtractableResponse<Response> response = 지하철_목록_조회();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getList("$")).hasSize(2);
-        assertThat(response.body().jsonPath().getList("name")).contains("강남역", "역삼역");
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.body().jsonPath().getList("$")).hasSize(2),
+                () -> assertThat(response.body().jsonPath().getList("name")).contains("강남역", "역삼역")
+        );
     }
 
     /**
