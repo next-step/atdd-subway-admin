@@ -159,7 +159,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         지하철_삭제_성공_확인(노선의_지하철_삭제_요청_응답);
     }
 
-    @DisplayName("가장 뒤쪽의 지하철 역 삭제 하는 경우")
+    @DisplayName("가운데의 지하철 역 삭제 하는 경우")
     @Test
     void deleteStationAtMiddle() {
 
@@ -175,6 +175,39 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         //then 삭제 완료
         지하철_삭제_성공_확인(노선의_지하철_삭제_요청_응답);
+    }
+
+    @DisplayName("노선에 없는 지하철역을 삭제 하는 경우")
+    @Test
+    void deleteNoAddedStation() {
+
+        // given 삭제 요청 할 지하철역 생성
+        long 왕십리역_id = 지하철역_생성_요청("왕십리역").jsonPath().getLong("id");
+
+        // given 지하철 노선에 지하철역 등록 요청 후
+        // 등록 지하철 역 순서: 강남역 - 광교역 - 양재역
+        long 양재역_id = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+        // given 신분당선 지하철 노선에 새로운 구간을 등록 요청
+        SectionRequest 새로운_구간 = SectionRequest.of(광교역_id, 양재역_id, 5);
+        구간_생성_요청(새로운_구간, 신분당선_id);
+
+        //when 해당 노선에 없는 지하철역 삭제 요청
+        ExtractableResponse<Response> 노선의_지하철_삭제_요청_응답 = 노선의_지하철_삭제_요청(신분당선_id, 왕십리역_id);
+
+        //then 삭제 실패
+        노선_생성_실패_확인(노선의_지하철_삭제_요청_응답);
+    }
+
+    @DisplayName("구간이 하나인 노선에서 지하철 삭제 요청 하는 경우")
+    @Test
+    void deleteOneSectionStation() {
+
+        // 등록 지하철 역 순서: 강남역 - 광교역
+        //when 해당 노선에 있는 지하철역 삭제
+        ExtractableResponse<Response> 노선의_지하철_삭제_요청_응답 = 노선의_지하철_삭제_요청(신분당선_id, 강남역_id);
+
+        //then 삭제 실패
+        노선_생성_실패_확인(노선의_지하철_삭제_요청_응답);
     }
 
 
