@@ -83,11 +83,38 @@ public class SectionAcceptanceTest {
 
         LineResponse 일호선_노선 = ID값으로_지하철노선_조회(일호선.getId());
 
-        List<String> stationNames = 일호선_노선.getStations().stream()
+        List<String> 일호선_역이름들 = 일호선_노선.getStations().stream()
                 .map(Station::getName)
                 .collect(Collectors.toList());
 
-        assertThat(stationNames).contains("신규상행역");
-
+        assertThat(일호선_역이름들).contains("신규상행역");
     }
+
+    /**
+     * When 지하철 구간에 하행 종점역이 추가하여 노선이 연장되면
+     * Then 신규 하행 구간이 추가된다.
+     */
+    @Test
+    void 새로운_역을_하행_종점으로_등록() {
+        StationResponse 신규_하행역 = 지하철역_생성("신규하행역").as(StationResponse.class);
+        ExtractableResponse<Response> 하행역_연장구간 = 지하철구간_생성(일호선.getId(), 신창역.getId(), 신규_하행역.getId(), 5);
+
+        assertThat(하행역_연장구간.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        LineResponse 일호선_노선 = ID값으로_지하철노선_조회(일호선.getId());
+
+        List<String> 일호선_역이름들 = 일호선_노선.getStations().stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+
+        assertThat(일호선_역이름들).contains("신규하행역");
+    }
+
+    @Test
+    void 역사이에_신규역등록실패_기존구간의_길이보다_신규길이가_크거나같은경우() {
+        ExtractableResponse<Response> 일호선_구간 = 지하철구간_생성(일호선.getId(), 소요산역.getId(), 서울역.getId(), 20);
+
+        assertThat(일호선_구간.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
 }
