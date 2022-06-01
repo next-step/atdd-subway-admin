@@ -5,7 +5,6 @@ import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections;
 
     protected Sections() {
@@ -40,10 +39,6 @@ public class Sections {
         this.sections.add(section);
     }
 
-    public boolean containsStation(Station station) {
-        return lineStations().contains(station);
-    }
-
     public int size() {
         return this.sections.size();
     }
@@ -52,16 +47,28 @@ public class Sections {
         return this.sections;
     }
 
-    public List<StationResponse> allStationResponses() {
-        return lineStations().toStationResponses();
+    public boolean containsStation(Station station) {
+        return sortedLineStations().contains(station);
     }
 
-    private LineStations lineStations() {
-        List<Station> allStations = new ArrayList<>();
-        this.sections.forEach(section -> {
-            allStations.addAll(section.getStations());
-        });
-        return LineStations.from(allStations);
+    public int indexOfStation(Station station) {
+        return sortedLineStations().indexOf(station);
+    }
+
+    public List<StationResponse> allStationResponses() {
+        return sortedLineStations().toStationResponses();
+    }
+
+    private LineStations sortedLineStations() {
+        List<Station> sortedAllStations = new ArrayList<>();
+        sortedAllStations.add(findEdgeUpSection().getUpStation());
+        for (int i = 0; i < this.sections.size(); i++) {
+            Station nextStation = findSectionByUpStation(sortedAllStations.get(i))
+                    .map(Section::getDownStation)
+                    .orElseThrow(IllegalArgumentException::new);
+            sortedAllStations.add(nextStation);
+        }
+        return LineStations.from(sortedAllStations);
     }
 
     private boolean isEdgeSection(Section addedSection) {

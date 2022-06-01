@@ -21,6 +21,10 @@ public class LineStations {
         return this.lineStations.contains(station);
     }
 
+    public int indexOf(Station station) {
+        return this.lineStations.indexOf(station);
+    }
+
     public List<StationResponse> toStationResponses() {
         return this.lineStations.stream()
                 .map(Station::toStationResponse)

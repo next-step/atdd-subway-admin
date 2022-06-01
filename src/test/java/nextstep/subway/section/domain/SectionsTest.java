@@ -12,11 +12,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SectionsTest {
     public static final Distance addDistance = Distance.from(4);
-    private Section newSection;
+    private Section initSection;
+    private Sections sections;
 
     @BeforeEach
     void setUp() {
-        this.newSection = new Section(SectionTest.강남역, SectionTest.역삼역, SectionTest.distance);
+        this.initSection = new Section(SectionTest.강남역, SectionTest.역삼역, SectionTest.distance);
+        this.sections = Sections.from(new ArrayList<>(Arrays.asList(this.initSection)));
     }
 
     @DisplayName("비어있는 지하철 구간 목록 생성")
@@ -32,19 +34,18 @@ class SectionsTest {
     @Test
     void test_create() {
         // given & when
-        Sections emptySections = Sections.from(Arrays.asList(this.newSection));
+        Sections newSections = Sections.from(Arrays.asList(this.initSection));
         // then
-        assertThanNotNullAndSize(emptySections, 1);
+        assertThanNotNullAndSize(newSections, 1);
     }
 
     @DisplayName("목록에 상행역과 연결된 지하철 구간 추가 : 강남역-(선릉역)-역삼역")
     @Test
     void test_add_up_section() {
         // given
-        Section upSection = new Section(SectionTest.강남역, SectionTest.선릉역, addDistance);
-        Sections sections = Sections.from(new ArrayList<>(Arrays.asList(upSection)));
+        Section connectUpSection = new Section(SectionTest.강남역, SectionTest.선릉역, addDistance);
         // when
-        sections.add(this.newSection);
+        this.sections.add(connectUpSection);
         // then
         assertThatSizeAndContainsStation(sections, 2);
     }
@@ -53,10 +54,9 @@ class SectionsTest {
     @Test
     void test_add_down_section() {
         // given
-        Section upSection = new Section(SectionTest.선릉역, SectionTest.역삼역, addDistance);
-        Sections sections = Sections.from(new ArrayList<>(Arrays.asList(upSection)));
+        Section connectDownSection = new Section(SectionTest.선릉역, SectionTest.역삼역, addDistance);
         // when
-        sections.add(this.newSection);
+        this.sections.add(connectDownSection);
         // then
         assertThatSizeAndContainsStation(sections, 2);
     }
@@ -65,10 +65,9 @@ class SectionsTest {
     @Test
     void test_add_edge_up_section() {
         // given
-        Section upSection = new Section(SectionTest.선릉역, SectionTest.강남역, addDistance);
-        Sections sections = Sections.from(new ArrayList<>(Arrays.asList(upSection)));
+        Section edgeUpSection = new Section(SectionTest.선릉역, SectionTest.강남역, addDistance);
         // when
-        sections.add(this.newSection);
+        this.sections.add(edgeUpSection);
         // then
         assertThatSizeAndContainsStation(sections, 2);
     }
@@ -77,12 +76,27 @@ class SectionsTest {
     @Test
     void test_add_edge_down_section() {
         // given
-        Section upSection = new Section(SectionTest.역삼역, SectionTest.선릉역, addDistance);
-        Sections sections = Sections.from(new ArrayList<>(Arrays.asList(upSection)));
+        Section edgeDownSection = new Section(SectionTest.역삼역, SectionTest.선릉역, addDistance);
         // when
-        sections.add(this.newSection);
+        this.sections.add(edgeDownSection);
         // then
         assertThatSizeAndContainsStation(sections, 2);
+    }
+
+    @DisplayName("목록에 지하철 구간을 추가하고 정렬 확인 : 강남역-역삼역-(선릉역)")
+    @Test
+    void test_add_sorted_section() {
+        // given
+        Section edgeDownSection = new Section(SectionTest.역삼역, SectionTest.선릉역, addDistance);
+        // when
+        this.sections.add(edgeDownSection);
+        // then
+        assertAll(
+                () -> assertThat(sections).isNotNull(),
+                () -> assertThat(sections.indexOfStation(SectionTest.강남역)).isEqualTo(0),
+                () -> assertThat(sections.indexOfStation(SectionTest.역삼역)).isEqualTo(1),
+                () -> assertThat(sections.indexOfStation(SectionTest.선릉역)).isEqualTo(2)
+        );
     }
 
     private void assertThanNotNullAndSize(Sections sections, int expectedSize) {
