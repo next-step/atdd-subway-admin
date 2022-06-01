@@ -104,7 +104,7 @@ public class Line extends BaseEntity {
                 .anyMatch(storedStation -> storedStation.equals(station));
     }
 
-    public void modifyNameAndColor(String name, String color) {
+    public void modify(String name, String color) {
         this.name = LineName.of(name);
         this.color = LineColor.of(color);
     }

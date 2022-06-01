@@ -83,7 +83,7 @@ public class LineService {
             validateDuplicatedColor(lineRequest.getColor());
         }
 
-        line.modifyNameAndColor(lineRequest.getName(), lineRequest.getColor());
+        line.modify(lineRequest.getName(), lineRequest.getColor());
     }
 
     private Line getLineById(Long lineId) {
