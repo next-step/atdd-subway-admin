@@ -58,28 +58,14 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = createLineRequest(firstLine);
-        int lineId = response.jsonPath().get("id");
-
-        List<StationResponse> stations = response.jsonPath().getList("stations", StationResponse.class);
-        StationResponse upStation = stations.get(0);
-        StationResponse downStation = stations.get(1);
+        LineResponse line = createLineRequest(firstLine).jsonPath().getObject("", LineResponse.class);
 
         // then
-        assertThat(response.statusCode())
-                .isEqualTo(HttpStatus.CREATED.value());
-
-        // then
-        LineResponse lineResponse = findLineRequest(lineId).jsonPath().getObject("", LineResponse.class);
-        assertThat(lineResponse)
-                .satisfies(line -> {
-                    assertThat(line.getName())
-                            .isEqualTo(firstLine.getName());
-                    assertThat(line.getColor())
-                            .isEqualTo(firstLine.getColor());
-                    assertThat(line.getStations())
-                            .containsExactly(upStation, downStation);
-                });
+        List<LineResponse> allLines = findAllLinesRequest().jsonPath().getList("", LineResponse.class);
+        assertThat(allLines)
+                .isNotEmpty()
+                .hasSize(1)
+                .contains(line);
     }
 
     /**
@@ -113,11 +99,29 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("생성된 특정 지하철 노선을 조회할 수 있다.")
     @Test
     void getLine() {
-        // given
-
         // when
+        ExtractableResponse<Response> response = createLineRequest(firstLine);
+        int lineId = response.jsonPath().get("id");
+
+        List<StationResponse> stations = response.jsonPath().getList("stations", StationResponse.class);
+        StationResponse upStation = stations.get(0);
+        StationResponse downStation = stations.get(1);
 
         // then
+        assertThat(response.statusCode())
+                .isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        LineResponse lineResponse = findLineRequest(lineId).jsonPath().getObject("", LineResponse.class);
+        assertThat(lineResponse)
+                .satisfies(line -> {
+                    assertThat(line.getName())
+                            .isEqualTo(firstLine.getName());
+                    assertThat(line.getColor())
+                            .isEqualTo(firstLine.getColor());
+                    assertThat(line.getStations())
+                            .containsExactly(upStation, downStation);
+                });
     }
 
 
