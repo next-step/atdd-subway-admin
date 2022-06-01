@@ -158,7 +158,10 @@ public class LineAcceptanceTest {
     }
 
     private ExtractableResponse<Response> getOne(Long id) {
-        return RestAssured.given().log().all().when().get("/lines/{id}", id).then().log().all().extract();
+        return RestAssured
+                .given().log().all()
+                .when().get("/lines/{id}", id)
+                .then().log().all().extract();
     }
 
     private ExtractableResponse<Response> updateLine(Long id, String name, String color) {
@@ -166,16 +169,24 @@ public class LineAcceptanceTest {
         params.put("name", name);
         params.put("color", color);
 
-        return RestAssured.given().log().all().body(params).contentType(MediaType.APPLICATION_JSON_VALUE).when()
-                .put("/lines/{id}", id).then().log().all().extract();
+        return RestAssured
+                .given().log().all().body(params).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/{id}", id)
+                .then().log().all().extract();
     }
 
     private ExtractableResponse<Response> deleteLine(Long id) {
-        return RestAssured.given().log().all().when().delete("/lines/{id}", id).then().log().all().extract();
+        return RestAssured
+                .given().log().all()
+                .when().delete("/lines/{id}", id)
+                .then().log().all().extract();
     }
 
     private ExtractableResponse<Response> getAllLine() {
-        return RestAssured.given().log().all().when().get("/lines").then().log().all().extract();
+        return RestAssured
+                .given().log().all()
+                .when().get("/lines")
+                .then().log().all().extract();
     }
 
     private ExtractableResponse<Response> createLine(
@@ -187,8 +198,10 @@ public class LineAcceptanceTest {
         params.put("downStationId", String.valueOf(downStationId));
         params.put("distance", String.valueOf(distance));
 
-        return RestAssured.given().log().all().body(params).contentType(MediaType.APPLICATION_JSON_VALUE).when()
-                .post("/lines").then().log().all().extract();
+        return RestAssured
+                .given().log().all().body(params).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all().extract();
     }
 
 }
