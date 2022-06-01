@@ -11,6 +11,8 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.message.ErrorMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,23 +56,58 @@ public class LineService {
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line findLine = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.LINE_NONE_EXIST.toMessage()));
+        Line findLine = getLine(id);
 
         findLine.changeColor(lineRequest.getColor());
         findLine.changeName(lineRequest.getName());
     }
 
     public LineResponse findLine(Long lindId) {
-        return LineResponse.of(lineRepository
-                .findById(lindId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.LINE_NONE_EXIST.toMessage())));
+        return LineResponse.of(getLine(lindId));
     }
+
 
     @Transactional
     public void deleteLine(Long lindId) {
         lineRepository.deleteById(lindId);
     }
+
+
+    public List<SectionResponse> findLineStation(Long lineId) {
+        return getLine(lineId)
+                .getSections()
+                .getList()
+                .stream()
+                .map(SectionResponse::of)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void saveSection(Long id, SectionRequest sectionRequest) {
+        Line line = getLine(id);
+        final Station upStation = getValidStation(sectionRequest.getUpStationId(), ErrorMessage.LINE_NOT_VALID_UP_STATION);
+        final Station downStation = getValidStation(sectionRequest.getDownStationId(), ErrorMessage.LINE_NOT_VALID_DOWN_STATION);
+
+        final Section newSection = Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(sectionRequest.getDistance())
+                .build();
+
+        line.getSections().addSection(newSection);
+        
+        System.out.println("newSection = " + newSection);
+        //final Line line1 = getLine(id);
+        //System.out.println(line1);
+    }
+
+
+    private Line getLine(Long lindId) {
+        return lineRepository
+                .findById(lindId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.LINE_NONE_EXIST.toMessage()));
+    }
+
 
 
     private Station getValidStation(Long stationId, ErrorMessage msg) {
@@ -81,14 +118,6 @@ public class LineService {
         return findStation.get();
     }
 
-    public Section findLineStation(Long lineId, int index) {
-        return lineRepository
-                .findById(lineId)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(ErrorMessage.LINE_NONE_EXIST.toMessage()))
-                .getSections()
-                .get(getIndex(index));
-    }
 
     private int getIndex(int index) {
         return index - INDEX_MANAGE_NUMBER;

@@ -4,10 +4,8 @@ package nextstep.subway.dto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-
+import nextstep.subway.domain.Sections;
 
 
 public class LineResponse {
@@ -50,8 +48,9 @@ public class LineResponse {
         return sections;
     }
 
-    private static List<SectionResponse> sectionToResponse(List<Section> sections) {
-        return sections.stream()
+    private static List<SectionResponse> sectionToResponse(Sections sections) {
+        return sections.getList()
+                .stream()
                 .map(SectionResponse::of)
                 .collect(Collectors.toList());
     }

@@ -171,7 +171,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
      then 구간의 정보를 얻는다.
   ```
 
-- [ ] 노선에 구간 등록
+- [X] 노선에 구간 등록
   ```text
     given 지하철 역을 생성하고 지하철 노선을 추가한다.
     when 노선을 추가 등록하면  

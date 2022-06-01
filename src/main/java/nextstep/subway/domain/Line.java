@@ -5,16 +5,11 @@ import static nextstep.subway.message.ErrorMessage.LINE_CHANGE_IS_NO_NAME;
 import static nextstep.subway.message.ErrorMessage.LINE_COLOR_IS_ESSENTIAL;
 import static nextstep.subway.message.ErrorMessage.LINE_NAME_IS_ESSENTIAL;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import nextstep.subway.message.ErrorMessage;
 import org.springframework.util.ObjectUtils;
 
@@ -27,9 +22,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "sectionId")
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     @Embedded
     private Distance distance;
@@ -53,14 +47,10 @@ public class Line extends BaseEntity {
         valid(name, color);
         this.name = name;
         this.color = color;
-        sections.add(Section.builder()
-                    .upStation(upStation)
-                    .downStation(downStation)
-                    .distance(distance)
-                    .build());
+        sections = new Sections(Section.builder().upStation(upStation)
+                .downStation(downStation)
+                .distance(distance).build());
     }
-
-
 
     public void changeColor(String color) {
         validEmpty(color, LINE_CHANGE_IS_NO_COLOR);
@@ -99,11 +89,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return sections;
     }
 
-    public void setSections(List<Section> sections) {
-        this.sections = sections;
-    }
 }

@@ -67,6 +67,10 @@ public class Section {
         return distance;
     }
 
+    public void minusDistance(Distance distance) {
+        this.distance.minusDistance(distance.value());
+    }
+
     public static class Builder {
         private Station upStation;
         private Station downStation;
