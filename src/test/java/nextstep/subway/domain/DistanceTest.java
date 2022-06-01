@@ -25,23 +25,4 @@ class DistanceTest {
                 .isThrownBy(() -> Distance.of(invalid))
                 .withMessage("거리는 0 이하 일 순 없습니다.");
     }
-
-    @Test
-    @DisplayName("거리를 빼면 정상적인 값이 반환")
-    void minusDistance() {
-        Distance distance = Distance.of(15L);
-        distance.minus(Distance.of(5L));
-
-        assertThat(distance.getDistance()).isEqualTo(10L);
-    }
-
-    @Test
-    @DisplayName("현재 거리보다 같거나 큰 값을 빼면 예외가 발생")
-    void minusMoreThanDistance() {
-        Distance distance = Distance.of(10L);
-
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> distance.minus(Distance.of(15L)))
-                .withMessage("추가하려는 구간의 거리는 현재 거리보다 작아야 합니다.");
-    }
 }

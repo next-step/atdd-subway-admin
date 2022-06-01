@@ -67,7 +67,11 @@ public class Section extends BaseEntity {
     }
 
     private void minus(Section section) {
-        this.distance.minus(section.distance);
+        try {
+            this.distance = Distance.of(this.distance.getDistance() - section.distance.getDistance());
+        } catch (IllegalArgumentException iae) {
+            throw new IllegalArgumentException("추가하려는 구간의 거리는 현재 거리보다 작아야 합니다.");
+        }
     }
 
     public boolean isSameDownStation(Station station) {

@@ -28,17 +28,6 @@ public class Distance {
         }
     }
 
-    public void minus(Distance other) {
-        if (isMoreThanOrEqual(other)) {
-            throw new IllegalArgumentException("추가하려는 구간의 거리는 현재 거리보다 작아야 합니다.");
-        }
-        this.distance -= other.distance;
-    }
-
-    private boolean isMoreThanOrEqual(Distance other) {
-        return this.distance <= other.distance;
-    }
-
     public Long getDistance() {
         return distance;
     }
