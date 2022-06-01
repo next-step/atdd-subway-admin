@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -11,17 +13,26 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Station upStation;
+    @Embedded
+    private final Sections sections = new Sections();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Station downStation;
+    public Sections getSections() {
+        return sections;
+    }
 
-    public Line(String name, String color, Station upStation, Station downStation) {
+    public void addSection(Section section) {
+        this.sections.addSection(section);
+        section.toLine(this);
+    }
+
+    public void addFirstSection(Section section) {
+        this.sections.addFisrtSection(section);
+        section.toLine(this);
+    }
+
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
     }
 
     public Line() {
@@ -40,16 +51,26 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
 
     public void updateLine(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+        this.sections.getSections().forEach(section -> {
+            Station upStation = section.getUpStation();
+            Station downStation = section.getDownStation();
+            if (!stations.contains(upStation)) {
+                stations.add(upStation);
+            }
+
+            if (!stations.contains(downStation)) {
+                stations.add(downStation);
+            }
+        });
+
+        return stations;
     }
 }
