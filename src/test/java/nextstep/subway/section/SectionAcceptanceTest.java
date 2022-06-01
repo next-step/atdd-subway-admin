@@ -16,17 +16,19 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
-    private LineResponse lineResponse;
-    private StationResponse newStationResponse;
-    private StationResponse newNotLineStationResponse;
+    private static LineResponse lineResponse;
+    private static StationResponse newStationResponse;
+    private static StationResponse newNotLineStationResponse;
 
     @BeforeEach
     public void init() {
@@ -41,71 +43,47 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         return Stream.of(
             DynamicTest.dynamicTest("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같다면 실패", () -> {
                 List<StationResponse> preStations = lineResponse.getStations();
-                SectionRequest sectionRequest =
-                    new SectionRequest(preStations.get(0).getId(), newStationResponse.getId(), 11L);
-
-                ExtractableResponse<Response> response = 지하철_구간_등록(sectionRequest, lineResponse.getId());
-
-                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                지하철_구간_등록시_실패_검증(preStations.get(0).getId(), newStationResponse.getId(), 11L);
             }),
             DynamicTest.dynamicTest("상행역과 하행역이 노선에 등록되어있는 있지 않은 역일 경우 실패", () -> {
-                SectionRequest sectionRequest =
-                    new SectionRequest(newNotLineStationResponse.getId(), newStationResponse.getId(), 10L);
-
-                ExtractableResponse<Response> response = 지하철_구간_등록(sectionRequest, lineResponse.getId());
-
-                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                지하철_구간_등록시_실패_검증(newNotLineStationResponse.getId(), newStationResponse.getId(), 10L);
             })
             ,
             DynamicTest.dynamicTest("상행역과 하행역이 노선에 이미 등록된 역일 경우 실패", () -> {
                 List<StationResponse> preStations = lineResponse.getStations();
-                SectionRequest sectionRequest =
-                    new SectionRequest(preStations.get(0).getId(), preStations.get(preStations.size() -1).getId(), 11L);
-
-                ExtractableResponse<Response> response = 지하철_구간_등록(sectionRequest, lineResponse.getId());
-
-                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                지하철_구간_등록시_실패_검증(preStations.get(0).getId(), preStations.get(preStations.size() - 1).getId(), 11L);
             })
         );
     }
 
-    @Test
-    @DisplayName("역 사이에 새로운 역이 등록될 경우")
-    void createSection_BetweenStation() {
-        List<StationResponse> preStations = lineResponse.getStations();
-        SectionRequest sectionRequest =
-            new SectionRequest(preStations.get(0).getId(), newStationResponse.getId(), 5L);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("providerCreateSectionCase")
+    void createSection(String name, SectionRequest sectionRequest, int resultSize) {
+        LineResponse response = 지하철_구간_등록(sectionRequest, lineResponse.getId()).as(LineResponse.class);
 
-        LineResponse response = 지하철_구간_등록(sectionRequest, lineResponse.getId())
-            .as(LineResponse.class);
-
-        assertThat(response.getStations()).hasSize(3);
+        assertThat(response.getStations()).hasSize(resultSize);
     }
 
-    @Test
-    @DisplayName("새로운 역이 상행종점역으로 등록될 경우")
-    void createSection_NewStartSection() {
+    static Stream<Arguments> providerCreateSectionCase() {
         List<StationResponse> preStations = lineResponse.getStations();
-        SectionRequest sectionRequest =
-            new SectionRequest(newStationResponse.getId(), preStations.get(0).getId(), 10L);
 
-        LineResponse response = 지하철_구간_등록(sectionRequest, lineResponse.getId())
-            .as(LineResponse.class);
-
-        assertThat(response.getStations()).hasSize(3);
-    }
-
-    @Test
-    @DisplayName("새로운 역이 하행종점역으로 등록될 경우")
-    void createSection_NewEndSection() {
-        List<StationResponse> preStations = lineResponse.getStations();
-        SectionRequest sectionRequest =
-            new SectionRequest(preStations.get(preStations.size() -1).getId(), newStationResponse.getId(), 10L);
-
-        LineResponse response = 지하철_구간_등록(sectionRequest, lineResponse.getId())
-            .as(LineResponse.class);
-
-        assertThat(response.getStations()).hasSize(3);
+        return Stream.of(
+            Arguments.of(
+                "역 사이에 새로운 역이 등록될 경우",
+                new SectionRequest(preStations.get(0).getId(), newStationResponse.getId(), 5L),
+                3
+            ),
+            Arguments.arguments(
+                "새로운 역이 상행종점역으로 등록될 경우",
+                new SectionRequest(newStationResponse.getId(), preStations.get(0).getId(), 10L),
+                3
+            ),
+            Arguments.arguments(
+                "새로운 역이 하행종점역으로 등록될 경우",
+                new SectionRequest(preStations.get(preStations.size() - 1).getId(), newStationResponse.getId(), 10L),
+                3
+            )
+        );
     }
 
     private ExtractableResponse<Response> 지하철_구간_등록(SectionRequest sectionRequest, Long lineId) {
@@ -115,6 +93,14 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
             .when().post("/lines/{lineId}/sections", lineId)
             .then().log().all()
             .extract();
+    }
+
+    private void 지하철_구간_등록시_실패_검증(Long upStationId, Long downStationId, Long distance) {
+        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
+
+        ExtractableResponse<Response> response = 지하철_구간_등록(sectionRequest, lineResponse.getId());
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
 }
