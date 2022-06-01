@@ -90,4 +90,12 @@ public class LineService {
         Station downStation = getStation(sectionRequest.getDownStationId());
         findLine.addSection(Section.of(upStation, downStation, sectionRequest.getDistance()));
     }
+
+    public void deleteStation(Long lineId, Long stationId) {
+        Line findLine = lineRepository.findById(lineId).orElseThrow(
+                () -> new NoSuchElementException(NO_LINE_ERROR)
+        );
+        Station findStation = getStation(stationId);
+        findLine.deleteStation(findStation);
+    }
 }

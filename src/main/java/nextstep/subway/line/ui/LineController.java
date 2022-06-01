@@ -67,6 +67,7 @@ public class LineController {
 
     @DeleteMapping("{lineId}/sections")
     public ResponseEntity deleteStationOnLine(@PathVariable Long lineId, @RequestParam Long stationId) {
+        lineService.deleteStation(lineId, stationId);
         return ResponseEntity.noContent().build();
     }
     @ExceptionHandler(IllegalArgumentException.class)

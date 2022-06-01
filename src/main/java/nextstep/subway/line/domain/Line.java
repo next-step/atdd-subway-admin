@@ -26,7 +26,7 @@ public class Line extends BaseEntity {
     private LineColor color;
 
     @Embedded
-    private Sections sections = Sections.newInstance();
+    private final Sections sections = Sections.newInstance();
 
     protected Line() {
     }
@@ -90,5 +90,9 @@ public class Line extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, color);
+    }
+
+    public void deleteStation(Station station) {
+        this.sections.delete(station);
     }
 }
