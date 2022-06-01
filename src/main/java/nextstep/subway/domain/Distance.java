@@ -25,6 +25,20 @@ public class Distance {
         return new Distance(distance);
     }
 
+    public boolean isLess(Distance compareSource) {
+        return this.value() < compareSource.value();
+    }
+
+    public void minusDistance(int number) {
+        valid(this.distance - number);
+        this.distance -= number;
+    }
+
+    public void plusDistance(int number) {
+        valid(this.distance + number);
+        this.distance += number;
+    }
+
     private void valid(int distance) {
         if (MIN_DISTANCE >= distance) {
             throw DISTANCE_VALID_EXCEPTION;
