@@ -88,14 +88,28 @@ public class Line extends BaseEntity {
         }
     }
 
-    public void changeUpStation(Section section) {
-        this.distance.plus(section.getDistance());
-        this.upStation = section.getUpStation();
+    private void changeUpStation(Section originSection, Section appendSection) {
+        this.distance.plus(appendSection.getDistance());
+        this.upStation = appendSection.getUpStation();
+        originSection.appendAfterSection(appendSection);
     }
 
-    public void changeDownStation(Section section) {
-        this.distance.plus(section.getDistance());
-        this.downStation = section.getDownStation();
+    private void changeDownStation(Section originSection, Section appendSection) {
+        this.distance.plus(appendSection.getDistance());
+        this.downStation = appendSection.getDownStation();
+        originSection.appendBeforeSection(appendSection);
+    }
+
+    public void addSection(Section section){
+        int first = 0;
+        int last = sections.size() -1;
+
+        List<Section> sections = getSectionsByOrder();
+        if(sections.get(first).getDownStation() == section.getUpStation()){
+            changeDownStation(sections.get(first), section);
+        }else if(sections.get(last).getUpStation() == section.getDownStation()){
+            changeUpStation(sections.get(last), section);
+        }
     }
 
     private List<Section> getSectionsByOrder() {

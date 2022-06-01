@@ -92,14 +92,12 @@ public class Section {
     public void appendAfterSection(Section appendSection) {
         this.nextSection = appendSection;
         appendSection.setBackSection(this);
-        this.line.changeUpStation(appendSection);
         return;
     }
 
     public void appendBeforeSection(Section appendSection) {
         this.backSection = appendSection;
         appendSection.setNextSection(this);
-        this.line.changeDownStation(appendSection);
         return;
     }
 
