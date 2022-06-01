@@ -161,7 +161,7 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/ + id")
+                .when().put("/lines/" + id  )
                 .then().log().all()
                 .extract();
     }
