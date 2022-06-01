@@ -55,10 +55,6 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    private List<StationResponse> generateStationResponses(Line line) {
-        return StationResponse.from(line.getSections());
-    }
-
     @Transactional
     public void addSection(Long id, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(id)
@@ -66,6 +62,10 @@ public class LineService {
         Station upStation = findStation(sectionRequest.getUpStationId());
         Station downStation = findStation(sectionRequest.getDownStationId());
         line.addSection(new Section(upStation, downStation, sectionRequest.getDistance()));
+    }
+
+    private List<StationResponse> generateStationResponses(Line line) {
+        return StationResponse.from(line.getSections());
     }
 
     private Station findStation(Long id) {
