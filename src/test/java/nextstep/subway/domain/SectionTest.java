@@ -6,12 +6,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("노선 구간역")
-public class LineStationTest {
+public class SectionTest {
 
 
     @Test
     @DisplayName("상행 노선 필수이다.")
-    void isNotNullUpstationLine() {
+    void isNotNullUpStationLine() {
         assertThatIllegalArgumentException().isThrownBy(() -> Section.builder()
                 .upStation(Station.createStation("주안역"))
                 .distance(Distance.of(3))
@@ -21,10 +21,9 @@ public class LineStationTest {
 
     @Test
     @DisplayName("하행 노선 필수이다.")
-    void isNotNullDowuStation() {
+    void isNotNullDownStation() {
         assertThatIllegalArgumentException().isThrownBy(() -> Section.builder()
                 .upStation(Station.createStation("인천역"))
-                .downStation(Station.createStation("주안역"))
                 .distance(3).build());
 
     }

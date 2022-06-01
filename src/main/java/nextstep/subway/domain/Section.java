@@ -1,5 +1,9 @@
 package nextstep.subway.domain;
 
+import static nextstep.subway.message.ErrorMessage.SECTION_HAS_DISTANCE_STATION_ESSENTIAL;
+import static nextstep.subway.message.ErrorMessage.SECTION_HAS_DOWN_STATION_ESSENTIAL;
+import static nextstep.subway.message.ErrorMessage.SECTION_HAS_UP_STATION_ESSENTIAL;
+
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -41,13 +45,13 @@ public class Section {
 
     private void valid(Station upStation, Station downStation, Distance distance) {
         if (upStation == null) {
-            throw new IllegalArgumentException("상행선은 필수 입니다.");
+            throw new IllegalArgumentException(SECTION_HAS_UP_STATION_ESSENTIAL.toMessage());
         }
         if (downStation == null) {
-            throw new IllegalArgumentException("하행선은 필수 입니다.");
+            throw new IllegalArgumentException(SECTION_HAS_DOWN_STATION_ESSENTIAL.toMessage());
         }
         if (distance == null) {
-            throw new IllegalArgumentException("거리는 필수 입니다.");
+            throw new IllegalArgumentException(SECTION_HAS_DISTANCE_STATION_ESSENTIAL.toMessage());
         }
     }
 

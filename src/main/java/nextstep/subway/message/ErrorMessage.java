@@ -12,8 +12,13 @@ public enum ErrorMessage {
     LINE_CHANGE_IS_NO_COLOR("변경할 색상명이 없습니다."),
     LINE_NAME_IS_ESSENTIAL("노선의 이름은 필수 입니다."),
     LINE_COLOR_IS_ESSENTIAL("노선의 색상은 필수 입니다."),
-    LINE_STATION_HAS_STATION_ESSENTIAL("역은 필수입니다."),
-    STATION_NAME_IS_ESSENTIAL("역이름은 필수입니다.");
+    STATION_NAME_IS_ESSENTIAL("역이름은 필수입니다."),
+
+    SECTION_HAS_UP_STATION_ESSENTIAL("상행역은 필수입니다."),
+    SECTION_HAS_DOWN_STATION_ESSENTIAL("하행역은 필수입니다."),
+    SECTION_HAS_DISTANCE_STATION_ESSENTIAL("거리은 필수입니다.");
+
+
 
 
     private final String message;
