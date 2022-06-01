@@ -1,5 +1,8 @@
 package nextstep.subway.dto;
 
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Station;
+
 public class LineRequest {
     private String name;
     private String color;
@@ -24,6 +27,10 @@ public class LineRequest {
 
     public static LineRequest of(String name, String color, Long upStationId, Long downStationId, Integer distance) {
         return new LineRequest(name, color, upStationId, downStationId, distance);
+    }
+
+    public Line toLine(Station upStation, Station downStation) {
+        return Line.of(name, color, upStation, downStation, distance);
     }
 
     public String getName() {
