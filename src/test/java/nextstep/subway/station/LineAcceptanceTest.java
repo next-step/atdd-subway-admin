@@ -12,7 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,11 +23,30 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @LocalServerPort
     int port;
 
+    private LineRequest firstLine;
+    private LineRequest secondLine;
+
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        setDefaultLine();
+    }
+
+    private void setDefaultLine() {
+        StationResponse firstLineUpStation = createStationRequest("강남역")
+                .jsonPath().getObject("", StationResponse.class);
+        StationResponse firstLineDownStation = createStationRequest("광교역")
+                .jsonPath().getObject("", StationResponse.class);
+
+        StationResponse secondLineUpStation = createStationRequest("대화역")
+                .jsonPath().getObject("", StationResponse.class);
+        StationResponse secondLineDownStation = createStationRequest("오금역")
+                .jsonPath().getObject("", StationResponse.class);
+
+        firstLine = LineRequest.of("신분당선", "bg-red-600", firstLineUpStation.getId(), firstLineDownStation.getId(), 10);
+        secondLine = LineRequest.of("3호선", "bg-bisque", secondLineUpStation.getId(), secondLineDownStation.getId(), 20);
     }
 
     /**
@@ -38,12 +58,12 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void createLine() {
         // when
-        StationResponse upStation = createStationRequest("강남역").jsonPath().getObject("", StationResponse.class);
-        StationResponse downStation = createStationRequest("광교역").jsonPath().getObject("", StationResponse.class);
-
-        LineRequest lineRequest = LineRequest.of("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
-        ExtractableResponse<Response> response = createLineRequest(lineRequest);
+        ExtractableResponse<Response> response = createLineRequest(firstLine);
         int lineId = response.jsonPath().get("id");
+
+        List<StationResponse> stations = response.jsonPath().getList("stations", StationResponse.class);
+        StationResponse upStation = stations.get(0);
+        StationResponse downStation = stations.get(1);
 
         // then
         assertThat(response.statusCode())
@@ -54,30 +74,12 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         assertThat(lineResponse)
                 .satisfies(line -> {
                     assertThat(line.getName())
-                            .isEqualTo(lineRequest.getName());
+                            .isEqualTo(firstLine.getName());
                     assertThat(line.getColor())
-                            .isEqualTo(lineRequest.getColor());
+                            .isEqualTo(firstLine.getColor());
                     assertThat(line.getStations())
                             .containsExactly(upStation, downStation);
                 });
-    }
-
-
-    private ExtractableResponse<Response> createLineRequest(LineRequest lineRequest) {
-        return RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> findLineRequest(int lineId) {
-        return RestAssured.given().log().all()
-                .pathParam("id", lineId)
-                .when().get("/lines/{id}")
-                .then().log().all()
-                .extract();
     }
 
     /**
@@ -88,11 +90,18 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("생성된 전체 지하철 노선 목록을 조회할 수 있다.")
     @Test
     void getLines() {
+        // given
+        LineResponse firstLineResponse = createLineRequest(firstLine).jsonPath().getObject("", LineResponse.class);
+        LineResponse secondLineResponse = createLineRequest(secondLine).jsonPath().getObject("", LineResponse.class);
+
         // when
+        List<LineResponse> allLines = findAllLinesRequest().jsonPath().getList("", LineResponse.class);
 
         // then
-
-        // then
+        assertThat(allLines)
+                .isNotEmpty()
+                .hasSize(2)
+                .containsExactly(firstLineResponse, secondLineResponse);
     }
 
 
@@ -104,9 +113,9 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("생성된 특정 지하철 노선을 조회할 수 있다.")
     @Test
     void getLine() {
-        // when
+        // given
 
-        // then
+        // when
 
         // then
     }
@@ -120,9 +129,9 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철 노선 정보를 수정할 수 있다.")
     @Test
     void updateLine() {
-        // when
+        // given
 
-        // then
+        // when
 
         // then
     }
@@ -136,9 +145,9 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철 노선 정보를 삭제할 수 있다.")
     @Test
     void deleteLine() {
-        // when
+        // given
 
-        // then
+        // when
 
         // then
     }
