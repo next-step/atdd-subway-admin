@@ -17,12 +17,12 @@ public class Section {
     @JoinColumn(nullable = false)
     private Station downStation;
     @Column(nullable = false)
-    private long distance;
+    private int distance;
 
     protected Section() {
     }
 
-    public Section(Line line, Station upStation, Station downStation, long distance) {
+    public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;

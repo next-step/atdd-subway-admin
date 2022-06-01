@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class SectionAcceptanceTest {
-    private static long 초기구간길이 = 10;
+    private static int 초기구간길이 = 10;
 
     @LocalServerPort
     int port;
@@ -175,17 +175,17 @@ class SectionAcceptanceTest {
                 .as(StationResponse.class);
     }
 
-    String 노선_생성(String name, String color, StationResponse upStation, StationResponse downStation, long distance) {
+    String 노선_생성(String name, String color, StationResponse upStation, StationResponse downStation, int distance) {
         return LineApi.create(new LineRequest(name, color, upStation.getId(), downStation.getId(), distance))
                 .header("location");
     }
 
-    void 구간추가_성공(String lineLocation, StationResponse upStation, StationResponse downStation, long distance) {
+    void 구간추가_성공(String lineLocation, StationResponse upStation, StationResponse downStation, int distance) {
         ExtractableResponse<Response> response = LineApi.addSection(lineLocation, new AddSectionRequest(upStation.getId(), downStation.getId(), distance));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    void 구간추가_실패(String lineLocation, StationResponse upStation, StationResponse downStation, long distance) {
+    void 구간추가_실패(String lineLocation, StationResponse upStation, StationResponse downStation, int distance) {
         ExtractableResponse<Response> response = LineApi.addSection(lineLocation, new AddSectionRequest(upStation.getId(), downStation.getId(), distance));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
