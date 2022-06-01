@@ -3,10 +3,13 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineCreateRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -23,9 +26,18 @@ public class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
+    @Autowired
+    private StationRepository stationRepository;
+
+    private Station upStation;
+    private Station downStation;
+
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
+        upStation = stationRepository.save(new Station("왕십리역"));
+        downStation = stationRepository.save(new Station("수원역"));
+
     }
 
     /**
@@ -36,7 +48,7 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선 생성 테스트")
     void 지하철노선_생성_테스트() {
         // given
-        LineCreateRequest lineRequest = new LineCreateRequest("2호선");
+        LineCreateRequest lineRequest = new LineCreateRequest("분당선", upStation.getId(), downStation.getId(), "yellow", 1000L);
 
         ExtractableResponse<Response> 지하철노선_생성_응답 = 지하철노선_생성(lineRequest);
 
