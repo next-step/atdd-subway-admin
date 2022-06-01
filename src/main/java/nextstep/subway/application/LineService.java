@@ -26,7 +26,7 @@ public class LineService {
     }
 
     public void updateLine(Long lineId, LineUpdateRequest lineUpdateRequest) {
-        Line line = findById(lineId);
+        Line line = findLineById(lineId);
         line.update(lineUpdateRequest);
     }
 
@@ -35,25 +35,29 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(NoSuchElementException::new);
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(NoSuchElementException::new);
+        Station upStation = findStationById(lineRequest.getUpStationId());
+        Station downStation = findStationById(lineRequest.getDownStationId());
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
 
-	@Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public LineResponse findLine(Long lineId) {
-        Line line = findById(lineId);
+        Line line = findLineById(lineId);
         return LineResponse.of(line);
     }
 
-	@Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream().map(LineResponse::of).collect(Collectors.toList());
     }
 
-    private Line findById(Long lineId) {
+    private Line findLineById(Long lineId) {
         return lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
+    }
+
+    private Station findStationById(Long stationId) {
+        return stationRepository.findById(stationId).orElseThrow(NoSuchElementException::new);
     }
 }
