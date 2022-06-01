@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.BothUpDownDoNotExistException;
 import nextstep.subway.exception.SameSectionRegistrationException;
 
 import javax.persistence.CascadeType;
@@ -23,18 +24,21 @@ public class Sections implements Iterable<Section> {
             return;
         }
 
-        duplicateRegistrationValidate(newSection);
+        sectionValidate(newSection);
 
         sections.forEach(section -> section.calculate(newSection));
         sections.add(newSection);
     }
 
-    private void duplicateRegistrationValidate(Section newSection) {
+    private void sectionValidate(Section newSection) {
         sections.forEach(
                 section -> {
                     List<Station> upDownStations = section.upDownStationPair();
                     if (upDownStations.contains(newSection.getUpStation()) && upDownStations.contains(newSection.getDownStation())) {
                         throw new SameSectionRegistrationException("상행역과 하행역이 이미 등록되어있습니다.");
+                    }
+                    if (!upDownStations.contains(newSection.getUpStation()) && !upDownStations.contains(newSection.getDownStation())) {
+                        throw new BothUpDownDoNotExistException("상행역과 하행역 중 하나라도 등록되어 있지 않아 추가할 수 없습니다.");
                     }
                 }
         );

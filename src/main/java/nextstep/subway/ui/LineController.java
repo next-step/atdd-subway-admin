@@ -5,6 +5,7 @@ import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.exception.BothUpDownDoNotExistException;
 import nextstep.subway.exception.SameSectionRegistrationException;
 import nextstep.subway.exception.SectionLengthOverException;
 import org.springframework.http.ResponseEntity;
@@ -63,7 +64,7 @@ public class LineController {
         return ResponseEntity.ok(lineService.addSection(id, sectionRequest));
     }
 
-    @ExceptionHandler({SectionLengthOverException.class, SameSectionRegistrationException.class})
+    @ExceptionHandler({SectionLengthOverException.class, SameSectionRegistrationException.class, BothUpDownDoNotExistException.class})
     public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }
