@@ -23,7 +23,7 @@ public class Sections {
     protected Sections() {
     }
 
-    public static Sections empty() {
+    public static Sections create() {
         return new Sections();
     }
 
