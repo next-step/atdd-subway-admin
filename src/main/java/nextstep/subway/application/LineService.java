@@ -12,7 +12,6 @@ import nextstep.subway.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -54,7 +53,7 @@ public class LineService {
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(ErrorMessage.ERROR_LINE_NOT_EXIST));
-        line.update(lineUpdateRequest.toLine(line.getUpStation(), line.getDownStation(), line.getDistance()));
+        line.update(lineUpdateRequest.toLine(line.getSections()));
     }
 
     @Transactional
@@ -63,7 +62,7 @@ public class LineService {
     }
 
     private List<StationResponse> generateStationResponses(Line line) {
-        return Arrays.asList(StationResponse.of(line.getUpStation()), StationResponse.of(line.getDownStation()));
+        return StationResponse.from(line.getSections());
     }
 
     private Station findStation(Long id) {

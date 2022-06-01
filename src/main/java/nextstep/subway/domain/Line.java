@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.Arrays;
 
 @Entity
 public class Line {
@@ -9,23 +10,25 @@ public class Line {
     private Long id;
     private String name;
     private String color;
-    @ManyToOne
-    @JoinColumn(name = "upStation_id")
-    private Station upStation;
-    @ManyToOne
-    @JoinColumn(name = "downStation_id")
-    private Station downStation;
-    private int distance;
+
+    @Embedded
+    private Sections sections;
 
     protected Line(){
+    }
+
+    public Line(String name, String color, Sections sections) {
+        this.name = name;
+        this.color = color;
+        this.sections = sections;
     }
 
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+        Section section = new Section(upStation, downStation, distance);
+        section.setLine(this);
+        this.sections = Sections.from(Arrays.asList(section));
     }
 
     public void update(Line newLine) {
@@ -45,16 +48,8 @@ public class Line {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
+    public Sections getSections() {
+        return sections;
     }
 
     private void updateName(String name) {
