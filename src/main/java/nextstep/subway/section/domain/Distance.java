@@ -15,12 +15,12 @@ public class Distance {
 
     }
 
-    private Distance(int distance) {
+    private Distance(final int distance) {
         validateDistance(distance);
         this.distance = distance;
     }
 
-    public static Distance from(int distance) {
+    public static Distance from(final int distance) {
         return new Distance(distance);
     }
 
@@ -42,6 +42,10 @@ public class Distance {
         return Distance.from(this.distance - other.distance);
     }
 
+    public Distance merge(Distance other) {
+        return new Distance(this.distance + other.distance);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -57,9 +61,5 @@ public class Distance {
     @Override
     public int hashCode() {
         return Objects.hash(distance);
-    }
-
-    public Distance merge(Distance other) {
-        return new Distance(this.distance + other.distance);
     }
 }

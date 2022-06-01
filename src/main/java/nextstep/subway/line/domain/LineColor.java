@@ -14,18 +14,18 @@ public class LineColor {
     protected LineColor() {
     }
 
-    private LineColor(String color) {
+    private LineColor(final String color) {
         validateLineColor(color);
         this.color = color;
     }
 
-    private void validateLineColor(String color) {
+    private void validateLineColor(final String color) {
         if (color == null || color.isEmpty()) {
             throw new IllegalArgumentException(NO_LINE_COLOR_ERROR);
         }
     }
 
-    public static LineColor from(String color) {
+    public static LineColor from(final String color) {
         return new LineColor(color);
     }
 
