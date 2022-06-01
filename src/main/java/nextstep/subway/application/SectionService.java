@@ -29,7 +29,7 @@ public class SectionService {
     private final LineRepository lineRepository;
     private final SectionRepository sectionRepository;
 
-    @Autowired
+
     public SectionService(StationRepository stationRepository,
         LineStationRepository lineStationRepository, LineRepository lineRepository,
         SectionRepository sectionRepository) {

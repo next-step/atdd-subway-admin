@@ -32,7 +32,7 @@ public class LineService {
     private final LineStationRepository lineStationRepository;
 
     private final SectionRepository sectionRepository;
-    @Autowired
+
     public LineService(LineRepository lineRepository, StationRepository stationRepository,
         LineStationRepository lineStationRepository, SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
