@@ -9,7 +9,7 @@ class DistanceTest {
 
     @ParameterizedTest
     @ValueSource(ints = { -10, -5, 0 })
-    void 로또_구매_불가한_가격(int value) {
+    void 유효하지_않은_구간거리(int value) {
         assertThatThrownBy(() -> {
             new Distance(value);
         }).isInstanceOf(IllegalArgumentException.class);
