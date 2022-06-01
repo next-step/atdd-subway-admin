@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SectionAcceptanceTest {
+    private static final int 소요산_신창구간_길이 = 20;
     @LocalServerPort
     int port;
 
@@ -48,7 +49,7 @@ public class SectionAcceptanceTest {
         소요산역 = 지하철역_생성("소요산역").as(StationResponse.class);
         신창역 = 지하철역_생성("신창역").as(StationResponse.class);
         서울역 = 지하철역_생성("서울역").as(StationResponse.class);
-        일호선 = 지하철노선_생성("1호선", 소요산역.getId(), 신창역.getId(), "파란색", 20).as(LineResponse.class);
+        일호선 = 지하철노선_생성("1호선", 소요산역.getId(), 신창역.getId(), "파란색", 소요산_신창구간_길이).as(LineResponse.class);
     }
 
     /**
@@ -112,9 +113,10 @@ public class SectionAcceptanceTest {
 
     @Test
     void 역사이에_신규역등록실패_기존구간의_길이보다_신규길이가_크거나같은경우() {
-        ExtractableResponse<Response> 일호선_구간 = 지하철구간_생성(일호선.getId(), 소요산역.getId(), 서울역.getId(), 20);
+        int 기존구간과_동일한_구간길이 = 소요산_신창구간_길이;
+        ExtractableResponse<Response> 동일한_길이의_구간등록_결과 = 지하철구간_생성(일호선.getId(), 소요산역.getId(), 서울역.getId(), 기존구간과_동일한_구간길이);
 
-        assertThat(일호선_구간.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(동일한_길이의_구간등록_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
 }

@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.SectionLengthOverException;
+
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
@@ -74,7 +76,7 @@ public class Section extends BaseEntity {
     private void calculateDistance(Section newSection) {
         int newDistance = this.distance - newSection.distance;
         if (newDistance <= 0) {
-            throw new IllegalArgumentException("기존 역 사이 거리보다 작을 수 없습니다.");
+            throw new SectionLengthOverException("기존 역 사이 거리보다 작을 수 없습니다.");
         }
         this.distance = newDistance;
     }
