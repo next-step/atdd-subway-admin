@@ -28,8 +28,12 @@ public class Distance {
         }
     }
 
-    public Long getDistance() {
-        return distance;
+    public static Distance add(Distance distance1, Distance distance2) {
+        return new Distance(distance1.distance + distance2.distance);
+    }
+
+    public static Distance subtract(Distance distance1, Distance distance2) {
+        return new Distance(distance1.distance - distance2.distance);
     }
 
     @Override

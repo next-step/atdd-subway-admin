@@ -68,10 +68,15 @@ public class Section extends BaseEntity {
 
     private void minus(Section section) {
         try {
-            this.distance = Distance.of(this.distance.getDistance() - section.distance.getDistance());
+            this.distance = Distance.subtract(this.distance, section.distance);
         } catch (IllegalArgumentException iae) {
             throw new IllegalArgumentException("추가하려는 구간의 거리는 현재 거리보다 작아야 합니다.");
         }
+    }
+
+    public static Section linkTwoSection(Section upStation, Section downStation) {
+        Distance distance = Distance.add(upStation.distance, downStation.distance);
+        return new Section(upStation.line, downStation.upStation, upStation.downStation, distance);
     }
 
     public boolean isSameDownStation(Station station) {
@@ -88,6 +93,10 @@ public class Section extends BaseEntity {
 
     public Station downStation() {
         return downStation;
+    }
+
+    public Line line() {
+        return line;
     }
 
     public List<Station> stations() {

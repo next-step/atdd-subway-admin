@@ -79,4 +79,12 @@ public class LineService {
         return stationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("역 정보가 존재하지 않습니다."));
     }
+
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        Station station = findStationById(stationId);
+
+        line.deleteSection(station);
+    }
 }

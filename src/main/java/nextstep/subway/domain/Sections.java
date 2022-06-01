@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import static nextstep.subway.domain.Section.linkTwoSection;
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -13,7 +15,7 @@ import nextstep.subway.dto.StationResponse;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Section> sections;
 
     public Sections() {
@@ -36,6 +38,21 @@ public class Sections {
         validateSection(section);
         this.sections.forEach(it -> it.update(section));
         this.sections.add(section);
+    }
+
+    public void deleteSection(Station station) {
+        final Section upStation = findSameUpStation(station);
+        final Section downStation = findSameDownStation(station);
+
+        if (isMiddleSection(upStation, downStation)) {
+            this.sections.add(linkTwoSection(upStation, downStation));
+        }
+        this.sections.remove(upStation);
+        this.sections.remove(downStation);
+    }
+
+    private boolean isMiddleSection(Section upStation, Section downStation) {
+        return upStation != null && downStation != null;
     }
 
     private void validateSection(Section section) {
@@ -86,15 +103,23 @@ public class Sections {
     }
 
     private Section findPreviousSection(Section section) {
+        return findSameDownStation(section.upStation());
+    }
+
+    private Section findNextSection(Section section) {
+        return findSameUpStation(section.downStation());
+    }
+
+    private Section findSameUpStation(Station station) {
         return this.sections.stream()
-                .filter(it -> it.isSameDownStation(section.upStation()))
+                .filter(it -> it.isSameUpStation(station))
                 .findFirst()
                 .orElse(null);
     }
 
-    private Section findNextSection(Section section) {
+    private Section findSameDownStation(Station station) {
         return this.sections.stream()
-                .filter(it -> it.isSameUpStation(section.downStation()))
+                .filter(it -> it.isSameDownStation(station))
                 .findFirst()
                 .orElse(null);
     }

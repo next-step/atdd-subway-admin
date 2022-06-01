@@ -2,9 +2,6 @@ package nextstep.subway.accept;
 
 import static nextstep.subway.accept.LineAcceptanceTest.노선_생성;
 import static nextstep.subway.accept.LineAcceptanceTest.노선_조회;
-import static nextstep.subway.accept.SectionParameterHelper.강남역_양재역_구간;
-import static nextstep.subway.accept.SectionParameterHelper.양재시민의숲역_양재역_구간;
-import static nextstep.subway.accept.SectionParameterHelper.양재역_강남역_구간;
 import static nextstep.subway.accept.StationAcceptanceTest.강남역;
 import static nextstep.subway.accept.StationAcceptanceTest.교대역;
 import static nextstep.subway.accept.StationAcceptanceTest.서초역;

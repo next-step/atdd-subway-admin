@@ -67,6 +67,11 @@ public class Line extends BaseEntity {
         sections.addSection(section);
     }
 
+    public void deleteSection(Station station) {
+        // TODO : 해당 노선에 있는지 확인
+        sections.deleteSection(station);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
