@@ -29,15 +29,7 @@ public class LineService {
                 .orElseThrow(StationNotFoundException::new);
 
         Line persistLine = lineRepository.save(lineRequest.toLine());
-        persistLine.setUpStation(upStation);
-        persistLine.setDownStation(downStation);
-
-        Sections sections = persistLine.getSections();
-        sections.add(new Section(lineRequest.getDistance(), upStation, downStation, persistLine));
-
-        LineStations lineStations = persistLine.getLineStations();
-        lineStations.add(new LineStation(upStation, persistLine));
-        lineStations.add(new LineStation(downStation, persistLine));
+        persistLine.initStation(upStation, downStation);
 
         return LineResponse.of(persistLine);
     }
