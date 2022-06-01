@@ -19,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import nextstep.subway.enums.LineColor;
+import nextstep.subway.exception.DupSectionException;
 import nextstep.subway.exception.LineNotFoundException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -89,8 +90,8 @@ public class Line extends BaseEntity {
     }
 
 
-
     public void addSection(Section section) {
+        validateDupSection(section);
         int first = 0;
         int last = sections.size() - 1;
 
@@ -134,6 +135,12 @@ public class Line extends BaseEntity {
             section = section.getNextSection();
         }
         return sectionOrdered;
+    }
+
+    private void validateDupSection(Section section) {
+        if (sections.contains(section)) {
+            throw new DupSectionException();
+        }
     }
 
     public Long getId() {

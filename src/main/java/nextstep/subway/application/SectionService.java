@@ -45,18 +45,10 @@ public class SectionService {
         Station downStation = getStationOrThrow(sectionRequest.getDownStationId());
         sectionRepository.findAllByLine(line);
 
-        validateDupSection(line, upStation, downStation);
         Section appendSection = Section.of(upStation, downStation, line,
             new Distance(sectionRequest.getDistance()));
 
         line.addSection(appendSection);
-    }
-
-    private void validateDupSection(Line line, Station upStation, Station downStation) {
-        if (sectionRepository.findAllByUpStationAndDownStationAndLine(upStation, downStation, line)
-            .isPresent()) {
-            throw new DupSectionException();
-        }
     }
 
     private Station getStationOrThrow(long stationId) {
