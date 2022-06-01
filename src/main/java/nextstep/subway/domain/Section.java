@@ -64,8 +64,8 @@ public class Section {
         Long backSectionId = backSection != null ? backSection.getId() : -1;
 
         return new SectionResponse(this.id, this.upStation.toStationDTO(),
-            this.downStation.toStationDTO(),
-            line.getName(), this.distance, nextSectionId, backSectionId);
+            this.downStation.toStationDTO(), line.getName(), this.distance, nextSectionId,
+            backSectionId);
     }
 
     public boolean insert(Section insertSection) {
@@ -74,7 +74,8 @@ public class Section {
         if (this.downStation == insertSection.getDownStation()) {
             insertFrontOfSection(insertSection);
             return insertSuccess;
-        } else if (this.upStation == insertSection.getUpStation()) {
+        }
+        if (this.upStation == insertSection.getUpStation()) {
             insertBackOfSection(insertSection);
             return insertSuccess;
         }
@@ -86,7 +87,6 @@ public class Section {
         insertSection.setNextSection(this.nextSection);
 
         this.distance.minus(insertSection.getDistance());
-
         this.upStation = insertSection.getDownStation();
         this.nextSection.setBackSection(insertSection);
         this.nextSection = insertSection;
@@ -122,9 +122,10 @@ public class Section {
         this.backSection = backSection;
     }
 
-    public boolean isFirstSection(){
+    public boolean isFirstSection() {
         return ObjectUtils.isEmpty(downStation);
     }
+
     public Station getUpStation() {
         return upStation;
     }
