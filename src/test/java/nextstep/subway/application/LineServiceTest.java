@@ -7,6 +7,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,9 @@ class LineServiceTest {
 
         // then
         assertThat(lineResponse).isNotNull();
+        assertThat(lineResponse.getId()).isGreaterThan(0L);
         assertThat(lineResponse.getName()).isEqualTo(lineName);
-        assertThat(lineResponse.getStations()).containsExactly(gangnam, yangjae);
+        assertThat(lineResponse.getStations())
+                .containsExactly(StationResponse.of(gangnam), StationResponse.of(yangjae));
     }
 }

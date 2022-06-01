@@ -18,5 +18,4 @@ class LineStationTest {
         assertThat(lineStation).isNotNull();
         assertThat(lineStation).isInstanceOf(LineStation.class);
     }
-
 }
