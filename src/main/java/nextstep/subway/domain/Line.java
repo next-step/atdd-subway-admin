@@ -5,6 +5,8 @@ import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
@@ -46,6 +48,8 @@ public class Line extends BaseEntity {
     @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST)
     private Set<LineStation> lineStationList = new LinkedHashSet<>();
 
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Section> sections = new LinkedList<>();
 
     public Line(Long id, String name, LineColor lineColor, Station upStation, Station downStation,
         Distance distance) {
