@@ -311,6 +311,32 @@ public class LineAcceptanceTest {
         응답_검증(response, HttpStatus.BAD_REQUEST);
     }
 
+    @DisplayName("구간 추가 오류(노선에 이미 포함된 지하철 역)")
+    @Test
+    void addSectionException3() {
+        // given
+        LineResponse line = 응답_객체_생성(노선_등록("2호선", "초록", 7, A역.getId(), C역.getId()), LineResponse.class);
+
+        // when
+        ValidatableResponse response = 구간_추가(A역.getId(), B역.getId(), 7, line.getId());
+
+        // then
+        응답_검증(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @DisplayName("구간 추가 오류(노선에 모두 포함안된 지하철 역)")
+    @Test
+    void addSectionException4() {
+        // given
+        LineResponse line = 응답_객체_생성(노선_등록("2호선", "초록", 7, A역.getId(), C역.getId()), LineResponse.class);
+
+        // when
+        ValidatableResponse response = 구간_추가(E역.getId(), F역.getId(), 10, line.getId());
+
+        // then
+        응답_검증(response, HttpStatus.BAD_REQUEST);
+    }
+
     /**
      * When 존재하지 않는 지하철역으로 노선을 등록하면
      * Then 노선 등록이 불가하다.
