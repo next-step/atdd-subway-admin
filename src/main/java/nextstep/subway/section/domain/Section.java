@@ -4,6 +4,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 public class Section{
@@ -35,6 +37,17 @@ public class Section{
         this.distance = new Distance(distance);
     }
 
+    public void updateWith(Section newSection) {
+        if (upStation.equals(newSection.getUpStation())) {
+            upStation = newSection.getDownStation();
+            distance.subtract(newSection.getDistance());
+        }
+        if (downStation.equals(newSection.getDownStation())) {
+            downStation = newSection.getUpStation();
+            distance.subtract(newSection.getDistance());
+        }
+    }
+
     public Station getUpStation() {
         return upStation;
     }
@@ -53,16 +66,5 @@ public class Section{
 
     public void setLine(Line line) {
         this.line = line;
-    }
-
-    public void updateIfAdjacentSection(Section newSection) {
-        if (upStation.equals(newSection.getUpStation())) {
-            upStation = newSection.getDownStation();
-            distance.subtract(newSection.getDistance());
-        }
-        if (downStation.equals(newSection.getDownStation())) {
-            downStation = newSection.getUpStation();
-            distance.subtract(newSection.getDistance());
-        }
     }
 }

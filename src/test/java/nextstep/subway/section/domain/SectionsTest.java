@@ -1,7 +1,5 @@
-package nextstep.subway.domain;
+package nextstep.subway.section.domain;
 
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class SectionsTest {
     public static final int DEFAULT_DISTANCE = 10;
@@ -26,6 +24,14 @@ class SectionsTest {
         lastStation = new Station("last");
         newStation = new Station("new");
         defaultSection = new Section(firstStation, lastStation, DEFAULT_DISTANCE);
+    }
+
+    @Test
+    @DisplayName("Sections에 존재하는 Stations 조회")
+    void Stations_조회(){
+        Sections sections = new Sections(new ArrayList<>(Arrays.asList(defaultSection)));
+        List<Station> stations = sections.getSortedStations();
+        assertThat(stations).containsExactly(firstStation, lastStation);
     }
 
     @Test
