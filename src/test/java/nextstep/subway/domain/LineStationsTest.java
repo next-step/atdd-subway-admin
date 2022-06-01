@@ -8,6 +8,20 @@ import org.junit.jupiter.api.Test;
 
 class LineStationsTest {
     @Test
+    void add_호출_시_연관관계가_추가되어야_한다() {
+        // given
+        final LineStation lineStation = new LineStation(new Line("신분당선", "bg-red-600"),
+                new Station("강남역"));
+        final LineStations lineStations = new LineStations();
+
+        // when
+        lineStations.add(lineStation);
+
+        // then
+        assertThat(lineStations.getStations().size()).isEqualTo(1);
+    }
+
+    @Test
     void getStations_호출_시_지하철역_목록을_반환해야_한다() {
         // given
         final Line line = new Line("신분당선", "bg-red-600");

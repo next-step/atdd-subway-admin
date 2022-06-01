@@ -18,6 +18,10 @@ public class LineStations {
         this.lineStations = lineStations;
     }
 
+    public void add(final LineStation lineStation) {
+        lineStations.add(lineStation);
+    }
+
     public List<Station> getStations() {
         return lineStations
                 .stream()
