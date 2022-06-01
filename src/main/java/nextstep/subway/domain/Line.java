@@ -61,6 +61,7 @@ public class Line {
     }
 
     public void addSection(Section section) {
+        section.setLine(this);
         sections.addSection(section);
     }
 }

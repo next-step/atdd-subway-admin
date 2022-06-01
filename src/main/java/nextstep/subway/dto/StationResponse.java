@@ -25,7 +25,7 @@ public class StationResponse {
 
     public static List<StationResponse> from(Sections sections) {
         List<StationResponse> result = new ArrayList<>();
-        List<Station> stations = sections.getStations();
+        List<Station> stations = sections.getSortedStations();
         for (Station station : stations) {
             result.add(new StationResponse(station.getId(), station.getName()));
         }

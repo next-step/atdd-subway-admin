@@ -1,31 +1,38 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.testutils.DatabaseCleanup;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
+
 import java.util.List;
 
 import static nextstep.subway.line.LineTestMethods.*;
-import static nextstep.subway.line.LineTestMethods.노선_전체_조회;
-import static nextstep.subway.station.StationTestMethods.*;
+import static nextstep.subway.station.StationTestMethods.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+    private StationResponse 상행종점역_1호선;
+    private StationResponse 하행종점역_1호선;
+    private StationResponse 상행종점역_2호선;
+    private StationResponse 하행종점역_2호선;
+
+    @BeforeEach
+    void initialize(){
+        상행종점역_1호선 = 지하철역_생성("상행종점역1").as(StationResponse.class);
+        하행종점역_1호선 = 지하철역_생성("하행종점역1").as(StationResponse.class);
+        상행종점역_2호선 = 지하철역_생성("상행종점역2").as(StationResponse.class);
+        하행종점역_2호선 = 지하철역_생성("하행종점역2").as(StationResponse.class);
+    }
     /**
      * When 지하철 노선을 생성하면
      * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
@@ -35,7 +42,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         ExtractableResponse<Response> response = 노선_생성(
-                generateLineRequest("1호선", "blue", "소요산역", "신창역", 10)
+                LineRequest.of("1호선", "blue", 상행종점역_1호선.getId(), 하행종점역_1호선.getId(), 10)
         );
 
         // then
@@ -55,10 +62,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         노선_생성(
-                generateLineRequest("1호선", "blue", "소요산역", "신창역", 10)
+                LineRequest.of("1호선", "blue", 상행종점역_1호선.getId(), 하행종점역_1호선.getId(), 10)
         );
         노선_생성(
-                generateLineRequest("2호선", "green", "합정역", "잠실역", 10)
+                LineRequest.of("2호선", "blue", 상행종점역_2호선.getId(), 하행종점역_2호선.getId(), 10)
         );
 
         //when
@@ -83,7 +90,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         //given
         ExtractableResponse<Response> createdResponse = 노선_생성(
-                generateLineRequest("1호선", "blue", "소요산역", "신창역", 10)
+                LineRequest.of("1호선", "blue", 상행종점역_1호선.getId(), 하행종점역_1호선.getId(), 10)
         );
         Long id_1호선 = getId(createdResponse);
 
@@ -108,7 +115,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         //given
         ExtractableResponse<Response> createdResponse = 노선_생성(
-                generateLineRequest("1호선", "blue", "소요산역", "신창역", 10)
+                LineRequest.of("1호선", "blue", 상행종점역_1호선.getId(), 하행종점역_1호선.getId(), 10)
         );
         Long id_1호선 = getId(createdResponse);
 
@@ -135,7 +142,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         //given
         ExtractableResponse<Response> createdResponse = 노선_생성(
-                generateLineRequest("1호선", "blue", "소요산역", "신창역", 10)
+                LineRequest.of("1호선", "blue", 상행종점역_1호선.getId(), 하행종점역_1호선.getId(), 10)
         );
         Long id_1호선 = getId(createdResponse);
 
@@ -147,13 +154,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(deletedResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
                 () -> assertThat(lineNames(노선_전체_조회())).doesNotContain("1호선")
         );
-    }
-
-    private LineRequest generateLineRequest
-            (String name, String color, String upStationName, String downStationName, int distance) {;
-        Long upStationId = getId(지하철역_생성(upStationName));
-        Long downStationId = getId(지하철역_생성(downStationName));
-        return LineRequest.of(name, color, upStationId, downStationId, distance);
     }
 
     private List<String> lineNames(ExtractableResponse<Response> response) {
