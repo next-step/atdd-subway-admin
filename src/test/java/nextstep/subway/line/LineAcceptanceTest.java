@@ -5,14 +5,12 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
-import nextstep.subway.utils.DatabaseCleaner;
-import org.junit.jupiter.api.AfterEach;
+import nextstep.subway.dto.LineRequest;
+import nextstep.subway.utils.AcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -23,32 +21,21 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest {
-    @LocalServerPort
-    int port;
-
+public class LineAcceptanceTest extends AcceptanceTest {
     @Autowired
     private StationRepository stationRepository;
-    @Autowired
-    private DatabaseCleaner databaseCleaner;
 
     private Station upStation;
     private Station downStation;
+    private LineRequest lineRequest;
 
+    @Override
     @BeforeEach
     public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-
+        super.setUp();
         upStation = stationRepository.save(new Station("상행지하철역"));
         downStation = stationRepository.save(new Station("하행지하철역"));
-    }
-
-    @AfterEach
-    public void tearDown() {
-        databaseCleaner.clean();
+        lineRequest = new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
     }
 
     /**
@@ -60,8 +47,7 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     void updateLine() {
         // given
-        ExtractableResponse<Response> created =
-                createLine("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
+        ExtractableResponse<Response> created = createLine(lineRequest);
         assertThat(created.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         Long id = created.jsonPath().getLong("id");
 
@@ -83,8 +69,7 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 삭제한다.")
     void deleteLine() {
         // given
-        ExtractableResponse<Response> created =
-                createLine("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
+        ExtractableResponse<Response> created = createLine(lineRequest);
         assertThat(created.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         Long id = created.jsonPath().getLong("id");
 
@@ -105,8 +90,7 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     void createLine() {
         //when
-        ExtractableResponse<Response> response =
-                createLine("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
+        ExtractableResponse<Response> response = createLine(lineRequest);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
@@ -123,10 +107,10 @@ public class LineAcceptanceTest {
     @DisplayName("지하철노선 목록을 조회한다.")
     void getAll() {
         // given
-        ExtractableResponse<Response> response1 =
-                createLine("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
-        ExtractableResponse<Response> response2 =
-                createLine("새로운추가노선", "bg-orange-500", upStation.getId(), downStation.getId(), 20L);
+        ExtractableResponse<Response> response1 = createLine(lineRequest);
+        ExtractableResponse<Response> response2 = createLine(
+                new LineRequest("새로운추가노선", "bg-orange-500", upStation.getId(), downStation.getId(), 20)
+        );
         assertThat(response1.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
@@ -146,8 +130,7 @@ public class LineAcceptanceTest {
     @DisplayName("지하철노선을 조회한다.")
     void getOne() {
         // given
-        ExtractableResponse<Response> response =
-                createLine("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
+        ExtractableResponse<Response> response = createLine(lineRequest);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
@@ -189,17 +172,9 @@ public class LineAcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private ExtractableResponse<Response> createLine(
-            String name, String color, long upStationId, long downStationId, long distance) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", String.valueOf(upStationId));
-        params.put("downStationId", String.valueOf(downStationId));
-        params.put("distance", String.valueOf(distance));
-
+    private ExtractableResponse<Response> createLine(LineRequest request) {
         return RestAssured
-                .given().log().all().body(params).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .given().log().all().body(request).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all().extract();
     }
