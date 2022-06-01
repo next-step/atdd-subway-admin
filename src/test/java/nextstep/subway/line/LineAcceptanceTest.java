@@ -3,9 +3,14 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -27,15 +32,39 @@ public class LineAcceptanceTest {
 
     @LocalServerPort
     int port;
-    LineRequest lineRequest1, lineRequest2;
+    @Autowired
+    StationRepository stationRepository;
+    @Autowired
+    LineRepository lineRepository;
+    Station upStation1, upStation2, downStation1, downStation2;
+    LineRequest lineCreateRequest1, lineCreateRequest2;
 
     @BeforeEach
     void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
-        lineRequest1 = new LineRequest("신분당선", "bg-red-600");
-        lineRequest2 = new LineRequest("2호선", "bg-green-600");
+        upStation1 = stationRepository.save(new Station(1L, "광교역"));
+        upStation2 = stationRepository.save(new Station(2L, "신사역"));
+        downStation1 = stationRepository.save(new Station(3L, "석남역"));
+        downStation2 = stationRepository.save(new Station(4L, "장암역"));
+        lineCreateRequest1 = new LineRequest(
+                "신분당선",
+                "bg-red-600",
+                upStation1.getId().toString(),
+                downStation1.getId().toString(),
+                "10");
+        lineCreateRequest2 = new LineRequest(
+                "7호선",
+                "bg-brown-600",
+                upStation2.getId().toString(),
+                downStation2.getId().toString(),
+                "10");
+    }
+
+    @AfterEach
+    void setDown() {
+        lineRepository.deleteAll();
     }
 
     /**
@@ -46,11 +75,11 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = createLine(lineRequest1);
+        ExtractableResponse<Response> response = createLine(lineCreateRequest1);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        assertThat(getLineNames()).containsAnyOf(lineRequest1.getName());
+        assertThat(getLineNames()).containsAnyOf(lineCreateRequest1.getName());
     }
 
     /**
@@ -62,14 +91,14 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        createLine(lineRequest1);
-        createLine(lineRequest2);
+        createLine(lineCreateRequest1);
+        createLine(lineCreateRequest2);
 
         // when
         List<String> lineNames = getLineNames();
 
         // then
-        assertThat(lineNames).containsAnyOf(lineRequest1.getName(), lineRequest2.getName());
+        assertThat(lineNames).containsAnyOf(lineCreateRequest1.getName(), lineCreateRequest2.getName());
     }
 
     /**
@@ -81,13 +110,13 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         // given
-        long lineId = createLine(lineRequest1).jsonPath().getLong(KEY_ID);
+        long lineId = createLine(lineCreateRequest1).jsonPath().getLong(KEY_ID);
 
         // when
         ExtractableResponse<Response> response = findByLineId(lineId);
 
         // then
-        assertThat(response.jsonPath().getString(KEY_NAME)).isEqualTo(lineRequest1.getName());
+        assertThat(response.jsonPath().getString(KEY_NAME)).isEqualTo(lineCreateRequest1.getName());
     }
 
     /**
@@ -99,7 +128,7 @@ public class LineAcceptanceTest {
     @Test
     void updateLine() {
         // given
-        long lineId = createLine(lineRequest1).jsonPath().getLong(KEY_ID);
+        long lineId = createLine(lineCreateRequest1).jsonPath().getLong(KEY_ID);
 
         // when
         LineRequest updateLineRequest = new LineRequest("뉴분당선", "bg-red-600");
@@ -107,7 +136,7 @@ public class LineAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
-        assertThat(response.jsonPath().getString(KEY_NAME)).isEqualTo(updateLineRequest.getName());
+        assertThat(findByLineId(lineId).jsonPath().getString(KEY_NAME)).isEqualTo(updateLineRequest.getName());
     }
 
     /**
@@ -119,13 +148,13 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        long lineId = createLine(lineRequest1).jsonPath().getLong(KEY_ID);
+        long lineId = createLine(lineCreateRequest1).jsonPath().getLong(KEY_ID);
 
         // when
         assertThat(deleteLine(lineId).statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         // then
-        assertThat(getLineNames()).doesNotContain(lineRequest1.getName());
+        assertThat(getLineNames()).doesNotContain(lineCreateRequest1.getName());
 
     }
 
@@ -147,6 +176,9 @@ public class LineAcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put(KEY_NAME, request.getName());
         params.put(KEY_COLOR, request.getColor());
+        params.put("upStationId", request.getUpStationId());
+        params.put("downStationId", request.getDownStationId());
+        params.put("distance", request.getDistance());
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -174,18 +206,44 @@ public class LineAcceptanceTest {
     private static class LineRequest {
         private final String name;
         private final String color;
+        private final String upStationId;
+        private final String downStationId;
+        private final String distance;
 
         public LineRequest(String name, String color) {
             this.name = name;
             this.color = color;
+            this.upStationId = null;
+            this.downStationId = null;
+            this.distance = null;
+        }
+
+        public LineRequest(String name, String color, String upStationId, String downStationId, String distance) {
+            this.name = name;
+            this.color = color;
+            this.upStationId = upStationId;
+            this.downStationId = downStationId;
+            this.distance = distance;
         }
 
         public String getName() {
-            return this.name;
+            return name;
         }
 
         public String getColor() {
-            return this.color;
+            return color;
+        }
+
+        public String getUpStationId() {
+            return upStationId;
+        }
+
+        public String getDownStationId() {
+            return downStationId;
+        }
+
+        public String getDistance() {
+            return distance;
         }
     }
 }

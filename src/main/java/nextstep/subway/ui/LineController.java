@@ -20,14 +20,25 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse line = lineService.saveLine(lineRequest);
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest request) {
+        LineResponse line = lineService.saveLine(request);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         return ResponseEntity.ok().body(lineService.findAllLines());
+    }
+
+    @GetMapping("/lines/{id}")
+    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findLine(id));
+    }
+
+    @PutMapping("/lines/{id}")
+    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest request) {
+        lineService.updateLine(id, request);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")

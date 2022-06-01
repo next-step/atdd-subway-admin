@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.dto.LineRequest;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,16 +18,20 @@ public class Line extends BaseEntity {
     @Column
     private String color;
 
-    @OneToMany(mappedBy = "line")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "line")
     private List<Station> stations = new ArrayList<>();
 
     public Line() {
     }
 
-    public Line(String name, String color, List<Station> stations) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.stations = stations;
+    }
+
+    public void modify(LineRequest lineRequest) {
+        this.name = lineRequest.getName();
+        this.color = lineRequest.getColor();
     }
 
     public Long getId() {
@@ -42,5 +48,10 @@ public class Line extends BaseEntity {
 
     public List<Station> getStations() {
         return stations;
+    }
+
+    public void addLastStation(Station station) {
+        this.stations.add(station);
+        station.setLine(this);
     }
 }
