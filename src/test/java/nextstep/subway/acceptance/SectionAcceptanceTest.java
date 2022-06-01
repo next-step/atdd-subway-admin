@@ -4,7 +4,6 @@ import static nextstep.subway.test.RequestUtils.requestDeleteById;
 import static nextstep.subway.test.RequestUtils.requestGetAll;
 import static nextstep.subway.test.RequestUtils.requestGetById;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.PATH;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -239,28 +238,54 @@ class SectionAcceptanceTest {
 
     /**
     * Given 구간을 등록하고
-    * When  해당 구간에 대한 지하철역 삭제 요청 하면
+    * When  해당 구간에 대한 지하철역 삭제 요청 하면 (최상단 출발역)
     * Then  해당 지하철역을 포함하는 구간이 삭제 된다.
-    * When  노선에 대한 구간을 조회하면
-    * Then  삭제된 구간에 대한 지하철역을 찾을 수 없다.
+    * When  해당 구간에 대한 지하철역 삭제 요청 하면 (종착역)
+    * Then  해당 지하철역을 포함하는 구간이 삭제 된다.
+    * When  해당 구간에 대한 지하철역 삭제 요청 하면 (사이역)
+    * Then  해당 지하철역을 포함하는 구간이 삭제 된다
+    * When  없는 구간에 대해 삭제 요청하면
+    * Then  삭제에 실패한다.
+    * When  하나의 구간만 있는 경우에 삭제요청하면
+    * Then  삭제에 실패한다.
     */
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void deleteSection() {
         //given
-        구간_생성_요청(이호선, "신대방역", "봉천역", 3);
+        구간_생성_요청(이호선, "당산역", "신도림역", 5);
+        구간_생성_요청(이호선, "신도림역", "신대방역", 3);
+        구간_생성_요청(이호선, "봉천역", "사당역", 10);
 
         //when
-        ExtractableResponse<Response> deleteResponse = 구간_삭제_요청((Long) 이호선.get("id"), STATION_IDS.get("봉천역"));
+        ExtractableResponse<Response> deleteResponse1 = 구간_삭제_요청((Long) 이호선.get("id"), STATION_IDS.get("당산역"));
 
         //then
-        구간_삭제_되었는지_상태_검증(deleteResponse);
+        구간이_삭제_되었는지_검증(deleteResponse1, "당산역");
 
         //when
-        ExtractableResponse<Response> response = requestGetById(LineAcceptanceTest.LINE_PATH, (Long) 이호선.get("id"));
+        ExtractableResponse<Response> deleteResponse2 = 구간_삭제_요청((Long) 이호선.get("id"), STATION_IDS.get("사당역"));
 
         //then
-        구간에서_지하철역이_삭제되었는지_검증(response, "봉천역");
+        구간이_삭제_되었는지_검증(deleteResponse2, "사당역");
+
+        //when
+        ExtractableResponse<Response> deleteResponse3 = 구간_삭제_요청((Long) 이호선.get("id"), STATION_IDS.get("신도림역"));
+
+        //then
+        구간이_삭제_되었는지_검증(deleteResponse3, "신도림역");
+
+        //when
+        ExtractableResponse<Response> deleteResponse4 = 구간_삭제_요청((Long) 이호선.get("id"), STATION_IDS.get("신도림역"));
+
+        //then
+        삭제에_실패_했는지_상태_검증(deleteResponse4);
+
+        //when
+        ExtractableResponse<Response> deleteResponse5 = 구간_삭제_요청((Long) 이호선.get("id"), STATION_IDS.get("신대방역"));
+
+        //then
+        삭제에_실패_했는지_상태_검증(deleteResponse5);
 
     }
 
@@ -296,13 +321,22 @@ class SectionAcceptanceTest {
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    private void 구간이_삭제_되었는지_검증(ExtractableResponse<Response> deleteResponse,String stationName) {
+        구간_삭제_되었는지_상태_검증(deleteResponse);
+        ExtractableResponse<Response> getResponse = requestGetById(LineAcceptanceTest.LINE_PATH, (Long) 이호선.get("id"));
+        노선_조회시_해당_지하철역이_삭제_되었는지_검증(getResponse, stationName);
+    }
+
     private void 구간_삭제_되었는지_상태_검증(ExtractableResponse<Response> deleteResponse) {
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    private void 구간에서_지하철역이_삭제되었는지_검증(ExtractableResponse<Response> response, String stationName) {
+    private void 노선_조회시_해당_지하철역이_삭제_되었는지_검증(ExtractableResponse<Response> response, String stationName) {
         assertThat(ExtractUtils.extract("stations.name", response, String.class))
                 .doesNotContain(stationName);
     }
 
+    private void 삭제에_실패_했는지_상태_검증(ExtractableResponse<Response> deleteResponse4) {
+        assertThat(deleteResponse4.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
