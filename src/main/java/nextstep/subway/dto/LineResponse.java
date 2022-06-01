@@ -15,7 +15,7 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, List<SectionResponse> sectionResponses) {
+    private LineResponse(Long id, String name, String color, List<SectionResponse> sectionResponses) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -24,7 +24,9 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         Sections sections = line.getSections();
-        List<SectionResponse> sectionResponses = sections.getSectionList().stream().map(SectionResponse::of)
+        List<SectionResponse> sectionResponses = sections.getSectionList()
+                .stream()
+                .map(SectionResponse::of)
                 .collect(toList());
         return new LineResponse(line.getId(), line.getName(), line.getColor(), sectionResponses);
     }

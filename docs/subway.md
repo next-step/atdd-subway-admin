@@ -59,6 +59,6 @@
     - 참고자료 : https://stackoverflow.com/questions/56712707/springboottest-vs-contextconfiguration-vs-import-in-spring-boot-unit-test
 
 ## 3단계 리뷰
-  - [ ] 구간 추가시 응답으로 Line을 직접 return 하지 않도록 수정 
-  - [ ] LineResponse 생성자 접근 제한
-  - [ ] Stream API 사용한 부분 줄 나누기
+  - [X] 구간 추가시 응답으로 Line을 직접 return 하지 않도록 수정 
+  - [X] LineResponse 생성자 접근 제한
+  - [X] Stream API 사용한 부분 줄 나누기

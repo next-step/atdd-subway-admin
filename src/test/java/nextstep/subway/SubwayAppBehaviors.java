@@ -24,7 +24,9 @@ public class SubwayAppBehaviors {
 
         LineResponse lineResponse = optionalLineResponse.get();
         List<SectionResponse> sectionResponses = lineResponse.getSectionResponses();
-        return sectionResponses.stream().map((sectionResponse) -> sectionResponse.getStartStationName()).collect(toList());
+        return sectionResponses.stream()
+                .map((sectionResponse) -> sectionResponse.getStartStationName())
+                .collect(toList());
     }
 
     public static ExtractableResponse<Response> 지하철구간을_생성한다(Long lineId, Long upStationId, Long downStationId, Long distance) throws CannotAddSectionException {
