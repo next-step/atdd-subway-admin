@@ -229,7 +229,7 @@ class SectionAcceptanceTest {
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-    private void 추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(Map<String,Object> line,String ...orderStations) {
+    private void 추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(Map<String, Object> line, String... orderStations) {
         ExtractableResponse<Response> response = requestGetById(LineAcceptanceTest.LINE_PATH, (Long) line.get("id"));
         List<String> extract = ExtractUtils.extract("stations.name", response, String.class);
         assertThat(extract).containsExactly(orderStations);
@@ -254,7 +254,7 @@ class SectionAcceptanceTest {
                 .doesNotContain(stationName);
     }
 
-    private void 삭제에_실패_했는지_상태_검증(ExtractableResponse<Response> deleteResponse4) {
-        assertThat(deleteResponse4.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    private void 삭제에_실패_했는지_상태_검증(ExtractableResponse<Response> deleteResponse) {
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
