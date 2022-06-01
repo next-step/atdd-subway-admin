@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.InvalidDistanceException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -12,6 +13,6 @@ class DistanceTest {
     void 유효하지_않은_구간거리(int value) {
         assertThatThrownBy(() -> {
             new Distance(value);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(InvalidDistanceException.class);
     }
 }
