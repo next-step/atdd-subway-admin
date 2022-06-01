@@ -39,7 +39,7 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section) {
         this.sections.add(section);
-        section.toLine(this);
+        section.setLine(this);
     }
 
     public void update(Line line) {
@@ -58,6 +58,7 @@ public class Line extends BaseEntity {
     public String getColor() {
         return color;
     }
+
 
     public List<Section> getSections() {
         return sections.get();

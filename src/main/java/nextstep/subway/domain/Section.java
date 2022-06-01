@@ -37,16 +37,60 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public void toLine(Line line) {
+    public void setLine(Line line) {
         this.line = line;
+    }
+
+    public List<Station> allStations() {
+        return Arrays.asList(upStation, downStation);
+    }
+
+    public void updateUpStation(Section section) {
+        subtractDistance(section.getDistance());
+        this.upStation = section.getDownStation();
+    }
+
+    public void updateDownStation(Section section) {
+        subtractDistance(section.getDistance());
+        this.downStation = section.getUpStation();
+    }
+
+    public void subtractDistance(Integer distance) {
+        validateSubtractDistance(distance);
+        this.distance = Math.subtractExact(this.distance, distance);
+
+    }
+
+    private void validateSubtractDistance(Integer distance) {
+        if (this.distance <= distance) {
+            throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
+        }
+    }
+
+    public boolean duplicateUpDownStations(Section section) {
+        List<Station> stations = allStations();
+        return stations.contains(section.getUpStation()) && stations.contains(section.getDownStation());
+    }
+
+    public boolean containsUpDownStations(Section section) {
+        List<Station> stations = allStations();
+        return stations.contains(section.getUpStation()) || stations.contains(section.getDownStation());
     }
 
     public Long getId() {
         return id;
     }
 
-    public List<Station> allStations() {
-        return Arrays.asList(upStation, downStation);
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public Integer getDistance() {
+        return distance;
     }
 
     @Override
@@ -78,4 +122,5 @@ public class Section extends BaseEntity {
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
     }
+
 }
