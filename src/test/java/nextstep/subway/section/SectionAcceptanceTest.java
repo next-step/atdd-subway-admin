@@ -1,5 +1,6 @@
 package nextstep.subway.section;
 
+import static nextstep.subway.line.LineAcceptanceTest.노션_조회;
 import static nextstep.subway.line.LineAcceptanceTest.지하철역과_노선_동시_생성;
 import static nextstep.subway.station.StationAcceptanceTest.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,7 +22,6 @@ import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -79,9 +79,9 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
 
 
-    @ParameterizedTest(name = "구간 삭제가 정상적으로 이루어지는 경우")
-    @ValueSource(longs = {1,2,3})
-    void deleteSection_success(Long stationId) {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("providerDeleteSectionCase")
+    void deleteSection_success(String name, Long stationId) {
         // given
         List<StationResponse> preStations = lineResponse.getStations();
         SectionRequest sectionRequest = new SectionRequest(preStations.get(0).getId(), newStationResponse.getId(), 5L);
@@ -91,7 +91,28 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_구간_삭제(stationId);
 
         // then
+        List<Object> stations = 노션_조회(lineResponse.getId()).jsonPath().getList("stations");
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(stations).hasSize(2);
+    }
+
+    static Stream<Arguments> providerDeleteSectionCase() {
+        List<StationResponse> preStations = lineResponse.getStations();
+
+        return Stream.of(
+            Arguments.of(
+                "상행종점역이 삭제되는 경우",
+                preStations.get(0).getId()
+            ),
+            Arguments.arguments(
+                "하행종점역이 삭제되는 경우",
+                preStations.get(preStations.size() - 1).getId()
+            ),
+            Arguments.arguments(
+                "상하행종점역 사이의 역이 삭제되는 경우",
+                newStationResponse.getId()
+            )
+        );
     }
 
     static Stream<Arguments> providerCreateSectionCase() {
