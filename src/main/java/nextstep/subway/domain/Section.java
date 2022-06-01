@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import nextstep.subway.dto.response.SectionResponse;
+import org.apache.commons.lang3.ObjectUtils;
 
 @Entity
 public class Section {
@@ -110,6 +111,9 @@ public class Section {
         this.backSection = backSection;
     }
 
+    public boolean isFirstSection(){
+        return ObjectUtils.isEmpty(downStation);
+    }
     public Station getUpStation() {
         return upStation;
     }

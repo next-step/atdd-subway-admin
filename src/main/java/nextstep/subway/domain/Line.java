@@ -19,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import nextstep.subway.enums.LineColor;
+import nextstep.subway.exception.LineNotFoundException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -95,6 +96,19 @@ public class Line extends BaseEntity {
     public void changeDownStation(Section section) {
         this.distance.plus(section.getDistance());
         this.downStation = section.getDownStation();
+    }
+
+    private List<Section> getSectionsByOrder() {
+        List<Section> sectionOrdered = new LinkedList<>();
+        Section section = sections.stream()
+            .filter(Section::isFirstSection)
+            .findFirst()
+            .orElseThrow(LineNotFoundException::new);
+        while (ObjectUtils.isNotEmpty(section.getNextSection())) {
+            sectionOrdered.add(section);
+            section = section.getNextSection();
+        }
+        return sectionOrdered;
     }
 
     public Long getId() {
