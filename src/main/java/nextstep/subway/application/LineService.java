@@ -26,7 +26,7 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse saveLine(LineRequest lineRequest) throws NoSuchElementException {
+    public LineResponse saveLine(LineRequest lineRequest) {
 
         Station upStation = findStationById(lineRequest.getUpStationId());
         Station downStation = findStationById(lineRequest.getDownStationId());
@@ -43,15 +43,14 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findById(Long id) throws NotFoundException {
-        return LineResponse.of(lineRepository.findById(id).orElseThrow(NotFoundException::new));
+    public LineResponse findById(Long id) {
+        return LineResponse.of(findLineById(id));
     }
 
     @Transactional
-    public void updateNameAndColor(Long id, LineUpdateNameAndColorRequest lineRequest)
-            throws NoSuchElementException {
+    public void updateNameAndColor(Long id, LineUpdateNameAndColorRequest lineRequest) {
 
-        Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        Line line = findLineById(id);
 
         line.updateNameAndColor(lineRequest.getName(), lineRequest.getColor());
     }
@@ -64,5 +63,9 @@ public class LineService {
     private Station findStationById(Long id) {
         return stationRepository.findById(id)
                 .orElseThrow(NoSuchElementException::new);
+    }
+
+    private Line findLineById(Long id) {
+        return lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 }
