@@ -75,8 +75,13 @@ public class LineStation extends BaseEntity {
         this.line = line;
     }
 
-    public void merge(LineStation deleteSection) {
-        this.downStation = deleteSection.getDownStation();
-        this.distance += deleteSection.distance;
+    public void merge(LineStation sectionByDownStation) {
+        this.downStation = sectionByDownStation.downStation;
+        this.distance = calcLinkDistance(sectionByDownStation);
     }
+
+    private long calcLinkDistance(LineStation sectionByDownStation) {
+        return this.distance + sectionByDownStation.distance;
+    }
+
 }

@@ -63,6 +63,12 @@ public class LineService {
         line.addSection(new SectionDTO(line, upStation, downStation, sectionRequestDTO.getDistance()));
     }
 
+    @Transactional
+    public void deleteSection(Long id, Station station) {
+        Line line = getLine(id);
+        line.deleteSection(station);
+    }
+
     private Line getLine(Long lineId) {
         return lineRepository.findByIdAndDeletedFalse(lineId)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] ID에 해당하는 노선이 없습니다."));

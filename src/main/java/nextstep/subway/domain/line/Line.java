@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import nextstep.subway.domain.BaseEntity;
 import nextstep.subway.domain.collection.LineStations;
+import nextstep.subway.domain.station.Station;
 import nextstep.subway.dto.line.SectionDTO;
 import org.apache.commons.lang3.StringUtils;
 
@@ -73,5 +74,9 @@ public class Line extends BaseEntity {
 
     public LineStations getLineStations() {
         return lineStations;
+    }
+
+    public void deleteSection(Station station) {
+        lineStations.delete(station);
     }
 }

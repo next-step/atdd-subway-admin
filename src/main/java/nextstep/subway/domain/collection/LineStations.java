@@ -13,12 +13,13 @@ import nextstep.subway.domain.line.LineStation;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.exception.CreateSectionException;
 import nextstep.subway.dto.line.SectionDTO;
+import nextstep.subway.exception.DeleteSectionException;
 
 @Embeddable
 public class LineStations {
 
-    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
-    @JoinColumn(name = "line_id",foreignKey = @ForeignKey(name = "fk_line_station_to_line"))
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_line_station_to_line"))
     private List<LineStation> lineStations = new ArrayList<>();
 
     public void add(LineStation target) {
@@ -41,7 +42,7 @@ public class LineStations {
         }
     }
 
-    private void addBetweenSectionByUpStation(SectionDTO sectionDTO){
+    private void addBetweenSectionByUpStation(SectionDTO sectionDTO) {
         LineStation sectionByUpStation = findSectionByUpStation(sectionDTO.getUpStation());
 
         long newDistance = sectionByUpStation.calcNewSectionDistance(sectionDTO.getDistance());
@@ -115,9 +116,35 @@ public class LineStations {
         }
     }
 
+    public void delete(Station station) {
+        boolean isExistSectionByUpSation = isExistSectionByUpSation(station);
+        boolean isExistSectionByDownSation = isExistSectionByDownSataion(station);
+        validateDeleteSectionNotFound(isExistSectionByUpSation, isExistSectionByDownSation);
+
+        LineStation sectionByUpStation = findSectionByUpStation(station);
+        LineStation sectionByDownStation = findSectionByDownStation(station);
+        if (!isExistSectionByDownSation) {
+            lineStations.remove(sectionByUpStation);
+        }
+        if (!isExistSectionByUpSation) {
+            lineStations.remove(sectionByDownStation);
+        }
+        if(isExistSectionByUpSation && isExistSectionByDownSation){
+            sectionByUpStation.merge(sectionByDownStation);
+            lineStations.remove(sectionByDownStation);
+        }
+    }
+
+
     private void validateAlreadySection(boolean isExistSectionByUpSation, boolean isExistSectionByDownSataion) {
         if (isExistSectionByUpSation && isExistSectionByDownSataion) {
             throw new CreateSectionException("[ERROR] 이미 구간이 존재합니다.");
+        }
+    }
+
+    private void validateDeleteSectionNotFound(boolean isExistSectionByUpSation, boolean isExistSectionByDownSation) {
+        if (!isExistSectionByUpSation && !isExistSectionByDownSation) {
+            throw new DeleteSectionException("[ERROR] 삭제할 구간을 찾을 수 없습니다.");
         }
     }
 
