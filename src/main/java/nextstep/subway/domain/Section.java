@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.SectionLengthOverException;
-
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
@@ -18,7 +17,9 @@ public class Section extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private int distance;
+
+    @Embedded
+    private Distance distance;
 
     @ManyToOne
     @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_to_upstation"))
@@ -38,7 +39,7 @@ public class Section extends BaseEntity {
     public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = Distance.from(distance);
     }
 
     public static Section of(Station upStation, Station downStation, int distance) {
@@ -58,7 +59,7 @@ public class Section extends BaseEntity {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.getDistance();
     }
 
     public void setLine(Line line) {
@@ -77,11 +78,7 @@ public class Section extends BaseEntity {
     }
 
     private void calculateDistance(Section newSection) {
-        int newDistance = this.distance - newSection.distance;
-        if (newDistance <= 0) {
-            throw new SectionLengthOverException("기존 역 사이 거리보다 작을 수 없습니다.");
-        }
-        this.distance = newDistance;
+        this.distance.minus(newSection.distance);
     }
 
     @Override
@@ -98,6 +95,6 @@ public class Section extends BaseEntity {
     }
 
     public List<Station> upDownStationPair() {
-        return Arrays.asList(upStation,downStation);
+        return Arrays.asList(upStation, downStation);
     }
 }
