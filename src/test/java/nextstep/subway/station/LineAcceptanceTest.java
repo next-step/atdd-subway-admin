@@ -5,7 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
-import nextstep.subway.dto.LineCreateRequest;
+import nextstep.subway.dto.LineRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,7 +48,7 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선 생성 테스트")
     void 지하철노선_생성_테스트() {
         // given
-        LineCreateRequest lineRequest = new LineCreateRequest("분당선", upStation.getId(), downStation.getId(), "yellow", 1000L);
+        LineRequest lineRequest = new LineRequest("분당선", upStation.getId(), downStation.getId(), "yellow", 1000L);
 
         ExtractableResponse<Response> 지하철노선_생성_응답 = 지하철노선_생성(lineRequest);
 
@@ -56,10 +56,10 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> 지하철노선_조회_응답 = 지하철노선_조회();
 
         // then
-        assertThat(true).isTrue();   // then
+        assertThat(지하철노선_조회_응답.jsonPath().getList(".").contains(지하철노선_생성_응답.jsonPath().get())).isTrue();   // then
     }
 
-    private ExtractableResponse<Response> 지하철노선_생성(LineCreateRequest lineRequest) {
+    private ExtractableResponse<Response> 지하철노선_생성(LineRequest lineRequest) {
         ExtractableResponse<Response> 지하철노선_생성_응답 =
                 RestAssured.given().log().all()
                         .body(lineRequest)

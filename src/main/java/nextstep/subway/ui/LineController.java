@@ -1,14 +1,13 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.LineService;
-import nextstep.subway.dto.LineCreateRequest;
-import nextstep.subway.dto.LineCreateResponse;
-import nextstep.subway.dto.LineListResponse;
+import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("line")
@@ -20,14 +19,13 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineCreateResponse> createLine(@RequestBody LineCreateRequest lineCreateRequest) {
-        LineCreateResponse lineCreateResponse = lineService.saveLine(lineCreateRequest);
-        return ResponseEntity.created(URI.create("/")).body(lineCreateResponse);
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+        LineResponse lineCreationResponse = lineService.saveLine(lineRequest);
+        return ResponseEntity.created(URI.create("/")).body(lineCreationResponse);
     }
 
     @GetMapping
-    public ResponseEntity<LineListResponse> getLines() {
-        LineListResponse lineListResponse = new LineListResponse(new ArrayList<>());
-        return ResponseEntity.ok(lineListResponse);
+    public ResponseEntity<List<LineResponse>> getLines() {
+        return ResponseEntity.ok(lineService.selectLine());
     }
 }
