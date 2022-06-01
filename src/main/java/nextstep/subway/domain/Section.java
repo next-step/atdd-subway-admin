@@ -123,7 +123,7 @@ public class Section {
     }
 
     public boolean isFirstSection() {
-        return ObjectUtils.isEmpty(downStation);
+        return ObjectUtils.isEmpty(backSection);
     }
 
     public Station getUpStation() {
