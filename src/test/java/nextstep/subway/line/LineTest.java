@@ -43,19 +43,6 @@ class LineTest {
             .hasMessageContaining(ExceptionType.IS_EMPTY_LINE_COLOR.getMessage());
     }
 
-    @DisplayName("노선 거리가 없으면 예외가 발생해야 한다")
-    @Test
-    void line_exception_test3() {
-        // given
-        upStation = new Station("테스트1");
-        downStation = new Station("테스트2");
-
-        assertThatThrownBy(() -> {
-            Line.of("2호선", "red", null, upStation, downStation);
-        }).isInstanceOf(BadRequestException.class)
-            .hasMessageContaining(ExceptionType.IS_EMPTY_LINE_DISTANCE.getMessage());
-    }
-
     @DisplayName("노선 정보를 변경하면 정상적으로 변경되어야 한다")
     @Test
     void line_update_test() {

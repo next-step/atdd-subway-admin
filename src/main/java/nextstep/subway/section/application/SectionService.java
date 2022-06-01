@@ -27,6 +27,6 @@ public class SectionService {
         Section section = Section.of(upStation, downStation, sectionRequest.getDistance());
 
         Line line = lineService.findOne(lineId);
-        line.addSection(section);
+        line.registerSection(section);
     }
 }

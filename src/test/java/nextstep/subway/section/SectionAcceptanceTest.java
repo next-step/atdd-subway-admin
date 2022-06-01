@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.global.exception.ExceptionType;
+import nextstep.subway.section.dto.SectionRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -58,12 +59,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> createSection() {
         return Stream.of(
             dynamicTest("역 사이에 새로운 역을 등록한다" , () -> {
-                Map<String, Object> params = new HashMap<>();
-                params.put("upStationId", 대림역_id);
-                params.put("downStationId", 신대방역_id);
-                params.put("distance", 7L);
-
-                ExtractableResponse<Response> saveResponse = 지하철_구간_등록(노선_id, params);
+                SectionRequest sectionRequest = new SectionRequest(대림역_id, 신대방역_id, 7L);
+                ExtractableResponse<Response> saveResponse = 지하철_구간_등록(노선_id, sectionRequest);
                 assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
             }),
             dynamicTest("노선을 조회하면 생성된 구간이 같이 조회되어야 한다", () -> {
@@ -84,12 +81,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> createSection2() {
         return Stream.of(
             dynamicTest("새로운 역을 상행 종점으로 등록한다" , () -> {
-                Map<String, Object> params = new HashMap<>();
-                params.put("upStationId", 신도림역_id);
-                params.put("downStationId", 대림역_id);
-                params.put("distance", 10L);
-
-                ExtractableResponse<Response> saveResponse = 지하철_구간_등록(노선_id, params);
+                SectionRequest sectionRequest = new SectionRequest(신도림역_id, 대림역_id, 10L);
+                ExtractableResponse<Response> saveResponse = 지하철_구간_등록(노선_id, sectionRequest);
                 assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
             }),
             dynamicTest("노선을 조회하면 상행 종점으로 생성된 구간이 조회되어야 한다", () -> {
@@ -110,12 +103,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> createSection3() {
         return Stream.of(
             dynamicTest("새로운 역을 하행 종점으로 등록한다" , () -> {
-                Map<String, Object> params = new HashMap<>();
-                params.put("upStationId", 강남역_id);
-                params.put("downStationId", 신림역_id);
-                params.put("distance", 10L);
-
-                ExtractableResponse<Response> saveResponse = 지하철_구간_등록(노선_id, params);
+                SectionRequest sectionRequest = new SectionRequest(강남역_id, 신림역_id, 10L);
+                ExtractableResponse<Response> saveResponse = 지하철_구간_등록(노선_id, sectionRequest);
                 assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
             }),
             dynamicTest("노선을 조회하면 하행 종점으로 생성된 구간이 조회되어야 한다", () -> {
@@ -137,12 +126,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
         return Stream.of(
             dynamicTest("기존 노선의 길이보다 거리가 긴 노선을 역 사이에 등록하면 "
                 + "예외가 발생한다" , () -> {
-                Map<String, Object> params = new HashMap<>();
-                params.put("upStationId", 대림역_id);
-                params.put("downStationId", 신대방역_id);
-                params.put("distance", 30L);
-
-                ExtractableResponse<Response> response = 지하철_구간_등록(노선_id, params);
+                SectionRequest sectionRequest = new SectionRequest(대림역_id, 신대방역_id, 30L);
+                ExtractableResponse<Response> response = 지하철_구간_등록(노선_id, sectionRequest);
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
                 assertThat(response.asString()).contains(ExceptionType.IS_NOT_OVER_ORIGIN_DISTANCE.getMessage());
             })
@@ -155,12 +140,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
         return Stream.of(
             dynamicTest("신규 노선 등록시 기존 노선에 모두 존재하는 역을 등록하면 "
                 + "예외가 발생한다" , () -> {
-                Map<String, Object> params = new HashMap<>();
-                params.put("upStationId", 대림역_id);
-                params.put("downStationId", 강남역_id);
-                params.put("distance", 5L);
-
-                ExtractableResponse<Response> response = 지하철_구간_등록(노선_id, params);
+                SectionRequest sectionRequest = new SectionRequest(대림역_id, 강남역_id, 5L);
+                ExtractableResponse<Response> response = 지하철_구간_등록(노선_id, sectionRequest);
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
                 assertThat(response.asString()).contains(ExceptionType.IS_EXIST_BOTH_STATIONS.getMessage());
             })
@@ -173,12 +154,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
         return Stream.of(
             dynamicTest("신규 노선 등록시 기존 노선에 모두 존재하지 않는 역을 등록하면 "
                 + "예외가 발생한다" , () -> {
-                Map<String, Object> params = new HashMap<>();
-                params.put("upStationId", 신림역_id);
-                params.put("downStationId", 신대방역_id);
-                params.put("distance", 5L);
-
-                ExtractableResponse<Response> response = 지하철_구간_등록(노선_id, params);
+                SectionRequest sectionRequest = new SectionRequest(신림역_id, 신대방역_id, 5L);
+                ExtractableResponse<Response> response = 지하철_구간_등록(노선_id, sectionRequest);
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
                 assertThat(response.asString()).contains(ExceptionType.IS_NOT_EXIST_BOTH_STATIONS.getMessage());
             })

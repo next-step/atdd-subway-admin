@@ -13,7 +13,7 @@ import nextstep.subway.global.exception.ExceptionType;
 @Embeddable
 public class Sections {
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> items = new ArrayList<>();
 
     public void add(Section newSection) {
@@ -44,7 +44,7 @@ public class Sections {
 
     private Section getConnectedSection(Section newSection) {
         return this.items.stream()
-            .filter(x -> x.isStationConnectable(newSection))
+            .filter(section -> section.isStationConnectable(newSection))
             .findAny()
             .orElseThrow(RuntimeException::new);
     }

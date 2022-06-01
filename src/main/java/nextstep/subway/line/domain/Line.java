@@ -46,24 +46,27 @@ public class Line extends BaseEntity {
         Station upStation,
         Station downStation
     ) {
-        validateLine(name, color, distance);
+        validateLine(name, color);
         this.name = name;
         this.color = color;
         Section section = Section.of(upStation, downStation, distance);
         section.addLine(this);
     }
 
-    private void validateLine(String name, String color, Long distance) {
+    private void validateLine(String name, String color) {
+        validateEmptyName(name);
+        validateEmptyColor(color);
+    }
+
+    private void validateEmptyName(String name) {
         if (Objects.isNull(name)) {
             throw new BadRequestException(ExceptionType.IS_EMPTY_LINE_NAME);
         }
+    }
 
+    private void validateEmptyColor(String color) {
         if (Objects.isNull(color)) {
             throw new BadRequestException(ExceptionType.IS_EMPTY_LINE_COLOR);
-        }
-
-        if (Objects.isNull(distance) || distance < 1) {
-            throw new BadRequestException(ExceptionType.IS_EMPTY_LINE_DISTANCE);
         }
     }
 
@@ -100,10 +103,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Sections getSections() {
-        return sections;
-    }
-
+    // todo: 순서 지키기, response 모르게 하기
     public Set<StationResponse> getStationResponses() {
         Set<StationResponse> stations = new HashSet<>();
         for (Section section : sections.getItems()) {
@@ -120,7 +120,11 @@ public class Line extends BaseEntity {
             .collect(Collectors.toList());
     }
 
-    public void addSection(Section section) {
+    public void registerSection(Section section) {
         section.addLine(this);
+    }
+
+    public void addSection(Section section) {
+        this.sections.add(section);
     }
 }

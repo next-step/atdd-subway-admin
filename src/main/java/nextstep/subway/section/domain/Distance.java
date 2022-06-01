@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import nextstep.subway.global.exception.BadRequestException;
@@ -20,7 +21,7 @@ public class Distance {
     }
 
     private void validateDistance(Long value) {
-        if (value <= 0) {
+        if (Objects.isNull(value) || value <= 0) {
             throw new BadRequestException(ExceptionType.MUST_BE_AT_LEAST_LENGTH_ONE);
         }
     }
