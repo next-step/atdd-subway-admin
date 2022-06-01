@@ -114,6 +114,10 @@ public class Section {
         return;
     }
 
+    public boolean isFirstSection() {
+        return ObjectUtils.isEmpty(backSection);
+    }
+
     public void setNextSection(Section nextSection) {
         this.nextSection = nextSection;
     }
@@ -122,9 +126,6 @@ public class Section {
         this.backSection = backSection;
     }
 
-    public boolean isFirstSection() {
-        return ObjectUtils.isEmpty(backSection);
-    }
 
     public Station getUpStation() {
         return upStation;
