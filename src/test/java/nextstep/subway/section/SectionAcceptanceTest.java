@@ -151,7 +151,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = 지하철구간을_생성한다(노선_ID, 강남역_ID, 신촌역_ID, 150L);
 
         // then
-        assertThat(response.statusCode() == HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     /**
@@ -175,7 +175,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = 지하철구간을_생성한다(노선_ID, 신촌역_ID, 신촌역_ID, 50L);
 
         // then
-        assertThat(response.statusCode()==HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     /**
@@ -197,7 +197,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = 지하철구간을_생성한다(노선_ID, 강남역_ID, 충정로역_ID, 50L);
 
         // then
-        assertThat(response.statusCode()==HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     /**
@@ -222,7 +222,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = 지하철구간을_생성한다(노선_ID, 신촌역_ID, 잠실역_ID, 50L);
 
         // then
-        assertThat(response.statusCode()==HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     /**
@@ -300,5 +300,55 @@ public class SectionAcceptanceTest {
         assertThat(response.statusCode()==HttpStatus.NO_CONTENT.value());
         List<String> stationNames = 지하철노선에_속한_지하철역_이름목록을_반환한다(노선_ID);
         assertThat(stationNames).containsExactly("강남역","신촌역");
+    }
+
+    /**
+     * Given 3개의 역을 가진 노선을 생성한다.
+     * When 노선에 포함되어있지 않은 구간(역)을 제거한다.
+     * Then 구간 제거에 실패한다.
+     */
+    @DisplayName("노선에 포함되지않은 구간을 제거할 경우 실패한다.")
+    @Test
+    void deleteNotFound() {
+        // given
+        Long 강남역_ID = 지하철역을_생성하고_생성된_ID를_반환한다("강남역");
+        Long 충정로역_ID = 지하철역을_생성하고_생성된_ID를_반환한다("충정로역");
+        Long 노선_ID = 지하철노선을_생성하고_ID를_반환한다(
+                "2호선", "초록색", 강남역_ID, 충정로역_ID, 100L
+        );
+        Long 신촌역_ID = 지하철역을_생성하고_생성된_ID를_반환한다("신촌역");
+        지하철구간을_생성한다(노선_ID, 강남역_ID, 신촌역_ID, 50L);
+
+        Long 잠실역_ID = 지하철역을_생성하고_생성된_ID를_반환한다("잠실역");
+
+        // when
+        ExtractableResponse<Response> response = 지하철구간을_삭제한다(노선_ID, 잠실역_ID);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    /**
+     * Given 2개의 역을 가진 노선(구간이 단 하나인 노선)을 생성한다.
+     * When 노선이 가진 유일한 구간을 제거한다.
+     * Then 구간 제거에 실패한다.
+     */
+    @DisplayName("노선이 가진 유일한 구간을 제거할 경우 실패한다.")
+    @Test
+    void lineWithNoSection() {
+        // given
+        Long 강남역_ID = 지하철역을_생성하고_생성된_ID를_반환한다("강남역");
+        Long 충정로역_ID = 지하철역을_생성하고_생성된_ID를_반환한다("충정로역");
+        Long 노선_ID = 지하철노선을_생성하고_ID를_반환한다(
+                "2호선", "초록색", 강남역_ID, 충정로역_ID, 100L
+        );
+        // when
+        ExtractableResponse<Response> deleteFirstStationResponse = 지하철구간을_삭제한다(노선_ID, 강남역_ID);
+        ExtractableResponse<Response> deleteLastStationResponse = 지하철구간을_삭제한다(노선_ID, 충정로역_ID);
+
+        // then
+
+        assertThat(deleteFirstStationResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(deleteLastStationResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }

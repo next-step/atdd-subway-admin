@@ -35,6 +35,9 @@ public class SectionService {
 
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.getById(lineId);
+        if(line.hasOnlyOneActualSection()){
+            throw new CannotDeleteSectionException("노선은 최소 1개의 구간을 가져야 합니다.");
+        }
         Station deleteStation = stationRepository.findById(stationId).get();
         Sections sections = line.getSections();
         sections.deleteSection(deleteStation);

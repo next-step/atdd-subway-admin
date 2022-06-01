@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import static java.util.stream.Collectors.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
@@ -27,6 +28,12 @@ public class Sections {
 
     public List<Section> getSectionList() {
         return Collections.unmodifiableList(sectionList);
+    }
+
+    public List<Section> getActualSectionList() {
+        return sectionList.stream()
+                .filter((section -> section.getDownStation() != null))
+                .collect(toList());
     }
 
     public void add(Section section) {
@@ -101,6 +108,7 @@ public class Sections {
         sectionOperation.delete();
         this.setOrder();
     }
+
 
     private interface InsertSectionOperation{
         void insert(Section newSection);
