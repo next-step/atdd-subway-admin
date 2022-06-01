@@ -60,4 +60,22 @@ public abstract class BaseAcceptanceTest {
                 .then().log().all()
                 .extract();
     }
+
+    protected ExtractableResponse<Response> updateLineRequest(int lineId, LineRequest lineRequest) {
+        return RestAssured.given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParam("id", lineId)
+                .when().put(LINES_URI + "/{id}")
+                .then().log().all()
+                .extract();
+    }
+
+    protected ExtractableResponse<Response> deleteLineRequest(int lineId) {
+        return RestAssured.given().log().all()
+                .pathParam("id", lineId)
+                .when().delete(LINES_URI + "/{id}")
+                .then().log().all()
+                .extract();
+    }
 }

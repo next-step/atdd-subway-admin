@@ -51,7 +51,6 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
     /**
      * When 지하철 노선을 생성하면
-     * Then 지하철 노선이 생성된다
      * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
      */
     @DisplayName("지하철 노선을 생성하면 조회 시 해당 노선을 찾을 수 있다.")
@@ -94,7 +93,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     /**
      * Given 지하철 노선을 생성하고
      * When 생성한 지하철 노선을 조회하면
-     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다
      */
     @DisplayName("생성된 특정 지하철 노선을 조회할 수 있다.")
     @Test
@@ -107,12 +106,10 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         StationResponse upStation = stations.get(0);
         StationResponse downStation = stations.get(1);
 
-        // then
-        assertThat(response.statusCode())
-                .isEqualTo(HttpStatus.CREATED.value());
+        // when
+        LineResponse lineResponse = findLineRequest(lineId).jsonPath().getObject("", LineResponse.class);
 
         // then
-        LineResponse lineResponse = findLineRequest(lineId).jsonPath().getObject("", LineResponse.class);
         assertThat(lineResponse)
                 .satisfies(line -> {
                     assertThat(line.getName())
@@ -134,25 +131,39 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void updateLine() {
         // given
+        int lineId = createLineRequest(firstLine).jsonPath().get("id");
 
         // when
+        updateLineRequest(lineId, secondLine);
 
         // then
+        LineResponse lineResponse = findLineRequest(lineId).jsonPath().getObject("", LineResponse.class);
+        assertThat(lineResponse)
+                .satisfies(line -> {
+                   assertThat(line.getName())
+                           .isEqualTo(secondLine.getName());
+                    assertThat(line.getColor())
+                            .isEqualTo(secondLine.getColor());
+                });
     }
-
 
     /**
      * Given 지하철 노선을 생성하고
      * When 생성한 지하철 노선을 삭제하면
-     * Then 해당 지하철 노선 정보는 삭제된다
+     * Then 해당 지하철 노선 정보는 조회되지 않는다
      */
     @DisplayName("지하철 노선 정보를 삭제할 수 있다.")
     @Test
     void deleteLine() {
         // given
+        int lineId = createLineRequest(firstLine).jsonPath().get("id");
 
         // when
+        deleteLineRequest(lineId);
 
         // then
+        ExtractableResponse<Response> lineResponse = findLineRequest(lineId);
+        assertThat(lineResponse.statusCode())
+                .isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
