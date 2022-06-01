@@ -9,6 +9,7 @@ public class Station extends BaseEntity {
     private Long id;
     @Column(unique = true, nullable = false)
     private String name;
+    @Column(name = "line_id")
     private Long lineId;
 
     public Station() {
