@@ -43,10 +43,6 @@ public class Line extends BaseEntity {
     @Embedded
     private Distance distance;
 
-    public static Line create(String name, String color, int distance) {
-        return new Line(name, color, distance);
-    }
-
     protected Line() {
     }
 
@@ -54,6 +50,10 @@ public class Line extends BaseEntity {
         this.name = LineName.of(name);
         this.color = LineColor.of(color);
         this.distance = Distance.of(distance);
+    }
+
+    public static Line create(String name, String color, int distance) {
+        return new Line(name, color, distance);
     }
 
     public Long getId() {

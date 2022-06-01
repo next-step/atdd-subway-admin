@@ -9,8 +9,11 @@ public class LineName {
     @Column(name = "name", unique = true)
     private String value;
 
-    public static LineName empty() {
-        return new LineName();
+    protected LineName() {
+    }
+
+    private LineName(String name) {
+        this.value = name;
     }
 
     public static LineName of(String name) {
@@ -19,13 +22,6 @@ public class LineName {
         }
 
         return new LineName(name);
-    }
-
-    protected LineName() {
-    }
-
-    private LineName(String name) {
-        this.value = name;
     }
 
     public String getValue() {

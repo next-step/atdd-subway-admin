@@ -19,11 +19,11 @@ public class Sections {
     )
     private List<Section> sections = new ArrayList<>();
 
-    public static Sections empty() {
-        return new Sections();
+    protected Sections() {
     }
 
-    protected Sections() {
+    public static Sections empty() {
+        return new Sections();
     }
 
     public List<Section> getSections() {

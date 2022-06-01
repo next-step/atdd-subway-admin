@@ -9,15 +9,15 @@ public class StationName {
     @Column(name = "name", unique = true)
     private String value;
 
+    protected StationName() {
+    }
+
     public static StationName of(String name) {
         if (Objects.isNull(name) || name.trim().isEmpty()) {
             throw new IllegalArgumentException("지하철명을 지정해주세요.");
         }
 
         return new StationName(name);
-    }
-
-    protected StationName() {
     }
 
     private StationName(String name) {

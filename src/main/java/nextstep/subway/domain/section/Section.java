@@ -28,10 +28,6 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "line_id", nullable = false)
     private Line line;
 
-    public static Section create(Station upStation, Station downStation, int distance) {
-        return new Section(upStation, downStation, distance);
-    }
-
     protected Section() {
     }
 
@@ -39,6 +35,10 @@ public class Section extends BaseEntity {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = Distance.of(distance);
+    }
+
+    public static Section create(Station upStation, Station downStation, int distance) {
+        return new Section(upStation, downStation, distance);
     }
 
     public void setLine(Line line) {
