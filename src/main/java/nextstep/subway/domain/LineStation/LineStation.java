@@ -29,8 +29,12 @@ public class LineStation {
     }
 
     public static LineStation create(Line line, Station station) {
-        if (Objects.isNull(line) || Objects.isNull(station)) {
-            throw new IllegalArgumentException("LineStation.create() Line 또는 Station이 null입니다.");
+        if (Objects.isNull(line)) {
+            throw new IllegalArgumentException("노선에 역을 추가할때 에러가 발생하였습니다. line is null");
+        }
+
+        if (Objects.isNull(station)) {
+            throw new IllegalArgumentException("노선에 역을 추가할 때 에러가 발생하였습니다. station is null");
         }
 
         return new LineStation(line, station);
