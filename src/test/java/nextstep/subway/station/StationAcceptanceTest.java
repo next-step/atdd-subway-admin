@@ -121,8 +121,8 @@ public class StationAcceptanceTest {
 
         return RestAssured
                 .given().log().all()
-                .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
                 .when().post("/stations")
                 .then().log().all()
                 .extract();
