@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,14 +25,13 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationService.findStationById(lineRequest.getUpStationId());
-        Station downStation = stationService.findStationById(lineRequest.getDownStationId());
+        Station upStation = stationService.findByIdOrElseThrow(lineRequest.getUpStationId());
+        Station downStation = stationService.findByIdOrElseThrow(lineRequest.getDownStationId());
         Line line = new Line(lineRequest.getName(), lineRequest.getColor(),
                 upStation, downStation, lineRequest.getDistance());
         Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
     }
-
 
     public List<LineResponse> findAllLines() {
         List<Line> line = lineRepository.findAll();
@@ -61,10 +59,6 @@ public class LineService {
     }
 
     private Line findById(Long id) {
-        Optional<Line> line = lineRepository.findById(id);
-        if (!line.isPresent()) {
-            throw new DataNotFoundException("노선이 존재하지 않습니다.");
-        }
-        return line.get();
+        return lineRepository.findById(id).orElseThrow(() -> new DataNotFoundException("노선이 존재하지 않습니다."));
     }
 }

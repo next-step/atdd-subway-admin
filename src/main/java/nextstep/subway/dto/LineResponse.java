@@ -26,24 +26,6 @@ public class LineResponse {
         this.stations.add(new StationResponse(upStation.getId(), upStation.getName()));
         this.stations.add(new StationResponse(downStation.getId(), downStation.getName()));
     }
-//
-//    static class StationResponse {
-//        Long id;
-//        String name;
-//
-//        public StationResponse(Long id, String name) {
-//            this.id = id;
-//            this.name = name;
-//        }
-//
-//        public Long getId() {
-//            return id;
-//        }
-//
-//        public String getName() {
-//            return name;
-//        }
-//    }
 
     public Long getId() {
         return id;
