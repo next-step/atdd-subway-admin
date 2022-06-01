@@ -36,7 +36,7 @@ public class LineTest {
     }
 
     @Test
-    void 다른_노선과_자하철역의_연관관계를_추가하면_익셉션이_발생해야_한다() {
+    void 다른_노선과_지하철역의_연관관계를_추가하면_익셉션이_발생해야_한다() {
         // given
         final Line line = new Line("신분당선", "bg-red-600");
         final LineStation lineStation = new LineStation(new Line("2호천", "bg-green-600"),
