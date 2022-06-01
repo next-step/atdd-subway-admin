@@ -153,6 +153,23 @@ class SectionAcceptanceTest {
         구간추가_실패(노선, 하행선, 상행선, 3);
     }
 
+    /**
+     * Given 새로운 역 두개를 추가하고
+     * When 새로운 역으로만 이루어진 구간을 추가하면
+     * Then 실패한다
+     */
+    @DisplayName("등록하는 구간의 상행역과 하행역이 하나도 등록되어있지 않다면 등록할 수 없다")
+    @Test
+    void createUnknownSection() {
+        // given
+        StationResponse 신규역1 = 지하철역_생성("신규역1");
+        StationResponse 신규역2 = 지하철역_생성("신규역2");
+
+        // when
+        // then
+        구간추가_실패(노선, 신규역1, 신규역2, 3);
+    }
+
     StationResponse 지하철역_생성(String name) {
         return StationApi.create(name)
                 .as(StationResponse.class);
