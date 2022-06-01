@@ -1,9 +1,11 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.InvalidDistanceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
     private Station A역;
@@ -125,5 +127,29 @@ class LineTest {
         assertThat(line.getDistance()).isEqualTo(60);
         assertThat(line.getSections().getList()).hasSize(5);
         assertThat(line.getLineStations().getList()).hasSize(6);
+    }
+
+    @Test
+    void 구간_추가_상행역으로_거리오류() {
+        // given
+        Line line = new Line("2호선", "초록", 10);
+        line.initStation(A역, C역);
+
+        // when, then
+        assertThatThrownBy(() -> {
+            line.insertSection(A역, B역, 10);
+        }).isInstanceOf(InvalidDistanceException.class);
+    }
+
+    @Test
+    void 구간_추가_하행역으로_거리오류() {
+        // given
+        Line line = new Line("2호선", "초록", 10);
+        line.initStation(A역, C역);
+
+        // when
+        assertThatThrownBy(() -> {
+            line.insertSection(B역, C역, 13);
+        }).isInstanceOf(InvalidDistanceException.class);
     }
 }

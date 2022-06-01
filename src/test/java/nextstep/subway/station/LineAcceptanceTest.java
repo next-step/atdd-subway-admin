@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import static nextstep.subway.station.StationAcceptanceTest.*;
+import static nextstep.subway.station.StationAcceptanceTest.응답_검증;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선 관련 기능")
@@ -277,6 +278,37 @@ public class LineAcceptanceTest {
         // then
         LineResponse find = 응답_객체_생성(노선_조회(line.getId()), LineResponse.class);
         assertThat(find.getStations()).hasSize(6);
+    }
+
+    /**
+     * Given 노선을 생성하고
+     * When 노선 거리를 초과하는 구간을 중간에 추가하면
+     * Then 노선을 추가하지 못한다
+     */
+    @DisplayName("구간 추가 오류(구간 거리 초과1)")
+    @Test
+    void addSectionException1() {
+        // given
+        LineResponse line = 응답_객체_생성(노선_등록("2호선", "초록", 7, A역.getId(), C역.getId()), LineResponse.class);
+
+        // when
+        ValidatableResponse response = 구간_추가(A역.getId(), B역.getId(), 7, line.getId());
+
+        // then
+        응답_검증(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @DisplayName("구간 추가 오류(구간 거리 초과2)")
+    @Test
+    void addSectionException2() {
+        // given
+        LineResponse line = 응답_객체_생성(노선_등록("2호선", "초록", 7, A역.getId(), C역.getId()), LineResponse.class);
+
+        // when
+        ValidatableResponse response = 구간_추가(B역.getId(), C역.getId(), 8, line.getId());
+
+        // then
+        응답_검증(response, HttpStatus.BAD_REQUEST);
     }
 
     /**
