@@ -42,7 +42,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findLine(Long id) {
+    public LineResponse findLineById(Long id) {
         Line line = lineRepository.getById(id);
         return LineResponse.of(line);
     }
