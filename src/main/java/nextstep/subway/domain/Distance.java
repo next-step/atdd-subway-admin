@@ -14,11 +14,11 @@ public class Distance {
     }
 
     private Distance(Long distance) {
+        validateInvalidValue(distance);
         this.distance = distance;
     }
 
     public static Distance of(Long distance) {
-        validateInvalidValue(distance);
         return new Distance(distance);
     }
 

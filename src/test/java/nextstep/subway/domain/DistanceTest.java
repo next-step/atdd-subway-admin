@@ -25,4 +25,32 @@ class DistanceTest {
                 .isThrownBy(() -> Distance.of(invalid))
                 .withMessage("거리는 0 이하 일 순 없습니다.");
     }
+
+    @Test
+    @DisplayName("두 거리를 더한 값을 확인")
+    void addDistance() {
+        Distance distance1 = Distance.of(10L);
+        Distance distance2 = Distance.of(5L);
+
+        assertThat(Distance.add(distance1, distance2)).isEqualTo(Distance.of(15L));
+    }
+
+    @Test
+    @DisplayName("두 거리를 뺀 값을 확인")
+    void subtractDistance() {
+        Distance distance1 = Distance.of(15L);
+        Distance distance2 = Distance.of(5L);
+
+        assertThat(Distance.subtract(distance1, distance2)).isEqualTo(Distance.of(10L));
+    }
+
+    @Test
+    @DisplayName("두 거리를 뺀 값이 음수면 예외 발생")
+    void invalidSubtractDistance() {
+        Distance distance1 = Distance.of(5L);
+        Distance distance2 = Distance.of(10L);
+
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> Distance.subtract(distance1, distance2));
+    }
 }
