@@ -68,7 +68,7 @@ public class SectionService {
 
         return sectionRepository.findAllByLine(line)
             .stream()
-            .map(Section::toResponse)
+            .map(section -> SectionResponse.from(section))
             .collect(Collectors.toList());
     }
 }

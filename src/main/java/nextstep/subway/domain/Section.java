@@ -60,15 +60,6 @@ public class Section {
         return new Section(upStation, downStation, line, distance, null, null);
     }
 
-    public SectionResponse toResponse() {
-        Long nextSectionId = nextSection != null ? nextSection.getId() : -1;
-        Long backSectionId = backSection != null ? backSection.getId() : -1;
-
-        return new SectionResponse(this.id, this.upStation.toStationDTO(),
-            this.downStation.toStationDTO(), line.getName(), this.distance, nextSectionId,
-            backSectionId);
-    }
-
     public boolean insert(Section insertSection) {
         boolean insertFail = false;
         boolean insertSuccess = true;
