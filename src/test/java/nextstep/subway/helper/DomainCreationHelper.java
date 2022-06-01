@@ -11,7 +11,7 @@ public class DomainCreationHelper {
     private DomainCreationHelper() {
     }
 
-    public static ExtractableResponse<Response> createStationRequest(final String name) {
+    public static ExtractableResponse<Response> 지하철역_생성됨(final String name) {
         final Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
@@ -23,7 +23,7 @@ public class DomainCreationHelper {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> createLineRequest(
+    public static ExtractableResponse<Response> 지하철노선_생성됨(
             final String name,
             final String color,
             final Long upStationId,
