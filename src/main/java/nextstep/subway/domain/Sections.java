@@ -19,13 +19,13 @@ public class Sections {
     }
 
     public void addFisrtSection(Section section) {
-        sections.add(section);
+        if (sections.size() == 0) {
+            sections.add(section);
+        }
     }
 
     public void addSection(Section section) {
-        if (sections.size() > 0) {
-            checkValidation(section);
-        }
+        checkValidation(section);
 
         AddSectionType addType = determineAddSection(section);
 
