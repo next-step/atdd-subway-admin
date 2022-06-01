@@ -37,6 +37,10 @@ public class Section{
         this.distance = new Distance(distance);
     }
 
+    public static Section of(Station upStation, Station downStation, int distance) {
+        return new Section(upStation, downStation, distance);
+    }
+
     public void updateWith(Section newSection) {
         if (upStation.equals(newSection.getUpStation())) {
             upStation = newSection.getDownStation();

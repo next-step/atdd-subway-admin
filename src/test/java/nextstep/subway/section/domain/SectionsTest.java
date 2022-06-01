@@ -10,20 +10,21 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SectionsTest {
     public static final int DEFAULT_DISTANCE = 10;
-    private Station firstStation;
-    private Station lastStation;
-    private Station newStation;
+    private Station 상행역;
+    private Station 하행역;
+    private Station 신규역;
     private Section defaultSection;
 
     @BeforeEach
     void initialize(){
-        firstStation = new Station("first");
-        lastStation = new Station("last");
-        newStation = new Station("new");
-        defaultSection = new Section(firstStation, lastStation, DEFAULT_DISTANCE);
+        상행역 = new Station("first");
+        하행역 = new Station("last");
+        신규역 = new Station("new");
+        defaultSection = new Section(상행역, 하행역, DEFAULT_DISTANCE);
     }
 
     @Test
@@ -31,7 +32,7 @@ class SectionsTest {
     void Stations_조회(){
         Sections sections = new Sections(new ArrayList<>(Arrays.asList(defaultSection)));
         List<Station> stations = sections.getSortedStations();
-        assertThat(stations).containsExactly(firstStation, lastStation);
+        assertThat(stations).containsExactly(상행역, 하행역);
     }
 
     @Test
@@ -39,13 +40,13 @@ class SectionsTest {
     void 상행역_신규역_구간_등록(){
         //given
         Sections sections = new Sections(new ArrayList<>(Arrays.asList(defaultSection)));
-        sections.addSection(new Section(firstStation, newStation, 5));
+        sections.addSection(new Section(상행역, 신규역, 5));
 
         //when
         List<Station> sortedStations = sections.getSortedStations();
 
         //then
-        assertThat(sortedStations).containsExactly(firstStation, newStation, lastStation);
+        assertThat(sortedStations).containsExactly(상행역, 신규역, 하행역);
     }
 
     @Test
@@ -53,13 +54,13 @@ class SectionsTest {
     void 신규역_하행역_구간_등록(){
         //given
         Sections sections = new Sections(new ArrayList<>(Arrays.asList(defaultSection)));
-        sections.addSection(new Section(newStation, lastStation, 5));
+        sections.addSection(new Section(신규역, 하행역, 5));
 
         //when
         List<Station> sortedStations = sections.getSortedStations();
 
         //then
-        assertThat(sortedStations).containsExactly(firstStation, newStation, lastStation);
+        assertThat(sortedStations).containsExactly(상행역, 신규역, 하행역);
     }
 
     @Test
@@ -67,13 +68,13 @@ class SectionsTest {
     void 신규역_상행역_구간_등록(){
         //given
         Sections sections = new Sections(new ArrayList<>(Arrays.asList(defaultSection)));
-        sections.addSection(new Section(newStation, firstStation, 5));
+        sections.addSection(new Section(신규역, 상행역, 5));
 
         //when
         List<Station> sortedStations = sections.getSortedStations();
 
         //then
-        assertThat(sortedStations).containsExactly(newStation, firstStation, lastStation);
+        assertThat(sortedStations).containsExactly(신규역, 상행역, 하행역);
     }
 
     @Test
@@ -81,13 +82,13 @@ class SectionsTest {
     void 하행역_신규역_구간_등록(){
         //given
         Sections sections = new Sections(new ArrayList<>(Arrays.asList(defaultSection)));
-        sections.addSection(new Section(lastStation, newStation, 5));
+        sections.addSection(new Section(하행역, 신규역, 5));
 
         //when
         List<Station> sortedStations = sections.getSortedStations();
 
         //then
-        assertThat(sortedStations).containsExactly(firstStation, lastStation, newStation);
+        assertThat(sortedStations).containsExactly(상행역, 하행역, 신규역);
     }
 
     @Test
@@ -97,8 +98,8 @@ class SectionsTest {
         Sections sections = new Sections(new ArrayList<>(Arrays.asList(defaultSection)));
 
         //then
-        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
-                () -> sections.addSection(new Section(firstStation, newStation, DEFAULT_DISTANCE)));
+        assertThrows(IllegalArgumentException.class,
+                () -> sections.addSection(new Section(상행역, 신규역, DEFAULT_DISTANCE)));
     }
 
     @Test
@@ -108,8 +109,8 @@ class SectionsTest {
         Sections sections = new Sections(new ArrayList<>(Arrays.asList(defaultSection)));
 
         //then
-        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
-                () -> sections.addSection(new Section(firstStation, lastStation, 5)));
+        assertThrows(IllegalArgumentException.class,
+                () -> sections.addSection(new Section(상행역, 하행역, 5)));
 
     }
 
@@ -118,11 +119,11 @@ class SectionsTest {
     void Exception_Unknown_Stations(){
         //given
         Sections sections = new Sections(new ArrayList<>(Arrays.asList(defaultSection)));
-        Station newStation2 = new Station("new2");
+        Station 신규역2 = new Station("new2");
 
         //then
-        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
-                () -> sections.addSection(new Section(newStation, newStation2, 5)));
+        assertThrows(IllegalArgumentException.class,
+                () -> sections.addSection(new Section(신규역, 신규역2, 5)));
 
     }
 }
