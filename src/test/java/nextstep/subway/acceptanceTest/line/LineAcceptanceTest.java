@@ -10,7 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.HashMap;
@@ -21,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련기능 인수테스트")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts={"classpath:/db/truncate.sql", "classpath:/db/data.sql"})
+@Sql(scripts = {"classpath:/db/truncate.sql", "classpath:/db/data.sql"})
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
@@ -43,7 +42,8 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 생성한다")
     void createLine() {
         //when
-        ExtractableResponse<Response> response = createLine("신분당선", "bg-red-600", "1", "2", "10");
+        ExtractableResponse<Response> response =
+                createLine("신분당선", "bg-red-600", "1", "2", "10");
 
         //Then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -125,14 +125,44 @@ public class LineAcceptanceTest {
         params.put("color", "bg-god-7000");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .params(params)
                 .when().put("/lines/1")
                 .then().log().all()
                 .extract();
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("생성되지 않은 역으로 지하철 노선을 생성하면 400 에러가 발생한다")
+    void createLineIfStationNotExists() {
+        //when
+        ExtractableResponse<Response> response =
+                createLine("신분당선", "bg-red-600", "4", "5", "10");
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    /**
+     * When 생성되지 않은 지하철 노선을 수정하면
+     * Then 400 에러가 발생한다
+     */
+    @Test
+    @DisplayName("생성하지 않은 지하철 노선정보를 수정하면 400 에러가 발생한다")
+    void changeLineException() {
+        //when
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "천당 위에 분당선");
+        params.put("color", "bg-god-7000");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .params(params)
+                .when().put("/lines/100")
+                .then().log().all()
+                .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     /**
@@ -148,7 +178,6 @@ public class LineAcceptanceTest {
                 createLine("신분당선", "bg-red-600", "1", "2", "10");
         int id = line.jsonPath().get("id");
 
-
         //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().delete("/lines/" + id)
@@ -158,6 +187,23 @@ public class LineAcceptanceTest {
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         assertThat(getLines("name")).doesNotContain("신분당선").hasSize(0);
+    }
+
+    /**
+     * When 생성되지 않은 지하철 노선을 삭제하면
+     * Then 400 에러가 발생한다
+     */
+    @Test
+    @DisplayName("지하철 노선을 제거한다")
+    void deleteLineIfNotExists() {
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when().delete("/lines/" + 10)
+                .then().log().all()
+                .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     private ExtractableResponse<Response> createLine(String name, String color, String upStationId, String downStationId, String distance) {
