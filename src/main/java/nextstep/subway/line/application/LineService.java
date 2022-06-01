@@ -91,6 +91,7 @@ public class LineService {
         findLine.addSection(Section.of(upStation, downStation, sectionRequest.getDistance()));
     }
 
+    @Transactional
     public void deleteStation(Long lineId, Long stationId) {
         Line findLine = lineRepository.findById(lineId).orElseThrow(
                 () -> new NoSuchElementException(NO_LINE_ERROR)
