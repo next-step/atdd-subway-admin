@@ -29,10 +29,6 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Line(LineRequest lineRequest) {
-        this(lineRequest.getName(), lineRequest.getColor());
-    }
-
     public Long getId() {
         return id;
     }

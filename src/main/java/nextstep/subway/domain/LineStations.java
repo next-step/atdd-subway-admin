@@ -81,10 +81,10 @@ public class LineStations {
     private void updateMatchedMiddle(LineStation lineStation, LineStation matchedStation) {
         Long distance = calculateDistance(matchedStation, lineStation);
         if (matchedStation.equalsUpStation(lineStation.getUpStation())) {
-            matchedStation.patch(distance, lineStation.getDownStation(), null);
+            matchedStation.updateUpStation(distance, lineStation.getDownStation());
             return;
         }
-        matchedStation.patch(distance, null, lineStation.getUpStation());
+        matchedStation.updateDownStation(distance, lineStation.getUpStation());
     }
 
     private Long calculateDistance(LineStation matchedStation, LineStation lineStation) {
