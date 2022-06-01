@@ -47,10 +47,10 @@ public class Line extends BaseEntity {
     @JoinColumn(name = "DOWN_STATION_ID", foreignKey = @ForeignKey(name = "fk_line_down_station"))
     private Station downStation;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Set<LineStation> lineStationList = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private List<Section> sections = new LinkedList<>();
 
     public Line(Long id, String name, LineColor lineColor, Station upStation, Station downStation,
