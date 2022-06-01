@@ -45,7 +45,7 @@ public class StationAcceptanceTest {
         final ExtractableResponse<Response> response = 지하철역을_생성한다(name);
 
         // then
-        응답_코드를_검증한다(response, HttpStatus.CREATED);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
         final List<String> stationNames = 지하철역_목록을_조회한다();
@@ -68,7 +68,7 @@ public class StationAcceptanceTest {
         final ExtractableResponse<Response> response = 지하철역을_생성한다(name);
 
         // then
-        응답_코드를_검증한다(response, HttpStatus.BAD_REQUEST);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -109,7 +109,8 @@ public class StationAcceptanceTest {
         final ExtractableResponse<Response> deleteResponse = 지하철역을_삭제한다(createResponse.jsonPath().getLong("id"));
 
         // then
-        응답_코드를_검증한다(deleteResponse, HttpStatus.NO_CONTENT);
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
         final List<String> stationNames = 지하철역_목록을_조회한다();
         assertThat(stationNames).doesNotContain(name);
     }
@@ -143,9 +144,5 @@ public class StationAcceptanceTest {
                 .when().delete("/stations/{id}", id)
                 .then().log().all()
                 .extract();
-    }
-
-    private void 응답_코드를_검증한다(final ExtractableResponse<Response> response, final HttpStatus created) {
-        assertThat(response.statusCode()).isEqualTo(created.value());
     }
 }
