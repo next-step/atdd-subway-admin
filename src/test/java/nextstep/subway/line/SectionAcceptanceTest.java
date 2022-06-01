@@ -27,56 +27,74 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SectionAcceptanceTest {
     @LocalServerPort
     int port;
-    StationResponse 상행종점역;
-    StationResponse 하행종점역;
+    StationResponse 상행선;
+    StationResponse 하행선;
     String 노선;
 
     /**
-     * Given 구간(상행종점역-하행종점역)을 갖는 노선을 생성한다
+     * Given 구간(상행선-하행선)을 갖는 노선을 생성한다
      */
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
         // given
-        상행종점역 = 지하철역_생성("상행종점역");
-        하행종점역 = 지하철역_생성("하행종점역");
-        노선 = 노선_생성("2호선", "green", 상행종점역, 하행종점역, 10);
+        상행선 = 지하철역_생성("상행선");
+        하행선 = 지하철역_생성("하행선");
+        노선 = 노선_생성("2호선", "green", 상행선, 하행선, 10);
     }
 
     /**
      * Given 신규역을 생성하고
-     * When 구간(상행종점역-신규역)을 추가하면
-     * Then 노선 조회 시 상행종점역-신규역-하행종점역 순서로 조회된다
+     * When 구간(상행선-신규역)을 추가하면
+     * Then 노선 조회 시 상행선-신규역-하행선 순서로 조회된다
      */
-    @DisplayName("구간(상행종점역-신규역)을 추가한다.")
+    @DisplayName("구간(상행선-신규역)을 추가한다.")
     @Test
     void createInsideLeft() {
         // given
         StationResponse 신규역 = 지하철역_생성("신규역");
 
         // when
-        구간추가_성공(노선, 상행종점역, 신규역, 3);
+        구간추가_성공(노선, 상행선, 신규역, 3);
 
         // then
-        노선_순서대로_조회_성공(노선, 상행종점역, 신규역, 하행종점역);
+        노선_순서대로_조회_성공(노선, 상행선, 신규역, 하행선);
     }
 
     /**
      * Given 신규역을 생성하고
-     * When 구간(신규역-하행종점역)을 추가하면
-     * Then 노선 조회 시 상행종점역-신규역-하행종점역 순서로 조회된다
+     * When 구간(신규역-하행선)을 추가하면
+     * Then 노선 조회 시 상행선-신규역-하행선 순서로 조회된다
      */
-    @DisplayName("구간(신규역-하행종점역)을 추가한다.")
+    @DisplayName("구간(신규역-하행선)을 추가한다.")
     @Test
     void createInsideRight() {
         // given
         StationResponse 신규역 = 지하철역_생성("신규역");
 
         // when
-        구간추가_성공(노선, 신규역, 하행종점역, 3);
+        구간추가_성공(노선, 신규역, 하행선, 3);
 
         // then
-        노선_순서대로_조회_성공(노선, 상행종점역, 신규역, 하행종점역);
+        노선_순서대로_조회_성공(노선, 상행선, 신규역, 하행선);
+    }
+
+    /**
+     * Given 신규역을 생성하고
+     * When 구간(신규역-상행선)을 추가하면
+     * Then 신규역이 상행종점역으로 조회된다
+     */
+    @DisplayName("구간(신규역-상행선)을 추가한다.")
+    @Test
+    void createOutsideLeft() {
+        // given
+        StationResponse 신규역 = 지하철역_생성("신규역");
+
+        // when
+        구간추가_성공(노선, 신규역, 상행선, 3);
+
+        // then
+        노선_상행종점역_조회_성공(노선, 신규역);
     }
 
     StationResponse 지하철역_생성(String name) {
@@ -102,5 +120,12 @@ class SectionAcceptanceTest {
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
         assertThat(findStationIds).containsSequence(stationIds);
+    }
+
+    void 노선_상행종점역_조회_성공(String lineLocation, StationResponse station) {
+        Long findBeginId = LineApi.find(lineLocation)
+                .jsonPath()
+                .getLong("stations[0].id");
+        assertThat(findBeginId).isEqualTo(station.getId());
     }
 }
