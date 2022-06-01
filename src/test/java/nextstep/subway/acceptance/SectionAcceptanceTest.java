@@ -1,7 +1,6 @@
 package nextstep.subway.acceptance;
 
 import static nextstep.subway.test.RequestUtils.requestDeleteById;
-import static nextstep.subway.test.RequestUtils.requestGetAll;
 import static nextstep.subway.test.RequestUtils.requestGetById;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -56,6 +55,7 @@ class SectionAcceptanceTest {
         STATION_IDS.put("당산역", ExtractUtils.extractId(StationAcceptanceTest.createStation("당산역")));
         STATION_IDS.put("신도림역", ExtractUtils.extractId(StationAcceptanceTest.createStation("신도림역")));
         STATION_IDS.put("신대방역", ExtractUtils.extractId(StationAcceptanceTest.createStation("신대방역")));
+        STATION_IDS.put("구로디지털단지역", ExtractUtils.extractId(StationAcceptanceTest.createStation("구로디지털단지역")));
         STATION_IDS.put("봉천역", ExtractUtils.extractId(StationAcceptanceTest.createStation("봉천역")));
         STATION_IDS.put("사당역", ExtractUtils.extractId(StationAcceptanceTest.createStation("사당역")));
         이호선.put("upStationId", STATION_IDS.get("신도림역"));
@@ -68,188 +68,105 @@ class SectionAcceptanceTest {
     /**
      * When 상행역과 하행역 사이에 새로운 구간을 등록하면(상행역 기준)
      * Then 새로운 구간이 생성 된다.
-     * When 노선 목록 조회 시
-     * Then 새로등록한 구간의 지하철역을 구간순서에 맞게 확인할 수 있다.
-     */
-    @DisplayName("구간 사이에 새로운 역을 등록한다.(상행기준)")
-    @Test
-    void addSection_between_up() {
-
-        //when
-        ExtractableResponse<Response> createResponse = 구간_생성_요청(이호선, "신도림역", "신대방역", 3);
-
-        //then
-        생성_되었는지_상태_검증(createResponse);
-
-        //when
-        ExtractableResponse<Response> response = requestGetAll(LineAcceptanceTest.LINE_PATH);
-
-        //then
-        추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(response, "[신도림역, 신대방역, 봉천역]");
-
-    }
-
-    /**
+     * And  조회시 새로등록한 구간의 지하철역을 구간순서에 맞게 확인할 수 있다.
      * When 상행역과 하행역 사이에 새로운 구간을 등록하면(하행역 기준)
      * Then 새로운 구간이 생성 된다.
-     * When 노선 목록 조회 시
-     * Then 새로등록한 구간의 지하철역을 구간순서에 맞게 확인할 수 있다.
-     */
-    @DisplayName("구간 사이에 새로운 역을 등록한다.(하행기준)")
-    @Test
-    void addSection_between_down() {
-
-        //when
-        ExtractableResponse<Response> createResponse = 구간_생성_요청(이호선, "신대방역", "봉천역", 3);
-
-        //then
-        생성_되었는지_상태_검증(createResponse);
-
-        //when
-        ExtractableResponse<Response> response = requestGetAll(LineAcceptanceTest.LINE_PATH);
-
-        //then
-        추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(response, "[신도림역, 신대방역, 봉천역]");
-
-    }
-
-   /**
+     * And  조회시 새로등록한 구간의 지하철역을 구간순서에 맞게 확인할 수 있다.  
      * When 새로운 구간을 상행 종점으로 등록하면
-     * Then 새로운 역이 상행 좀점으로 추가 생성 된다.
-     * When 노선 목록 조회 시
-     * Then 연결된 구간의 지하철역들을 구간순서에 맞게 확인할 수 있다.
-     */
-    @DisplayName("새로운 구간을 상행 종점으로 등록한다.")
-    @Test
-    void addSection_start_station() {
-
-        //when
-        ExtractableResponse<Response> createResponse = 구간_생성_요청(이호선, "당산역", "신도림역", 10);
-
-        //then
-        생성_되었는지_상태_검증(createResponse);
-
-        //when
-        ExtractableResponse<Response> response = requestGetAll(LineAcceptanceTest.LINE_PATH);
-
-        //then
-        추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(response, "[당산역, 신도림역, 봉천역]");
-
-    }
-
-   /**
+     * Then 새로운 구간이 생성 된다.
+     * And  조회시 새로등록한 구간의 지하철역을 구간순서에 맞게 확인할 수 있다.  
      * When 새로운 구간을 하행 종점으로 등록하면
-     * Then 새로운 역이 하행 좀점으로 추가 생성 된다.
-     * When 노선 목록 조회 시
-     * Then 연결된 구간의 지하철역들을 구간순서에 맞게 확인할 수 있다.
-     */
-    @DisplayName("새로운 구간을 하행 종점으로 등록한다.")
+     * Then 새로운 구간이 생성 된다.
+     * And  조회시 새로등록한 구간의 지하철역을 구간순서에 맞게 확인할 수 있다.
+     * */
+    @DisplayName("지하철 노선에 구간을 등록 한다.")
     @Test
-    void addSection_end_station() {
-
+    void addSection(){
         //when
-        ExtractableResponse<Response> createResponse = 구간_생성_요청(이호선, "봉천역", "사당역", 15);
+        ExtractableResponse<Response> createResponse1 = 구간_생성_요청(이호선, "신도림역", "신대방역", 3);
 
         //then
-        생성_되었는지_상태_검증(createResponse);
+        생성_되었는지_상태_검증(createResponse1);
+        추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(이호선, "신도림역", "신대방역", "봉천역");
 
         //when
-        ExtractableResponse<Response> response = requestGetAll(LineAcceptanceTest.LINE_PATH);
+        ExtractableResponse<Response> createResponse2 = 구간_생성_요청(이호선, "구로디지털단지역", "봉천역", 5);
 
         //then
-        추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(response, "[신도림역, 봉천역, 사당역]");
-
-    }
-
-    /**
-     * When 정상적인 여러개의 구간을 등록하고
-     * When 노선 목록 조회 시
-     * Then 연결된 구간의 지하철역들을 구간순서에 맞게 모두 확인할 수 있다.
-     */
-    @DisplayName("정상적인 여러개의 구간을 등록한다.")
-    @Test
-    void addSection_all() {
+        생성_되었는지_상태_검증(createResponse2);
+        추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(이호선, "신도림역", "신대방역", "구로디지털단지역", "봉천역");
 
         //when
-        구간_생성_요청(이호선, "봉천역", "사당역", 15);
-        구간_생성_요청(이호선, "신도림역", "신대방역", 5);
-        구간_생성_요청(이호선, "당산역", "신도림역", 15);
-
-        //when
-        ExtractableResponse<Response> response = requestGetAll(LineAcceptanceTest.LINE_PATH);
+        ExtractableResponse<Response> createResponse3 = 구간_생성_요청(이호선, "당산역", "신도림역", 10);
 
         //then
-        추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(response, "[당산역, 신도림역, 신대방역, 봉천역, 사당역]");
+        생성_되었는지_상태_검증(createResponse3);
+        추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(이호선, "당산역", "신도림역", "신대방역", "구로디지털단지역", "봉천역");
+
+        //when
+        ExtractableResponse<Response> createResponse4 = 구간_생성_요청(이호선, "봉천역", "사당역", 10);
+
+        //then
+        생성_되었는지_상태_검증(createResponse4);
+        추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(이호선, "당산역", "신도림역", "신대방역", "구로디지털단지역", "봉천역", "사당역");
 
     }
 
     /**
      * When 등록 되어있지 않는 지하철역들로 구간을 요청하면
-     * Then 찾을 수 없기 때문에 등록에 실패한다.
-     */
-    @DisplayName("상행&하행역이 둘 중 하나도 포함되어 있지 않으면 실패한다.")
-    @Test
-    void addSection_not_found() {
-
-        //when
-        ExtractableResponse<Response> createResponse = 구간_생성_요청(이호선, "신대방역", "사당역", 15);
-
-        //then
-        생성에_실패_했는지_상태_검증(createResponse);
-    }
-
-   /**
+     * Then 등록에 실패한다.
      * When 이미 등록된 구간으로 요청하면
      * Then 등록에 실패한다.
-     */
-    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 실패한다.")
-    @Test
-    void addSection_already_section() {
-
-        //when
-        ExtractableResponse<Response> createResponse = 구간_생성_요청(이호선, "신도림역", "봉천역", 10);
-
-        //then
-        생성에_실패_했는지_상태_검증(createResponse);
-    }
-
-    /**
+     * When 이미 등록된 구간으로 요청하면
      * When 기존 역 구간 길이보다 등록할 길이가 큰 경우
      * Then 등록에 실패한다.
      * When 기존 역 구간 길이와 등록할 길이가 같은 경우
      * Then 등록에 실패한다.
-     */
-    @DisplayName("기존 역 구간 길이보다 크거나 같으면 실패한다.")
+     * */
+    @DisplayName("지하철 노선에 구간을 등록 실패한다.")
     @Test
-    void addSection_equal_or_greater_distence() {
+    void addSection_fail() {
 
         //when
-        ExtractableResponse<Response> createResponse = 구간_생성_요청(이호선, "신도림역", "신대방역", 30);
+        ExtractableResponse<Response> createResponse1 = 구간_생성_요청(이호선, "신대방역", "사당역", 15);
 
         //then
-        생성에_실패_했는지_상태_검증(createResponse);
+        생성에_실패_했는지_상태_검증(createResponse1);
 
         //when
-        ExtractableResponse<Response> createResponse2 = 구간_생성_요청(이호선, "신대방역", "봉천역", 10);
+        ExtractableResponse<Response> createResponse2 = 구간_생성_요청(이호선, "신도림역", "봉천역", 10);
 
         //then
         생성에_실패_했는지_상태_검증(createResponse2);
+
+        //when
+        ExtractableResponse<Response> createResponse3 = 구간_생성_요청(이호선, "신도림역", "신대방역", 30);
+
+        //then
+        생성에_실패_했는지_상태_검증(createResponse3);
+
+        //when
+        ExtractableResponse<Response> createResponse4 = 구간_생성_요청(이호선, "신대방역", "봉천역", 10);
+
+        //then
+        생성에_실패_했는지_상태_검증(createResponse4);
+
     }
 
     /**
-    * Given 구간을 등록하고
-    * When  해당 구간에 대한 지하철역 삭제 요청 하면 (최상단 출발역)
-    * Then  해당 지하철역을 포함하는 구간이 삭제 된다.
-    * When  해당 구간에 대한 지하철역 삭제 요청 하면 (종착역)
-    * Then  해당 지하철역을 포함하는 구간이 삭제 된다.
-    * When  해당 구간에 대한 지하철역 삭제 요청 하면 (사이역)
-    * Then  해당 지하철역을 포함하는 구간이 삭제 된다
-    * When  없는 구간에 대해 삭제 요청하면
-    * Then  삭제에 실패한다.
-    * When  하나의 구간만 있는 경우에 삭제요청하면
-    * Then  삭제에 실패한다.
-    */
-    @DisplayName("지하철 노선을 삭제한다.")
+     * Given 구간을 등록하고
+     * When  해당 구간에 대한 지하철역 삭제 요청 하면 (최상단 출발역)
+     * Then  해당 지하철역을 포함하는 구간이 삭제 된다.
+     * When  해당 구간에 대한 지하철역 삭제 요청 하면 (종착역)
+     * Then  해당 지하철역을 포함하는 구간이 삭제 된다.
+     * When  해당 구간에 대한 지하철역 삭제 요청 하면 (사이역)
+     * Then  해당 지하철역을 포함하는 구간이 삭제 된다
+     * When  없는 구간에 대해 삭제 요청하면
+     * Then  삭제에 실패한다.
+     * When  하나의 구간만 있는 경우에 삭제요청하면
+     * Then  삭제에 실패한다.
+     * */
+    @DisplayName("지하철 노선에 구간을 삭제한다.")
     @Test
     void deleteSection() {
         //given
@@ -261,19 +178,19 @@ class SectionAcceptanceTest {
         ExtractableResponse<Response> deleteResponse1 = 구간_삭제_요청((Long) 이호선.get("id"), STATION_IDS.get("당산역"));
 
         //then
-        구간이_삭제_되었는지_검증(deleteResponse1, "당산역");
+        구간이_삭제_되었는지_검증(deleteResponse1, 이호선,"당산역");
 
         //when
         ExtractableResponse<Response> deleteResponse2 = 구간_삭제_요청((Long) 이호선.get("id"), STATION_IDS.get("사당역"));
 
         //then
-        구간이_삭제_되었는지_검증(deleteResponse2, "사당역");
+        구간이_삭제_되었는지_검증(deleteResponse2, 이호선, "사당역");
 
         //when
         ExtractableResponse<Response> deleteResponse3 = 구간_삭제_요청((Long) 이호선.get("id"), STATION_IDS.get("신도림역"));
 
         //then
-        구간이_삭제_되었는지_검증(deleteResponse3, "신도림역");
+        구간이_삭제_되었는지_검증(deleteResponse3, 이호선, "신도림역");
 
         //when
         ExtractableResponse<Response> deleteResponse4 = 구간_삭제_요청((Long) 이호선.get("id"), STATION_IDS.get("신도림역"));
@@ -312,7 +229,8 @@ class SectionAcceptanceTest {
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-    private void 추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(ExtractableResponse<Response> response, String orderStations) {
+    private void 추가된_구간에_대한_지하철역이_순서대로_조회_되는지_검증(Map<String,Object> line,String ...orderStations) {
+        ExtractableResponse<Response> response = requestGetById(LineAcceptanceTest.LINE_PATH, (Long) line.get("id"));
         List<String> extract = ExtractUtils.extract("stations.name", response, String.class);
         assertThat(extract).containsExactly(orderStations);
     }
@@ -321,9 +239,9 @@ class SectionAcceptanceTest {
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private void 구간이_삭제_되었는지_검증(ExtractableResponse<Response> deleteResponse,String stationName) {
+    private void 구간이_삭제_되었는지_검증(ExtractableResponse<Response> deleteResponse,Map<String,Object> line,String stationName) {
         구간_삭제_되었는지_상태_검증(deleteResponse);
-        ExtractableResponse<Response> getResponse = requestGetById(LineAcceptanceTest.LINE_PATH, (Long) 이호선.get("id"));
+        ExtractableResponse<Response> getResponse = requestGetById(LineAcceptanceTest.LINE_PATH, (Long) line.get("id"));
         노선_조회시_해당_지하철역이_삭제_되었는지_검증(getResponse, stationName);
     }
 
