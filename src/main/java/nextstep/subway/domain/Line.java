@@ -51,26 +51,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-
     public void updateLine(String name, String color) {
         this.name = name;
         this.color = color;
-    }
-
-    public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
-        this.sections.getSections().forEach(section -> {
-            Station upStation = section.getUpStation();
-            Station downStation = section.getDownStation();
-            if (!stations.contains(upStation)) {
-                stations.add(upStation);
-            }
-
-            if (!stations.contains(downStation)) {
-                stations.add(downStation);
-            }
-        });
-
-        return stations;
     }
 }
