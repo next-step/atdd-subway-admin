@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,8 +37,8 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = StationRequest
-                .createStation(Collections.singletonMap("name", "강남역"));
+        String stationName = "강남역";
+        ExtractableResponse<Response> response = StationRequest.createStation(stationName);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -48,7 +47,7 @@ public class StationAcceptanceTest {
         List<String> stationNames = StationRequest.getAllStations()
                 .jsonPath()
                 .getList("name", String.class);
-        assertThat(stationNames).containsAnyOf("강남역");
+        assertThat(stationNames).containsAnyOf(stationName);
     }
 
     /**
@@ -60,11 +59,12 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        StationRequest.createStation(Collections.singletonMap("name", "선릉역"));
+        String stationName = "선릉역";
+        StationRequest.createStation(stationName);
 
         // when
         ExtractableResponse<Response> response = StationRequest
-                .createStation(Collections.singletonMap("name", "선릉역"));
+                .createStation(stationName);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -79,8 +79,10 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        StationRequest.createStation(Collections.singletonMap("name", "역삼역"));
-        StationRequest.createStation(Collections.singletonMap("name", "삼성역"));
+        String stationName1 = "역삼역";
+        String stationName2 = "삼성역";
+        StationRequest.createStation(stationName1);
+        StationRequest.createStation(stationName2);
 
         // when
         List<String> stationNames = StationRequest.getAllStations()
@@ -88,7 +90,7 @@ public class StationAcceptanceTest {
                 .getList("name", String.class);
 
         // then
-        assertThat(stationNames).containsAnyOf("역삼역", "삼성역");
+        assertThat(stationNames).containsAnyOf(stationName1, stationName2);
     }
 
     /**
@@ -100,9 +102,8 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Long createdStationId = StationRequest.createStation(Collections.singletonMap("name", "잠실역"))
-                .jsonPath()
-                .getLong("id");
+        String stationName = "역삼역";
+        Long createdStationId = StationRequest.createStationThenReturnId(stationName);
 
         // when
         ExtractableResponse<Response> deleteResponse = StationRequest.deleteStation(createdStationId);

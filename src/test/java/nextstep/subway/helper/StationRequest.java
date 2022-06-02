@@ -3,9 +3,8 @@ package nextstep.subway.helper;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.fail;
+import java.util.HashMap;
+import java.util.Map;
 
 public class StationRequest {
     private static final String PATH = "/stations";
@@ -16,14 +15,15 @@ public class StationRequest {
         return RequestHelper.getRequest(PATH, new HashMap<>());
     }
 
-    public static ExtractableResponse<Response> createStation(Map<String, Object> body) {
-        List<String> essentialKeys = Arrays.asList("name");
-
-        if (!body.keySet().containsAll(essentialKeys)) {
-            fail("필수값이 누락되었습니다.");
-        }
+    public static ExtractableResponse<Response> createStation(String name) {
+        Map<String, String> body = new HashMap<>();
+        body.put("name", name);
 
         return RequestHelper.postRequest(PATH, new HashMap<>(), body);
+    }
+
+    public static Long createStationThenReturnId(String name) {
+        return createStation(name).jsonPath().getLong("id");
     }
 
     public static ExtractableResponse<Response> deleteStation(Long stationId) {
