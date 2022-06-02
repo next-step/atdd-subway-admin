@@ -187,19 +187,48 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
     /**
      * Given 지하철 노선의 구간 사이에 새로운 구간을 등록하고
-     * When 종점을 제거하면
+     * When 종점을 제거하면 (하행 종점)
      * Then 다음으로 오던 역이 종점이 된다.
      */
-    @DisplayName("지하철역을 제거한다.")
+    @DisplayName("종점(하행)을 제거하면 구간을 제거하고 다음으로 오던 역이 종점이 된다.")
     @Test
-    void deleteStation() {
+    void deleteStationLast() {
         // given
         SectionRestAssured.지하철구간_추가_요청(신분당선.getId(), 청계산입구역.getId(), 판교역.getId(), 5);
 
         // when
-        ExtractableResponse<Response> deleteResponse = SectionRestAssured.지하철구간_제거_요청(신분당선.getId(), 청계산입구역.getId());
+        ExtractableResponse<Response> deleteResponse = SectionRestAssured.지하철구간_제거_요청(신분당선.getId(), 판교역.getId());
 
         // then
-        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        List<String> stationNames = deleteResponse.jsonPath().getList("stations.name", String.class);
+        assertAll(
+                () -> assertThat(stationNames).hasSize(2),
+                () -> assertThat(stationNames).containsExactly(양재역.getName(), 청계산입구역.getName())
+        );
+    }
+
+    /**
+     * Given 지하철 노선의 구간 사이에 새로운 구간을 등록하고
+     * When 종점을 제거하면 (상행 종점)
+     * Then 다음으로 오던 역이 종점이 된다.
+     */
+    @DisplayName("종점(상행)을 제거하면 구간을 제거하고 다음으로 오던 역이 종점이 된다.")
+    @Test
+    void deleteStationFirst() {
+        // given
+        SectionRestAssured.지하철구간_추가_요청(신분당선.getId(), 청계산입구역.getId(), 판교역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> deleteResponse = SectionRestAssured.지하철구간_제거_요청(신분당선.getId(), 양재역.getId());
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then
+        List<String> stationNames = deleteResponse.jsonPath().getList("stations.name", String.class);
+        assertAll(
+                () -> assertThat(stationNames).hasSize(2),
+                () -> assertThat(stationNames).containsExactly(청계산입구역.getName(), 판교역.getName())
+        );
     }
 }

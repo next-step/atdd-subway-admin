@@ -61,6 +61,10 @@ public class Sections {
                 .contains(section.downStation());
     }
 
+    private void update(Section newSection) {
+        sections.forEach(section -> section.update(newSection));
+    }
+
     public Distance distance() {
         return Distance.valueOf(sections.stream()
                 .mapToInt(section -> section.distance().distance())
@@ -81,6 +85,25 @@ public class Sections {
         return orderedStations;
     }
 
+    public void deleteSection(Station station) {
+        if (isEqualToFirstUpStation(station)) {
+            sections.remove(sections.stream()
+                    .filter(section -> station.equals(section.upStation()))
+                    .findFirst()
+                    .orElseThrow(() -> new NotFoundException("상행 종점 구간을 찾을 수 없습니다.")));
+        }
+        if (isEqualToLastDownStation(station)) {
+            sections.remove(sections.stream()
+                    .filter(section -> station.equals(section.downStation()))
+                    .findFirst()
+                    .orElseThrow(() -> new NotFoundException("하행 종점 구간을 찾을 수 없습니다.")));
+        }
+    }
+
+    private boolean isEqualToFirstUpStation(Station station) {
+        return station.equals(firstUpStation());
+    }
+
     private Station firstUpStation() {
         Set<Station> upStations = sections.stream()
                 .map(Section::upStation)
@@ -94,6 +117,10 @@ public class Sections {
                 .orElseThrow(() -> new NotFoundException("상행 종점역을 찾을 수 없습니다."));
     }
 
+    private boolean isEqualToLastDownStation(Station station) {
+        return station.equals(lastDownStation());
+    }
+
     private Station lastDownStation() {
         Set<Station> upStations = sections.stream()
                 .map(Section::upStation)
@@ -105,9 +132,5 @@ public class Sections {
                 .filter(downStation -> !upStations.contains(downStation))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("하행 종점역을 찾을 수 없습니다."));
-    }
-
-    private void update(Section newSection) {
-        sections.forEach(section -> section.update(newSection));
     }
 }

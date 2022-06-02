@@ -83,6 +83,10 @@ public class Line extends BaseEntity {
         section.addLine(this);
     }
 
+    public void deleteSection(Station station) {
+        sections.deleteSection(station);
+    }
+
     public Long id() {
         return id;
     }
