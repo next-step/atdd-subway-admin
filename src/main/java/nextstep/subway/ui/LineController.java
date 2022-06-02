@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +22,7 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping("/lines")
+    @PostMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> createLine(@RequestBody final LineRequest lineRequest) {
         final LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
@@ -35,5 +36,11 @@ public class LineController {
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
         return ResponseEntity.ok().body(lineService.findLineById(id));
+    }
+
+    @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> modifyLine(@PathVariable final Long id, @RequestBody final LineRequest lineRequest) {
+        lineService.modifyLine(id, lineRequest);
+        return ResponseEntity.ok().build();
     }
 }
