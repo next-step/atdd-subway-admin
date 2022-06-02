@@ -6,7 +6,6 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.service.LineService;
 import nextstep.subway.section.dto.SectionRequest;
-import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.section.service.SectionService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
