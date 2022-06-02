@@ -2,6 +2,7 @@ package nextstep.subway.station.dto;
 
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationName;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +14,9 @@ public class StationResponse {
     public StationResponse() {
     }
 
-    private StationResponse(Long id, String name) {
+    private StationResponse(Long id, StationName name) {
         this.id = id;
-        this.name = name;
+        this.name = name.getName();
     }
 
     public static StationResponse from(Station station) {

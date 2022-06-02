@@ -11,8 +11,12 @@ public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String color;
+
+    @Embedded
+    private LineName name;
+
+    @Embedded
+    private LineColor color;
 
     @Embedded
     private Sections sections;
@@ -21,8 +25,8 @@ public class Line {
     }
 
     private Line(String name, String color, Section section) {
-        this.name = name;
-        this.color = color;
+        this.name = LineName.from(name);
+        this.color = LineColor.from(color);
         this.sections = Sections.from(section);
         section.updateLine(this);
     }
@@ -40,11 +44,11 @@ public class Line {
         return id;
     }
 
-    public String getName() {
+    public LineName getName() {
         return name;
     }
 
-    public String getColor() {
+    public LineColor getColor() {
         return color;
     }
 
@@ -53,11 +57,11 @@ public class Line {
     }
 
     private void updateName(String name) {
-        this.name = name;
+        this.name = LineName.from(name);
     }
 
     private void updateColor(String color) {
-        this.color = color;
+        this.color = LineColor.from(color);
     }
 
     public void addSection(Section section) {
