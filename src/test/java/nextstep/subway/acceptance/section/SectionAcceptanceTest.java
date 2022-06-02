@@ -192,7 +192,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
      */
     @DisplayName("종점(하행)을 제거하면 구간을 제거하고 다음으로 오던 역이 종점이 된다.")
     @Test
-    void deleteStationLast() {
+    void deleteSectionLast() {
         // given
         SectionRestAssured.지하철구간_추가_요청(신분당선.getId(), 청계산입구역.getId(), 판교역.getId(), 5);
 
@@ -214,7 +214,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
      */
     @DisplayName("종점(상행)을 제거하면 구간을 제거하고 다음으로 오던 역이 종점이 된다.")
     @Test
-    void deleteStationFirst() {
+    void deleteSectionFirst() {
         // given
         SectionRestAssured.지하철구간_추가_요청(신분당선.getId(), 청계산입구역.getId(), 판교역.getId(), 5);
 
@@ -229,6 +229,32 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertAll(
                 () -> assertThat(stationNames).hasSize(2),
                 () -> assertThat(stationNames).containsExactly(청계산입구역.getName(), 판교역.getName())
+        );
+    }
+
+    /**
+     * Given 지하철 노선의 구간 사이에 새로운 구간을 등록하고
+     * When 중간역을 제거하면 (B 제거)
+     * Then 재배치를 한다. A - B - C -> A - C
+     * Then 거리는 두 구간의 거리의 합
+     */
+    @DisplayName("중간역을 제거하면 중간역이 제거되고 재배치가 되어 거리는 두 구간의 거리의 합이 된다.")
+    @Test
+    void deleteSectionInSide() {
+        // given
+        SectionRestAssured.지하철구간_추가_요청(신분당선.getId(), 판교역.getId(), 정자역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> deleteResponse = SectionRestAssured.지하철구간_제거_요청(신분당선.getId(), 판교역.getId());
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then
+        List<String> stationNames = deleteResponse.jsonPath().getList("stations.name", String.class);
+        assertAll(
+                () -> assertThat(stationNames).hasSize(2),
+                () -> assertThat(stationNames).containsExactly(양재역.getName(), 정자역.getName())
         );
     }
 }

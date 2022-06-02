@@ -37,6 +37,10 @@ public class Distance {
         validateDistance(this.distance);
     }
 
+    public void plus(Distance distance) {
+        this.distance = Math.addExact(this.distance, distance.distance());
+    }
+
     public int distance() {
         return distance;
     }

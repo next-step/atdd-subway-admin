@@ -87,17 +87,15 @@ public class Sections {
 
     public void deleteSection(Station station) {
         if (isEqualToFirstUpStation(station)) {
-            sections.remove(sections.stream()
-                    .filter(section -> station.equals(section.upStation()))
-                    .findFirst()
-                    .orElseThrow(() -> new NotFoundException("상행 종점 구간을 찾을 수 없습니다.")));
+            sections.remove(findSectionWithSameUpStation(station));
         }
         if (isEqualToLastDownStation(station)) {
-            sections.remove(sections.stream()
-                    .filter(section -> station.equals(section.downStation()))
-                    .findFirst()
-                    .orElseThrow(() -> new NotFoundException("하행 종점 구간을 찾을 수 없습니다.")));
+            sections.remove(findSectionWithSameDownStation(station));
         }
+        Section nextSection = findSectionWithSameUpStation(station);
+        Section prevSection = findSectionWithSameDownStation(station);
+        prevSection.updateDownStationByNextSection(nextSection);
+        sections.remove(nextSection);
     }
 
     private boolean isEqualToFirstUpStation(Station station) {
@@ -117,6 +115,13 @@ public class Sections {
                 .orElseThrow(() -> new NotFoundException("상행 종점역을 찾을 수 없습니다."));
     }
 
+    private Section findSectionWithSameUpStation(Station station) {
+        return sections.stream()
+                .filter(section -> station.equals(section.upStation()))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("일치하는 상행역이 없습니다."));
+    }
+
     private boolean isEqualToLastDownStation(Station station) {
         return station.equals(lastDownStation());
     }
@@ -132,5 +137,12 @@ public class Sections {
                 .filter(downStation -> !upStations.contains(downStation))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("하행 종점역을 찾을 수 없습니다."));
+    }
+
+    private Section findSectionWithSameDownStation(Station station) {
+        return sections.stream()
+                .filter(section -> station.equals(section.downStation()))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("일치하는 하행역이 없습니다."));
     }
 }
