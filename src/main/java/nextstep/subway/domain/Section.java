@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -128,13 +126,6 @@ public class Section extends BaseEntity {
 
     public Station downStation() {
         return downStation;
-    }
-
-    public List<Station> stations() {
-        List<Station> stations = new ArrayList<>();
-        stations.add(this.upStation);
-        stations.add(this.downStation);
-        return stations;
     }
 
     public Distance distance() {
