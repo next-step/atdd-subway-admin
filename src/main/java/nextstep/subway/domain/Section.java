@@ -141,10 +141,6 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-    public void updateDownStationByNextSection(Section nextSection) {
-        distance.plus(nextSection.distance);
-        this.downStation = nextSection.downStation();
-    }
     @Override
     public boolean equals(Object o) {
         if (this == o) {

@@ -99,12 +99,13 @@ public class Sections {
         }
         Section nextSection = findSectionWithSameUpStation(station);
         Section prevSection = findSectionWithSameDownStation(station);
-        prevSection.updateDownStationByNextSection(nextSection);
+        sections.add(mergeSection(prevSection, nextSection));
         sections.remove(nextSection);
+        sections.remove(prevSection);
     }
 
     private void validateNumberOfSections() {
-        if(!isSizeMoreThanMin()) {
+        if (!isSizeMoreThanMin()) {
             throw new ImpossibleDeleteException("제거 가능한 구간이 없습니다.");
         }
     }
@@ -160,4 +161,11 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("일치하는 하행역이 없습니다."));
     }
+
+    private Section mergeSection(Section prevSection, Section nextSection) {
+        prevSection.distance().plus(nextSection.distance());
+        return Section.builder(prevSection.upStation(), nextSection.downStation(), prevSection.distance())
+                .build();
+    }
+
 }

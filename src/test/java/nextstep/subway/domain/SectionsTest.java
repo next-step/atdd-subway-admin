@@ -142,4 +142,18 @@ class SectionsTest {
         sections1.addSection(newSection);
         assertThat(sections1.orderedStations()).containsExactly(강남역, 양재역, 판교역, 양재시민의숲역);
     }
+
+    @DisplayName("종점(상행)을 제거하면 구간을 제거하고 다음으로 오던 역이 종점이 된다.")
+    @Test
+    void deleteSectionFirst() {
+        sections1.deleteSection(강남역);
+        assertThat(sections1.orderedStations()).containsExactly(양재역, 양재시민의숲역);
+    }
+
+    @DisplayName("중간역을 제거하면 중간역이 제거되고 재배치가 된다.")
+    @Test
+    void deleteSectionInSide() {
+        sections1.deleteSection(양재역);
+        assertThat(sections1.orderedStations()).containsExactly(강남역, 양재시민의숲역);
+    }
 }
