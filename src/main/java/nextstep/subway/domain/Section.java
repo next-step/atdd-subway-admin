@@ -33,6 +33,20 @@ public class Section {
         this.distance = new Distance(distance);
     }
 
+    public void updateUpSection(Section newSection) {
+        distance.minus(newSection.getDistance());
+        this.upStation = newSection.getDownStation();
+    }
+
+    public void updateDownSection(Section newSection) {
+        distance.minus(newSection.getDistance());
+        this.downStation = newSection.getUpStation();
+    }
+
+    public boolean getEqualsUpStation(Station downStation) {
+        return this.upStation.equals(downStation);
+    }
+
     public void addLine(Line line) {
         this.line = line;
     }
@@ -55,20 +69,6 @@ public class Section {
 
     public Integer getDistance() {
         return distance.getDistance();
-    }
-
-    public void updateUpSection(Section newSection) {
-        distance.minus(newSection.getDistance());
-        this.upStation = newSection.getDownStation();
-    }
-
-    public void updateDownSection(Section newSection) {
-        distance.minus(newSection.getDistance());
-        this.downStation = newSection.getUpStation();
-    }
-
-    public boolean getEqualsUpStation(Station downStation) {
-        return this.upStation.equals(downStation);
     }
 
     @Override

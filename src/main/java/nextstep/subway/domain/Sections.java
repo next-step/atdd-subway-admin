@@ -15,49 +15,18 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public Set<Station> getStations() {
-        return sections.stream()
-                        .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                        .collect(Collectors.toSet());
-    }
-
-    public Set<Station> getUpStations() {
-        return sections.stream()
-                .flatMap(section -> Stream.of(section.getUpStation()))
-                .collect(Collectors.toSet());
-    }
-
-    public Set<Station> getDownStations() {
-        return sections.stream()
-                .flatMap(section -> Stream.of(section.getDownStation()))
-                .collect(Collectors.toSet());
-    }
-
     public List<Station> getStationsSorted() {
         List<Station> stations = new ArrayList<>();
 
-        Station rootStation = getUpStations().stream()
-                                            .filter(station -> !getDownStations().contains(station))
-                                            .findFirst()
-                                            .orElseThrow(NoSuchElementException::new);
-
+        Station rootStation = getRootStation();
         stations.add(rootStation);
-
-
-//        Section rootSection = sections.stream()
-//                .filter(section -> getDownStations().contains(section))
-//                .findFirst()
-//                .orElseThrow(NoSuchElementException::new);
-
-//        Station rootStation = rootSection.getUpStation();
-//        stations.add(rootStation);
-//        Station nextStation = rootSection.getDownStation();
-//        stations.add(nextStation);
         Station nextStation = getNextStation(rootStation);
+
         while(Objects.nonNull(nextStation)) {
             stations.add(nextStation);
             nextStation = getNextStation(nextStation);
         }
+
         return stations;
     }
 
@@ -103,7 +72,6 @@ public class Sections {
                 !getStations().contains(newSection.getDownStation());
     }
     
-    //역과 역 사이에 새로운 구간이 생길 때, 기존 구간 변경
     private void updateExistSection(Section newSection) {
         //역과 역사이 (상행이 같을 때)
         sections.stream()
@@ -116,8 +84,31 @@ public class Sections {
                 .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
                 .findFirst()
                 .ifPresent(section -> section.updateDownSection(newSection));
+    }
 
-        //상행 종점, 하행 종점이 새로 추가되는 경우는 기존 수정 필요 X
+    public Set<Station> getStations() {
+        return sections.stream()
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .collect(Collectors.toSet());
+    }
+
+    private Station getRootStation() {
+        return getUpStations().stream()
+                .filter(station -> !getDownStations().contains(station))
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
+    }
+
+    private Set<Station> getUpStations() {
+        return sections.stream()
+                .flatMap(section -> Stream.of(section.getUpStation()))
+                .collect(Collectors.toSet());
+    }
+
+    private Set<Station> getDownStations() {
+        return sections.stream()
+                .flatMap(section -> Stream.of(section.getDownStation()))
+                .collect(Collectors.toSet());
     }
 
     public List<Section> getSections() {

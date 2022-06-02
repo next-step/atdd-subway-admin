@@ -26,7 +26,6 @@ public class StationService {
         return StationResponse.of(persistStation);
     }
 
-    @Transactional
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
 
@@ -35,7 +34,6 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     public Station findById(Long id) {
         Station station = stationRepository.findById(id)
                                             .orElseThrow(EntityNotFoundException::new);
