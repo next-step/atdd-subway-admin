@@ -31,8 +31,8 @@ public class ApplicationTest {
      * 테스트 환경 구축 (Spring Boot Test)
      * 테스트 클라이언트 설정 (RestAssured)
      * 지하철역 생성 인수 테스트
-     *      - When 지하철역을 생성한다.
-     *      - Then 지하철역이 생성된다.
+     * - When 지하철역을 생성한다.
+     * - Then 지하철역이 생성된다.
      */
 
     @Test
@@ -81,13 +81,11 @@ public class ApplicationTest {
         return response;
     }
 
-    private void 지하철역이_생성됨_검증(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-    }
-
     private void 지하철역_조회_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }    private ExtractableResponse<Response> 지하철역_생성(Map<String, String> params) {
+    }
+
+    private ExtractableResponse<Response> 지하철역_생성(Map<String, String> params) {
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
                 .body(params)
@@ -100,5 +98,9 @@ public class ApplicationTest {
         지하철역이_생성됨_검증(response);
 
         return response;
+    }
+
+    private void 지하철역이_생성됨_검증(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 }
