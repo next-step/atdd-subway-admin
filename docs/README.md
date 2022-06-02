@@ -78,9 +78,9 @@ API 명세
 요구사항 설명
 
 <details>
-<summary>구간 삭제 Request 접기/펼치기</summary>
+<summary>구간 등록 Request 접기/펼치기</summary>
 
-지하철 구간 삭제 request
+지하철 구간 등록 request
 
 ```http
 POST /lines/1/sections HTTP/1.1
@@ -175,7 +175,8 @@ public ResponseEntity addSection(
 
 기능 구현 팁
 - 세부적인 예외 상황을 고려하지 않고 Happy Path 경우를 검증하기 위한 인수 테스트를 먼저 만드세요.
-- "Happy Path"는 '아무것도 잘못되지 않는 사용자 시나리오'를 의미한다 (All-Pass Scenario / Positive Test). 이는 사람의 실수, 엣지 케이스, 의도를 벗어난 행동을 포함하지 않기 때문에 이 시나리오 대로 테스트를 수행하면 이슈나 버그가 발생할 가능성이 현저히 낮아진다.
+- "Happy Path"는 '아무것도 잘못되지 않는 사용자 시나리오'를 의미한다 
+- (All-Pass Scenario / Positive Test). 이는 사람의 실수, 엣지 케이스, 의도를 벗어난 행동을 포함하지 않기 때문에 이 시나리오 대로 테스트를 수행하면 이슈나 버그가 발생할 가능성이 현저히 낮아진다.
 
 JPA 관계 맵핑
 - 지하철역은 여러개의 지하철 노선에 포함될 수 있다.
@@ -191,3 +192,61 @@ JPA 관계 맵핑
 - https://github.com/next-step/atdd-subway-map/blob/boorownie/src/main/java/nextstep/subway/line/domain/LineStations.java
 - 참고한 코드에서는 LineStation을 일급컬렉션을 묶어 LineStations로 둠
 - JPA @Embedded And @Embeddable을 참고하세요.
+
+
+### 구간 제거 기능
+기능 요구사항
+요구사항 설명에서 제공되는 요구사항을 기반으로 지하철 구간 제거 기능을 구현하세요.
+- 요구사항을 정의한 인수 조건을 조출하세요.
+- 인수 조건을 검증하는 인수 테스트를 작성하세요.
+- 예외 케이스에 대한 검증도 포함하세요.
+
+프로그래밍 요구사항
+- 인수 테스트 주도 개발 프로세스에 맞춰서 기능을 구현하세요.
+- 요구사항 설명을 참고하여 인수 조건을 정의
+- 인수 조건을 검증하는 인수 테스트 작성
+- 인수 테스트를 충족하는 기능 구현
+- 인수 조건은 인수 테스트 메서드 상단에 주석으로 작성하세요.
+- 뼈대 코드의 인수 테스트를 참고
+- 인수 테스트의 결과가 다른 인수 테스트에 영향을 끼치지 않도록 인수 테스트를 서로 격리 시키세요.
+- 인수 테스트의 재사용성과 가독성, 그리고 빠른 테스트 의도 파악을 위해 인수 테스트를 리팩터링 하세요.
+
+
+요구사항 설명
+API 명세
+<details>
+<summary>구간 삭제 Request 접기/펼치기</summary>
+
+```http
+DELETE /lines/1/sections?stationId=2 HTTP/1.1
+accept: */*
+host: localhost:52165
+```
+</details>
+
+노선의 구간을 제거하는 기능을 구현하기
+- 종점이 제거될 경우 다음으로 오던 역이 종점이 됨
+- 중간역이 제거될 경우 재배치를 함
+- 노선에 A - B - C 역이 연결되어 있을 때 B역을 제거할 경우 A - C로 재배치 됨
+- 거리는 두 구간의 거리의 합으로 정함
+
+
+구간 삭제 시 예외 케이스를 고려하기
+- 기능 설명을 참고하여 예외가 발생할 수 있는 경우를 검증할 수 있는 인수 테스트를 만들고 이를 성공 시키세요.
+- 예시) 노선에 등록되어있지 않은 역을 제거하려 한다.
+
+구간이 하나인 노선에서 마지막 구간을 제거할 때
+- 제거할 수 없음
+
+힌트
+
+구간 제거 요청 처리
+```java
+@DeleteMapping("/{lineId}/sections")
+public ResponseEntity removeLineStation(
+    @PathVariable Long lineId,
+    @RequestParam Long stationId) {
+    lineService.removeSectionByStationId(lineId, stationId);
+    return ResponseEntity.ok().build();
+}
+```
