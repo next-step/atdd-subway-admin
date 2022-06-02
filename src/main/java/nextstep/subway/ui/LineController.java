@@ -6,6 +6,7 @@ import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.exception.ImpossibleDeleteException;
 import nextstep.subway.exception.NotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
@@ -78,6 +79,11 @@ public class LineController {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity handleNotFoundException() {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(ImpossibleDeleteException.class)
+    public ResponseEntity handleImpossibleDeleteException() {
         return ResponseEntity.badRequest().build();
     }
 }

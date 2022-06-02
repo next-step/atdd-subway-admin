@@ -8,10 +8,12 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.exception.ImpossibleDeleteException;
 import nextstep.subway.exception.NotFoundException;
 
 @Embeddable
 public class Sections {
+    public static final int MIN = 1;
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -28,8 +30,8 @@ public class Sections {
 
     public void addSection(Section section) {
         if (!isSectionsEmpty()) {
-            validNotAddedSection(section);
-            validContainsUpStationOrDownStation(section);
+            validateNotAddedSection(section);
+            validateContainsUpStationOrDownStation(section);
             update(section);
         }
         sections.add(section);
@@ -39,7 +41,7 @@ public class Sections {
         return sections.isEmpty();
     }
 
-    private void validNotAddedSection(Section section) {
+    private void validateNotAddedSection(Section section) {
         if (containsUpStationAndDownStation(section)) {
             throw new IllegalArgumentException("이미 등록된 구간 요청입니다.");
         }
@@ -50,7 +52,7 @@ public class Sections {
                 .contains(section.downStation());
     }
 
-    private void validContainsUpStationOrDownStation(Section section) {
+    private void validateContainsUpStationOrDownStation(Section section) {
         if (containsNoneOfUpStationAndDownStation(section)) {
             throw new IllegalArgumentException("등록을 위해 필요한 상행역과 하행역이 모두 등록되어 있지 않습니다.");
         }
@@ -86,16 +88,29 @@ public class Sections {
     }
 
     public void deleteSection(Station station) {
+        validateNumberOfSections();
         if (isEqualToFirstUpStation(station)) {
             sections.remove(findSectionWithSameUpStation(station));
+            return;
         }
         if (isEqualToLastDownStation(station)) {
             sections.remove(findSectionWithSameDownStation(station));
+            return;
         }
         Section nextSection = findSectionWithSameUpStation(station);
         Section prevSection = findSectionWithSameDownStation(station);
         prevSection.updateDownStationByNextSection(nextSection);
         sections.remove(nextSection);
+    }
+
+    private void validateNumberOfSections() {
+        if(!isSizeMoreThanMin()) {
+            throw new ImpossibleDeleteException("제거 가능한 구간이 없습니다.");
+        }
+    }
+
+    private boolean isSizeMoreThanMin() {
+        return sections.size() > MIN;
     }
 
     private boolean isEqualToFirstUpStation(Station station) {

@@ -275,4 +275,18 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         // then
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * When 구간이 하나인 노선에서 마지막 구간을 제거하면
+     * Then 구간 제거에 실패한다.
+     */
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거하면 구간 제거에 실패한다.")
+    @Test
+    void deleteSectionLeftAlone() {
+        // when
+        ExtractableResponse<Response> deleteResponse = SectionRestAssured.지하철구간_제거_요청(신분당선.getId(), 양재역.getId());
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
