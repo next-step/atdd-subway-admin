@@ -1,6 +1,7 @@
 package nextstep.subway.section;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import nextstep.subway.domain.Distance;
 import nextstep.subway.utils.RestAssuredMethod;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -81,7 +83,7 @@ public class SectionAcceptanceTest {
         // when
         String upStationId = Integer.toString(지하철역_생성("상행종점").jsonPath().get("id"));
 
-        구간_생성(upStationId, lineUpStationId);
+        구간_생성(upStationId, lineUpStationId, "5");
 
         // then
         List<HashMap<String, ?>> stations = 지하철노선_한개_조회(Integer.valueOf(lineId)).get("stations");
@@ -109,7 +111,7 @@ public class SectionAcceptanceTest {
         // when
         String downStationId = Integer.toString(지하철역_생성("하행종점").jsonPath().get("id"));
 
-        구간_생성(lineDownStationId, downStationId);
+        구간_생성(lineDownStationId, downStationId, "5");
 
         // then
         List<HashMap<String, ?>> stations = 지하철노선_한개_조회(Integer.valueOf(lineId)).get("stations");
@@ -138,12 +140,39 @@ public class SectionAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private void 구간_생성(String upStationId, String downStationId) {
+    /**
+     * Given 상행과 하행을 생성하고
+     * <p>
+     * When 이미 등록된 역을 구간으로 등록하려고 하면
+     * <p>
+     * Then 예외가 발생한다.
+     */
+    @DisplayName("이미 등록된 역을 구간으로 등록하려 하면 예외가 발생한다.")
+    @Test
+    void createAlreadySectionThrowException() {
+        // given
+        String stationId = Integer.toString(지하철역_생성("중간역").jsonPath().get("id"));
+
+        // when
+        구간_생성(stationId, lineDownStationId, "5");
+
+        // then
+
+        assertAll(
+                () -> assertThat(구간_생성(lineUpStationId, lineDownStationId, "7").statusCode()).isEqualTo(
+                        HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(구간_생성(stationId, lineDownStationId, "3").statusCode()).isEqualTo(
+                        HttpStatus.BAD_REQUEST.value())
+        );
+    }
+
+
+    private ExtractableResponse<Response> 구간_생성(String upStationId, String downStationId, String distance) {
         Map<String, String> params = new HashMap<>();
-        params.put("distance", "5");
+        params.put("distance", distance);
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);
-        RestAssuredMethod.post("/lines/{id}/sections", params,
+        return RestAssuredMethod.post("/lines/{id}/sections", params,
                 new HashMap<String, String>() {{
                     put("id", lineId);
                 }});
