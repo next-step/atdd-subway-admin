@@ -133,4 +133,13 @@ class SectionsTest {
                 .isThrownBy(() -> sections1.addSection(newSection))
                 .withMessage("등록을 위해 필요한 상행역과 하행역이 모두 등록되어 있지 않습니다.");
     }
+
+    @DisplayName("구간들로부터 상행종점부터 하행종점까지 정렬된 지하철역 반환 테스트")
+    @Test
+    void orderedStations() {
+        Section newSection = Section.builder(판교역, 양재시민의숲역, Distance.valueOf(3))
+                .build();
+        sections1.addSection(newSection);
+        assertThat(sections1.orderedStations()).containsExactly(강남역, 양재역, 판교역, 양재시민의숲역);
+    }
 }
