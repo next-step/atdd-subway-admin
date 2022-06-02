@@ -26,18 +26,15 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("노선을 생성한다.")
     @Test
     void createLine() {
-        // given
-        final String lineName = "신분당선";
-
         // when
-        final ExtractableResponse<Response> createResponse = 지하철_노선을_생성한다(lineName);
+        final ExtractableResponse<Response> createResponse = 지하철_노선을_생성한다("신분당선");
 
         // then
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        final List<String> lineNames = 지하철_노선_목록을_조회한다();
-        assertThat(lineNames).contains(lineName);
+        final List<LineResponse> lines = 지하철_노선_목록을_조회한다().jsonPath().getList(".", LineResponse.class);
+        assertThat(lines).contains(createResponse.body().as(LineResponse.class));
     }
 
 
@@ -50,16 +47,16 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void getLines() {
         // given
-        final String lineName1 = "신분당선";
-        final String lineName2 = "2호선";
-        지하철_노선을_생성한다(lineName1);
-        지하철_노선을_생성한다(lineName2);
+        final LineResponse createdLine1 = 지하철_노선을_생성한다("신분당선").body().as(LineResponse.class);
+        final LineResponse createdLine2 = 지하철_노선을_생성한다("2호선").body().as(LineResponse.class);
 
         // when
-        final List<String> lineNames = 지하철_노선_목록을_조회한다();
+        final ExtractableResponse<Response> getListResponse = 지하철_노선_목록을_조회한다();
 
         // then
-        assertThat(lineNames).containsExactly(lineName1, lineName2);
+        assertThat(getListResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(getListResponse.jsonPath().getList(".", LineResponse.class))
+                .containsExactly(createdLine1, createdLine2);
     }
 
     /**
@@ -71,14 +68,14 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void getLine() {
         // given
-        final String lineName = "신분당선";
-        final LineResponse createResponse = 지하철_노선을_생성한다(lineName).body().as(LineResponse.class);
+        final LineResponse createdLine = 지하철_노선을_생성한다("신분당선").body().as(LineResponse.class);
 
         // when
-        final LineResponse getResponse = 지하철_노선을_조회한다(createResponse.getId());
+        final ExtractableResponse<Response> getResponse = 지하철_노선을_조회한다(createdLine.getId());
 
         // then
-        assertThat(getResponse).isEqualTo(createResponse);
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(getResponse.body().as(LineResponse.class)).isEqualTo(createdLine);
     }
 
     private ExtractableResponse<Response> 지하철_노선을_생성한다(final String name) {
@@ -100,22 +97,20 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
                 .extract();
     }
 
-    private List<String> 지하철_노선_목록을_조회한다() {
+    private ExtractableResponse<Response> 지하철_노선_목록을_조회한다() {
         return RestAssured
                 .given().log().all()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines")
                 .then().log().all()
-                .extract()
-                .jsonPath().getList("name", String.class);
+                .extract();
     }
 
-    private LineResponse 지하철_노선을_조회한다(final Long id) {
+    private ExtractableResponse<Response> 지하철_노선을_조회한다(final Long id) {
         return RestAssured
                 .given().log().all()
                 .when().get("/lines/{id}", id)
                 .then().log().all()
-                .extract()
-                .body().as(LineResponse.class);
+                .extract();
     }
 }
