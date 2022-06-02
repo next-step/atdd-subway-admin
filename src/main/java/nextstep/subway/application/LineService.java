@@ -36,6 +36,18 @@ public class LineService {
         return LineResponse.of(response);
     }
 
+    public LineResponse saveSections(Long id, LineRequest lineRequest) {
+        Line line = findLineById(id);
+        Section section = createSection(
+                lineRequest.getDistance(),
+                lineRequest.getUpStationId(),
+                lineRequest.getDownStationId()
+        );
+
+        line.addSection(section);
+        return LineResponse.of(line);
+    }
+
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
