@@ -199,7 +199,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
      then 등록이 되지 않는다.
   ```
 
-- [ ] 새로운 역을 상행 종점에 등록한다.
+- [X] 새로운 역을 상행 종점에 등록한다.
   ```text
      given 지하철 역을 생성하고 지하철 노선을 추가한다.
      when 상행역 노선의 새로운 역이며 하행역이 기존 상행종점인역인 구간을 등록 요청한다. 

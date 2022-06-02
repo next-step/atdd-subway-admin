@@ -146,13 +146,27 @@ public class SectionAcceptanceTest {
         //then 등록이 되지 않는다.
         assertThat(상행역과_하행역이_포함되지_않는_노선을_추가한다.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
-
+    /*
+    * given 지하철 역을 생성하고 지하철 노선을 추가한다.
+    * when 상행역 노선의 새로운 역이며 하행역이 기존 상행종점인역인 구간을 등록 요청한다.
+     * then 새로운 역이 상행 종점에 등록된다. - 이때는 거리를 신경쓰지 않는다.
+    */
     @Test
     @DisplayName("새로운 역을 상행 종점에 등록한다.")
     void upStationAddSection() {
-        //given 지하철 역을 생성하고 지하철 노선을 추가한다.
+        StationResponse 도화역 = 지하철역을_생성_한다("도화역").as(StationResponse.class);
+        //StationResponse 인천역 = 지하철역을_생성_한다("인천역").as(StationResponse.class);
+
         //when 상행역 노선의 새로운 역이며 하행역이 기존 상행종점인역인 구간을 등록 요청한다.
+        SectionRequest 상행_종점_구간 = new SectionRequest(도화역.getId(), 인천역.getId(), 3);
+        ExtractableResponse<Response> 상행_종점에_등록한다 = 노선의_구간을_추가한다(호선_1.getId(), 상행_종점_구간);
+
         //then 새로운 역이 상행 종점에 등록된다. - 이때는 거리를 신경쓰지 않는다.
+        final JsonPath 노선의_구간을_조회 = 노선의_구간을_전부_조회(호선_1.getId()).jsonPath();
+        assertAll(
+                () -> assertThat(노선의_구간을_조회.getString("upStation[0].name")).isEqualTo("도화역"),
+                () -> assertThat(노선의_구간을_조회.getInt("distance[0]")).isEqualTo(3)
+        );
     }
 
     @Test

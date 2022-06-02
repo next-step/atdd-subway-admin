@@ -36,6 +36,7 @@ public class Sections {
 
 
     public List<Section> getList() {
+        sortedSections();
         return Collections.unmodifiableList(sectionElement);
     }
 
@@ -47,7 +48,6 @@ public class Sections {
             addBetweenSection(newSection);
             return;
         }
-
         this.sectionElement.add(newSection);
     }
 
@@ -73,6 +73,12 @@ public class Sections {
 
     }
 
+    private Section findUpSection(Station findStation) {
+        return this.sectionElement.stream()
+                .filter(section -> section.getUpStation().equals(findStation))
+                .findFirst().get();
+    }
+
     private Predicate<Station> stationsIsNotContains (List<Station> searchStations) {
         return station -> !searchStations.contains(station);
     }
@@ -90,7 +96,6 @@ public class Sections {
                 .map(Section::getUpStation);
     }
 
-
     private void addBetweenSection(Section newSection) {
         Section beforeSection = findAddSection(newSection);
         validDistance(newSection, beforeSection);
@@ -98,6 +103,20 @@ public class Sections {
         beforeSection.minusDistance(newSection.getDistance());
         this.sectionElement.add(newSection);
     }
+
+
+    private void sortedSections() {
+        List<Section> list = new ArrayList<>();
+
+        while (!sectionElement.isEmpty()) {
+            Section lastUpSection = findUpSection(getLastUpStation());
+            list.add(lastUpSection);
+            sectionElement.remove(lastUpSection);
+        }
+
+        sectionElement = list;
+    }
+
 
     private void validDistance(Section newSection, Section beforeSection) {
         if (!newSection.getDistance().isLess(beforeSection.getDistance())) {
@@ -143,6 +162,5 @@ public class Sections {
         return sectionElement.stream()
                 .anyMatch(section -> section.getUpStation().equals(newSection.getUpStation()));
     }
-
 
 }

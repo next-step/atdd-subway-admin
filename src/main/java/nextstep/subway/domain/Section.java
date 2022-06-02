@@ -4,6 +4,7 @@ import static nextstep.subway.message.ErrorMessage.SECTION_HAS_DISTANCE_STATION_
 import static nextstep.subway.message.ErrorMessage.SECTION_HAS_DOWN_STATION_ESSENTIAL;
 import static nextstep.subway.message.ErrorMessage.SECTION_HAS_UP_STATION_ESSENTIAL;
 
+import java.util.Objects;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -105,4 +106,21 @@ public class Section {
         return new Builder();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(upStation, section.upStation) && Objects.equals(downStation,
+                section.downStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(upStation, downStation);
+    }
 }
