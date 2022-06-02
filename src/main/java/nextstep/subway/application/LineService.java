@@ -2,9 +2,9 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineStationRequest;
 import nextstep.subway.exception.CustomException;
 import nextstep.subway.exception.ErrorCode;
 import org.springframework.stereotype.Service;
@@ -17,19 +17,17 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class LineService {
     private final LineRepository lineRepository;
-    private final StationService stationService;
+    private final LineStationService lineStationService;
 
-    public LineService(LineRepository lineRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, LineStationService lineStationService) {
         this.lineRepository = lineRepository;
-        this.stationService = stationService;
+        this.lineStationService = lineStationService;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationService.getOrElseThrow(lineRequest.getUpStationId());
-        Station downStation = stationService.getOrElseThrow(lineRequest.getDownStationId());
-
-        Line line = lineRepository.save(new Line(lineRequest, upStation, downStation));
+        Line line = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+        lineStationService.saveLineStation(lineRequest, line);
 
         return LineResponse.of(line);
     }
@@ -51,10 +49,7 @@ public class LineService {
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = getOrElseThrow(id);
-        Station upStation = stationService.getOrElseThrow(lineRequest.getUpStationId());
-        Station downStation = stationService.getOrElseThrow(lineRequest.getDownStationId());
-
-        line.update(lineRequest, upStation, downStation);
+        line.update(lineRequest);
     }
 
     @Transactional
@@ -62,10 +57,14 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
+    @Transactional
+    public void createStations(Long id, LineStationRequest lineStationRequest) {
+        Line line = getOrElseThrow(id);
+        lineStationService.saveLineStation(lineStationRequest, line);
+    }
+
+
     private Line getOrElseThrow(Long id) {
-        if (id == null) {
-            return null;
-        }
         return lineRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.LINE_NOT_FOUND));
     }
