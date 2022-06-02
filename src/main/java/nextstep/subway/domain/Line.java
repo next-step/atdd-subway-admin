@@ -18,16 +18,8 @@ public class Line extends BaseEntity {
     @Embedded
     private Distance distance;
 
-    @OneToOne
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-
-    @OneToOne
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
-
     @Embedded
-    private Sections sections = new Sections();
+    private final Sections sections = new Sections();
 
     protected Line() {
     }
@@ -42,16 +34,6 @@ public class Line extends BaseEntity {
         this.name = name;
         this.color = color;
         initStation(distance, upStation, downStation);
-    }
-
-    public Line setUpStation(Station upStation) {
-        this.upStation = upStation;
-        return this;
-    }
-
-    public Line setDownStation(Station downStation) {
-        this.downStation = downStation;
-        return this;
     }
 
     public void updateLine(String name, String color) {
@@ -182,8 +164,6 @@ public class Line extends BaseEntity {
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
                 ", distance=" + distance +
-                ", upStation=" + upStation +
-                ", downStation=" + downStation +
                 ", sections=" + sections +
                 '}';
     }
