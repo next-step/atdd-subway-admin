@@ -17,10 +17,6 @@ public class LineUpdateRequest {
         return new LineUpdateRequest(name, color);
     }
 
-    public Line toLine(Sections sections) {
-        return Line.of(name, color, sections);
-    }
-
     public String getName() {
         return name;
     }

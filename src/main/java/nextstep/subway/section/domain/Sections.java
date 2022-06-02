@@ -37,17 +37,12 @@ public class Sections{
         sections.add(section);
     }
 
-    public List<Station> getSortedStations() {
-        sortSections();
-        return getStations();
-    }
-
     private void validateSectionToAdd(Section section) {
-        checkIfBothStationsAreAlreadyRegistered(section);
-        checkIfBothStationsAreUnknown(section);
+        validateAtLeastOneStationIsNew(section);
+        validateAtLeastOneStationIsRegistered(section);
     }
 
-    private void checkIfBothStationsAreAlreadyRegistered(Section section) {
+    private void validateAtLeastOneStationIsNew(Section section) {
         if (hasStation(section.getUpStation()) && hasStation(section.getDownStation())) {
             throw new IllegalArgumentException(
                     String.format(ErrorMessage.ERROR_SECTION_ALREADY_REGISTERED_STATIONS,
@@ -56,7 +51,7 @@ public class Sections{
         }
     }
 
-    private void checkIfBothStationsAreUnknown(Section section) {
+    private void validateAtLeastOneStationIsRegistered(Section section) {
         if (!hasStation(section.getUpStation()) && !hasStation(section.getDownStation())) {
             throw new IllegalArgumentException(
                     String.format(ErrorMessage.ERROR_SECTION_UNKNOWN_STATIONS,
@@ -65,10 +60,15 @@ public class Sections{
         }
     }
 
-    private void updateAdjacentSection(Section newSection) {
+    private void updateAdjacentSection(Section sectionToAdd) {
         for (Section section : sections) {
-            section.updateWith(newSection);
+            section.updateWith(sectionToAdd);
         }
+    }
+
+    public List<Station> getSortedStations() {
+        sortSections();
+        return getStations();
     }
 
     private List<Station> getStations(){

@@ -54,7 +54,7 @@ public class LineService {
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(String.format(ErrorMessage.ERROR_LINE_NOT_FOUND, id)));
-        line.update(lineUpdateRequest.toLine(line.getSections()));
+        line.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
     }
 
     @Transactional

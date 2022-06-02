@@ -27,23 +27,13 @@ public class Line {
         section.updateLine(this);
     }
 
-    private Line(String name, String color, Sections sections) {
-        this.name = name;
-        this.color = color;
-        this.sections = sections;
-    }
-
-    public static Line of(String name, String color, Sections sections){
-        return new Line(name, color, sections);
-    }
-
     public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
         return new Line(name, color, Section.of(upStation, downStation, distance));
     }
 
-    public void update(Line newLine) {
-        updateName(newLine.getName());
-        updateColor(newLine.getColor());
+    public void update(String name, String color) {
+        updateName(name);
+        updateColor(color);
     }
 
     public Long getId() {
