@@ -99,9 +99,9 @@ public class Sections {
         }
         Section nextSection = findSectionWithSameUpStation(station);
         Section prevSection = findSectionWithSameDownStation(station);
-        sections.add(mergeSection(prevSection, nextSection));
         sections.remove(nextSection);
         sections.remove(prevSection);
+        sections.add(mergeSection(prevSection, nextSection));
     }
 
     private void validateNumberOfSections() {
@@ -164,8 +164,9 @@ public class Sections {
 
     private Section mergeSection(Section prevSection, Section nextSection) {
         prevSection.distance().plus(nextSection.distance());
-        return Section.builder(prevSection.upStation(), nextSection.downStation(), prevSection.distance())
+        Section newSection = Section.builder(prevSection.upStation(), nextSection.downStation(), prevSection.distance())
                 .build();
+        newSection.addLine(prevSection.line());
+        return newSection;
     }
-
 }

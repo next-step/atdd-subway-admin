@@ -141,6 +141,10 @@ public class Section extends BaseEntity {
         return distance;
     }
 
+    public Line line() {
+        return line;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
