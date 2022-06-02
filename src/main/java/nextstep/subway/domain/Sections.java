@@ -3,15 +3,16 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    public static final String HAS_UP_AND_DOWN_STATION_MSG = "상행역과 하행역이 이미 다른 구간에 동시에 등록되어 있습니다.";
+    public static final String HAS_NOT_UP_AND_DOWN_STATION_MSG = "새로운 구간에 상행역과 하행역 중 하나는 포함되어야 합니다.";
+
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public Set<Station> getStations() {
@@ -20,9 +21,56 @@ public class Sections {
                         .collect(Collectors.toSet());
     }
 
-    public void addSection(Station upStation, Station downStation, Integer distance) {
-        Section section = new Section(upStation, downStation, distance);
-        sections.add(section);
+    public Set<Station> getUpStations() {
+        return sections.stream()
+                .flatMap(section -> Stream.of(section.getUpStation()))
+                .collect(Collectors.toSet());
+    }
+
+    public Set<Station> getDownStations() {
+        return sections.stream()
+                .flatMap(section -> Stream.of(section.getDownStation()))
+                .collect(Collectors.toSet());
+    }
+
+    public List<Station> getStationsSorted() {
+        List<Station> stations = new ArrayList<>();
+
+        Station rootStation = getUpStations().stream()
+                                            .filter(station -> !getDownStations().contains(station))
+                                            .findFirst()
+                                            .orElseThrow(NoSuchElementException::new);
+
+        stations.add(rootStation);
+
+
+//        Section rootSection = sections.stream()
+//                .filter(section -> getDownStations().contains(section))
+//                .findFirst()
+//                .orElseThrow(NoSuchElementException::new);
+
+//        Station rootStation = rootSection.getUpStation();
+//        stations.add(rootStation);
+//        Station nextStation = rootSection.getDownStation();
+//        stations.add(nextStation);
+        Station nextStation = getNextStation(rootStation);
+        while(Objects.nonNull(nextStation)) {
+            stations.add(nextStation);
+            nextStation = getNextStation(nextStation);
+        }
+        return stations;
+    }
+
+    private Station getNextStation(Station downStation) {
+        Section nextSection = sections.stream()
+                .filter(section -> section.getEqualsUpStation(downStation))
+                .findFirst()
+                .orElse(null);
+
+        if(Objects.nonNull(nextSection))
+            return nextSection.getDownStation();
+
+        return null;
     }
 
     public void addSection(Section section) {
@@ -35,16 +83,14 @@ public class Sections {
         sections.add(section);
     }
 
-    private boolean addSectionValid(Section section) {
+    private void addSectionValid(Section section) {
         if(hasUpStationAndDownStation(section)) {
-            throw new IllegalArgumentException("");
+            throw new IllegalArgumentException(HAS_UP_AND_DOWN_STATION_MSG);
         }
 
         if(hasNotUpStationAndDownStation(section)) {
-            throw new IllegalArgumentException("");
+            throw new IllegalArgumentException(HAS_NOT_UP_AND_DOWN_STATION_MSG);
         }
-
-        return true;
     }
 
     private boolean hasUpStationAndDownStation(Section newSection) {

@@ -32,6 +32,7 @@ public class LineService {
                                       ,stationService.findById(lineRequest.getDownStationId())
                                       ,lineRequest.getDistance());
         persistLine.addSection(section);
+
         return LineResponse.of(persistLine);
     }
 

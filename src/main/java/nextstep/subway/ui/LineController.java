@@ -9,6 +9,7 @@ import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,9 +61,10 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
-    @ExceptionHandler({DataIntegrityViolationException.class, EmptyResultDataAccessException.class})
-    public ResponseEntity handleIllegalArgsException() {
-        return ResponseEntity.badRequest().build();
+    @ExceptionHandler({DataIntegrityViolationException.class, EmptyResultDataAccessException.class, IllegalArgumentException.class})
+    public ResponseEntity handleIllegalArgsException(RuntimeException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(exception.getMessage());
     }
-
 }
