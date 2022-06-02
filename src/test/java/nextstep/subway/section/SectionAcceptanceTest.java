@@ -39,6 +39,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     @TestFactory
+    @DisplayName("노선에 새로운 구간을 등록할 경우, 예외처리를 검증한다.")
     Stream<DynamicTest> createSection_fail() {
         return Stream.of(
             DynamicTest.dynamicTest("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같다면 실패", () -> {
@@ -57,6 +58,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     @ParameterizedTest(name = "{0}")
+    @DisplayName("노선에 새로운 지하철 구간을 등록할 경우, 노선 조회시 증가된 지하철역의 개수를 찾을 수 있다.")
     @MethodSource("providerCreateSectionCase")
     void createSection(String name, SectionRequest sectionRequest, int resultSize) {
         LineResponse response = 지하철_구간_등록(sectionRequest, lineResponse.getId()).as(LineResponse.class);
@@ -69,19 +71,19 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         return Stream.of(
             Arguments.of(
-                "역 사이에 새로운 역이 등록될 경우",
+                "노선의 종점역 사이에 새로운 역이 등록될 경우",
                 new SectionRequest(preStations.get(0).getId(), newStationResponse.getId(), 5L),
-                3
+                lineResponse.getStations().size() + 1
             ),
             Arguments.arguments(
-                "새로운 역이 상행종점역으로 등록될 경우",
+                "노선에 새로운 역이 상행종점역으로 등록될 경우",
                 new SectionRequest(newStationResponse.getId(), preStations.get(0).getId(), 10L),
-                3
+                lineResponse.getStations().size() + 1
             ),
             Arguments.arguments(
-                "새로운 역이 하행종점역으로 등록될 경우",
+                "노선에 새로운 역이 하행종점역으로 등록될 경우",
                 new SectionRequest(preStations.get(preStations.size() - 1).getId(), newStationResponse.getId(), 10L),
-                3
+                lineResponse.getStations().size() + 1
             )
         );
     }
