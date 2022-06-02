@@ -30,12 +30,6 @@ public class Sections {
         elements.add(section);
     }
 
-    public Set<Station> getAllStations() {
-        return elements.stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                .collect(Collectors.toSet());
-    }
-
     private void validate(Section section) {
         containsAllStations(section);
         notContainsStations(section);
