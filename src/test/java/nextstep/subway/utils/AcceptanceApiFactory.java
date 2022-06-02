@@ -62,6 +62,25 @@ public class AcceptanceApiFactory {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 지하철노선_구간_등록(
+            Long lineId,
+            int upStationId,
+            int downStationId,
+            int distance
+    ) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines/{lineId}/sections", lineId)
+                .then().log().all()
+                .extract();
+    }
+
     public static ExtractableResponse<Response> 지하철노선_수정(Long id, String name, String color) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);

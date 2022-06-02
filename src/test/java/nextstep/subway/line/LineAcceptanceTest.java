@@ -26,6 +26,8 @@ public class LineAcceptanceTest {
     int port;
     private int 강남역_ID;
     private int 교대역_ID;
+    private int 서초역_ID;
+    private int 역삼역_ID;
 
     @Autowired
     private DatabaseCleanup databaseCleanup;
@@ -40,6 +42,8 @@ public class LineAcceptanceTest {
 
         강남역_ID = 지하철역_생성("강남역").jsonPath().getInt("id");
         교대역_ID = 지하철역_생성("교대역").jsonPath().getInt("id");
+        서초역_ID = 지하철역_생성("서초역").jsonPath().getInt("id");
+        역삼역_ID = 지하철역_생성("역삼역").jsonPath().getInt("id");
     }
 
     @Test
@@ -123,5 +127,53 @@ public class LineAcceptanceTest {
 
         ExtractableResponse<Response> 지하철노선_조회_결과 = 지하철노선_조회(id);
         assertThat(지하철노선_조회_결과.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    @DisplayName("역사이에 역을 신규로 등록하는 경우")
+    void newStationBetweenTheStations() {
+        ExtractableResponse<Response> 지하철노선_생성_결과 = 지하철노선_생성("2호선", "bg-green-600", 교대역_ID, 역삼역_ID);
+        assertThat(지하철노선_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        Long 지하철노선_ID = 지하철노선_생성_결과.jsonPath().getLong("id");
+        ExtractableResponse<Response> 지하철노선_구간_등록_결과 = 지하철노선_구간_등록(지하철노선_ID, 교대역_ID, 강남역_ID, 5);
+
+        assertAll(
+                () -> assertThat(지하철노선_구간_등록_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(지하철노선_구간_등록_결과.jsonPath().getList("stations.name", String.class))
+                        .containsExactly("역삼역", "강남역", "교대역")
+        );
+    }
+
+    @Test
+    @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
+    void newStationUpLastStation() {
+        ExtractableResponse<Response> 지하철노선_생성_결과 = 지하철노선_생성("2호선", "bg-green-600", 교대역_ID, 강남역_ID);
+        assertThat(지하철노선_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        Long 지하철노선_ID = 지하철노선_생성_결과.jsonPath().getLong("id");
+        ExtractableResponse<Response> 지하철노선_구간_등록_결과 = 지하철노선_구간_등록(지하철노선_ID, 서초역_ID, 교대역_ID, 3);
+
+        assertAll(
+                () -> assertThat(지하철노선_구간_등록_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(지하철노선_구간_등록_결과.jsonPath().getList("stations.name", String.class))
+                        .containsExactly("서초역", "강남역", "교대역")
+        );
+    }
+
+    @Test
+    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
+    void newStationDownLastStation() {
+        ExtractableResponse<Response> 지하철노선_생성_결과 = 지하철노선_생성("2호선", "bg-green-600", 교대역_ID, 강남역_ID);
+        assertThat(지하철노선_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        Long 지하철노선_ID = 지하철노선_생성_결과.jsonPath().getLong("id");
+        ExtractableResponse<Response> 지하철노선_구간_등록_결과 = 지하철노선_구간_등록(지하철노선_ID, 강남역_ID, 역삼역_ID, 15);
+
+        assertAll(
+                () -> assertThat(지하철노선_구간_등록_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(지하철노선_구간_등록_결과.jsonPath().getList("stations.name", String.class))
+                        .containsExactly("서초역", "강남역", "교대역")
+        );
     }
 }
