@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.BaseAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,17 +20,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-    }
+public class StationAcceptanceTest extends BaseAcceptanceTest {
 
     /**
      * When 지하철역을 생성하면
@@ -108,11 +99,12 @@ public class StationAcceptanceTest {
         assertThat(stationNames).doesNotContain("강남역");
     }
 
-    private ExtractableResponse<Response> createStationWithStationName(String stationName){
+    public static ExtractableResponse<Response> createStationWithStationName(String stationName){
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
-        return RestAssured.given().log().all()
+        return RestAssured
+            .given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/stations")
