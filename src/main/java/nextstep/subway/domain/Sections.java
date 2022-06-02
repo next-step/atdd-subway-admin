@@ -28,7 +28,6 @@ public class Sections {
         List<Section> sections = new ArrayList<>();
         sections.add(new Section(null, upStation, null));
         sections.add(new Section(upStation, downStation, distance));
-//        sections.add(new Section(downStation, null, null));
         return new Sections(sections);
     }
 
@@ -37,6 +36,14 @@ public class Sections {
     }
 
     public void add(Section newSection) {
+
+        Section firstSection = getFirstSection();
+
+        if (isMatchedDownStation(newSection.getDownStation(), firstSection)) {
+            addSectionOfFirstSectionMatched(newSection, firstSection);
+            return;
+        }
+
         Optional<Section> upMatchedSection = matchUpStation(newSection);
         if (upMatchedSection.isPresent()) {
             addSectionOfUpMatchedCase(newSection, upMatchedSection);
@@ -50,23 +57,28 @@ public class Sections {
         }
     }
 
+    private void addSectionOfFirstSectionMatched(Section newSection, Section firstSection) {
+        firstSection.setDownStation(newSection.getUpStation());
+        sections.add(newSection);
+    }
+
+
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
 
-        Station preStation = getFirstSection().getDownStation();
+        Section preSection = getFirstSection();
 
-        stations.add(preStation);
+        stations.add(preSection.getDownStation());
         while (true) {
-            Station finalPreStation = preStation;
-            Optional<Station> nextStation = sections.stream()
+            Section finalPreSection = preSection;
+            Optional<Section> nextStation = sections.stream()
                     .filter(section -> !Objects.isNull(section.getUpStation()))
-                    .filter(section -> section.getUpStation().getId().equals(finalPreStation.getId()))
-                    .map(Section::getDownStation)
+                    .filter(section -> isMatchedDownStation(section.getUpStation(), finalPreSection))
                     .findFirst();
 
             if (nextStation.isPresent()) {
-                stations.add(nextStation.get());
-                preStation = nextStation.get();
+                stations.add(nextStation.get().getDownStation());
+                preSection = nextStation.get();
             }
 
             if (!nextStation.isPresent()) {
@@ -94,12 +106,12 @@ public class Sections {
 
     private Optional<Section> matchDownStation(Section newSection) {
         return sections.stream()
-                .filter(section -> !Objects.isNull(section.getDownStation()))
-                .filter(section -> section.getDownStation().getId().equals(newSection.getDownStation().getId()))
+                .filter(section -> isMatchedDownStation(section.getDownStation(), newSection))
                 .findFirst();
     }
 
     private void addSectionOfDownMatchedCase(Section newSection, Optional<Section> downMatchedSection) {
+
         Section oldSection = downMatchedSection.get();
         sections.add(
                 new Section(
@@ -115,7 +127,7 @@ public class Sections {
     private Optional<Section> matchUpStation(Section newSection) {
         Optional<Section> upMatchedSection = sections.stream()
                 .filter(section -> !Objects.isNull(section.getUpStation()))
-                .filter(section -> section.getUpStation().getId().equals(newSection.getUpStation().getId()))
+                .filter(section -> isMatchedUpStation(section.getUpStation(), newSection))
                 .findFirst();
         return upMatchedSection;
     }
@@ -132,4 +144,13 @@ public class Sections {
         oldSection.setDownStation(newSection.getDownStation());
         oldSection.setDistance(newSection.getDistance());
     }
+
+    private boolean isMatchedDownStation(Station station, Section section) {
+        return station.getId().equals(section.getDownStation().getId());
+    }
+
+    private boolean isMatchedUpStation(Station station, Section section) {
+        return station.getId().equals(section.getUpStation().getId());
+    }
+
 }
