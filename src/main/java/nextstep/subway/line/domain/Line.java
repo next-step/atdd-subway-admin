@@ -5,7 +5,6 @@ import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.Arrays;
 
 @Entity
 public class Line {
@@ -25,7 +24,7 @@ public class Line {
         this.name = name;
         this.color = color;
         this.sections = Sections.from(section);
-        section.setLine(this);
+        section.updateLine(this);
     }
 
     private Line(String name, String color, Sections sections) {
@@ -72,7 +71,7 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        section.setLine(this);
+        section.updateLine(this);
         sections.addSection(section);
     }
 }

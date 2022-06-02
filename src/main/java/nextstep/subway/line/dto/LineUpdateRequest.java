@@ -8,11 +8,10 @@ public class LineUpdateRequest {
     private String name;
     private String color;
 
-    public LineUpdateRequest(String name, String color) {
+    private LineUpdateRequest(String name, String color) {
         this.name = name;
         this.color = color;
     }
-
 
     public static LineUpdateRequest of(String name, String color) {
         return new LineUpdateRequest(name, color);

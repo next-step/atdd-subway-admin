@@ -48,7 +48,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void createSectionBetweenStations() {
         //given
         StationResponse 새로운역 = StationTestMethods.지하철역_생성("새로운역").as(StationResponse.class);
-        SectionRequest 새로운역_하행역_구간 = new SectionRequest(새로운역.getId(), 하행역.getId(), 5);
+        SectionRequest 새로운역_하행역_구간 = SectionRequest.of(새로운역.getId(), 하행역.getId(), 5);
         구간_추가(기본노선.getId(), 새로운역_하행역_구간);
 
         //when
@@ -70,7 +70,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void createSectionBeforeFirstStation() {
         //given
         StationResponse 새로운역 = StationTestMethods.지하철역_생성("새로운역").as(StationResponse.class);
-        SectionRequest 새로운역_상행역_구간 = new SectionRequest(새로운역.getId(), 상행역.getId(), 5);
+        SectionRequest 새로운역_상행역_구간 = SectionRequest.of(새로운역.getId(), 상행역.getId(), 5);
         구간_추가(기본노선.getId(), 새로운역_상행역_구간);
 
         //when
@@ -92,7 +92,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void createSectionAfterLastStation() {
         //given
         StationResponse 새로운역 = StationTestMethods.지하철역_생성("새로운역").as(StationResponse.class);
-        SectionRequest 하행역_새로운역_구간 = new SectionRequest(하행역.getId(), 새로운역.getId(), 5);
+        SectionRequest 하행역_새로운역_구간 = SectionRequest.of(하행역.getId(), 새로운역.getId(), 5);
         구간_추가(기본노선.getId(), 하행역_새로운역_구간);
 
         //when
@@ -114,7 +114,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void exception_createLongerSectionBetweenStations() {
         //when
         StationResponse 새로운역 = StationTestMethods.지하철역_생성("새로운역").as(StationResponse.class);
-        SectionRequest 새로운역_하행역_구간 = new SectionRequest(새로운역.getId(), 하행역.getId(), DEFAULT_DISTANCE);
+        SectionRequest 새로운역_하행역_구간 = SectionRequest.of(새로운역.getId(), 하행역.getId(), DEFAULT_DISTANCE);
         ExtractableResponse<Response> response = 구간_추가(기본노선.getId(), 새로운역_하행역_구간);
 
         //Then
@@ -137,7 +137,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void exception_createSectionWithAlreadyExistingStations() {
         //when
         StationResponse 새로운역 = StationTestMethods.지하철역_생성("새로운역").as(StationResponse.class);
-        SectionRequest 새로운역_하행역_구간 = new SectionRequest(상행역.getId(), 하행역.getId(), 5);
+        SectionRequest 새로운역_하행역_구간 = SectionRequest.of(상행역.getId(), 하행역.getId(), 5);
         ExtractableResponse<Response> response = 구간_추가(기본노선.getId(), 새로운역_하행역_구간);
 
         //Then
@@ -161,7 +161,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         //when
         StationResponse 새로운역 = StationTestMethods.지하철역_생성("새로운역").as(StationResponse.class);
         StationResponse 새로운역2 = StationTestMethods.지하철역_생성("새로운역2").as(StationResponse.class);
-        SectionRequest 새로운역_새로운역2_구간 = new SectionRequest(새로운역.getId(), 새로운역2.getId(), 5);
+        SectionRequest 새로운역_새로운역2_구간 = SectionRequest.of(새로운역.getId(), 새로운역2.getId(), 5);
         ExtractableResponse<Response> response = 구간_추가(기본노선.getId(), 새로운역_새로운역2_구간);
 
         //Then

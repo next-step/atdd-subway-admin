@@ -68,7 +68,7 @@ public class Section{
         return line;
     }
 
-    public void setLine(Line line) {
+    public void updateLine(Line line) {
         this.line = line;
     }
 }

@@ -10,25 +10,25 @@ public class StationResponse {
     private Long id;
     private String name;
 
-    public static StationResponse from(Station station) {
-        return new StationResponse(station.getId(), station.getName());
-    }
-
     public StationResponse() {
     }
 
-    public StationResponse(Long id, String name) {
+    private StationResponse(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
+    public static StationResponse from(Station station) {
+        return new StationResponse(station.getId(), station.getName());
+    }
+
     public static List<StationResponse> from(Sections sections) {
-        List<StationResponse> result = new ArrayList<>();
+        List<StationResponse> stationResponses = new ArrayList<>();
         List<Station> stations = sections.getSortedStations();
         for (Station station : stations) {
-            result.add(new StationResponse(station.getId(), station.getName()));
+            stationResponses.add(new StationResponse(station.getId(), station.getName()));
         }
-        return result;
+        return stationResponses;
     }
 
     public Long getId() {

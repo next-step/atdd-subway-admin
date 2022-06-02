@@ -73,7 +73,9 @@ public class Sections{
 
     private List<Station> getStations(){
         List<Station> stations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
-        stations.add(sections.get(sections.size() - 1).getDownStation());
+        if(!stations.isEmpty()) {
+            stations.add(sections.get(sections.size() - 1).getDownStation());
+        }
         return stations;
     }
 

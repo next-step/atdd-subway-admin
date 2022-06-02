@@ -8,7 +8,7 @@ public class StationRequest {
     protected StationRequest() {
     }
 
-    public StationRequest(String name) {
+    private StationRequest(String name) {
         this.name = name;
     }
 
