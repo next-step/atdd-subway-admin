@@ -1,4 +1,4 @@
-package nextstep.subway.dto;
+package nextstep.subway.line.dto;
 
 public class LineRequest {
 
@@ -42,8 +42,19 @@ public class LineRequest {
         this.distance = distance;
     }
 
-    public static LineRequest of(String name, String color, Long upStationId, Long downStationId,
-        Long distance) {
-        return new LineRequest(name, color, upStationId, downStationId, distance);
+    public static LineRequest of(
+        String name,
+        String color,
+        Long upStationId,
+        Long downStationId,
+        Long distance
+    ) {
+        return new LineRequest(
+            name,
+            color,
+            upStationId,
+            downStationId,
+            distance
+        );
     }
 }

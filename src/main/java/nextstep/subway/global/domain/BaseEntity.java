@@ -1,4 +1,4 @@
-package nextstep.subway.domain;
+package nextstep.subway.global.domain;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -16,12 +16,4 @@ public class BaseEntity {
 
     @LastModifiedDate
     private LocalDateTime modifiedDate;
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
-    }
 }
