@@ -5,6 +5,7 @@ import java.util.List;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.repository.LineRepository;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
@@ -39,7 +40,7 @@ public class SectionService {
             .filter(station -> station.getId().equals(sectionRequest.getUpStationId())).findFirst()
             .orElseThrow(() -> new IllegalArgumentException("상행역이 존재하지 않습니다."));
 
-        line.addSection(new Section(upStation, downStation, sectionRequest.getDistance()));
+        line.addSection(new Section(upStation, downStation, new Distance(sectionRequest.getDistance())));
 
         return LineResponse.from(line);
     }

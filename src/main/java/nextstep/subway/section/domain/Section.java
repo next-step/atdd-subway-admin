@@ -1,7 +1,6 @@
 package nextstep.subway.section.domain;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -31,13 +30,13 @@ public class Section {
     @JoinColumn(name = "down_station_id", nullable = false)
     private Station downStation;
 
-    @Column(nullable = false)
-    private Long distance;
+    @Embedded
+    private Distance distance = new Distance();
 
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, Long distance) {
+    public Section(Station upStation, Station downStation, Distance distance) {
         validateUpDownStation(upStation, downStation);
 
         this.upStation = upStation;
@@ -72,7 +71,7 @@ public class Section {
             this.downStation = changeSection.getUpStation();
         }
 
-        this.distance -= changeSection.getDistance();
+        this.distance.subtract(changeSection.getDistance());
     }
 
     private void validateUpDownStation(Station upStation, Station downStation) {
@@ -86,13 +85,13 @@ public class Section {
     }
 
     private void validateDistance(Section changeSection) {
-        if (!this.checkDistance(changeSection.getDistance())) {
-            throw new IllegalArgumentException("구간의 거리는 기존 구간보다 작아야 합니다.");
+        if (!this.isMoreThanDistance(changeSection.getDistance())) {
+            throw new IllegalArgumentException("변경되는 구간의 거리는 기존 구간보다 작아야 합니다.");
         }
     }
 
-    private boolean checkDistance(Long distance) {
-        return this.distance > distance;
+    private boolean isMoreThanDistance(Distance distance) {
+        return this.distance.compareTo(distance) > 0;
     }
 
     public Station getUpStation() {
@@ -103,8 +102,8 @@ public class Section {
         return this.downStation;
     }
 
-    public Long getDistance() {
-        return distance;
+    public Distance getDistance() {
+        return this.distance;
     }
 
 }
