@@ -1,10 +1,8 @@
 package nextstep.subway.application;
 
 import nextstep.subway.domain.*;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.LineUpdateRequest;
-import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.*;
+import nextstep.subway.exception.ErrorMessage;
 import nextstep.subway.exception.NoSuchElementFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +25,9 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(() -> new NoSuchElementFoundException("해당 역을 찾을 수 없습니다."));
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(() -> new NoSuchElementFoundException("해당 역을 찾을 수 없습니다."));
+
+        Station upStation = findStationById(lineRequest.getUpStationId());
+        Station downStation = findStationById(lineRequest.getDownStationId());
 
         Line persistLine = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
         persistLine.addFirstSection(new Section(upStation, downStation, lineRequest.getDistance()));
@@ -45,31 +44,31 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new NoSuchElementFoundException("해당 노선을 찾을 수 없습니다."));
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NoSuchElementFoundException(ErrorMessage.NOT_FOUND_LINE));
         return LineResponse.of(line);
     }
 
     @Transactional
     public void updateLine(LineUpdateRequest updateRequest) {
-        Line line = lineRepository.findById(updateRequest.getId()).orElseThrow(() -> new NoSuchElementFoundException("해당 노선을 찾을 수 없습니다."));
+        Line line = lineRepository.findById(updateRequest.getId()).orElseThrow(() -> new NoSuchElementFoundException(ErrorMessage.NOT_FOUND_LINE));
         line.updateLine(updateRequest.getName(), updateRequest.getColor());
     }
 
     @Transactional
     public void deleteLineById(@PathVariable Long id) {
         if (!lineRepository.existsById(id)) {
-            throw new NoSuchElementFoundException("해당 노선을 찾을 수 없습니다.");
+            throw new NoSuchElementFoundException(ErrorMessage.NOT_FOUND_LINE);
         }
         lineRepository.deleteById(id);
     }
 
     private Station findStationById(Long id) {
-        return stationRepository.findById(id).orElseThrow(() -> new NoSuchElementFoundException("해당 역을 찾을 수 없습니다."));
+        return stationRepository.findById(id).orElseThrow(() -> new NoSuchElementFoundException(ErrorMessage.NOT_FOUND_STATION));
     }
 
     @Transactional
     public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchElementFoundException("라인을 찾을 수 없습니다."));
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchElementFoundException(ErrorMessage.NOT_FOUND_LINE));
 
         Station upStation = findStationById(sectionRequest.getUpStationId());
         Station downStation = findStationById(sectionRequest.getDownStationId());
