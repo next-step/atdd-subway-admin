@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.DatabaseCleanUp;
-import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
 import nextstep.subway.line.LineAcceptanceTest;
@@ -58,11 +57,10 @@ public class SectionAcceptanceTest {
         //when 지하철 노선의 구간을 생성하면
         ExtractableResponse<Response> response = createSection(신분당선.getId(), 강남역.getId(), 양재역.getId(), 10);
 
-        //then : 응답 결과에서 새롭게 생성한 구간의 upstation과 downstation 이름을 찾을 수 있다.
-        List<String> stations = response.jsonPath().getList("stations.name");
+        //then : 응답 결과에서 sections에서 새로운 역의 이름을 찾을 수 있다.
+        List<String> downStations = response.jsonPath().getList("sections.downStationName");
 
-        assertThat(stations).contains("강남역");
-        assertThat(stations).contains("양재역");
+        assertThat(downStations).contains("양재역");
     }
 
     @Test
@@ -72,10 +70,10 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = createSection(신분당선.getId(), 정자역.getId(), 강남역.getId(), 7);
 
         //then 응답 결과에서 새롭게 등록한 상행 종점 역을 찾을 수 있고 해당 상행 종점 역은 첫번째로 위치한다.
-        List<String> stations = response.jsonPath().getList("stations.name");
+        List<String> upStationNames = response.jsonPath().getList("sections.upStationName");
 
-        assertThat(stations).contains("정자역");
-        assertThat(stations.get(0)).isEqualTo("정자역");
+        assertThat(upStationNames).contains("정자역");
+        assertThat(upStationNames.get(0)).isEqualTo("정자역");
 
     }
 
@@ -86,10 +84,10 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = createSection(신분당선.getId(), 광교중앙역.getId(), 광교역.getId(), 8);
 
         //then 응답 결과에서 새롭게 등록한 상행 종점 역을 찾을 수 있고 해당 상행 종점 역은 마지막에 위치한다.
-        List<String> stations = response.jsonPath().getList("stations.name");
+        List<String> downStationNames = response.jsonPath().getList("sections.downStationName");
 
-        assertThat(stations).contains("광교역");
-        assertThat(stations.get(Math.max(stations.size() - 1, 0))).isEqualTo("광교역");
+        assertThat(downStationNames).contains("광교역");
+        assertThat(downStationNames.get(Math.max(downStationNames.size() - 1, 0))).isEqualTo("광교역");
 
     }
 
