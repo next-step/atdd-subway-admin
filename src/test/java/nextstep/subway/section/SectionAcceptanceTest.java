@@ -16,6 +16,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 
 @DisplayName("지하철 구간 관련 기능")
@@ -102,7 +103,6 @@ public class SectionAcceptanceTest {
      * <p>
      * Then 기존의 하행 종점은 노선의 일반 역으로 변경된다.
      */
-
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
     @Test
     void createNewDownStationSection() {
@@ -120,6 +120,22 @@ public class SectionAcceptanceTest {
                         .map(target -> target.get("id").toString())
                         .collect(Collectors.toList())
         ).contains(lineDownStationId);
+    }
+
+    /**
+     * Given 상행과 하행을 생성하고
+     * <p>
+     * When 기존 역 사이 길이보다 크거나 같은 길이로 등록을 시도하면
+     * <p>
+     * Then 라인 예외가 발생한다.
+     */
+    @DisplayName("기존 역 사이 길이보다 크거나 같은 길이로 등록하려 하면 예외가 발생한다.")
+    @Test
+    void createLongerThrowException() {
+        // when
+        ExtractableResponse<Response> response = 상행_기준_구간_생성("구간역1", "11");
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private void 구간_생성(String upStationId, String downStationId) {
