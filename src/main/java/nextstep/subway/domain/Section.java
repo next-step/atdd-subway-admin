@@ -55,15 +55,6 @@ public class Section extends BaseEntity {
         this.downStation = section.getUpStation();
     }
 
-    public boolean duplicateUpDownStations(Section section) {
-        return this.upStation.equals(section.getUpStation()) && this.downStation.equals(section.getDownStation());
-    }
-
-    public boolean containsUpDownStations(Section section) {
-        List<Station> stations = allStations();
-        return stations.contains(section.getUpStation()) || stations.contains(section.getDownStation());
-    }
-
     private void updateDistance(Distance distance) {
         setDistance(this.distance.subtract(distance));
     }

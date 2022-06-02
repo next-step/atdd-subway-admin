@@ -2,6 +2,9 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -33,19 +36,16 @@ public class Sections {
     }
 
     private void containsAllStations(Section newSection) {
-        elements.stream()
-                .filter(section -> section.duplicateUpDownStations(newSection))
-                .findFirst()
-                .ifPresent(section -> {
-                    throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
-                });
+        if(allStations().containsAll(newSection.allStations())) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
+        }
     }
 
     private void notContainsStations(Section newSection) {
-        elements.stream()
-                .filter(section -> section.containsUpDownStations(newSection))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다."));
+        Set<Station> stations = allStations();
+        if(!stations.contains(newSection.getUpStation()) && !stations.contains(newSection.getDownStation())) {
+            throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
+        }
     }
 
     private void updateSection(Section newSection) {
@@ -58,6 +58,12 @@ public class Sections {
                 .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
                 .findFirst()
                 .ifPresent(section -> section.updateDownStation(newSection));
+    }
+
+    private Set<Station> allStations() {
+        return elements.stream()
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .collect(Collectors.toSet());
     }
 
     public List<Section> get() {
