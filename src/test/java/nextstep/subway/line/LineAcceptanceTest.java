@@ -78,6 +78,31 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         assertThat(getResponse.body().as(LineResponse.class)).isEqualTo(createdLine);
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void modifyLine() {
+        // given
+        final LineResponse createdLine = 지하철_노선을_생성한다("신분당선").body().as(LineResponse.class);
+        final String newName = "수정된이름";
+        final String newColor = "bg-modified-600";
+
+        // when
+        final ExtractableResponse<Response> putResponse = 지하철_노선을_수정한다(createdLine.getId(), newName, newColor);
+
+        // then
+        assertThat(putResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then
+        final LineResponse modifiedLine = 지하철_노선을_조회한다(createdLine.getId()).body().as(LineResponse.class);
+        assertThat(modifiedLine.getName()).isEqualTo(newName);
+        assertThat(modifiedLine.getColor()).isEqualTo(newColor);
+    }
+
     private ExtractableResponse<Response> 지하철_노선을_생성한다(final String name) {
         final Map<String, Object> params = new HashMap<>();
         params.put("name", name);
@@ -109,7 +134,22 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     private ExtractableResponse<Response> 지하철_노선을_조회한다(final Long id) {
         return RestAssured
                 .given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines/{id}", id)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선을_수정한다(final Long id, final String newName, final String newColor) {
+        final Map<String, Object> params = new HashMap<>();
+        params.put("name", newName);
+        params.put("color", newColor);
+
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when().put("/lines/{id}", id)
                 .then().log().all()
                 .extract();
     }
