@@ -19,6 +19,8 @@ public class LineService {
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+    private static final String INVALID_STATION = "유효하지 않은 지하철역입니다.";
+    private static final String INVALID_LINE = "유효하지 않은 지하철 노선입니다.";
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -36,7 +38,7 @@ public class LineService {
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line foundLine = lineRepository.findById(id).orElseThrow(
-            () -> new InvalidLineException("유효하지 않은 노선입니다.")
+            () -> new InvalidLineException(INVALID_LINE)
         );
         Station upStation = findStationById(foundLine.getUpStation().getId());
         Station downStation = findStationById(foundLine.getDownStation().getId());
@@ -60,12 +62,12 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse findLineById(Long id) {
         return LineResponse.of(lineRepository.findById(id)
-            .orElseThrow(() -> new InvalidLineException("유효하지 않은 노선입니다.")));
+            .orElseThrow(() -> new InvalidLineException(INVALID_LINE)));
     }
 
     private Station findStationById(Long stationId) {
         return stationRepository.findById(stationId)
-            .orElseThrow(() -> new InvalidStationException("유효하지 않은 지하철역입니다."));
+            .orElseThrow(() -> new InvalidStationException(INVALID_STATION));
     }
 
 }

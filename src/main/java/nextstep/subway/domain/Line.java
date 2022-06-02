@@ -17,6 +17,11 @@ import org.apache.commons.lang3.StringUtils;
 @Entity
 public class Line extends BaseEntity {
 
+    private static final String INVALID_LINE_NAME = "노선 이름정보가 존재하지 않습니다.";
+    private static final String INVALID_LINE_COLOR = "노선 색상정보가 존재하지 않습니다.";
+    private static final String INVALID_LINE_UP_STATION = "노선 상행역 정보가 존재하지 않습니다.";
+    private static final String INVALID_LINE_DOWN_STATION = "노선 하행역 정보가 존재하지 않습니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -72,25 +77,25 @@ public class Line extends BaseEntity {
 
     private void validateName(String name) {
         if (StringUtils.isEmpty(name)) {
-            throw new InvalidStringException("노선 이름정보가 존재하지 않습니다.");
+            throw new InvalidStringException(INVALID_LINE_NAME);
         }
     }
 
     private void validateColor(String color) {
         if (StringUtils.isEmpty(color)) {
-            throw new InvalidStringException("노선 색상정보가 존재하지 않습니다.");
+            throw new InvalidStringException(INVALID_LINE_COLOR);
         }
     }
 
     private void validateUpStation(Station upStation) {
         if (Objects.isNull(upStation)) {
-            throw new InvalidStringException("상행선 정보가 존재하지 않습니다.");
+            throw new InvalidStringException(INVALID_LINE_UP_STATION);
         }
     }
 
     private void validateDownStation(Station downStation) {
         if (Objects.isNull(downStation)) {
-            throw new InvalidStringException("하행선 정보가 존재하지 않습니다.");
+            throw new InvalidStringException(INVALID_LINE_DOWN_STATION);
         }
     }
 

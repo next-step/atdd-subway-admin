@@ -12,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 @Entity
 public class Station extends BaseEntity {
 
+    private static final String INVALID_STATION_NAME = "지하철 역 이름정보가 존재하지 않습니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,7 +31,7 @@ public class Station extends BaseEntity {
 
     private void validateName(String name) {
         if (StringUtils.isEmpty(name)) {
-            throw new InvalidStringException("역 이름 정보가 존재하지 않습니다.");
+            throw new InvalidStringException(INVALID_STATION_NAME);
         }
     }
 
