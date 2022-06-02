@@ -102,4 +102,36 @@ class LineServiceTest {
         assertThatThrownBy(() -> lineService.findLineById(1L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void 아이디와_LineRequest_객체를_파라미터로_노선을_수정할_수_있어야_한다() {
+        // given
+        final Line givenLine = new Line("신분당선", "bg-red-600");
+        givenLine.relateToStation(new LineStation(givenLine, gangnam));
+        givenLine.relateToStation(new LineStation(givenLine, yangjae));
+        lineRepository.save(givenLine);
+
+        final String newName = "수정된이름";
+        final String newColor = "bg-modified-600";
+        final LineRequest lineRequest = new LineRequest(newName, newColor);
+
+        // when
+        lineService.modifyLine(givenLine.getId(), lineRequest);
+
+        // then
+        assertThat(givenLine.getName()).isEqualTo(newName);
+        assertThat(givenLine.getColor()).isEqualTo(newColor);
+    }
+
+    @Test
+    void 유효하지_않은_아이디로_노선을_수정하면_IllegalArgumentException이_발생해야_한다() {
+        // given
+        final String newName = "수정된이름";
+        final String newColor = "bg-modified-600";
+        final LineRequest lineRequest = new LineRequest(newName, newColor);
+
+        // when and then
+        assertThatThrownBy(() -> lineService.modifyLine(1L, lineRequest))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

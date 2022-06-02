@@ -14,6 +14,11 @@ public class LineRequest {
     public LineRequest() {
     }
 
+    public LineRequest(final String name, final String color) {
+        this.name = name;
+        this.color = color;
+    }
+
     public LineRequest(final String name, final String color, final Long upStationId, final Long downStationId) {
         this.name = name;
         this.color = color;
