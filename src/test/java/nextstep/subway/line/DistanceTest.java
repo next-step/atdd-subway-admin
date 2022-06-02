@@ -21,4 +21,10 @@ public class DistanceTest {
         assertThatThrownBy(() -> new Distance(-1L))
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("비교 할수 있다.")
+    @Test
+    void isBigTest() {
+        assertThat(new Distance(2L).isBig(new Distance(1L))).isTrue();
+    }
 }

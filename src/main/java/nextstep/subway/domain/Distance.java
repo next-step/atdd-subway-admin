@@ -22,6 +22,14 @@ public class Distance {
         this.distance = distance;
     }
 
+    public boolean isBig(final Distance distance) {
+        return distance.isSmall(this.distance);
+    }
+
+    private boolean isSmall(final Long distance) {
+        return this.distance < distance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
