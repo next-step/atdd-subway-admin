@@ -15,7 +15,7 @@ public class Distance {
 
     public Distance(int distance) {
         if (distance <= 0) {
-            throw new InvalidDistanceException();
+            throw new InvalidDistanceException("구간 거리는 0보다 커야 합니다");
         }
         this.distance = distance;
     }
