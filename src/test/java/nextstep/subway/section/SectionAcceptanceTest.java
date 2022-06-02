@@ -136,10 +136,9 @@ public class SectionAcceptanceTest {
     void noStationLine() {
         //given 지하철 역을 생성하고 지하철 노선을 추가한다.
         StationResponse 도화역 = 지하철역을_생성_한다("도화역").as(StationResponse.class);
-        StationResponse 서울역 = 지하철역을_생성_한다("서울역").as(StationResponse.class);
 
 
-        SectionRequest 상행역과_하행역이_포함되지_않는_노선 = new SectionRequest(도화역.getId(), 서울역.getId(), 3);
+        SectionRequest 상행역과_하행역이_포함되지_않는_노선 = new SectionRequest(동인천역.getId(), 도화역.getId(), 3);
         ExtractableResponse<Response> 상행역과_하행역이_포함되지_않는_노선을_추가한다 = 노선의_구간을_추가한다(호선_1.getId(), 상행역과_하행역이_포함되지_않는_노선);
         //when 상행역과 하행역이 포함되지 않는 노선을 구간에 등록 요청한다.
 
@@ -169,12 +168,25 @@ public class SectionAcceptanceTest {
         );
     }
 
+    //given 지하철 역을 생성하고 지하철 노선을 추가한다.
+    //when 상행역이 기존 하행 종점이며 하행역 노선의 새로운 역인 노선을 등록 요청한다.
+    //then 새로운 역을 하행 종점에 등록된다..- 이때는 거리를 신경쓰지 않는다.
     @Test
     @DisplayName("새로운 역을 하행 종점에 등록한다.")
     void downStationAddSection() {
-        //given 지하철 역을 생성하고 지하철 노선을 추가한다.
+        StationResponse 도화역 = 지하철역을_생성_한다("도화역").as(StationResponse.class);
+        //StationResponse 인천역 = 지하철역을_생성_한다("인천역").as(StationResponse.class);
+
         //when 상행역이 기존 하행 종점이며 하행역 노선의 새로운 역인 노선을 등록 요청한다.
-        //then 새로운 역을 하행 종점에 등록된다..- 이때는 거리를 신경쓰지 않는다.
+        SectionRequest 하행_종점_구간 = new SectionRequest(동인천역.getId(), 도화역.getId(), 3);
+        ExtractableResponse<Response> 하행_종점에_등록한다 = 노선의_구간을_추가한다(호선_1.getId(), 하행_종점_구간);
+
+        //then 새로운 역이 상행 종점에 등록된다. - 이때는 거리를 신경쓰지 않는다.
+        final JsonPath 노선의_구간을_조회 = 노선의_구간을_전부_조회(호선_1.getId()).jsonPath();
+        assertAll(
+                () -> assertThat(노선의_구간을_조회.getString("upStation[1].name")).isEqualTo("동인천역"),
+                () -> assertThat(노선의_구간을_조회.getInt("distance[1]")).isEqualTo(3)
+        );
     }
 
     private static ExtractableResponse<Response> 노선의_구간을_추가한다(Long lineId, SectionRequest sectionRequest) {
