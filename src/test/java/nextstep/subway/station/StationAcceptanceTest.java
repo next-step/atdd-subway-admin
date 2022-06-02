@@ -9,12 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import static nextstep.subway.station.StationSteps.request_station_creation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
@@ -39,16 +37,7 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = request_station_creation("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -71,23 +60,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
+        request_station_creation("강남역");
 
         // when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = request_station_creation("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -102,23 +78,8 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/stations")
-            .then().log().all()
-            .extract();
-
-        params.put("name", "역삼역");
-        RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/stations")
-            .then().log().all()
-            .extract();
+        request_station_creation("강남역");
+        request_station_creation("역삼역");
 
         // when
         ExtractableResponse<Response> response =
@@ -143,19 +104,10 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        ExtractableResponse<Response> createResponse =
-                RestAssured.given().log().all()
-                    .body(params)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .when().post("/stations")
-                    .then().log().all()
-                    .extract();
-
+        ExtractableResponse<Response> createResponse = request_station_creation("강남역");
         String uri = createResponse.header("Location");
 
+        // when
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
                     .when()
@@ -163,6 +115,7 @@ public class StationAcceptanceTest {
                     .then().log().all()
                     .extract();
 
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
