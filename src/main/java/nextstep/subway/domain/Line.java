@@ -55,7 +55,7 @@ public class Line extends BaseEntity {
 
     public List<Station> getLineStations() {
         return sections.getSections().stream()
-                .flatMap(s -> s.getLineStations().stream())
+                .flatMap(section -> section.getLineStations().stream())
                 .distinct()
                 .collect(Collectors.toList());
     }
