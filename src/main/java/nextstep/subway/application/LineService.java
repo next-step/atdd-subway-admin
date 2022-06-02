@@ -18,19 +18,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class LineService {
     private final LineRepository lineRepository;
-    private final StationService stationService;
     private final SectionRepository sectionRepository;
+    private final StationService stationService;
+    private final SectionService sectionService;
 
-    public LineService(LineRepository lineRepository, StationService stationService,
-                       SectionRepository sectionRepository) {
+    public LineService(LineRepository lineRepository, SectionRepository sectionRepository,
+                       StationService stationService,
+                       SectionService sectionService) {
         this.lineRepository = lineRepository;
-        this.stationService = stationService;
         this.sectionRepository = sectionRepository;
+        this.stationService = stationService;
+        this.sectionService = sectionService;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Section section = generateSection(lineRequest);
+        Section section = sectionService.generateSection(lineRequest);
         sectionRepository.save(section);
 
         Line persistLine = lineRepository.save(lineRequest.toLine());
@@ -75,11 +78,5 @@ public class LineService {
         Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
         line.addSection(sectionRequest.createSection(upStation, downStation));
         return line;
-    }
-
-    private Section generateSection(LineRequest lineRequest) {
-        Station upStation = stationService.findStationById(lineRequest.getUpStationId());
-        Station downStation = stationService.findStationById(lineRequest.getDownStationId());
-        return new Section(upStation, downStation, lineRequest.getDistance());
     }
 }
