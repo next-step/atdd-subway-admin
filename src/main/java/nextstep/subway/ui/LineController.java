@@ -7,6 +7,7 @@ import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,6 +44,12 @@ public class LineController {
     @PutMapping(value = "/lines/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> modifyLine(@PathVariable final Long id, @RequestBody final LineRequest lineRequest) {
         lineService.modifyLine(id, lineRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/lines/{id}")
+    public ResponseEntity<Void> deleteLine(@PathVariable final Long id) {
+        lineService.deleteLineById(id);
         return ResponseEntity.ok().build();
     }
 }
