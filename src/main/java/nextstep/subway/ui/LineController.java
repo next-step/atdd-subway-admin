@@ -22,7 +22,9 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/lines",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> createLine(@RequestBody final LineRequest lineRequest) {
         final LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
@@ -38,7 +40,7 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.findLineById(id));
     }
 
-    @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/lines/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> modifyLine(@PathVariable final Long id, @RequestBody final LineRequest lineRequest) {
         lineService.modifyLine(id, lineRequest);
         return ResponseEntity.ok().build();
