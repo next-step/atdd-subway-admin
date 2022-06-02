@@ -29,9 +29,6 @@ public class Line extends BaseEntity {
     @Embedded
     private Sections sections = new Sections();
 
-    @Embedded
-    private LineStations lineStations = new LineStations();
-
     protected Line() {
     }
 
@@ -116,14 +113,12 @@ public class Line extends BaseEntity {
         int restDistance = section.getDistance() - distance;
         sections.add(new Section(restDistance, insertDownStation, section.getDownStation(), this));
         section.updateSection(section.getUpStation(), insertDownStation, distance);
-        lineStations.add(new LineStation(insertDownStation, this));
     }
 
     private void insertSectionFromDownStation(Station insertUpStation, Integer distance, Section section) {
         int restDistance = section.getDistance() - distance;
         sections.add(new Section(distance, insertUpStation, section.getDownStation(), this));
         section.updateSection(section.getUpStation(), insertUpStation, restDistance);
-        lineStations.add(new LineStation(insertUpStation, this));
     }
 
     public boolean isLineUpStation(Station station) {
@@ -164,10 +159,6 @@ public class Line extends BaseEntity {
 
     public Sections getSections() {
         return sections;
-    }
-
-    public LineStations getLineStations() {
-        return lineStations;
     }
 
     @Override
