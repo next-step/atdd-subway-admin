@@ -5,7 +5,9 @@ import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class LineResponse {
     private final long id;
@@ -21,7 +23,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        List<StationResponse> stationResponses = new ArrayList<>();
+        Set<StationResponse> stationResponses = new HashSet<>();
         Sections lineSections = line.getSections();
 
         lineSections.getSections().forEach(section -> {
@@ -29,7 +31,8 @@ public class LineResponse {
             stationResponses.add(toStationResponse(section.getDownStation()));
         });
 
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
+        List<StationResponse> responses = new ArrayList<>(stationResponses);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), responses);
     }
 
     private static StationResponse toStationResponse(Station station) {
