@@ -101,7 +101,7 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
-        // when
+        // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
 
@@ -142,5 +142,27 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "강남역");
+
+        ExtractableResponse<Response> createResponse =
+                RestAssured.given().log().all()
+                    .body(params)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().post("/stations")
+                    .then().log().all()
+                    .extract();
+
+        String uri = createResponse.header("Location");
+
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                    .when()
+                    .delete(uri)
+                    .then().log().all()
+                    .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
