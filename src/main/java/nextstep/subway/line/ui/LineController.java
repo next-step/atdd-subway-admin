@@ -1,12 +1,11 @@
-package nextstep.subway.ui;
+package nextstep.subway.line.ui;
 
-import nextstep.subway.application.LineService;
-import nextstep.subway.application.StationService;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.line.application.LineService;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;

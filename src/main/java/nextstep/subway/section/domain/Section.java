@@ -1,4 +1,7 @@
-package nextstep.subway.domain;
+package nextstep.subway.section.domain;
+
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.line.domain.Line;
 
 import javax.persistence.*;
 import java.util.Objects;
