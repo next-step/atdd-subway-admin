@@ -179,7 +179,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     then 기존의 구간은 거리가 신규 노선의 거리만큼 줄어든다
   ```
 
-- [ ] 기존 노선보다 긴 노선 등록 
+- [X] 기존 노선보다 긴 노선 등록 
   ```text
      given 지하철 역을 생성하고 지하철 노선을 추가한다.
      when 기존 노선 보다 긴 노선을 등록 요청 한다.

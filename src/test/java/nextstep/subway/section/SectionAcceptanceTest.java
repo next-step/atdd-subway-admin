@@ -88,7 +88,6 @@ public class SectionAcceptanceTest {
         //when 노선을 추가 등록하면
         SectionRequest 구간추가요청 = new SectionRequest(도화역.getId(), 동인천역.getId(), 3);
         final ExtractableResponse<Response> 노선의_구간을_추가한다 = 노선의_구간을_추가한다(호선_1.getId(), 구간추가요청);
-
         JsonPath 노선의_구간을_전부_조회 = 노선의_구간을_전부_조회(호선_1.getId()).jsonPath();
 
         assertAll(
@@ -104,12 +103,19 @@ public class SectionAcceptanceTest {
 
     }
 
+    //given 지하철 역을 생성하고 지하철 노선을 추가한다.
+    //when 기존 노선 보다 긴 노선을 등록 요청 한다.
+    //then 등록이 되지 않는다.
     @Test
     @DisplayName("기존 노선보다 긴 노선 등록")
     void longAddSection() {
-        //given 지하철 역을 생성하고 지하철 노선을 추가한다.
         //when 기존 노선 보다 긴 노선을 등록 요청 한다.
+        StationResponse 도화역 = 지하철역을_생성_한다("도화역").as(StationResponse.class);
+        SectionRequest 구간추가요청 = new SectionRequest(도화역.getId(), 동인천역.getId(), 13);
+        final ExtractableResponse<Response> 거리가긴_구간을_추가한다 = 노선의_구간을_추가한다(호선_1.getId(), 구간추가요청);
         //then 등록이 되지 않는다.
+
+        assertThat(거리가긴_구간을_추가한다.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test

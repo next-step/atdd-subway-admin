@@ -73,7 +73,7 @@ public class LineService {
     }
 
 
-    public List<SectionResponse> findLineStation(Long lineId) {
+    public List<SectionResponse> findAllSection(Long lineId) {
         return getLine(lineId)
                 .getSections()
                 .getList()
@@ -95,10 +95,6 @@ public class LineService {
                 .build();
 
         line.getSections().addSection(newSection);
-        
-        System.out.println("newSection = " + newSection);
-        //final Line line1 = getLine(id);
-        //System.out.println(line1);
     }
 
 

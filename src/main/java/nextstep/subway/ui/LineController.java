@@ -56,7 +56,7 @@ public class LineController {
     @GetMapping("lines/{lineId}/sections")
     public ResponseEntity<List<SectionResponse>> searchSection(@PathVariable Long lineId) {
         return ResponseEntity.ok()
-                .body(lineService.findLineStation(lineId));
+                .body(lineService.findAllSection(lineId));
     }
 
     @PostMapping("{lineId}/selections")
@@ -64,13 +64,12 @@ public class LineController {
                                      @RequestBody SectionRequest sectionRequest) {
 
         lineService.saveSection(lineId, sectionRequest);
-
-        return ResponseEntity.created(URI.create("lines/id")).build();
+        return ResponseEntity.created(URI.create("lines/"+ lineId + "/sections")).build();
     }
 
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity handleIllegalArgument(IllegalArgumentException e) {
+    @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class})
+    public ResponseEntity handleIllegalArgument(RuntimeException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
