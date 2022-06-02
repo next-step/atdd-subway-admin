@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,8 +23,8 @@ public class Section extends BaseEntity {
     @ManyToOne
     private Station downStation;
 
-    @Column(nullable = false)
-    private Integer distance;
+    @Embedded
+    private Distance distance;
 
     @ManyToOne()
     private Line line;
@@ -34,7 +35,7 @@ public class Section extends BaseEntity {
     public Section(Station upStation, Station downStation, Integer distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public void setLine(Line line) {
@@ -46,12 +47,12 @@ public class Section extends BaseEntity {
     }
 
     public void updateUpStation(Section section) {
-        subtractDistance(section.getDistance());
+        updateDistance(section.getDistance());
         this.upStation = section.getDownStation();
     }
 
     public void updateDownStation(Section section) {
-        subtractDistance(section.getDistance());
+        updateDistance(section.getDistance());
         this.downStation = section.getUpStation();
     }
 
@@ -64,16 +65,8 @@ public class Section extends BaseEntity {
         return stations.contains(section.getUpStation()) || stations.contains(section.getDownStation());
     }
 
-    private void subtractDistance(Integer distance) {
-        validateSubtractDistance(distance);
-        this.distance = Math.subtractExact(this.distance, distance);
-
-    }
-
-    private void validateSubtractDistance(Integer distance) {
-        if (this.distance <= distance) {
-            throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
-        }
+    private void updateDistance(Distance distance) {
+        setDistance(this.distance.subtract(distance));
     }
 
     public Long getId() {
@@ -88,8 +81,12 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public Integer getDistance() {
+    public Distance getDistance() {
         return distance;
+    }
+
+    private void setDistance(Distance distance) {
+        this.distance = distance;
     }
 
     @Override
