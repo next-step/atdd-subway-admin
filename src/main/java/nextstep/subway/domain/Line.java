@@ -34,12 +34,8 @@ public class Line {
 
     public static Line of(String name, String color, Section section) {
         Line line = new Line(name, color);
-        line.addSections(section);
+        line.addSection(section);
         return line;
-    }
-
-    public void addSections(Section section) {
-        this.sections.addSections(section);
     }
 
     public void update(String name, String color) {
@@ -68,10 +64,15 @@ public class Line {
     }
 
     public Sections getSections() {
-        return this.sections;
+        return sections;
     }
 
     public Boolean getDeleted() {
         return deleted;
+    }
+
+    public void addSection(Section section) {
+        section.setLine(this);
+        sections.addSections(section);
     }
 }
