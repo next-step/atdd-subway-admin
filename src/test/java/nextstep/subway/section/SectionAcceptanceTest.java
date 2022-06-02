@@ -166,6 +166,27 @@ public class SectionAcceptanceTest {
         );
     }
 
+    /**
+     * Given 상행과 하행을 생성하고
+     * <p>
+     * When 상행역 혹은 하행역을 포함하지 않고, 구간으로 등록하려고 하면
+     * <p>
+     * Then 예외가 발생한다.
+     */
+    @DisplayName("상행역 혹은 하행역을 포함하지 않고, 구간으로 등록하려고 하면 예외가 발생한다.")
+    @Test
+    void createNotExistedStation() {
+        // given
+        String notExistedStationId1 = Integer.toString(지하철역_생성("없는역1").jsonPath().get("id"));
+        String notExistedStationId2 = Integer.toString(지하철역_생성("없는역2").jsonPath().get("id"));
+        
+        // when
+        ExtractableResponse<Response> response = 구간_생성(notExistedStationId1, notExistedStationId2, "5");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
 
     private ExtractableResponse<Response> 구간_생성(String upStationId, String downStationId, String distance) {
         Map<String, String> params = new HashMap<>();

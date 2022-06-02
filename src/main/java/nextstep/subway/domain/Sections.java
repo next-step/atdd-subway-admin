@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import static nextstep.subway.domain.ErrorMessage.ALREADY_CREATED_SECTION;
+import static nextstep.subway.domain.ErrorMessage.NOT_EXISTED_STATION;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,6 +50,7 @@ public class Sections {
         Optional<Section> downMatchedSection = matchDownStation(newSection);
 
         validateAlreadySection(upMatchedSection, downMatchedSection);
+        validateNotExistedStation(upMatchedSection, downMatchedSection);
 
         if (upMatchedSection.isPresent()) {
             addSectionOfUpMatchedCase(newSection, upMatchedSection);
@@ -58,7 +60,6 @@ public class Sections {
             addSectionOfDownMatchedCase(newSection, downMatchedSection);
             return;
         }
-
         Section lastSection = getLastSection();
         if (isMatchedDownStation(newSection.getUpStation(), lastSection)) {
             sections.add(newSection);
@@ -180,6 +181,12 @@ public class Sections {
     private void validateAlreadySection(Optional<Section> upMatchedSection, Optional<Section> downMatchedSection) {
         if (upMatchedSection.isPresent() && downMatchedSection.isPresent()) {
             throw new IllegalArgumentException(ALREADY_CREATED_SECTION.toString());
+        }
+    }
+
+    private void validateNotExistedStation(Optional<Section> upMatchedSection, Optional<Section> downMatchedSection) {
+        if (!upMatchedSection.isPresent() && !downMatchedSection.isPresent()) {
+            throw new IllegalArgumentException(NOT_EXISTED_STATION.toString());
         }
     }
 }
