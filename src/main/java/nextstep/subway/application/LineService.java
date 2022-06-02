@@ -50,6 +50,12 @@ public class LineService {
         lineRepository.save(line);
     }
 
+    @Transactional
+    public void deleteLineById(final Long id) {
+        final Line line = validateAndFind(id);
+        lineRepository.delete(line);
+    }
+
     private Line validateAndFind(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("노선 아이디가 존재하지 않습니다."));

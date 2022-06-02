@@ -134,4 +134,27 @@ class LineServiceTest {
         assertThatThrownBy(() -> lineService.modifyLine(1L, lineRequest))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void 아이디를_파라미터로_노선을_삭제할_수_있어야_한다() {
+        // given
+        final Line givenLine = new Line("신분당선", "bg-red-600");
+        givenLine.relateToStation(new LineStation(givenLine, gangnam));
+        givenLine.relateToStation(new LineStation(givenLine, yangjae));
+        lineRepository.save(givenLine);
+
+        // when
+        lineService.deleteLineById(givenLine.getId());
+
+        // then
+        assertThatThrownBy(() -> lineService.findLineById(givenLine.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 유효하지_않은_아이디로_노선을_삭제하면_IllegalArgumentException이_발생해야_한다() {
+        // when and then
+        assertThatThrownBy(() -> lineService.deleteLineById(1L))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }
