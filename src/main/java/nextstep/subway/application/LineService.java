@@ -73,7 +73,7 @@ public class LineService {
                 .orElseThrow(() -> new EntityNotFoundException("지하철노선이 없습니다."));
         Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
         Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
-        line.addSection(sectionRequest.toSection(upStation, downStation));
+        line.addSection(sectionRequest.createSection(upStation, downStation));
         return line;
     }
 
