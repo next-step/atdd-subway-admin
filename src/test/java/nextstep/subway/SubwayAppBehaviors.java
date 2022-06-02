@@ -18,13 +18,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 public class SubwayAppBehaviors {
+    public static ExtractableResponse<Response> 지하철구간을_삭제한다(Long 노선_ID, Long 역_ID) {
+        String requestURI = String.format("/lines/%d/sections?stationId=%d",노선_ID,역_ID);
+        return RestAssured
+                .given().log().all()
+                .when().delete(requestURI)
+                .then().log().all()
+                .extract();
+    }
+
     public static List<String> 지하철노선에_속한_지하철역_이름목록을_반환한다(Long lineId){
         Optional<LineResponse> optionalLineResponse = 지하철노선을_조회한다(lineId);
         assertThat(optionalLineResponse.isPresent()).isTrue();
 
         LineResponse lineResponse = optionalLineResponse.get();
         List<SectionResponse> sectionResponses = lineResponse.getSectionResponses();
-        return sectionResponses.stream().map((sectionResponse) -> sectionResponse.getStartStationName()).collect(toList());
+        return sectionResponses.stream()
+                .map((sectionResponse) -> sectionResponse.getStartStationName())
+                .collect(toList());
     }
 
     public static ExtractableResponse<Response> 지하철구간을_생성한다(Long lineId, Long upStationId, Long downStationId, Long distance) throws CannotAddSectionException {
