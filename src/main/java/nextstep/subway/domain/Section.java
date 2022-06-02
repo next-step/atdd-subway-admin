@@ -44,4 +44,15 @@ public class Section {
         return downStation;
     }
 
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
+    public void setDistance(Distance distance) {
+        this.distance = distance;
+    }
+
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
 }
