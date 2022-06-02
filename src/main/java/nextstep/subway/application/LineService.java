@@ -55,6 +55,11 @@ public class LineService {
         return LineResponse.of(persistStation);
     }
 
+    public Line deleteSection(Long id, Long stationId) {
+        Line line = getLine(id);
+        return line;
+    }
+
     private Line getLine(long id) {
         return lineRepository.findById(id).orElseThrow(() -> new NotFoundException("등록된 노선이 없습니다."));
     }

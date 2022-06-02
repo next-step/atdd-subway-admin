@@ -184,4 +184,22 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * Given 지하철 노선의 구간 사이에 새로운 구간을 등록하고
+     * When 종점을 제거하면
+     * Then 다음으로 오던 역이 종점이 된다.
+     */
+    @DisplayName("지하철역을 제거한다.")
+    @Test
+    void deleteStation() {
+        // given
+        SectionRestAssured.지하철구간_추가_요청(신분당선.getId(), 청계산입구역.getId(), 판교역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> deleteResponse = SectionRestAssured.지하철구간_제거_요청(신분당선.getId(), 청계산입구역.getId());
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
 }

@@ -21,4 +21,16 @@ public class SectionRestAssured {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철구간_제거_요청(long lineId, long stationId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("lineId", lineId);
+        params.put("stationId", stationId);
+
+        return RestAssured.given().log().all()
+                .param("stationId", stationId)
+                .when().delete( "/lines/{id}/sections", lineId)
+                .then().log().all()
+                .extract();
+    }
 }
