@@ -6,6 +6,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class LineStations {
@@ -29,23 +30,13 @@ public class LineStations {
 
     public List<Station> getStationsSortedByUpToDown() {
         List<Station> result = new ArrayList<>();
-        LineStation lineStation = this.lineStations
-                .stream()
-                .filter(LineStation::isStart)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("노선의 시작 상/하행역 정보를 찾을 수 없습니다."));
+        LineStation lineStation = findStartLineStation();
+
         result.add(lineStation.getUpStation());
         result.add(lineStation.getDownStation());
 
         for (int i = 0; i < this.lineStations.size() - 1; i++) {
-            final LineStation preLineStation = lineStation;
-            lineStation = this.lineStations
-                    .stream()
-                    .filter(value -> value.getUpStation().isSameId(preLineStation.getDownStation().getId()))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException(
-                            preLineStation.getDownStation().getName() + " 의 다음 노선 정보를 찾을 수 없습니다."
-                        ));
+            lineStation = findNextLineStation(lineStation.getDownStation());
             result.add(lineStation.getDownStation());
         }
 
@@ -87,5 +78,31 @@ public class LineStations {
                 .filter(lineStation -> lineStation.isSameDownStation(downStation) || lineStation.isAddNewFirst(downStation))
                 .findFirst()
                 .orElse(null);
+    }
+
+    private LineStation findStartLineStation() {
+        List<LineStation> findResult = this.lineStations
+                .stream()
+                .filter(LineStation::isStart)
+                .collect(Collectors.toList());
+
+        if (findResult.size() != 1) {
+            throw new IllegalStateException("노선의 시작점이 1개가 아닙니다.");
+        }
+
+        return findResult.get(0);
+    }
+
+    private LineStation findNextLineStation(Station nextStation) {
+        List<LineStation> findResult = this.lineStations
+                .stream()
+                .filter(value -> value.getUpStation().isSameId(nextStation.getId()))
+                .collect(Collectors.toList());
+
+        if (findResult.size() != 1) {
+            throw new IllegalStateException(nextStation.getName() + " 의 다음역 정보가 1개가 아닙니다.");
+        }
+
+        return findResult.get(0);
     }
 }
