@@ -106,11 +106,15 @@ class StationAcceptanceTest {
         신규_역_등록("역삼역");
 
         // when
-        ExtractableResponse<Response> response = 등록된_역_목록_조회();
+        ExtractableResponse<Response> 목록_조회_결과_응답 = 등록된_역_목록_조회();
 
         // then
+        지하철역_목록_조회_개수_확인(목록_조회_결과_응답, 2);
+    }
+
+    private void 지하철역_목록_조회_개수_확인(ExtractableResponse<Response> response, int count) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList(".")).hasSize(2);
+        assertThat(response.jsonPath().getList(".")).hasSize(count);
     }
 
     private ExtractableResponse<Response> 등록된_역_목록_조회() {
