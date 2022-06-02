@@ -1,5 +1,9 @@
 package nextstep.subway.domain;
 
+import static nextstep.subway.message.ErrorMessage.SECTION_ADD_DISTANCE_IS_BIG;
+import static nextstep.subway.message.ErrorMessage.SECTION_IS_NO_SEARCH;
+import static nextstep.subway.message.ErrorMessage.SECTION_UP_STATION_AND_DOWN_STATION_EXIST;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +45,7 @@ public class Sections {
     private void addBetweenSection(Section newSection) {
         Section beforeSection = findAddSection(newSection);
         if (!validDistance(newSection, beforeSection)) {
-            throw new IllegalStateException("구간에 추가할 길이가 너무 깁니다.");
+            throw new IllegalStateException(SECTION_ADD_DISTANCE_IS_BIG.toMessage());
         }
         beforeSection.minusDistance(newSection.getDistance());
         this.sectionElement.add(newSection);
@@ -59,12 +63,12 @@ public class Sections {
         return sectionElement.stream()
                 .filter((section -> section.getDownStation().equals(newSection.getDownStation())))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("찾을수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(SECTION_IS_NO_SEARCH.toMessage()));
     }
 
     private void validExistUpStationAndDownStation(Section newSection) {
         if (isExistUpStation(newSection) && isExistDownStation(newSection)) {
-            throw new IllegalArgumentException("상행선과 하행선이 이미 존재하는 구간입니다.");
+            throw new IllegalArgumentException(SECTION_UP_STATION_AND_DOWN_STATION_EXIST.toMessage());
         }
     }
 
