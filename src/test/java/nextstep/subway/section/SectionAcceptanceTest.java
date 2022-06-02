@@ -134,11 +134,12 @@ public class SectionAcceptanceTest {
     @Test
     @DisplayName("상행역과 하행역이 포함되지 않는 노선을 구간에 등록한다.")
     void noStationLine() {
+
         //given 지하철 역을 생성하고 지하철 노선을 추가한다.
         StationResponse 도화역 = 지하철역을_생성_한다("도화역").as(StationResponse.class);
+        StationResponse 신도림 = 지하철역을_생성_한다("신도림").as(StationResponse.class);
 
-
-        SectionRequest 상행역과_하행역이_포함되지_않는_노선 = new SectionRequest(동인천역.getId(), 도화역.getId(), 3);
+        SectionRequest 상행역과_하행역이_포함되지_않는_노선 = new SectionRequest(신도림.getId(), 도화역.getId(), 3);
         ExtractableResponse<Response> 상행역과_하행역이_포함되지_않는_노선을_추가한다 = 노선의_구간을_추가한다(호선_1.getId(), 상행역과_하행역이_포함되지_않는_노선);
         //when 상행역과 하행역이 포함되지 않는 노선을 구간에 등록 요청한다.
 
