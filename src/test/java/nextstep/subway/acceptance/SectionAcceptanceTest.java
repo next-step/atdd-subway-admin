@@ -149,10 +149,105 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_등록안됨(response);
     }
 
+    /**
+     * When 노선의 구간중 시작역을 삭제하면
+     * Then 재배치된 지하철 노선의 지하철역 정보를 응답받을 수 있다.
+     */
+    @DisplayName("강남역-삼성역-잠실역 구간에서 강남역을 삭제한다")
+    @Test
+    void deleteFirstStation() {
+        // when
+        지하철_노선에_지하철_구간_등록_요청(1, 3, 5);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_삭제_요청(1, 1);
+
+        // then
+        지하철_노선에_지하철_구간_삭제됨(response);
+        지하철_노선에_지하철_구간_조회됨(new String[]{"삼성역", "잠실역"});
+    }
+
+    /**
+     * When 노선의 구간중 종점역을 삭제하면
+     * Then 재배치된 지하철 노선의 지하철역 정보를 응답받을 수 있다.
+     */
+    @DisplayName("강남역-삼성역-잠실역 구간에서 잠실역을 삭제한다")
+    @Test
+    void deleteLastStation() {
+        // when
+        지하철_노선에_지하철_구간_등록_요청(1, 3, 5);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_삭제_요청(1, 2);
+
+        // then
+        지하철_노선에_지하철_구간_삭제됨(response);
+        지하철_노선에_지하철_구간_조회됨(new String[]{"강남역", "삼성역"});
+    }
+
+    /**
+     * When 노선의 구간중 중간역을 삭제하면
+     * Then 재배치된 지하철 노선의 지하철역 정보를 응답받을 수 있다.
+     */
+    @DisplayName("강남역-삼성역-잠실역 구간에서 삼성역을 삭제한다")
+    @Test
+    void deleteMiddleStation() {
+        // when
+        지하철_노선에_지하철_구간_등록_요청(1, 3, 5);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_삭제_요청(1, 3);
+
+        // then
+        지하철_노선에_지하철_구간_삭제됨(response);
+        지하철_노선에_지하철_구간_조회됨(new String[]{"강남역", "잠실역"});
+    }
+
+    /**
+     * When 노선의 구간중 존재하지 않는 역을 삭제하면
+     * Then 삭제에 실패했다는 응답이 반환된다.
+     */
+    @DisplayName("강남역-삼성역-잠실역 구간에서 건대입구역을 삭제한다")
+    @Test
+    void deleteNonExistStation() {
+        // when
+        지하철_노선에_지하철_구간_등록_요청(1, 3, 5);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_삭제_요청(1, 5);
+
+        // then
+        지하철_노선에_지하철_구간_삭제안됨(response);
+    }
+
+    /**
+     * When 노선의 구간중 마지막 구간을 삭제하면
+     * Then 삭제에 실패했다는 응답이 반환된다.
+     */
+    @DisplayName("강남역-삼성역 구간에서 강남역을 삭제한다")
+    @Test
+    void deleteLastUpStation() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_삭제_요청(1, 1);
+
+        // then
+        지하철_노선에_지하철_구간_삭제안됨(response);
+    }
+
+    /**
+     * When 노선의 구간중 마지막 구간을 삭제하면
+     * Then 삭제에 실패했다는 응답이 반환된다.
+     */
+    @DisplayName("강남역-삼성역 구간에서 삼성역을 삭제한다")
+    @Test
+    void deleteLastDownStation() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_삭제_요청(1, 2);
+
+        // then
+        지하철_노선에_지하철_구간_삭제안됨(response);
+    }
+
     public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_등록_요청(long upStationId, long downStationId,
                                                                      long distance) {
         return RestAssuredTemplate.post("/lines/{lineId}/sections", 1,
                 new SectionRequest(upStationId, downStationId, distance));
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선에_지하철역_삭제_요청(long lineId, long deleteStationId) {
+        return RestAssuredTemplate.delete("/lines/{lineId}/sections?stationId=" + deleteStationId, lineId);
     }
 
     public static List<String> 지하철_노선의_구간을_조회한다(long lineId) {
@@ -163,7 +258,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    void 지하철_노선에_지하철_구간_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
     void 지하철_노선에_지하철_구간_등록안됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    void 지하철_노선에_지하철_구간_삭제안됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
