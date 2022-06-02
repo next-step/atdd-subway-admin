@@ -2,7 +2,6 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
@@ -16,9 +15,28 @@ public class Sections {
     private final List<Section> sections = new ArrayList<>();
 
     public List<Section> getSections() {
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(findStartSection());
+
+        while (sectionList.size() != sections.size()) {
+            sectionList.add(findNextSection(sectionList.get(sectionList.size() - 1).getDownStation()));
+        }
+
+        return sectionList;
+    }
+
+    private Section findStartSection() {
         return sections.stream()
-                .sorted((s1, s2) -> s1.getUpStation().getName().equals(s2.getDownStation().getName()) ? 0 : -1)
-                .collect(Collectors.toList());
+                .filter(section -> isStartOrEndStation(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Section findNextSection(Station lastStation) {
+        return sections.stream()
+                .filter(section -> lastStation.equals(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     public void addSection(Section section) {
