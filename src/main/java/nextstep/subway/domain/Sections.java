@@ -93,15 +93,16 @@ public class Sections {
 
     private void addBetweenSection(Section newSection) {
         Section beforeSection = findAddSection(newSection);
-        if (!validDistance(newSection, beforeSection)) {
-            throw new IllegalStateException(SECTION_ADD_DISTANCE_IS_BIG.toMessage());
-        }
+        validDistance(newSection, beforeSection);
+
         beforeSection.minusDistance(newSection.getDistance());
         this.sectionElement.add(newSection);
     }
 
-    private boolean validDistance(Section newSection, Section beforeSection) {
-        return newSection.getDistance().isLess(beforeSection.getDistance());
+    private void validDistance(Section newSection, Section beforeSection) {
+        if (!newSection.getDistance().isLess(beforeSection.getDistance())) {
+            throw new IllegalStateException(SECTION_ADD_DISTANCE_IS_BIG.toMessage());
+        }
     }
 
     private boolean isBetweenAddSection(Section newSection) {
