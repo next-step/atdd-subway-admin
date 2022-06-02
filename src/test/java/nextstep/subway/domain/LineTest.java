@@ -46,4 +46,19 @@ public class LineTest {
         assertThatThrownBy(() -> line.relateToStation(lineStation))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void 이름과_색상을_파라미터로_노선을_수정할_수_있어야_한다() {
+        // given
+        final Line line = new Line("신분당선", "bg-red-600");
+        final String newName = "수정된이름";
+        final String newColor = "bg-modified-600";
+
+        // when
+        line.update(newName, newColor);
+
+        // then
+        assertThat(line.getName()).isEqualTo(newName);
+        assertThat(line.getColor()).isEqualTo(newColor);
+    }
 }

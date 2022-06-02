@@ -40,6 +40,11 @@ public class Line extends BaseEntity {
         lineStations.add(lineStation);
     }
 
+    public void update(final String newName, final String newColor) {
+        name = newName;
+        color = newColor;
+    }
+
     public Long getId() {
         return id;
     }
