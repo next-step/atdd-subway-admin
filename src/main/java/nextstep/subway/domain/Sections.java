@@ -40,12 +40,40 @@ public class Sections {
 
     public void add(Section newSection) {
 
-        Section firstSection = getFirstSection();
-        if (isMatchedDownStation(newSection.getDownStation(), firstSection)) {
-            addSectionOfFirstSectionMatched(newSection, firstSection);
+        if (addFirstSection(newSection)) {
             return;
         }
 
+        if (addMiddleSection(newSection)) {
+            return;
+        }
+
+        if (addLastSection(newSection)) {
+            return;
+        }
+
+        throw new IllegalArgumentException(NOT_EXISTED_STATION.toString());
+    }
+
+    private boolean addLastSection(Section newSection) {
+        Section lastSection = getLastSection();
+        if (isMatchedDownStation(newSection.getUpStation(), lastSection)) {
+            sections.add(newSection);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean addFirstSection(Section newSection) {
+        Section firstSection = getFirstSection();
+        if (isMatchedDownStation(newSection.getDownStation(), firstSection)) {
+            addSectionOfFirstSectionMatched(newSection, firstSection);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean addMiddleSection(Section newSection) {
         Optional<Section> upMatchedSection = matchUpStation(newSection);
         Optional<Section> downMatchedSection = matchDownStation(newSection);
 
@@ -53,20 +81,13 @@ public class Sections {
 
         if (upMatchedSection.isPresent()) {
             addSectionOfUpMatchedCase(newSection, upMatchedSection);
-            return;
+            return true;
         }
         if (downMatchedSection.isPresent()) {
             addSectionOfDownMatchedCase(newSection, downMatchedSection);
-            return;
+            return true;
         }
-
-        Section lastSection = getLastSection();
-        if (isMatchedDownStation(newSection.getUpStation(), lastSection)) {
-            sections.add(newSection);
-            return;
-        }
-
-        throw new IllegalArgumentException(NOT_EXISTED_STATION.toString());
+        return false;
     }
 
     private void addSectionOfFirstSectionMatched(Section newSection, Section firstSection) {
