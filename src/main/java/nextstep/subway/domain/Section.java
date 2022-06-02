@@ -68,8 +68,7 @@ public class Section extends BaseEntity {
     }
 
     public boolean duplicateUpDownStations(Section section) {
-        List<Station> stations = allStations();
-        return stations.contains(section.getUpStation()) && stations.contains(section.getDownStation());
+        return this.upStation.equals(section.getUpStation()) && this.downStation.equals(section.getDownStation());
     }
 
     public boolean containsUpDownStations(Section section) {
