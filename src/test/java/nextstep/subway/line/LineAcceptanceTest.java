@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nextstep.subway.BaseAcceptanceTest;
+import nextstep.subway.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -61,6 +62,25 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         assertThat(lineNames).containsExactly(lineName1, lineName2);
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void getLine() {
+        // given
+        final String lineName = "신분당선";
+        final LineResponse createResponse = 지하철_노선을_생성한다(lineName).body().as(LineResponse.class);
+
+        // when
+        final LineResponse getResponse = 지하철_노선을_조회한다(createResponse.getId());
+
+        // then
+        assertThat(getResponse).isEqualTo(createResponse);
+    }
+
     private ExtractableResponse<Response> 지하철_노선을_생성한다(final String name) {
         final Map<String, Object> params = new HashMap<>();
         params.put("name", name);
@@ -88,5 +108,14 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
                 .then().log().all()
                 .extract()
                 .jsonPath().getList("name", String.class);
+    }
+
+    private LineResponse 지하철_노선을_조회한다(final Long id) {
+        return RestAssured
+                .given().log().all()
+                .when().get("/lines/{id}", id)
+                .then().log().all()
+                .extract()
+                .body().as(LineResponse.class);
     }
 }
