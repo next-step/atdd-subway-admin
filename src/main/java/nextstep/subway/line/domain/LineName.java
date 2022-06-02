@@ -14,18 +14,18 @@ public class LineName {
     protected LineName() {
     }
 
-    private LineName(String name) {
+    private LineName(final String name) {
         validateLineName(name);
         this.name = name;
     }
 
-    private void validateLineName(String name) {
+    private void validateLineName(final String name) {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException(NO_LINE_NAME_ERROR);
         }
     }
 
-    public static LineName from(String name) {
+    public static LineName from(final String name) {
         return new LineName(name);
     }
 
