@@ -72,7 +72,11 @@ public class Line extends BaseEntity {
         lineStations.add(new LineStation(downStation, this));
     }
 
-    public void insertSection(Station insertUpStation, Station insertDownStation, Integer distance) {
+    public void insertSection(Section section) {
+        Station insertUpStation = section.getUpStation();
+        Station insertDownStation = section.getDownStation();
+        int distance = section.getDistance();
+
         if (!validateInsertStation(insertUpStation, insertDownStation)) {
             throw new InvalidSectionException();
         }
@@ -89,15 +93,15 @@ public class Line extends BaseEntity {
 
         Optional<Section> findUpStream = sections.findSectionWithUpStation(insertUpStation);
         if (findUpStream.isPresent()) {
-            Section section = findUpStream.get();
-            insertSectionFromUpStation(insertDownStation, distance, section);
+            Section find = findUpStream.get();
+            insertSectionFromUpStation(insertDownStation, distance, find);
             return;
         }
 
         Optional<Section> findDownStream = sections.findSectionWithDownStation(insertDownStation);
         if (findDownStream.isPresent()) {
-            Section section = findDownStream.get();
-            insertSectionFromDownStation(insertUpStation, distance, section);
+            Section find = findDownStream.get();
+            insertSectionFromDownStation(insertUpStation, distance, find);
             return;
         }
     }

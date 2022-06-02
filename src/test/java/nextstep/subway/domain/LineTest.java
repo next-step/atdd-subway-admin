@@ -49,7 +49,7 @@ class LineTest {
         line.initStation(A역, C역);
 
         // when
-        line.insertSection(A역, B역, 3);
+        line.insertSection(new Section(3, A역, B역));
 
         // then
         assertThat(line.getUpStation()).isEqualTo(A역);
@@ -66,7 +66,7 @@ class LineTest {
         line.initStation(A역, C역);
 
         // when
-        line.insertSection(B역, C역, 3);
+        line.insertSection(new Section(3, B역, C역));
 
         // then
         assertThat(line.getUpStation()).isEqualTo(A역);
@@ -83,7 +83,7 @@ class LineTest {
         line.initStation(A역, C역);
 
         // when
-        line.insertSection(B역, A역, 3);
+        line.insertSection(new Section(3, B역, A역));
 
         // then
         assertThat(line.getUpStation()).isEqualTo(B역);
@@ -100,7 +100,7 @@ class LineTest {
         line.initStation(A역, C역);
 
         // when
-        line.insertSection(C역, B역, 3);
+        line.insertSection(new Section(3, C역, B역));
 
         // then
         assertThat(line.getUpStation()).isEqualTo(A역);
@@ -117,10 +117,10 @@ class LineTest {
         line.initStation(A역, D역);
 
         // when
-        line.insertSection(A역, B역, 4);
-        line.insertSection(C역, D역, 3);
-        line.insertSection(E역, A역, 15);
-        line.insertSection(D역, F역, 30);
+        line.insertSection(new Section(4, A역, B역));
+        line.insertSection(new Section(3, C역, D역));
+        line.insertSection(new Section(15, E역, A역));
+        line.insertSection(new Section(30, D역, F역));
 
         // then
         assertThat(line.getUpStation()).isEqualTo(E역);
@@ -138,7 +138,7 @@ class LineTest {
 
         // when, then
         assertThatThrownBy(() -> {
-            line.insertSection(A역, B역, 10);
+            line.insertSection(new Section(10, A역, B역));
         }).isInstanceOf(InvalidDistanceException.class);
     }
 
@@ -150,7 +150,7 @@ class LineTest {
 
         // when
         assertThatThrownBy(() -> {
-            line.insertSection(B역, C역, 13);
+            line.insertSection(new Section(13, B역, C역));
         }).isInstanceOf(InvalidDistanceException.class);
     }
 
@@ -162,7 +162,7 @@ class LineTest {
 
         // when
         assertThatThrownBy(() -> {
-            line.insertSection(A역, C역, 10);
+            line.insertSection(new Section(10, A역, C역));
         }).isInstanceOf(InvalidSectionException.class);
     }
 
@@ -174,7 +174,7 @@ class LineTest {
 
         // when
         assertThatThrownBy(() -> {
-            line.insertSection(C역, D역, 10);
+            line.insertSection(new Section(10, C역, D역));
         }).isInstanceOf(InvalidSectionException.class);
     }
 }

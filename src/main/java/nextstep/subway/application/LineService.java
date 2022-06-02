@@ -64,11 +64,11 @@ public class LineService {
     public void addSection(Long id, SectionRequest request) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(LineNotFoundException::new);
-        Station insertUpStation = stationRepository.findById(request.getUpStationId())
+        Station upStation = stationRepository.findById(request.getUpStationId())
                 .orElseThrow(StationNotFoundException::new);
-        Station insertDownStation = stationRepository.findById(request.getDownStationId())
+        Station downStation = stationRepository.findById(request.getDownStationId())
                 .orElseThrow(StationNotFoundException::new);
-
-        line.insertSection(insertUpStation, insertDownStation, request.getDistance());
+        Section section = new Section(request.getDistance(), upStation, downStation);
+        line.insertSection(section);
     }
 }

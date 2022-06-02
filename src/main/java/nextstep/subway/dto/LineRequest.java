@@ -1,6 +1,5 @@
 package nextstep.subway.dto;
 
-import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 
 public class LineRequest {
