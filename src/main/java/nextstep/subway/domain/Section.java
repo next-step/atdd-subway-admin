@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -90,6 +89,12 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
+    private void validateLineNotNull(Line line) {
+        if (Objects.isNull(line)) {
+            throw new NotFoundException("노선 정보가 없습니다.");
+        }
+    }
+
     public void update(Section newSection) {
         if (isEqualsUpStation(newSection)) {
             updateUpStationByNewSection(newSection);
@@ -99,11 +104,22 @@ public class Section extends BaseEntity {
         }
     }
 
-    public List<Station> stations() {
-        List<Station> stations = new ArrayList<>();
-        stations.add(this.upStation);
-        stations.add(this.downStation);
-        return stations;
+    private boolean isEqualsUpStation(Section newSection) {
+        return this.upStation().equals(newSection.upStation());
+    }
+
+    private void updateUpStationByNewSection(Section newSection) {
+        distance.minus(newSection.distance);
+        this.upStation = newSection.downStation();
+    }
+
+    private boolean isEqualsDownStation(Section newSection) {
+        return this.downStation().equals(newSection.downStation());
+    }
+
+    private void updateDownStationByNewSection(Section newSection) {
+        distance.minus(newSection.distance);
+        this.downStation = newSection.upStation();
     }
 
     public Station upStation() {
@@ -114,31 +130,31 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
+    public List<Station> stations() {
+        List<Station> stations = new ArrayList<>();
+        stations.add(this.upStation);
+        stations.add(this.downStation);
+        return stations;
+    }
+
     public Distance distance() {
         return distance;
     }
 
-    private void updateUpStationByNewSection(Section newSection) {
-        distance.minus(newSection.distance);
-        this.upStation = newSection.downStation();
-    }
-
-    private void updateDownStationByNewSection(Section newSection) {
-        distance.minus(newSection.distance);
-        this.downStation = newSection.upStation();
-    }
-
-    private boolean isEqualsUpStation(Section newSection) {
-        return this.upStation().equals(newSection.upStation());
-    }
-
-    private boolean isEqualsDownStation(Section newSection) {
-        return this.downStation().equals(newSection.downStation());
-    }
-
-    private void validateLineNotNull(Line line) {
-        if (Objects.isNull(line)) {
-            throw new NotFoundException("노선 정보가 없습니다.");
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
         }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(id, section.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

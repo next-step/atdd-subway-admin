@@ -1,12 +1,14 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.exception.NotFoundException;
 
 @Embeddable
 public class Sections {
@@ -44,7 +46,8 @@ public class Sections {
     }
 
     private boolean containsUpStationAndDownStation(Section section) {
-        return this.stations().contains(section.upStation()) && this.stations().contains(section.downStation());
+        return this.orderedStations().contains(section.upStation()) && this.orderedStations()
+                .contains(section.downStation());
     }
 
     private void validContainsUpStationOrDownStation(Section section) {
@@ -54,7 +57,8 @@ public class Sections {
     }
 
     private boolean containsNoneOfUpStationAndDownStation(Section section) {
-        return !this.stations().contains(section.upStation()) && !this.stations().contains(section.downStation());
+        return !this.orderedStations().contains(section.upStation()) && !this.orderedStations()
+                .contains(section.downStation());
     }
 
     public Distance distance() {
@@ -63,12 +67,44 @@ public class Sections {
                 .reduce(0, Integer::sum));
     }
 
-    public List<Station> stations() {
-        return sections.stream()
-                .map(Section::stations)
-                .flatMap(Collection::stream)
-                .distinct()
-                .collect(Collectors.toList());
+    public List<Station> orderedStations() {
+        Map<Station, Station> section = sections.stream()
+                .collect(Collectors.toMap(Section::upStation, Section::downStation));
+        Station currentStation = firstUpStation();
+        Station lastDownStation = lastDownStation();
+        List<Station> orderedStations = new ArrayList<>();
+        while (section.containsKey(currentStation)) {
+            orderedStations.add(currentStation);
+            currentStation = section.get(currentStation);
+        }
+        orderedStations.add(lastDownStation);
+        return orderedStations;
+    }
+
+    private Station firstUpStation() {
+        Set<Station> upStations = sections.stream()
+                .map(Section::upStation)
+                .collect(Collectors.toSet());
+        Set<Station> downStations = sections.stream()
+                .map(Section::downStation)
+                .collect(Collectors.toSet());
+        return upStations.stream()
+                .filter(upStation -> !downStations.contains(upStation))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("상행 종점역을 찾을 수 없습니다."));
+    }
+
+    private Station lastDownStation() {
+        Set<Station> upStations = sections.stream()
+                .map(Section::upStation)
+                .collect(Collectors.toSet());
+        Set<Station> downStations = sections.stream()
+                .map(Section::downStation)
+                .collect(Collectors.toSet());
+        return downStations.stream()
+                .filter(downStation -> !upStations.contains(downStation))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("하행 종점역을 찾을 수 없습니다."));
     }
 
     private void update(Section newSection) {

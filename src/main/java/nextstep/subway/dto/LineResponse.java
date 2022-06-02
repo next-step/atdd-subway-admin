@@ -26,7 +26,7 @@ public class LineResponse extends BaseDto {
     }
 
     public static LineResponse of(Line line) {
-        List<StationResponse> stations = line.sections().stations().stream()
+        List<StationResponse> stations = line.sections().orderedStations().stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
 

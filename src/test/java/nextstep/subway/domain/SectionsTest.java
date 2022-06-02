@@ -55,7 +55,7 @@ class SectionsTest {
         Section newSection = Section.builder(양재역, 판교역, Distance.valueOf(5))
                 .build();
         sections1.addSection(newSection);
-        List<String> stationNames = sections1.stations().stream()
+        List<String> stationNames = sections1.orderedStations().stream()
                 .map(Station::name)
                 .collect(Collectors.toList());
         assertThat(stationNames).containsOnly("강남역", "양재역", "판교역", "양재시민의숲역");
@@ -67,7 +67,7 @@ class SectionsTest {
         Section newSection = Section.builder(판교역, 양재시민의숲역, Distance.valueOf(4))
                 .build();
         sections1.addSection(newSection);
-        List<String> stationNames = sections1.stations().stream()
+        List<String> stationNames = sections1.orderedStations().stream()
                 .map(Station::name)
                 .collect(Collectors.toList());
         assertThat(stationNames).containsOnly("강남역", "양재역", "판교역", "양재시민의숲역");
@@ -82,7 +82,7 @@ class SectionsTest {
     @DisplayName("구간들에 포함된 역 정보들 조회 테스트")
     @Test
     void getStations() {
-        assertThat(sections1.stations()).containsOnly(강남역, 양재역, 양재시민의숲역);
+        assertThat(sections1.orderedStations()).containsOnly(강남역, 양재역, 양재시민의숲역);
     }
 
     @DisplayName("구간들에 있는 하행역이 일치하는 구간 사이에 구간 추가")
@@ -91,7 +91,7 @@ class SectionsTest {
         Section newSection = Section.builder(판교역, 양재시민의숲역, Distance.valueOf(4))
                 .build();
         sections1.addSection(newSection);
-        assertThat(sections1.stations()).containsOnly(강남역, 양재역, 양재시민의숲역, 판교역);
+        assertThat(sections1.orderedStations()).containsOnly(강남역, 양재역, 양재시민의숲역, 판교역);
     }
 
     @DisplayName("구간들에 하행 종점에 구간 추가")
@@ -100,7 +100,7 @@ class SectionsTest {
         Section newSection = Section.builder(양재시민의숲역, 판교역, Distance.valueOf(12))
                 .build();
         sections1.addSection(newSection);
-        assertThat(sections1.stations()).containsOnly(강남역, 양재역, 양재시민의숲역, 판교역);
+        assertThat(sections1.orderedStations()).containsOnly(강남역, 양재역, 양재시민의숲역, 판교역);
     }
 
     @DisplayName("구간들에 있는 하행역이 일치하는 구간 사이에 구간길이가 같거나 큰 구간 추가하면 예외 발생")
