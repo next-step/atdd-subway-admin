@@ -1,9 +1,6 @@
 package nextstep.subway.dto;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineStation;
-import nextstep.subway.domain.LineStations;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +23,15 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        LineStations lineStations = line.getLineStations();
         List<StationResponse> stations = new ArrayList<>();
-        for (LineStation lineStation : lineStations.getList()) {
-            Station station = lineStation.getStation();
-            stations.add(new StationResponse(station.getId(), station.getName()));
+        Sections sections = line.getSections();
+        Section section = sections.getLineUpSection();
+        System.out.println("section: " + section);
+        while (section.getDownStation() != null) {
+            Station station = new Station(section.getDownStation().getId(), section.getDownStation().getName());
+            System.out.println("section: " + section);
+            stations.add(StationResponse.of(station));
+            section = sections.findSectionWithUpStation(section.getDownStation()).get();
         }
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
     }

@@ -44,9 +44,7 @@ public class Line extends BaseEntity {
     public Line(String name, String color, int distance, Station upStation, Station downStation) {
         this.name = name;
         this.color = color;
-        this.distance = new Distance(distance);
-        this.upStation = upStation;
-        this.downStation = downStation;
+        initStation(distance, upStation, downStation);
     }
 
     public Line setUpStation(Station upStation) {
@@ -64,57 +62,54 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void initStation(Station upStation, Station downStation) {
-        setUpStation(upStation);
-        setDownStation(downStation);
-        sections.add(new Section(getDistance(), upStation, downStation, this));
-        lineStations.add(new LineStation(upStation, this));
-        lineStations.add(new LineStation(downStation, this));
+    public void initStation(int distance, Station upStation, Station downStation) {
+        this.distance = new Distance(distance);
+        sections.add(new Section(1, null, upStation, this));
+        sections.add(new Section(distance, upStation, downStation, this));
+        sections.add(new Section(1, downStation, null, this));
     }
 
     public void insertSection(Section section) {
-        Station insertUpStation = section.getUpStation();
-        Station insertDownStation = section.getDownStation();
-        int distance = section.getDistance();
+        validateSection(section);
 
-        if (!validateInsertStation(insertUpStation, insertDownStation)) {
-            throw new InvalidSectionException();
-        }
-
-        if (isSameUpStation(insertDownStation)) {
-            insertSectionToHead(new Section(distance, insertUpStation, getUpStation(), this));
+        if (isLineUpStation(section.getDownStation())) {
+            sections.add(new Section(1, null, section.getUpStation(), this));
+            Section lineUpSection = sections.getLineUpSection();
+            lineUpSection.updateSection(section.getUpStation(), lineUpSection.getDownStation(), section.getDistance());
+            addLineDistance(section.getDistance());
             return;
         }
 
-        if (isSameDownStation(insertUpStation)) {
-            insertSectionToTail(new Section(distance, getDownStation(), insertDownStation, this));
+        if (isLineDownStation(section.getUpStation())) {
+            sections.add(new Section(1, section.getDownStation(), null, this));
+            Section lineDownSection = sections.getLineDownSection();
+            lineDownSection.updateSection(lineDownSection.getUpStation(), section.getDownStation(), section.getDistance());
+            addLineDistance(section.getDistance());
             return;
         }
 
-        Optional<Section> findUpStream = sections.findSectionWithUpStation(insertUpStation);
+        Optional<Section> findUpStream = sections.findSectionWithUpStation(section.getUpStation());
         if (findUpStream.isPresent()) {
             Section find = findUpStream.get();
-            insertSectionFromUpStation(insertDownStation, distance, find);
+            insertSectionFromUpStation(section.getDownStation(), section.getDistance(), find);
             return;
         }
 
-        Optional<Section> findDownStream = sections.findSectionWithDownStation(insertDownStation);
+        Optional<Section> findDownStream = sections.findSectionWithDownStation(section.getDownStation());
         if (findDownStream.isPresent()) {
             Section find = findDownStream.get();
-            insertSectionFromDownStation(insertUpStation, distance, find);
-            return;
+            insertSectionFromDownStation(section.getUpStation(), section.getDistance(), find);
         }
     }
 
-    private boolean validateInsertStation(Station insertUpStation, Station insertDownStation) {
-        boolean isExistUpStation = lineStations.containStation(insertUpStation);
-        boolean isExistDownStation = lineStations.containStation(insertDownStation);
-
-        if (isExistUpStation && isExistDownStation) {
-            return false;
+    private void validateSection(Section section) {
+        if (sections.containBothStation(section)) {
+            throw new InvalidSectionException("이미 노선에 포함된 구간은 추가할 수 없습니다.");
         }
 
-        return isExistUpStation || isExistDownStation;
+        if (sections.containNoneStation(section)) {
+            throw new InvalidSectionException("구간 내 지하철 역이 하나는 등록된 상태여야 합니다.");
+        }
     }
 
     private void insertSectionFromUpStation(Station insertDownStation, Integer distance, Section section) {
@@ -131,25 +126,11 @@ public class Line extends BaseEntity {
         lineStations.add(new LineStation(insertUpStation, this));
     }
 
-    public void insertSectionToHead(Section section) {
-        sections.add(section);
-        setUpStation(section.getUpStation());
-        addLineDistance(section.getDistance());
-        lineStations.add(new LineStation(section.getUpStation(), section.getLine()));
-    }
-
-    public void insertSectionToTail(Section section) {
-        sections.add(section);
-        setDownStation(section.getDownStation());
-        addLineDistance(section.getDistance());
-        lineStations.add(new LineStation(section.getDownStation(), section.getLine()));
-    }
-
-    public boolean isSameUpStation(Station station) {
+    public boolean isLineUpStation(Station station) {
         return getUpStation().equals(station);
     }
 
-    public boolean isSameDownStation(Station station) {
+    public boolean isLineDownStation(Station station) {
         return getDownStation().equals(station);
     }
 
@@ -174,11 +155,11 @@ public class Line extends BaseEntity {
     }
 
     public Station getUpStation() {
-        return upStation;
+        return sections.getLineUpStation();
     }
 
     public Station getDownStation() {
-        return downStation;
+        return sections.getLineDownStation();
     }
 
     public Sections getSections() {
@@ -201,5 +182,18 @@ public class Line extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(name, color);
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", distance=" + distance +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", sections=" + sections +
+                '}';
     }
 }

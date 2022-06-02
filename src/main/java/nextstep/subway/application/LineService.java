@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,7 +28,7 @@ public class LineService {
                 .orElseThrow(StationNotFoundException::new);
 
         Line persistLine = lineRepository.save(lineRequest.toLine());
-        persistLine.initStation(upStation, downStation);
+        persistLine.initStation(lineRequest.getDistance(), upStation, downStation);
 
         return LineResponse.of(persistLine);
     }

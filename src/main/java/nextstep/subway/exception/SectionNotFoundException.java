@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-public class InvalidSectionException extends RuntimeException {
-    public InvalidSectionException(String message) {
+public class SectionNotFoundException extends RuntimeException {
+    public SectionNotFoundException(String message) {
         super(message);
     }
 }

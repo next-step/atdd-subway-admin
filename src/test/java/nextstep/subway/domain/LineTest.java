@@ -27,26 +27,20 @@ class LineTest {
     }
 
     @Test
-    void 노선_초기화_테스트() {
+    void 노선_생성_테스트() {
         // given
-        Line line = new Line("2호선", "초록", 10);
+        Line line = new Line("2호선", "초록", 10, A역, B역);
 
-        // when
-        line.initStation(A역, B역);
-
-        // then
+        // when, then
         assertThat(line.getUpStation()).isEqualTo(A역);
         assertThat(line.getDownStation()).isEqualTo(B역);
         assertThat(line.getDistance()).isEqualTo(10);
-        assertThat(line.getSections().getList()).hasSize(1);
-        assertThat(line.getLineStations().getList()).hasSize(2);
     }
 
     @Test
     void 구간_추가_상행역으로() {
         // given
-        Line line = new Line("2호선", "초록", 10);
-        line.initStation(A역, C역);
+        Line line = new Line("2호선", "초록", 10, A역, C역);
 
         // when
         line.insertSection(new Section(3, A역, B역));
@@ -55,15 +49,12 @@ class LineTest {
         assertThat(line.getUpStation()).isEqualTo(A역);
         assertThat(line.getDownStation()).isEqualTo(C역);
         assertThat(line.getDistance()).isEqualTo(10);
-        assertThat(line.getSections().getList()).hasSize(2);
-        assertThat(line.getLineStations().getList()).hasSize(3);
     }
 
     @Test
     void 구간_추가_하행역으로() {
         // given
-        Line line = new Line("2호선", "초록", 10);
-        line.initStation(A역, C역);
+        Line line = new Line("2호선", "초록", 10, A역, C역);
 
         // when
         line.insertSection(new Section(3, B역, C역));
@@ -72,15 +63,12 @@ class LineTest {
         assertThat(line.getUpStation()).isEqualTo(A역);
         assertThat(line.getDownStation()).isEqualTo(C역);
         assertThat(line.getDistance()).isEqualTo(10);
-        assertThat(line.getSections().getList()).hasSize(2);
-        assertThat(line.getLineStations().getList()).hasSize(3);
     }
 
     @Test
     void 구간_추가_상행종점역_변경() {
         // given
-        Line line = new Line("2호선", "초록", 10);
-        line.initStation(A역, C역);
+        Line line = new Line("2호선", "초록", 10, A역, C역);
 
         // when
         line.insertSection(new Section(3, B역, A역));
@@ -89,15 +77,12 @@ class LineTest {
         assertThat(line.getUpStation()).isEqualTo(B역);
         assertThat(line.getDownStation()).isEqualTo(C역);
         assertThat(line.getDistance()).isEqualTo(13);
-        assertThat(line.getSections().getList()).hasSize(2);
-        assertThat(line.getLineStations().getList()).hasSize(3);
     }
 
     @Test
     void 구간_추가_하행종점역_변경() {
         // given
-        Line line = new Line("2호선", "초록", 10);
-        line.initStation(A역, C역);
+        Line line = new Line("2호선", "초록", 10, A역, C역);
 
         // when
         line.insertSection(new Section(3, C역, B역));
@@ -106,15 +91,12 @@ class LineTest {
         assertThat(line.getUpStation()).isEqualTo(A역);
         assertThat(line.getDownStation()).isEqualTo(B역);
         assertThat(line.getDistance()).isEqualTo(13);
-        assertThat(line.getSections().getList()).hasSize(2);
-        assertThat(line.getLineStations().getList()).hasSize(3);
     }
 
     @Test
     void 다양하게_구간_추가() {
         // given
-        Line line = new Line("2호선", "초록", 15);
-        line.initStation(A역, D역);
+        Line line = new Line("2호선", "초록", 15, A역, D역);
 
         // when
         line.insertSection(new Section(4, A역, B역));
@@ -126,15 +108,12 @@ class LineTest {
         assertThat(line.getUpStation()).isEqualTo(E역);
         assertThat(line.getDownStation()).isEqualTo(F역);
         assertThat(line.getDistance()).isEqualTo(60);
-        assertThat(line.getSections().getList()).hasSize(5);
-        assertThat(line.getLineStations().getList()).hasSize(6);
     }
 
     @Test
     void 구간_추가_상행역으로_거리오류() {
         // given
-        Line line = new Line("2호선", "초록", 10);
-        line.initStation(A역, C역);
+        Line line = new Line("2호선", "초록", 10, A역, C역);
 
         // when, then
         assertThatThrownBy(() -> {
@@ -145,8 +124,7 @@ class LineTest {
     @Test
     void 구간_추가_하행역으로_거리오류() {
         // given
-        Line line = new Line("2호선", "초록", 10);
-        line.initStation(A역, C역);
+        Line line = new Line("2호선", "초록", 10, A역, C역);
 
         // when
         assertThatThrownBy(() -> {
@@ -157,20 +135,18 @@ class LineTest {
     @Test
     void 노선에_이미_추가된_지하철역_구간_추가() {
         // given
-        Line line = new Line("2호선", "초록", 10);
-        line.initStation(A역, C역);
+        Line line = new Line("2호선", "초록", 10, A역, C역);
 
         // when
         assertThatThrownBy(() -> {
-            line.insertSection(new Section(10, A역, C역));
+            line.insertSection(new Section(5, A역, C역));
         }).isInstanceOf(InvalidSectionException.class);
     }
 
     @Test
     void 노선에_모두_추가안된_지하철역_구간_추가() {
         // given
-        Line line = new Line("2호선", "초록", 10);
-        line.initStation(A역, B역);
+        Line line = new Line("2호선", "초록", 10, A역, B역);
 
         // when
         assertThatThrownBy(() -> {

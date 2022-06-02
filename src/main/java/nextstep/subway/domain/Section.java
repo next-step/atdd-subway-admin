@@ -45,8 +45,8 @@ public class Section {
     }
 
     public boolean containsStation(Station station) {
-        return getUpStation().equals(station)
-                || getDownStation().equals(station);
+        return station.equals(getUpStation())
+                || station.equals(getDownStation());
     }
 
     public Integer getDistance() {
@@ -63,5 +63,15 @@ public class Section {
 
     public Line getLine() {
         return line;
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", distance=" + distance +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                '}';
     }
 }
