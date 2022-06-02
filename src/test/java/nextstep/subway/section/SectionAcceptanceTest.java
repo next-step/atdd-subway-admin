@@ -78,7 +78,7 @@ public class SectionAcceptanceTest {
     @Test
     void createNewUpStationSection() {
         // when
-        String upStationId = Integer.toString(지하철역_생성("구간역1").jsonPath().get("id"));
+        String upStationId = Integer.toString(지하철역_생성("상행종점").jsonPath().get("id"));
 
         Map<String, String> params = new HashMap<>();
         params.put("distance", "5");
@@ -92,12 +92,48 @@ public class SectionAcceptanceTest {
         // then
         List<HashMap<String, ?>> stations = 지하철노선_한개_조회(Integer.valueOf(lineId)).get("stations");
 
-        assertThat(stations.get(0).get("name")).isEqualTo("구간역1");
+        assertThat(stations.get(0).get("name")).isEqualTo("상행종점");
         assertThat(
                 stations.stream()
                         .map(target -> target.get("id").toString())
                         .collect(Collectors.toList())
         ).contains(lineUpStationId);
+    }
+
+    /**
+     * Given 상행과 하행을 생성하고
+     * <p>
+     * When 새로운 역을 하행 종점으로 등록하면
+     * <p>
+     * Then 라인 조회 시 하행 종점이 변경된 역 목록을 찾을 수 있다.
+     * <p>
+     * Then 기존의 하행 종점은 노선의 일반 역으로 변경된다.
+     */
+
+    @DisplayName("새로운 역을 하행 종점으로 등록한다.")
+    @Test
+    void createNewDownStationSection() {
+        // when
+        String downStationId = Integer.toString(지하철역_생성("하행종점").jsonPath().get("id"));
+
+        Map<String, String> params = new HashMap<>();
+        params.put("distance", "5");
+        params.put("upStationId", lineDownStationId);
+        params.put("downStationId", downStationId);
+        RestAssuredMethod.post("/lines/{id}/sections", params,
+                new HashMap<String, String>() {{
+                    put("id", lineId);
+                }});
+
+        // then
+        List<HashMap<String, ?>> stations = 지하철노선_한개_조회(Integer.valueOf(lineId)).get("stations");
+
+        assertThat(stations.get(stations.size() - 1).get("name")).isEqualTo("하행종점");
+        assertThat(
+                stations.stream()
+                        .map(target -> target.get("id").toString())
+                        .collect(Collectors.toList())
+        ).contains(lineDownStationId);
     }
 
 

@@ -38,7 +38,6 @@ public class Sections {
     public void add(Section newSection) {
 
         Section firstSection = getFirstSection();
-
         if (isMatchedDownStation(newSection.getDownStation(), firstSection)) {
             addSectionOfFirstSectionMatched(newSection, firstSection);
             return;
@@ -53,6 +52,12 @@ public class Sections {
         Optional<Section> downMatchedSection = matchDownStation(newSection);
         if (downMatchedSection.isPresent()) {
             addSectionOfDownMatchedCase(newSection, downMatchedSection);
+            return;
+        }
+
+        Section lastSection = getLastSection();
+        if (isMatchedDownStation(newSection.getUpStation(), lastSection)) {
+            sections.add(newSection);
             return;
         }
     }
@@ -98,10 +103,25 @@ public class Sections {
     }
 
     private Section getLastSection() {
-        return sections.stream()
-                .filter(section -> Objects.isNull(section.getDownStation()))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
+
+        Section preSection = getFirstSection();
+
+        while (true) {
+            Section finalPreSection = preSection;
+            Optional<Section> nextStation = sections.stream()
+                    .filter(section -> !Objects.isNull(section.getUpStation()))
+                    .filter(section -> isMatchedDownStation(section.getUpStation(), finalPreSection))
+                    .findFirst();
+
+            if (nextStation.isPresent()) {
+                preSection = nextStation.get();
+            }
+
+            if (!nextStation.isPresent()) {
+                break;
+            }
+        }
+        return preSection;
     }
 
     private Optional<Section> matchDownStation(Section newSection) {
