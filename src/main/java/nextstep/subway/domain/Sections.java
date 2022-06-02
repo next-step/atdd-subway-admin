@@ -148,7 +148,11 @@ public class Sections {
     }
 
     public boolean contains(Station station) {
-        return getInOrderStations().contains(station);
+        return this.sections.stream()
+                .map(Section::stations)
+                .flatMap(List::stream)
+                .collect(Collectors.toSet())
+                .contains(station);
     }
 
     @Override
