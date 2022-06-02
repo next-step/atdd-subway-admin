@@ -48,14 +48,14 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse findOneLine(long id) {
-        Line line = lineRepository.findById(id).orElseThrow(NotFoundException::new);
+    public LineResponse findOneLine(Long lineId) {
+        Line line = findLineById(lineId);
         return LineResponse.of(line);
     }
 
     @Transactional
-    public void updateLine(long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(NotFoundException::new);
+    public void updateLine(Long lineId, LineRequest lineRequest) {
+        Line line = findLineById(lineId);
         line.changeLineInfo(lineRequest.getName(), lineRequest.getColor());
     }
 
@@ -65,17 +65,21 @@ public class LineService {
     }
 
     @Transactional
-    public void saveSection(long lineId, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(lineId).orElseThrow(NotFoundException::new);
+    public void saveSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = findLineById(lineId);
         line.addSection(generateSection(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
                 sectionRequest.getDistance()));
     }
 
-    private Section generateSection(long upStationId, long downStationId, long distance) {
+    private Section generateSection(Long upStationId, Long downStationId, Long distance) {
         Station upStation = stationRepository.findById(upStationId)
                 .orElseThrow(NotFoundException::new);
         Station downStation = stationRepository.findById(downStationId)
                 .orElseThrow(NotFoundException::new);
         return sectionRepository.save(new Section(upStation, downStation, distance));
+    }
+
+    private Line findLineById(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(NotFoundException::new);
     }
 }
