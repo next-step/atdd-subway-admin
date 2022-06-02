@@ -29,17 +29,17 @@ public class LineStations {
     }
 
     public void addSection(Line line, Station upStation, Station downStation, Long distance) {
-        boolean isExistSectionByUpSation = isExistSectionByUpSation(upStation);
-        boolean isExistSectionByDownSataion = isExistSectionByDownSataion(downStation);
-        validateAlreadySection(isExistSectionByUpSation, isExistSectionByDownSataion);
+        boolean isExistSectionByUpStation = isExistSectionByUpStation(upStation);
+        boolean isExistSectionByDownStation = isExistSectionByDownStation(downStation);
+        validateAlreadySection(isExistSectionByUpStation, isExistSectionByDownStation);
 
-        if (isExistSectionByUpSation) {
+        if (isExistSectionByUpStation) {
             addBetweenSectionByUpStation(line, upStation, downStation, distance);
         }
-        if (isExistSectionByDownSataion) {
+        if (isExistSectionByDownStation) {
             addBetweenSectionByDownStation(line, upStation, downStation, distance);
         }
-        if (!isExistSectionByUpSation && !isExistSectionByDownSataion) {
+        if (!isExistSectionByUpStation && !isExistSectionByDownStation) {
             addStartOrEndSection(line, upStation, downStation, distance);
         }
     }
@@ -75,7 +75,7 @@ public class LineStations {
                 .orElse(null);
     }
 
-    private boolean isExistSectionByUpSation(Station upStation) {
+    private boolean isExistSectionByUpStation(Station upStation) {
         return lineStations.stream()
                 .anyMatch(lineStation -> lineStation.getUpStation().equals(upStation));
     }
@@ -87,7 +87,7 @@ public class LineStations {
                 .orElse(null);
     }
 
-    private boolean isExistSectionByDownSataion(Station downStation) {
+    private boolean isExistSectionByDownStation(Station downStation) {
         return lineStations.stream()
                 .anyMatch(lineStation -> lineStation.getDownStation().equals(downStation));
     }
@@ -119,33 +119,33 @@ public class LineStations {
     }
 
     public void delete(Station station) {
-        boolean isExistSectionByUpSation = isExistSectionByUpSation(station);
-        boolean isExistSectionByDownSation = isExistSectionByDownSataion(station);
+        boolean isExistSectionByUpStation = isExistSectionByUpStation(station);
+        boolean isExistSectionByDownStation = isExistSectionByDownStation(station);
         validateOnlyOneSection();
-        validateDeleteSectionNotFound(isExistSectionByUpSation, isExistSectionByDownSation);
+        validateDeleteSectionNotFound(isExistSectionByUpStation, isExistSectionByDownStation);
 
         LineStation sectionByUpStation = findSectionByUpStation(station);
         LineStation sectionByDownStation = findSectionByDownStation(station);
-        if (!isExistSectionByDownSation) {
+        if (!isExistSectionByDownStation) {
             lineStations.remove(sectionByUpStation);
         }
-        if (!isExistSectionByUpSation) {
+        if (!isExistSectionByUpStation) {
             lineStations.remove(sectionByDownStation);
         }
-        if (isExistSectionByUpSation && isExistSectionByDownSation) {
+        if (isExistSectionByUpStation && isExistSectionByDownStation) {
             sectionByUpStation.merge(sectionByDownStation);
             lineStations.remove(sectionByDownStation);
         }
     }
 
-    private void validateAlreadySection(boolean isExistSectionByUpSation, boolean isExistSectionByDownSataion) {
-        if (isExistSectionByUpSation && isExistSectionByDownSataion) {
+    private void validateAlreadySection(boolean isExistSectionByUpStation, boolean isExistSectionByDownStation) {
+        if (isExistSectionByUpStation && isExistSectionByDownStation) {
             throw new CreateSectionException("[ERROR] 이미 구간이 존재합니다.");
         }
     }
 
-    private void validateDeleteSectionNotFound(boolean isExistSectionByUpSation, boolean isExistSectionByDownSation) {
-        if (!isExistSectionByUpSation && !isExistSectionByDownSation) {
+    private void validateDeleteSectionNotFound(boolean isExistSectionByUpStation, boolean isExistSectionByDownStation) {
+        if (!isExistSectionByUpStation && !isExistSectionByDownStation) {
             throw new DeleteSectionException("[ERROR] 삭제할 구간을 찾을 수 없습니다.");
         }
     }
