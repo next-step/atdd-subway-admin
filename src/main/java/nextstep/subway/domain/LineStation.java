@@ -55,31 +55,59 @@ public class LineStation {
         LineStation addResult = new LineStation(distance, upStation, downStation, false);
 
         if (isAddNewFirst(downStation)) {
-            this.isStart = false;
-            addResult.isStart = true;
-
-            return addResult;
+            return addNewLineFirstStation(addResult);
         }
         if (isAddNewLast(upStation)) {
-            this.isLast = false;
-            addResult.isLast = true;
+            return addNewLineLastStation(addResult);
+        }
+        if (isAddUpToMiddle(upStation.getId())) {
+            return addUpToMiddle(addResult, downStation, distance);
+        }
+        if (isAddMiddleToDown(downStation.getId())) {
+            return addMiddleToDown(addResult, upStation, distance);
+        }
 
-            return addResult;
-        }
-        if (this.upStation.isSameId(upStation.getId())) {
-            addResult.isStart = this.isStart;
-            this.isStart = false;
-            this.distance -= distance;
-            this.upStation = downStation;
-        }
-        if (this.downStation.isSameId(downStation.getId())) {
-            addResult.isLast = this.isLast;
-            this.isLast = false;
-            this.distance -= distance;
-            this.downStation = upStation;
-        }
+        throw new IllegalArgumentException("지하철을 추가할 수 없습니다.");
+    }
+
+    private LineStation addNewLineFirstStation(LineStation addResult) {
+        this.isStart = false;
+        addResult.isStart = true;
 
         return addResult;
+    }
+
+    private LineStation addNewLineLastStation(LineStation addResult) {
+        this.isLast = false;
+        addResult.isLast = true;
+
+        return addResult;
+    }
+
+    private LineStation addUpToMiddle(LineStation addResult, Station downStation, Long distance) {
+        addResult.isStart = this.isStart;
+        this.isStart = false;
+        this.upStation = downStation;
+        this.distance -= distance;
+
+        return addResult;
+    }
+
+    private LineStation addMiddleToDown(LineStation addResult, Station upStation, Long distance) {
+        addResult.isLast = this.isLast;
+        this.isLast = false;
+        this.downStation = upStation;
+        this.distance -= distance;
+
+        return addResult;
+    }
+
+    private boolean isAddUpToMiddle(Long upStationId) {
+        return this.upStation.isSameId(upStationId);
+    }
+
+    private boolean isAddMiddleToDown(Long downStationId) {
+        return this.downStation.isSameId(downStationId);
     }
 
     private void validation(Long distance, Station upStation, Station downStation) {
