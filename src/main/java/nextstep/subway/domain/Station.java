@@ -54,11 +54,11 @@ public class Station extends BaseEntity {
         }
     }
 
-    public Long getId() {
+    public Long id() {
         return id;
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 

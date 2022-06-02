@@ -6,7 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -39,6 +41,7 @@ class LineServiceTest {
     Line line2;
     Station upStation;
     Station downStation;
+    Section section;
 
     @BeforeEach
     void setUp() {
@@ -48,12 +51,16 @@ class LineServiceTest {
         downStation = Station.builder("새로운지하철역")
                 .id(2L)
                 .build();
-        line = Line.builder("신분당선", "bg-red-600", 10, upStation, downStation)
+        section = Section.builder(upStation, downStation, Distance.valueOf(10))
+                .build();
+        line = Line.builder("신분당선", "bg-red-600")
                 .id(1L)
                 .build();
-        line2 = Line.builder("신분당선", "bg-blue-600", 10, upStation, downStation)
+        line.addSection(section);
+        line2 = Line.builder("신분당선", "bg-blue-600")
                 .id(1L)
                 .build();
+        line2.addSection(section);
         lineRequest = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
         lineRequest2 = new LineRequest("신분당선", "bg-blue-600", 1L, 2L, 10);
         lineResponse = LineResponse.of(line);
@@ -69,8 +76,7 @@ class LineServiceTest {
         LineResponse lineResponse = lineService.saveLine(lineRequest);
         assertAll(
                 () -> assertThat(lineResponse.getId()).isNotNull(),
-                () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
-                () -> assertThat(lineResponse.getStations().get(0)).isEqualTo(StationResponse.of(upStation))
+                () -> assertThat(lineResponse.getName()).isEqualTo("신분당선")
         );
     }
 
@@ -87,16 +93,14 @@ class LineServiceTest {
     @DisplayName("노선 변경 테스트")
     @Test
     void updateLine() {
-        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        when(stationRepository.findById(lineRequest2.getUpStationId())).thenReturn(Optional.of(upStation));
-        when(stationRepository.findById(lineRequest2.getDownStationId())).thenReturn(Optional.of(downStation));
-        Line line = Line.builder(lineRequest2.getName(), lineRequest2.getColor(), lineRequest2.getDistance(), upStation,
-                        downStation)
+        when(lineRepository.findById(line.id())).thenReturn(Optional.of(line));
+        Line line = Line.builder(lineRequest2.getName(), lineRequest2.getColor())
                 .id(1L)
                 .build();
+        line.addSection(section);
 
         when(lineRepository.save(line)).thenReturn(this.line2);
-        LineResponse lineResponse = lineService.updateLine(line.getId(), lineRequest2);
+        LineResponse lineResponse = lineService.updateLine(line.id(), lineRequest2);
         assertAll(
                 () -> assertThat(lineResponse.getId()).isNotNull(),
                 () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),

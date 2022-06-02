@@ -1,16 +1,15 @@
 package nextstep.subway.dto;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 
 public class LineResponse extends BaseDto {
     private final Long id;
     private final String name;
     private final String color;
-
     private final int distance;
 
     private final List<StationResponse> stations;
@@ -27,10 +26,11 @@ public class LineResponse extends BaseDto {
     }
 
     public static LineResponse of(Line line) {
-        List<StationResponse> stations = new ArrayList<>();
-        stations.add(StationResponse.of(line.getUpStation()));
-        stations.add(StationResponse.of(line.getDownStation()));
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getDistance(), stations,
+        List<StationResponse> stations = line.sections().stations().stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
+
+        return new LineResponse(line.id(), line.name(), line.color(), line.distance().distance(), stations,
                 line.getCreatedDate(),
                 line.getModifiedDate());
     }

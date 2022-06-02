@@ -6,6 +6,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.StationRepository;
@@ -26,28 +27,32 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
-                .orElseThrow(() -> new NotFoundException("등록된 지하철역이 없습니다."));
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId())
-                .orElseThrow(() -> new NotFoundException("등록된 지하철역이 없습니다."));
-        Line line = lineRequest.toLine(upStation, downStation);
+        Line line = lineRequest.toLine(getStation(lineRequest.getUpStationId()),
+                getStation(lineRequest.getDownStationId()));
         Line persistStation = lineRepository.save(line);
         return LineResponse.of(persistStation);
     }
 
     @Transactional
     public LineResponse updateLine(long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundException("등록된 노선이 없습니다."));
-        Station upStation = stationRepository.findById(line.getUpStation().getId())
-                .orElseThrow(() -> new NotFoundException("등록된 지하철역이 없습니다."));
-        Station downStation = stationRepository.findById(line.getDownStation().getId())
-                .orElseThrow(() -> new NotFoundException("등록된 지하철역이 없습니다."));
-        Line newLine = Line.builder(lineRequest.getName(), lineRequest.getColor(), line.getDistance(), upStation,
-                        downStation)
-                .id(line.getId())
-                .build();
-        Line persistStation = lineRepository.save(newLine);
+        Line line = getLine(id);
+        line.update(lineRequest.getName(), lineRequest.getColor());
+        Line persistStation = lineRepository.save(line);
         return LineResponse.of(persistStation);
+    }
+
+    @Transactional
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Line addSection(Long id, SectionRequest sectionRequest) {
+        Line line = getLine(id);
+        line.addSection(sectionRequest.toSection(getStation(sectionRequest.getUpStationId()),
+                getStation(sectionRequest.getDownStationId())));
+        lineRepository.save(line);
+        return line;
     }
 
     public List<LineResponse> findAllLines() {
@@ -56,13 +61,16 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
     public LineResponse findLineById(Long id) {
-        return LineResponse.of(lineRepository.findById(id).orElseThrow(() -> new NotFoundException("등록된 노선이 없습니다.")));
+        return LineResponse.of(getLine(id));
     }
 
-    @Transactional
-    public void deleteLineById(Long id) {
-        lineRepository.deleteById(id);
+    private Line getLine(long id) {
+        return lineRepository.findById(id).orElseThrow(() -> new NotFoundException("등록된 노선이 없습니다."));
+    }
+
+    private Station getStation(Long line) {
+        return stationRepository.findById(line)
+                .orElseThrow(() -> new NotFoundException("등록된 지하철역이 없습니다."));
     }
 }
