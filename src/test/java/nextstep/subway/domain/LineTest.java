@@ -34,7 +34,6 @@ class LineTest {
         // when, then
         assertThat(line.getUpStation()).isEqualTo(A역);
         assertThat(line.getDownStation()).isEqualTo(B역);
-        assertThat(line.getDistance()).isEqualTo(10);
     }
 
     @Test
@@ -48,7 +47,6 @@ class LineTest {
         // then
         assertThat(line.getUpStation()).isEqualTo(A역);
         assertThat(line.getDownStation()).isEqualTo(C역);
-        assertThat(line.getDistance()).isEqualTo(10);
     }
 
     @Test
@@ -62,7 +60,6 @@ class LineTest {
         // then
         assertThat(line.getUpStation()).isEqualTo(A역);
         assertThat(line.getDownStation()).isEqualTo(C역);
-        assertThat(line.getDistance()).isEqualTo(10);
     }
 
     @Test
@@ -76,7 +73,6 @@ class LineTest {
         // then
         assertThat(line.getUpStation()).isEqualTo(B역);
         assertThat(line.getDownStation()).isEqualTo(C역);
-        assertThat(line.getDistance()).isEqualTo(13);
     }
 
     @Test
@@ -90,7 +86,6 @@ class LineTest {
         // then
         assertThat(line.getUpStation()).isEqualTo(A역);
         assertThat(line.getDownStation()).isEqualTo(B역);
-        assertThat(line.getDistance()).isEqualTo(13);
     }
 
     @Test
@@ -107,7 +102,6 @@ class LineTest {
         // then
         assertThat(line.getUpStation()).isEqualTo(E역);
         assertThat(line.getDownStation()).isEqualTo(F역);
-        assertThat(line.getDistance()).isEqualTo(60);
     }
 
     @Test

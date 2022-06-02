@@ -15,19 +15,11 @@ public class Line extends BaseEntity {
     private String name;
     @Column
     private String color;
-    @Embedded
-    private Distance distance;
 
     @Embedded
     private final Sections sections = new Sections();
 
     protected Line() {
-    }
-
-    public Line(String name, String color, int distance) {
-        this.name = name;
-        this.color = color;
-        this.distance = new Distance(distance);
     }
 
     public Line(String name, String color, int distance, Station upStation, Station downStation) {
@@ -42,7 +34,6 @@ public class Line extends BaseEntity {
     }
 
     public void initStation(int distance, Station upStation, Station downStation) {
-        this.distance = new Distance(distance);
         sections.add(new Section(1, null, upStation, this));
         sections.add(new Section(distance, upStation, downStation, this));
         sections.add(new Section(1, downStation, null, this));
@@ -55,7 +46,6 @@ public class Line extends BaseEntity {
             sections.add(new Section(1, null, section.getUpStation(), this));
             Section lineUpSection = sections.getLineUpSection();
             lineUpSection.updateSection(section.getUpStation(), lineUpSection.getDownStation(), section.getDistance());
-            addLineDistance(section.getDistance());
             return;
         }
 
@@ -63,7 +53,6 @@ public class Line extends BaseEntity {
             sections.add(new Section(1, section.getDownStation(), null, this));
             Section lineDownSection = sections.getLineDownSection();
             lineDownSection.updateSection(lineDownSection.getUpStation(), section.getDownStation(), section.getDistance());
-            addLineDistance(section.getDistance());
             return;
         }
 
@@ -111,10 +100,6 @@ public class Line extends BaseEntity {
         return getDownStation().equals(station);
     }
 
-    private void addLineDistance(Integer distance) {
-        this.distance = new Distance(getDistance() + distance);
-    }
-
     public Long getId() {
         return id;
     }
@@ -125,10 +110,6 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    public Integer getDistance() {
-        return distance.getDistance();
     }
 
     public Station getUpStation() {
@@ -163,7 +144,6 @@ public class Line extends BaseEntity {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
-                ", distance=" + distance +
                 ", sections=" + sections +
                 '}';
     }
