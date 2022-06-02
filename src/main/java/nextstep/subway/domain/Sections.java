@@ -40,4 +40,16 @@ public class Sections {
                 .filter(section -> section.getDownStation().equals(downStation))
                 .findFirst();
     }
+
+    public boolean containStation(Station station) {
+        return list.stream().anyMatch(section -> section.containsStation(station));
+    }
+
+    public boolean containBothStation(Section section) {
+        return containStation(section.getUpStation()) && containStation(section.getDownStation());
+    }
+
+    public boolean containNoneStation(Section section) {
+        return !containStation(section.getUpStation()) && !containStation(section.getDownStation());
+    }
 }

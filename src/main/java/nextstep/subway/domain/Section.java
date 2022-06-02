@@ -44,6 +44,11 @@ public class Section {
         this.distance = new Distance(distance);
     }
 
+    public boolean containsStation(Station station) {
+        return getUpStation().equals(station)
+                || getDownStation().equals(station);
+    }
+
     public Integer getDistance() {
         return distance.getDistance();
     }
