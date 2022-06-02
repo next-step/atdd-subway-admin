@@ -24,7 +24,7 @@ public class Sections {
 
     public void add(Section section) {
         if (elements.size() > 0) {
-            validateStations(section);
+            validate(section);
         }
         updateSection(section);
         elements.add(section);
@@ -36,7 +36,7 @@ public class Sections {
                 .collect(Collectors.toSet());
     }
 
-    private void validateStations(Section section) {
+    private void validate(Section section) {
         containsAllStations(section);
         notContainsStations(section);
     }
