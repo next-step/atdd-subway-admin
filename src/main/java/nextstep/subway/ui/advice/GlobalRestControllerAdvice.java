@@ -12,9 +12,8 @@ import java.util.NoSuchElementException;
 @RestControllerAdvice
 public class GlobalRestControllerAdvice {
 
-    @ExceptionHandler(NoSuchElementException.class)
+    @ExceptionHandler({NoSuchElementException.class, IllegalArgumentException.class})
     public ResponseEntity<Map<String, String>> noSuchElementException(Exception e) {
-        // TODO Error Response Dto 추가가 필요해보임
         Map<String, String> errors = new HashMap<>();
         errors.put("message", e.getMessage());
 
