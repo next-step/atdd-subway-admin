@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
@@ -31,7 +30,7 @@ public class Line {
     public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        this.sections.addForInit(section, this);
+        this.addSection(section);
     }
 
     public void update(String name, String color) {
@@ -44,11 +43,8 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        this.sections.add(section, this);
-    }
-
-    public int sizeSections() {
-        return this.sections.size();
+        this.sections.add(section);
+        section.changeLine(this);
     }
 
     public Long getId() {

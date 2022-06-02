@@ -7,7 +7,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -16,13 +15,9 @@ public class Sections {
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
-    public void add(Section section, Line line) {
+    public void add(Section section) {
         validateSection(section);
-        addAndChangeSection(section, line);
-    }
-
-    public void addForInit(Section section, Line line) {
-        addSection(section, line);
+        addAndChangeSection(section);
     }
 
     public List<Station> orderStationsOfLine() {
@@ -50,7 +45,7 @@ public class Sections {
         Optional<Section> optionalUpSection = findByStation(section.getUpStation());
         Optional<Section> optionalDownSection = findByStation(section.getDownStation());
 
-        if (!optionalUpSection.isPresent() && !optionalDownSection.isPresent()) {
+        if (!sections.isEmpty() && !optionalUpSection.isPresent() && !optionalDownSection.isPresent()) {
             throw new IllegalArgumentException("종점역이 노선에 등록되어있지 않습니다.");
         }
 
@@ -59,17 +54,13 @@ public class Sections {
         }
     }
 
-    private void addAndChangeSection(Section section, Line line) {
+    private void addAndChangeSection(Section section) {
         Section currentSection = findCurrentSection(section);
         if (currentSection != null) {
             currentSection.changeSection(section);
         }
-        addSection(section, line);
-    }
 
-    private void addSection(Section section, Line line) {
-        sections.add(section);
-        section.changeLine(line);
+        this.sections.add(section);
     }
 
     private Section findStartSection(Section section) {
