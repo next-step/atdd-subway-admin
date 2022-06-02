@@ -2,10 +2,13 @@ package nextstep.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import nextstep.subway.exception.ImpossibleDeleteException;
+import nextstep.subway.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -120,7 +123,7 @@ class SectionsTest {
                 .withMessage("구간 길이는 0 이하가 될 수 없습니다.");
     }
 
-    @DisplayName("구간들에 구간 등록시 상행역과 하행역이 이미 노선에 모두 등록되어 있는 경우 예외")
+    @DisplayName("구간들에 구간 등록시 상행역과 하행역이 이미 구간들에 모두 등록되어 있는 경우 예외")
     @Test
     void addSectionContainsUpStationAndDownStation() {
         Section newSection = Section.builder(양재역, 양재시민의숲역, Distance.valueOf(3))
@@ -130,7 +133,7 @@ class SectionsTest {
                 .withMessage("이미 등록된 구간 요청입니다.");
     }
 
-    @DisplayName("구간들에 구간 등록시 상행역과 하행역 둘 중 하나도 노선에 포함되어있지 않으면 예외 발생")
+    @DisplayName("구간들에 구간 등록시 상행역과 하행역 둘 중 하나도 구간들에 포함되어있지 않으면 예외 발생")
     @Test
     void addSectionContainsNoneOfUpStationAndDownStation() {
         Section newSection = Section.builder(판교역, 미정역, Distance.valueOf(3))
@@ -161,5 +164,22 @@ class SectionsTest {
     void deleteSectionInSide() {
         sections1.deleteSection(양재역);
         assertThat(sections1.orderedStations()).containsExactly(강남역, 양재시민의숲역);
+    }
+
+    @DisplayName("구간들에 없는 역을 제거하면 구간 제거에 실패한다.")
+    @Test
+    void deleteSectionNotAdded() {
+        assertThatThrownBy(() -> sections1.deleteSection(미정역))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("일치하는 상행역이 없습니다.");
+    }
+
+    @DisplayName("구간이 하나인 구간들에서 마지막 구간을 제거하면 구간 제거에 실패한다.")
+    @Test
+    void deleteSectionLeftAlone() {
+        sections1.deleteSection(강남역);
+        assertThatThrownBy(() -> sections1.deleteSection(양재시민의숲역))
+                .isInstanceOf(ImpossibleDeleteException.class)
+                .hasMessage("제거 가능한 구간이 없습니다.");
     }
 }
