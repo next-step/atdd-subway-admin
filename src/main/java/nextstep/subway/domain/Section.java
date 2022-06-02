@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
