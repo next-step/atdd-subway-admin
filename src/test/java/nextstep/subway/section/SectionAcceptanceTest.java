@@ -118,11 +118,17 @@ public class SectionAcceptanceTest {
         assertThat(거리가긴_구간을_추가한다.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    //given 지하철 역을 생성하고 지하철 노선을 추가한다.
+    //when 기존 노선과 같은 노선을 등록한다
+    //then 등록이 되지 않는다.
     @Test
     @DisplayName("이미 존재하는 구간을 노선 구간에 등록한다.")
     void addExistSection() {
         //when 기존 노선과 같은 노선을 등록한다.
+        SectionRequest 이미_존재하는_노선 = new SectionRequest(인천역.getId(), 동인천역.getId(), 3);
+        ExtractableResponse<Response> 이미_존재하는_노선을_추가한다 = 노선의_구간을_추가한다(호선_1.getId(), 이미_존재하는_노선);
         //then 등록이 되지 않는다.
+        assertThat(이미_존재하는_노선을_추가한다.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test

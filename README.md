@@ -185,7 +185,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
      when 기존 노선 보다 긴 노선을 등록 요청 한다.
      then 등록이 되지 않는다.
   ```
-- [ ] 이미 존재하는 구간을 노선 구간에 등록한다.
+- [X] 이미 존재하는 구간을 노선 구간에 등록한다.
   ```text
      given 지하철 역을 생성하고 지하철 노선을 추가한다.
      when 기존 노선과 같은 노선을 등록한다.
