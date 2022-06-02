@@ -55,7 +55,16 @@ public class Section extends BaseEntity {
         this.downStation = section.getUpStation();
     }
 
-    public void subtractDistance(Integer distance) {
+    public boolean duplicateUpDownStations(Section section) {
+        return this.upStation.equals(section.getUpStation()) && this.downStation.equals(section.getDownStation());
+    }
+
+    public boolean containsUpDownStations(Section section) {
+        List<Station> stations = allStations();
+        return stations.contains(section.getUpStation()) || stations.contains(section.getDownStation());
+    }
+
+    private void subtractDistance(Integer distance) {
         validateSubtractDistance(distance);
         this.distance = Math.subtractExact(this.distance, distance);
 
@@ -65,15 +74,6 @@ public class Section extends BaseEntity {
         if (this.distance <= distance) {
             throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
         }
-    }
-
-    public boolean duplicateUpDownStations(Section section) {
-        return this.upStation.equals(section.getUpStation()) && this.downStation.equals(section.getDownStation());
-    }
-
-    public boolean containsUpDownStations(Section section) {
-        List<Station> stations = allStations();
-        return stations.contains(section.getUpStation()) || stations.contains(section.getDownStation());
     }
 
     public Long getId() {
