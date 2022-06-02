@@ -40,6 +40,9 @@ public class Line extends BaseEntity {
     @Embedded
     private Distance distance;
 
+    @Embedded
+    private Sections sections = new Sections();
+
     protected Line() {
     }
 
@@ -66,6 +69,10 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    public void addSection(Station upStation, Station downStation, Distance distance) {
+        sections.add(new Section(upStation, downStation, distance));
+    }
+
     public Long getId() {
         return id;
     }
@@ -81,7 +88,10 @@ public class Line extends BaseEntity {
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
         stations.add(upStation);
+        stations.addAll(sections.getStationsToUpStation(upStation));
+        stations.addAll(sections.getStationsFromDownStation(downStation));
         stations.add(downStation);
+
         return stations;
     }
 
