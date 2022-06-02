@@ -257,4 +257,22 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
                 () -> assertThat(stationNames).containsExactly(양재역.getName(), 정자역.getName())
         );
     }
+
+    /**
+     * Given 지하철 노선의 구간 사이에 새로운 구간을 등록하고
+     * When 노선에 없는 역을 제거하면
+     * Then 구간 제거에 실패한다.
+     */
+    @DisplayName("노선에 없는 역을 제거하면 구간 제거에 실패한다.")
+    @Test
+    void deleteSectionNotAdded() {
+        // given
+        SectionRestAssured.지하철구간_추가_요청(신분당선.getId(), 판교역.getId(), 정자역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> deleteResponse = SectionRestAssured.지하철구간_제거_요청(신분당선.getId(), 미금역.getId());
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
