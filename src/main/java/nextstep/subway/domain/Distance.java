@@ -32,13 +32,13 @@ public class Distance {
         return distance <= MIN;
     }
 
-    public int distance() {
-        return distance;
-    }
-
     public void minus(Distance distance) {
         this.distance = Math.subtractExact(this.distance, distance.distance());
         validateDistance(this.distance);
+    }
+
+    public int distance() {
+        return distance;
     }
 
     @Override

@@ -26,11 +26,25 @@ public class LineService {
     }
 
     @Transactional
+    public Line addSection(Long id, SectionRequest sectionRequest) {
+        Line line = getLine(id);
+        line.addSection(sectionRequest.toSection(getStation(sectionRequest.getUpStationId()),
+                getStation(sectionRequest.getDownStationId())));
+        lineRepository.save(line);
+        return line;
+    }
+
+    @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Line line = lineRequest.toLine(getStation(lineRequest.getUpStationId()),
                 getStation(lineRequest.getDownStationId()));
         Line persistStation = lineRepository.save(line);
         return LineResponse.of(persistStation);
+    }
+
+    private Station getStation(Long line) {
+        return stationRepository.findById(line)
+                .orElseThrow(() -> new NotFoundException("등록된 지하철역이 없습니다."));
     }
 
     @Transactional
@@ -41,18 +55,13 @@ public class LineService {
         return LineResponse.of(persistStation);
     }
 
-    @Transactional
-    public void deleteLineById(Long id) {
-        lineRepository.deleteById(id);
+    private Line getLine(long id) {
+        return lineRepository.findById(id).orElseThrow(() -> new NotFoundException("등록된 노선이 없습니다."));
     }
 
     @Transactional
-    public Line addSection(Long id, SectionRequest sectionRequest) {
-        Line line = getLine(id);
-        line.addSection(sectionRequest.toSection(getStation(sectionRequest.getUpStationId()),
-                getStation(sectionRequest.getDownStationId())));
-        lineRepository.save(line);
-        return line;
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
     }
 
     public List<LineResponse> findAllLines() {
@@ -63,14 +72,5 @@ public class LineService {
 
     public LineResponse findLineById(Long id) {
         return LineResponse.of(getLine(id));
-    }
-
-    private Line getLine(long id) {
-        return lineRepository.findById(id).orElseThrow(() -> new NotFoundException("등록된 노선이 없습니다."));
-    }
-
-    private Station getStation(Long line) {
-        return stationRepository.findById(line)
-                .orElseThrow(() -> new NotFoundException("등록된 지하철역이 없습니다."));
     }
 }

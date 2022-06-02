@@ -63,11 +63,6 @@ public class Section extends BaseEntity {
             this.distance = distance;
         }
 
-        public SectionBuilder id(Long id) {
-            this.id = id;
-            return this;
-        }
-
         private void validateUpStationNotNull(Station upStation) {
             if (Objects.isNull(upStation)) {
                 throw new NotFoundException("상행역 정보가 없습니다.");
@@ -78,6 +73,11 @@ public class Section extends BaseEntity {
             if (Objects.isNull(downStation)) {
                 throw new NotFoundException("하행역 정보가 없습니다.");
             }
+        }
+
+        public SectionBuilder id(Long id) {
+            this.id = id;
+            return this;
         }
 
         public Section build() {
