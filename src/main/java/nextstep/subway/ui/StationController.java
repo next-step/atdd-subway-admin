@@ -1,8 +1,5 @@
 package nextstep.subway.ui;
 
-import static nextstep.subway.ui.UrlConstant.CREATE_STATIONS;
-import static nextstep.subway.ui.UrlConstant.DELETE_STATIONS;
-import static nextstep.subway.ui.UrlConstant.SHOW_STATIONS;
 
 import java.net.URI;
 import java.util.List;
@@ -20,7 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@RestController(value = "/stations")
 public class StationController {
     private StationService stationService;
 
@@ -28,18 +25,18 @@ public class StationController {
         this.stationService = stationService;
     }
 
-    @PostMapping(CREATE_STATIONS)
+    @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         StationResponse station = stationService.saveStation(stationRequest);
         return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(station);
     }
 
-    @GetMapping(value = SHOW_STATIONS, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
         return ResponseEntity.ok().body(stationService.findAllStations());
     }
 
-    @DeleteMapping(DELETE_STATIONS)
+    @DeleteMapping
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationService.deleteStationById(id);
         return ResponseEntity.noContent().build();
