@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.ErrorMessage;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -42,30 +44,40 @@ public class Sections {
         }
     }
 
+    private boolean isRegisteredStation(Station station) {
+        boolean result = false;
+
+        for (Section section : sections) {
+            result = result || (section.getUpStation() == station || section.getDownStation() == station);
+        }
+
+        return result;
+    }
+
     private void checkValidation(Section section) {
-        Optional<Section> registerdUpStation = this.sections.stream().filter(s -> s.getUpStation() == section.getUpStation()).findAny();
-        Optional<Section> registedDownStation = this.sections.stream().filter(s -> s.getDownStation() == section.getDownStation()).findAny();
+        boolean isRegisteredUpstation = isRegisteredStation(section.getUpStation());
+        boolean isRegisteredDownStation = isRegisteredStation(section.getDownStation());
 
         Station firstStation = sections.get(0).getUpStation();
         Station lastStation = sections.get(Math.max((sections.size() - 1), 0)).getDownStation();
 
-        if (registerdUpStation.isPresent() && registedDownStation.isPresent()) {
-            throw new IllegalArgumentException("이미 등록된 구간입니다.");
+        if (isRegisteredUpstation && isRegisteredDownStation) {
+            throw new IllegalArgumentException(ErrorMessage.ALREADY_REGISTERED_LINE.getMessage());
         }
 
-        if (!registerdUpStation.isPresent() &&
-                !registedDownStation.isPresent() &&
+        if (!isRegisteredUpstation &&
+                !isRegisteredDownStation &&
                 section.getDownStation() != firstStation &&
                 section.getUpStation() != lastStation
         ) {
-            throw new IllegalArgumentException("상행역과 하행역 모두 찾을 수 없습니다.");
+            throw new IllegalArgumentException(ErrorMessage.NOT_FOUND_STATIONS_FOR_SECTION.getMessage());
         }
      }
 
 
     private void checkDistanceForNewStation(Section newSection, Section originSection) {
         if (originSection.getDistance() <= newSection.getDistance()) {
-            throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같으면 새로운 구간을 등록할 수 없습니다.");
+            throw new IllegalArgumentException(ErrorMessage.NOT_VALID_DISTANCE_FOR_SECTION.getMessage());
         }
     }
 
@@ -95,8 +107,8 @@ public class Sections {
 
     private void insertStation(Section section) {
         Section originSection = sections.stream().filter(s ->
-          s.getUpStation() == section.getUpStation()
-        ).findFirst().orElseThrow(() -> new IllegalArgumentException("구간을 등록하기 위한 역을 찾을 수 없습니다."));
+          s.getUpStation() == section.getUpStation() && s.getDownStation() != null
+        ).findAny().orElseThrow(() -> new IllegalArgumentException(ErrorMessage.NOT_FOUND_STATION_FOR_SECTION.getMessage()));
 
         checkDistanceForNewStation(section, originSection);
 
