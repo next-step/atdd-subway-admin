@@ -50,7 +50,6 @@ public class Sections {
         Optional<Section> downMatchedSection = matchDownStation(newSection);
 
         validateAlreadySection(upMatchedSection, downMatchedSection);
-        validateNotExistedStation(upMatchedSection, downMatchedSection);
 
         if (upMatchedSection.isPresent()) {
             addSectionOfUpMatchedCase(newSection, upMatchedSection);
@@ -60,11 +59,14 @@ public class Sections {
             addSectionOfDownMatchedCase(newSection, downMatchedSection);
             return;
         }
+
         Section lastSection = getLastSection();
         if (isMatchedDownStation(newSection.getUpStation(), lastSection)) {
             sections.add(newSection);
             return;
         }
+
+        throw new IllegalArgumentException(NOT_EXISTED_STATION.toString());
     }
 
     private void addSectionOfFirstSectionMatched(Section newSection, Section firstSection) {
@@ -81,10 +83,7 @@ public class Sections {
         stations.add(preSection.getDownStation());
         while (true) {
             Section finalPreSection = preSection;
-            Optional<Section> nextStation = sections.stream()
-                    .filter(section -> !Objects.isNull(section.getUpStation()))
-                    .filter(section -> isMatchedDownStation(section.getUpStation(), finalPreSection))
-                    .findFirst();
+            Optional<Section> nextStation = getNextStation(finalPreSection);
 
             if (nextStation.isPresent()) {
                 stations.add(nextStation.get().getDownStation());
@@ -99,7 +98,6 @@ public class Sections {
         return stations;
     }
 
-
     private Section getFirstSection() {
         return sections.stream()
                 .filter(section -> Objects.isNull(section.getUpStation()))
@@ -113,10 +111,7 @@ public class Sections {
 
         while (true) {
             Section finalPreSection = preSection;
-            Optional<Section> nextStation = sections.stream()
-                    .filter(section -> !Objects.isNull(section.getUpStation()))
-                    .filter(section -> isMatchedDownStation(section.getUpStation(), finalPreSection))
-                    .findFirst();
+            Optional<Section> nextStation = getNextStation(finalPreSection);
 
             if (nextStation.isPresent()) {
                 preSection = nextStation.get();
@@ -170,6 +165,13 @@ public class Sections {
         oldSection.setDistance(newSection.getDistance());
     }
 
+    private Optional<Section> getNextStation(Section finalPreSection) {
+        return sections.stream()
+                .filter(section -> !Objects.isNull(section.getUpStation()))
+                .filter(section -> isMatchedDownStation(section.getUpStation(), finalPreSection))
+                .findFirst();
+    }
+
     private boolean isMatchedDownStation(Station station, Section section) {
         return station.getId().equals(section.getDownStation().getId());
     }
@@ -181,12 +183,6 @@ public class Sections {
     private void validateAlreadySection(Optional<Section> upMatchedSection, Optional<Section> downMatchedSection) {
         if (upMatchedSection.isPresent() && downMatchedSection.isPresent()) {
             throw new IllegalArgumentException(ALREADY_CREATED_SECTION.toString());
-        }
-    }
-
-    private void validateNotExistedStation(Optional<Section> upMatchedSection, Optional<Section> downMatchedSection) {
-        if (!upMatchedSection.isPresent() && !downMatchedSection.isPresent()) {
-            throw new IllegalArgumentException(NOT_EXISTED_STATION.toString());
         }
     }
 }
