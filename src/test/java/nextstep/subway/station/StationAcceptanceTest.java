@@ -3,7 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.helper.RequestHelper;
+import nextstep.subway.helper.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,8 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
-    private final String STATION_PATH = "/stations";
-
     @LocalServerPort
     int port;
 
@@ -41,14 +38,14 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = RequestHelper
-                .postRequest(STATION_PATH, new HashMap<>(), Collections.singletonMap("name", "강남역"));
+        ExtractableResponse<Response> response = StationRequest
+                .createStation(Collections.singletonMap("name", "강남역"));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames = RequestHelper.getRequest(STATION_PATH, new HashMap<>())
+        List<String> stationNames = StationRequest.getAllStations()
                 .jsonPath()
                 .getList("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
@@ -63,11 +60,11 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        RequestHelper.postRequest(STATION_PATH, new HashMap<>(), Collections.singletonMap("name", "선릉역"));
+        StationRequest.createStation(Collections.singletonMap("name", "선릉역"));
 
         // when
-        ExtractableResponse<Response> response = RequestHelper
-                .postRequest(STATION_PATH, new HashMap<>(), Collections.singletonMap("name", "선릉역"));
+        ExtractableResponse<Response> response = StationRequest
+                .createStation(Collections.singletonMap("name", "선릉역"));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -82,11 +79,11 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        RequestHelper.postRequest(STATION_PATH, new HashMap<>(), Collections.singletonMap("name", "역삼역"));
-        RequestHelper.postRequest(STATION_PATH, new HashMap<>(), Collections.singletonMap("name", "삼성역"));
+        StationRequest.createStation(Collections.singletonMap("name", "역삼역"));
+        StationRequest.createStation(Collections.singletonMap("name", "삼성역"));
 
         // when
-        List<String> stationNames = RequestHelper.getRequest(STATION_PATH, new HashMap<>())
+        List<String> stationNames = StationRequest.getAllStations()
                 .jsonPath()
                 .getList("name", String.class);
 
@@ -103,19 +100,15 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        String createdStationId = RequestHelper
-                .postRequest(STATION_PATH, new HashMap<>(), Collections.singletonMap("name", "잠실역"))
-                .body()
+        Long createdStationId = StationRequest.createStation(Collections.singletonMap("name", "잠실역"))
                 .jsonPath()
-                .get("id")
-                .toString();
+                .getLong("id");
 
         // when
-        ExtractableResponse<Response> deleteResponse = RequestHelper
-                .deleteRequest(STATION_PATH + "/{id}", new HashMap<>(), createdStationId);
-        List<String> stationIds = RequestHelper.getRequest(STATION_PATH, new HashMap<>())
+        ExtractableResponse<Response> deleteResponse = StationRequest.deleteStation(createdStationId);
+        List<Long> stationIds = StationRequest.getAllStations()
                 .jsonPath()
-                .getList("id", String.class);
+                .getList("id", Long.class);
 
         // then
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
