@@ -18,12 +18,8 @@ public class LineUpdateRequest {
         return new LineUpdateRequest(name, color);
     }
 
-    public Line toLine(Station upStation, Station downStation, int distance) {
-        return new Line(name, color, upStation, downStation, distance);
-    }
-
     public Line toLine(Sections sections) {
-        return new Line(name, color, sections);
+        return Line.of(name, color, sections);
     }
 
     public String getName() {

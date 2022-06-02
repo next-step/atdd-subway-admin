@@ -21,18 +21,25 @@ public class Line {
     protected Line(){
     }
 
-    public Line(String name, String color, Sections sections) {
+    private Line(String name, String color, Section section) {
+        this.name = name;
+        this.color = color;
+        this.sections = Sections.from(section);
+        section.setLine(this);
+    }
+
+    private Line(String name, String color, Sections sections) {
         this.name = name;
         this.color = color;
         this.sections = sections;
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
-        this.name = name;
-        this.color = color;
-        Section section = new Section(upStation, downStation, distance);
-        section.setLine(this);
-        this.sections = Sections.from(Arrays.asList(section));
+    public static Line of(String name, String color, Sections sections){
+        return new Line(name, color, sections);
+    }
+
+    public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
+        return new Line(name, color, Section.of(upStation, downStation, distance));
     }
 
     public void update(Line newLine) {

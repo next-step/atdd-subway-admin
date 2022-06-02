@@ -10,7 +10,7 @@ public class Distance {
     protected Distance() {
     }
 
-    public Distance(int distance) {
+    private Distance(int distance) {
         validateDistance(distance);
         this.distance = distance;
     }

@@ -17,10 +17,10 @@ class SectionTest {
 
     @BeforeEach
     void initialize(){
-        상행역 = new Station("first");
-        하행역 = new Station("last");
-        신규역 = new Station("new");
-        defaultSection = new Section(상행역, 하행역, DEFAULT_DISTANCE);
+        상행역 = Station.from("first");
+        하행역 = Station.from("last");
+        신규역 = Station.from("new");
+        defaultSection = Section.of(상행역, 하행역, DEFAULT_DISTANCE);
     }
 
     @Test

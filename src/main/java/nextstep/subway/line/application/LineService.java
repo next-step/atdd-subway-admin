@@ -68,7 +68,7 @@ public class LineService {
                 .orElseThrow(() -> new NoSuchElementException(String.format(ErrorMessage.ERROR_LINE_NOT_FOUND, id)));
         Station upStation = findStation(sectionRequest.getUpStationId());
         Station downStation = findStation(sectionRequest.getDownStationId());
-        line.addSection(new Section(upStation, downStation, sectionRequest.getDistance()));
+        line.addSection(Section.of(upStation, downStation, sectionRequest.getDistance()));
     }
 
     private List<StationResponse> generateStationResponses(Line line) {

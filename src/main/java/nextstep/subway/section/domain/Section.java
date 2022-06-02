@@ -31,10 +31,10 @@ public class Section{
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
+    private Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = new Distance(distance);
+        this.distance = Distance.from(distance);
     }
 
     public static Section of(Station upStation, Station downStation, int distance) {

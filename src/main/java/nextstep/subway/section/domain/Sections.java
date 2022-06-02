@@ -6,23 +6,29 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections{
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Section> sections;
+    List<Section> sections = new ArrayList<>();
 
     protected Sections() {
     }
 
-    public Sections(List<Section> sections) {
+    private Sections(List<Section> sections) {
         this.sections = sections;
     }
 
     public static Sections from(List<Section> sections) {
         return new Sections(sections);
+    }
+
+    public static Sections from(Section section) {
+        return new Sections(new ArrayList<>(Arrays.asList(section)));
     }
 
     public void addSection(Section section) {
