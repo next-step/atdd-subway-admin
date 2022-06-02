@@ -37,4 +37,10 @@ public class LineService {
                 .map(line -> LineResponse.of(line))
                 .collect(Collectors.toList());
     }
+
+    public LineResponse findLineById(final Long id) {
+        final Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("노선 아이디가 존재하지 않습니다."));
+        return LineResponse.of(line);
+    }
 }

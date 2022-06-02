@@ -1,6 +1,7 @@
 package nextstep.subway.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -73,10 +74,32 @@ class LineServiceTest {
         lineRepository.save(line3);
 
         // when
-        List<LineResponse> lines = lineService.findAllLines();
+        final List<LineResponse> lines = lineService.findAllLines();
 
         // then
         assertThat(lines.stream().map(LineResponse::getName).collect(Collectors.toList()))
                 .containsExactly(line1.getName(), line2.getName(), line3.getName());
+    }
+
+    @Test
+    void 아이디로_노선을_조회하면_해당하는_노선에_대해_LineResponse_객체가_반환되어야_한다() {
+        // given
+        final Line givenLine = new Line("신분당선", "bg-red-600");
+        givenLine.relateToStation(new LineStation(givenLine, gangnam));
+        givenLine.relateToStation(new LineStation(givenLine, yangjae));
+        lineRepository.save(givenLine);
+
+        // when
+        final LineResponse line = lineService.findLineById(givenLine.getId());
+
+        // then
+        assertThat(line).isEqualTo(LineResponse.of(givenLine));
+    }
+
+    @Test
+    void 유효하지_않은_아이디로_노선을_조회하면_IllegalArgumentException이_발생해야_한다() {
+        // when and then
+        assertThatThrownBy(() -> lineService.findLineById(1L))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
