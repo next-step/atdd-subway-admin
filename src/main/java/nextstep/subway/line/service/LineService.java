@@ -57,7 +57,7 @@ public class LineService {
         Line line = lineRepository.findById(lineId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
 
-        line.update(lineRequest);
+        line.update(lineRequest.getName(), lineRequest.getColor());
     }
 
     @Transactional

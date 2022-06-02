@@ -13,7 +13,7 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "line")
+    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section, Line line) {
@@ -40,6 +40,10 @@ public class Sections {
         }
 
         return stations;
+    }
+
+    public int size() {
+        return this.sections.size();
     }
 
     private void validateSection(Section section) {

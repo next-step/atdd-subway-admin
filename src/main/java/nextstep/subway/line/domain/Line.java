@@ -25,7 +25,7 @@ public class Line {
     @Embedded
     private final Sections sections = new Sections();
 
-    protected Line() {
+    public Line() {
     }
 
     public Line(String name, String color, Section section) {
@@ -34,9 +34,9 @@ public class Line {
         this.sections.addForInit(section, this);
     }
 
-    public void update(LineRequest lineRequest) {
-        this.name = lineRequest.getName();
-        this.color = lineRequest.getColor();
+    public void update(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 
     public List<Station> orderStationsOfLine() {
@@ -45,6 +45,10 @@ public class Line {
 
     public void addSection(Section section) {
         this.sections.add(section, this);
+    }
+
+    public int sizeSections() {
+        return this.sections.size();
     }
 
     public Long getId() {
