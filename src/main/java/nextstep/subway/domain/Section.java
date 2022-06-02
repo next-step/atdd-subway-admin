@@ -73,23 +73,23 @@ public class Section {
     public void changeStationInfo(Section section) {
         if (upStation.equals(section.getUpStation())) {
             changeUpStation(section.getDownStation());
-            changeDistance(section.getDistance());
+            subtractDistance(section.getDistance());
         }
         if (downStation.equals(section.getDownStation())) {
             changeDownStation(section.getUpStation());
-            changeDistance(section.getDistance());
+            subtractDistance(section.getDistance());
         }
     }
 
-    private void changeUpStation(Station downStation) {
-        this.upStation = downStation;
+    private void changeUpStation(Station station) {
+        this.upStation = station;
     }
 
-    private void changeDownStation(Station upStation) {
-        this.downStation = upStation;
+    private void changeDownStation(Station station) {
+        this.downStation = station;
     }
 
-    private void changeDistance(Distance newDistance) {
+    private void subtractDistance(Distance newDistance) {
         validDistanceCheck(newDistance);
         this.distance = new Distance(this.distance.getDistance() - newDistance.getDistance());
     }
