@@ -30,11 +30,11 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     public void setUp() {
         super.setUp();
 
-        A역 = StationAcceptanceTest.지하철역_생성("A역").as(StationResponse.class);
-        B역 = StationAcceptanceTest.지하철역_생성("B역").as(StationResponse.class);
-        C역 = StationAcceptanceTest.지하철역_생성("C역").as(StationResponse.class);
-        D역 = StationAcceptanceTest.지하철역_생성("D역").as(StationResponse.class);
-        E역 = StationAcceptanceTest.지하철역_생성("E역").as(StationResponse.class);
+        A역 = 지하철역_생성("A역");
+        B역 = 지하철역_생성("B역");
+        C역 = 지하철역_생성("C역");
+        D역 = 지하철역_생성("D역");
+        E역 = 지하철역_생성("E역");
 
         신분당선 = LineAcceptanceTest.지하철노선_생성("신분당선", "bg-red-600", B역.getId(), D역.getId(), 7)
                 .as(LineResponse.class);
@@ -138,5 +138,10 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
         assertThat(stations).contains(expected);
+    }
+
+    private static StationResponse 지하철역_생성(String name)  {
+        return StationAcceptanceTest.지하철역_생성(name)
+                .as(StationResponse.class);
     }
 }
