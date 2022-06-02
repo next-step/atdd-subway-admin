@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
@@ -43,19 +44,18 @@ public class Sections {
 
     public void deleteSection(Station station) {
         validateSizeOnlyOne();
-        final Section upStation = findSameUpStation(station);
-        final Section downStation = findSameDownStation(station);
+        final Optional<Section> upStation = findSameUpStation(station);
+        final Optional<Section> downStation = findSameDownStation(station);
 
         if (isMiddleSection(upStation, downStation)) {
-            this.sections.add(mergeTwoSection(upStation, downStation));
+            this.sections.add(mergeTwoSection(upStation.get(), downStation.get()));
         }
-
-        this.sections.remove(upStation);
-        this.sections.remove(downStation);
+        upStation.ifPresent(sections::remove);
+        downStation.ifPresent(sections::remove);
     }
 
-    private boolean isMiddleSection(Section upStation, Section downStation) {
-        return upStation != null && downStation != null;
+    private boolean isMiddleSection(Optional<Section> upStation, Optional<Section> downStation) {
+        return upStation.isPresent() && downStation.isPresent();
     }
 
     private void validateSizeOnlyOne() {
@@ -104,33 +104,29 @@ public class Sections {
         if (isEmpty()) {
             return null;
         }
-        Section section = this.sections.get(size() - 1);
-        while (findPreviousSection(section) != null) {
-            section = findPreviousSection(section);
-        }
-        return section;
+        return findFirstSection(this.sections.get(size() - 1));
     }
 
-    private Section findPreviousSection(Section section) {
-        return findSameDownStation(section.upStation());
+    private Section findFirstSection(Section section) {
+        Optional<Section> optionalSection = findSameDownStation(section.upStation());
+        return optionalSection.map(this::findFirstSection).orElse(section);
     }
 
     private Section findNextSection(Section section) {
-        return findSameUpStation(section.downStation());
+        Optional<Section> optionalSection = findSameUpStation(section.downStation());
+        return optionalSection.orElse(null);
     }
 
-    private Section findSameUpStation(Station station) {
+    private Optional<Section> findSameUpStation(Station station) {
         return this.sections.stream()
                 .filter(it -> it.isSameUpStation(station))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
-    private Section findSameDownStation(Station station) {
+    private Optional<Section> findSameDownStation(Station station) {
         return this.sections.stream()
                 .filter(it -> it.isSameDownStation(station))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
     private boolean hasNothingBothStations(Station upStation, Station downStation) {
