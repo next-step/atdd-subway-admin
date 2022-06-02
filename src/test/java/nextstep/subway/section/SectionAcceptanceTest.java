@@ -80,14 +80,7 @@ public class SectionAcceptanceTest {
         // when
         String upStationId = Integer.toString(지하철역_생성("상행종점").jsonPath().get("id"));
 
-        Map<String, String> params = new HashMap<>();
-        params.put("distance", "5");
-        params.put("upStationId", upStationId);
-        params.put("downStationId", lineUpStationId);
-        RestAssuredMethod.post("/lines/{id}/sections", params,
-                new HashMap<String, String>() {{
-                    put("id", lineId);
-                }});
+        구간_생성(upStationId, lineUpStationId);
 
         // then
         List<HashMap<String, ?>> stations = 지하철노선_한개_조회(Integer.valueOf(lineId)).get("stations");
@@ -116,14 +109,7 @@ public class SectionAcceptanceTest {
         // when
         String downStationId = Integer.toString(지하철역_생성("하행종점").jsonPath().get("id"));
 
-        Map<String, String> params = new HashMap<>();
-        params.put("distance", "5");
-        params.put("upStationId", lineDownStationId);
-        params.put("downStationId", downStationId);
-        RestAssuredMethod.post("/lines/{id}/sections", params,
-                new HashMap<String, String>() {{
-                    put("id", lineId);
-                }});
+        구간_생성(lineDownStationId, downStationId);
 
         // then
         List<HashMap<String, ?>> stations = 지하철노선_한개_조회(Integer.valueOf(lineId)).get("stations");
@@ -136,6 +122,16 @@ public class SectionAcceptanceTest {
         ).contains(lineDownStationId);
     }
 
+    private void 구간_생성(String upStationId, String downStationId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("distance", "5");
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        RestAssuredMethod.post("/lines/{id}/sections", params,
+                new HashMap<String, String>() {{
+                    put("id", lineId);
+                }});
+    }
 
     private ExtractableResponse<Response> 상행_기준_구간_생성(String stationName, String distance) {
         String downStationId = Integer.toString(지하철역_생성(stationName).jsonPath().get("id"));
