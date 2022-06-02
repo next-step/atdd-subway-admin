@@ -81,6 +81,11 @@ public class Section {
         }
     }
 
+    public void combineStationInfo(Section section) {
+        changeDownStation(section.getDownStation());
+        addDistance(section.getDistance());
+    }
+
     private void changeUpStation(Station station) {
         this.upStation = station;
     }
@@ -92,6 +97,10 @@ public class Section {
     private void subtractDistance(Distance newDistance) {
         validDistanceCheck(newDistance);
         this.distance = new Distance(this.distance.getDistance() - newDistance.getDistance());
+    }
+
+    private void addDistance(Distance newDistance) {
+        this.distance = new Distance(this.distance.getDistance() + newDistance.getDistance());
     }
 
     private void validDistanceCheck(Distance newDistance) {

@@ -65,6 +65,10 @@ public class Line extends BaseEntity {
         section.setLine(this);
     }
 
+    public void deleteStation(Station deleteStation) {
+        sections.deleteSection(deleteStation);
+    }
+
     public void changeLineInfo(String name, String color) {
         this.name = name;
         this.color = color;

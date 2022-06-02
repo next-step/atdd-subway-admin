@@ -71,6 +71,12 @@ public class LineService {
                 sectionRequest.getDistance()));
     }
 
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        line.deleteStation(findStationById(stationId));
+    }
+
     private Section generateSection(Long upStationId, Long downStationId, Long distance) {
         Station upStation = stationRepository.findById(upStationId)
                 .orElseThrow(NotFoundException::new);
@@ -81,5 +87,9 @@ public class LineService {
 
     private Line findLineById(Long lineId) {
         return lineRepository.findById(lineId).orElseThrow(NotFoundException::new);
+    }
+
+    private Station findStationById(Long stationId) {
+        return stationRepository.findById(stationId).orElseThrow(NotFoundException::new);
     }
 }
