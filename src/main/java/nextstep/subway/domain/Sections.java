@@ -33,8 +33,8 @@ public class Sections {
         return this.sections.size();
     }
 
-    public boolean isEmpty() {
-        return this.sections.isEmpty();
+    public void removeSection(Section section) {
+        sections.remove(section);
     }
 
     @Override
