@@ -26,10 +26,9 @@ public class LineResponse {
         List<StationResponse> stations = new ArrayList<>();
         Sections sections = line.getSections();
         Section section = sections.getLineUpSection();
-        System.out.println("section: " + section);
         while (section.getDownStation() != null) {
             Station station = new Station(section.getDownStation().getId(), section.getDownStation().getName());
-            System.out.println("section: " + section);
+            System.out.println("station: " + station);
             stations.add(StationResponse.of(station));
             section = sections.findSectionWithUpStation(section.getDownStation()).get();
         }
