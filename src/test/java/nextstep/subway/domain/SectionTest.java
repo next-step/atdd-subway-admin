@@ -85,4 +85,22 @@ class SectionTest {
                 () -> assertThat(section.distance()).isEqualTo(Distance.valueOf(5))
         );
     }
+
+    @DisplayName("현재 구간의 하행역을 다음 구간의 하행역으로 변경하고 구간길이는 더해짐")
+    @Test
+    void updateDownStationByNextSection() {
+        Station upStation = Station.builder("판교")
+                .id(3L)
+                .build();
+        Station downStation = Station.builder("미정")
+                .id(2L)
+                .build();
+        Section nextSection = Section.builder(upStation, downStation, Distance.valueOf(5))
+                .build();
+        section.updateDownStationByNextSection(nextSection);
+        assertAll(
+                () -> assertThat(section.downStation()).isEqualTo(downStation),
+                () -> assertThat(section.distance()).isEqualTo(Distance.valueOf(15))
+        );
+    }
 }
