@@ -123,7 +123,7 @@ class LineAcceptanceTest {
         지하철노선_조회_실패(location);
     }
 
-    String 지하철노선_생성_성공(String name, String color, String upStationName, String downStationName, long distance) {
+    String 지하철노선_생성_성공(String name, String color, String upStationName, String downStationName, int distance) {
         long upStationId = StationApi.create(upStationName).jsonPath().getLong("id");
         long downStationId = StationApi.create(downStationName).jsonPath().getLong("id");
         ExtractableResponse<Response> response = LineApi.create(new LineRequest(name, color, upStationId, downStationId, distance));
