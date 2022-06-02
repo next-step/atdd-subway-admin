@@ -117,7 +117,7 @@ class StationAcceptanceTest {
         assertThat(response.jsonPath().getList(".")).hasSize(count);
     }
 
-    private ExtractableResponse<Response> 등록된_역_목록_조회() {
+    public static ExtractableResponse<Response> 등록된_역_목록_조회() {
         return RestAssured
                 .given().log().all()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -125,7 +125,7 @@ class StationAcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private ExtractableResponse<Response> 신규_역_등록(String name) {
+    public static ExtractableResponse<Response> 신규_역_등록(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
