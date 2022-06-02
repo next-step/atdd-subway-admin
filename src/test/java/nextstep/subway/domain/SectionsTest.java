@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import static nextstep.subway.domain.Station.createStation;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
@@ -21,7 +22,7 @@ public class SectionsTest {
                 .build();
 
         final Section addSection = Section.builder()
-                .distance(10)
+                .distance(4)
                 .upStation(createStation("동인천역"))
                 .downStation(createStation("서울역"))
                 .build();
@@ -59,5 +60,33 @@ public class SectionsTest {
     }
 
 
+    @Test
+    @DisplayName("상행선종점을 찾는다.")
+    void getLastUpStation() {
+        sections.addSection(Section.builder()
+                .distance(2)
+                .upStation(createStation("서울역"))
+                .downStation(createStation("신림역"))
+                .build());
 
+        Station lastUpStation = sections.getLastUpStation();
+
+        assertThat(lastUpStation).isEqualTo(createStation("주안역"));
+
+    }
+
+    @Test
+    @DisplayName("하행선종점 찾는다.")
+    void getLastDownStation() {
+        sections.addSection(Section.builder()
+                .distance(2)
+                .upStation(createStation("서울역"))
+                .downStation(createStation("신림역"))
+                .build());
+
+        Station lastDownStation = sections.getLastDownStation();
+
+        assertThat(lastDownStation).isEqualTo(createStation("신림역"));
+
+    }
 }

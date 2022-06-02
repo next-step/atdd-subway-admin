@@ -2,8 +2,6 @@ package nextstep.subway.message;
 
 
 public enum ErrorMessage {
-
-
     LINE_NONE_EXIST("존재 하지 않은 노선입니다."),
     LINE_NOT_VALID_UP_STATION("유효하지 않은 상행종점입니다."),
     LINE_NOT_VALID_DOWN_STATION("유효하지 않은 하행종점입니다."),
@@ -22,7 +20,9 @@ public enum ErrorMessage {
 
     SECTION_ADD_DISTANCE_IS_BIG("구간에 추가할 길이가 너무 깁니다."),
     SECTION_UP_STATION_AND_DOWN_STATION_EXIST("상행선과 하행선이 이미 존재하는 구간입니다."),
-    SECTION_IS_NO_SEARCH("구간을 찾을수 없습니다.")
+    SECTION_UP_STATION_AND_DOWN_STATION_NO_EXIST("상행선과 하행선이 존재하지 않은 구간입니다."),
+    SECTION_IS_NO_SEARCH("구간을 찾을수 없습니다."),
+    STATION_IS_NO_SEARCH("역을 찾을수 없습니다.")
     ;
 
 
