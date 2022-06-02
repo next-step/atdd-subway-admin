@@ -43,6 +43,7 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    @Transactional
     public void modifyLine(final Long id, final LineRequest lineRequest) {
         final Line line = validateAndFind(id);
         line.update(lineRequest.getName(), lineRequest.getColor());
