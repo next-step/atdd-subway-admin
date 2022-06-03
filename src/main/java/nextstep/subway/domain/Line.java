@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import static javax.persistence.EnumType.STRING;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -23,8 +22,6 @@ import javax.persistence.OneToMany;
 import nextstep.subway.enums.LineColor;
 import nextstep.subway.exception.DupSectionException;
 import nextstep.subway.exception.LineNotFoundException;
-import nextstep.subway.exception.SectionInvalidException;
-import nextstep.subway.exception.StationNotFoundException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -101,11 +98,11 @@ public class Line extends BaseEntity {
 
         List<Section> sections = getSectionsByOrder();
         if (sections.get(first).getDownStation() == section.getUpStation()) {
-            changeDownStation(sections.get(first), section);
+            changeDownStationForAppend(sections.get(first), section);
             return;
         }
         if (sections.get(last).getUpStation() == section.getDownStation()) {
-            changeUpStation(sections.get(last), section);
+            changeUpStationForAppend(sections.get(last), section);
             return;
         }
 
@@ -116,13 +113,13 @@ public class Line extends BaseEntity {
         }
     }
 
-    private void changeUpStation(Section originSection, Section appendSection) {
+    private void changeUpStationForAppend(Section originSection, Section appendSection) {
         this.distance.plus(appendSection.getDistance());
         this.upStation = appendSection.getUpStation();
         originSection.appendAfterSection(appendSection);
     }
 
-    private void changeDownStation(Section originSection, Section appendSection) {
+    private void changeDownStationForAppend(Section originSection, Section appendSection) {
         this.distance.plus(appendSection.getDistance());
         this.downStation = appendSection.getDownStation();
         originSection.appendBeforeSection(appendSection);
