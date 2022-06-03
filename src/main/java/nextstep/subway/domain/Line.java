@@ -53,8 +53,7 @@ public class Line extends BaseEntity {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Set<LineStation> lineStationList = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-        CascadeType.REMOVE})
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Section> sections = new LinkedList<>();
 
     public Line(Long id, String name, LineColor lineColor, Station upStation, Station downStation,
