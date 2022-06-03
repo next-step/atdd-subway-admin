@@ -1,24 +1,20 @@
-package nextstep.subway.dto;
+package nextstep.subway.line.dto;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
 
 public class LineUpdateRequest {
     private String name;
     private String color;
 
-    public LineUpdateRequest(String name, String color) {
+    private LineUpdateRequest(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-
     public static LineUpdateRequest of(String name, String color) {
         return new LineUpdateRequest(name, color);
-    }
-
-    public Line toLine(Station upStation, Station downStation, int distance) {
-        return new Line(name, color, upStation, downStation, distance);
     }
 
     public String getName() {

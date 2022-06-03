@@ -2,7 +2,7 @@ package nextstep.subway.station;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.dto.StationRequest;
+import nextstep.subway.station.dto.StationRequest;
 
 import static nextstep.subway.testutils.RestAssuredMethods.*;
 

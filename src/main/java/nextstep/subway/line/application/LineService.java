@@ -1,19 +1,19 @@
-package nextstep.subway.application;
+package nextstep.subway.line.application;
 
 import nextstep.subway.consts.ErrorMessage;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.LineUpdateRequest;
-import nextstep.subway.dto.StationResponse;
+import nextstep.subway.section.dto.*;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineUpdateRequest;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -47,14 +47,14 @@ public class LineService {
     public LineResponse findLineById(Long id) {
         return lineRepository.findById(id)
                 .map(line -> LineResponse.of(line, generateStationResponses(line)))
-                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.ERROR_LINE_NOT_EXIST));
+                .orElseThrow(() -> new NoSuchElementException(String.format(ErrorMessage.ERROR_LINE_NOT_FOUND, id)));
     }
 
     @Transactional
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.ERROR_LINE_NOT_EXIST));
-        line.update(lineUpdateRequest.toLine(line.getUpStation(), line.getDownStation(), line.getDistance()));
+                .orElseThrow(() -> new NoSuchElementException(String.format(ErrorMessage.ERROR_LINE_NOT_FOUND, id)));
+        line.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
     }
 
     @Transactional
@@ -62,12 +62,21 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
+    @Transactional
+    public void addSection(Long id, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(String.format(ErrorMessage.ERROR_LINE_NOT_FOUND, id)));
+        Station upStation = findStation(sectionRequest.getUpStationId());
+        Station downStation = findStation(sectionRequest.getDownStationId());
+        line.addSection(Section.of(upStation, downStation, sectionRequest.getDistance()));
+    }
+
     private List<StationResponse> generateStationResponses(Line line) {
-        return Arrays.asList(StationResponse.of(line.getUpStation()), StationResponse.of(line.getDownStation()));
+        return StationResponse.from(line.getSections());
     }
 
     private Station findStation(Long id) {
         return stationRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.ERROR_STATION_NOT_EXIST));
+                .orElseThrow(() -> new NoSuchElementException(String.format(ErrorMessage.ERROR_STATION_NOT_FOUND, id)));
     }
 }
