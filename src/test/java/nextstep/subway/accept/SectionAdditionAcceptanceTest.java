@@ -40,8 +40,8 @@ class SectionAdditionAcceptanceTest {
     @LocalServerPort
     int port;
 
-    private StationResponse 생성된_강남역, 생성된_양재시민의숲역, 생성된_양재역, 생성된_서초역, 생성된_교대역;
-    private LineResponse 생성된_신분당선, 생성된_이호선;
+    public static StationResponse 생성된_강남역, 생성된_양재시민의숲역, 생성된_양재역, 생성된_서초역, 생성된_교대역;
+    public static LineResponse 생성된_신분당선, 생성된_이호선;
 
     @BeforeEach
     void setUp() {
@@ -163,7 +163,7 @@ class SectionAdditionAcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private void saveStationAndLine() {
+    public static void saveStationAndLine() {
         생성된_강남역 = 지하철역_생성(강남역);
         생성된_양재역 = 지하철역_생성(양재역);
         생성된_양재시민의숲역 = 지하철역_생성(양재시민의숲역);

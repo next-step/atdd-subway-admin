@@ -7,7 +7,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
-import org.springframework.dao.DataIntegrityViolationException;
+import nextstep.subway.exception.ExistStationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +45,7 @@ public class StationService {
         Optional<Station> optionalStation = stationRepository.findByName(stationRequest.getName());
 
         if (optionalStation.isPresent()) {
-            throw new DataIntegrityViolationException("이미 존재하는 역입니다.");
+            throw new ExistStationException("이미 존재하는 역입니다.");
         }
     }
 }

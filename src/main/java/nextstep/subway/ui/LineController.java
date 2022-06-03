@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -70,6 +71,15 @@ public class LineController {
         lineService.addSection(id, sectionRequest);
         return ResponseEntity
                 .ok()
+                .build();
+    }
+
+    @DeleteMapping(value = "/{id}/sections")
+    public ResponseEntity deleteSection(@PathVariable Long id,
+                                        @RequestParam("stationId") Long stationId) {
+        lineService.deleteSection(id, stationId);
+        return ResponseEntity
+                .noContent()
                 .build();
     }
 }

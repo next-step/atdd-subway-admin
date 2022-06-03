@@ -14,11 +14,11 @@ public class Distance {
     }
 
     private Distance(Long distance) {
+        validateInvalidValue(distance);
         this.distance = distance;
     }
 
     public static Distance of(Long distance) {
-        validateInvalidValue(distance);
         return new Distance(distance);
     }
 
@@ -28,19 +28,12 @@ public class Distance {
         }
     }
 
-    public void minus(Distance other) {
-        if (isMoreThanOrEqual(other)) {
-            throw new IllegalArgumentException("추가하려는 구간의 거리는 현재 거리보다 작아야 합니다.");
-        }
-        this.distance -= other.distance;
+    public static Distance add(Distance distance1, Distance distance2) {
+        return new Distance(distance1.distance + distance2.distance);
     }
 
-    private boolean isMoreThanOrEqual(Distance other) {
-        return this.distance <= other.distance;
-    }
-
-    public Long getDistance() {
-        return distance;
+    public static Distance subtract(Distance distance1, Distance distance2) {
+        return new Distance(distance1.distance - distance2.distance);
     }
 
     @Override

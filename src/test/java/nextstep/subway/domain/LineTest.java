@@ -10,10 +10,14 @@ import org.junit.jupiter.api.Test;
 
 class LineTest {
     private Line line;
+    private Station seoCho, gangNam, yangJae;
 
     @BeforeEach
     void setUp() {
         line = new Line("신분당선", "bg-red-600");
+        seoCho = new Station("서초역");
+        gangNam = new Station("강남역");
+        yangJae = new Station("양재역");
     }
 
     @Test
@@ -36,9 +40,17 @@ class LineTest {
     @Test
     @DisplayName("구간을 추가시 들어가는지 검증")
     void addSection() {
-        Station seoCho = new Station("서초역");
-        Station gangNam = new Station("강남역");
         line.addSection(new Section(line, seoCho, gangNam, Distance.of(10L)));
+
+        assertThat(line.sections().size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("구간을 삭제시 삭제되었는지 검증")
+    void deleteSection() {
+        line.addSection(new Section(line, seoCho, gangNam, Distance.of(10L)));
+        line.addSection(new Section(line, gangNam, yangJae, Distance.of(5L)));
+        line.deleteSection(yangJae);
 
         assertThat(line.sections().size()).isEqualTo(1);
     }

@@ -27,21 +27,30 @@ class DistanceTest {
     }
 
     @Test
-    @DisplayName("거리를 빼면 정상적인 값이 반환")
-    void minusDistance() {
-        Distance distance = Distance.of(15L);
-        distance.minus(Distance.of(5L));
+    @DisplayName("두 거리를 더한 값을 확인")
+    void addDistance() {
+        Distance distance1 = Distance.of(10L);
+        Distance distance2 = Distance.of(5L);
 
-        assertThat(distance.getDistance()).isEqualTo(10L);
+        assertThat(Distance.add(distance1, distance2)).isEqualTo(Distance.of(15L));
     }
 
     @Test
-    @DisplayName("현재 거리보다 같거나 큰 값을 빼면 예외가 발생")
-    void minusMoreThanDistance() {
-        Distance distance = Distance.of(10L);
+    @DisplayName("두 거리를 뺀 값을 확인")
+    void subtractDistance() {
+        Distance distance1 = Distance.of(15L);
+        Distance distance2 = Distance.of(5L);
+
+        assertThat(Distance.subtract(distance1, distance2)).isEqualTo(Distance.of(10L));
+    }
+
+    @Test
+    @DisplayName("두 거리를 뺀 값이 음수면 예외 발생")
+    void invalidSubtractDistance() {
+        Distance distance1 = Distance.of(5L);
+        Distance distance2 = Distance.of(10L);
 
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> distance.minus(Distance.of(15L)))
-                .withMessage("추가하려는 구간의 거리는 현재 거리보다 작아야 합니다.");
+                .isThrownBy(() -> Distance.subtract(distance1, distance2));
     }
 }

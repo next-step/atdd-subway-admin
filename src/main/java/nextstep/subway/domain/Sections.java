@@ -1,19 +1,23 @@
 package nextstep.subway.domain;
 
+import static nextstep.subway.domain.Section.mergeTwoSection;
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.exception.UniqueSectionException;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Section> sections;
 
     public Sections() {
@@ -36,6 +40,28 @@ public class Sections {
         validateSection(section);
         this.sections.forEach(it -> it.update(section));
         this.sections.add(section);
+    }
+
+    public void deleteSection(Station station) {
+        validateSizeOnlyOne();
+        final Optional<Section> upStation = findSameUpStation(station);
+        final Optional<Section> downStation = findSameDownStation(station);
+
+        if (isMiddleSection(upStation, downStation)) {
+            this.sections.add(mergeTwoSection(upStation.get(), downStation.get()));
+        }
+        upStation.ifPresent(sections::remove);
+        downStation.ifPresent(sections::remove);
+    }
+
+    private boolean isMiddleSection(Optional<Section> upStation, Optional<Section> downStation) {
+        return upStation.isPresent() && downStation.isPresent();
+    }
+
+    private void validateSizeOnlyOne() {
+        if (size() == 1) {
+            throw new UniqueSectionException("해당 노선의 유일한 구간이라 지울 수 없습니다.");
+        }
     }
 
     private void validateSection(Section section) {
@@ -78,25 +104,29 @@ public class Sections {
         if (isEmpty()) {
             return null;
         }
-        Section section = this.sections.get(size() - 1);
-        while (findPreviousSection(section) != null) {
-            section = findPreviousSection(section);
-        }
-        return section;
+        return findFirstSection(this.sections.get(size() - 1));
     }
 
-    private Section findPreviousSection(Section section) {
-        return this.sections.stream()
-                .filter(it -> it.isSameDownStation(section.upStation()))
-                .findFirst()
-                .orElse(null);
+    private Section findFirstSection(Section section) {
+        Optional<Section> optionalSection = findSameDownStation(section.upStation());
+        return optionalSection.map(this::findFirstSection).orElse(section);
     }
 
     private Section findNextSection(Section section) {
+        Optional<Section> optionalSection = findSameUpStation(section.downStation());
+        return optionalSection.orElse(null);
+    }
+
+    private Optional<Section> findSameUpStation(Station station) {
         return this.sections.stream()
-                .filter(it -> it.isSameUpStation(section.downStation()))
-                .findFirst()
-                .orElse(null);
+                .filter(it -> it.isSameUpStation(station))
+                .findFirst();
+    }
+
+    private Optional<Section> findSameDownStation(Station station) {
+        return this.sections.stream()
+                .filter(it -> it.isSameDownStation(station))
+                .findFirst();
     }
 
     private boolean hasNothingBothStations(Station upStation, Station downStation) {
@@ -115,6 +145,14 @@ public class Sections {
 
     public boolean isEmpty() {
         return this.sections.isEmpty();
+    }
+
+    public boolean contains(Station station) {
+        return this.sections.stream()
+                .map(Section::stations)
+                .flatMap(List::stream)
+                .collect(Collectors.toSet())
+                .contains(station);
     }
 
     @Override
