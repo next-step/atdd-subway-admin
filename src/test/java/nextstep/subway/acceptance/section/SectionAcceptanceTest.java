@@ -127,6 +127,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
+
         List<String> stationNames = response.jsonPath().getList("stations.name", String.class);
         assertAll(
                 () -> assertThat(stationNames).hasSize(4),
@@ -236,9 +237,9 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
      * Given 지하철 노선의 구간 사이에 새로운 구간을 등록하고
      * When 중간역을 제거하면 (B 제거)
      * Then 재배치를 한다. A - B - C -> A - C
-     * Then
+     * Then 합쳐진 구간은 거리의 합이 더해진다.
      */
-    @DisplayName("중간역을 제거하면 중간역이 제거되고 재배치가 된다.")
+    @DisplayName("중간역을 제거하면 중간역이 제거되고 재배치가 된다. 합쳐진 구간은 거리의 합이 더해진다.")
     @Test
     void deleteSectionInSide() {
         // given
@@ -252,9 +253,11 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         List<String> stationNames = deleteResponse.jsonPath().getList("stations.name", String.class);
+        int distance = deleteResponse.jsonPath().getInt("distance");
         assertAll(
                 () -> assertThat(stationNames).hasSize(2),
-                () -> assertThat(stationNames).containsExactly(양재역.getName(), 정자역.getName())
+                () -> assertThat(stationNames).containsExactly(양재역.getName(), 정자역.getName()),
+                () -> assertThat(distance).isEqualTo(15)
         );
     }
 
