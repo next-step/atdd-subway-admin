@@ -7,7 +7,6 @@ import io.restassured.response.Response;
 import java.util.List;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineUpdateRequest;
-import nextstep.subway.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,10 +21,11 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     private Long 또다른지하철역_ID;
 
     @BeforeEach
-    void beforeEach() {
-        지하철역_ID = 지하철역_생성_id_반환("지하철역");
-        새로운지하철역_ID = 지하철역_생성_id_반환("새로운지하철역");
-        또다른지하철역_ID = 지하철역_생성_id_반환("또다른지하철역");
+    public void setUp() {
+        super.setUp();
+        지하철역_ID = StationAcceptanceTest.지하철역_생성_id_반환("지하철역");
+        새로운지하철역_ID = StationAcceptanceTest.지하철역_생성_id_반환("새로운지하철역");
+        또다른지하철역_ID = StationAcceptanceTest.지하철역_생성_id_반환("또다른지하철역");
     }
 
     /**
@@ -119,32 +119,32 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         응답결과_확인(response, HttpStatus.NO_CONTENT);
     }
 
-    private ExtractableResponse<Response> 지하철노선_생성(String name, String color, long upStationId, long downStationId,
+    public static ExtractableResponse<Response> 지하철노선_생성(String name, String color, long upStationId, long downStationId,
                                                    int distance) {
         LineRequest lineRequest = new LineRequest(name, color, upStationId, downStationId, distance);
         return post(path, lineRequest);
     }
 
-    private Long 지하철노선_생성_id_반환(String name, String color, long upStationId, long downStationId, int distance) {
+    public static Long 지하철노선_생성_id_반환(String name, String color, long upStationId, long downStationId, int distance) {
         return 지하철노선_생성(name, color, upStationId, downStationId, distance)
                 .jsonPath()
                 .getLong("id");
     }
 
-    private ExtractableResponse<Response> 지하철노선_수정(long id, String name, String color) {
+    public static ExtractableResponse<Response> 지하철노선_수정(long id, String name, String color) {
         LineUpdateRequest lineUpdateRequest = new LineUpdateRequest(name, color);
         return put(path, id, lineUpdateRequest);
     }
 
-    private ExtractableResponse<Response> 전체_지하철노선_조회() {
+    public static ExtractableResponse<Response> 전체_지하철노선_조회() {
         return get(path);
     }
 
-    private ExtractableResponse<Response> 지하철노선_조회(long id) {
+    public static ExtractableResponse<Response> 지하철노선_조회(long id) {
         return get(path, id);
     }
 
-    private List<String> 전체_지하철노선_이름_조회() {
+    public static List<String> 전체_지하철노선_이름_조회() {
         return 전체_지하철노선_조회()
                 .jsonPath()
                 .getList("name", String.class);
@@ -170,13 +170,4 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         assertThat(lineNames).containsAnyOf(searchName);
     }
 
-    private void 응답결과_확인(ExtractableResponse<Response> response, HttpStatus httpStatus) {
-        assertThat(response.statusCode()).isEqualTo(httpStatus.value());
-    }
-
-    public Long 지하철역_생성_id_반환(String name) {
-        return post(StationAcceptanceTest.path, new StationRequest(name))
-                .jsonPath()
-                .getLong("id");
-    }
 }

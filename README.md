@@ -20,6 +20,7 @@
 ## 단계 별 문서보기
 [1단계 - 지하철역 인수 테스트 작성](./docs/STEP1_README.md)<br>
 [2단계 - 지하철 노선 기능](./docs/STEP2_README.md)<br>
+[3단계 - 구간 추가 기능](./docs/STEP3_README.md)<br>
 
 <br>
 

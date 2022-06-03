@@ -3,13 +3,12 @@ package nextstep.subway.domain;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
 @Entity
 public class Section extends BaseEntity {
@@ -17,14 +16,14 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     private Station upStation;
 
-    @OneToOne
+    @ManyToOne
     private Station downStation;
 
-    @Column(nullable = false)
-    private Integer distance;
+    @Embedded
+    private Distance distance;
 
     @ManyToOne()
     private Line line;
@@ -35,19 +34,49 @@ public class Section extends BaseEntity {
     public Section(Station upStation, Station downStation, Integer distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
-    public void toLine(Line line) {
+    public void setLine(Line line) {
         this.line = line;
+    }
+
+    public List<Station> allStations() {
+        return Arrays.asList(upStation, downStation);
+    }
+
+    public void updateUpStation(Section section) {
+        updateDistance(section.getDistance());
+        this.upStation = section.getDownStation();
+    }
+
+    public void updateDownStation(Section section) {
+        updateDistance(section.getDistance());
+        this.downStation = section.getUpStation();
+    }
+
+    private void updateDistance(Distance distance) {
+        setDistance(this.distance.subtract(distance));
     }
 
     public Long getId() {
         return id;
     }
 
-    public List<Station> allStations() {
-        return Arrays.asList(upStation, downStation);
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public Distance getDistance() {
+        return distance;
+    }
+
+    private void setDistance(Distance distance) {
+        this.distance = distance;
     }
 
     @Override
@@ -79,4 +108,5 @@ public class Section extends BaseEntity {
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
     }
+
 }

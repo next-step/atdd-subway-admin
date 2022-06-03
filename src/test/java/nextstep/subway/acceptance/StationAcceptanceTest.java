@@ -89,36 +89,32 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         지하철역_존재하지_않음(전체_지하철역_이름_조회(), "강남역");
     }
 
-    public ExtractableResponse<Response> 전체_지하철역_조회() {
+    public static ExtractableResponse<Response> 전체_지하철역_조회() {
         return get(path);
     }
 
-    public List<String> 전체_지하철역_이름_조회() {
+    public static List<String> 전체_지하철역_이름_조회() {
         return 전체_지하철역_조회()
                 .jsonPath()
                 .getList("name", String.class);
     }
 
-    public ExtractableResponse<Response> 지하철역_생성(String name) {
+    public static ExtractableResponse<Response> 지하철역_생성(String name) {
         return post(path, new StationRequest(name));
     }
 
-    public Long 지하철역_생성_id_반환(String name) {
+    public static Long 지하철역_생성_id_반환(String name) {
         return 지하철역_생성(name)
                 .jsonPath()
                 .getLong("id");
     }
 
-    public ExtractableResponse<Response> 지하철역_삭제(long id) {
+    public static ExtractableResponse<Response> 지하철역_삭제(long id) {
         return delete(path, id);
     }
 
     private void 지하철역_개수_확인(ExtractableResponse<Response> response, int size) {
         assertThat(response.jsonPath().getList(".").size()).isEqualTo(size);
-    }
-
-    private void 응답결과_확인(ExtractableResponse<Response> response, HttpStatus httpStatus) {
-        assertThat(response.statusCode()).isEqualTo(httpStatus.value());
     }
 
     private void 지하철역_존재함(List<String> stationNames, String searchName) {
