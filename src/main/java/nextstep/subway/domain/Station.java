@@ -1,6 +1,10 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 public class Station extends BaseEntity {
@@ -9,8 +13,6 @@ public class Station extends BaseEntity {
     private Long id;
     @Column(unique = true, nullable = false)
     private String name;
-    @Column(name = "line_id")
-    private Long lineId;
 
     protected Station() {
     }
@@ -25,13 +27,5 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
-    }
-
-    public Long getLineId() {
-        return lineId;
-    }
-
-    public void toLine(Line line) {
-        this.lineId = line.getId();
     }
 }

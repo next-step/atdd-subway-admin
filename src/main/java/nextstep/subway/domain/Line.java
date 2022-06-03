@@ -1,15 +1,13 @@
 package nextstep.subway.domain;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.criteria.CriteriaBuilder.In;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Line extends BaseEntity {
@@ -20,17 +18,24 @@ public class Line extends BaseEntity {
     private String name;
     @Column(nullable = false)
     private String color;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "up_station_id")
+    private Section upStation;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "down_station_id")
+    private Section downStation;
     private Integer distance;
-    @OneToMany
-    @JoinColumn(name = "line_id")
-    private List<Station> stations = new ArrayList<>();
 
     protected Line() {
     }
 
-    public Line(String name, String color) {
+    public Line(String name, String color, Section upStation, Section downStation, Integer distance) {
         this.name = name;
         this.color = color;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
     }
 
     public Long getId() {
@@ -49,8 +54,12 @@ public class Line extends BaseEntity {
         return distance;
     }
 
-    public List<Station> getStations() {
-        return stations;
+    public Section getUpStation() {
+        return upStation;
+    }
+
+    public Section getDownStation() {
+        return downStation;
     }
 
     public void updateName(String name) {
@@ -60,10 +69,4 @@ public class Line extends BaseEntity {
     public void updateColor(String color) {
         this.color = color;
     }
-
-    public void addStation(Station station) {
-        stations.add(station);
-        station.toLine(this);
-    }
-
 }
