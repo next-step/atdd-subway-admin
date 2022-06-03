@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
@@ -15,21 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
         Line persistLine = lineRepository.save(lineRequest.toLine());
-
-        Station upStation = stationRepository.getById(lineRequest.getUpStationId());
-        Station downStation = stationRepository.getById(lineRequest.getDownStationId());
-        persistLine.addStation(upStation);
-        persistLine.addStation(downStation);
-
         return LineResponse.from(persistLine);
     }
 
