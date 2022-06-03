@@ -38,6 +38,10 @@ public class Section {
         this.line = line;
     }
 
+    public boolean isValidSection() {
+        return getUpStation() != null && getDownStation() != null;
+    }
+
     public void updateSection(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
@@ -47,6 +51,10 @@ public class Section {
     public boolean containsStation(Station station) {
         return station.equals(getUpStation())
                 || station.equals(getDownStation());
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Distance getDistance() {

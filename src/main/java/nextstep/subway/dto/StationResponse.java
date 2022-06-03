@@ -21,6 +21,9 @@ public class StationResponse {
     }
 
     public static StationResponse of(Station station) {
+        if (station == null) {
+            return null;
+        }
         return new StationResponse(station.getId(), station.getName());
     }
 

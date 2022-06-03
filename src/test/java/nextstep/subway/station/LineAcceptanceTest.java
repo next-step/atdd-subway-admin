@@ -354,7 +354,7 @@ public class LineAcceptanceTest {
         응답_검증(response2, HttpStatus.BAD_REQUEST);
     }
 
-    private ValidatableResponse 노선_등록(String name, String color, int distance, Long upStreamId, Long downStreamId) {
+    public static ValidatableResponse 노선_등록(String name, String color, int distance, Long upStreamId, Long downStreamId) {
         LineRequest lineRequest = new LineRequest(name, color, distance, upStreamId, downStreamId);
 
         return RestAssured.given().log().all()
@@ -364,14 +364,14 @@ public class LineAcceptanceTest {
                     .then().log().all();
     }
 
-    private ValidatableResponse 노선_조회(Long id) {
+    public static ValidatableResponse 노선_조회(Long id) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines/" + id)
                 .then().log().all();
     }
 
-    private ValidatableResponse 노선_수정(Long id, String name, String color) {
+    public static ValidatableResponse 노선_수정(Long id, String name, String color) {
         LineUpdateRequest lineUpdateRequest = new LineUpdateRequest(name, color);
 
         return RestAssured.given().log().all()
@@ -381,7 +381,7 @@ public class LineAcceptanceTest {
                 .then().log().all();
     }
 
-    private ValidatableResponse 구간_추가(long upStationId, long downStationId, int distance, long lineId) {
+    public static ValidatableResponse 구간_추가(long upStationId, long downStationId, int distance, long lineId) {
         SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
         return RestAssured.given().log().all()

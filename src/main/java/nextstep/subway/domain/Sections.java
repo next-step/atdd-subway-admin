@@ -133,6 +133,17 @@ public class Sections {
         return !containStation(section.getUpStation()) && !containStation(section.getDownStation());
     }
 
+    public void sort() {
+        List<Section> sorted = new ArrayList<>();
+        Section section = getLineUpSection();
+        sorted.add(section);
+        while (section.getDownStation() != null) {
+            section = findSectionWithUpStation(section.getDownStation()).get();
+            sorted.add(section);
+        }
+        this.list = sorted;
+    }
+
     @Override
     public String toString() {
         return "Sections{" +

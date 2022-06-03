@@ -28,7 +28,6 @@ public class LineResponse {
         Section section = sections.getLineUpSection();
         while (section.getDownStation() != null) {
             Station station = new Station(section.getDownStation().getId(), section.getDownStation().getName());
-            System.out.println("station: " + station);
             stations.add(StationResponse.of(station));
             section = sections.findSectionWithUpStation(section.getDownStation()).get();
         }
