@@ -278,8 +278,6 @@ public class SectionAcceptanceTest {
         assertAll(
             () -> assertThat(지하철_노선_조회하기_response.jsonPath().getList("stations.name"))
                 .contains("수지구청역", "정자역"),
-            () -> assertThat(지하철_노선_조회하기_response.jsonPath().get("distance").toString())
-                .isEqualTo("20"),
             () -> assertThat(지하철_구간_조회하기_response.jsonPath().getList("downStationInfo.name"))
                 .contains("수지구청역", "미금역"),
             () -> assertThat(지하철_구간_조회하기_response.jsonPath().getList("upStationInfo.name"))
