@@ -6,4 +6,6 @@ public interface LineStationRepository extends JpaRepository<LineStation,Long> {
     int deleteAllByLine(Line line);
 
     int deleteAllByStation(Station station);
+
+    int deleteAllByStationAndLine(Station station, Line line);
 }
