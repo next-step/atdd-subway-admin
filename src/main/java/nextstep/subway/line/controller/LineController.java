@@ -53,9 +53,4 @@ public class LineController {
     public ResponseEntity<SectionResponse> addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
         return ResponseEntity.ok().body(lineService.addSection(id, sectionRequest));
     }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException() {
-        return ResponseEntity.badRequest().build();
-    }
 }
