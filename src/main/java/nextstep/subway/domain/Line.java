@@ -31,6 +31,10 @@ public class Line {
         this.lineStations = lineStations;
     }
 
+    public Line(String name, String color) {
+        this(null, name, color, new ArrayList<>());
+    }
+
     private Line(String name, String color, List<LineStation> lineStations) {
         this(null, name, color, lineStations);
     }

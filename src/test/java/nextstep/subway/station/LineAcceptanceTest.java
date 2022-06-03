@@ -124,7 +124,7 @@ public class LineAcceptanceTest {
     }
 
     private void 지하철노선_생성_검증(ExtractableResponse<Response> 지하철노선_생성_응답) {
-        API응답_검증(지하철노선_생성_응답.statusCode(), HttpStatus.CREATED.value());
+        ApiAcceptance.API응답_검증(지하철노선_생성_응답.statusCode(), HttpStatus.CREATED.value());
     }
 
     private ExtractableResponse<Response> 지하철노선_조회() {
@@ -141,7 +141,7 @@ public class LineAcceptanceTest {
     }
 
     private void 지하철노선_조회_검증(ExtractableResponse<Response> 지하철노선_조회_응답) {
-        API응답_검증(지하철노선_조회_응답.statusCode(), HttpStatus.OK.value());
+        ApiAcceptance.API응답_검증(지하철노선_조회_응답.statusCode(), HttpStatus.OK.value());
     }
 
     private ExtractableResponse<Response> 지하철노선_수정(Long lineId, LineRequest lineRequest) {
@@ -159,7 +159,7 @@ public class LineAcceptanceTest {
     }
 
     private void 지하철노선_수정_검증(ExtractableResponse<Response> 지하철노선_수정_응답) {
-        API응답_검증(지하철노선_수정_응답.statusCode(), HttpStatus.OK.value());
+        ApiAcceptance.API응답_검증(지하철노선_수정_응답.statusCode(), HttpStatus.OK.value());
     }
 
     private ExtractableResponse<Response> 지하철노선_상세_조회(Long lineId) {
@@ -174,7 +174,7 @@ public class LineAcceptanceTest {
     }
 
     private void 지하철노선_상세_검증(ExtractableResponse<Response> 지하철노선_상세_응답) {
-        API응답_검증(지하철노선_상세_응답.statusCode(), HttpStatus.OK.value());
+        ApiAcceptance.API응답_검증(지하철노선_상세_응답.statusCode(), HttpStatus.OK.value());
     }
 
     private void 지하철노선_삭제(Long lineId) {
@@ -189,10 +189,6 @@ public class LineAcceptanceTest {
     }
 
     private void 지하철노선_삭제_검증(ExtractableResponse<Response> 지하철노선_삭제_응답) {
-        API응답_검증(지하철노선_삭제_응답.statusCode(), HttpStatus.NO_CONTENT.value());
-    }
-
-    private void API응답_검증(int givenStatusCode, int whenStatusCode) {
-        assertThat(givenStatusCode).isEqualTo(whenStatusCode);
+        ApiAcceptance.API응답_검증(지하철노선_삭제_응답.statusCode(), HttpStatus.NO_CONTENT.value());
     }
 }
