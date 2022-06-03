@@ -43,16 +43,16 @@ public class Line extends BaseEntity {
         validateSection(section);
 
         if (isLineUpStation(section.getDownStation())) {
-            sections.add(new Section(1, null, section.getUpStation(), this));
             Section lineUpSection = sections.getLineUpSection();
             lineUpSection.updateSection(section.getUpStation(), lineUpSection.getDownStation(), section.getDistance());
+            sections.add(new Section(1, null, section.getUpStation(), this));
             return;
         }
 
         if (isLineDownStation(section.getUpStation())) {
-            sections.add(new Section(1, section.getDownStation(), null, this));
             Section lineDownSection = sections.getLineDownSection();
             lineDownSection.updateSection(lineDownSection.getUpStation(), section.getDownStation(), section.getDistance());
+            sections.add(new Section(1, section.getDownStation(), null, this));
             return;
         }
 

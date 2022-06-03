@@ -28,7 +28,6 @@ public class LineService {
                 .orElseThrow(StationNotFoundException::new);
 
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
-        persistLine.initStation(lineRequest.getDistance(), upStation, downStation);
 
         return LineResponse.of(persistLine);
     }
