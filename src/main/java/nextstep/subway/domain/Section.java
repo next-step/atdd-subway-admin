@@ -156,21 +156,4 @@ public class Section {
         return id;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Section section = (Section) o;
-        return upStation.equals(section.upStation) && downStation.equals(section.downStation)
-            && line.equals(section.line);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(upStation, downStation, line);
-    }
 }
