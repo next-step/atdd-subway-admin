@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -12,7 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import nextstep.subway.dto.response.SectionResponse;
 import org.apache.commons.lang3.ObjectUtils;
 
 @Entity
@@ -62,13 +60,16 @@ public class Section {
 
     public static Section merge(Section backSection, Section nextSection) {
         backSection.getDistance().plus(nextSection.getDistance());
-        return new Section(nextSection.getUpStation(), backSection.getDownStation(), backSection.getLine(),
+        return new Section(nextSection.getUpStation(), backSection.getDownStation(),
+            backSection.getLine(),
             backSection.getDistance(), nextSection.getNextSection(),
             backSection.getBackSection());
     }
-    public static Section empty(Line line){
+
+    public static Section empty(Line line) {
         return new Section(null, null, line, new Distance(0), null, null);
     }
+
     public boolean insert(Section insertSection) {
         boolean insertFail = false;
         boolean insertSuccess = true;
