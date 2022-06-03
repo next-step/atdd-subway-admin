@@ -11,7 +11,8 @@ import java.util.List;
 
 import static nextstep.subway.BaseAcceptanceTest.*;
 import static nextstep.subway.line.LineAcceptanceMethod.*;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SectionAcceptanceMethod {
     private static final String SECTIONS_URI = "/sections";
@@ -23,9 +24,11 @@ public class SectionAcceptanceMethod {
 
     public static void 지하철구간_추가됨(ExtractableResponse<Response> 구간_추가_응답, SectionRequest 구간_추가_요청) {
         SectionResponse sectionResponse = 구간_추가_응답.jsonPath().getObject(".", SectionResponse.class);
-        assertThat(sectionResponse.getUpStationId()).isEqualTo(구간_추가_요청.getUpStationId());
-        assertThat(sectionResponse.getDownStationId()).isEqualTo(구간_추가_요청.getDownStationId());
-        assertThat(sectionResponse.getDistance()).isEqualTo(구간_추가_요청.getDistance());
+        assertAll (
+                () -> assertThat(sectionResponse.getUpStationId()).isEqualTo(구간_추가_요청.getUpStationId()),
+                () -> assertThat(sectionResponse.getDownStationId()).isEqualTo(구간_추가_요청.getDownStationId()),
+                () -> assertThat(sectionResponse.getDistance()).isEqualTo(구간_추가_요청.getDistance())
+        );
     }
 
     public static void 추가된_지하철구간_조회(ExtractableResponse<Response> 지하철노선_생성_응답, SectionRequest 지하철구간_요청) {

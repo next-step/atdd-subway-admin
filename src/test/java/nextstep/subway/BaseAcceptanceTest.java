@@ -12,10 +12,10 @@ import org.springframework.test.context.jdbc.Sql;
 @Sql("/truncate.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class BaseAcceptanceTest {
-    protected final String ID_KEY = "id";
-    protected final String LINE_COLOR_RED = "bg-red-600";
-    protected final String LINE_COLOR_GREEN = "bg-green-600";
-    protected final int DISTANCE = 10;
+    protected static final String ID_KEY = "id";
+    protected static final String LINE_COLOR_RED = "bg-red-600";
+    protected static final String LINE_COLOR_GREEN = "bg-green-600";
+    protected static final int DISTANCE = 10;
 
     @LocalServerPort
     int port;
