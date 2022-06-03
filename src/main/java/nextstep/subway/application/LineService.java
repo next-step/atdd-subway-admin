@@ -49,12 +49,14 @@ public class LineService {
 
     @Transactional
     public void update(Long id, LineUpdateRequest request) {
-        lineRepository.findById(id).ifPresent(line -> line.modifyBy(request));
+        lineRepository.findById(id)
+                .ifPresent(line -> line.modifyBy(request));
     }
 
     @Transactional
     public void deleteById(Long id) {
-        lineRepository.deleteById(id);
+        lineRepository.findByIdWithSections(id)
+                .ifPresent(lineRepository::delete);
     }
 
     @Transactional
