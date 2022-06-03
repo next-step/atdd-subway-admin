@@ -83,10 +83,7 @@ class LineServiceTest {
     @Test
     void 노선_목록을_조회하면_모든_노선에_대해_LineResponse_객체_목록이_반환되어야_한다() {
         // given
-        final Line line1 = new Line("신분당선", "bg-red-600");
-        line1.relateToStation(new LineStation(line1, gangnam));
-        line1.relateToStation(new LineStation(line1, yangjae));
-        lineRepository.save(line1);
+        final Line line1 = givenLine();
 
         final Line line2 = new Line("2호선", "bg-green-600");
         line2.relateToStation(new LineStation(line2, gangnam));
@@ -107,10 +104,7 @@ class LineServiceTest {
     @Test
     void 아이디로_노선을_조회하면_해당하는_노선에_대해_LineResponse_객체가_반환되어야_한다() {
         // given
-        final Line givenLine = new Line("신분당선", "bg-red-600");
-        givenLine.relateToStation(new LineStation(givenLine, gangnam));
-        givenLine.relateToStation(new LineStation(givenLine, yangjae));
-        lineRepository.save(givenLine);
+        final Line givenLine = givenLine();
 
         // when
         final LineResponse line = lineService.findLineById(givenLine.getId());
@@ -129,10 +123,7 @@ class LineServiceTest {
     @Test
     void 아이디와_LineRequest_객체를_파라미터로_노선을_수정할_수_있어야_한다() {
         // given
-        final Line givenLine = new Line("신분당선", "bg-red-600");
-        givenLine.relateToStation(new LineStation(givenLine, gangnam));
-        givenLine.relateToStation(new LineStation(givenLine, yangjae));
-        lineRepository.save(givenLine);
+        final Line givenLine = givenLine();
 
         final String newName = "수정된이름";
         final String newColor = "bg-modified-600";
@@ -161,10 +152,7 @@ class LineServiceTest {
     @Test
     void 아이디로_노선을_삭제할_수_있어야_한다() {
         // given
-        final Line givenLine = new Line("신분당선", "bg-red-600");
-        givenLine.relateToStation(new LineStation(givenLine, gangnam));
-        givenLine.relateToStation(new LineStation(givenLine, yangjae));
-        lineRepository.save(givenLine);
+        final Line givenLine = givenLine();
 
         // when
         lineService.deleteLineById(givenLine.getId());
@@ -179,5 +167,12 @@ class LineServiceTest {
         // when and then
         assertThatThrownBy(() -> lineService.deleteLineById(1L))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    private Line givenLine() {
+        final Line givenLine = new Line("신분당선", "bg-red-600");
+        givenLine.relateToStation(new LineStation(givenLine, gangnam));
+        givenLine.relateToStation(new LineStation(givenLine, yangjae, gangnam));
+        return lineRepository.save(givenLine);
     }
 }
