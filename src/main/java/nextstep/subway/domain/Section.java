@@ -58,14 +58,20 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
+    public Distance getDistance() {
+        return distance;
+    }
+
     public void setLine(Line line) {
         this.line = line;
     }
 
     public void separate(Section newSection) {
         if (this.upStation.equals(newSection.getUpStation())) {
+            System.out.println("!");
             this.upStation = newSection.getDownStation();
             calculateDistance(newSection);
+
         }
         if (this.downStation.equals(newSection.getDownStation())) {
             this.downStation = newSection.getUpStation();
@@ -74,7 +80,7 @@ public class Section extends BaseEntity {
     }
 
     private void calculateDistance(Section newSection) {
-        this.distance.minus(newSection.distance);
+        distance = distance.minus(newSection.distance);
     }
 
     public List<Station> upDownStationPair() {

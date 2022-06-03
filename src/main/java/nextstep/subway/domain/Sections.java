@@ -7,15 +7,18 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 @Embeddable
-public class Sections implements Iterable<Section> {
+public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
     public Sections() {
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 
     public void add(Section newSection) {
@@ -41,9 +44,9 @@ public class Sections implements Iterable<Section> {
         );
     }
 
-    @Override
-    public Iterator<Section> iterator() {
-        return sections.iterator();
+    public int totalDistanceLength() {
+        return sections.stream()
+                .mapToInt(value -> value.getDistance().getDistance())
+                .sum();
     }
-
 }
