@@ -31,6 +31,10 @@ public class Distance {
         this.value = value - target.getValue();
     }
 
+    public void plus(Distance target) {
+        this.value = value + target.getValue();
+    }
+
     private void validateDistanceValue(Distance target) {
         if (target.getValue() >= value) {
             throw new BadRequestException(ExceptionType.IS_NOT_OVER_ORIGIN_DISTANCE);
