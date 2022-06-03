@@ -9,27 +9,27 @@ import javax.persistence.Embeddable;
 public class Distance {
     private static final int MIN = 0;
     @Column
-    private int distance;
+    private final int distance;
 
-    protected Distance() {
+    public Distance() {
+        distance = 0;
     }
 
-    private Distance(int distance) {
+    public Distance(int distance) {
+        if (distance < MIN) {
+            throw new IllegalArgumentException("거리는 0보다 작을 수 없습니다.");
+        }
         this.distance = distance;
-    }
-
-    public static Distance from(int distance) {
-        return new Distance(distance);
     }
 
     public int getDistance() {
         return distance;
     }
 
-    public void minus(Distance distance) {
+    public Distance minus(Distance distance) {
         if (this.distance - distance.getDistance() <= MIN) {
             throw new SectionLengthOverException("기존 역 사이 거리보다 작을 수 없습니다.");
         }
-        this.distance -= distance.getDistance();
+        return new Distance(this.distance - distance.getDistance());
     }
 }

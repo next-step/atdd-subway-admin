@@ -39,7 +39,7 @@ public class Section extends BaseEntity {
     public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = Distance.from(distance);
+        this.distance = new Distance(distance);
     }
 
     public static Section of(Station upStation, Station downStation, int distance) {
@@ -77,6 +77,10 @@ public class Section extends BaseEntity {
         this.distance.minus(newSection.distance);
     }
 
+    public List<Station> upDownStationPair() {
+        return Arrays.asList(upStation, downStation);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -88,9 +92,5 @@ public class Section extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, getUpStation(), getDownStation(), line);
-    }
-
-    public List<Station> upDownStationPair() {
-        return Arrays.asList(upStation, downStation);
     }
 }
