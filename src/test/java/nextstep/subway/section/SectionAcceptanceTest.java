@@ -88,12 +88,14 @@ public class SectionAcceptanceTest {
         // then
         List<HashMap<String, ?>> stations = 지하철노선_한개_조회(Integer.valueOf(lineId)).get("stations");
 
-        assertThat(stations.get(0).get("name")).isEqualTo("상행종점");
-        assertThat(
-                stations.stream()
-                        .map(target -> target.get("id").toString())
-                        .collect(Collectors.toList())
-        ).contains(lineUpStationId);
+        assertAll(
+                () -> assertThat(stations.get(0).get("name")).isEqualTo("상행종점"),
+                () -> assertThat(
+                        stations.stream()
+                                .map(target -> target.get("id").toString())
+                                .collect(Collectors.toList())
+                ).contains(lineUpStationId)
+        );
     }
 
     /**
@@ -116,12 +118,14 @@ public class SectionAcceptanceTest {
         // then
         List<HashMap<String, ?>> stations = 지하철노선_한개_조회(Integer.valueOf(lineId)).get("stations");
 
-        assertThat(stations.get(stations.size() - 1).get("name")).isEqualTo("하행종점");
-        assertThat(
-                stations.stream()
-                        .map(target -> target.get("id").toString())
-                        .collect(Collectors.toList())
-        ).contains(lineDownStationId);
+        assertAll(
+                () -> assertThat(stations.get(stations.size() - 1).get("name")).isEqualTo("하행종점"),
+                () -> assertThat(
+                        stations.stream()
+                                .map(target -> target.get("id").toString())
+                                .collect(Collectors.toList())
+                ).contains(lineDownStationId)
+        );
     }
 
     /**
@@ -179,7 +183,7 @@ public class SectionAcceptanceTest {
         // given
         String notExistedStationId1 = Integer.toString(지하철역_생성("없는역1").jsonPath().get("id"));
         String notExistedStationId2 = Integer.toString(지하철역_생성("없는역2").jsonPath().get("id"));
-        
+
         // when
         ExtractableResponse<Response> response = 구간_생성(notExistedStationId1, notExistedStationId2, "5");
 
