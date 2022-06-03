@@ -2,33 +2,26 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.util.LineTestUtil;
 import nextstep.subway.util.StationTestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @DisplayName("지하철 노선 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
-public class LineAcceptanceTest {
-    @LocalServerPort
-    int port;
-    ExtractableResponse<Response> lineCreateResponse;
+class LineAcceptanceTest extends BaseAcceptanceTest {
+
+    private ExtractableResponse<Response> lineCreateResponse;
 
     @BeforeEach
+    @Order(1)
     public void setUp() {
-        RestAssured.port = port;
-
         Long upStationId = StationTestUtil.createStation("강남역").jsonPath().getLong("id");
         Long downStationId = StationTestUtil.createStation("광교중앙역").jsonPath().getLong("id");
         lineCreateResponse = LineTestUtil.createLine("신분당선", "red", upStationId, downStationId, 10);
