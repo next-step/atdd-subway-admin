@@ -74,6 +74,22 @@ public class Sections {
         return items;
     }
 
+    public List<Station> getOrderedStations() {
+        List<Station> stations = new ArrayList<>();
+        Section section = this.getFirstSection();
+        stations.add(section.getUpStation());
+        stations.add(section.getDownStation());
+
+        Optional<Section> optionalNextSection = this.getNextSection(section);
+        while (optionalNextSection.isPresent()) {
+            Section nextSection = optionalNextSection.get();
+            stations.add(nextSection.getDownStation());
+            optionalNextSection = this.getNextSection(nextSection);
+        }
+
+        return stations;
+    }
+
     public Section getFirstSection() {
         Station firstStation = getFirstStation();
 
