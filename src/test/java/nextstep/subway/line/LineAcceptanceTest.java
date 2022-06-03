@@ -5,16 +5,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
-import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.util.LineTestUtil;
+import nextstep.subway.util.StationTestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
@@ -30,9 +29,9 @@ public class LineAcceptanceTest {
     public void setUp() {
         RestAssured.port = port;
 
-        Long upStationId = StationAcceptanceTest.createOneStation("강남역").jsonPath().getLong("id");
-        Long downStationId = StationAcceptanceTest.createOneStation("광교중앙역").jsonPath().getLong("id");
-        lineCreateResponse = createOneLine("신분당선", "red", upStationId, downStationId, 10);
+        Long upStationId = StationTestUtil.createStation("강남역").jsonPath().getLong("id");
+        Long downStationId = StationTestUtil.createStation("광교중앙역").jsonPath().getLong("id");
+        lineCreateResponse = LineTestUtil.createLine("신분당선", "red", upStationId, downStationId, 10);
     }
 
     /**
@@ -48,7 +47,7 @@ public class LineAcceptanceTest {
         assertThat(lineCreateResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        ExtractableResponse<Response> response = getAllLines();
+        ExtractableResponse<Response> response = LineTestUtil.getAllLines();
         assertThat(response.jsonPath().getList("name", String.class)).containsAnyOf("신분당선");
     }
 
@@ -59,12 +58,12 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        Long upStationIdOfBundang = StationAcceptanceTest.createOneStation("수원역").jsonPath().getLong("id");
-        Long downStationIdOfBundang = StationAcceptanceTest.createOneStation("압구정로데오").jsonPath().getLong("id");
-        createOneLine("분당선", "yellow", upStationIdOfBundang, downStationIdOfBundang, 10);
+        Long upStationIdOfBundang = StationTestUtil.createStation("수원역").jsonPath().getLong("id");
+        Long downStationIdOfBundang = StationTestUtil.createStation("압구정로데오").jsonPath().getLong("id");
+        LineTestUtil.createLine("분당선", "yellow", upStationIdOfBundang, downStationIdOfBundang, 10);
 
         // when
-        ExtractableResponse<Response> response = getAllLines();
+        ExtractableResponse<Response> response = LineTestUtil.getAllLines();
 
         // then
         assertThat(response.jsonPath().getList("$", LineResponse.class)).hasSize(2);
@@ -81,7 +80,7 @@ public class LineAcceptanceTest {
         // BeforeEach 에서 실행
 
         // when
-        LineResponse lineResponse = getOneLine(lineCreateResponse.jsonPath().getLong("id")).jsonPath()
+        LineResponse lineResponse = LineTestUtil.getLine(lineCreateResponse.jsonPath().getLong("id")).jsonPath()
                 .getObject("$", LineResponse.class);
 
         // then
@@ -98,10 +97,10 @@ public class LineAcceptanceTest {
         // BeforeEach 에서 실행
 
         // when
-        updateOneLine(lineCreateResponse.jsonPath().getLong("id"), "짱비싼선", "black");
+        LineTestUtil.updateLine(lineCreateResponse.jsonPath().getLong("id"), "짱비싼선", "black");
 
         // then
-        LineResponse lineResponse = getOneLine(lineCreateResponse.jsonPath().getLong("id")).jsonPath()
+        LineResponse lineResponse = LineTestUtil.getLine(lineCreateResponse.jsonPath().getLong("id")).jsonPath()
                 .getObject("$", LineResponse.class);
         assertThat(lineResponse.getName()).isEqualTo("짱비싼선");
         assertThat(lineResponse.getColor()).isEqualTo("black");
@@ -117,57 +116,10 @@ public class LineAcceptanceTest {
         // BeforeEach에서 실행
 
         // when
-        deleteOneLine(lineCreateResponse.jsonPath().getLong("id"));
+        LineTestUtil.deleteLine(lineCreateResponse.jsonPath().getLong("id"));
 
         // then
-        ExtractableResponse<Response> response = getAllLines();
+        ExtractableResponse<Response> response = LineTestUtil.getAllLines();
         assertThat(response.jsonPath().getList("name", String.class)).doesNotContain("신분당선");
-    }
-
-    public static ExtractableResponse<Response> createOneLine(String lineName, String lineColor, Long upStationId,
-                                                              Long downStationId, Integer distance) {
-        LineRequest request = new LineRequest(lineName, lineColor, upStationId, downStationId, distance);
-
-        return RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> updateOneLine(Long id, String lineName, String lineColor) {
-        LineRequest request = new LineRequest(lineName, lineColor, null, null, null);
-
-        return RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/" + id)
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> deleteOneLine(Long id) {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/lines/" + id)
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> getOneLine(Long id) {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines/" + id)
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> getAllLines() {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines/")
-                .then().log().all()
-                .extract();
     }
 }

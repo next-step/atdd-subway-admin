@@ -5,22 +5,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.util.StationTestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
-public class StationAcceptanceTest {
+class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
@@ -36,13 +35,13 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> createResponse = createOneStation("강남역");
+        ExtractableResponse<Response> createResponse = StationTestUtil.createStation("강남역");
 
         // then
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        ExtractableResponse<Response> response = getAllStations();
+        ExtractableResponse<Response> response = StationTestUtil.getAllStations();
         assertThat(response.jsonPath().getList("name", String.class)).containsAnyOf("강남역");
     }
 
@@ -53,10 +52,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        createOneStation("강남역");
+        StationTestUtil.createStation("강남역");
 
         // when
-        ExtractableResponse<Response> response = createOneStation("강남역");
+        ExtractableResponse<Response> response = StationTestUtil.createStation("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -69,11 +68,11 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        createOneStation("강남역");
-        createOneStation("삼성역");
+        StationTestUtil.createStation("강남역");
+        StationTestUtil.createStation("삼성역");
 
         // when
-        ExtractableResponse<Response> response = getAllStations();
+        ExtractableResponse<Response> response = StationTestUtil.getAllStations();
 
         // then
         assertThat(response.jsonPath().getList("$", StationResponse.class)).hasSize(2);
@@ -87,40 +86,13 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = createOneStation("강남역");
+        ExtractableResponse<Response> createResponse = StationTestUtil.createStation("강남역");
 
         // when
-        deleteOneStation(createResponse.jsonPath().getLong("id"));
+        StationTestUtil.deleteStation(createResponse.jsonPath().getLong("id"));
 
         // then
-        ExtractableResponse<Response> response = getAllStations();
+        ExtractableResponse<Response> response = StationTestUtil.getAllStations();
         assertThat(response.jsonPath().getList("name", String.class)).doesNotContain("강남역");
-    }
-
-    public static ExtractableResponse<Response> createOneStation(String stationName) {
-        StationRequest request = new StationRequest(stationName);
-
-        return RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> deleteOneStation(Long id) {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/stations/" + id)
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> getAllStations() {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/stations/")
-                .then().log().all()
-                .extract();
     }
 }
