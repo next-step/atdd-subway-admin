@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 @DataJpaTest
 public class LineRepositoryTest {
+
     @Autowired
     private LineRepository lineRepository;
     @Autowired
@@ -23,7 +24,7 @@ public class LineRepositoryTest {
         Station 강남역 = stationRepository.save(new Station("강남역"));
         Station 판교역 = stationRepository.save(new Station("판교역"));
 
-        Line expected = new Line("신분당선", "bg-red-600", 강남역, 판교역, 10);
+        Line expected = new Line("신분당선", "bg-red-600", 강남역, 판교역, 10l);
         //when
         Line actual = lineRepository.save(expected);
         //then
