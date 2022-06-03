@@ -29,4 +29,10 @@ public class LineStationService {
         line.addLineStation(lineStation);
         return lineStation;
     }
+
+    @Transactional
+    public void deleteSectionByStationId(Line line, Long stationId) {
+        Station station = stationService.getOrElseThrow(stationId);
+        line.deleteSection(station);
+    }
 }

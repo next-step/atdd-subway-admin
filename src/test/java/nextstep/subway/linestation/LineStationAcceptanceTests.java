@@ -115,6 +115,36 @@ public class LineStationAcceptanceTests {
         assertThat(statusCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 추가 구간을 등록하고
+     * When 구간을 제거하면
+     * Then 해당 지하철 노선을 조회할 때 제거된 것을 확인할 수 있다.
+     */
+    @DisplayName("구간을 제거할 수 있다")
+    @ParameterizedTest
+    @CsvSource(value = {"0,1,2", "1,0,2", "2,0,1"})
+    // 상행 종점 삭제, middle 삭제, 하행 종점 삭제
+    void deleteLineStationTest(int stationId, int firstStationId, int secondStationId) {
+        // Given
+        createSection(lineId, 5L, downStationId, newStationId);
+
+        // When
+        deleteSection(lineId, stationIds.get(stationId));
+
+        // Then
+        List<Long> result = getLine(lineId).jsonPath().getList("stations.id", Long.class);
+        assertThat(result).containsExactly(stationIds.get(firstStationId), stationIds.get(secondStationId));
+    }
+
+    private ExtractableResponse<Response> deleteSection(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .queryParam("stationId", stationId)
+                .when().delete("/lines/{id}/stations", lineId)
+                .then().log().all()
+                .extract();
+    }
+
     private ExtractableResponse<Response> createSection(Long lineId, Long distance, Long upStationId, Long downStationId) {
         Map<String, String> params = createStationRequestMap(distance, upStationId, downStationId);
 
