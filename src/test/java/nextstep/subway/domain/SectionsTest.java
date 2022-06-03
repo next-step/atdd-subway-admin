@@ -148,7 +148,7 @@ class SectionsTest {
 
     @DisplayName("상행 종점역 추가")
     @Test
-    void insertToLineHead() {
+    void insertSectionWhenSectionIsHead() {
         // given
         Sections sections = new Sections(sectionList);
         Section section = new Section(10, E역, A역);
@@ -162,7 +162,7 @@ class SectionsTest {
 
     @DisplayName("하행 종점역 추가")
     @Test
-    void insertToLineTail() {
+    void insertSectionWhenSectionIsTail() {
         // given
         Sections sections = new Sections(sectionList);
         Section section = new Section(10, D역, F역);
@@ -171,6 +171,55 @@ class SectionsTest {
         sections.insertSectionWhenSectionIsTail(new Line(), section);
 
         // that
+        assertThat(sections.getLineDownStation()).isEqualTo(F역);
+    }
+
+    @DisplayName("상행역이 포함된 구간 추가")
+    @Test
+    void insertSectionWhenStationIsIncluded_1() {
+        // given
+        Sections sections = new Sections(sectionList);
+        Section section = new Section(5, A역, F역);
+
+        // when
+        sections.insertSectionWhenStationIsIncluded(null, section);
+
+        // then
+        Section find = sections.findSectionWithUpStation(A역).get();
+        assertThat(find.getDownStation()).isEqualTo(F역);
+    }
+
+    @DisplayName("하행역 포함된 구간 추가")
+    @Test
+    void insertSectionWhenStationIsIncluded_2() {
+        // given
+        Sections sections = new Sections(sectionList);
+        Section section = new Section(5, F역, D역);
+
+        // when
+        sections.insertSectionWhenStationIsIncluded(null, section);
+
+        // then
+        Section find = sections.findSectionWithDownStation(D역).get();
+        assertThat(find.getUpStation()).isEqualTo(F역);
+    }
+
+    @DisplayName("구간 추가")
+    @Test
+    public void insertSection() {
+        // given
+        List<Section> list = new ArrayList<>();
+        list.add(new Section(1 , null, C역));
+        list.add(new Section(10 , C역, D역));
+        list.add(new Section(1, D역, null));
+        Sections sections = new Sections(list);
+
+        // when
+        sections.insertSection(null, new Section(10, A역, C역));
+        sections.insertSection(null, new Section(10, D역, F역));
+
+        // then
+        assertThat(sections.getLineUpStation()).isEqualTo(A역);
         assertThat(sections.getLineDownStation()).isEqualTo(F역);
     }
 }
