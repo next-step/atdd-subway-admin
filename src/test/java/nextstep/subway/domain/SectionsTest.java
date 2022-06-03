@@ -154,9 +154,7 @@ class SectionsTest {
         Section section = new Section(10, E역, A역);
 
         // when
-        if (sections.isLineUpStation(section.getDownStation())) {
-            sections.insertToLineHead(new Line(), section);
-        }
+        sections.insertSectionWhenSectionIsHead(new Line(), section);
 
         // that
         assertThat(sections.getLineUpStation()).isEqualTo(E역);
@@ -170,9 +168,7 @@ class SectionsTest {
         Section section = new Section(10, D역, F역);
 
         // when
-        if (sections.isLineDownStation(section.getUpStation())) {
-            sections.insertToLineTail(new Line(), section);
-        }
+        sections.insertSectionWhenSectionIsTail(new Line(), section);
 
         // that
         assertThat(sections.getLineDownStation()).isEqualTo(F역);

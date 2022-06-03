@@ -23,12 +23,56 @@ public class Sections {
         this.list = list;
     }
 
-    public void add(Section section) {
+    public void addSection(Section section) {
         list.add(section);
     }
 
     public List<Section> getList() {
         return list;
+    }
+
+    public void insertSection(Line line, Section section) {
+        insertSectionWhenSectionIsHead(line, section);
+        insertSectionWhenSectionIsTail(line, section);
+        if (containBothStation(section)) {
+            return;
+        }
+        insertSectionWhenStationIsIncluded(line, section);
+    }
+
+    public void insertSectionWhenSectionIsHead(Line line, Section section) {
+        if (isLineUpStation(section.getDownStation())) {
+            Section lineUpSection = getLineUpSection();
+            lineUpSection.updateSection(section.getUpStation(), lineUpSection.getDownStation(), section.getDistance());
+            list.add(new Section(1, null, section.getUpStation(), line));
+        }
+    }
+
+    public void insertSectionWhenSectionIsTail(Line line, Section section) {
+        if (isLineDownStation(section.getUpStation())) {
+            Section lineDownSection = getLineDownSection();
+            lineDownSection.updateSection(lineDownSection.getUpStation(), section.getDownStation(), section.getDistance());
+            list.add(new Section(1, section.getDownStation(), null, line));
+        }
+    }
+
+    public void insertSectionWhenStationIsIncluded(Line line, Section section) {
+        Optional<Section> upStation = findSectionWithUpStation(section.getUpStation());
+        Optional<Section> downStation = findSectionWithDownStation(section.getDownStation());
+        upStation.ifPresent(frontSection -> insertSectionFromFront(line, frontSection, section));
+        downStation.ifPresent(rearSection -> insertSectionFromRear(line, section, rearSection));
+    }
+
+    public void insertSectionFromFront(Line line, Section frontSection, Section rearSection) {
+        int restDistance = frontSection.getDistance() - rearSection.getDistance();
+        list.add(new Section(restDistance, rearSection.getDownStation(), frontSection.getDownStation(), line));
+        frontSection.updateSection(frontSection.getUpStation(), rearSection.getDownStation(), rearSection.getDistance());
+    }
+
+    public void insertSectionFromRear(Line line, Section frontSection, Section rearSection) {
+        int restDistance = rearSection.getDistance() - frontSection.getDistance();
+        list.add(new Section(frontSection.getDistance(), frontSection.getUpStation(), rearSection.getDownStation(), line));
+        rearSection.updateSection(rearSection.getUpStation(), frontSection.getUpStation(), restDistance);
     }
 
     public boolean isLineUpStation(Station station) {
@@ -37,18 +81,6 @@ public class Sections {
 
     public boolean isLineDownStation(Station station) {
         return getLineDownStation().equals(station);
-    }
-
-    public void insertToLineHead(Line line, Section section) {
-        Section lineUpSection = getLineUpSection();
-        lineUpSection.updateSection(section.getUpStation(), lineUpSection.getDownStation(), section.getDistance());
-        add(new Section(1, null, section.getUpStation(), line));
-    }
-
-    public void insertToLineTail(Line line, Section section) {
-        Section lineDownSection = getLineDownSection();
-        lineDownSection.updateSection(lineDownSection.getUpStation(), section.getDownStation(), section.getDistance());
-        add(new Section(1, section.getDownStation(), null, line));
     }
 
     public Optional<Section> findSectionWithUpStation(Station upStation) {
