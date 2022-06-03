@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import static javax.persistence.EnumType.STRING;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -21,6 +22,8 @@ import javax.persistence.OneToMany;
 import nextstep.subway.enums.LineColor;
 import nextstep.subway.exception.DupSectionException;
 import nextstep.subway.exception.LineNotFoundException;
+import nextstep.subway.exception.SectionInvalidException;
+import nextstep.subway.exception.StationNotFoundException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -50,7 +53,8 @@ public class Line extends BaseEntity {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Set<LineStation> lineStationList = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+        CascadeType.REMOVE})
     private List<Section> sections = new LinkedList<>();
 
     public Line(Long id, String name, LineColor lineColor, Station upStation, Station downStation,
@@ -143,6 +147,55 @@ public class Line extends BaseEntity {
         }
     }
 
+    public void removeStation(Station station) {
+        validateSectionSize();
+        if (upStation.equals(station)) {
+            //상향 지하철 삭제
+            return;
+        }
+        if (downStation.equals(station)) {
+            //하향지하철삭제
+            return;
+        }
+        Section backSection = sections.stream()
+            .filter(section -> section.getUpStation().equals(station))
+            .findFirst()
+            .orElseThrow(SectionInvalidException::new);
+
+        Section nextSection = backSection.getNextSection();
+        Section newSection = Section.merge(backSection, nextSection);
+        deleteBackSectionInfo(backSection, newSection);
+        deleteNextSectionInfo(nextSection, newSection);
+        sections.add(newSection);
+    }
+
+    private void deleteNextSectionInfo(Section nextSection, Section newSection) {
+        try {
+            nextSection.getNextSection().setBackSection(newSection);
+        } catch (NullPointerException e) {
+
+        } finally {
+            sections.remove(nextSection);
+        }
+
+    }
+
+    private void deleteBackSectionInfo(Section backSection, Section newSection) {
+        try {
+            backSection.getBackSection().setNextSection(newSection);
+        } catch (NullPointerException e) {
+
+        } finally {
+            sections.remove(backSection);
+        }
+    }
+
+    private void validateSectionSize() {
+        if (sections.size() <= 1) {
+            throw new SectionInvalidException();
+        }
+    }
+
     public Long getId() {
         return id;
     }
@@ -164,4 +217,14 @@ public class Line extends BaseEntity {
     }
 
 
+    public void concatSection(Section sectionLeft, Section sectionRight) {
+        validateNoStationInLine(sectionLeft, sectionRight);
+
+    }
+
+    private void validateNoStationInLine(Section sectionLeft, Section sectionRight) {
+        if (isEmpty(sectionLeft) && isEmpty(sectionRight)) {
+            throw new StationNotFoundException();
+        }
+    }
 }
