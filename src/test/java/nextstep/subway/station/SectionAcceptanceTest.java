@@ -320,4 +320,22 @@ public class SectionAcceptanceTest {
                 .contains(10,10)
         );
     }
+
+    /**
+     * given distance가 10인 지하철역 2개와, 그를 포함하는 line이 주어지고(init) 미금-정자
+     * when 미금역을 삭제할시
+     * then 에러가 반환된다.
+     */
+    @Test
+    public void 노선_구간_삭제_구간이_1개일때_삭제불가() {
+        //given (init)
+
+        //when
+        ExtractableResponse<Response> 지하철_역_삭제하기_response = 지하철_역_삭제하기(ID_신분당선, 미금역_ID);
+
+        //then
+        assertThat(지하철_역_삭제하기_response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+
 }
