@@ -30,7 +30,7 @@ public class LineService {
         persistLine.addStation(upStation);
         persistLine.addStation(downStation);
 
-        return LineResponse.of(persistLine);
+        return LineResponse.from(persistLine);
     }
 
     @Transactional(readOnly = true)
@@ -38,14 +38,14 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(LineResponse::of)
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLineById(Long id) {
         Line line = lineRepository.getById(id);
-        return LineResponse.of(line);
+        return LineResponse.from(line);
     }
 
     public void deleteLineById(Long id) {
