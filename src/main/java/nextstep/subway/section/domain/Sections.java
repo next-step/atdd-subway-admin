@@ -97,9 +97,10 @@ public class Sections {
 
     private Section findEdgeUpSection() {
         List<Station> downStations = this.sections.stream()
-                .map(Section::getDownStation).collect(Collectors.toList());
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
         return this.sections.stream()
-                .filter(section -> !downStations.contains(section.getUpStation()))
+                .filter(section -> !section.isIncludedUpStation(downStations))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_EDGE_UP_SECTION));
     }
@@ -109,7 +110,7 @@ public class Sections {
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
         return this.sections.stream()
-                .filter(section -> !upStations.contains(section.getDownStation()))
+                .filter(section -> !section.isIncludedDownStation(upStations))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_EDGE_DOWN_SECTION));
     }
