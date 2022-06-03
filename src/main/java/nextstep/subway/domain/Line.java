@@ -92,7 +92,7 @@ public class Line extends BaseEntity {
     }
 
 
-    public void addSection(Section section) {
+    public void addSection(Section section, Section targetSection) {
         validateDupSection(section);
         int first = 0;
         int last = sections.size() - 1;
@@ -107,11 +107,7 @@ public class Line extends BaseEntity {
             return;
         }
 
-        for (Section curSection : sections) {
-            if (curSection.insert(section)) {
-                return;
-            }
-        }
+        targetSection.insert(section);
     }
 
     private void changeUpStationForAppend(Section originSection, Section appendSection) {
