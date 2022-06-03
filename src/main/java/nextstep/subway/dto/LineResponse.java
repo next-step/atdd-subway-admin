@@ -48,20 +48,4 @@ public class LineResponse {
     public String getColor() {
         return color;
     }
-
-    public Integer getDistance() {
-        return distance;
-    }
-
-    public List<StationResponse> getStations() {
-        return stations;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
-    }
 }

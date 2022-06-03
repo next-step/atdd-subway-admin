@@ -26,10 +26,6 @@ public class LineRequest {
         return downStationId;
     }
 
-    public Integer getDistance() {
-        return distance;
-    }
-
     public Line toLine() {
         return new Line(name, color, new Station(upStationId), new Station(downStationId), distance);
     }

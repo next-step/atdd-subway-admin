@@ -111,7 +111,7 @@ public class LineAcceptanceTest {
     /**
      * Given 지하철 노선을 생성하고 When 생성한 지하철 노선을 삭제하면 Then 해당 지하철 노선 정보는 삭제된다
      */
-    @DisplayName("지하철역을 제거한다.")
+    @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteStation() {
         // given
