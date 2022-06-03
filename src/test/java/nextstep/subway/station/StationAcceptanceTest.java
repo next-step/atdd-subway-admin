@@ -1,10 +1,14 @@
 package nextstep.subway.station;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
-import javax.persistence.criteria.CriteriaBuilder.In;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,26 +17,19 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
 
     @LocalServerPort
     int port;
-    private Map<String, String> params;
+    private static Map<String, String> params = new HashMap<>();
 
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
-        params = new HashMap<>();
     }
 
     /**
@@ -67,11 +64,11 @@ public class StationAcceptanceTest {
             .extract();
     }
 
-    private void 응답코드_확인(ExtractableResponse<Response> response, HttpStatus httpStatus) {
+    public static void 응답코드_확인(ExtractableResponse<Response> response, HttpStatus httpStatus) {
         assertThat(response.statusCode()).isEqualTo(httpStatus.value());
     }
 
-    private ExtractableResponse<Response> 지하철역_생성_요청(String name) {
+    public static ExtractableResponse<Response> 지하철역_생성_요청(String name) {
         params.put("name", name);
         return RestAssured.given().log().all()
             .body(params)
@@ -134,7 +131,8 @@ public class StationAcceptanceTest {
         지하철역_생성_요청("판교역");
 
         //when
-        ExtractableResponse<Response> deleteResponse = 지하철역_삭제_요청(createResponse.jsonPath().get("id"));
+        ExtractableResponse<Response> deleteResponse = 지하철역_삭제_요청(
+            createResponse.jsonPath().get("id"));
 
         //then
         응답코드_확인(deleteResponse, HttpStatus.NO_CONTENT);
