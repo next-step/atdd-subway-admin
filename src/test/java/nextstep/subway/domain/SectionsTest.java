@@ -1,11 +1,13 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.StationNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,9 +30,11 @@ class SectionsTest {
         F역 = new Station(6L, "F역");
 
         sectionList = Arrays.asList(
+                new Section(1, null, A역),
                 new Section(10, A역, B역),
                 new Section(10, B역, C역),
-                new Section(10, C역, D역)
+                new Section(10, C역, D역),
+                new Section(1, D역, null)
         );
     }
 
@@ -64,5 +68,63 @@ class SectionsTest {
 
         // when, then
         assertThat(sections.containNoneStation(new Section(30, E역, F역))).isTrue();
+    }
+
+    @DisplayName("상행역으로 구간 정보 조회")
+    @Test
+    void findSectionWithUpStation() {
+        // given
+        Sections sections = new Sections(sectionList);
+
+        // when
+        Section section = sections.findSectionWithUpStation(B역)
+                .orElseThrow(StationNotFoundException::new);
+
+        // then
+        assertThat(section.getUpStation()).isEqualTo(B역);
+        assertThat(section.getDownStation()).isEqualTo(C역);
+    }
+
+    @DisplayName("하행역으로 구간 정보 조회")
+    @Test
+    void findSectionWithDownStation() {
+        // given
+        Sections sections = new Sections(sectionList);
+
+        // when
+        Section section = sections.findSectionWithDownStation(D역)
+                .orElseThrow(StationNotFoundException::new);
+
+        // then
+        assertThat(section.getUpStation()).isEqualTo(C역);
+        assertThat(section.getDownStation()).isEqualTo(D역);
+    }
+
+    @DisplayName("상행종점역을 포함한 구간 정보 조회")
+    @Test
+    void getLineUpSection() {
+        // given
+        Sections sections = new Sections(sectionList);
+
+        // when
+        Section section = sections.getLineUpSection();
+
+        // then
+        assertThat(section.getUpStation()).isNull();
+        assertThat(section.getDownStation()).isEqualTo(A역);
+    }
+
+    @DisplayName("하행종점역 포함한 구간 정보 조회")
+    @Test
+    void getLineDownSection() {
+        // given
+        Sections sections = new Sections(sectionList);
+
+        // when
+        Section section = sections.getLineDownSection();
+
+        // then
+        assertThat(section.getUpStation()).isEqualTo(D역);
+        assertThat(section.getDownStation()).isNull();
     }
 }
