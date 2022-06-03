@@ -29,4 +29,13 @@ public class LineStations {
                 .map(LineStation::getStation)
                 .collect(Collectors.toList());
     }
+
+    public Station getPreviousOf(final Station current) {
+        return lineStations
+                .stream()
+                .filter(lineStation -> lineStation.getStation().equals(current))
+                .findFirst()
+                .get()
+                .getPrevious();
+    }
 }

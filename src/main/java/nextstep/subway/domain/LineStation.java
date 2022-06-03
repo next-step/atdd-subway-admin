@@ -27,7 +27,7 @@ public class LineStation extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "previous_station_id")
-    private Station previous = null;
+    private Station previous;
 
     public LineStation() {
     }
