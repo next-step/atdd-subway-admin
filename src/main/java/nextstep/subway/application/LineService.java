@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class LineService {
 
     private final LineRepository lineRepository;
@@ -45,7 +45,7 @@ public class LineService {
         foundLine.update(lineRequest, upStation, downStation);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
