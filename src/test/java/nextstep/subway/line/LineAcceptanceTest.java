@@ -141,7 +141,7 @@ public class LineAcceptanceTest {
         assertAll(
                 () -> assertThat(지하철노선_구간_등록_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
                 () -> assertThat(지하철노선_구간_등록_결과.jsonPath().getList("stations.name", String.class))
-                        .containsExactly("역삼역", "강남역", "교대역")
+                        .containsExactly("교대역", "강남역", "역삼역")
         );
     }
 
@@ -157,7 +157,7 @@ public class LineAcceptanceTest {
         assertAll(
                 () -> assertThat(지하철노선_구간_등록_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
                 () -> assertThat(지하철노선_구간_등록_결과.jsonPath().getList("stations.name", String.class))
-                        .containsExactly("서초역", "강남역", "교대역")
+                        .containsExactly("서초역", "교대역", "강남역")
         );
     }
 
@@ -173,7 +173,7 @@ public class LineAcceptanceTest {
         assertAll(
                 () -> assertThat(지하철노선_구간_등록_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
                 () -> assertThat(지하철노선_구간_등록_결과.jsonPath().getList("stations.name", String.class))
-                        .containsExactly("서초역", "강남역", "교대역")
+                        .containsExactly("교대역", "강남역", "역삼역")
         );
     }
 }

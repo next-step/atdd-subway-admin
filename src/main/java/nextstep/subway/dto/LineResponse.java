@@ -1,13 +1,10 @@
 package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 public class LineResponse {
     private final long id;
@@ -23,15 +20,11 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        Set<StationResponse> stationResponses = new HashSet<>();
-        Sections lineSections = line.getSections();
+        List<Station> list = line.sortByStation();
+        List<StationResponse> responses = list.stream().map(LineResponse::toStationResponse)
+                .distinct()
+                .collect(Collectors.toList());
 
-        lineSections.getSections().forEach(section -> {
-            stationResponses.add(toStationResponse(section.getUpStation()));
-            stationResponses.add(toStationResponse(section.getDownStation()));
-        });
-
-        List<StationResponse> responses = new ArrayList<>(stationResponses);
         return new LineResponse(line.getId(), line.getName(), line.getColor(), responses);
     }
 

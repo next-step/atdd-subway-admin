@@ -3,10 +3,14 @@ package nextstep.subway.domain;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Entity
 @Where(clause = "deleted=false")
 public class Line {
+    private static String NOT_FOUND_SECTION = "등록된 지하철 노선이 없습니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,6 +69,48 @@ public class Line {
 
     public Sections getSections() {
         return sections;
+    }
+
+    public Section getFirstSection() {
+        List<Station> upStation = new ArrayList<>();
+        List<Station> downStation = new ArrayList<>();
+        sections.getSections().forEach(section -> {
+            upStation.add(section.getUpStation());
+            downStation.add(section.getDownStation());
+        });
+
+        upStation.removeAll(downStation);
+        return findFirstSection(upStation.get(0));
+    }
+
+    public List<Station> sortByStation() {
+        List<Station> stations = new ArrayList<>();
+        Section section = getFirstSection();
+
+        stations.add(section.getUpStation());
+        stations.add(section.getDownStation());
+
+        // 다음역 찾기
+        while (NextSection(section) != null) {
+            Section nextSection = NextSection(section);
+            stations.add(nextSection.getDownStation());
+            section = nextSection;
+        }
+
+        return stations;
+    }
+
+    private Section findFirstSection(Station station) {
+        return sections.getSections().stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException(NOT_FOUND_SECTION));
+    }
+
+    private Section NextSection(Section firstSection) {
+        return sections.getSections().stream()
+                .filter(section -> section.isEqualsUpStation(firstSection.getDownStation()))
+                .findFirst().orElse(null);
     }
 
     public Boolean getDeleted() {
