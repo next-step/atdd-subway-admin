@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 
 import static nextstep.subway.testutils.RestAssuredMethods.*;
 
@@ -19,5 +20,9 @@ public class StationTestMethods {
 
     public static ExtractableResponse<Response> 지하철역_삭제(String location) {
         return delete(location);
+    }
+
+    public static StationResponse createStationResponse(String stationName) {
+        return 지하철역_생성(stationName).as(StationResponse.class);
     }
 }

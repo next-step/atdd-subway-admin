@@ -8,8 +8,8 @@ import static nextstep.subway.testutils.RestAssuredMethods.post;
 
 public class SectionTestMethods {
     public static final String URI_SECTIONS = "/lines/%s/sections";
-    
-    public static ExtractableResponse<Response> 구간_추가(Long id, SectionRequest sectionRequest) {
-        return post(String.format(URI_SECTIONS, id), sectionRequest);
+
+    public static ExtractableResponse<Response> 구간_추가(Long id, Long upStationId, Long downStationId, int distance) {
+        return post(String.format(URI_SECTIONS, id), SectionRequest.of(upStationId, downStationId, distance));
     }
 }
