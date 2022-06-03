@@ -5,8 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
-import java.util.Map;
+import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,9 +59,9 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        Long upStationId_b = StationAcceptanceTest.createOneStation("수원역").jsonPath().getLong("id");
-        Long downStationId_b = StationAcceptanceTest.createOneStation("압구정로데오").jsonPath().getLong("id");
-        createOneLine("분당선", "yellow", upStationId_b, downStationId_b, 10);
+        Long upStationIdOfBundang = StationAcceptanceTest.createOneStation("수원역").jsonPath().getLong("id");
+        Long downStationIdOfBundang = StationAcceptanceTest.createOneStation("압구정로데오").jsonPath().getLong("id");
+        createOneLine("분당선", "yellow", upStationIdOfBundang, downStationIdOfBundang, 10);
 
         // when
         ExtractableResponse<Response> response = getAllLines();
@@ -127,15 +126,10 @@ public class LineAcceptanceTest {
 
     public static ExtractableResponse<Response> createOneLine(String lineName, String lineColor, Long upStationId,
                                                               Long downStationId, Integer distance) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", lineName);
-        params.put("color", lineColor);
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", distance);
+        LineRequest request = new LineRequest(lineName, lineColor, upStationId, downStationId, distance);
 
         return RestAssured.given().log().all()
-                .body(params)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all()
@@ -143,12 +137,10 @@ public class LineAcceptanceTest {
     }
 
     public static ExtractableResponse<Response> updateOneLine(Long id, String lineName, String lineColor) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", lineName);
-        params.put("color", lineColor);
+        LineRequest request = new LineRequest(lineName, lineColor, null, null, null);
 
         return RestAssured.given().log().all()
-                .body(params)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/lines/" + id)
                 .then().log().all()

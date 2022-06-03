@@ -5,8 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
-import java.util.Map;
+import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -99,11 +98,10 @@ public class StationAcceptanceTest {
     }
 
     public static ExtractableResponse<Response> createOneStation(String stationName) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", stationName);
+        StationRequest request = new StationRequest(stationName);
 
         return RestAssured.given().log().all()
-                .body(params)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all()
