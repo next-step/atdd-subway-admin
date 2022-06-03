@@ -40,9 +40,7 @@ public class Sections {
 
     public void add(Section section) {
         validateContainsUpDownStation(section);
-        if (!this.sections.isEmpty() && !isEdgeSection(section)) {
-            relocateConnectSection(section);
-        }
+        relocateConnectSection(section);
         this.sections.add(section);
     }
 
@@ -72,14 +70,6 @@ public class Sections {
             throw new IllegalArgumentException(ALREADY_EXIST_UP_DOWN_STATION);
         }
     }
-
-//    private LineStations allLineStations() {
-//        List<Station> allStations = new ArrayList<>();
-//        this.sections.forEach(section -> {
-//            allStations.addAll(section.getStations());
-//        });
-//        return LineStations.from(allStations);
-//    }
 
     private LineStations sortedLineStations() {
         List<Station> sortedAllStations = new ArrayList<>();
@@ -116,7 +106,8 @@ public class Sections {
 
     private Section findEdgeDownSection() {
         List<Station> upStations = this.sections.stream()
-                .map(Section::getUpStation).collect(Collectors.toList());
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
         return this.sections.stream()
                 .filter(section -> !upStations.contains(section.getDownStation()))
                 .findFirst()
@@ -124,9 +115,11 @@ public class Sections {
     }
 
     private void relocateConnectSection(Section addedSection) {
-        Section connectSection = findConnectSection(addedSection);
-        relocateUpSection(connectSection, addedSection);
-        relocateDownSection(connectSection, addedSection);
+        if (!this.sections.isEmpty() && !isEdgeSection(addedSection)) {
+            Section connectSection = findConnectSection(addedSection);
+            relocateUpSection(connectSection, addedSection);
+            relocateDownSection(connectSection, addedSection);
+        }
     }
 
     private void relocateUpSection(Section connectSection, Section addedSection) {
@@ -146,7 +139,7 @@ public class Sections {
     private Section findConnectSection(Section section) {
         return findSectionByUpStation(section.getUpStation())
                 .orElseGet(() -> findSectionByDownStation(section.getDownStation())
-                        .orElseThrow(() -> new IllegalArgumentException(NOT_CONTAINS_CONNECT_SECTION))
+                    .orElseThrow(() -> new IllegalArgumentException(NOT_CONTAINS_CONNECT_SECTION))
                 );
     }
 
