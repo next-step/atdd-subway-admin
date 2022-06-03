@@ -3,6 +3,8 @@ package nextstep.subway.domain;
 import nextstep.subway.dto.LineRequest;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Line {
@@ -16,40 +18,35 @@ public class Line {
     @Column
     private String color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
-
-    @Column
-    private Long distance;
+    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private List<LineStation> lineStations = new ArrayList<>();
 
     protected Line() {
     }
 
-    private Line(Long id, String name, String color, Station upStation, Station downStation, Long distance) {
+    private Line(Long id, String name, String color, List<LineStation> lineStations) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+        this.lineStations = lineStations;
     }
 
-    private Line(String name, String color, Station upStation, Station downStation, Long distance) {
-        this(null, name, color, upStation, downStation, distance);
+    private Line(String name, String color, List<LineStation> lineStations) {
+        this(null, name, color, lineStations);
     }
 
-    public static Line of(LineRequest lineRequest, Station upStation, Station downStation) {
-        return new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
+    public static Line of(LineRequest lineRequest, List<LineStation> lineStations) {
+        return new Line(lineRequest.getName(), lineRequest.getColor(), lineStations);
     }
 
     public void update(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public void addLineStation(LineStation lineStation) {
+        lineStations.add(lineStation);
+        lineStation.toLine(this);
     }
 
     public Long getId() {
@@ -64,15 +61,7 @@ public class Line {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public Long getDistance() {
-        return distance;
+    public List<LineStation> getLineStations() {
+        return lineStations;
     }
 }
