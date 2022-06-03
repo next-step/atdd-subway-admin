@@ -2,13 +2,11 @@ package nextstep.subway.domain;
 
 import java.util.Optional;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import nextstep.subway.dto.LineRequest;
 
 @Entity
@@ -23,36 +21,24 @@ public class Line extends BaseEntity {
     @Column
     private String color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
-
-    @Column
-    private Long distance;
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
     }
 
-    public Line(LineRequest lineRequest, Station upStation, Station downStation) {
+    public Line(final LineRequest lineRequest, final Section section) {
         this(
                 lineRequest.getName(),
                 lineRequest.getColor(),
-                upStation,
-                downStation,
-                lineRequest.getDistance()
+                section
         );
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, Long distance) {
+    public Line(final String name, final String color, final Section section) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+        this.sections.addSection(section);
     }
 
     public Long getId() {
@@ -67,21 +53,12 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public Long getDistance() {
-        return distance;
-    }
-
     public void update(final LineRequest lineRequest) {
         Optional.ofNullable(lineRequest.getName()).ifPresent(name -> this.name = name);
         Optional.ofNullable(lineRequest.getColor()).ifPresent(color -> this.color = color);
-        Optional.ofNullable(lineRequest.getDistance()).ifPresent(distance -> this.distance = distance);
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 }

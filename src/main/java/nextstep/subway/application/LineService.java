@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
@@ -30,8 +31,9 @@ public class LineService {
     public LineResponse saveLine(final LineRequest lineRequest) {
         final Station upStation = findStationsById(lineRequest.getUpStationId());
         final Station downStation = findStationsById(lineRequest.getDownStationId());
+        final Section section = new Section(upStation, downStation, lineRequest.getDistance());
 
-        final Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
+        final Line persistLine = lineRepository.save(lineRequest.toLine(section));
         return LineResponse.of(persistLine);
     }
 

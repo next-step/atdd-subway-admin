@@ -30,6 +30,15 @@ public class Section {
     @Column
     private Long distance;
 
+    protected Section() {
+    }
+
+    public Section(final Station upStation, final Station downStation, final Long distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
     public Long getId() {
         return id;
     }
