@@ -7,7 +7,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
@@ -20,7 +19,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import nextstep.subway.enums.LineColor;
-import nextstep.subway.exception.DupSectionException;
 import nextstep.subway.exception.LineNotFoundException;
 import nextstep.subway.exception.SectionInvalidException;
 import org.apache.commons.lang3.ObjectUtils;
@@ -158,7 +156,7 @@ public class Line extends BaseEntity {
 
 
     public void replaceSectionByMerge(Section backSection, Section nextSection) {
-        Section newSection = Section.merge(backSection, nextSection);
+        Section newSection = Section.mergeOf(backSection, nextSection);
         deleteBackSectionInfo(backSection, newSection);
         deleteNextSectionInfo(nextSection, newSection);
         sections.add(newSection);
