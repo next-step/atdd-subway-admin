@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -59,6 +60,29 @@ class SectionTest {
             () -> assertThat(기존_노선.getDistanceValue()).isEqualTo(3L),
             () -> assertThat(추가된_노선.getUpStation()).isEqualTo(기존_노선.getDownStation()),
             () -> assertThat(추가된_노선.getDistanceValue()).isEqualTo(7L)
+        );
+    }
+
+    @DisplayName("노선에 삭제될 노선을 재배치 하면 기존 노선의 downStation 이 "
+        + "target 의 downStation 으로 변경되고 두 구간의 distance 가 합쳐져야 한다")
+    @Test
+    void relocate_test() {
+        // given
+        Station 노선1_upStation = new Station(1L, "테스트");
+        Station 노선1_downStation = new Station(2L, "테스트2");
+        Section 노선1 = Section.of(노선1_upStation, 노선1_downStation, 10L);
+
+        Station 노선2_upStation = new Station(2L, "테스트2");
+        Station 노선2_downStation = new Station(3L, "테스트3");
+        Section 노선2 = Section.of(노선2_upStation, 노선2_downStation, 7L);
+
+        // when
+        노선1.relocate(노선2);
+
+        // then
+        assertAll(
+            () -> assertThat(노선1.getDownStation()).isEqualTo(노선2.getDownStation()),
+            () -> assertThat(노선1.getDistanceValue()).isEqualTo(17)
         );
     }
 }

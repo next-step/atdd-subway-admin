@@ -86,7 +86,7 @@ public class Section extends BaseEntity {
     }
 
     public boolean isContains(Station station) {
-        return upStation == station || downStation == station;
+        return isEqualsUpStation(station) || isEqualsDownStation(station);
     }
 
     public boolean isStationConnectable(Section newSection) {
@@ -102,11 +102,11 @@ public class Section extends BaseEntity {
     }
 
     public boolean isEqualsUpStation(Station station) {
-        return upStation == station;
+        return upStation == station || upStation.equals(station);
     }
 
     public boolean isEqualsDownStation(Station station) {
-        return downStation == station;
+        return downStation == station || downStation.equals(station);
     }
 
     public Long getId() {
