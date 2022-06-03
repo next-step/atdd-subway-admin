@@ -22,6 +22,7 @@ import javax.persistence.OneToMany;
 import nextstep.subway.enums.LineColor;
 import nextstep.subway.exception.DupSectionException;
 import nextstep.subway.exception.LineNotFoundException;
+import nextstep.subway.exception.SectionInvalidException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -119,6 +120,25 @@ public class Line extends BaseEntity {
         originSection.appendAfterSection(appendSection);
     }
 
+    public void changeUpStationForDelete(Section lastSection){
+        validateSectionSize();
+        lastSection.getBackSection().setNextSection(null);
+        this.upStation = lastSection.getDownStation();
+        this.distance.minus(lastSection.getDistance());
+    }
+    public void changeDownStationForDelete(Section firstSection){
+        validateSectionSize();
+        firstSection.getNextSection().setBackSection(null);
+        this.downStation = firstSection.getUpStation();
+        this.distance.minus(firstSection.getDistance());
+    }
+
+    private void validateSectionSize() {
+        if(sections.size() <=1){
+            throw new SectionInvalidException();
+        }
+    }
+
     private void changeDownStationForAppend(Section originSection, Section appendSection) {
         this.distance.plus(appendSection.getDistance());
         this.downStation = appendSection.getDownStation();
@@ -196,5 +216,7 @@ public class Line extends BaseEntity {
         return downStation;
     }
 
-
+    public Distance getDistance() {
+        return distance;
+    }
 }
