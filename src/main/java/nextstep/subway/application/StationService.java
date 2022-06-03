@@ -7,6 +7,7 @@ import nextstep.subway.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityExistsException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,8 +21,13 @@ public class StationService {
     }
 
     @Transactional
-    public StationResponse saveStation(StationRequest stationRequest) {
-        Station persistStation = stationRepository.saveOne(stationRequest.toStation());
+    public StationResponse saveStation(StationRequest request) {
+        stationRepository.findByName(request.getName())
+                .ifPresent(s -> {
+                    throw new EntityExistsException("이미 존재하는 지하철역입니다. name: " + request.getName());
+                });
+
+        Station persistStation = stationRepository.save(request.toStation());
         return StationResponse.of(persistStation);
     }
 
