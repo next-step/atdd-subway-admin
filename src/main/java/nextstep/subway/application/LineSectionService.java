@@ -30,7 +30,7 @@ public class LineSectionService {
         this.lineStationRepository = lineStationRepository;
     }
 
-    @Transactional
+    @Transactional()
     public void deleteStation(Long lineId, Long stationId){
         Line line = lineRepository.findById(lineId)
             .orElseThrow(LineNotFoundException::new);

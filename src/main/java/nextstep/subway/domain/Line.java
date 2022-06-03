@@ -119,12 +119,14 @@ public class Line extends BaseEntity {
     public void changeUpStationForDelete(Section lastSection){
         validateSectionSize();
         lastSection.getBackSection().setNextSection(null);
+        sections.remove(lastSection);
         this.upStation = lastSection.getDownStation();
         this.distance.minus(lastSection.getDistance());
     }
     public void changeDownStationForDelete(Section firstSection){
         validateSectionSize();
         firstSection.getNextSection().setBackSection(null);
+        sections.remove(firstSection);
         this.downStation = firstSection.getUpStation();
         this.distance.minus(firstSection.getDistance());
     }
