@@ -119,12 +119,8 @@ public class Sections {
     }
 
     private Station firstUpStation() {
-        Set<Station> upStations = sections.stream()
-                .map(Section::upStation)
-                .collect(Collectors.toSet());
-        Set<Station> downStations = sections.stream()
-                .map(Section::downStation)
-                .collect(Collectors.toSet());
+        Set<Station> upStations = getUpStations();
+        Set<Station> downStations = getDownStations();
         return upStations.stream()
                 .filter(upStation -> !downStations.contains(upStation))
                 .findFirst()
@@ -143,12 +139,8 @@ public class Sections {
     }
 
     private Station lastDownStation() {
-        Set<Station> upStations = sections.stream()
-                .map(Section::upStation)
-                .collect(Collectors.toSet());
-        Set<Station> downStations = sections.stream()
-                .map(Section::downStation)
-                .collect(Collectors.toSet());
+        Set<Station> upStations = getUpStations();
+        Set<Station> downStations = getDownStations();
         return downStations.stream()
                 .filter(downStation -> !upStations.contains(downStation))
                 .findFirst()
@@ -160,6 +152,18 @@ public class Sections {
                 .filter(section -> station.equals(section.downStation()))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("일치하는 하행역이 없습니다."));
+    }
+
+    private Set<Station> getDownStations() {
+        return sections.stream()
+                .map(Section::downStation)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<Station> getUpStations() {
+        return sections.stream()
+                .map(Section::upStation)
+                .collect(Collectors.toSet());
     }
 
     private Section mergeSection(Section prevSection, Section nextSection) {
