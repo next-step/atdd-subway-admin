@@ -17,19 +17,19 @@ class SectionNavigatorTest {
     @Test
     void orderedStations() {
         Line line = new Line("2호선", "green");
-        Station station1 = new Station("서초역");
-        Station station2 = new Station("논현역");
-        Station station3 = new Station("신도림역");
-        Station station4 = new Station("신림역");
-        Station station5 = new Station("교대역");
-        Station station6 = new Station("강남역");
+        Station 서초역 = new Station("서초역");
+        Station 논현역 = new Station("논현역");
+        Station 신도림역 = new Station("신도림역");
+        Station 신림역 = new Station("신림역");
+        Station 교대역 = new Station("교대역");
+        Station 강남역 = new Station("강남역");
         List<Section> sections = Arrays.asList(
-                new Section(line, station1, station6, 1),
-                new Section(line, station4, station1, 1),
-                new Section(line, station5, station4, 1),
-                new Section(line, station2, station5, 1),
-                new Section(line, station3, station2, 1)
+                new Section(line, 서초역, 강남역, 1),
+                new Section(line, 신림역, 서초역, 1),
+                new Section(line, 교대역, 신림역, 1),
+                new Section(line, 논현역, 교대역, 1),
+                new Section(line, 신도림역, 논현역, 1)
         );
-        assertThat(new SectionNavigator(sections).orderedStations()).containsSequence(station3, station2, station5, station4, station1, station6);
+        assertThat(new SectionNavigator(sections).orderedStations()).containsSequence(신도림역, 논현역, 교대역, 신림역, 서초역, 강남역);
     }
 }
