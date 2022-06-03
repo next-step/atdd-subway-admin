@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.BaseAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,44 +20,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-    }
-
-    private ExtractableResponse<Response> createStationWithStationName(String stationName){
-        Map<String, String> params = new HashMap<>();
-        params.put("name", stationName);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> getStationList() {
-        return RestAssured
-            .given().log().all()
-            .when().get("/stations")
-            .then().log().all()
-            .extract();
-    }
-
-    private ExtractableResponse<Response> deleteStationWithStationName(Long stationId) {
-        return RestAssured.given().log().all()
-            .when().delete("/stations/{id}", stationId)
-            .then().log().all()
-            .extract();
-    }
+public class StationAcceptanceTest extends BaseAcceptanceTest {
 
     /**
      * When 지하철역을 생성하면
@@ -130,8 +94,36 @@ public class StationAcceptanceTest {
         deleteStationWithStationName(stationId);
 
         // then
-        List<String> stationNames = getStationList().jsonPath().getList("id", String.class);
+        List<String> stationNames = getStationList().jsonPath().getList("name", String.class);
         assertThat(stationNames).hasSize(0);
         assertThat(stationNames).doesNotContain("강남역");
+    }
+
+    public static ExtractableResponse<Response> createStationWithStationName(String stationName){
+        Map<String, String> params = new HashMap<>();
+        params.put("name", stationName);
+
+        return RestAssured
+            .given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().post("/stations")
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> getStationList() {
+        return RestAssured
+            .given().log().all()
+            .when().get("/stations")
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> deleteStationWithStationName(Long stationId) {
+        return RestAssured.given().log().all()
+            .when().delete("/stations/{id}", stationId)
+            .then().log().all()
+            .extract();
     }
 }
