@@ -58,6 +58,6 @@ public class LineService {
 
     private Line getOrElseThrow(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("노선 아이디가 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(String.format("노선 아이디가 존재하지 않습니다: %d}", id)));
     }
 }
