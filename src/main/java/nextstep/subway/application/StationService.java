@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class StationService {
     private StationRepository stationRepository;
 
@@ -35,7 +35,8 @@ public class StationService {
     }
 
     public Station findByIdOrElseThrow(Long id) {
-        return stationRepository.findById(id).orElseThrow(() -> new DataNotFoundException("지하철 역이 존재하지 않습니다."));
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("지하철 역이 존재하지 않습니다."));
     }
 
     @Transactional
