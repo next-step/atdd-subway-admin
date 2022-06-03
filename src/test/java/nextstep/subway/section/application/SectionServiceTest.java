@@ -1,7 +1,7 @@
 package nextstep.subway.section.application;
 
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
-import nextstep.subway.section.ui.SectionRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

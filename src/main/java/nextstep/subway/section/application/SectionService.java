@@ -1,7 +1,7 @@
 package nextstep.subway.section.application;
 
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
-import nextstep.subway.section.ui.SectionRequest;
 import org.springframework.stereotype.Service;
 
 @Service
