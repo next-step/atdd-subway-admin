@@ -106,4 +106,8 @@ public class Section {
         return this.distance;
     }
 
+    public Long getId() {
+        return id;
+    }
+
 }
