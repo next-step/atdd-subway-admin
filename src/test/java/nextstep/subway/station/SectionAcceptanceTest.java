@@ -253,5 +253,39 @@ public class SectionAcceptanceTest {
         );
     }
 
+    /**
+     * given distance가 10인 지하철역 2개와, 그를 포함하는 line이 주어지고(init) 미금-정자
+     * given 지하철역 2개를 추가 및 구간등록을 한 뒤
+     * when 가장 앞의 역을 삭제하면
+     * then line의 시작지점과 distance, 구간들이 변경된다.
+     */
+    @Test
+    public void 노선_구간_삭제_출발지변경_테스트() {
+        //given /* 성복 - 수지구청 - 미금 - 정자*/
+        String 수지구청_ID = 지하철역_만들기("수지구청역").jsonPath().get("id").toString();
+        String 성복_ID = 지하철역_만들기("성복역").jsonPath().get("id").toString();
+        지하철_구간_등록하기(수지구청_ID, 미금역_ID, "10", ID_신분당선);
+        지하철_구간_등록하기(성복_ID, 수지구청_ID, "10", ID_신분당선);
+        ExtractableResponse<Response> 지하철_노선_조회하기_response1 = 지하철_노선_조회하기(ID_신분당선);
 
+        //when
+        지하철_역_삭제하기(ID_신분당선, 성복_ID);
+
+        //then
+        ExtractableResponse<Response> 지하철_구간_조회하기_response = 지하철_구간_조회하기(ID_신분당선);
+        ExtractableResponse<Response> 지하철_노선_조회하기_response = 지하철_노선_조회하기(ID_신분당선);
+
+        assertAll(
+            () -> assertThat(지하철_노선_조회하기_response.jsonPath().getList("stations.name"))
+                .contains("수지구청역", "정자역"),
+            () -> assertThat(지하철_노선_조회하기_response.jsonPath().get("distance").toString())
+                .isEqualTo("20"),
+            () -> assertThat(지하철_구간_조회하기_response.jsonPath().getList("downStationInfo.name"))
+                .contains("수지구청역", "미금역"),
+            () -> assertThat(지하철_구간_조회하기_response.jsonPath().getList("upStationInfo.name"))
+                .contains("미금역", "정자역"),
+            () -> assertThat(지하철_구간_조회하기_response.jsonPath().getList("distance"))
+                .contains(10,10)
+        );
+    }
 }
