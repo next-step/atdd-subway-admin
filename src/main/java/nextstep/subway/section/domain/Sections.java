@@ -74,9 +74,13 @@ public class Sections{
     private List<Station> getStations(){
         List<Station> stations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
         if(!stations.isEmpty()) {
-            stations.add(sections.get(sections.size() - 1).getDownStation());
+            addLastDownStation(stations);
         }
         return stations;
+    }
+
+    private boolean addLastDownStation(List<Station> stations) {
+        return stations.add(sections.get(sections.size() - 1).getDownStation());
     }
 
     private boolean hasStation(Station station){

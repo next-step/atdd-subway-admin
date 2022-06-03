@@ -44,12 +44,12 @@ public class Line {
         return id;
     }
 
-    public LineName getName() {
-        return name;
+    public String getName() {
+        return name.getName();
     }
 
-    public LineColor getColor() {
-        return color;
+    public String getColor() {
+        return color.getColor();
     }
 
     public Sections getSections() {

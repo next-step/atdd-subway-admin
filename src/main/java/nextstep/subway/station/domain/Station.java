@@ -28,8 +28,8 @@ public class Station extends BaseEntity {
         return id;
     }
 
-    public StationName getName() {
-        return name;
+    public String getName() {
+        return name.getName();
     }
 
     @Override
@@ -45,6 +45,6 @@ public class Station extends BaseEntity {
         if (obj == null || !(obj instanceof  Station)) {
             return false;
         }
-        return ((Station)obj).getId() == id && ((Station)obj).getName() == name;
+        return ((Station)obj).getId() == id && ((Station)obj).getName() == this.getName();
     }
 }

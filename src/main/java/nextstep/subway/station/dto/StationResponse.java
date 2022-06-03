@@ -14,9 +14,9 @@ public class StationResponse {
     public StationResponse() {
     }
 
-    private StationResponse(Long id, StationName name) {
+    private StationResponse(Long id, String name) {
         this.id = id;
-        this.name = name.getName();
+        this.name = name;
     }
 
     public static StationResponse from(Station station) {
