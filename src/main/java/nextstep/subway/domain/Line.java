@@ -118,7 +118,7 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        section.setLine(this);
         sections.addSections(section);
+        section.setLine(this);
     }
 }

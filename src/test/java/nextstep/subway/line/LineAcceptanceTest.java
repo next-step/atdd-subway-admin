@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
+import static nextstep.subway.domain.Section.DISTANCE_LENGTH_ERROR;
+import static nextstep.subway.domain.Sections.DUPLICATE_SECTION_ERROR;
 import static nextstep.subway.utils.AcceptanceApiFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -49,10 +51,10 @@ public class LineAcceptanceTest {
     @Test
     @DisplayName("지하철 노선을 생성 후 지하철 노선 목록 조회 테스트")
     void createLineAndFindLines() {
-        ExtractableResponse<Response> response = 지하철노선_생성("2호선", "bg-green-600", 강남역_ID, 교대역_ID);
+        ExtractableResponse<Response> 지하철노선_생성_결과 = 지하철노선_생성("2호선", "bg-green-600", 강남역_ID, 교대역_ID);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(지하철노선_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         List<String> 지하철노선_조회_결과 = 지하철노선_목록_조회();
         assertAll(
@@ -188,7 +190,22 @@ public class LineAcceptanceTest {
 
         assertAll(
                 () -> assertThat(지하철노선_구간_등록_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(지하철노선_구간_등록_결과.jsonPath().getString("message")).isEqualTo("역 사이 길이보다 크거나 같을 수 없습니다.")
+                () -> assertThat(지하철노선_구간_등록_결과.jsonPath().getString("message")).isEqualTo(DISTANCE_LENGTH_ERROR)
+        );
+    }
+
+    @Test
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록된 경우 테스트")
+    void newStationDuplicate() {
+        ExtractableResponse<Response> 지하철노선_생성_결과 = 지하철노선_생성("2호선", "bg-green-600", 교대역_ID, 역삼역_ID);
+        assertThat(지하철노선_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        Long 지하철노선_ID = 지하철노선_생성_결과.jsonPath().getLong("id");
+        ExtractableResponse<Response> 지하철노선_구간_등록_결과 = 지하철노선_구간_등록(지하철노선_ID, 교대역_ID, 역삼역_ID, 5);
+
+        assertAll(
+                () -> assertThat(지하철노선_구간_등록_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(지하철노선_구간_등록_결과.jsonPath().getString("message")).isEqualTo(DUPLICATE_SECTION_ERROR)
         );
     }
 }

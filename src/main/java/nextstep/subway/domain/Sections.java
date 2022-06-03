@@ -9,6 +9,7 @@ import java.util.NoSuchElementException;
 
 @Embeddable
 public class Sections {
+    public static String DUPLICATE_SECTION_ERROR = "중복된 지하철 노선을 등록할 수 없습니다.";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
@@ -29,7 +30,7 @@ public class Sections {
 
     private void validate(Section section) {
         if (sections.contains(section)) {
-            throw new IllegalArgumentException("중복된 섹션");
+            throw new IllegalArgumentException(DUPLICATE_SECTION_ERROR);
         }
     }
 

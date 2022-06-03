@@ -5,7 +5,7 @@ import java.util.Objects;
 
 @Entity
 public class Section {
-    private static final String DISTANCE_LENGTH_ERROR = "역 사이 길이보다 크거나 같을 수 없습니다.";
+    public static final String DISTANCE_LENGTH_ERROR = "역 사이 길이보다 크거나 같을 수 없습니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -84,11 +84,12 @@ public class Section {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return Objects.equals(id, section.id);
+        return Objects.equals(getUpStation(), section.getUpStation())
+                && Objects.equals(getDownStation(), section.getDownStation());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(getUpStation(), getDownStation());
     }
 }
