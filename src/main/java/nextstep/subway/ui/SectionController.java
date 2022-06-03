@@ -31,7 +31,8 @@ public class SectionController {
     public ResponseEntity saveSection(@PathVariable Long lineId,
         @RequestBody SectionRequest sectionRequest) {
         sectionService.createSection(lineId, sectionRequest);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+            .build();
     }
 
     @GetMapping("")
