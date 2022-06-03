@@ -1,5 +1,7 @@
 package nextstep.subway.application;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -32,5 +34,10 @@ public class LineService {
             lineRequest.getDistance());
         lineRepository.save(line);
         return LineResponse.of(line);
+    }
+
+    public List<LineResponse> findAllLine() {
+        List<Line> lines = lineRepository.findAll();
+        return lines.stream().map(line -> LineResponse.of(line)).collect(Collectors.toList());
     }
 }
