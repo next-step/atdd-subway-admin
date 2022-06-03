@@ -85,11 +85,11 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_조회() {
         // given
-        Long lineId = createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10L))
-                .jsonPath().getLong("id");
+        String location = createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10L))
+                .header("Location");
 
         // when
-        LineResponse line = getLine(lineId).jsonPath()
+        LineResponse line = getLine(location).jsonPath()
                 .getObject("", LineResponse.class);
 
 
@@ -106,7 +106,7 @@ public class LineAcceptanceTest {
     @Test
     void 존재하지_않는_지하철_노선_조회() {
         // when
-        ExtractableResponse<Response> response = getLine(10L);
+        ExtractableResponse<Response> response = getLine("/lines/10");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
@@ -121,14 +121,14 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_수정() {
         // given
-        ExtractableResponse<Response> response = createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10L));
-        Long lineId = response.body().jsonPath().getLong("id");
+        String location = createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10L))
+                .header("Location");
 
         // when
-        editLine(lineId, new LineRequest("다른분당선", ""));
+        editLine(location, new LineRequest("다른분당선", ""));
 
         // then
-        LineResponse line = getLine(lineId).jsonPath()
+        LineResponse line = getLine(location).jsonPath()
                 .getObject("", LineResponse.class);
         assertThat(line.getName()).isEqualTo("다른분당선");
     }
@@ -141,7 +141,7 @@ public class LineAcceptanceTest {
     @Test
     void 존재하지_않는_지하철_노선_수정() {
         // when
-        ExtractableResponse<Response> response = editLine(10L, new LineRequest("다른분당선", "bg-red-600"));
+        ExtractableResponse<Response> response = editLine("/lines/10", new LineRequest("다른분당선", "bg-red-600"));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
@@ -156,11 +156,11 @@ public class LineAcceptanceTest {
     @Test
     void 생성한_지하철_노선_삭제() {
         // given
-        ExtractableResponse<Response> response = createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10L));
-        Long lineId = response.body().jsonPath().getLong("id");
+        String location = createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10L))
+                .header("Location");
 
         // when
-        deleteLine(lineId);
+        deleteLine(location);
 
         // then
         List<String> lineNames = getLinesIn("name", String.class);
@@ -175,24 +175,24 @@ public class LineAcceptanceTest {
     @Test
     void 존재하지_않는_노선_삭제() {
         // when
-        ExtractableResponse<Response> response = deleteLine(1L);
+        ExtractableResponse<Response> response = deleteLine("lines/10");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-    private ExtractableResponse<Response> deleteLine(Long lineId) {
+    private ExtractableResponse<Response> deleteLine(String location) {
         return RestAssured.given().log().all()
-                .when().delete(ENDPOINT + "/" + lineId)
+                .when().delete(location)
                 .then().log().all()
                 .extract();
     }
 
-    private ExtractableResponse<Response> editLine(Long lineId, LineRequest body) {
+    private ExtractableResponse<Response> editLine(String location, LineRequest body) {
         return RestAssured.given().log().all()
                 .body(body)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put(ENDPOINT + "/" + lineId)
+                .when().put(location)
                 .then().log().all()
                 .extract();
     }
@@ -213,9 +213,9 @@ public class LineAcceptanceTest {
                 .extract().jsonPath().getList(path, genericType);
     }
 
-    private ExtractableResponse<Response> getLine(Long lineId) {
+    private ExtractableResponse<Response> getLine(String location) {
         return RestAssured.given().log().all()
-                .when().get(ENDPOINT + "/" + lineId)
+                .when().get(location)
                 .then().log().all()
                 .extract();
     }

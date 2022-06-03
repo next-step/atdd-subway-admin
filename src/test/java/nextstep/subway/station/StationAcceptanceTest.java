@@ -97,11 +97,11 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Long stationId = createStation(new StationRequest("여의나루역"))
-                .jsonPath().getLong("id");
+        String location = createStation(new StationRequest("여의나루역"))
+                .header("Location");
 
         // when
-        deleteStation(stationId);
+        deleteStation(location);
 
         // then
         List<String> stationNames = getStationsIn("name", String.class);
@@ -116,7 +116,7 @@ public class StationAcceptanceTest {
     @Test
     void 존재하지_않는_지하철역_삭제() {
         // when
-        ExtractableResponse<Response> response = deleteStation(1L);
+        ExtractableResponse<Response> response = deleteStation("/stations/10");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
@@ -138,9 +138,9 @@ public class StationAcceptanceTest {
                 .extract().jsonPath().getList(path, genericType);
     }
 
-    private ExtractableResponse<Response> deleteStation(Long stationId) {
+    private ExtractableResponse<Response> deleteStation(String location) {
         return RestAssured.given().log().all()
-                .when().delete(ENDPOINT + "/" + stationId)
+                .when().delete(location)
                 .then().log().all()
                 .extract();
     }
