@@ -215,16 +215,4 @@ public class Line extends BaseEntity {
     public Station getDownStation() {
         return downStation;
     }
-
-
-    public void concatSection(Section sectionLeft, Section sectionRight) {
-        validateNoStationInLine(sectionLeft, sectionRight);
-
-    }
-
-    private void validateNoStationInLine(Section sectionLeft, Section sectionRight) {
-        if (isEmpty(sectionLeft) && isEmpty(sectionRight)) {
-            throw new StationNotFoundException();
-        }
-    }
 }
