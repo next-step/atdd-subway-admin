@@ -6,6 +6,7 @@ import static nextstep.subway.line.LineAcceptance.toLineStationNames;
 import static nextstep.subway.line.LineAcceptance.지하철_노선_생성;
 import static nextstep.subway.line.LineAcceptance.지하철_노선_조회;
 import static nextstep.subway.section.SectionAcceptance.지하철_구간_등록;
+import static nextstep.subway.section.SectionAcceptance.지하철_구간_제거;
 import static nextstep.subway.station.StationAcceptance.toStationId;
 import static nextstep.subway.station.StationAcceptance.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -107,6 +108,48 @@ class SectionAcceptanceTest extends AcceptanceTest {
                     () -> assertThat(result.getStations()).hasSize(3),
                     () -> assertThat(toLineStationNames(result)).containsExactly("대림역", "강남역", "신림역")
                 );
+            })
+        );
+    }
+
+    @DisplayName("중간에 있는 역을 제거한다.")
+    @TestFactory
+    Stream<DynamicTest> deleteSection() {
+        return Stream.of(
+            dynamicTest("삭제를 위해 구간을 등록한다" , () -> {
+                SectionRequest sectionRequest = new SectionRequest(강남역_id, 신림역_id, 10L);
+                ExtractableResponse<Response> saveResponse = 지하철_구간_등록(노선_id, sectionRequest);
+                assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+            }),
+            dynamicTest("중간 구간인 강남역을 삭제하면 정상적으로 삭제되어야 한다", () -> {
+                ExtractableResponse<Response> response = 지하철_구간_제거(노선_id, 강남역_id);
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+            }),
+            dynamicTest("삭제되면 정상적으로 노선 하나에 대림 신림만 남아야 한다", () -> {
+                ExtractableResponse<Response> response = 지하철_노선_조회(노선_id);
+                LineResponse lineResponse = toLine(response);
+                assertThat(toLineStationNames(lineResponse)).containsExactly("대림역", "신림역");
+            })
+        );
+    }
+
+    @DisplayName("종점에 있는 역을 제거한다.")
+    @TestFactory
+    Stream<DynamicTest> deleteSection2() {
+        return Stream.of(
+            dynamicTest("삭제를 위해 구간을 등록한다" , () -> {
+                SectionRequest sectionRequest = new SectionRequest(강남역_id, 신림역_id, 10L);
+                ExtractableResponse<Response> saveResponse = 지하철_구간_등록(노선_id, sectionRequest);
+                assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+            }),
+            dynamicTest("중간 구간인 신림역을 삭제하면 정상적으로 삭제되어야 한다", () -> {
+                ExtractableResponse<Response> response = 지하철_구간_제거(노선_id, 신림역_id);
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+            }),
+            dynamicTest("삭제되면 정상적으로 노선 하나에 대림 강남만 남아야 한다", () -> {
+                ExtractableResponse<Response> response = 지하철_노선_조회(노선_id);
+                LineResponse lineResponse = toLine(response);
+                assertThat(toLineStationNames(lineResponse)).containsExactly("대림역", "강남역");
             })
         );
     }
