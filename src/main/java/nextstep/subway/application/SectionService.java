@@ -48,6 +48,7 @@ public class SectionService {
             new Distance(sectionRequest.getDistance()));
         Section targetSection = null;
         Station addStation = null;
+
         if (lineStationRepository.findAllByStationAndLine(upStation, line).isPresent()) {
             targetSection = sectionRepository.findAllByUpStationAndLine(upStation, line)
                 .orElse(null);
@@ -57,8 +58,7 @@ public class SectionService {
                 .orElse(null);
             addStation = upStation;
         }
-        /* 성복 - 수지구청 - 미금 - 정자*/
-        /* 수지 동*/
+
         lineStationRepository.save(new LineStation(line, addStation));
         line.addSection(appendSection, targetSection);
     }
