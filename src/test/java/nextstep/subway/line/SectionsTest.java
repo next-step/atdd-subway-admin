@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @DisplayName("노선에 속한 구간 관련 테스트")
 class SectionsTest {
@@ -76,10 +77,12 @@ class SectionsTest {
     @Test
     void addTooLongSection() {
         Station station = new Station("서초역");
-        assertThatThrownBy(() -> line.addSection(stationA, station, DEFAULT_DISTANCE))
-                        .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> line.addSection(stationA, station, DEFAULT_DISTANCE + 1))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertSoftly(softAssertions -> {
+            softAssertions.assertThatThrownBy(() -> line.addSection(stationA, station, DEFAULT_DISTANCE))
+                    .isInstanceOf(IllegalArgumentException.class);
+            softAssertions.assertThatThrownBy(() -> line.addSection(stationA, station, DEFAULT_DISTANCE + 1))
+                    .isInstanceOf(IllegalArgumentException.class);
+        });
     }
 
     @DisplayName("등록하는 구간의 상행역과 하행역이 이미 등록되어 있다면 등록할 수 없다")
