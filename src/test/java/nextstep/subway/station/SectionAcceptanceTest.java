@@ -337,5 +337,21 @@ public class SectionAcceptanceTest {
         assertThat(지하철_역_삭제하기_response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * given distance가 10인 지하철역 2개와, 그를 포함하는 line이 주어지고(init) 미금-정자
+     * given 수지구청역을 생성만하고 line에 포함을 시키지 않은 뒤에
+     * when 수지구청역을 삭제할시
+     * then 에러가 반환된다.
+     */
+    @Test
+    public void 노선_구간_삭제_등록되지않은_역은_삭제불가() {
+        //given
+        String 수지구청_ID = 지하철역_만들기("수지구청역").jsonPath().get("id").toString();
 
+        //when
+        ExtractableResponse<Response> 지하철_역_삭제하기_response = 지하철_역_삭제하기(ID_신분당선, 수지구청_ID);
+
+        //then
+        assertThat(지하철_역_삭제하기_response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
