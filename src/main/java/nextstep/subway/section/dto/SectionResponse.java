@@ -3,6 +3,7 @@ package nextstep.subway.section.dto;
 import nextstep.subway.section.domain.Section;
 
 public class SectionResponse {
+    private Long id;
     private String downStationId;
     private String upStationId;
     private int distance;
@@ -18,6 +19,10 @@ public class SectionResponse {
 
     public static SectionResponse of(Section section) {
         return new SectionResponse(section.getDownStationId(), section.getUpStationId(), section.getDistance());
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getDownStationId() {
