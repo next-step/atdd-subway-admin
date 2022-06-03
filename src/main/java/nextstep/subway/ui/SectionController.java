@@ -30,7 +30,7 @@ public class SectionController {
     @PostMapping()
     public ResponseEntity saveSection(@PathVariable Long lineId,
         @RequestBody SectionRequest sectionRequest) {
-        sectionService.createSection(lineId, sectionRequest);
+        lineSectionService.createSection(lineId, sectionRequest);
         return ResponseEntity.ok()
             .build();
     }

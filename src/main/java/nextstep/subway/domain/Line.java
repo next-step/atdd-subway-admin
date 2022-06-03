@@ -93,7 +93,6 @@ public class Line extends BaseEntity {
 
 
     public void addSection(Section section, Section targetSection) {
-        validateDupSection(section);
         int first = 0;
         int last = sections.size() - 1;
 
@@ -156,15 +155,7 @@ public class Line extends BaseEntity {
         return sectionOrdered;
     }
 
-    private void validateDupSection(Section section) {
-        Optional<Section> sectionAlreadyPersistCheck = sections.stream().filter(
-                o -> o.getDownStation().equals(section.getDownStation()) && o.getUpStation()
-                    .equals(section.getUpStation()))
-            .findFirst();
-        if (sectionAlreadyPersistCheck.isPresent()) {
-            throw new DupSectionException();
-        }
-    }
+
 
     public void replaceSectionByMerge(Section backSection, Section nextSection) {
         Section newSection = Section.merge(backSection, nextSection);
