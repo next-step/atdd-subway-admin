@@ -3,13 +3,12 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Embeddable
 public class Sections {
     public static String DUPLICATE_SECTION_ERROR = "중복된 지하철 노선을 등록할 수 없습니다.";
+    public static String NOT_MATCH_STATION_ERROR = "상행역과 하행역 둘 중 하나도 포함되지 않은 경우 지하철 노선을 등록할 수 없습니다.";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
@@ -28,10 +27,29 @@ public class Sections {
         return sections;
     }
 
+    public List<Station> getStations() {
+        Set<Station> stations = new HashSet<>();
+
+        sections.forEach(section -> {
+            stations.add(section.getUpStation());
+            stations.add(section.getDownStation());
+        });
+
+        return new ArrayList<>(stations);
+    }
+
     private void validate(Section section) {
         if (sections.contains(section)) {
             throw new IllegalArgumentException(DUPLICATE_SECTION_ERROR);
         }
+
+        if (getStations().size() > 0 && !isContainsStation(section.getUpStation(), section.getDownStation())) {
+            throw new IllegalArgumentException(NOT_MATCH_STATION_ERROR);
+        }
+    }
+
+    private boolean isContainsStation(Station upStation, Station downStation) {
+        return getStations().contains(upStation) || getStations().contains(downStation);
     }
 
     private void checkUpStation(Section section) {

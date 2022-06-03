@@ -16,6 +16,7 @@ import java.util.List;
 
 import static nextstep.subway.domain.Section.DISTANCE_LENGTH_ERROR;
 import static nextstep.subway.domain.Sections.DUPLICATE_SECTION_ERROR;
+import static nextstep.subway.domain.Sections.NOT_MATCH_STATION_ERROR;
 import static nextstep.subway.utils.AcceptanceApiFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -206,6 +207,27 @@ public class LineAcceptanceTest {
         assertAll(
                 () -> assertThat(지하철노선_구간_등록_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
                 () -> assertThat(지하철노선_구간_등록_결과.jsonPath().getString("message")).isEqualTo(DUPLICATE_SECTION_ERROR)
+        );
+    }
+
+    @Test
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가 불가 테스트")
+    void notMatchStation() {
+        ExtractableResponse<Response> 지하철노선_생성_결과 = 지하철노선_생성("2호선", "bg-green-600", 교대역_ID, 강남역_ID);
+        assertThat(지하철노선_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Long 지하철노선_ID = 지하철노선_생성_결과.jsonPath().getLong("id");
+
+        ExtractableResponse<Response> 지하철노선_구간_등록_결과 = 지하철노선_구간_등록(지하철노선_ID, 서초역_ID, 교대역_ID, 3);
+        assertThat(지하철노선_구간_등록_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        int 남부터미널역_ID = 지하철역_생성("남부터미널역").jsonPath().getInt("id");
+        int 양재역_ID = 지하철역_생성("양재역").jsonPath().getInt("id");
+
+        ExtractableResponse<Response> 지하철노선_미포함_등록_결과 = 지하철노선_구간_등록(지하철노선_ID, 남부터미널역_ID, 양재역_ID, 3);
+
+        assertAll(
+                () -> assertThat(지하철노선_미포함_등록_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(지하철노선_미포함_등록_결과.jsonPath().getString("message")).isEqualTo(NOT_MATCH_STATION_ERROR)
         );
     }
 }
