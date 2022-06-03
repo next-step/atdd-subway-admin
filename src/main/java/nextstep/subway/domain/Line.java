@@ -141,7 +141,11 @@ public class Line extends BaseEntity {
     }
 
     private void validateDupSection(Section section) {
-        if (sections.contains(section)) {
+        Optional<Section> sectionAlreadyPersistCheck = sections.stream().filter(
+                o -> o.getDownStation().equals(section.getDownStation()) && o.getUpStation()
+                    .equals(section.getUpStation()))
+            .findFirst();
+        if (sectionAlreadyPersistCheck.isPresent()) {
             throw new DupSectionException();
         }
     }
