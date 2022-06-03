@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 public class LineTest {
     @Test
-    void 노선_이름과_색상을_파라미터로_Line_객체가_생성되어야_한다() {
+    void 이름과_색상으로_노선이_생성되어야_한다() {
         // given
         final String lineName = "신분당선";
         final String color = "bg-red-600";
@@ -21,7 +21,7 @@ public class LineTest {
     }
 
     @Test
-    void 노선에_지하철역과의_연관관계를_추가할_수_있어야_한다() {
+    void 지하철역과의_연관관계를_추가할_수_있어야_한다() {
         // given
         final Station station1 = new Station("강남역");
         final Station station2 = new Station("양재역");
@@ -39,8 +39,10 @@ public class LineTest {
     void 다른_노선과_지하철역의_연관관계를_추가하면_IllegalArgumentException이_발생해야_한다() {
         // given
         final Line line = new Line("신분당선", "bg-red-600");
-        final LineStation lineStation = new LineStation(new Line("2호천", "bg-green-600"),
-                new Station("강남역"));
+        final LineStation lineStation = new LineStation(
+                new Line("2호천", "bg-green-600"),
+                new Station("강남역")
+        );
 
         // when and then
         assertThatThrownBy(() -> line.relateToStation(lineStation))
@@ -48,7 +50,7 @@ public class LineTest {
     }
 
     @Test
-    void 이름과_색상을_파라미터로_노선을_수정할_수_있어야_한다() {
+    void 노선을_수정할_수_있어야_한다() {
         // given
         final Line line = new Line("신분당선", "bg-red-600");
         final String newName = "수정된이름";
