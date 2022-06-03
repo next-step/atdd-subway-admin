@@ -183,6 +183,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간이_삭제된다(구간_삭제_응답);
     }
 
+    /**
+     * Given 2개의 구간을 생성하고
+     * When 구간의 중간역을 삭제하면
+     * Then 지하철 노선에 종점이 삭제된다.
+     */
+    @Test
+    void 구간의_중간역을_삭제한다() {
+        // given
+        Long 판교역_id = id_추출(지하철역_생성("판교역"));
+        SectionRequest 신규_구간 = new SectionRequest(판교역_id, 정자역_id, 5);
+        노선에_신규_구간을_등록(신분당선, 신규_구간);
+
+        // when
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간을_삭제한다(신분당선, 판교역_id);
+
+        // then
+        구간이_삭제된다(구간_삭제_응답);
+    }
+
     public static class SectionAcceptanceTemplate {
         public static void 노선에_신규_구간이_정상_등록된다(ExtractableResponse<Response> 신규_구간이_등록된_노선) {
             assertThat(신규_구간이_등록된_노선.statusCode()).isEqualTo(HttpStatus.CREATED.value());
