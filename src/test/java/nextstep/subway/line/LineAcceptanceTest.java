@@ -130,7 +130,7 @@ public class LineAcceptanceTest {
     }
 
     @Test
-    @DisplayName("역사이에 역을 신규로 등록하는 경우")
+    @DisplayName("역사이에 역을 신규로 등록하는 경우 테스트")
     void newStationBetweenTheStations() {
         ExtractableResponse<Response> 지하철노선_생성_결과 = 지하철노선_생성("2호선", "bg-green-600", 교대역_ID, 역삼역_ID);
         assertThat(지하철노선_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -146,7 +146,7 @@ public class LineAcceptanceTest {
     }
 
     @Test
-    @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
+    @DisplayName("새로운 역을 상행 종점으로 등록할 경우 테스트")
     void newStationUpLastStation() {
         ExtractableResponse<Response> 지하철노선_생성_결과 = 지하철노선_생성("2호선", "bg-green-600", 교대역_ID, 강남역_ID);
         assertThat(지하철노선_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -162,7 +162,7 @@ public class LineAcceptanceTest {
     }
 
     @Test
-    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
+    @DisplayName("새로운 역을 하행 종점으로 등록할 경우 테스트")
     void newStationDownLastStation() {
         ExtractableResponse<Response> 지하철노선_생성_결과 = 지하철노선_생성("2호선", "bg-green-600", 교대역_ID, 강남역_ID);
         assertThat(지하철노선_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -174,6 +174,21 @@ public class LineAcceptanceTest {
                 () -> assertThat(지하철노선_구간_등록_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
                 () -> assertThat(지하철노선_구간_등록_결과.jsonPath().getList("stations.name", String.class))
                         .containsExactly("교대역", "강남역", "역삼역")
+        );
+    }
+
+    @Test
+    @DisplayName("새로운 역을 등록시 기존역보다 길이가 긴 경우 테스트")
+    void newStationOverDistance() {
+        ExtractableResponse<Response> 지하철노선_생성_결과 = 지하철노선_생성("2호선", "bg-green-600", 교대역_ID, 역삼역_ID);
+        assertThat(지하철노선_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        Long 지하철노선_ID = 지하철노선_생성_결과.jsonPath().getLong("id");
+        ExtractableResponse<Response> 지하철노선_구간_등록_결과 = 지하철노선_구간_등록(지하철노선_ID, 교대역_ID, 강남역_ID, 100);
+
+        assertAll(
+                () -> assertThat(지하철노선_구간_등록_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(지하철노선_구간_등록_결과.jsonPath().getString("message")).isEqualTo("역 사이 길이보다 크거나 같을 수 없습니다.")
         );
     }
 }
