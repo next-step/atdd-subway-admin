@@ -1,6 +1,7 @@
 package nextstep.subway.application;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -20,7 +21,7 @@ public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
     private static final String INVALID_STATION = "유효하지 않은 지하철역입니다.";
-    private static final String INVALID_LINE = "유효하지 않은 지하철 노선입니다.";
+    private static final String INVALID_LINE = "%d : 유효하지 않은 지하철 노선입니다.";
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -37,8 +38,10 @@ public class LineService {
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
+        Optional<Line> lineOptional = lineRepository.findById(id);
+        String lineName = lineOptional.orElse(null).getName();
         Line foundLine = lineRepository.findById(id).orElseThrow(
-            () -> new InvalidLineException(INVALID_LINE)
+            () -> new InvalidLineException(String.format(INVALID_LINE, lineName))
         );
         Station upStation = findStationById(foundLine.getUpStation().getId());
         Station downStation = findStationById(foundLine.getDownStation().getId());
@@ -60,9 +63,11 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse findLineById(Long id) {
-        return LineResponse.of(lineRepository.findById(id)
-            .orElseThrow(() -> new InvalidLineException(INVALID_LINE)));
+    public LineResponse findById(Long id) {
+        Optional<Line> lineOptional = lineRepository.findById(id);
+        String lineName = lineOptional.orElse(null).getName();
+        return LineResponse.of(lineOptional
+            .orElseThrow(() -> new InvalidLineException(String.format(INVALID_LINE, lineName))));
     }
 
     private Station findStationById(Long stationId) {
