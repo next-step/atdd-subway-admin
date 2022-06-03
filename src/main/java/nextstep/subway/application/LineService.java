@@ -39,24 +39,24 @@ public class LineService {
     }
 
     public LineResponse findLineById(final Long id) {
-        final Line line = validateAndFind(id);
+        final Line line = getOrElseThrow(id);
         return LineResponse.of(line);
     }
 
     @Transactional
     public void modifyLine(final Long id, final LineRequest lineRequest) {
-        final Line line = validateAndFind(id);
+        final Line line = getOrElseThrow(id);
         line.update(lineRequest.getName(), lineRequest.getColor());
         lineRepository.save(line);
     }
 
     @Transactional
     public void deleteLineById(final Long id) {
-        final Line line = validateAndFind(id);
+        final Line line = getOrElseThrow(id);
         lineRepository.delete(line);
     }
 
-    private Line validateAndFind(Long id) {
+    private Line getOrElseThrow(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("노선 아이디가 존재하지 않습니다."));
     }
