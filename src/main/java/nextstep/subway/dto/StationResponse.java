@@ -4,16 +4,19 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import nextstep.subway.domain.Station;
 
-public class StationResponse extends BaseResponse {
+public class StationResponse {
 
     private final Long id;
     private final String name;
+    private LocalDateTime createdDate;
+    private LocalDateTime modifiedDate;
 
     private StationResponse(Long id, String name, LocalDateTime createdDate,
         LocalDateTime modifiedDate) {
-        super(createdDate, modifiedDate);
         this.id = id;
         this.name = name;
+        this.createdDate = createdDate;
+        this.modifiedDate = modifiedDate;
     }
 
     public static StationResponse of(Station station) {
@@ -27,6 +30,14 @@ public class StationResponse extends BaseResponse {
 
     public String getName() {
         return name;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public LocalDateTime getModifiedDate() {
+        return modifiedDate;
     }
 
     @Override

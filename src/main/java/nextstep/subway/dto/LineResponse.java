@@ -6,20 +6,23 @@ import java.util.List;
 import java.util.Objects;
 import nextstep.subway.domain.Line;
 
-public class LineResponse extends BaseResponse {
+public class LineResponse {
 
     private final Long id;
     private final String name;
     private final String color;
     private final List<StationResponse> stations;
+    private LocalDateTime createdDate;
+    private LocalDateTime modifiedDate;
 
     private LineResponse(Long id, String name, String color, List<StationResponse> stations,
         LocalDateTime createdDate, LocalDateTime modifiedDate) {
-        super(createdDate, modifiedDate);
         this.id = id;
         this.name = name;
         this.color = color;
         this.stations = stations;
+        this.createdDate = createdDate;
+        this.modifiedDate = modifiedDate;
     }
 
     public static LineResponse of(Line line) {
@@ -44,6 +47,14 @@ public class LineResponse extends BaseResponse {
 
     public List<StationResponse> getStations() {
         return stations;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public LocalDateTime getModifiedDate() {
+        return modifiedDate;
     }
 
     @Override
