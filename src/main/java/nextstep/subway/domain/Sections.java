@@ -31,6 +31,26 @@ public class Sections {
         return list;
     }
 
+    public boolean isLineUpStation(Station station) {
+        return getLineUpStation().equals(station);
+    }
+
+    public boolean isLineDownStation(Station station) {
+        return getLineDownStation().equals(station);
+    }
+
+    public void insertToLineHead(Line line, Section section) {
+        Section lineUpSection = getLineUpSection();
+        lineUpSection.updateSection(section.getUpStation(), lineUpSection.getDownStation(), section.getDistance());
+        add(new Section(1, null, section.getUpStation(), line));
+    }
+
+    public void insertToLineTail(Line line, Section section) {
+        Section lineDownSection = getLineDownSection();
+        lineDownSection.updateSection(lineDownSection.getUpStation(), section.getDownStation(), section.getDistance());
+        add(new Section(1, section.getDownStation(), null, line));
+    }
+
     public Optional<Section> findSectionWithUpStation(Station upStation) {
         return list.stream()
                 .filter(section -> upStation.equals(section.getUpStation()))

@@ -42,17 +42,13 @@ public class Line extends BaseEntity {
     public void insertSection(Section section) {
         validateSection(section);
 
-        if (isLineUpStation(section.getDownStation())) {
-            Section lineUpSection = sections.getLineUpSection();
-            lineUpSection.updateSection(section.getUpStation(), lineUpSection.getDownStation(), section.getDistance());
-            sections.add(new Section(1, null, section.getUpStation(), this));
+        if (sections.isLineUpStation(section.getDownStation())) {
+            sections.insertToLineHead(this, section);
             return;
         }
 
-        if (isLineDownStation(section.getUpStation())) {
-            Section lineDownSection = sections.getLineDownSection();
-            lineDownSection.updateSection(lineDownSection.getUpStation(), section.getDownStation(), section.getDistance());
-            sections.add(new Section(1, section.getDownStation(), null, this));
+        if (sections.isLineDownStation(section.getUpStation())) {
+            sections.insertToLineTail(this, section);
             return;
         }
 
@@ -90,14 +86,6 @@ public class Line extends BaseEntity {
         int restDistance = section.getDistance() - distance;
         sections.add(new Section(distance, insertUpStation, section.getDownStation(), this));
         section.updateSection(section.getUpStation(), insertUpStation, restDistance);
-    }
-
-    public boolean isLineUpStation(Station station) {
-        return getUpStation().equals(station);
-    }
-
-    public boolean isLineDownStation(Station station) {
-        return getDownStation().equals(station);
     }
 
     public Long getId() {

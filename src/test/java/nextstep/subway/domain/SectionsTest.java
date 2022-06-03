@@ -5,9 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,13 +28,12 @@ class SectionsTest {
         E역 = new Station(5L, "E역");
         F역 = new Station(6L, "F역");
 
-        sectionList = Arrays.asList(
-                new Section(1, null, A역),
-                new Section(10, A역, B역),
-                new Section(10, B역, C역),
-                new Section(10, C역, D역),
-                new Section(1, D역, null)
-        );
+        sectionList = new ArrayList<>();
+        sectionList.add(new Section(1, null, A역));
+        sectionList.add(new Section(10, A역, B역));
+        sectionList.add(new Section(10, B역, C역));
+        sectionList.add(new Section(10, C역, D역));
+        sectionList.add(new Section(1, D역, null));
     }
 
     @DisplayName("구간 리스트 내 지하철 역 포함")
@@ -126,5 +124,57 @@ class SectionsTest {
         // then
         assertThat(section.getUpStation()).isEqualTo(D역);
         assertThat(section.getDownStation()).isNull();
+    }
+
+    @DisplayName("상행 종점역 확인")
+    @Test
+    void isLineUpStation() {
+        // given
+        Sections sections = new Sections(sectionList);
+
+        // when then
+        assertThat(sections.isLineUpStation(A역)).isTrue();
+    }
+
+    @DisplayName("하행 종점역 확인")
+    @Test
+    void isLineDownStation() {
+        // given
+        Sections sections = new Sections(sectionList);
+
+        // when then
+        assertThat(sections.isLineDownStation(D역)).isTrue();
+    }
+
+    @DisplayName("상행 종점역 추가")
+    @Test
+    void insertToLineHead() {
+        // given
+        Sections sections = new Sections(sectionList);
+        Section section = new Section(10, E역, A역);
+
+        // when
+        if (sections.isLineUpStation(section.getDownStation())) {
+            sections.insertToLineHead(new Line(), section);
+        }
+
+        // that
+        assertThat(sections.getLineUpStation()).isEqualTo(E역);
+    }
+
+    @DisplayName("하행 종점역 추가")
+    @Test
+    void insertToLineTail() {
+        // given
+        Sections sections = new Sections(sectionList);
+        Section section = new Section(10, D역, F역);
+
+        // when
+        if (sections.isLineDownStation(section.getUpStation())) {
+            sections.insertToLineTail(new Line(), section);
+        }
+
+        // that
+        assertThat(sections.getLineDownStation()).isEqualTo(F역);
     }
 }
