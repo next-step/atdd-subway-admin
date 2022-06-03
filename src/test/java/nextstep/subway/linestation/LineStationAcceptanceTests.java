@@ -136,6 +136,42 @@ public class LineStationAcceptanceTests {
         assertThat(result).containsExactly(stationIds.get(firstStationId), stationIds.get(secondStationId));
     }
 
+    /**
+     * When 하나만 있는 구간을 제거하면
+     * Then 제거할 수 없다.
+     */
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 수 없다")
+    @Test
+    void validateLastSection_deleteSection() {
+        // When
+        int statusCode = deleteSection(lineId, upStationId).statusCode();
+
+        // Then
+        assertThat(statusCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 추가 구간을 등록하고
+     * Given 추가 역을 등록하고
+     * When 추가된 역을 제거하면
+     * Then 제거할 수 없다.
+     */
+    @DisplayName("노선에 없는 역은 제거할 수 없다")
+    @Test
+    void validateNonMatch_deleteSection() {
+        // Given
+        createSection(lineId, 5L, downStationId, newStationId);
+
+        // Given
+        long newStationId = createTestStation("신규지하철역").jsonPath().getLong("id");
+
+        // When
+        int statusCode = deleteSection(lineId, newStationId).statusCode();
+
+        // Then
+        assertThat(statusCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> deleteSection(Long lineId, Long stationId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
