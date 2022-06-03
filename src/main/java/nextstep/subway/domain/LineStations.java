@@ -48,10 +48,10 @@ public class LineStations {
         LineStation findByDownStation = findLineStationByDownStationId(downStation);
 
         if (findByUpStation != null && findByDownStation != null) {
-            throw new IllegalArgumentException("기존에 등록된 상/하행역을 등록할 수 없습니다.");
+            throw new IllegalArgumentException("기존에 등록된 같은 상/하행역을 등록할 수 없습니다.");
         }
         if (findByUpStation == null && findByDownStation == null) {
-            throw new IllegalArgumentException("기존 노선에 등록되지 않은 상/하행역을 추가할 수 없습니다.");
+            throw new IllegalArgumentException("노선에 등록되지 않은 역을 추가할 수 없습니다.");
         }
 
         if (findByUpStation != null) {

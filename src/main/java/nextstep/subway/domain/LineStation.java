@@ -61,10 +61,10 @@ public class LineStation {
             return addNewLineLastStation(addResult);
         }
         if (isAddUpToMiddle(upStation.getId())) {
-            return addUpToMiddle(addResult, downStation, distance);
+            return addUpToMiddle(addResult);
         }
         if (isAddMiddleToDown(downStation.getId())) {
-            return addMiddleToDown(addResult, upStation, distance);
+            return addMiddleToDown(addResult);
         }
 
         throw new IllegalArgumentException("지하철을 추가할 수 없습니다.");
@@ -84,20 +84,20 @@ public class LineStation {
         return addResult;
     }
 
-    private LineStation addUpToMiddle(LineStation addResult, Station downStation, Long distance) {
+    private LineStation addUpToMiddle(LineStation addResult) {
         addResult.isStart = this.isStart;
         this.isStart = false;
-        this.upStation = downStation;
-        this.distance -= distance;
+        this.upStation = addResult.downStation;
+        this.distance -= addResult.distance;
 
         return addResult;
     }
 
-    private LineStation addMiddleToDown(LineStation addResult, Station upStation, Long distance) {
+    private LineStation addMiddleToDown(LineStation addResult) {
         addResult.isLast = this.isLast;
         this.isLast = false;
-        this.downStation = upStation;
-        this.distance -= distance;
+        this.downStation = addResult.upStation;
+        this.distance -= addResult.distance;
 
         return addResult;
     }
