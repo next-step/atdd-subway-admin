@@ -3,7 +3,6 @@ package nextstep.subway.section;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +15,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static nextstep.subway.line.LineAcceptanceFactory.ID값으로_지하철노선_조회;
 import static nextstep.subway.line.LineAcceptanceFactory.지하철노선_생성;
@@ -71,9 +69,7 @@ public class SectionAcceptanceTest {
 
         LineResponse 일호선_노선 = ID값으로_지하철노선_조회(일호선.getId());
 
-        List<String> 일호선_역이름들 = 일호선_노선.getStations().stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
+        List<String> 일호선_역이름들 = 일호선_노선.getStationNames();
 
         assertThat(일호선_역이름들).contains("신규상행역");
     }
@@ -91,9 +87,7 @@ public class SectionAcceptanceTest {
 
         LineResponse 일호선_노선 = ID값으로_지하철노선_조회(일호선.getId());
 
-        List<String> 일호선_역이름들 = 일호선_노선.getStations().stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
+        List<String> 일호선_역이름들 = 일호선_노선.getStationNames();
 
         assertThat(일호선_역이름들).contains("신규하행역");
     }

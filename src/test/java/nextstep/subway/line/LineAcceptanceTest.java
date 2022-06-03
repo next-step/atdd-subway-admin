@@ -97,11 +97,6 @@ public class LineAcceptanceTest {
 
         LineResponse 지하철노선_1호선 = ID값으로_지하철노선_조회(id);
 
-        List<String> stationNames = 지하철노선_1호선.getStations()
-                .stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
-
         assertAll(
                 () -> assertThat(지하철노선_1호선.getName()).isEqualTo(LINE1_NAME),
                 () -> assertThat(지하철노선_1호선.getColor()).isEqualTo(LINE1_COLOR)

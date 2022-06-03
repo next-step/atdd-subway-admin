@@ -50,7 +50,9 @@ public class LineResponse {
         return color;
     }
 
-    public List<Station> getStations() {
-        return stations;
+    public List<String> getStationNames() {
+        return stations.stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
     }
 }
