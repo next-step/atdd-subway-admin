@@ -1,5 +1,7 @@
 package nextstep.subway.section.dto;
 
+import nextstep.subway.section.domain.Section;
+
 public class SectionRequest {
     private String downStationId;
     private String upStationId;
@@ -28,5 +30,9 @@ public class SectionRequest {
 
     public int getDistance() {
         return distance;
+    }
+
+    public Section toSection() {
+        return new Section(downStationId, upStationId, distance);
     }
 }

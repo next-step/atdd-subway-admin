@@ -24,6 +24,18 @@ public class Section {
         this.distance = distance;
     }
 
+    public String getDownStationId() {
+        return downStationId;
+    }
+
+    public String getUpStationId() {
+        return upStationId;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
