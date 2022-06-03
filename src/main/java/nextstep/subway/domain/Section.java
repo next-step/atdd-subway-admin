@@ -31,17 +31,17 @@ public class Section {
         this.downStation = downStation;
     }
 
-    public Section(int distance, Station upStation, Station downStation, Line line) {
-        this.distance = new Distance(distance);
+    public Section(Distance distance, Station upStation, Station downStation, Line line) {
+        this.distance = distance;
         this.upStation = upStation;
         this.downStation = downStation;
         this.line = line;
     }
 
-    public void updateSection(Station upStation, Station downStation, Integer distance) {
+    public void updateSection(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = new Distance(distance);
+        this.distance = distance;
     }
 
     public boolean containsStation(Station station) {
@@ -49,8 +49,8 @@ public class Section {
                 || station.equals(getDownStation());
     }
 
-    public Integer getDistance() {
-        return distance.getDistance();
+    public Distance getDistance() {
+        return distance;
     }
 
     public Station getUpStation() {

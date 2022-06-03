@@ -44,7 +44,7 @@ public class Sections {
         if (isLineUpStation(section.getDownStation())) {
             Section lineUpSection = getLineUpSection();
             lineUpSection.updateSection(section.getUpStation(), lineUpSection.getDownStation(), section.getDistance());
-            list.add(new Section(1, null, section.getUpStation(), line));
+            list.add(new Section(new Distance(1), null, section.getUpStation(), line));
         }
     }
 
@@ -52,7 +52,7 @@ public class Sections {
         if (isLineDownStation(section.getUpStation())) {
             Section lineDownSection = getLineDownSection();
             lineDownSection.updateSection(lineDownSection.getUpStation(), section.getDownStation(), section.getDistance());
-            list.add(new Section(1, section.getDownStation(), null, line));
+            list.add(new Section(new Distance(1), section.getDownStation(), null, line));
         }
     }
 
@@ -64,13 +64,13 @@ public class Sections {
     }
 
     public void insertSectionFromFront(Line line, Section frontSection, Section rearSection) {
-        int restDistance = frontSection.getDistance() - rearSection.getDistance();
+        Distance restDistance = frontSection.getDistance().minusDistance(rearSection.getDistance());
         list.add(new Section(restDistance, rearSection.getDownStation(), frontSection.getDownStation(), line));
         frontSection.updateSection(frontSection.getUpStation(), rearSection.getDownStation(), rearSection.getDistance());
     }
 
     public void insertSectionFromRear(Line line, Section frontSection, Section rearSection) {
-        int restDistance = rearSection.getDistance() - frontSection.getDistance();
+        Distance restDistance = rearSection.getDistance().minusDistance(frontSection.getDistance());
         list.add(new Section(frontSection.getDistance(), frontSection.getUpStation(), rearSection.getDownStation(), line));
         rearSection.updateSection(rearSection.getUpStation(), frontSection.getUpStation(), restDistance);
     }

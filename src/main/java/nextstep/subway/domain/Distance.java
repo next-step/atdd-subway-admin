@@ -24,6 +24,11 @@ public class Distance {
         return distance;
     }
 
+    public Distance minusDistance(Distance distance) {
+        int minusValue = this.distance - distance.getDistance();
+        return new Distance(minusValue);
+    }
+
     @Override
     public String toString() {
         return "Distance{" +

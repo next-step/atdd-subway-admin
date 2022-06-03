@@ -34,7 +34,7 @@ class SectionRepositoryTest {
         Line line = lineRepository.save(new Line("2호선", "초록", 100, upStation, downStation));
 
         // when
-        Section actual = sectionRepository.save(new Section(100, upStation, downStation, line));
+        Section actual = sectionRepository.save(new Section(new Distance(100), upStation, downStation, line));
 
         // then
         assertThat(actual).isNotNull();
