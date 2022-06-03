@@ -57,4 +57,11 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections/" + section.getId()))
                 .body(sectionsResponse);
     }
+
+    @DeleteMapping("/lines//{lineId}/sections")
+    public ResponseEntity<Void> removeSection(@PathVariable Long lineId,
+                                              @RequestParam Long stationId) {
+        lineService.removeSectionByStationId(lineId, stationId);
+        return ResponseEntity.ok().build();
+    }
 }

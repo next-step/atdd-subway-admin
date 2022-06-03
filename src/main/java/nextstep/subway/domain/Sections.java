@@ -53,4 +53,17 @@ public class Sections {
     public List<Section> getElements() {
         return Collections.unmodifiableList(elements);
     }
+
+    public void remove(Station station) {
+        Section findSection = findSection(station);
+
+        elements.remove(findSection);
+    }
+
+    private Section findSection(Station station) {
+        return elements.stream()
+                .filter(section -> section.hasStation(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당역을 포함하는 구간이 존재하지 않습니다."));
+    }
 }

@@ -113,6 +113,10 @@ public class Section extends BaseEntity {
         return this.downStation.equals(station);
     }
 
+    public boolean hasStation(Station station) {
+        return isSameUpStation(station) || isSameDownStation(station);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

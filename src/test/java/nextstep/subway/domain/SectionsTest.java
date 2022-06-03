@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SectionsTest {
@@ -37,5 +38,19 @@ class SectionsTest {
         assertThatThrownBy(() ->
                 sections.add(newSection)
         ).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 하행_종점_구간을_삭제한다() {
+        // given
+        Station downStation = new Station("광교역");
+        Section newSection = new Section(7, new Station("정자역"), downStation);
+        sections.add(newSection);
+
+        // when
+        sections.remove(downStation);
+
+        // then
+        assertThat(sections.getElements()).hasSize(1);
     }
 }

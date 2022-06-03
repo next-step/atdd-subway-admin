@@ -215,7 +215,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         public static ExtractableResponse<Response> 구간을_삭제한다(LineResponse lineResponse, Long stationId) {
             return RestAssured
                     .given().log().all()
-                    .param("sectionId", stationId)
+                    .param("stationId", stationId)
                     .when().delete("/lines/" + lineResponse.getId() + "/sections")
                     .then().log().all()
                     .extract();

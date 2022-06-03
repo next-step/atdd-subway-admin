@@ -1,8 +1,6 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +14,12 @@ import java.util.stream.Collectors;
 public class LineService {
     private final LineRepository lineRepository;
     private final SectionMapper sectionMapper;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, SectionMapper sectionMapper) {
+    public LineService(LineRepository lineRepository, SectionMapper sectionMapper, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.sectionMapper = sectionMapper;
+        this.stationRepository = stationRepository;
     }
 
     @Transactional
@@ -68,5 +68,14 @@ public class LineService {
 
         findLine.addSection(section);
         return section;
+    }
+
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line findLine = findById(lineId);
+        Station station = stationRepository.findById(stationId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 지하철역을 찾을 수 없습니다."));
+
+        findLine.removeSection(station);
     }
 }

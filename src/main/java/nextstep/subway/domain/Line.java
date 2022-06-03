@@ -48,6 +48,10 @@ public class Line extends BaseEntity {
         return sections.getElements();
     }
 
+    public void removeSection(Station station) {
+        sections.remove(station);
+    }
+
     // 연관 관계 편의 메서드
     public void addSection(Section section) {
         Objects.requireNonNull(section, "구간 정보가 필요합니다.");
