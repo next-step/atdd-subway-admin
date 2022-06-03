@@ -25,12 +25,22 @@ public class LineStation extends BaseEntity {
     @JoinColumn(name = "station_id")
     private Station station;
 
+    @ManyToOne
+    @JoinColumn(name = "previous_station_id")
+    private Station previous = null;
+
     public LineStation() {
     }
 
     public LineStation(final Line line, final Station station) {
         this.line = line;
         this.station = station;
+    }
+
+    public LineStation(final Line line, final Station station, final Station previous) {
+        this.line = line;
+        this.station = station;
+        this.previous = previous;
     }
 
     public Long getId() {
@@ -43,5 +53,9 @@ public class LineStation extends BaseEntity {
 
     public Station getStation() {
         return station;
+    }
+
+    public Station getPrevious() {
+        return previous;
     }
 }
