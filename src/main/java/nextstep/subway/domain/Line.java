@@ -30,7 +30,7 @@ public class Line {
     protected Line() {
     }
 
-    public Line(Long id, String name, String color, Station upStation, Station downStation, Long distance) {
+    private Line(Long id, String name, String color, Station upStation, Station downStation, Long distance) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -39,7 +39,7 @@ public class Line {
         this.distance = distance;
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, Long distance) {
+    private Line(String name, String color, Station upStation, Station downStation, Long distance) {
         this(null, name, color, upStation, downStation, distance);
     }
 
