@@ -21,16 +21,16 @@ public class Line extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id")
-    private Section upStation;
+    private Station upStation;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id")
-    private Section downStation;
+    private Station downStation;
     private Integer distance;
 
     protected Line() {
     }
 
-    public Line(String name, String color, Section upStation, Section downStation, Integer distance) {
+    public Line(String name, String color, Station upStation, Station downStation, Integer distance) {
         this.name = name;
         this.color = color;
         this.upStation = upStation;
@@ -54,11 +54,11 @@ public class Line extends BaseEntity {
         return distance;
     }
 
-    public Section getUpStation() {
+    public Station getUpStation() {
         return upStation;
     }
 
-    public Section getDownStation() {
+    public Station getDownStation() {
         return downStation;
     }
 
