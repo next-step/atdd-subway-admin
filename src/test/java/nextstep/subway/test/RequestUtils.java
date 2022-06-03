@@ -19,6 +19,14 @@ public class RequestUtils {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> requestDeleteById(String path,Map<String,Object> queryParams ,long id) {
+        return RestAssured.given().log().all()
+                .queryParams(queryParams)
+                .when().delete(path, id)
+                .then().log().all()
+                .extract();
+    }
+
     public static List<ExtractableResponse<Response>> requestCreateBundle(List<Map<String, Object>> paramsBundle,
                                                                           String path) {
         List<ExtractableResponse<Response>> responses = new ArrayList<>();
@@ -37,12 +45,14 @@ public class RequestUtils {
                 .then().log().all()
                 .extract();
     }
-    public static ExtractableResponse<Response> requestCreate(long lineId, Map<String, Object> sectionParams, String path) {
+
+    public static ExtractableResponse<Response> requestCreate(long lineId, Map<String, Object> sectionParams,
+                                                              String path) {
         return RestAssured.given().log().all()
                 .body(sectionParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.ALL_VALUE)
-                .when().post(path,lineId)
+                .when().post(path, lineId)
                 .then().log().all()
                 .extract();
     }
