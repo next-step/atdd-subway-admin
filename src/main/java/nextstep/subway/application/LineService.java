@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.LineStation;
+import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -26,8 +27,8 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(final LineRequest request) {
         final Line line = request.toLine();
-        line.relateToStation(new LineStation(line, stationRepository.getById(request.getUpStationId())));
-        line.relateToStation(new LineStation(line, stationRepository.getById(request.getDownStationId())));
+        line.relateToStation(new LineStation(line, getStationOrElseThrow(request.getUpStationId())));
+        line.relateToStation(new LineStation(line, getStationOrElseThrow(request.getDownStationId())));
         lineRepository.save(line);
         return LineResponse.of(line);
     }
@@ -39,25 +40,30 @@ public class LineService {
     }
 
     public LineResponse findLineById(final Long id) {
-        final Line line = getOrElseThrow(id);
+        final Line line = getLineOrElseThrow(id);
         return LineResponse.of(line);
     }
 
     @Transactional
     public void modifyLine(final Long id, final LineRequest lineRequest) {
-        final Line line = getOrElseThrow(id);
+        final Line line = getLineOrElseThrow(id);
         line.update(lineRequest.getName(), lineRequest.getColor());
         lineRepository.save(line);
     }
 
     @Transactional
     public void deleteLineById(final Long id) {
-        final Line line = getOrElseThrow(id);
+        final Line line = getLineOrElseThrow(id);
         lineRepository.delete(line);
     }
 
-    private Line getOrElseThrow(Long id) {
+    private Line getLineOrElseThrow(final Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("노선 아이디가 존재하지 않습니다: %d}", id)));
+                .orElseThrow(() -> new IllegalArgumentException(String.format("지하철 노선 아이디가 유효하지 않습니다: %d}", id)));
+    }
+
+    private Station getStationOrElseThrow(final Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(String.format("지하철역 아이디가 유효하지 않습니다: %d}", id)));
     }
 }

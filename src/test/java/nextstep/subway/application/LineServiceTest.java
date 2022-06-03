@@ -3,6 +3,7 @@ package nextstep.subway.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
@@ -40,10 +41,10 @@ class LineServiceTest {
     }
 
     @Test
-    void LineRequest_객체를_파라미터로_노선을_생성하면_올바른_LineResponse_객체가_반환되어야_한다() {
+    void LineRequest_객체로_노선을_생성하면_올바른_LineResponse_객체가_반환되어야_한다() {
         // given
         final String lineName = "신분당선";
-        final String color = "bg_red-600";
+        final String color = "bg-red-600";
         final LineRequest lineRequest = new LineRequest(lineName, color, gangnam.getId(), yangjae.getId());
 
         // when
@@ -55,6 +56,24 @@ class LineServiceTest {
         assertThat(lineResponse.getName()).isEqualTo(lineName);
         assertThat(lineResponse.getStations())
                 .containsExactly(StationResponse.of(gangnam), StationResponse.of(yangjae));
+    }
+
+    @Test
+    void LineRequest_객체의_상행종점역이나_하행종점역이_조회되지_않으면_노선_생성_시_IllegalArgumentException이_발생해야_한다() {
+        // given
+        final String lineName = "신분당선";
+        final String color = "bg-red-600";
+        final List<LineRequest> invalidRequests = Arrays.asList(
+                new LineRequest(lineName, color, 0L, 0L),
+                new LineRequest(lineName, color, gangnam.getId(), 0L),
+                new LineRequest(lineName, color, 0L, yangjae.getId())
+        );
+
+        // when and then
+        for (final LineRequest request : invalidRequests) {
+            assertThatThrownBy(() -> lineService.saveLine(request))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
     }
 
     @Test
@@ -97,7 +116,7 @@ class LineServiceTest {
     }
 
     @Test
-    void 유효하지_않은_아이디로_노선을_조회하면_IllegalArgumentException이_발생해야_한다() {
+    void 없는_아이디로_노선_조회_시_IllegalArgumentException이_발생해야_한다() {
         // when and then
         assertThatThrownBy(() -> lineService.findLineById(1L))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -124,7 +143,7 @@ class LineServiceTest {
     }
 
     @Test
-    void 유효하지_않은_아이디로_노선을_수정하면_IllegalArgumentException이_발생해야_한다() {
+    void 없는_아이디로_노선_수정_시_IllegalArgumentException이_발생해야_한다() {
         // given
         final String newName = "수정된이름";
         final String newColor = "bg-modified-600";
@@ -136,7 +155,7 @@ class LineServiceTest {
     }
 
     @Test
-    void 아이디를_파라미터로_노선을_삭제할_수_있어야_한다() {
+    void 아이디로_노선을_삭제할_수_있어야_한다() {
         // given
         final Line givenLine = new Line("신분당선", "bg-red-600");
         givenLine.relateToStation(new LineStation(givenLine, gangnam));
@@ -152,7 +171,7 @@ class LineServiceTest {
     }
 
     @Test
-    void 유효하지_않은_아이디로_노선을_삭제하면_IllegalArgumentException이_발생해야_한다() {
+    void 없는_아이디로_노선_삭제_시_IllegalArgumentException이_발생해야_한다() {
         // when and then
         assertThatThrownBy(() -> lineService.deleteLineById(1L))
                 .isInstanceOf(IllegalArgumentException.class);
