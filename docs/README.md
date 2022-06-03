@@ -69,4 +69,10 @@
     - when 새로운역을 하행으로 등록하면
     - then 새로운 역이 하행으로 등록된다.
 
+#### 중요변경사항
+
+* 도메인 관계 구조 변경
+    - (변경전) Line - Station => 1 : N
+    - (변경후) Line - LineStation - Station => 1 : N : 1
+
 ---
