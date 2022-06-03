@@ -30,7 +30,7 @@ public class LineController {
 
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<LineResponse>> getLines(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<List<LineResponse>> getLines() {
         return ResponseEntity.ok().body(lineService.findAllLine());
     }
 }

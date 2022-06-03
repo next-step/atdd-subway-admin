@@ -2,11 +2,14 @@ package nextstep.subway.line;
 
 import static nextstep.subway.station.StationAcceptanceTest.응답코드_확인;
 import static nextstep.subway.station.StationAcceptanceTest.지하철역_생성_요청;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +18,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 
+@Sql("/truncate.sql")
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
@@ -46,6 +51,44 @@ public class LineAcceptanceTest {
             10L);
         // then
         응답코드_확인(createResponse, HttpStatus.CREATED);
+        ExtractableResponse<Response> getResponse = 지하철노선_조회_요청();
+        지하철노선_이름_포함_확인(getResponse, Arrays.asList("신분당선"));
+    }
+
+
+    /**
+     * Given 2개의 지하철 노선을 생성하고 When 지하철 노선 목록을 조회하면 Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     */
+    @DisplayName("지하철역을 조회한다.")
+    @Test
+    void getStations() {
+        //given
+        지하철역_생성_요청("강남역");
+        지하철역_생성_요청("판교역");
+        지하철역_생성_요청("잠실역");
+        지하철역_생성_요청("건대역");
+        지하철노선_생성_요청("신분당선", "bg-red-600", 1L, 2L,
+            10L);
+        지하철노선_생성_요청("2호선", "bg-blue-600", 3L, 4L,
+            10L);
+
+        //when
+        ExtractableResponse<Response> getResponse = 지하철노선_조회_요청();
+
+        //then
+        지하철노선_이름_포함_확인(getResponse, Arrays.asList("신분당선", "2호선"));
+    }
+
+    private void 지하철노선_이름_포함_확인(ExtractableResponse<Response> getResponse, List<String> names) {
+        assertThat(getResponse.jsonPath().getList("name")).hasSameElementsAs(names);
+    }
+
+
+    private ExtractableResponse<Response> 지하철노선_조회_요청() {
+        return RestAssured.given().log().all()
+            .when().get("/lines")
+            .then().log().all()
+            .extract();
     }
 
     public ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color, Long upStationId,
