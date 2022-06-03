@@ -55,17 +55,12 @@ public class Line extends BaseEntity {
         this.distance = distance;
     }
 
-    public Line(LineRequest lineRequest, Station upStation, Station downStation) {
-        this(lineRequest.getName(), lineRequest.getColor(), upStation, downStation,
-            lineRequest.getDistance());
-    }
-
-    public void update(LineRequest lineRequest, Station upStation, Station downStation) {
-        name = lineRequest.getName();
-        color = lineRequest.getColor();
+    public void update(String name, String color, Station upStation, Station downStation, Long distance) {
+        this.name = name;
+        this.color = color;
         this.upStation = upStation;
         this.downStation = downStation;
-        distance = lineRequest.getDistance();
+        this.distance = distance;
     }
 
     private void validate(String name, String color, Station upStation, Station downStation) {

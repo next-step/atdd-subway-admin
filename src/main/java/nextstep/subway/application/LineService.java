@@ -30,9 +30,12 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
+        String name = lineRequest.getName();
+        String color = lineRequest.getColor();
         Station upStation = findStationById(lineRequest.getUpStationId());
         Station downStation = findStationById(lineRequest.getDownStationId());
-        Line newLine = lineRepository.save(new Line(lineRequest, upStation, downStation));
+        Long distance = lineRequest.getDistance();
+        Line newLine = lineRepository.save(new Line(name, color, upStation, downStation, distance));
         return LineResponse.of(newLine);
     }
 
@@ -43,9 +46,12 @@ public class LineService {
         Line foundLine = lineRepository.findById(id).orElseThrow(
             () -> new InvalidLineException(String.format(INVALID_LINE, lineName))
         );
+        String name = lineRequest.getName();
+        String color = lineRequest.getColor();
         Station upStation = findStationById(foundLine.getUpStation().getId());
         Station downStation = findStationById(foundLine.getDownStation().getId());
-        foundLine.update(lineRequest, upStation, downStation);
+        Long distance = lineRequest.getDistance();
+        foundLine.update(name, color, upStation, downStation, distance);
     }
 
     @Transactional(readOnly = true)
