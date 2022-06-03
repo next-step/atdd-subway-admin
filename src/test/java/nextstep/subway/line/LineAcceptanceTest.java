@@ -21,9 +21,6 @@ import org.springframework.http.MediaType;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends BaseAcceptanceTest {
 
-    private Long stationId1;
-    private Long stationId2;
-
     /**
      * When 지하철 노선을 생성하면
      * Then 지하철 노선이 생성된다
@@ -32,9 +29,11 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        // when
+        // given
         createStationWithStationName("강남역");
         createStationWithStationName("양재역");
+
+        // when
         ExtractableResponse<Response> response = createLineWithLineName("신분당선", "bg-red-600", 1L, 2L, 10L);
 
         // then
