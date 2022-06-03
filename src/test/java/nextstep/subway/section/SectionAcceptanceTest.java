@@ -146,7 +146,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 ExtractableResponse<Response> response = 지하철_구간_제거(노선_id, 신림역_id);
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
             }),
-            dynamicTest("삭제되면 정상적으로 노선 하나에 대림 강남만 남아야 한다", () -> {
+            dynamicTest("삭제되면 정상적으로 노선에 대림 강남만 남아야 한다", () -> {
                 ExtractableResponse<Response> response = 지하철_노선_조회(노선_id);
                 LineResponse lineResponse = toLine(response);
                 assertThat(toLineStationNames(lineResponse)).containsExactly("대림역", "강남역");
@@ -192,6 +192,35 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 ExtractableResponse<Response> response = 지하철_구간_등록(노선_id, sectionRequest);
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
                 assertThat(response.asString()).contains(ExceptionType.IS_NOT_EXIST_BOTH_STATIONS.getMessage());
+            })
+        );
+    }
+
+    @DisplayName("구간 삭제시 노선이 하나 이하라면 예외가 발생 ")
+    @TestFactory
+    Stream<DynamicTest> deleteSection_exception() {
+        return Stream.of(
+            dynamicTest("구간 삭제시 노선이 하나 이하라면 예외가 발생한다", () -> {
+                ExtractableResponse<Response> response = 지하철_구간_제거(노선_id, 강남역_id);
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                assertThat(response.asString()).contains(ExceptionType.CAN_NOT_DELETE_LINE_STATION.getMessage());
+            })
+        );
+    }
+
+    @DisplayName("구간 삭제시 해당 지하철역이 노선에 없다면 예외가 발생 ")
+    @TestFactory
+    Stream<DynamicTest> deleteSection_exception2() {
+        return Stream.of(
+            dynamicTest("구간이 두개 이상 되기 위해 구간을 등록한다" , () -> {
+                SectionRequest sectionRequest = new SectionRequest(강남역_id, 신림역_id, 10L);
+                ExtractableResponse<Response> saveResponse = 지하철_구간_등록(노선_id, sectionRequest);
+                assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+            }),
+            dynamicTest("구간 삭제시 해당 지하철역이 노선에 존재하지 않다면 예외가 발생한다", () -> {
+                ExtractableResponse<Response> response = 지하철_구간_제거(노선_id, 신대방역_id);
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                assertThat(response.asString()).contains(ExceptionType.NOT_FOUND_LINE_STATION.getMessage());
             })
         );
     }
