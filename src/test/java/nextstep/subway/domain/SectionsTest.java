@@ -208,18 +208,20 @@ class SectionsTest {
     @Test
     public void insertSection() {
         // given
-        List<Section> list = new ArrayList<>();
-        list.add(new Section(1 , null, C역));
-        list.add(new Section(10 , C역, D역));
-        list.add(new Section(1, D역, null));
-        Sections sections = new Sections(list);
+        Sections sections = new Sections(sectionList);
+        Station 상행종점역 = new Station(101L, "상행종점역");
+        Station 하행종점역 = new Station(102L, "하행종점역");
+        Station F역 = new Station(103L, "F역");
+        Station G역 = new Station(104L, "G역");
 
         // when
-        sections.insertSection(null, new Section(10, A역, C역));
+        sections.insertSection(null, new Section(10, 상행종점역, A역));
+        sections.insertSection(null, new Section(15, D역, G역));
         sections.insertSection(null, new Section(10, D역, F역));
+        sections.insertSection(null, new Section(10, G역, 하행종점역));
 
         // then
-        assertThat(sections.getLineUpStation()).isEqualTo(A역);
-        assertThat(sections.getLineDownStation()).isEqualTo(F역);
+        assertThat(sections.getLineUpStation()).isEqualTo(상행종점역);
+        assertThat(sections.getLineDownStation()).isEqualTo(하행종점역);
     }
 }
