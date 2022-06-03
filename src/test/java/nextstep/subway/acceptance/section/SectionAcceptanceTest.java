@@ -236,6 +236,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
      * Given 지하철 노선의 구간 사이에 새로운 구간을 등록하고
      * When 중간역을 제거하면 (B 제거)
      * Then 재배치를 한다. A - B - C -> A - C
+     * Then
      */
     @DisplayName("중간역을 제거하면 중간역이 제거되고 재배치가 된다.")
     @Test
