@@ -8,6 +8,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
@@ -150,22 +151,7 @@ public class Line extends BaseEntity {
         }
     }
 
-    public void removeStation(Station station) {
-        validateSectionSize();
-        if (upStation.equals(station)) {
-            //상향 지하철 삭제
-            return;
-        }
-        if (downStation.equals(station)) {
-            //하향지하철삭제
-            return;
-        }
-        Section backSection = sections.stream()
-            .filter(section -> section.getUpStation().equals(station))
-            .findFirst()
-            .orElseThrow(SectionInvalidException::new);
-
-        Section nextSection = backSection.getNextSection();
+    public void replaceSectionByMerge(Section backSection, Section nextSection) {
         Section newSection = Section.merge(backSection, nextSection);
         deleteBackSectionInfo(backSection, newSection);
         deleteNextSectionInfo(nextSection, newSection);
@@ -193,12 +179,6 @@ public class Line extends BaseEntity {
         }
     }
 
-    private void validateSectionSize() {
-        if (sections.size() <= 1) {
-            throw new SectionInvalidException();
-        }
-    }
-
     public Long getId() {
         return id;
     }
@@ -218,4 +198,6 @@ public class Line extends BaseEntity {
     public Station getDownStation() {
         return downStation;
     }
+
+
 }
