@@ -1,4 +1,4 @@
-package nextstep.subway.section.ui;
+package nextstep.subway.section.dto;
 
 public class SectionRequest {
     private String downStationId;
