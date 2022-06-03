@@ -1,8 +1,8 @@
 package nextstep.subway.dto;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 
 public class LineResponse {
@@ -15,8 +15,10 @@ public class LineResponse {
     private LocalDateTime modifiedDate;
 
     public static LineResponse from(Line line) {
-        List<StationResponse> stations = line.getStations().stream().map(StationResponse::from)
-                .collect(Collectors.toList());
+        List<StationResponse> stations = new ArrayList<>();
+        stations.add(StationResponse.from(line.getUpStation()));
+        stations.add(StationResponse.from(line.getDownStation()));
+
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getDistance(), stations,
                 line.getCreatedDate(), line.getModifiedDate());
     }
