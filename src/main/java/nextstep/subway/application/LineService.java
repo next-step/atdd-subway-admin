@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
@@ -22,7 +22,6 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Line persistLine = lineRepository.save(lineRequest.toLine());
 
@@ -34,6 +33,7 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
@@ -42,17 +42,16 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLineById(Long id) {
         Line line = lineRepository.getById(id);
         return LineResponse.of(line);
     }
 
-    @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
 
-    @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = lineRepository.getById(id);
         line.updateName(lineRequest.getName());
