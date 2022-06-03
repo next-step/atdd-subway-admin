@@ -60,6 +60,15 @@ public class Section {
         return new Section(upStation, downStation, line, distance, null, null);
     }
 
+    public static Section merge(Section backSection, Section nextSection) {
+        backSection.getDistance().plus(nextSection.getDistance());
+        return new Section(nextSection.getUpStation(), backSection.getDownStation(), backSection.getLine(),
+            backSection.getDistance(), nextSection.getNextSection(),
+            backSection.getBackSection());
+    }
+    public static Section empty(Line line){
+        return new Section(null, null, line, new Distance(0), null, null);
+    }
     public boolean insert(Section insertSection) {
         boolean insertFail = false;
         boolean insertSuccess = true;
