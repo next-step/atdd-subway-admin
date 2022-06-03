@@ -31,4 +31,18 @@ public class SectionAcceptanceRequest {
                 .then().log().all()
                 .extract();
     }
+
+    public static void 지하철구간_존재(String downStationId, String upStationId, int distance) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("downStationId", downStationId);
+        params.put("upStationId", upStationId);
+        params.put("distance", distance);
+
+        RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when().post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+    }
 }

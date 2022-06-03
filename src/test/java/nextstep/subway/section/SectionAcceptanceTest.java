@@ -12,8 +12,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import static nextstep.subway.section.acceptance.SectionAcceptanceRequest.지하철구간_생성_요청;
+import static nextstep.subway.section.acceptance.SectionAcceptanceRequest.지하철구간_존재;
 import static nextstep.subway.section.acceptance.SectionAcceptanceRequest.지하철역과_노선_존재;
 import static nextstep.subway.section.acceptance.SectionAcceptanceResponse.지하철구간_생성_성공;
+import static nextstep.subway.section.acceptance.SectionAcceptanceResponse.지하철구간_생성_실패;
 
 @DisplayName("구간기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -61,6 +63,16 @@ public class SectionAcceptanceTest {
     @DisplayName("지하철 구간이 중복된다면 예외를 던진다")
     @Test
     void 구간_생성_중복_예외() {
+        String downStationId = "2";
+        String upStationId = "1";
+        int distance = 10;
+
+        지하철역과_노선_존재();
+        지하철구간_존재(downStationId, upStationId, distance);
+
+        ExtractableResponse<Response> response = 지하철구간_생성_요청(downStationId, upStationId, distance);
+
+        지하철구간_생성_실패(response);
     }
 
     /**

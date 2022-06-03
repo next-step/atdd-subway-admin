@@ -12,4 +12,8 @@ public class SectionAcceptanceResponse {
         assertThat(distance).isEqualTo(10);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
+
+    public static void 지하철구간_생성_실패(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
