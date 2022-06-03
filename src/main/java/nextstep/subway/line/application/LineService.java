@@ -70,6 +70,11 @@ public class LineService {
         lineRepository.delete(line);
     }
 
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        line.deleteSection(stationService.findById(stationId));
+    }
+
     private Line findLineById(Long id) {
         return lineRepository.findById(id)
             .orElseThrow(() -> new BadRequestException(ExceptionType.INVALID_LINE_ID));
