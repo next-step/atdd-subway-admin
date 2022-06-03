@@ -41,7 +41,7 @@ class LineServiceTest {
     }
 
     @Test
-    void LineRequest_객체로_노선을_생성하면_올바른_LineResponse_객체가_반환되어야_한다() {
+    void LineRequest_객체로_노선을_생성할_수_있어야_한다() {
         // given
         final String lineName = "신분당선";
         final String color = "bg-red-600";
@@ -56,6 +56,10 @@ class LineServiceTest {
         assertThat(lineResponse.getName()).isEqualTo(lineName);
         assertThat(lineResponse.getStations())
                 .containsExactly(StationResponse.of(gangnam), StationResponse.of(yangjae));
+
+        final Line createdLine = lineRepository.findById(lineResponse.getId()).get();
+        assertThat(createdLine.getLineStations().getPreviousOf(gangnam)).isNull();
+        assertThat(createdLine.getLineStations().getPreviousOf(yangjae)).isEqualTo(gangnam);
     }
 
     @Test

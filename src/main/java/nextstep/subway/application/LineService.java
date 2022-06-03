@@ -27,8 +27,10 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(final LineRequest request) {
         final Line line = request.toLine();
-        line.relateToStation(new LineStation(line, getStationOrElseThrow(request.getUpStationId())));
-        line.relateToStation(new LineStation(line, getStationOrElseThrow(request.getDownStationId())));
+        final Station upStation = getStationOrElseThrow(request.getUpStationId());
+        final Station downStation = getStationOrElseThrow(request.getDownStationId());
+        line.relateToStation(new LineStation(line, upStation));
+        line.relateToStation(new LineStation(line, downStation, upStation));
         lineRepository.save(line);
         return LineResponse.of(line);
     }
