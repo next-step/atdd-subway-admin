@@ -48,23 +48,23 @@ public class Line extends BaseEntity {
         this.color = lineRequest.getColor();
     }
 
-    public Long id() {
+    public Long getId() {
         return id;
     }
 
-    public String name() {
+    public String getName() {
         return name;
     }
 
-    public String color() {
+    public String getColor() {
         return color;
     }
 
-    public Station upStation() {
+    public Station getUpStation() {
         return upStation;
     }
 
-    public Station downStation() {
+    public Station getDownStation() {
         return downStation;
     }
 

@@ -25,10 +25,10 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         List<StationResponse> stations = Arrays.asList(
-                StationResponse.of(line.upStation()),
-                StationResponse.of(line.downStation())
+                StationResponse.of(line.getUpStation()),
+                StationResponse.of(line.getDownStation())
         );
-        return new LineResponse(line.id(), line.name(), line.color(), stations);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
     }
 
     public Long getId() {
