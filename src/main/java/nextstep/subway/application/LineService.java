@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,4 +42,10 @@ public class LineService {
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
+
+    public LineResponse findLineById(Long id) {
+        return LineResponse.of(lineRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(String.format("Line Not Found : %d", id))));
+    }
+
 }

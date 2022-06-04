@@ -69,7 +69,19 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
      */
     @Test
     void 지하철노선_조회() {
+        // given
+        Long 지하철역_id = 지하철역_생성됨("지하철역").body().jsonPath().getLong("id");
+        Long 새로운지하철역_id = 지하철역_생성됨("새로운지하철역").body().jsonPath().getLong("id");
 
+        String name = "신분당선";
+        ExtractableResponse<Response> response = 지하철_노선_생성됨(name, "bg-red-600", 10, 지하철역_id, 새로운지하철역_id);
+        long lineId = response.body().jsonPath().getLong("id");
+
+        // when
+        String lineName = 지하철_노선_조회(lineId);
+
+        // then
+        assertThat(lineName).isEqualTo(name);
     }
 
     /**
@@ -98,6 +110,10 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
     public static List<String> 지하철_노선_전체_조회() {
         return RestAssuredTemplate.get("/lines").body().jsonPath().getList("name", String.class);
+    }
+
+    public static String 지하철_노선_조회(long lineId) {
+        return RestAssuredTemplate.get("/lines/" + lineId).jsonPath().getString("name");
     }
 
 }
