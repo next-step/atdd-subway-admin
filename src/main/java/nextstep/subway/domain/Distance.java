@@ -9,25 +9,32 @@ public class Distance {
     private static final Long ZERO = 0L;
 
     @Column(nullable = false)
-    private final Long distance;
+    private Long distance;
 
     protected Distance() {
-        this(0L);
     }
 
     public Distance(final Long distance) {
-        if (ZERO > distance) {
+        if (ZERO >= distance) {
             throw new IllegalArgumentException("invalid parameter");
         }
         this.distance = distance;
     }
 
-    public boolean isBig(final Distance distance) {
-        return distance.isSmall(this.distance);
+    public Distance subtract(final Distance destination) {
+        return destination.subtractBy(this.distance);
     }
 
-    private boolean isSmall(final Long distance) {
-        return this.distance < distance;
+    public  Distance plus(Distance destination) {
+        return destination.plus(this.distance);
+    }
+
+    private Distance plus(final Long destination) {
+        return new Distance(destination + this.distance);
+    }
+
+    private Distance subtractBy(final Long source) {
+        return new Distance(source - this.distance);
     }
 
     @Override

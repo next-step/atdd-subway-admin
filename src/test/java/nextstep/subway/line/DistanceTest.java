@@ -22,9 +22,15 @@ public class DistanceTest {
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("비교 할수 있다.")
+    @DisplayName("입력된 값으로 부터 뺄수 있다.")
     @Test
-    void isBigTest() {
-        assertThat(new Distance(2L).isBig(new Distance(1L))).isTrue();
+    void subtractTest() {
+        assertThat(new Distance(2L).subtract(new Distance(1L))).isEqualTo(new Distance(1L));
+    }
+
+    @DisplayName("입력된 값으로 부터 더할수 있다.")
+    @Test
+    void plusTest() {
+        assertThat(new Distance(2L).plus(new Distance(1L))).isEqualTo(new Distance(3L));
     }
 }
