@@ -2,6 +2,7 @@ package nextstep.subway.application;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import javassist.NotFoundException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -24,11 +25,14 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse saveLine(LineRequest lineRequest) {
+    public LineResponse saveLine(LineRequest lineRequest) throws NotFoundException {
+        if (isExistLine(lineRequest)) {
+            throw new IllegalArgumentException("이미 존재하는 노선입니다");
+        }
         Station upStation = stationRepository.findById(lineRequest.getUpStationId())
-            .orElseThrow(() -> new IllegalArgumentException("상행 역이 존재하지 않습니다."));
+            .orElseThrow(() -> new NotFoundException("상행 역이 존재하지 않습니다."));
         Station downStation = stationRepository.findById(lineRequest.getDownStationId())
-            .orElseThrow(() -> new IllegalArgumentException("하행 역이 존재하지 않습니다."));
+            .orElseThrow(() -> new NotFoundException("하행 역이 존재하지 않습니다."));
 
         Line line = new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation,
             lineRequest.getDistance());
@@ -57,5 +61,10 @@ public class LineService {
     @Transactional
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
+    }
+
+
+    private boolean isExistLine(LineRequest lineRequest) {
+        return lineRepository.findByName(lineRequest.getName()) != null;
     }
 }

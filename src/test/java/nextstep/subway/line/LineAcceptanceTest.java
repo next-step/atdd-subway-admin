@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
+
 @Sql("/truncate.sql")
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -28,6 +29,7 @@ public class LineAcceptanceTest {
     @LocalServerPort
     int port;
     private Map<String, String> params;
+
 
     @BeforeEach
     public void setUp() {
@@ -47,12 +49,30 @@ public class LineAcceptanceTest {
         지하철역_생성_요청("강남역");
         지하철역_생성_요청("판교역");
         // when
-        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청("신분당선", "bg-red-600", 1L, 2L,
+        ExtractableResponse<Response> 신분당선 = 지하철노선_생성_요청(TestLine.SHINBUNDANG.getName(),
+            "bg-red-600", 1L, 2L,
             10L);
         // then
-        응답코드_확인(createResponse, HttpStatus.CREATED);
-        ExtractableResponse<Response> getResponse = 지하철노선_목록_조회_요청();
-        지하철노선목록_이름_포함_확인(getResponse, Arrays.asList("신분당선"));
+        응답코드_확인(신분당선, HttpStatus.CREATED);
+        ExtractableResponse<Response> getResponse = 지하철노선_조회_요청(신분당선.jsonPath().getLong("id"));
+        지하철노선_이름존재_확인(getResponse, TestLine.SHINBUNDANG.getName());
+    }
+
+    /**
+     * Given: 지하철 노선 하나 생성, When : 동일한 이름의 지하철 노선을 생성하면 Then : Bad Request Error 발생
+     */
+    @DisplayName("존재하는 지하철노선을 생성한다.")
+    @Test
+    void createLine_duplicated() {
+        // given
+        지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
+
+        // when
+        ExtractableResponse<Response> 신분당선 = 지하철노선_생성_요청(TestLine.SHINBUNDANG.getName(),
+            "bg-red-600", 1L, 2L,
+            10L);
+        // then
+        응답코드_확인(신분당선, HttpStatus.BAD_REQUEST);
     }
 
 
@@ -63,21 +83,16 @@ public class LineAcceptanceTest {
     @Test
     void getStations() {
         //given
-        지하철역_생성_요청("강남역");
-        지하철역_생성_요청("판교역");
-        지하철역_생성_요청("잠실역");
-        지하철역_생성_요청("건대역");
-        지하철노선_생성_요청("신분당선", "bg-red-600", 1L, 2L,
-            10L);
-        지하철노선_생성_요청("2호선", "bg-blue-600", 3L, 4L,
-            10L);
-
+        지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
+        지하철_노선_등록되어_있음(TestLine.NUMBER_2);
         //when
         ExtractableResponse<Response> getResponse = 지하철노선_목록_조회_요청();
-
         //then
-        지하철노선목록_이름_포함_확인(getResponse, Arrays.asList("신분당선", "2호선"));
+        응답코드_확인(getResponse, HttpStatus.OK);
+        지하철노선목록_이름_여러개존재_확인(getResponse,
+            Arrays.asList(TestLine.SHINBUNDANG.getName(), TestLine.NUMBER_2.getName()));
     }
+
 
     /**
      * Given 지하철 노선을 생성하고 When 생성한 지하철 노선을 조회하면 Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
@@ -86,16 +101,12 @@ public class LineAcceptanceTest {
     @Test
     void getStation() {
         //given
-        지하철역_생성_요청("강남역");
-        지하철역_생성_요청("판교역");
-        지하철노선_생성_요청("신분당선", "bg-red-600", 1L, 2L,
-            10L);
-
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
         //when
-        ExtractableResponse<Response> getResponse = 지하철노선_조회_요청(1L);
-
+        ExtractableResponse<Response> getResponse = 지하철노선_조회_요청(신분당선.jsonPath().getLong("id"));
         //then
-        지하철노선_이름_포함_확인(getResponse, "신분당선");
+        응답코드_확인(getResponse, HttpStatus.OK);
+        지하철노선_이름존재_확인(getResponse, TestLine.SHINBUNDANG.getName());
     }
 
     /**
@@ -105,16 +116,15 @@ public class LineAcceptanceTest {
     @Test
     void updateStation() {
         //given
-        지하철역_생성_요청("강남역");
-        지하철역_생성_요청("판교역");
-        ExtractableResponse<Response> 신분당선 = 지하철노선_생성_요청("신분당선", "bg-red-600", 1L, 2L, 10L);
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
 
         //when
         지하철노선_수정_요청(신분당선.jsonPath().getLong("id"), "다른분당선", "bg-green-600");
         ExtractableResponse<Response> getResponse = 지하철노선_조회_요청(신분당선.jsonPath().getLong("id"));
 
         //then
-        지하철노선_이름_포함_확인(getResponse, "다른분당선");
+        응답코드_확인(getResponse, HttpStatus.OK);
+        지하철노선_이름존재_확인(getResponse, "다른분당선");
     }
 
     /**
@@ -124,9 +134,7 @@ public class LineAcceptanceTest {
     @Test
     void deleteStation() {
         //given
-        지하철역_생성_요청("강남역");
-        지하철역_생성_요청("판교역");
-        ExtractableResponse<Response> 신분당선 = 지하철노선_생성_요청("신분당선", "bg-red-600", 1L, 2L, 10L);
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
 
         //when
         ExtractableResponse<Response> deleteResponse = 지하철노선_삭제_요청(신분당선.jsonPath().getLong("id"));
@@ -134,20 +142,20 @@ public class LineAcceptanceTest {
         //then
         응답코드_확인(deleteResponse, HttpStatus.NO_CONTENT);
         ExtractableResponse<Response> getResponse = 지하철노선_목록_조회_요청();
-        지하철노선_목록에_없음(getResponse, "신분당선");
+        지하철노선_목록에_없음(getResponse, TestLine.SHINBUNDANG.getName());
     }
 
     private void 지하철노선_목록에_없음(ExtractableResponse<Response> getResponse, String name) {
         assertThat(getResponse.jsonPath().getList("name")).doesNotContain(name);
     }
 
-    private void 지하철노선목록_이름_포함_확인(ExtractableResponse<Response> getResponse, List<String> names) {
+    private void 지하철노선목록_이름_여러개존재_확인(ExtractableResponse<Response> getResponse,
+        List<String> names) {
         assertThat(getResponse.jsonPath().getList("name")).hasSameElementsAs(names);
     }
 
-    private void 지하철노선_이름_포함_확인(ExtractableResponse<Response> getResponse, String name) {
-        String object = getResponse.jsonPath().getString("name");
-        assertThat(object).isEqualTo(name);
+    private void 지하철노선_이름존재_확인(ExtractableResponse<Response> getResponse, String name) {
+        assertThat(getResponse.jsonPath().getString("name")).isEqualTo(name);
     }
 
     private ExtractableResponse<Response> 지하철노선_목록_조회_요청() {
@@ -199,5 +207,23 @@ public class LineAcceptanceTest {
             .when().post("/lines")
             .then().log().all()
             .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(TestLine testLine) {
+        if (testLine.equals(TestLine.NUMBER_2)) {
+            ExtractableResponse<Response> 잠실역 = 지하철역_생성_요청("잠실역");
+            ExtractableResponse<Response> 건대역 = 지하철역_생성_요청("건대역");
+            return 지하철노선_생성_요청(testLine.getName(), "bg-blue-600",
+                건대역.jsonPath().getLong("id"),
+                건대역.jsonPath().getLong("id"), 10L);
+        }
+        if (testLine.equals(TestLine.SHINBUNDANG)) {
+            ExtractableResponse<Response> 강남역 = 지하철역_생성_요청("강남역");
+            ExtractableResponse<Response> 판교역 = 지하철역_생성_요청("판교역");
+            return 지하철노선_생성_요청(testLine.getName(), "bg-red-600",
+                강남역.jsonPath().getLong("id"),
+                판교역.jsonPath().getLong("id"), 10L);
+        }
+        return null;
     }
 }
