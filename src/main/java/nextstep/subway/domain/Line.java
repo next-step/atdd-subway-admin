@@ -11,6 +11,7 @@ import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
+    private static final int MIN_SECTIONS_SIZE = 1;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -63,6 +64,9 @@ public class Line extends BaseEntity {
     public void remove(Station station) {
         if (!sections.isContain(station)) {
             throw new NoStationOnLineException("노선에 없는 역입니다.");
+        }
+        if (sections.getSections().size() <= MIN_SECTIONS_SIZE) {
+            throw new IllegalArgumentException("구간이 1개이면 역을 제거할 수 없습니다.");
         }
         sections.remove(station);
     }

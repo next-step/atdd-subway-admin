@@ -71,7 +71,7 @@ public class LineController {
         return ResponseEntity.ok(lineService.removeSection(lineId, stationId));
     }
 
-    @ExceptionHandler({SectionLengthOverException.class, SameSectionRegistrationException.class, BothUpDownDoNotExistException.class, NoStationOnLineException.class})
+    @ExceptionHandler({SectionLengthOverException.class, SameSectionRegistrationException.class, BothUpDownDoNotExistException.class, NoStationOnLineException.class, IllegalArgumentException.class})
     public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }
