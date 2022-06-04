@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.EntityNotFoundException;
 import java.net.URI;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 public class LineController {
@@ -46,8 +47,13 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity handleIllegalArgsException() {
+    @ExceptionHandler({EntityNotFoundException.class, NoSuchElementException.class})
+    public ResponseEntity handleNotFoundException() {
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler({IllegalArgumentException.class})
+    public ResponseEntity handleIllegalArgsException() {
+        return ResponseEntity.badRequest().build();
     }
 }
