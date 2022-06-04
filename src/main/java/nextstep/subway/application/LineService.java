@@ -40,4 +40,10 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
         return lines.stream().map(line -> LineResponse.of(line)).collect(Collectors.toList());
     }
+
+    public LineResponse findLine(Long id) {
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("지하철 노선이 존재하지 않습니다."));
+        return LineResponse.of(line);
+    }
 }
