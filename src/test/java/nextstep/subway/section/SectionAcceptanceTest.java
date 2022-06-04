@@ -202,6 +202,23 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간이_삭제된다(구간_삭제_응답);
     }
 
+    /**
+     * Given 새로운 역을 생성하고
+     * When 노선의 등록되지 않은 새로운 역을 삭제하면
+     * Then 구간이 삭제되지 않는다.
+     */
+    @Test
+    void 노선에_등록되지_않은_역을_삭제한다() {
+        // given
+        Long 판교역_id = id_추출(지하철역_생성("판교역"));
+
+        // when
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간을_삭제한다(신분당선, 판교역_id);
+
+        // then
+        구간이_삭제되지_않는다(구간_삭제_응답);
+    }
+
     public static class SectionAcceptanceTemplate {
         public static void 노선에_신규_구간이_정상_등록된다(ExtractableResponse<Response> 신규_구간이_등록된_노선) {
             assertThat(신규_구간이_등록된_노선.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -238,6 +255,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                     .when().delete("/lines/" + lineResponse.getId() + "/sections")
                     .then().log().all()
                     .extract();
+        }
+
+        public static void 구간이_삭제되지_않는다(ExtractableResponse<Response> response) {
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
     }
 }
