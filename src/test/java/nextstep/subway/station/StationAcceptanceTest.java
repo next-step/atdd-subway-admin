@@ -75,6 +75,20 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        지하철역_생성_요청("강남역");
+        지하철역_생성_요청("잠실역");
+
+        // when
+        ExtractableResponse<Response> response = 지하철역_목록_조회();
+
+        // then
+        지하철역_조회_성공_확인(response);
+
+        // then
+        List<String> stationNames = response.jsonPath().getList("name", String.class);
+        지하철역_포함_확인(stationNames, "강남역");
+        지하철역_포함_확인(stationNames, "잠실역");
     }
 
     /**
@@ -112,6 +126,10 @@ public class StationAcceptanceTest {
 
     private void 지하철역_생성_실패_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 지하철역_조회_성공_확인(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     private void 지하철역_포함_확인(List<String> stationNames, String stationName) {
