@@ -128,6 +128,23 @@ public class LineAcceptanceTest {
     }
 
     /**
+     * Given 지하철 노선을 생성하고 When 존재하지 않는 지하철 노선을 수정하면 Then Not Found 에러 발생
+     */
+    @DisplayName("지하철역을 수정한다.")
+    @Test
+    void update_not_exist_Station() {
+        //given
+        지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
+
+        //when
+        ExtractableResponse<Response> updateResponse = 지하철노선_수정_요청(999999L, "다른분당선",
+            "bg-green-600");
+
+        //then
+        응답코드_확인(updateResponse, HttpStatus.NOT_FOUND);
+    }
+
+    /**
      * Given 지하철 노선을 생성하고 When 생성한 지하철 노선을 삭제하면 Then 해당 지하철 노선 정보는 삭제된다
      */
     @DisplayName("지하철역을 삭제한다.")
