@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 import nextstep.subway.line.repository.LineRepository;
 import nextstep.subway.station.domain.Station;
@@ -77,6 +78,32 @@ class SectionsTest {
     void removeStationInSection_fail(String name, Station removeStation) {
         assertThatIllegalArgumentException()
             .isThrownBy(() -> sections.removeStationInSection(removeStation));
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("노선에서 특정 지하철역을 삭제되었을 떄, 남은 노선의 구간 개수를 확인한다.")
+    @MethodSource("providerRemoveStationInSection_successCase")
+    void removeStationInSection_success(String name, Station removeStation, List<Station> resultStations) {
+        Section newSection = new Section(upStation, newDownStation, new Distance(5L));
+        sections.add(newSection);
+
+        sections.removeStationInSection(removeStation);
+
+        assertThat(sections.orderStationsOfLine()).containsExactly(resultStations.toArray(new Station[0]));
+    }
+
+    static Stream<Arguments> providerRemoveStationInSection_successCase() {
+        return Stream.of(
+            Arguments.of(
+                "상행종점역이 삭제되었을 때", upStation, Arrays.asList(newDownStation, downStation)
+            ),
+            Arguments.of(
+                "하행종점역이 삭제되었을 때", downStation, Arrays.asList(upStation, newDownStation)
+            ),
+            Arguments.of(
+                "상하행종점역 사이의 역이 삭제되었을 때", newDownStation, Arrays.asList(upStation, downStation)
+            )
+        );
     }
 
     static Stream<Arguments> providerRemoveStationInSection_failCase() {
