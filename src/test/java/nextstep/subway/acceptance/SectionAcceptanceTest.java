@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.*;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineResponse;
@@ -147,9 +149,110 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         응답결과_확인(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    public static ExtractableResponse<Response> 지하철노선_구간_추가(Long id, Long upStationId, Long downStationId,
+    /**
+     * When 신분당선(B-C-D)에서 B역을 제거하면
+     * Then 구간 제거에 성공한다.
+     */
+    @DisplayName("상행역이 포함된 구간을 제거한다.")
+    @Test
+    void 구간_제거_상행역() {
+        //given
+        LineResponse 신분당선 = LineAcceptanceTest.지하철노선_생성("신분당선", "bg-red-600", B역.getId(), D역.getId(), 7)
+                .as(LineResponse.class);
+        지하철노선_구간_추가(신분당선.getId(), B역.getId(), 지하철역_생성("C역").getId(), 4);
+
+        //when
+        ExtractableResponse<Response> response = 지하철노선_구간_삭제(신분당선.getId(), B역.getId());
+
+        //then
+        응답결과_확인(response, HttpStatus.OK);
+    }
+
+    /**
+     * When 신분당선(B-C-D)에서 D역을 제거하면
+     * Then 구간 제거에 성공한다.
+     */
+    @DisplayName("하행역이 포함된 구간을 제거한다.")
+    @Test
+    void 구간_제거_하행역() {
+        //given
+        LineResponse 신분당선 = LineAcceptanceTest.지하철노선_생성("신분당선", "bg-red-600", B역.getId(), D역.getId(), 7)
+                .as(LineResponse.class);
+        지하철노선_구간_추가(신분당선.getId(), B역.getId(), 지하철역_생성("C역").getId(), 4);
+
+        //when
+        ExtractableResponse<Response> response = 지하철노선_구간_삭제(신분당선.getId(), D역.getId());
+
+        //then
+        응답결과_확인(response, HttpStatus.OK);
+    }
+
+    /**
+     * When 신분당선(B-C-D)에서 C역을 제거하면
+     * Then 구간 제거에 성공한다.
+     */
+    @DisplayName("중간역이 포함된 구간을 제거한다.")
+    @Test
+    void 구간_제거_중간역() {
+        //given
+        LineResponse 신분당선 = LineAcceptanceTest.지하철노선_생성("신분당선", "bg-red-600", B역.getId(), D역.getId(), 7)
+                .as(LineResponse.class);
+        StationResponse C역 = 지하철역_생성("C역");
+        지하철노선_구간_추가(신분당선.getId(), B역.getId(), C역.getId(), 4);
+
+        //when
+        ExtractableResponse<Response> response = 지하철노선_구간_삭제(신분당선.getId(), C역.getId());
+
+        //then
+        응답결과_확인(response, HttpStatus.OK);
+    }
+
+    /**
+     * When 신분당선(B-D)에서 A역을 제거하면
+     * Then Internal Server Error(500)가 발생한다.
+     */
+    @DisplayName("미등록역이 포함된 구간은 제거할 수 없다.")
+    @Test
+    void invalid_구간_제거_미등록역() {
+        //given
+        LineResponse 신분당선 = LineAcceptanceTest.지하철노선_생성("신분당선", "bg-red-600", B역.getId(), D역.getId(), 7)
+                .as(LineResponse.class);
+        StationResponse A역 = 지하철역_생성("A역");
+
+        //when
+        ExtractableResponse<Response> response = 지하철노선_구간_삭제(신분당선.getId(), A역.getId());
+
+        //then
+        응답결과_확인(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * When 신분당선(B-D)에서 B역을 제거하면
+     * Then Internal Server Error(500)가 발생한다.
+     */
+    @DisplayName("노선이 단일 구간으로 구성된 경우 구간을 삭제할 수 없다.")
+    @Test
+    void invalid_구간_제거_단일구간() {
+        //given
+        LineResponse 신분당선 = LineAcceptanceTest.지하철노선_생성("신분당선", "bg-red-600", B역.getId(), D역.getId(), 7)
+                .as(LineResponse.class);
+
+        //when
+        ExtractableResponse<Response> response = 지하철노선_구간_삭제(신분당선.getId(), B역.getId());
+
+        //then
+        응답결과_확인(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    public static ExtractableResponse<Response> 지하철노선_구간_추가(Long lineId, Long upStationId, Long downStationId,
                                                             Integer distance) {
-        return post("/lines/" + id + path, new SectionRequest(upStationId, downStationId, distance));
+        return post("/lines/" + lineId + path, new SectionRequest(upStationId, downStationId, distance));
+    }
+
+    public static ExtractableResponse<Response> 지하철노선_구간_삭제(Long lineId, Long stationId) {
+        Map<String, Long> params = new HashMap<>();
+        params.put("stationId", stationId);
+        return delete("/lines/" + lineId + path, params);
     }
 
     private void 지하철노선_지하철역_포함됨(ExtractableResponse<Response> response, StationResponse expected) {
