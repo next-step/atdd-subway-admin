@@ -2,6 +2,7 @@ package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,13 +13,15 @@ public class LineResponse {
 
     private final String color;
 
-    private final List<LineStationResponse> lineStation;
+    private final List<LineStationResponse> lineStations;
+    private final List<StationResponse> stations;
 
-    public LineResponse(Long id, String name, String color, List<LineStationResponse> lineStation) {
+    public LineResponse(Long id, String name, String color, List<LineStationResponse> lineStations, List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.lineStation = lineStation;
+        this.lineStations = lineStations;
+        this.stations = stations;
     }
 
     public static LineResponse of(Line line) {
@@ -27,7 +30,12 @@ public class LineResponse {
                 .map(LineStationResponse::of)
                 .collect(Collectors.toList());
 
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), lineStations);
+        List<StationResponse> stations = new ArrayList<>();
+        lineStations.forEach(lineStation -> {
+            stations.addAll(lineStation.getStations());
+        });
+
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), lineStations, stations.stream().distinct().collect(Collectors.toList()));
     }
 
     public Long getId() {
@@ -42,7 +50,11 @@ public class LineResponse {
         return color;
     }
 
-    public List<LineStationResponse> getLineStation() {
-        return lineStation;
+    public List<LineStationResponse> getLineStations() {
+        return lineStations;
+    }
+
+    public List<StationResponse> getStations() {
+        return stations;
     }
 }

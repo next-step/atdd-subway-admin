@@ -2,6 +2,10 @@ package nextstep.subway.dto;
 
 import nextstep.subway.domain.LineStation;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+
 public class LineStationResponse {
     private Long id;
     private StationResponse upStation;
@@ -36,5 +40,22 @@ public class LineStationResponse {
 
     public Long getDistance() {
         return distance;
+    }
+
+    public List<StationResponse> getStations() {
+        return Arrays.asList(upStation, downStation);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LineStationResponse that = (LineStationResponse) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
