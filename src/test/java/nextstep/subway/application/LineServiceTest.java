@@ -3,7 +3,6 @@ package nextstep.subway.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
@@ -23,10 +22,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 class LineServiceTest {
     @Autowired
     private StationRepository stationRepository;
-
     @Autowired
     private LineRepository lineRepository;
 
+    private StationService stationService;
     private LineService lineService;
 
     private Station gangnam = new Station("강남역");
@@ -34,7 +33,8 @@ class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        lineService = new LineService(lineRepository, stationRepository);
+        stationService = new StationService(stationRepository);
+        lineService = new LineService(lineRepository, stationService);
 
         stationRepository.save(gangnam);
         stationRepository.save(yangjae);
@@ -60,24 +60,6 @@ class LineServiceTest {
         final Line createdLine = lineRepository.findById(lineResponse.getId()).get();
         assertThat(createdLine.getLineStations().getPreviousOf(gangnam)).isNull();
         assertThat(createdLine.getLineStations().getPreviousOf(yangjae)).isEqualTo(gangnam);
-    }
-
-    @Test
-    void LineRequest_객체의_상행종점역이나_하행종점역이_조회되지_않으면_노선_생성_시_IllegalArgumentException이_발생해야_한다() {
-        // given
-        final String lineName = "신분당선";
-        final String color = "bg-red-600";
-        final List<LineRequest> invalidRequests = Arrays.asList(
-                new LineRequest(lineName, color, 0L, 0L),
-                new LineRequest(lineName, color, gangnam.getId(), 0L),
-                new LineRequest(lineName, color, 0L, yangjae.getId())
-        );
-
-        // when and then
-        for (final LineRequest request : invalidRequests) {
-            assertThatThrownBy(() -> lineService.saveLine(request))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
     }
 
     @Test

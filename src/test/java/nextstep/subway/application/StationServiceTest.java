@@ -1,6 +1,7 @@
 package nextstep.subway.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.Optional;
@@ -87,5 +88,12 @@ class StationServiceTest {
 
         // then
         assertThat(station).isEqualTo(station);
+    }
+
+    @Test
+    void 아이디로_지하철역_엔티티가_조회되지_않으면_IllegalArgumentException이_발생해야_한다() {
+        // when and then
+        assertThatThrownBy(() -> stationService.getStationOrElseThrow(0L))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
