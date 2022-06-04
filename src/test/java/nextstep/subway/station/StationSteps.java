@@ -10,7 +10,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
 public class StationSteps {
-	public static ExtractableResponse<Response> request_station_creation(String name) {
+	public static ExtractableResponse<Response> 지하철_생성_요청(String name) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);
 		return RestAssured.given().log().all()

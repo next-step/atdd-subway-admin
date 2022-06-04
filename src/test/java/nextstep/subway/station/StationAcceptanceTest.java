@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
-import static nextstep.subway.station.StationSteps.request_station_creation;
+import static nextstep.subway.station.StationSteps.지하철_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
@@ -37,7 +37,7 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = request_station_creation("강남역");
+        ExtractableResponse<Response> response = 지하철_생성_요청("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -60,10 +60,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        request_station_creation("강남역");
+        지하철_생성_요청("강남역");
 
         // when
-        ExtractableResponse<Response> response = request_station_creation("강남역");
+        ExtractableResponse<Response> response = 지하철_생성_요청("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -78,8 +78,8 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        request_station_creation("강남역");
-        request_station_creation("역삼역");
+        지하철_생성_요청("강남역");
+        지하철_생성_요청("역삼역");
 
         // when
         ExtractableResponse<Response> response =
@@ -104,7 +104,7 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = request_station_creation("강남역");
+        ExtractableResponse<Response> createResponse = 지하철_생성_요청("강남역");
         String uri = createResponse.header("Location");
 
         // when
