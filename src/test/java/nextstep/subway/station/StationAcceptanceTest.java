@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest extends BaseAcceptanceTest {
+public class StationAcceptanceTest extends BaseStationAcceptanceTest {
     @LocalServerPort
     int port;
 

@@ -8,7 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
 @Sql("/truncate.sql")
-public abstract class BaseAcceptanceTest {
+public abstract class BaseStationAcceptanceTest {
     private static final String STATIONS_URI = "/stations";
 
     protected ExtractableResponse<Response> createStationRequest(String stationName) {
