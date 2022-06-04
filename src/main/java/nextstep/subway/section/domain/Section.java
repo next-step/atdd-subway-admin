@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,7 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -18,9 +18,8 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "line_id")
-    private Line line;
+    @Column(name = "line_id")
+    private Long line;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id", nullable = false)
@@ -54,10 +53,6 @@ public class Section {
 
     public boolean isPostSection(Section preSection) {
         return upStation != null && upStation.isSame(preSection.getDownStation());
-    }
-
-    public void changeLine(Line line) {
-        this.line = line;
     }
 
     public void changeSection(Section changeSection) {

@@ -44,7 +44,6 @@ public class Line {
 
     public void addSection(Section section) {
         this.sections.add(section);
-        section.changeLine(this);
     }
 
     public Long getId() {
