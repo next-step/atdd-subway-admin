@@ -47,6 +47,7 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("지하철 노선이 존재하지 않습니다."));
