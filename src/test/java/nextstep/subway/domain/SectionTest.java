@@ -5,27 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import nextstep.subway.exception.NotFoundException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class SectionTest {
-    Station upStation;
-    Station downStation;
-    Section section;
-
-    @BeforeEach
-    void setUp() {
-        upStation = Station.builder("양재")
-                .id(1L)
-                .build();
-        downStation = Station.builder("판교")
-                .id(2L)
-                .build();
-        section = Section.builder(upStation, downStation, Distance.valueOf(10))
-                .build();
-    }
-
+class SectionTest extends SectionTestFixture {
     @DisplayName("상행 지하철역이 Null 일 경우 예외 테스트")
     @Test
     void createSectionByNullUpStation() {

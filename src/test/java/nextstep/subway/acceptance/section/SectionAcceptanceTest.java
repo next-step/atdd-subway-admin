@@ -127,6 +127,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
+
         List<String> stationNames = response.jsonPath().getList("stations.name", String.class);
         assertAll(
                 () -> assertThat(stationNames).hasSize(4),
@@ -183,5 +184,112 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 지하철 노선의 구간 사이에 새로운 구간을 등록하고
+     * When 종점을 제거하면 (하행 종점)
+     * Then 다음으로 오던 역이 종점이 된다.
+     */
+    @DisplayName("종점(하행)을 제거하면 구간을 제거하고 다음으로 오던 역이 종점이 된다.")
+    @Test
+    void deleteSectionLast() {
+        // given
+        SectionRestAssured.지하철구간_추가_요청(신분당선.getId(), 청계산입구역.getId(), 판교역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> deleteResponse = SectionRestAssured.지하철구간_제거_요청(신분당선.getId(), 판교역.getId());
+
+        // then
+        List<String> stationNames = deleteResponse.jsonPath().getList("stations.name", String.class);
+        assertAll(
+                () -> assertThat(stationNames).hasSize(2),
+                () -> assertThat(stationNames).containsExactly(양재역.getName(), 청계산입구역.getName())
+        );
+    }
+
+    /**
+     * Given 지하철 노선의 구간 사이에 새로운 구간을 등록하고
+     * When 종점을 제거하면 (상행 종점)
+     * Then 다음으로 오던 역이 종점이 된다.
+     */
+    @DisplayName("종점(상행)을 제거하면 구간을 제거하고 다음으로 오던 역이 종점이 된다.")
+    @Test
+    void deleteSectionFirst() {
+        // given
+        SectionRestAssured.지하철구간_추가_요청(신분당선.getId(), 청계산입구역.getId(), 판교역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> deleteResponse = SectionRestAssured.지하철구간_제거_요청(신분당선.getId(), 양재역.getId());
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then
+        List<String> stationNames = deleteResponse.jsonPath().getList("stations.name", String.class);
+        assertAll(
+                () -> assertThat(stationNames).hasSize(2),
+                () -> assertThat(stationNames).containsExactly(청계산입구역.getName(), 판교역.getName())
+        );
+    }
+
+    /**
+     * Given 지하철 노선의 구간 사이에 새로운 구간을 등록하고
+     * When 중간역을 제거하면 (B 제거)
+     * Then 재배치를 한다. A - B - C -> A - C
+     * Then 합쳐진 구간은 거리의 합이 더해진다.
+     */
+    @DisplayName("중간역을 제거하면 중간역이 제거되고 재배치가 된다. 합쳐진 구간은 거리의 합이 더해진다.")
+    @Test
+    void deleteSectionInSide() {
+        // given
+        SectionRestAssured.지하철구간_추가_요청(신분당선.getId(), 판교역.getId(), 정자역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> deleteResponse = SectionRestAssured.지하철구간_제거_요청(신분당선.getId(), 판교역.getId());
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then
+        List<String> stationNames = deleteResponse.jsonPath().getList("stations.name", String.class);
+        int distance = deleteResponse.jsonPath().getInt("distance");
+        assertAll(
+                () -> assertThat(stationNames).hasSize(2),
+                () -> assertThat(stationNames).containsExactly(양재역.getName(), 정자역.getName()),
+                () -> assertThat(distance).isEqualTo(15)
+        );
+    }
+
+    /**
+     * Given 지하철 노선의 구간 사이에 새로운 구간을 등록하고
+     * When 노선에 없는 역을 제거하면
+     * Then 구간 제거에 실패한다.
+     */
+    @DisplayName("노선에 없는 역을 제거하면 구간 제거에 실패한다.")
+    @Test
+    void deleteSectionNotAdded() {
+        // given
+        SectionRestAssured.지하철구간_추가_요청(신분당선.getId(), 판교역.getId(), 정자역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> deleteResponse = SectionRestAssured.지하철구간_제거_요청(신분당선.getId(), 미금역.getId());
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 구간이 하나인 노선에서 마지막 구간을 제거하면
+     * Then 구간 제거에 실패한다.
+     */
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거하면 구간 제거에 실패한다.")
+    @Test
+    void deleteSectionLeftAlone() {
+        // when
+        ExtractableResponse<Response> deleteResponse = SectionRestAssured.지하철구간_제거_요청(신분당선.getId(), 양재역.getId());
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

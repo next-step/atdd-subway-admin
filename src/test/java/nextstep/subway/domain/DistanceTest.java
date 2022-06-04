@@ -28,7 +28,7 @@ class DistanceTest {
         assertThat(distance).isEqualTo(Distance.valueOf(expect));
     }
 
-    @DisplayName("구간길이를 빼서 0 또2는 음수가 나올 경우 예외가 발생한다.")
+    @DisplayName("구간길이를 빼서 0 또는 음수가 나올 경우 예외가 발생한다.")
     @ParameterizedTest(name = "구간 {0}은 {1}을 빼 예외가 발생한다.")
     @CsvSource(value = {"10:15", "20:20"}, delimiter = ':')
     void minusZeroOrNegative(int input, int other) {
@@ -36,5 +36,14 @@ class DistanceTest {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> distance.minus(Distance.valueOf(other)))
                 .withMessage("구간 길이는 0 이하가 될 수 없습니다.");
+    }
+
+    @DisplayName("구간길이 끼리는 더할 수 있다.")
+    @ParameterizedTest(name = "구간길이 {0}은 {1}을 더해 {2}가 된다.")
+    @CsvSource(value = {"10:5:15", "20:1:21"}, delimiter = ':')
+    void plus(int input, int other, int expect) {
+        Distance distance = Distance.valueOf(input);
+        distance.plus(Distance.valueOf(other));
+        assertThat(distance).isEqualTo(Distance.valueOf(expect));
     }
 }

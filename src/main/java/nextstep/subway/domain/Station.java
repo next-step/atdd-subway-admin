@@ -38,15 +38,15 @@ public class Station extends BaseEntity {
             this.name = name;
         }
 
-        public StationBuilder id(Long id) {
-            this.id = id;
-            return this;
-        }
-
         private void validateNameNotNull(String name) {
             if (StringUtils.isEmpty(name)) {
                 throw new NotFoundException("이름 정보가 없습니다.");
             }
+        }
+
+        public StationBuilder id(Long id) {
+            this.id = id;
+            return this;
         }
 
         public Station build() {

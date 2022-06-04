@@ -46,11 +46,6 @@ public class Line extends BaseEntity {
             this.color = color;
         }
 
-        public LineBuilder id(Long id) {
-            this.id = id;
-            return this;
-        }
-
         private void validateParameter(String name, String color) {
             validateNameNotNull(name);
             validateColorNotNull(color);
@@ -68,6 +63,11 @@ public class Line extends BaseEntity {
             }
         }
 
+        public LineBuilder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
         public Line build() {
             return new Line(this);
         }
@@ -81,6 +81,10 @@ public class Line extends BaseEntity {
     public void addSection(Section section) {
         sections.addSection(section);
         section.addLine(this);
+    }
+
+    public void deleteSection(Station station) {
+        sections.deleteSection(station);
     }
 
     public Long id() {

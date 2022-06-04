@@ -8,7 +8,8 @@ import java.util.Map;
 import org.springframework.http.MediaType;
 
 public class LineRestAssured {
-    public static ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color, long upStationId, long downStationId, int distance) {
+    public static ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color, long upStationId,
+                                                            long downStationId, int distance) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
