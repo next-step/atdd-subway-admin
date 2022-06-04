@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.LineRequest;
+import nextstep.subway.exception.InvalidSectionException;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -14,40 +14,43 @@ public class Line extends BaseEntity {
     private String name;
     @Column
     private String color;
+
     @Embedded
-    private Distance distance;
-
-    @OneToOne
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-
-    @OneToOne
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
+    private final Sections sections = new Sections();
 
     protected Line() {
     }
 
-    public Line(String name, String color, int distance) {
+    public Line(String name, String color, int distance, Station upStation, Station downStation) {
         this.name = name;
         this.color = color;
-        this.distance = new Distance(distance);
+        initStation(new Distance(distance), upStation, downStation);
     }
 
-    public Line setUpStation(Station upStation) {
-        this.upStation = upStation;
-        return this;
-    }
-
-    public Line setDownStation(Station downStation) {
-        this.downStation = downStation;
-        return this;
-    }
-
-    public void updateLine(String name, String color, int distance) {
+    public void updateLine(String name, String color) {
         this.name = name;
         this.color = color;
-        this.distance = new Distance(distance);
+    }
+
+    public void initStation(Distance distance, Station upStation, Station downStation) {
+        sections.addSection(new Section(new Distance(1), null, upStation, this));
+        sections.addSection(new Section(distance, upStation, downStation, this));
+        sections.addSection(new Section(new Distance(1), downStation, null, this));
+    }
+
+    public void insertSection(Section section) {
+        validateSection(section);
+        sections.insertSection(this, section);
+    }
+
+    private void validateSection(Section section) {
+        if (sections.containBothStation(section)) {
+            throw new InvalidSectionException("이미 노선에 포함된 구간은 추가할 수 없습니다.");
+        }
+
+        if (sections.containNoneStation(section)) {
+            throw new InvalidSectionException("구간 내 지하철 역이 하나는 등록된 상태여야 합니다.");
+        }
     }
 
     public Long getId() {
@@ -62,16 +65,16 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Distance getDistance() {
-        return distance;
-    }
-
     public Station getUpStation() {
-        return upStation;
+        return sections.getLineUpStation();
     }
 
     public Station getDownStation() {
-        return downStation;
+        return sections.getLineDownStation();
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 
     @Override
@@ -79,13 +82,22 @@ public class Line extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return name.equals(line.name) &&
-                color.equals(line.color) &&
-                distance.equals(line.distance);
+        return Objects.equals(name, line.name) &&
+                Objects.equals(color, line.color);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, color, distance);
+        return Objects.hash(name, color);
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", sections=" + sections +
+                '}';
     }
 }

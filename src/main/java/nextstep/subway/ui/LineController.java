@@ -1,9 +1,7 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.LineService;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.LineResponses;
+import nextstep.subway.dto.*;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +12,7 @@ import java.util.List;
 
 @RestController
 public class LineController {
-    private LineService lineService;
+    private final LineService lineService;
 
     public LineController(LineService lineService) {
         this.lineService = lineService;
@@ -26,15 +24,31 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
+    @GetMapping(value = "/lines/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<SectionResponse>> showLineSections(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findAllSections(id).getList());
+    }
+
+    @PostMapping("/lines/{id}/sections")
+    public ResponseEntity createSection(@PathVariable Long id, @RequestBody SectionRequest request) {
+        lineService.addSection(id, request);
+        return ResponseEntity.noContent().build();
+    }
+
     @PutMapping("/lines/{id}")
-    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        LineResponse line = lineService.updateLine(id, lineRequest);
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineUpdateRequest request) {
+        LineResponse line = lineService.updateLine(id, request);
         return ResponseEntity.ok().body(line);
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         return ResponseEntity.ok().body(lineService.findAllLines().getList());
+    }
+
+    @GetMapping("/lines/{id}")
+    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findLine(id));
     }
 
     @DeleteMapping("/lines/{id}")

@@ -2,6 +2,9 @@ package nextstep.subway.station;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
+import nextstep.subway.domain.Distance;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Station;
 import nextstep.subway.dto.*;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import static nextstep.subway.station.StationAcceptanceTest.*;
+import static nextstep.subway.station.StationAcceptanceTest.응답_검증;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -80,6 +85,24 @@ public class LineAcceptanceTest {
 
     /**
      * Given 노선을 생성하고
+     * When 생성한 노선을 조회하면
+     * Then 노선이 조회된다
+     */
+    @DisplayName("등록된 지하철역을 조회한다. (1건)")
+    @Test
+    void getLine() {
+        // given
+        LineResponse expected = 응답_객체_생성(노선_등록("2호선", "초록", 10, 강남역.getId(), 잠실역.getId()), LineResponse.class);
+
+        // when
+        LineResponse actual = 응답_객체_생성(노선_조회(expected.getId()), LineResponse.class);
+
+        // then
+        assertThat(expected).isEqualTo(actual);
+    }
+
+    /**
+     * Given 노선을 생성하고
      * When 노선의 정보를 수정하면
      * Then 노선 정보가 수정된다
      */
@@ -90,7 +113,7 @@ public class LineAcceptanceTest {
         LineResponse 지하철2호선 = 응답_객체_생성(노선_등록("2호선", "초록", 10, 강남역.getId(), 잠실역.getId()), LineResponse.class);
 
         // when
-        ValidatableResponse response = 노선_수정(지하철2호선.getId(), "8호선", "분홍", 200, 모란역.getId(), 잠실역.getId());
+        ValidatableResponse response = 노선_수정(지하철2호선.getId(), "8호선", "분홍");
 
         // then
         응답_검증(response, HttpStatus.OK);
@@ -169,7 +192,7 @@ public class LineAcceptanceTest {
         응답_검증(response2, HttpStatus.BAD_REQUEST);
     }
 
-    private ValidatableResponse 노선_등록(String name, String color, Integer distance, Long upStreamId, Long downStreamId) {
+    public static ValidatableResponse 노선_등록(String name, String color, int distance, Long upStreamId, Long downStreamId) {
         LineRequest lineRequest = new LineRequest(name, color, distance, upStreamId, downStreamId);
 
         return RestAssured.given().log().all()
@@ -179,11 +202,18 @@ public class LineAcceptanceTest {
                     .then().log().all();
     }
 
-    private ValidatableResponse 노선_수정(Long id, String name, String color, Integer distance, Long upStreamId, Long downStreamId) {
-        LineRequest lineRequest = new LineRequest(name, color, distance, upStreamId, downStreamId);
+    public static ValidatableResponse 노선_조회(Long id) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines/" + id)
+                .then().log().all();
+    }
+
+    public static ValidatableResponse 노선_수정(Long id, String name, String color) {
+        LineUpdateRequest lineUpdateRequest = new LineUpdateRequest(name, color);
 
         return RestAssured.given().log().all()
-                .body(lineRequest)
+                .body(lineUpdateRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/lines/" + id)
                 .then().log().all();

@@ -21,6 +21,9 @@ public class StationResponse {
     }
 
     public static StationResponse of(Station station) {
+        if (station == null) {
+            return null;
+        }
         return new StationResponse(station.getId(), station.getName());
     }
 
@@ -43,5 +46,13 @@ public class StationResponse {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    @Override
+    public String toString() {
+        return "StationResponse{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
