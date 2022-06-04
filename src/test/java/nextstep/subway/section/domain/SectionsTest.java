@@ -124,4 +124,21 @@ class SectionsTest {
                 () -> sections.addSection(Section.of(신규역, 신규역2, 5)));
 
     }
+
+    @Test
+    @DisplayName("새로운 하행종점 구간 등록 : [하행역 - 신규역] 구간 등록")
+    void deletetest(){
+        //given
+        Sections sections = Sections.from(defaultSection);
+        sections.addSection(Section.of(상행역, 신규역, 5));
+
+        //when
+        sections.removeStation(상행역);
+
+        //then
+        List<Station> sortedStations = sections.getSortedStations();
+        for (Station sortedStation : sortedStations) {
+            System.out.println("sortedStation = " + sortedStation.getName());
+        }
+    }
 }

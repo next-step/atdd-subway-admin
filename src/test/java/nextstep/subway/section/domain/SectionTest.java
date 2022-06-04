@@ -27,7 +27,7 @@ class SectionTest {
     @DisplayName("Section Update 테스트: 새로운 구간: [상행역 - 신규역], Default 구간: [신규역 - 하행역]")
     void updateSection(){
         Section newSection = Section.of(상행역, 신규역, 3);
-        defaultSection.updateWith(newSection);
+        defaultSection.divideWith(newSection);
         assertAll(
                 () -> assertThat(defaultSection.getUpStation()).isEqualTo(신규역),
                 () -> assertThat(defaultSection.getDistance()).isEqualTo(Distance.from(7))
@@ -38,7 +38,7 @@ class SectionTest {
     @DisplayName("Section Update 테스트: Default 구간: [상행역 - 신규역], 새로운 구간: [신규역 - 하행역]")
     void updateSection2(){
         Section newSection = Section.of(신규역, 하행역, 3);
-        defaultSection.updateWith(newSection);
+        defaultSection.divideWith(newSection);
         assertAll(
                 () -> assertThat(defaultSection.getDownStation()).isEqualTo(신규역),
                 () -> assertThat(defaultSection.getDistance()).isEqualTo(Distance.from(7))

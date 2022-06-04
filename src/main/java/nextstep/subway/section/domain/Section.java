@@ -41,7 +41,7 @@ public class Section{
         return new Section(upStation, downStation, distance);
     }
 
-    public void updateWith(Section newSection) {
+    public void divideWith(Section newSection) {
         if (upStation.equals(newSection.getUpStation())) {
             upStation = newSection.getDownStation();
             distance.subtract(newSection.getDistance());
@@ -50,6 +50,11 @@ public class Section{
             downStation = newSection.getUpStation();
             distance.subtract(newSection.getDistance());
         }
+    }
+
+    public void mergeWith(Section nextSection) {
+        downStation = nextSection.downStation;
+        distance.add(nextSection.getDistance());
     }
 
     public Station getUpStation() {

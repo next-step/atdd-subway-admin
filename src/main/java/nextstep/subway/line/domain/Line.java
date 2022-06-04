@@ -68,4 +68,8 @@ public class Line {
         section.updateLine(this);
         sections.addSection(section);
     }
+
+    public void removeStation(Station station) {
+        sections.removeStation(station);
+    }
 }

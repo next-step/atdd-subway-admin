@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import static nextstep.subway.line.LineTestMethods.createLineResponse;
 import static nextstep.subway.line.LineTestMethods.노선_단건_조회;
+import static nextstep.subway.section.SectionTestMethods.구간_삭제;
 import static nextstep.subway.section.SectionTestMethods.구간_추가;
 import static nextstep.subway.station.StationTestMethods.createStationResponse;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -199,7 +200,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("종점이 제거될 경우 다음으로 오던 역이 종점이 된다. (상행역 제거)")
     @Test
     void deleteFirstSection(){
+        //given
+        StationResponse 상행역 = createStationResponse("상행역");
+        StationResponse 중간역 = createStationResponse("중간역");
+        StationResponse 하행역 = createStationResponse("하행역");
+        LineResponse 기본노선 = createLineResponse(
+                "1호선", "blue", 상행역.getId(), 하행역.getId(), DEFAULT_DISTANCE
+        );
+        구간_추가(기본노선.getId(), 상행역.getId(), 중간역.getId(), 5);
 
+        //when
+        ExtractableResponse<Response> response = 구간_삭제(기본노선.getId(), 상행역.getId());
+        LineResponse 기본노선_조회결과 = 노선_단건_조회(기본노선.getId()).as(LineResponse.class);
+
+        //then
+        List<String> stations = 기본노선_조회결과.getStations().stream()
+                .map(StationResponse::getName).collect(Collectors.toList());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(stations).containsExactly("중간역", "하행역")
+        );
     }
 
     /**
@@ -210,7 +230,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("종점이 제거될 경우 이전 역이 종점이 된다. (하행역 제거)")
     @Test
     void deleteLastSection(){
+        //given
+        StationResponse 상행역 = createStationResponse("상행역");
+        StationResponse 중간역 = createStationResponse("중간역");
+        StationResponse 하행역 = createStationResponse("하행역");
+        LineResponse 기본노선 = createLineResponse(
+                "1호선", "blue", 상행역.getId(), 하행역.getId(), DEFAULT_DISTANCE
+        );
+        구간_추가(기본노선.getId(), 상행역.getId(), 중간역.getId(), 5);
 
+        //when
+        ExtractableResponse<Response> response = 구간_삭제(기본노선.getId(), 하행역.getId());
+        LineResponse 기본노선_조회결과 = 노선_단건_조회(기본노선.getId()).as(LineResponse.class);
+
+        //then
+        List<String> stations = 기본노선_조회결과.getStations().stream()
+                .map(StationResponse::getName).collect(Collectors.toList());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(stations).containsExactly("상행역", "중간역")
+        );
     }
 
     /**
@@ -221,9 +260,58 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("중간역이 제거될 경우 재배치를 한다.")
     @Test
     void deleteMiddleSection(){
+        //given
+        StationResponse 상행역 = createStationResponse("상행역");
+        StationResponse 중간역 = createStationResponse("중간역");
+        StationResponse 하행역 = createStationResponse("하행역");
+        LineResponse 기본노선 = createLineResponse(
+                "1호선", "blue", 상행역.getId(), 하행역.getId(), DEFAULT_DISTANCE
+        );
+        구간_추가(기본노선.getId(), 상행역.getId(), 중간역.getId(), 5);
 
+        //when
+        ExtractableResponse<Response> response = 구간_삭제(기본노선.getId(), 중간역.getId());
+        LineResponse 기본노선_조회결과 = 노선_단건_조회(기본노선.getId()).as(LineResponse.class);
+
+        //then
+        List<String> stations = 기본노선_조회결과.getStations().stream()
+                .map(StationResponse::getName).collect(Collectors.toList());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(stations).containsExactly("상행역", "하행역")
+        );
     }
 
+    /**
+     * Given 기본노선(상행역-중간역-하행역)을 생성하고
+     * When [새로운역]구간을 제거하면
+     * Then 예외가 발생한다
+     */
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 수 없다.")
+    @Test
+    void exception_deleteUnknownSection(){
+        //given
+        StationResponse 상행역 = createStationResponse("상행역");
+        StationResponse 중간역 = createStationResponse("중간역");
+        StationResponse 하행역 = createStationResponse("하행역");
+        LineResponse 기본노선 = createLineResponse(
+                "1호선", "blue", 상행역.getId(), 하행역.getId(), DEFAULT_DISTANCE
+        );
+        구간_추가(기본노선.getId(), 상행역.getId(), 중간역.getId(), 5);
+
+        //when
+        StationResponse 새로운역 = createStationResponse("새로운역");
+        ExtractableResponse<Response> response = 구간_삭제(기본노선.getId(), 새로운역.getId());
+        LineResponse 기본노선_조회결과 = 노선_단건_조회(기본노선.getId()).as(LineResponse.class);
+
+        //then
+        List<String> stations = 기본노선_조회결과.getStations().stream()
+                .map(StationResponse::getName).collect(Collectors.toList());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(stations).containsExactly("상행역", "중간역", "하행역")
+        );
+    }
 
     /**
      * Given 기본노선(상행역-하행역)을 생성하고
@@ -232,6 +320,24 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 수 없다.")
     @Test
-    void exception_deleteOne(){
+    void exception_deleteOnlyOneSection(){
+        //given
+        StationResponse 상행역 = createStationResponse("상행역");
+        StationResponse 하행역 = createStationResponse("하행역");
+        LineResponse 기본노선 = createLineResponse(
+                "1호선", "blue", 상행역.getId(), 하행역.getId(), DEFAULT_DISTANCE
+        );
+
+        //when
+        ExtractableResponse<Response> response = 구간_삭제(기본노선.getId(), 상행역.getId());
+        LineResponse 기본노선_조회결과 = 노선_단건_조회(기본노선.getId()).as(LineResponse.class);
+
+        //then
+        List<String> stations = 기본노선_조회결과.getStations().stream()
+                .map(StationResponse::getName).collect(Collectors.toList());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(stations).containsExactly("상행역", "하행역")
+        );
     }
 }

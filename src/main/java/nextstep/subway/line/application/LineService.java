@@ -71,6 +71,14 @@ public class LineService {
         line.addSection(Section.of(upStation, downStation, sectionRequest.getDistance()));
     }
 
+    @Transactional
+    public void removeSectionByStationId(Long id, Long stationId) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(String.format(ErrorMessage.ERROR_LINE_NOT_FOUND, id)));
+        Station station = findStation(stationId);
+        line.removeStation(station);
+    }
+
     private List<StationResponse> generateStationResponses(Line line) {
         return StationResponse.from(line.getSections());
     }

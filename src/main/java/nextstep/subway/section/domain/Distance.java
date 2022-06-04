@@ -27,6 +27,11 @@ public class Distance {
         }
     }
 
+    public void add(Distance distance) {
+        this.distance += distance.getDistance();
+        validateDistance(this.distance);
+    }
+
     public void subtract(Distance distance) {
         this.distance -= distance.getDistance();
         validateDistance(this.distance);

@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections{
+    public static final int MINIMUM_SECTION_NUMBER = 1;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Section> sections = new ArrayList<>();
 
@@ -62,29 +64,25 @@ public class Sections{
 
     private void updateAdjacentSection(Section sectionToAdd) {
         for (Section section : sections) {
-            section.updateWith(sectionToAdd);
+            section.divideWith(sectionToAdd);
         }
     }
 
-    public List<Station> getSortedStations() {
+    public List<Station> getSortedStations(){
         sortSections();
-        return getStations();
-    }
-
-    private List<Station> getStations(){
         List<Station> stations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
         if(!stations.isEmpty()) {
-            addLastDownStation(stations);
+            stations.add(getLastDownStation());
         }
         return stations;
     }
 
-    private boolean addLastDownStation(List<Station> stations) {
-        return stations.add(sections.get(sections.size() - 1).getDownStation());
+    private Station getLastDownStation() {
+        return sections.get(sections.size() - 1).getDownStation();
     }
 
     private boolean hasStation(Station station){
-        return getStations().contains(station);
+        return getSortedStations().contains(station);
     }
 
     private void sortSections() {
@@ -94,5 +92,73 @@ public class Sections{
             }
             return 1;
         });
+    }
+
+    public void removeStation(Station station) {
+        validateStationToRemove(station);
+        if (isEndStation(station)) {
+            removeEndStation(station);
+            return;
+        }
+        removeMiddleStation(station);
+    }
+
+    private void validateStationToRemove(Station station) {
+        if (sections.size() <= MINIMUM_SECTION_NUMBER) {
+            throw new IllegalArgumentException(
+                    String.format("[ERROR] 구간이 %d개 이하일 때는 제거할 수 없습니다.", MINIMUM_SECTION_NUMBER)
+            );
+        }
+        if (!hasStation(station)) {
+            throw new IllegalArgumentException(
+                    "[ERROR] 노선에 존재하지 않는 Station %s은 제거할 수 없습니다."
+            );
+        }
+    }
+
+    private void removeEndStation(Station station) {
+        sections.remove(getEndSection(station));
+    }
+
+    private void removeMiddleStation(Station station) {
+        Section previousSection = getPreviousSection(station);
+        Section postSection = getPostSection(station);
+        previousSection.mergeWith(postSection);
+        sections.remove(postSection);
+    }
+
+    private Section getPreviousSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findFirst().orElseThrow(() ->
+                        new IllegalArgumentException("[ERROR] Station %s의 이전 구간을 찾을 수 없습니다."));
+    }
+
+    private Section getPostSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst().orElseThrow(() ->
+                        new IllegalArgumentException("[ERROR] Station %s의 이후 구간을 찾을 수 없습니다."));
+    }
+
+    private Section getEndSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(station) || section.getUpStation().equals(station))
+                .findFirst().orElseThrow(() ->
+                        new IllegalArgumentException("[ERROR] Station %s의 종점 구간을 찾을 수 없습니다."));
+    }
+
+    private boolean isEndStation(Station station) {
+        return isFirstStation(station) || isLastStation(station);
+    }
+
+    private boolean isFirstStation(Station station) {
+        List<Station> sortedStations = getSortedStations();
+        return !sortedStations.isEmpty() && sortedStations.get(0).equals(station);
+    }
+
+    private boolean isLastStation(Station station) {
+        List<Station> sortedStations = getSortedStations();
+        return !sortedStations.isEmpty() && sortedStations.get(sortedStations.size() - 1).equals(station);
     }
 }
