@@ -3,11 +3,13 @@ package nextstep.subway.line.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.repository.LineRepository;
-import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.repository.StationRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.repository.LineRepository;
+import nextstep.subway.section.domain.Distance;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.repository.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +32,9 @@ public class LineService {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId())
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 상행종점역입니다."));
 
-        Line persistLine = lineRepository.save(lineRequest.toLine(downStation, upStation));
+        Section section = new Section(upStation, downStation, new Distance(lineRequest.getDistance()));
+        Line persistLine = lineRepository.save(lineRequest.toLine(section));
+
         return LineResponse.from(persistLine);
     }
 
@@ -53,7 +57,7 @@ public class LineService {
         Line line = lineRepository.findById(lineId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
 
-        line.update(lineRequest);
+        line.update(lineRequest.getName(), lineRequest.getColor());
     }
 
     @Transactional

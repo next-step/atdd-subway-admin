@@ -2,9 +2,9 @@ package nextstep.subway.station.controller;
 
 import java.net.URI;
 import java.util.List;
-import nextstep.subway.station.service.StationService;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.service.StationService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
