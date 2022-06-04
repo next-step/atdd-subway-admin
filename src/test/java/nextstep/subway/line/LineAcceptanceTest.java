@@ -58,5 +58,17 @@ public class LineAcceptanceTest {
                         .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        ExtractableResponse<Response> 목록_조회_결과_응답 = 노선_목록_조회();
+        assertThat(목록_조회_결과_응답.jsonPath().getList(".")).hasSize(1);
+    }
+
+    protected static ExtractableResponse<Response> 노선_목록_조회() {
+        return RestAssured
+                .given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines")
+                .then().log().all().extract();
     }
 }
