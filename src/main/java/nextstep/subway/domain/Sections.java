@@ -95,25 +95,18 @@ public class Sections {
         sections.add(newSection);
     }
 
-
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
 
         Section preSection = getFirstSection();
-
         stations.add(preSection.getDownStation());
-        while (true) {
-            Section finalPreSection = preSection;
-            Optional<Section> nextStation = getNextStation(finalPreSection);
+        Optional<Section> nextStation = getNextStation(preSection);
 
-            if (nextStation.isPresent()) {
-                stations.add(nextStation.get().getDownStation());
-                preSection = nextStation.get();
-            }
+        while (isLastSection(nextStation)) {
+            stations.add(nextStation.get().getDownStation());
+            preSection = nextStation.get();
 
-            if (!nextStation.isPresent()) {
-                break;
-            }
+            nextStation = getNextStation(preSection);
         }
 
         return stations;
@@ -129,20 +122,19 @@ public class Sections {
     private Section getLastSection() {
 
         Section preSection = getFirstSection();
-
-        while (true) {
-            Section finalPreSection = preSection;
-            Optional<Section> nextStation = getNextStation(finalPreSection);
-
-            if (nextStation.isPresent()) {
-                preSection = nextStation.get();
-            }
-
-            if (!nextStation.isPresent()) {
-                break;
-            }
+        Optional<Section> nextStation = getNextStation(preSection);
+        while (isLastSection(nextStation)) {
+            preSection = nextStation.get();
+            nextStation = getNextStation(preSection);
         }
         return preSection;
+    }
+
+    private boolean isLastSection(Optional<Section> section) {
+        if (section.isPresent()) {
+            return true;
+        }
+        return false;
     }
 
     private Optional<Section> matchDownStation(Section newSection) {
