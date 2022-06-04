@@ -22,16 +22,16 @@ public class LineStationService {
         this.stationService = stationService;
     }
 
-    public LineStationResponse createLineStation(LineStationRequest lineStationRequest) {
-        Line line = lineService.findLineById(lineStationRequest.getLineId());
+    public LineStationResponse createLineStation(Long lineId, LineStationRequest lineStationRequest) {
+        Line line = lineService.findLineById(lineId);
 
         Station upStation = stationService.findStationById(lineStationRequest.getUpStationId());
         Station downStation = stationService.findStationById(lineStationRequest.getDownStationId());
         LineStation newLineStation = LineStation.of(upStation, downStation, lineStationRequest.getDistance());
 
         line.addLineStation(newLineStation);
-        
-        return new LineStationResponse();
+
+        return LineStationResponse.of(saveLineStation(newLineStation));
     }
 
     private LineStation saveLineStation(LineStation lineStation) {

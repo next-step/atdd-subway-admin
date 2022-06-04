@@ -8,18 +8,18 @@ public class LineStationResponse {
     private StationResponse downStation;
     private Long distance;
 
-    public static LineStationResponse of(LineStation lineStation) {
-        return new LineStationResponse(lineStation.getId(), StationResponse.of(lineStation.getUpStation()), StationResponse.of(lineStation.getDownStation()), lineStation.getDistance());
-    }
-
     public LineStationResponse() {
     }
 
-    public LineStationResponse(Long id, StationResponse upStation, StationResponse downStation, Long distance) {
+    private LineStationResponse(Long id, StationResponse upStation, StationResponse downStation, Long distance) {
         this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public static LineStationResponse of(LineStation lineStation) {
+        return new LineStationResponse(lineStation.getId(), StationResponse.of(lineStation.getUpStation()), StationResponse.of(lineStation.getDownStation()), lineStation.getDistance());
     }
 
     public Long getId() {

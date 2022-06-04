@@ -30,9 +30,7 @@ public class LineStations {
             updateUpStation(newLineStation, lineStation);
             updateDownStation(newLineStation, lineStation);
         });
-
-        System.out.println("ASdsadasd");
-
+        
         lineStations.add(newLineStation);
     }
 

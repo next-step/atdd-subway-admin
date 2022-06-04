@@ -45,7 +45,6 @@ public class LineStationAcceptanceTest {
         line = lineRepository.save(new Line("분당선", "yellow"));
     }
 
-
     @Test
     @DisplayName("지하철 구간을 등록한다.")
     void 지하철구간_등록_테스트() {
@@ -64,7 +63,7 @@ public class LineStationAcceptanceTest {
                         .then().log().all()
                         .extract();
 
-        ApiAcceptance.API응답_검증(response.statusCode(), HttpStatus.OK.value());
+        ApiAcceptance.API응답_검증(response.statusCode(), HttpStatus.CREATED.value());
 
         // then
         assertThat(response.jsonPath().getLong("id")).isNotNull();
