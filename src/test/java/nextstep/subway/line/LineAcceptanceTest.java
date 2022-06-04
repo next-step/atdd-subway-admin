@@ -39,22 +39,11 @@ public class LineAcceptanceTest {
     @DisplayName("지하철노선 생성")
     @Test
     void createLine() {
-        ExtractableResponse<Response> 상행_방향_역 = 신규_역_등록("강남역");
-        ExtractableResponse<Response> 하행_방향_역 = 신규_역_등록("양재역");
+        // When
+        ExtractableResponse<Response> 신분당선_생성_응답 = 신분당선_생성();
+        assertThat(신분당선_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        // when
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", Long.parseLong(상행_방향_역.jsonPath().getString("id")));
-        params.put("downStationId", Long.parseLong(하행_방향_역.jsonPath().getString("id")));
-        params.put("distance", 10);
-
-        ExtractableResponse<Response> response = 노선_생성(params);
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        // then
+        // Then
         ExtractableResponse<Response> 목록_조회_결과_응답 = 노선_목록_조회();
         assertThat(목록_조회_결과_응답.jsonPath().getList(".")).hasSize(1);
     }
@@ -68,34 +57,13 @@ public class LineAcceptanceTest {
     @Test
     void showLines() {
         // Given
-        ExtractableResponse<Response> line1_상행_방향_역 = 신규_역_등록("강남역");
-        ExtractableResponse<Response> line1_하행_방향_역 = 신규_역_등록("양재역");
+        신분당선_생성();
+        신림선_생성();
 
-        Map<String, Object> line1Params = new HashMap<>();
-        line1Params.put("name", "신분당선");
-        line1Params.put("color", "bg-red-600");
-        line1Params.put("upStationId", Long.parseLong(line1_상행_방향_역.jsonPath().getString("id")));
-        line1Params.put("downStationId", Long.parseLong(line1_하행_방향_역.jsonPath().getString("id")));
-        line1Params.put("distance", 10);
-
-        노선_생성(line1Params);
-
-        ExtractableResponse<Response> line2_상행_방향_역 = 신규_역_등록("신림역");
-        ExtractableResponse<Response> line2_하행_방향_역 = 신규_역_등록("서원역");
-
-        Map<String, Object> line2Params = new HashMap<>();
-        line2Params.put("name", "신림선");
-        line2Params.put("color", "bg-red-100");
-        line2Params.put("upStationId", Long.parseLong(line2_상행_방향_역.jsonPath().getString("id")));
-        line2Params.put("downStationId", Long.parseLong(line2_하행_방향_역.jsonPath().getString("id")));
-        line2Params.put("distance", 7);
-
-        노선_생성(line2Params);
-
-        // when
+        // When
         ExtractableResponse<Response> 노선_목록_조회_결과 = 노선_목록_조회();
 
-        // then
+        // Then
         assertThat(노선_목록_조회_결과.jsonPath().getList("name")).hasSize(2);
     }
 
@@ -114,5 +82,33 @@ public class LineAcceptanceTest {
                 .when().post("/lines")
                 .then().log().all()
                 .extract();
+    }
+
+    private ExtractableResponse<Response> 신분당선_생성() {
+        ExtractableResponse<Response> 신분당선_상행_방향_역 = 신규_역_등록("강남역");
+        ExtractableResponse<Response> 신분당선_하행_방향_역 = 신규_역_등록("양재역");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        params.put("upStationId", Long.parseLong(신분당선_상행_방향_역.jsonPath().getString("id")));
+        params.put("downStationId", Long.parseLong(신분당선_하행_방향_역.jsonPath().getString("id")));
+        params.put("distance", 10);
+
+        return 노선_생성(params);
+    }
+
+    private ExtractableResponse<Response> 신림선_생성() {
+        ExtractableResponse<Response> 신림선_상행_방향_역 = 신규_역_등록("신림역");
+        ExtractableResponse<Response> 신림선_하행_방향_역 = 신규_역_등록("서원역");
+
+        Map<String, Object> line2Params = new HashMap<>();
+        line2Params.put("name", "신림선");
+        line2Params.put("color", "bg-red-100");
+        line2Params.put("upStationId", Long.parseLong(신림선_상행_방향_역.jsonPath().getString("id")));
+        line2Params.put("downStationId", Long.parseLong(신림선_하행_방향_역.jsonPath().getString("id")));
+        line2Params.put("distance", 7);
+
+        return 노선_생성(line2Params);
     }
 }
