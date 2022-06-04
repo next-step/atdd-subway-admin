@@ -64,8 +64,8 @@ public class Line extends BaseEntity {
     }
 
 
-    public List<Section> getSections() {
-        return sections.get();
+    public Sections getSections() {
+        return sections;
     }
 
     @Override

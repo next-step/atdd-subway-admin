@@ -7,6 +7,7 @@
 - 3단계 피드백 반영
   - [X] SectionAcceptanceTest의 given 수정
   - [X] LineService 에서 SectionRepository 의존성 제거
+  - [X] 도메인(Sections) 레이어에 위치한 유효성 검증을 서비스 레이어로 이관
 - 인수 테스트 작성
   - [X] 상행 종점역 제거 성공 케이스 작성
   - [X] 하행 종점역 제거 성공 케이스 작성

@@ -1,12 +1,13 @@
 package nextstep.subway.application;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
-import nextstep.subway.domain.SectionRepository;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -70,13 +71,20 @@ public class LineService {
         Line line = getLine(id);
         Station upStation = getStation(sectionRequest.getUpStationId());
         Station downStation = getStation(sectionRequest.getDownStationId());
-        line.addSection(sectionRequest.createSection(upStation, downStation));
+        Section newSection = sectionRequest.createSection(upStation, downStation);
+
+        validateAdd(line, newSection);
+
+        line.addSection(newSection);
         return line;
     }
 
     public void removeSectionByStationId(Long lineId, Long stationId) {
         Line line = getLine(lineId);
         Station station = getStation(stationId);
+
+        validateRemove(line, station);
+
         line.removeSectionByStation(station);
     }
 
@@ -87,5 +95,25 @@ public class LineService {
 
     private Station getStation(Long id) {
         return stationService.findStationById(id);
+    }
+
+    private void validateAdd(Line line, Section newSection) {
+        Set<Station> stations = line.getSections().allStations();
+        if (stations.containsAll(newSection.allStations())) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
+        }
+        if (!stations.contains(newSection.getUpStation()) && !stations.contains(newSection.getDownStation())) {
+            throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
+        }
+    }
+
+    private void validateRemove(Line line, Station station) {
+        Sections sections = line.getSections();
+        if (sections.size() == Sections.MIN_SECTION_COUNT) {
+            throw new IllegalStateException("단일 구간인 노선은 구간을 제거할 수 없습니다.");
+        }
+        if (!sections.allStations().contains(station)) {
+            throw new IllegalArgumentException("노선에 등록되지 않은 구간은 제거할 수 없습니다.");
+        }
     }
 }
