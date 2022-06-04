@@ -36,14 +36,13 @@ public class LineService {
             throw new IllegalArgumentException(ErrorMessage.LINE_DUPLICATE.toMessage());
         }
 
-        final Station upStation = getValidStation(request.getUpStationId(), ErrorMessage.LINE_NOT_VALID_UP_STATION);
-        final Station downStation = getValidStation(request.getDownStationId(), ErrorMessage.LINE_NOT_VALID_DOWN_STATION);
-
-        final Line line = lineRepository.save(new Line(
-                request.getName(), request.getColor(), upStation, downStation, Distance.of(request.getDistance()))
-        );
-
-        return LineResponse.of(line);
+        return LineResponse.of(lineRepository.save(Line.builder()
+                .name(request.getName())
+                .color(request.getColor())
+                .upStation(getValidStation(request.getUpStationId(), ErrorMessage.LINE_NOT_VALID_UP_STATION))
+                .downStation(getValidStation(request.getDownStationId(), ErrorMessage.LINE_NOT_VALID_DOWN_STATION))
+                .distance(Distance.of(request.getDistance()))
+                .build()));
     }
 
     public List<LineResponse> findAllLine() {

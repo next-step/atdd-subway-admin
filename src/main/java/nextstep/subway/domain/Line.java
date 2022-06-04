@@ -43,13 +43,17 @@ public class Line extends BaseEntity {
         this(name, color, Distance.of(distance));
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, Distance distance) {
+    private Line(String name, String color, Station upStation, Station downStation, Distance distance) {
         valid(name, color);
         this.name = name;
         this.color = color;
         sections = new Sections(Section.builder().upStation(upStation)
                 .downStation(downStation)
                 .distance(distance).build());
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     public void changeColor(String color) {
@@ -91,6 +95,43 @@ public class Line extends BaseEntity {
 
     public Sections getSections() {
         return sections;
+    }
+
+    public static class Builder {
+        private String name;
+        private String color;
+        private Station upStation;
+        private Station downStation;
+        private Distance distance;
+
+        public Line build() {
+            return new Line(name, color, upStation, downStation, distance);
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder color(String color) {
+            this.color = color;
+            return this;
+        }
+
+        public Builder upStation(Station upStation) {
+            this.upStation = upStation;
+            return this;
+        }
+
+        public Builder downStation(Station downStation) {
+            this.downStation = downStation;
+            return this;
+        }
+
+        public Builder distance(Distance distance) {
+            this.distance = distance;
+            return this;
+        }
     }
 
 }
