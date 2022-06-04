@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import java.util.List;
 
@@ -19,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest extends BaseAcceptanceTest {
+public class LineAcceptanceTest extends BaseLineAcceptanceTest {
     @LocalServerPort
     int port;
 
@@ -35,18 +37,23 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     }
 
     private void setDefaultLine() {
-        StationResponse firstLineUpStation = createStationRequest("강남역")
-                .jsonPath().getObject("", StationResponse.class);
-        StationResponse firstLineDownStation = createStationRequest("광교역")
-                .jsonPath().getObject("", StationResponse.class);
+        StationResponse firstLineUpStation = createStationRequest("강남역");
+        StationResponse firstLineDownStation = createStationRequest("광교역");
 
-        StationResponse secondLineUpStation = createStationRequest("대화역")
-                .jsonPath().getObject("", StationResponse.class);
-        StationResponse secondLineDownStation = createStationRequest("오금역")
-                .jsonPath().getObject("", StationResponse.class);
+        StationResponse secondLineUpStation = createStationRequest("대화역");
+        StationResponse secondLineDownStation = createStationRequest("오금역");
 
         firstLine = LineRequest.of("신분당선", "bg-red-600", firstLineUpStation.getId(), firstLineDownStation.getId(), 10);
         secondLine = LineRequest.of("3호선", "bg-bisque", secondLineUpStation.getId(), secondLineDownStation.getId(), 20);
+    }
+
+    private StationResponse createStationRequest(String stationName) {
+        return RestAssured.given().log().all()
+                .body(StationRequest.from(stationName))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract().jsonPath().getObject("", StationResponse.class);
     }
 
     /**
