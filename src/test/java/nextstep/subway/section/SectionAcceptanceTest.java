@@ -219,6 +219,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간이_삭제되지_않는다(구간_삭제_응답);
     }
 
+    /**
+     * When 구간이 하나인 노선의 마지막_역을_삭제하면
+     * Then 구간이 삭제되지 않는다.
+     */
+    @Test
+    void 구간이_하나인_노선의_마지막_역을_삭제한다() {
+        // when
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간을_삭제한다(신분당선, 정자역_id);
+
+        // then
+        구간이_삭제되지_않는다(구간_삭제_응답);
+    }
+
     public static class SectionAcceptanceTemplate {
         public static void 노선에_신규_구간이_정상_등록된다(ExtractableResponse<Response> 신규_구간이_등록된_노선) {
             assertThat(신규_구간이_등록된_노선.statusCode()).isEqualTo(HttpStatus.CREATED.value());
