@@ -40,8 +40,8 @@ public class Sections {
         return stations;
     }
 
-    public void remove(Station station) {
-        validateDeleteLineStation(station);
+    public void removeStationInSection(Station station) {
+        validateDeleteStationInSection(station);
 
         Optional<Section> optionalUpStation = findByUpStation(station);
         Optional<Section> optionalDownStation = findByDownStation(station);
@@ -62,7 +62,7 @@ public class Sections {
         return this.sections.size();
     }
 
-    private void validateDeleteLineStation(Station station) {
+    private void validateDeleteStationInSection(Station station) {
         if (this.canNotDelete()) {
             throw new IllegalArgumentException("노선에 남은 구간이 하나이기 떄문에 삭제할 수 없습니다.");
         }

@@ -50,7 +50,7 @@ public class SectionService {
         Station station = stationRepository.findById(stationId)
             .orElseThrow(() -> new IllegalArgumentException("삭제하려는 지하철역이 존재하지 않습니다."));
 
-        line.removeSection(station);
+        line.removeStationInSection(station);
     }
 
     private Line findLineById(Long lineId) {

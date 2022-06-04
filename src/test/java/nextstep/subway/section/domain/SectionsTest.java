@@ -32,7 +32,7 @@ class SectionsTest {
     private static Station newDownStation = new Station("낙성대역");
     private static Section section;
     private static Sections sections;
-    
+
     @BeforeEach
     public void init() {
         stationRepository.saveAll(Arrays.asList(upStation, downStation, newDownStation, newUpStation));
@@ -69,6 +69,25 @@ class SectionsTest {
         sections.add(newSection);
 
         assertThat(sections.orderStationsOfLine()).containsExactly(upStation, newUpStation, downStation);
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("노선에서 특정 지하철역을 삭제할 때, 발생할 수 있는 예외처리 확인")
+    @MethodSource("providerRemoveStationInSection_failCase")
+    void removeStationInSection_fail(String name, Station removeStation) {
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> sections.removeStationInSection(removeStation));
+    }
+
+    static Stream<Arguments> providerRemoveStationInSection_failCase() {
+        return Stream.of(
+            Arguments.of(
+                "노선에 남은 구간이 하나일 때", upStation
+            ),
+            Arguments.of(
+                "노선에 해당 지하철역이 없을 때", newDownStation
+            )
+        );
     }
 
     static Stream<Arguments> providerCreateSection_add_failCase(){
