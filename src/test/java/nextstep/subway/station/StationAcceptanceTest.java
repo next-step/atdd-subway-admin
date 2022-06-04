@@ -105,42 +105,19 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
-        //given
-        //지하철역_생성_목록
-        List<String> names = new ArrayList<>();
-        names.add("신림역");
-        names.add("강남역");
-
-        // when
-        // 지하철역_생성
-        names.stream().forEach(s -> createStation(s));
+        //given, when
+        //지하철역_생성
+        createStation("강남역");
+        createStation("신림역");
 
         //then
         // 지하철_노선_조회
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = selectAllStation();
 
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
             () -> assertThat(response.jsonPath().getList(".", StationResponse.class)).hasSize(2)
         );
-    }
-
-    void createStation(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        ExtractableResponse<Response> when =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
     }
 
     /**
@@ -151,14 +128,9 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
-        //given
-        //지하철역_생성_목록
-        List<String> names = new ArrayList<>();
-        names.add("강남역");
-
-        //when
-        // 지하철역_생성
-        names.stream().forEach(s -> createStation(s));
+        //given, when
+        //지하철역_생성
+        createStation("강남역");
 
         //then
         //지하철역_삭제
@@ -172,16 +144,34 @@ public class StationAcceptanceTest {
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         //지하철역_조회
-        ExtractableResponse<Response> getAllResponse =
-                RestAssured.given().log().all()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> getAllResponse = selectAllStation();
 
         assertAll(
             () -> assertThat(getAllResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
             () -> assertThat(getAllResponse.jsonPath().getList(".", StationResponse.class)).hasSize(0)
         );
+    }
+
+    @DisplayName("name 값으로 지하철역을 생성한다.")
+    void createStation(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        ExtractableResponse<Response> when =
+                RestAssured.given().log().all()
+                        .body(params)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().post("/stations")
+                        .then().log().all()
+                        .extract();
+    }
+
+    @DisplayName("지하철을 생성하지 않고 지하철역만 조회한다.")
+    ExtractableResponse<Response> selectAllStation() {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/stations")
+                .then().log().all()
+                .extract();
     }
 }
