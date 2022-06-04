@@ -9,27 +9,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.subway.BaseAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-    }
-
+public class StationAcceptanceTest extends BaseAcceptanceTest {
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다
@@ -39,17 +28,17 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // given
-        final String name = "강남역";
+        final String stationName = "강남역";
 
         // when
-        final ExtractableResponse<Response> response = 지하철역을_생성한다(name);
+        final ExtractableResponse<Response> response = 지하철역을_생성한다(stationName);
 
         // then
-        응답_코드를_검증한다(response, HttpStatus.CREATED);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
         final List<String> stationNames = 지하철역_목록을_조회한다();
-        assertThat(stationNames).containsAnyOf(name);
+        assertThat(stationNames).containsAnyOf(stationName);
     }
 
     /**
@@ -61,14 +50,14 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        final String name = "강남역";
-        지하철역을_생성한다(name);
+        final String stationName = "강남역";
+        지하철역을_생성한다(stationName);
 
         // when
-        final ExtractableResponse<Response> response = 지하철역을_생성한다(name);
+        final ExtractableResponse<Response> response = 지하철역을_생성한다(stationName);
 
         // then
-        응답_코드를_검증한다(response, HttpStatus.BAD_REQUEST);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -76,7 +65,7 @@ public class StationAcceptanceTest {
      * When 지하철역 목록을 조회하면
      * Then 2개의 지하철역을 응답 받는다
      */
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("지하철역 목록을 조회한다.")
     @Test
     void getStations() {
         // given
@@ -102,16 +91,17 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        final String name = "강남역";
-        final ExtractableResponse<Response> createResponse = 지하철역을_생성한다(name);
+        final String stationName = "강남역";
+        final ExtractableResponse<Response> createResponse = 지하철역을_생성한다(stationName);
 
         // when
         final ExtractableResponse<Response> deleteResponse = 지하철역을_삭제한다(createResponse.jsonPath().getLong("id"));
 
         // then
-        응답_코드를_검증한다(deleteResponse, HttpStatus.NO_CONTENT);
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
         final List<String> stationNames = 지하철역_목록을_조회한다();
-        assertThat(stationNames).doesNotContain(name);
+        assertThat(stationNames).doesNotContain(stationName);
     }
 
     private ExtractableResponse<Response> 지하철역을_생성한다(final String name) {
@@ -120,8 +110,8 @@ public class StationAcceptanceTest {
 
         return RestAssured
                 .given().log().all()
-                .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
                 .when().post("/stations")
                 .then().log().all()
                 .extract();
@@ -143,9 +133,5 @@ public class StationAcceptanceTest {
                 .when().delete("/stations/{id}", id)
                 .then().log().all()
                 .extract();
-    }
-
-    private void 응답_코드를_검증한다(final ExtractableResponse<Response> response, final HttpStatus created) {
-        assertThat(response.statusCode()).isEqualTo(created.value());
     }
 }
