@@ -32,11 +32,26 @@ public class Line extends BaseEntity {
     }
 
     private Line(String name, String color, Station upStation, Station downStation, Integer distance) {
+        validateDistance(distance);
+        validateUpDownStations(upStation, downStation);
+
         this.name = name;
         this.color = color;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private void validateDistance(Integer distance) {
+        if (distance <= 0) {
+            throw new IllegalArgumentException("지하철 노선의 거리는 양수만 입력해 주세요.");
+        }
+    }
+
+    private void validateUpDownStations(Station upStation, Station downStation) {
+        if (upStation.equals(downStation)) {
+            throw new IllegalArgumentException("상행종점역과 하행종점역은 같을 수 없습니다.");
+        }
     }
 
     public static Line of(String name, String color, Station upStation, Station downStation, Integer distance) {
