@@ -21,8 +21,4 @@ public class StationTestMethods {
     public static ExtractableResponse<Response> 지하철역_삭제(String location) {
         return delete(location);
     }
-
-    public static StationResponse createStationResponse(String stationName) {
-        return 지하철역_생성(stationName).as(StationResponse.class);
-    }
 }

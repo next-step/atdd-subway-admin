@@ -33,9 +33,4 @@ public class LineTestMethods {
     public static ExtractableResponse<Response> 노선_삭제(Long lineId) {
         return delete(URI_LINES + SLASH + lineId);
     }
-
-    public static LineResponse createLineResponse
-            (String name, String color, Long upStationId, Long downStationId, int distance) {
-        return 노선_생성(name, color, upStationId, downStationId, distance).as(LineResponse.class);
-    }
 }

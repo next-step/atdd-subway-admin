@@ -4,7 +4,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,11 +12,11 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.line.LineTestMethods.createLineResponse;
 import static nextstep.subway.line.LineTestMethods.노선_단건_조회;
 import static nextstep.subway.section.SectionTestMethods.구간_삭제;
 import static nextstep.subway.section.SectionTestMethods.구간_추가;
-import static nextstep.subway.station.StationTestMethods.createStationResponse;
+import static nextstep.subway.testutils.FactoryMethods.createLineResponse;
+import static nextstep.subway.testutils.FactoryMethods.createStationResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
