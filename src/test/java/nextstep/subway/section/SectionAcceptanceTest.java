@@ -296,6 +296,27 @@ public class SectionAcceptanceTest {
         );
     }
 
+    /**
+     * When 노선에 등록되어 있지 않은 역을 제거하려고 하면
+     * <p>
+     * Then 예외가 발생한다.
+     */
+    @DisplayName("노선에 등록되어 있지 않은 역을 제거하려고 하면 예외 발생")
+    @Test
+    void deleteNotExistedSection() {
+
+        // when
+        ExtractableResponse<Response> response = RestAssuredMethod.delete("/lines/{id}/sections",
+                new HashMap<String, String>() {{
+                    put("id", lineId);
+                }}, new HashMap<String, Integer>() {{
+                    put("stationId", 지하철역_생성("없는역").jsonPath().get("id"));
+                }});
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> 구간_생성(String upStationId, String downStationId, String distance) {
         Map<String, String> params = new HashMap<>();
         params.put("distance", distance);
