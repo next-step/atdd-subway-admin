@@ -53,4 +53,9 @@ public class LineService {
             .orElseThrow(() -> new IllegalArgumentException("지하철 노선이 존재하지 않습니다."));
         line.update(lineRequest);
     }
+
+    @Transactional
+    public void deleteLine(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
