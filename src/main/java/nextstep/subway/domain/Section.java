@@ -67,4 +67,8 @@ public class Section extends BaseEntity {
     public boolean isNextSectionOf(Section section) {
         return Objects.equals(this.upStation, section.downStation);
     }
+
+    public boolean hasSameStations(Section other) {
+        return this.upStation == other.upStation && this.downStation == other.downStation;
+    }
 }

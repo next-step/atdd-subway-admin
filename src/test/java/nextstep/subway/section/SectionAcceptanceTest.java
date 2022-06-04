@@ -15,6 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -131,6 +132,25 @@ public class SectionAcceptanceTest {
         List<String> stationNames = LineAcceptanceTest.getLine("/lines/" + 분당선.getId())
                 .jsonPath().getList("stations.name", String.class);
         assertThat(stationNames).containsExactly("왕십리역", "선릉역", "도곡역");
+    }
+
+    /**
+     * Given 구간 하나를 가진 노선이 있을 때
+     * When 기존 구간과 같은 구간을 추가하면
+     * Then 400 에러가 전달된다
+     */
+    @DisplayName("기존 구간과 같은 구간을 추가한다.")
+    @Test
+    void 중복_구간_추가() {
+        // given
+        // 분당선(왕십리역-선릉역)
+
+        // when
+        ExtractableResponse<Response> response = addSection(
+                "/lines/" + 분당선.getId(), new SectionRequest(왕십리역.getId(), 선릉역.getId(), 4));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> addSection(String lineLocation, SectionRequest body) {

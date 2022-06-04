@@ -14,6 +14,8 @@ public class Sections {
 
     // TODO: add validations
     public void add(Section newSection) {
+        validateDuplication(newSection);
+
         if (list.isEmpty()) {
             list.add(newSection);
             return;
@@ -55,5 +57,14 @@ public class Sections {
                 .filter(it -> it.hasSameUpStationAs(newSection))
                 .findFirst()
                 .ifPresent(it -> it.updateUpStationToDownStationOf(newSection));
+    }
+
+    private void validateDuplication(Section newSection) {
+        list.stream()
+                .filter(section -> section.hasSameStations(newSection))
+                .findAny()
+                .ifPresent(it -> {
+                    throw new IllegalArgumentException("구간 중복");
+                });
     }
 }
