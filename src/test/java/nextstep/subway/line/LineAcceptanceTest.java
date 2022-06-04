@@ -4,13 +4,9 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.common.RestAssuredTemplate;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
@@ -20,13 +16,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends BaseAcceptanceTest {
-
-    @BeforeEach
-    void setUp(@Autowired LineRepository lineRepository,
-               @Autowired StationRepository stationRepository) {
-        lineRepository.deleteAll();
-        stationRepository.deleteAll();
-    }
 
     /**
      * When 지하철 노선을 생성하면
