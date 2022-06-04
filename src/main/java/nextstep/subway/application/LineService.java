@@ -2,6 +2,7 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -28,9 +29,9 @@ public class LineService {
         Line persistLine = lineRepository.save(new Line(
                 request.getName(),
                 request.getColor(),
-                stationRepository.getById(request.getUpStationId()),
-                stationRepository.getById(request.getDownStationId()),
-                request.getDistance()));
+                new Sections(
+                        stationRepository.getById(request.getUpStationId()),
+                        stationRepository.getById(request.getDownStationId()))));
 
         return LineResponse.of(persistLine);
     }

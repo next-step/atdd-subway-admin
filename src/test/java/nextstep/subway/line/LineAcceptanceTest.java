@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationRequest;
+import nextstep.subway.dto.StationResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,12 +31,16 @@ public class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
+    StationResponse 지하철역;
+    StationResponse 새로운지하철역;
+    StationResponse 또다른지하철역;
+
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
-        StationAcceptanceTest.createStation(new StationRequest("지하철역"));
-        StationAcceptanceTest.createStation(new StationRequest("새로운지하철역"));
-        StationAcceptanceTest.createStation(new StationRequest("또다른지하철역"));
+        지하철역 = StationAcceptanceTest.createStation(new StationRequest("지하철역")).as(StationResponse.class);
+        새로운지하철역 = StationAcceptanceTest.createStation(new StationRequest("새로운지하철역")).as(StationResponse.class);
+        또다른지하철역 = StationAcceptanceTest.createStation(new StationRequest("또다른지하철역")).as(StationResponse.class);
     }
 
     /**
@@ -46,7 +51,8 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_생성_조회() {
         // when
-        ExtractableResponse<Response> response = createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10L));
+        ExtractableResponse<Response> response = createLine(new LineRequest(
+                "신분당선", "bg-red-600", 지하철역.getId(), 새로운지하철역.getId(), 10));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
@@ -66,8 +72,8 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_목록_조회() {
         // given
-        createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10L));
-        createLine(new LineRequest("분당선", "bg-green-600", 1L, 3L, 13L));
+        createLine(new LineRequest("신분당선", "bg-red-600", 지하철역.getId(), 새로운지하철역.getId(), 10));
+        createLine(new LineRequest("분당선", "bg-green-600", 지하철역.getId(), 또다른지하철역.getId(), 13));
 
         // when
         List<String> lineNames = getLinesIn("name", String.class);
@@ -85,7 +91,8 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_조회() {
         // given
-        String location = createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10L))
+        String location = createLine(new LineRequest(
+                "신분당선", "bg-red-600", 지하철역.getId(), 새로운지하철역.getId(), 10))
                 .header("Location");
 
         // when
@@ -121,7 +128,8 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_수정() {
         // given
-        String location = createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10L))
+        String location = createLine(new LineRequest(
+                "신분당선", "bg-red-600", 지하철역.getId(), 새로운지하철역.getId(), 10))
                 .header("Location");
 
         // when
@@ -141,7 +149,8 @@ public class LineAcceptanceTest {
     @Test
     void 존재하지_않는_지하철_노선_수정() {
         // when
-        ExtractableResponse<Response> response = editLine("/lines/10", new LineRequest("다른분당선", "bg-red-600"));
+        ExtractableResponse<Response> response = editLine(
+                "/lines/10", new LineRequest("다른분당선", "bg-red-600"));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
@@ -156,7 +165,7 @@ public class LineAcceptanceTest {
     @Test
     void 생성한_지하철_노선_삭제() {
         // given
-        String location = createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10L))
+        String location = createLine(new LineRequest("신분당선", "bg-red-600", 지하철역.getId(), 새로운지하철역.getId(), 10))
                 .header("Location");
 
         // when
@@ -197,7 +206,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> createLine(LineRequest body) {
+    public static ExtractableResponse<Response> createLine(LineRequest body) {
         return RestAssured.given().log().all()
                 .body(body)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
