@@ -99,6 +99,18 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        Long stationId = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철역_삭제_요청(stationId);
+
+        // then
+        지하철역_삭제_성공_확인(response);
+
+        // then
+        List<String> stationNames = 지하철역_목록_조회().jsonPath().getList("name", String.class);
+        지하철역_미포함_확인(stationNames, "강남역");
     }
 
     private ExtractableResponse<Response> 지하철역_생성_요청(String stationName) {
@@ -120,6 +132,14 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
+    private ExtractableResponse<Response> 지하철역_삭제_요청(Long stationId) {
+        return RestAssured.given().log().all()
+                .pathParam("id", stationId)
+                .when().delete("/stations" + "/{id}")
+                .then().log().all()
+                .extract();
+    }
+
     private void 지하철역_생성_성공_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -132,7 +152,15 @@ public class StationAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    private void 지하철역_삭제_성공_확인(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
     private void 지하철역_포함_확인(List<String> stationNames, String stationName) {
         assertThat(stationNames).containsAnyOf(stationName);
+    }
+
+    private void 지하철역_미포함_확인(List<String> stationNames, String stationName) {
+        assertThat(stationNames).doesNotContain(stationName);
     }
 }
