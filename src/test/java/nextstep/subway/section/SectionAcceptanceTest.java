@@ -2,6 +2,7 @@ package nextstep.subway.section;
 
 import static nextstep.subway.helper.DomainCreationHelper.지하철구간_상행_기점_생성됨;
 import static nextstep.subway.helper.DomainCreationHelper.지하철구간_상행_종점_생성됨;
+import static nextstep.subway.helper.DomainCreationHelper.지하철구간_상행_하행_새로_생성됨;
 import static nextstep.subway.helper.DomainCreationHelper.지하철구간_이미_둘다_등록된_노선_요청;
 import static nextstep.subway.helper.DomainCreationHelper.지하철구간_하행_기점_생성됨;
 import static nextstep.subway.helper.DomainCreationHelper.지하철구간_하행_종점_생성됨;
@@ -112,6 +113,17 @@ public class SectionAcceptanceTest extends DoBeforeEachAbstract {
         assertThat(노선.jsonPath().getString("stations[0].name")).isEqualTo("노량진역");
         assertThat(노선.jsonPath().getString("stations[1].name")).isEqualTo("용산역");
         assertThat(노선.jsonPath().getString("stations[2].name")).isEqualTo("남영역");
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.")
+    @Test
+    void addSectionBothNotExistsException() {
+        // when
+        // 지하철_노선에_지하철_구간_등록_요청
+        final ExtractableResponse<Response> 결과 = 지하철구간_상행_하행_새로_생성됨(lineId, "신길역", "시청역", 18L);
+
+        // then
+        assertThat(결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> 노선_조회(Long lineId) {

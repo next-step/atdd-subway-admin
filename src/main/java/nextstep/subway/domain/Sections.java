@@ -10,6 +10,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import nextstep.subway.exception.BothStationAlreadyExistsException;
+import nextstep.subway.exception.BothStationNotExistsException;
 import nextstep.subway.exception.DistanceIsEqualOrGreaterException;
 import nextstep.subway.exception.ResourceNotFoundException;
 
@@ -19,7 +20,7 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public boolean addSection(final Section addableSection) {
-        checkBothStationAlreadyExists(addableSection);
+        checkBothStationExists(addableSection);
         if (checkSectionIsBetween(addableSection)) {
             checkDistanceIsEqualOrGreaterThan(addableSection);
             updateOriginSection(addableSection);
@@ -27,7 +28,11 @@ public class Sections {
         return sections.add(addableSection);
     }
 
-    private void checkBothStationAlreadyExists(final Section addableSection) {
+    private void checkBothStationExists(final Section addableSection) {
+        if (sections.isEmpty()) {
+            return;
+        }
+
         final long matchedCount = getAllStations().stream()
                 .filter(station ->
                         station == addableSection.getUpStation() ||
@@ -36,6 +41,10 @@ public class Sections {
 
         if (matchedCount == 2) {
             throw new BothStationAlreadyExistsException();
+        }
+
+        if (matchedCount == 0) {
+            throw new BothStationNotExistsException();
         }
     }
 
