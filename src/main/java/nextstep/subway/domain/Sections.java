@@ -63,13 +63,13 @@ public class Sections {
         Section downMatchedSection = findSectionFromDownStation(station);
         Optional<Section> upMatchedSection = findSectionFromUpStation(station);
 
-        if (downMatchedSection.isFirstSection()) {
-            downMatchedSection.setDownStation(upMatchedSection.get().getDownStation());
+        if (!isLastSection(upMatchedSection)) {
+            sections.remove(downMatchedSection);
             return;
         }
 
-        if (!upMatchedSection.isPresent()) {
-            sections.remove(downMatchedSection);
+        if (downMatchedSection.isFirstSection()) {
+            downMatchedSection.setDownStation(upMatchedSection.get().getDownStation());
             return;
         }
 
