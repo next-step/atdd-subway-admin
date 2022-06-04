@@ -29,6 +29,10 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
+    public Line(final String name, final String color) {
+        this(name, color, new Distance(0L));
+    }
+
     public Line(final String name, final String color, final Distance distance) {
         this(name, color, new Station(), new Station(), distance);
     }
