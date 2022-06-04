@@ -56,21 +56,21 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        Section upMatchedSection = findSectionFromDownStation(station);
-        Section downMatchedSection = findSectionFromUpStation(station);
+        Section downMatchedSection = findSectionFromDownStation(station);
+        Section upMatchedSection = findSectionFromUpStation(station);
 
-        if (upMatchedSection.isFirstSection()) {
-            upMatchedSection.setDownStation(downMatchedSection.getDownStation());
+        if (downMatchedSection.isFirstSection()) {
+            downMatchedSection.setDownStation(upMatchedSection.getDownStation());
             return;
         }
 
-        sections.remove(upMatchedSection);
         sections.remove(downMatchedSection);
+        sections.remove(upMatchedSection);
 
         add(new Section(
-                upMatchedSection.getUpStation(),
-                downMatchedSection.getDownStation(),
-                upMatchedSection.getDistance().add(downMatchedSection.getDistance()))
+                downMatchedSection.getUpStation(),
+                upMatchedSection.getDownStation(),
+                downMatchedSection.getDistance().add(upMatchedSection.getDistance()))
         );
     }
 
