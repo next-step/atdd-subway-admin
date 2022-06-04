@@ -99,11 +99,11 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
     }
 
     public static ExtractableResponse<Response> 지하철역_생성됨(String name) {
-        return RestAssuredTemplate.post(new StationRequest(name), "/stations");
+        return RestAssuredTemplate.post("/stations", new StationRequest(name));
     }
 
     public static ExtractableResponse<Response> 지하철역_삭제(long stationId) {
-        return RestAssuredTemplate.delete("/stations/{id}", stationId);
+        return RestAssuredTemplate.delete("/stations/" + stationId);
     }
 
     public static List<String> 지하철역_전체_조회() {

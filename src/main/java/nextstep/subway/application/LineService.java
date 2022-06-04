@@ -5,12 +5,12 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,4 +48,11 @@ public class LineService {
                 .orElseThrow(() -> new NoSuchElementException(String.format("Line Not Found : %d", id))));
     }
 
+    @Transactional
+    public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(String.format("Line Not Found : %d", id)));
+
+        line.change(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
+    }
 }

@@ -3,6 +3,8 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.List;
 
+import static java.util.Objects.requireNonNull;
+
 @Entity
 public class Line {
 
@@ -31,6 +33,11 @@ public class Line {
         sections.add(section);
     }
 
+    public void change(String name, String color) {
+        this.name = requireNonNull(name, "name 값을 입력해주세요.");
+        this.color = requireNonNull(color, "color 값을 입력해주세요.");
+    }
+
     public Long getId() {
         return id;
     }
@@ -50,5 +57,4 @@ public class Line {
     public List<Station> getStations() {
         return sections.getStations();
     }
-
 }

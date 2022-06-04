@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.common.RestAssuredTemplate;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -91,7 +92,20 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
      */
     @Test
     void 지하철노선_수정() {
+        // given
+        Long 지하철역_id = 지하철역_생성됨("지하철역").body().jsonPath().getLong("id");
+        Long 새로운지하철역_id = 지하철역_생성됨("새로운지하철역").body().jsonPath().getLong("id");
 
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성됨("신분당선", "bg-green-600", 10, 지하철역_id, 새로운지하철역_id);
+        long lineId = createResponse.body().jsonPath().getLong("id");
+
+        // when
+        String name = "다른분당선";
+        String color = "bg-red-600";
+        ExtractableResponse<Response> response = 지하철_노선_수정(lineId, name, color);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     /**
@@ -105,7 +119,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성됨(String name, String color, Integer distance, Long upStationId, Long downStationId) {
-        return RestAssuredTemplate.post(new LineRequest(name, color, upStationId, downStationId, distance), "/lines");
+        return RestAssuredTemplate.post("/lines", new LineRequest(name, color, upStationId, downStationId, distance));
     }
 
     public static List<String> 지하철_노선_전체_조회() {
@@ -114,6 +128,10 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
     public static String 지하철_노선_조회(long lineId) {
         return RestAssuredTemplate.get("/lines/" + lineId).jsonPath().getString("name");
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_수정(long lineId, String name, String color) {
+        return RestAssuredTemplate.put("/lines/" + lineId, new LineUpdateRequest(name, color));
     }
 
 }
