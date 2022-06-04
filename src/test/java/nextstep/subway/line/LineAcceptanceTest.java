@@ -176,7 +176,7 @@ public class LineAcceptanceTest extends BasicAcceptance {
         return requestUtil.updateLine(id, convertMapBy(lineRequest));
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성(final LineRequest lineRequest) {
+    static ExtractableResponse<Response> 지하철_노선_생성(final LineRequest lineRequest) {
         return requestUtil.createLine(convertMapBy(lineRequest));
     }
 
@@ -208,12 +208,12 @@ public class LineAcceptanceTest extends BasicAcceptance {
         return responseList.stream().anyMatch(lineResponse -> Objects.equals(lineResponse.getName(), lineName));
     }
 
-    private Map<String, String> convertMapBy(final LineRequest lineRequest) {
+    static Map<String, String> convertMapBy(final LineRequest lineRequest) {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.convertValue(lineRequest, Map.class);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성됨(ExtractableResponse<Response> response) {
+    static ExtractableResponse<Response> 지하철_노선_생성됨(ExtractableResponse<Response> response) {
         요청_성공_실패_여부_확인(response, HttpStatus.CREATED);
         return response;
     }
