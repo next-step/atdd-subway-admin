@@ -6,6 +6,8 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +30,9 @@ public class LineServiceTest {
     @Mock
     private LineRepository lineRepository;
 
+    @Mock
+    private StationRepository stationRepository;
+
     @InjectMocks
     private LineService lineService;
 
@@ -35,9 +40,14 @@ public class LineServiceTest {
     @Test
     void create() {
         String lineName = "2호선";
-        when(lineRepository.save(any(Line.class))).thenReturn(new Line(lineName));
+        Station upStation = new Station("강남역");
+        Station downStation = new Station("역삼역");
 
-        LineResponse lineResponse = lineService.create(LineRequest.of(lineName));
+        when(stationRepository.findById(any(Long.class))).thenReturn(Optional.of(upStation));
+        when(stationRepository.findById(any(Long.class))).thenReturn(Optional.of(downStation));
+        when(lineRepository.save(any(Line.class))).thenReturn(new Line(lineName, upStation, downStation));
+
+        LineResponse lineResponse = lineService.create(LineRequest.of(lineName, 2L, 1L));
 
         assertThat(lineResponse.getName()).isEqualTo(lineName);
     }
@@ -72,7 +82,7 @@ public class LineServiceTest {
     @DisplayName("id값이 존재한다면 지하철노선을 수정한다")
     @Test
     void updateLineWithValidId() {
-        LineRequest lineRequest = LineRequest.of("3호선");
+        LineRequest lineRequest = LineRequest.of("3호선", 2L, 1L);
         when(lineRepository.findById(1L)).thenReturn(Optional.of(new Line("2호선")));
 
         LineResponse lineResponse = lineService.updateLine(1L, lineRequest);
@@ -83,8 +93,7 @@ public class LineServiceTest {
     @DisplayName("id값이 존재하지 않는다면 예외를 던진다")
     @Test
     void updateLineWithInvalidId() {
-        LineRequest lineRequest = LineRequest.of("3호선");
-
+        LineRequest lineRequest = LineRequest.of("3호선", 2L, 1L);
         assertThatThrownBy(() -> lineService.updateLine(1L, lineRequest))
                 .isInstanceOf(LineNotFoundException.class);
     }

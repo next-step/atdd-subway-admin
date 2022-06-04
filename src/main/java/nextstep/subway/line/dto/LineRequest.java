@@ -1,26 +1,42 @@
 package nextstep.subway.line.dto;
 
-import nextstep.subway.line.domain.Line;
-
 public class LineRequest {
     private String name;
+    private Long upStationId;
+    private Long downStationId;
+    private int distance;
+    private String color;
 
     public LineRequest() {
     }
 
-    private LineRequest(String name) {
+    private LineRequest(String name, Long upStationId, Long downStationId) {
         this.name = name;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
     }
 
-    public static LineRequest of(String name) {
-        return new LineRequest(name);
+    public static LineRequest of(String name, Long upStationId, Long downStationId) {
+        return new LineRequest(name, upStationId, downStationId);
     }
 
     public String getName() {
         return name;
     }
 
-    public Line toLine() {
-        return new Line(name);
+    public Long getUpStationId() {
+        return upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public String getColor() {
+        return color;
     }
 }

@@ -15,7 +15,7 @@ public class SectionAcceptanceRequest {
     public static void 지하철역과_노선_존재() {
         지하철역_존재("강남역");
         지하철역_존재("역삼역");
-        지하철노선_존재("2호선");
+        지하철노선_존재("2호선", 1L, 2L, 10, "green");
     }
 
     public static ExtractableResponse<Response> 지하철구간_생성_요청(String downStationId, String upStationId, int distance) {

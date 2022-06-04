@@ -10,8 +10,12 @@ import java.util.Map;
 
 public class LineAcceptanceRequest {
     public static ExtractableResponse<Response> 지하철노선_생성_요청() {
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", "2호선");
+        params.put("upStationId", 1L);
+        params.put("downStationId", 2L);
+        params.put("distance", 10);
+        params.put("color", "green");
 
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -21,9 +25,13 @@ public class LineAcceptanceRequest {
                 .extract();
     }
 
-    public static void 지하철노선_존재(String name) {
-        Map<String, String> params = new HashMap<>();
+    public static void 지하철노선_존재(String name, Long upStationId, Long downStationId, int distance, String color) {
+        Map<String, Object> params = new HashMap<>();
         params.put("name", name);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+        params.put("color", color);
 
         RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

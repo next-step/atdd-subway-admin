@@ -2,6 +2,7 @@ package nextstep.subway.common.exception;
 
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.section.exception.SectionDuplicationException;
+import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -19,5 +20,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SectionDuplicationException.class)
     public ErrorResponse handleSectionDuplicationException() {
         return ErrorResponse.of(ErrorMessage.SECTION_DUPLICATION.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(StationNotFoundException.class)
+    public ErrorResponse handleStationNotFoundException() {
+        return ErrorResponse.of(ErrorMessage.STATION_NOT_FOUND.getMessage());
     }
 }
