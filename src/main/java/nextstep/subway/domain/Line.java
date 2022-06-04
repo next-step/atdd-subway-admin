@@ -18,23 +18,14 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private String color;
 
-    @ManyToOne
-    @JoinColumn(name = "UPSTATION_ID")
-    private Station upStation;
-
-    @ManyToOne
-    @JoinColumn(name = "DOWNSTATION_ID")
-    private Station downStation;
-
     @Embedded
-    @Column(nullable = false)
-    private Distance distance;
+    private Section section;
 
     protected Line() {
     }
 
     public Line(final String name, final String color, final Distance distance) {
-        this(name, color, null, null, distance);
+        this(name, color, new Station(), new Station(), distance);
     }
 
     public Line(final String name, final String color, final Station upStation, final Station downStation, final Distance distance) {
@@ -45,18 +36,11 @@ public class Line extends BaseEntity {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+        this.section = new Section(upStation, downStation, distance);
     }
 
     public Line(Long id, String name, String color, Station upStation, Station downStation, Long distance) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = new Distance(distance);
+        this(id, name, color, upStation, downStation, new Distance(distance));
     }
 
     public Long getId() {
@@ -72,15 +56,15 @@ public class Line extends BaseEntity {
     }
 
     public Station getUpStation() {
-        return upStation;
+        return section.getUpStation();
     }
 
     public Station getDownStation() {
-        return downStation;
+        return section.getDownStation();
     }
 
     public Distance getDistance() {
-        return distance;
+        return section.getDistance();
     }
 
     public void updateName(String name) {
@@ -96,7 +80,7 @@ public class Line extends BaseEntity {
     }
 
     public Line upStationBy(final Station upStation) {
-        this.upStation = upStation;
+        this.section.updateUpStationBy(upStation);
         return this;
     }
 
@@ -106,7 +90,7 @@ public class Line extends BaseEntity {
     }
 
     public Line downStationBy(Station downStation) {
-        this.downStation = downStation;
+        this.section.updateDownStationBy(downStation);
         return this;
     }
 

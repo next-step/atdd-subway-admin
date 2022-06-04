@@ -1,12 +1,23 @@
 package nextstep.subway.domain;
 
+import javax.persistence.*;
 import java.util.Objects;
 
 
+@Embeddable
 public class Section {
+    @ManyToOne
+    @JoinColumn(name = "UPSTATION_ID")
     private Station upStation;
+
+    @ManyToOne
+    @JoinColumn(name = "DOWNSTATION_ID")
     private Station downStation;
+
+    @Embedded
+    @Column(nullable = false)
     private Distance distance;
+
 
     protected Section() {
     }
@@ -43,6 +54,10 @@ public class Section {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public Distance getDistance() {
+        return distance;
     }
 
     public Section updateUpStationBy(final Station upStation) {
