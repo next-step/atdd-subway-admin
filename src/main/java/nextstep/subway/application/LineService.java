@@ -11,11 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
@@ -25,7 +24,6 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = findStationById(lineRequest.getUpStationId());
         Station downStation = findStationById(lineRequest.getDownStationId());
@@ -34,10 +32,12 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
         return  LineResponse.of(lineRepository.getById(id));
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
@@ -46,14 +46,12 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line persistLine = lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("지하철 노선 정보가 존재하지 않습니다."));
         persistLine.update(lineRequest);
     }
 
-    @Transactional
     public void deleteLine(Long id) {
         lineRepository.delete(findLineById(id));
     }
