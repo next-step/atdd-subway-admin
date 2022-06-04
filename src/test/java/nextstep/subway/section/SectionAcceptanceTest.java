@@ -18,6 +18,7 @@ import java.util.List;
 
 import static nextstep.subway.line.LineAcceptanceFactory.ID값으로_지하철노선_조회;
 import static nextstep.subway.line.LineAcceptanceFactory.지하철노선_생성;
+import static nextstep.subway.section.SectionAcceptanceFactory.지하철_구간_삭제;
 import static nextstep.subway.section.SectionAcceptanceFactory.지하철구간_생성;
 import static nextstep.subway.station.StationAcceptanceFactory.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -140,4 +141,20 @@ public class SectionAcceptanceTest {
 
         assertThat(일호선_수원_신창_구간등록.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+
+    /**
+     * Given 노선에 상행역, 중간역, 하행역이 등록되어 있고
+     * When 상행역을 제거하면
+     * Then 중간역 - 하행역 구간으로 재배치된다.
+     */
+    @Test
+    void 상행역을_제거한다() {
+        ExtractableResponse<Response> 일호선_소요산_서울역_구간 = 지하철구간_생성(일호선.getId(), 소요산역.getId(), 서울역.getId(), 10);
+
+        ExtractableResponse<Response> extract = 지하철_구간_삭제(일호선.getId(), 소요산역.getId());
+
+        assertThat(extract.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
 }

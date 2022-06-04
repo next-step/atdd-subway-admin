@@ -52,6 +52,10 @@ public class LineResponse {
         return color;
     }
 
+    public List<StationResponse> getStations() {
+        return stations;
+    }
+
     @JsonIgnore
     public List<String> getStationNames() {
         return stations.stream()
