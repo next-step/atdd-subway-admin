@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections{
-    public static final int MINIMUM_SECTION_NUMBER = 1;
+    public static final int MINIMUM_SECTION_LENGTH = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Section> sections = new ArrayList<>();
@@ -104,14 +104,22 @@ public class Sections{
     }
 
     private void validateStationToRemove(Station station) {
-        if (sections.size() <= MINIMUM_SECTION_NUMBER) {
+        validateSectionMinimumLength();
+        validateStationExists(station);
+    }
+
+    private void validateSectionMinimumLength() {
+        if (sections.size() <= MINIMUM_SECTION_LENGTH) {
             throw new IllegalArgumentException(
-                    String.format("[ERROR] 구간이 %d개 이하일 때는 제거할 수 없습니다.", MINIMUM_SECTION_NUMBER)
+                    String.format(ErrorMessage.ERROR_CANNOT_DELETE_SECTION_MINIMUM_LENGTH, MINIMUM_SECTION_LENGTH)
             );
         }
+    }
+
+    private void validateStationExists(Station station) {
         if (!hasStation(station)) {
             throw new IllegalArgumentException(
-                    "[ERROR] 노선에 존재하지 않는 Station %s은 제거할 수 없습니다."
+                    String.format(ErrorMessage.ERROR_CANNOT_DELETE_SECTION_NOT_EXIST, station.getName())
             );
         }
     }
@@ -130,22 +138,25 @@ public class Sections{
     private Section getPreviousSection(Station station) {
         return sections.stream()
                 .filter(section -> section.getDownStation().equals(station))
-                .findFirst().orElseThrow(() ->
-                        new IllegalArgumentException("[ERROR] Station %s의 이전 구간을 찾을 수 없습니다."));
+                .findFirst().orElseThrow(() -> new IllegalArgumentException(
+                        String.format(ErrorMessage.ERROR_PREVIOUS_SECTION_NOT_FOUND, station.getName()))
+                );
     }
 
     private Section getPostSection(Station station) {
         return sections.stream()
                 .filter(section -> section.getUpStation().equals(station))
-                .findFirst().orElseThrow(() ->
-                        new IllegalArgumentException("[ERROR] Station %s의 이후 구간을 찾을 수 없습니다."));
+                .findFirst().orElseThrow(() -> new IllegalArgumentException(
+                        String.format(ErrorMessage.ERROR_POST_SECTION_NOT_FOUND, station.getName()))
+                );
     }
 
     private Section getEndSection(Station station) {
         return sections.stream()
                 .filter(section -> section.getDownStation().equals(station) || section.getUpStation().equals(station))
-                .findFirst().orElseThrow(() ->
-                        new IllegalArgumentException("[ERROR] Station %s의 종점 구간을 찾을 수 없습니다."));
+                .findFirst().orElseThrow(() -> new IllegalArgumentException(
+                        String.format(ErrorMessage.ERROR_END_SECTION_NOT_FOUND, station.getName()))
+                );
     }
 
     private boolean isEndStation(Station station) {
