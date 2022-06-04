@@ -19,9 +19,9 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
     @BeforeEach
     void createStations() {
-        this.지하철역_ID = 지하철역_생성("지하철역").jsonPath().getLong(ID_KEY);
-        this.새로운지하철역_ID = 지하철역_생성("새로운지하철역").jsonPath().getLong(ID_KEY);
-        this.또다른지하철역_ID = 지하철역_생성("또다른지하철역").jsonPath().getLong(ID_KEY);
+        this.지하철역_ID = 지하철역_생성("지하철역").jsonPath().getLong(idKey);
+        this.새로운지하철역_ID = 지하철역_생성("새로운지하철역").jsonPath().getLong(idKey);
+        this.또다른지하철역_ID = 지하철역_생성("또다른지하철역").jsonPath().getLong(idKey);
     }
 
     /**
@@ -33,7 +33,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     void createLine() {
         // when
         String 신분당선 = "신분당선";
-        LineRequest 신분당선_생성_요청 = LineRequest.of(신분당선, LINE_COLOR_RED, 지하철역_ID, 새로운지하철역_ID, DISTANCE);
+        LineRequest 신분당선_생성_요청 = LineRequest.of(신분당선, lineColorRed, 지하철역_ID, 새로운지하철역_ID, distance);
         지하철노선_생성(신분당선_생성_요청);
 
         // then
@@ -50,10 +50,10 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     void getLines() {
         // given
         String 신분당선 = "신분당선";
-        LineRequest 신분당선_생성_요청 = LineRequest.of(신분당선, LINE_COLOR_RED, 지하철역_ID, 새로운지하철역_ID, DISTANCE);
+        LineRequest 신분당선_생성_요청 = LineRequest.of(신분당선, lineColorRed, 지하철역_ID, 새로운지하철역_ID, distance);
         지하철노선_생성(신분당선_생성_요청);
         String 분당선 = "분당선";
-        LineRequest 분당선_생성_요청 = LineRequest.of(분당선, LINE_COLOR_GREEN, 지하철역_ID, 또다른지하철역_ID, DISTANCE);
+        LineRequest 분당선_생성_요청 = LineRequest.of(분당선, lineColorGreen, 지하철역_ID, 또다른지하철역_ID, distance);
         지하철노선_생성(분당선_생성_요청);
 
         // when & then
@@ -70,7 +70,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     void getLine() {
         // given
         String 신분당선 = "신분당선";
-        LineRequest 신분당선_생성_요청 = LineRequest.of(신분당선, LINE_COLOR_RED, 지하철역_ID, 새로운지하철역_ID, DISTANCE);
+        LineRequest 신분당선_생성_요청 = LineRequest.of(신분당선, lineColorRed, 지하철역_ID, 새로운지하철역_ID, distance);
         ExtractableResponse<Response> 신분당선_생성_응답 = 지하철노선_생성(신분당선_생성_요청);
 
         // when
@@ -90,12 +90,12 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     void updateLine() {
         // given
         String 신분당선 = "신분당선";
-        LineRequest 신분당선_생성_요청 = LineRequest.of(신분당선, LINE_COLOR_GREEN, 지하철역_ID, 새로운지하철역_ID, DISTANCE);
+        LineRequest 신분당선_생성_요청 = LineRequest.of(신분당선, lineColorGreen, 지하철역_ID, 새로운지하철역_ID, distance);
         ExtractableResponse<Response> 신분당선_생성_응답 = 지하철노선_생성(신분당선_생성_요청);
 
         // when
         String 다른분당선 = "다른분당선";
-        LineRequest 다른분당선_수정_요청 = LineRequest.of(다른분당선, LINE_COLOR_RED, 지하철역_ID, 새로운지하철역_ID, DISTANCE);
+        LineRequest 다른분당선_수정_요청 = LineRequest.of(다른분당선, lineColorRed, 지하철역_ID, 새로운지하철역_ID, distance);
         지하철노선_수정(신분당선_생성_응답, 다른분당선_수정_요청);
 
         // then
@@ -112,7 +112,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     void deleteLine() {
         // given
         String 신분당선 = "신분당선";
-        LineRequest 신분당선_생성_요청 = LineRequest.of(신분당선, LINE_COLOR_GREEN, 지하철역_ID, 새로운지하철역_ID, DISTANCE);
+        LineRequest 신분당선_생성_요청 = LineRequest.of(신분당선, lineColorGreen, 지하철역_ID, 새로운지하철역_ID, distance);
         ExtractableResponse<Response> 신분당선_생성_응답 = 지하철노선_생성(신분당선_생성_요청);
 
         // when

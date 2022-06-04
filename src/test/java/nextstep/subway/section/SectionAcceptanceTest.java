@@ -23,10 +23,10 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @BeforeEach
     void createLine() {
         // given
-        this.강남역_ID = 지하철역_생성("강남역").jsonPath().getLong(ID_KEY);
-        this.판교역_ID = 지하철역_생성("판교역").jsonPath().getLong(ID_KEY);
-        this.새로운역_ID = 지하철역_생성("새로운역").jsonPath().getLong(ID_KEY);
-        LineRequest 신분당선_생성_요청 = LineRequest.of("신분당선", LINE_COLOR_RED, this.강남역_ID, this.판교역_ID, DISTANCE);
+        this.강남역_ID = 지하철역_생성("강남역").jsonPath().getLong(idKey);
+        this.판교역_ID = 지하철역_생성("판교역").jsonPath().getLong(idKey);
+        this.새로운역_ID = 지하철역_생성("새로운역").jsonPath().getLong(idKey);
+        LineRequest 신분당선_생성_요청 = LineRequest.of("신분당선", lineColorRed, this.강남역_ID, this.판교역_ID, distance);
         this.신분당선_생성_응답 = 지하철노선_생성(신분당선_생성_요청);
     }
 
@@ -147,7 +147,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void notExistAllStations() {
         // when
-        Long 없는역_ID = 지하철역_생성("없는역").jsonPath().getLong(ID_KEY);
+        Long 없는역_ID = 지하철역_생성("없는역").jsonPath().getLong(idKey);
         SectionRequest 기존_노선에_없는_구간_요청 = SectionRequest.of(this.새로운역_ID, 없는역_ID, 4);
         ExtractableResponse<Response> 기존_노선에_없는_구간_추가_응답 = 지하철_구간_추가(this.신분당선_생성_응답, 기존_노선에_없는_구간_요청);
 

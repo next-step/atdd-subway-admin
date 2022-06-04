@@ -40,7 +40,9 @@ public class Sections {
 
     public void add(Section section) {
         validateContainsUpDownStation(section);
-        relocateConnectSection(section);
+        if (addableSection(section)) {
+            relocateConnectSection(section);
+        }
         this.sections.add(section);
     }
 
@@ -83,6 +85,10 @@ public class Sections {
         return LineStations.from(sortedAllStations);
     }
 
+    private boolean addableSection(Section addedSection) {
+        return !this.sections.isEmpty() && !isEdgeSection(addedSection);
+    }
+
     private boolean isEdgeSection(Section addedSection) {
         return isEdgeUpSection(addedSection) || isEdgeDownSection(addedSection);
     }
@@ -116,11 +122,9 @@ public class Sections {
     }
 
     private void relocateConnectSection(Section addedSection) {
-        if (!this.sections.isEmpty() && !isEdgeSection(addedSection)) {
-            Section connectSection = findConnectSection(addedSection);
-            relocateUpSection(connectSection, addedSection);
-            relocateDownSection(connectSection, addedSection);
-        }
+        Section connectSection = findConnectSection(addedSection);
+        relocateUpSection(connectSection, addedSection);
+        relocateDownSection(connectSection, addedSection);
     }
 
     private void relocateUpSection(Section connectSection, Section addedSection) {
@@ -138,10 +142,8 @@ public class Sections {
     }
 
     private Section findConnectSection(Section section) {
-        return findSectionByUpStation(section.getUpStation())
-                .orElseGet(() -> findSectionByDownStation(section.getDownStation())
-                    .orElseThrow(() -> new IllegalArgumentException(NOT_CONTAINS_CONNECT_SECTION))
-                );
+        return findSectionByUpStation(section.getUpStation()).orElseGet(() -> findSectionByDownStation(section.getDownStation())
+                .orElseThrow(() -> new IllegalArgumentException(NOT_CONTAINS_CONNECT_SECTION)));
     }
 
     private Optional<Section> findSectionByUpStation(Station upStation) {
