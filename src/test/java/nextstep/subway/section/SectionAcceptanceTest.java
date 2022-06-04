@@ -157,4 +157,18 @@ public class SectionAcceptanceTest {
         assertThat(extract.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    /**
+     * Given 노선에 상행역, 중간역, 하행역이 등록되어 있고
+     * When 하행역을 제거하면
+     * Then 상행역 - 중간역 구간으로 재배치된다.
+     */
+    @Test
+    void 하행역을_제거한다() {
+        ExtractableResponse<Response> 일호선_소요산_서울역_구간 = 지하철구간_생성(일호선.getId(), 소요산역.getId(), 서울역.getId(), 10);
+
+        ExtractableResponse<Response> extract = 지하철_구간_삭제(일호선.getId(), 신창역.getId());
+
+        assertThat(extract.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
 }
