@@ -6,7 +6,7 @@
 ## TODO
 - 3단계 피드백 반영
   - [X] SectionAcceptanceTest의 given 수정
-  - [] LineService 에서 SectionRepository 의존성 제거
+  - [X] LineService 에서 SectionRepository 의존성 제거
 - 인수 테스트 작성
   - [] 상행 종점역 제거 성공 케이스 작성
   - [] 하행 종점역 제거 성공 케이스 작성

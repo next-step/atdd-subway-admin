@@ -18,15 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class LineService {
     private final LineRepository lineRepository;
-    private final SectionRepository sectionRepository;
     private final StationService stationService;
     private final SectionService sectionService;
 
-    public LineService(LineRepository lineRepository, SectionRepository sectionRepository,
-                       StationService stationService,
-                       SectionService sectionService) {
+    public LineService(LineRepository lineRepository, StationService stationService, SectionService sectionService) {
         this.lineRepository = lineRepository;
-        this.sectionRepository = sectionRepository;
         this.stationService = stationService;
         this.sectionService = sectionService;
     }
@@ -34,7 +30,7 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Section section = sectionService.generateSection(lineRequest);
-        sectionRepository.save(section);
+        sectionService.saveSection(section);
 
         Line persistLine = lineRepository.save(lineRequest.toLine());
         persistLine.addSection(section);
