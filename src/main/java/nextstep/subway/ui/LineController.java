@@ -5,9 +5,10 @@ import java.util.List;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.SectionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,9 +52,17 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity handleIllegalArgument(IllegalArgumentException e) { // 1
-        return ResponseEntity.badRequest().body(e.getMessage());
+    @GetMapping("lines/{lineId}/sections")
+    public ResponseEntity<List<SectionResponse>> searchSection(@PathVariable Long lineId) {
+        return ResponseEntity.ok()
+                .body(lineService.findAllSection(lineId));
     }
 
+    @PostMapping("{lineId}/selections")
+    public ResponseEntity addSection(@PathVariable Long lineId,
+                                     @RequestBody SectionRequest sectionRequest) {
+
+        lineService.saveSection(lineId, sectionRequest);
+        return ResponseEntity.created(URI.create("lines/"+ lineId + "/sections")).build();
+    }
 }
