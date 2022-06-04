@@ -10,4 +10,9 @@ public class NoSuchElementFoundException extends RuntimeException{
         super(message);
         this.message = message;
     }
+
+    public NoSuchElementFoundException(ErrorMessage message) {
+        super(message.getMessage());
+        this.message = message.getMessage();
+    }
 }

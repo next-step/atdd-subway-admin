@@ -9,12 +9,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineTest {
 
-
     @DisplayName("라인 생성 테스트")
     @Test
     void createLineTest() {
         //when 라인 생성시
-        Line line = new Line("2호선", "bg-green-600", new Station("강남역"), new Station("대림역"));
+        Line line = new Line("2호선", "bg-green-600");
 
         //then 생성한 라인의 name과 color로 검증
         assertThat(line.getName()).isEqualTo("2호선");
@@ -25,7 +24,7 @@ public class LineTest {
     @Test
     void updateLineTest() {
         //given 라인 생성 후
-        Line line = new Line("신분당선", "bg-red-600", new Station("판교역"), new Station("정자역"));
+        Line line = new Line("신분당선", "bg-red-600");
 
         //when name과 color를 수정하면
         line.updateLine("분당선", "bg-yellow-600");
