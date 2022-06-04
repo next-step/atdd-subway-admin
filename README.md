@@ -54,10 +54,8 @@ npm run dev
 ```
 
 #### API 명세
-
 * 지하철역 목록
 ```http request
-HTTP request
 GET /stations HTTP/1.1
 Accept: application/json
 Host: localhost:8080
@@ -94,6 +92,148 @@ HTTP/1.1 204 No Content
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-COntrol-Request-Headers
+```
+
+* 지하철역 노선 등록
+```http request
+POST /lines HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+Content-Length: 118
+Host: localhost:8080
+
+{
+  "name" : "신분당선",
+  "color" : "bg-red-600",
+  "upStationId": 1,
+  "downStationId" : 2,
+  "distance" : 10
+}
+```
+
+```http request
+HTTP/1.1 201 Created
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Location: /lines/1
+Content-Type: application/json
+Content-Type: 193
+
+{
+  "id" : 1,
+  "name" : "신분당선",
+  "color" : "bg-red-600",
+  "stations" : [ {
+    "id" : 1,
+    "name" : "지하철역"
+  }, {
+    "id" : 2,
+    "name" : "새로운지하철역"
+  } ]
+}
+```
+
+* 지하철역 노선 목록
+```http request
+GET /lines HTTP/1.1
+Accept: application/json
+Host: localhost:8080
+```
+
+```http request
+HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+Content-Type: 391
+
+[ {
+  "id" : 1,
+  "name" : "신분당선",
+  "color" : "bg-red-600",
+  "stations" : [ {
+    "id" : 1,
+    "name" : "지하철역"
+  }, {
+    "id" : 2,
+    "name" : "새로운지하철역"
+  } ]
+}, {
+  "id" : 2,
+  "name" : "분당선",
+  "color" : "bg-green-600",
+  "stations" : [ {
+    "id" : 1,
+    "name" : "지하철역"
+  }, {
+    "id" : 3,
+    "name" : "새로운지하철역"
+  } ]
+} ]
+```
+
+* 지하철역 노선 조회
+```http request
+GET /lines/1 HTTP/1.1
+Accept: application/json
+Host: localhost:8080
+```
+
+```http request
+HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+Content-Type: 193
+
+{
+  "id" : 1,
+  "name" : "신분당선",
+  "color" : "bg-red-600",
+  "stations" : [ {
+    "id" : 1,
+    "name" : "지하철역"
+  }, {
+    "id" : 2,
+    "name" : "새로운지하철역"
+  } ]
+}
+```
+
+* 지하철역 노선 수정
+```http request
+PUT /lines/1 HTTP/1.1
+Content-Type: application/json
+Content-Length: 58
+Host: localhost:8080
+
+{
+  "name" : "다른분당선",
+  "color" : "bg-red-600"
+}
+```
+
+```http request
+HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+```
+
+* 지하철역 노선 삭제
+```http request
+DELETE /lines HTTP/1.1
+Host: localhost:8080
+```
+
+```http request
+HTTP/1.1 204 No Content
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 ```
 
 ## ✏️ Code Review Process
