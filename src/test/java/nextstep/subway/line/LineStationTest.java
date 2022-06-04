@@ -47,4 +47,12 @@ public class LineStationTest {
         LineStation savedLineStation = lineStationRepository.save(new LineStation(신분당선_강남_양재_10L, new Section(강남역, 양재역, new Distance(10L))));
         AssertionsForClassTypes.assertThat(lineStationRepository.findById(savedLineStation.getId()).orElseThrow(EntityNotFoundException::new)).isEqualTo(savedLineStation);
     }
+
+    @DisplayName("연관관계 테스트")
+    @Test
+    void mappingTest() {
+        LineStation savedLineStation = lineStationRepository.save(new LineStation(신분당선_강남_양재_10L, new Section(강남역, 양재역, new Distance(10L))));
+        Line line = lineRepository.findById(savedLineStation.getLine().getId()).orElseThrow(EntityNotFoundException::new);
+        assertThat(line.getLineStations().contains(savedLineStation)).isTrue();
+    }
 }

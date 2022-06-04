@@ -3,6 +3,8 @@ package nextstep.subway.domain;
 import nextstep.subway.dto.LineRequest;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -20,6 +22,9 @@ public class Line extends BaseEntity {
 
     @Embedded
     private Section section;
+
+    @OneToMany(mappedBy = "line")
+    List<LineStation> lineStations = new ArrayList<>();
 
     protected Line() {
     }
@@ -92,6 +97,10 @@ public class Line extends BaseEntity {
     public Line downStationBy(Station downStation) {
         this.section.updateDownStationBy(downStation);
         return this;
+    }
+
+    public List<LineStation> getLineStations() {
+        return lineStations;
     }
 
     @Override
