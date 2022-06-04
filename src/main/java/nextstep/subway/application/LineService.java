@@ -45,7 +45,7 @@ public class LineService {
     }
 
     private Line findById(Long lineId) {
-        return lineRepository.findById(lineId)
+        return lineRepository.findLineById(lineId)
                 .orElseThrow(() -> new NoSuchElementException("해당 지하철 노선을 찾을 수 없습니다."));
     }
 
