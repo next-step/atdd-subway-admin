@@ -111,7 +111,7 @@ public class Section {
     }
 
     private void validation(final Station upStation, final Station downStation) {
-        if (Objects.isNull(upStation) || Objects.isNull(downStation)) {
+        if (Objects.isNull(upStation) && Objects.isNull(downStation)) {
             throw new IllegalArgumentException("Either upStation or downStation must have a value");
         }
     }

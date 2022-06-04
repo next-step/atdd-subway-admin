@@ -43,10 +43,9 @@ public class SectionTest {
     }
 
     @DisplayName("downStationId or upStationId 는 optional 이지만 둘중 하나 값을 존재 해야 한다.")
-    @ParameterizedTest
-    @MethodSource("upStation_downStation_제공하는_함수")
-    void noHasStationInformationTest(final Station upStation, final Station downStation) {
-        assertThatThrownBy(() -> new Section(upStation, downStation, 1L))
+    @Test
+    void noHasStationInformationTest() {
+        assertThatThrownBy(() -> new Section(null, null, 1L))
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
@@ -97,13 +96,5 @@ public class SectionTest {
         Section updatedUpStation = new Section(강남역, 양재역, 1L).updateUpStationBy(인천역);
         assertThat(updatedUpStation).isEqualTo(new Section(인천역, 양재역, 1L));
         assertThat(updatedUpStation.updateDownStationBy(강남역)).isEqualTo(new Section(인천역, 강남역, 1L));
-    }
-
-    private static Stream<Arguments> upStation_downStation_제공하는_함수() {
-        return Stream.of(
-                Arguments.arguments(null, null),
-                Arguments.arguments(강남역, null),
-                Arguments.arguments(null, 양재역)
-        );
     }
 }
