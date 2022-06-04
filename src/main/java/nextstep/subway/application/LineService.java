@@ -26,9 +26,7 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) throws NotFoundException {
-        if (isExistLine(lineRequest)) {
-            throw new IllegalArgumentException("이미 존재하는 노선입니다");
-        }
+        validateExistOrThrow(lineRequest);
         Station upStation = stationRepository.findById(lineRequest.getUpStationId())
             .orElseThrow(() -> new NotFoundException("상행 역이 존재하지 않습니다."));
         Station downStation = stationRepository.findById(lineRequest.getDownStationId())
@@ -46,25 +44,31 @@ public class LineService {
     }
 
     public LineResponse findLine(Long id) throws NotFoundException {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("지하철 노선이 존재하지 않습니다."));
+        Line line = findLineOrThrow(id);
         return LineResponse.of(line);
     }
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) throws NotFoundException {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("지하철 노선이 존재하지 않습니다."));
+        Line line = findLineOrThrow(id);
         line.update(lineRequest);
     }
 
     @Transactional
-    public void deleteLine(Long id) {
+    public void deleteLine(Long id) throws NotFoundException {
+        findLineOrThrow(id);
         lineRepository.deleteById(id);
     }
 
 
-    private boolean isExistLine(LineRequest lineRequest) {
-        return lineRepository.findByName(lineRequest.getName()) != null;
+    private void validateExistOrThrow(LineRequest lineRequest) {
+        if (lineRepository.findByName(lineRequest.getName()) != null) {
+            throw new IllegalArgumentException("이미 존재하는 노선입니다");
+        }
+    }
+
+    private Line findLineOrThrow(Long id) throws NotFoundException {
+        return lineRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("지하철 노선이 존재하지 않습니다."));
     }
 }

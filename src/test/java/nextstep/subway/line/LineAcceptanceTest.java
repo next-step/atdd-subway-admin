@@ -130,9 +130,9 @@ public class LineAcceptanceTest {
     /**
      * Given 지하철 노선을 생성하고 When 존재하지 않는 지하철 노선을 수정하면 Then Not Found 에러 발생
      */
-    @DisplayName("지하철역을 수정한다.")
+    @DisplayName("없는 지하철역을 수정한다.")
     @Test
-    void update_not_exist_Station() {
+    void update_not_exist_station() {
         //given
         지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
 
@@ -160,6 +160,22 @@ public class LineAcceptanceTest {
         응답코드_확인(deleteResponse, HttpStatus.NO_CONTENT);
         ExtractableResponse<Response> getResponse = 지하철노선_목록_조회_요청();
         지하철노선_목록에_없음(getResponse, TestLine.SHINBUNDANG.getName());
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고 When 존재하지 않는 지하철 노선을 삭제하면 Then Not Found 에러 발생
+     */
+    @DisplayName("없는 지하철역을 삭제한다.")
+    @Test
+    void delete_not_exist_station() {
+        //given
+        지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
+
+        //when
+        ExtractableResponse<Response> deleteResponse = 지하철노선_삭제_요청(99999L);
+
+        //then
+        응답코드_확인(deleteResponse, HttpStatus.NOT_FOUND);
     }
 
     private void 지하철노선_목록에_없음(ExtractableResponse<Response> getResponse, String name) {
