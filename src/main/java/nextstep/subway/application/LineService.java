@@ -62,12 +62,13 @@ public class LineService {
     }
 
     @Transactional
-    public Section addSection(Long lineId, SectionRequest request) {
+    public SectionsResponse addSection(Long lineId, SectionRequest request) {
         Line findLine = findById(lineId);
         Section section = sectionMapper.from(request);
 
         findLine.addSection(section);
-        return section;
+        Line saved = lineRepository.save(findLine);
+        return new SectionsResponse(saved);
     }
 
     @Transactional
