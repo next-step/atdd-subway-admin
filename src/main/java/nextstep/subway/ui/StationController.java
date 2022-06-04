@@ -25,7 +25,7 @@ public class StationController {
 
     private final StationService stationService;
 
-    @Autowired
+
     public StationController(StationService stationService) {
         this.stationService = stationService;
     }

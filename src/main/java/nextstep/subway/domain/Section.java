@@ -11,8 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import nextstep.subway.dto.response.SectionResponse;
-import nextstep.subway.exception.SectionInvalidException;
+import org.apache.commons.lang3.ObjectUtils;
 
 @Entity
 public class Section {
@@ -45,7 +44,7 @@ public class Section {
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, Line line, Distance distance,
+    protected Section(Station upStation, Station downStation, Line line, Distance distance,
         Section nextSection, Section backSection) {
         this.upStation = upStation;
         this.downStation = downStation;
@@ -55,27 +54,43 @@ public class Section {
         this.backSection = backSection;
     }
 
-    public SectionResponse toResponse() {
-        Long nextSectionId = nextSection != null ? nextSection.getId() : -1;
-        Long backSectionId = backSection != null ? backSection.getId() : -1;
-
-        return new SectionResponse(this.id, this.upStation.toStationDTO(),
-            this.downStation.toStationDTO(),
-            line.getName(), this.distance, nextSectionId, backSectionId);
+    public static Section of(Station upStation, Station downStation, Line line, Distance distance) {
+        return new Section(upStation, downStation, line, distance, null, null);
     }
 
-    public void insertBackOfSection(Section insertSection) {
+    public static Section mergeOf(Section backSection, Section nextSection) {
+        backSection.getDistance().plus(nextSection.getDistance());
+        return new Section(nextSection.getUpStation(), backSection.getDownStation(),
+            backSection.getLine(),
+            backSection.getDistance(), nextSection.getNextSection(),
+            backSection.getBackSection());
+    }
+
+    public boolean insert(Section insertSection) {
+        boolean insertFail = false;
+        boolean insertSuccess = true;
+        if (this.downStation == insertSection.getDownStation()) {
+            insertFrontOfSection(insertSection);
+            return insertSuccess;
+        }
+        if (this.upStation == insertSection.getUpStation()) {
+            insertBackOfSection(insertSection);
+            return insertSuccess;
+        }
+        return insertFail;
+    }
+
+    private void insertBackOfSection(Section insertSection) {
         insertSection.setBackSection(this);
         insertSection.setNextSection(this.nextSection);
 
         this.distance.minus(insertSection.getDistance());
-
         this.upStation = insertSection.getDownStation();
         this.nextSection.setBackSection(insertSection);
         this.nextSection = insertSection;
     }
 
-    public void insertFrontOfSection(Section insertSection) {
+    private void insertFrontOfSection(Section insertSection) {
         insertSection.setBackSection(this.backSection);
         insertSection.setNextSection(this);
 
@@ -88,15 +103,17 @@ public class Section {
     public void appendAfterSection(Section appendSection) {
         this.nextSection = appendSection;
         appendSection.setBackSection(this);
-        this.line.changeUpStation(appendSection);
         return;
     }
 
     public void appendBeforeSection(Section appendSection) {
         this.backSection = appendSection;
         appendSection.setNextSection(this);
-        this.line.changeDownStation(appendSection);
         return;
+    }
+
+    public boolean isFirstSection() {
+        return ObjectUtils.isEmpty(backSection);
     }
 
     public void setNextSection(Section nextSection) {
@@ -106,6 +123,7 @@ public class Section {
     public void setBackSection(Section backSection) {
         this.backSection = backSection;
     }
+
 
     public Station getUpStation() {
         return upStation;
@@ -134,4 +152,5 @@ public class Section {
     public Long getId() {
         return id;
     }
+
 }

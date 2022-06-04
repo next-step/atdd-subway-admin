@@ -24,7 +24,7 @@ public class LineController {
 
     private final LineService lineService;
 
-    @Autowired
+
     public LineController(LineService lineService) {
         this.lineService = lineService;
     }

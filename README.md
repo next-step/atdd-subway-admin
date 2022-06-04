@@ -67,3 +67,16 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
  - 구간 저장시, 이미 저장된 구간인가?
  - 신규 구간의 distance가 포함될 구간의 distance를 넘지 않는가? 
 4. 위 구간에 대한 저장 기능을 구현한다.
+
+---
+### Step4 구현 필요 기능 내역 ###
+1. 노선 구간 제거 기능 
+ - 제거할 구간이 line의 가장 앞 구간 여부
+   - line의 출발역 변경 및 distance변경
+ - 제거할 구간이 line의 가장 끝 구간 여부 
+   - line의 종창역 변경 및 distance변경
+ - 제거할 구간이 사이에 있는 경우 
+   - 해당 station이 포함되어있는 2개의 section을 묶는다. 
+ - 에러처리
+   - 지워야할 역이 없는경우
+ 

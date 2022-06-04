@@ -37,6 +37,16 @@ public class AttdSectionHelper {
             .extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_역_삭제하기(String 노선_ID, String 지하철역_ID) {
+        String URI = stringAppender(Arrays.asList("/lines/", 노선_ID, "/sections"));
+
+        return RestAssured.given().log().all()
+            .queryParam("stationId", 지하철역_ID)
+            .when().delete(URI)
+            .then().log().all()
+            .extract();
+    }
+
     private static String stringAppender(List<String> strings) {
         StringBuilder stringBuilder = new StringBuilder();
         for (String string : strings) {
