@@ -234,7 +234,7 @@ public class SectionAcceptanceTest {
 
     public static List<SectionResponse> 구간_목록_조회(Long lineId) {
         ValidatableResponse listResponse = RestAssured.given().log().all()
-                .when().get("/sections/" + lineId)
+                .when().get("/lines/" + lineId + "/sections")
                 .then().log().all();
         return getJsonPathForResponse(listResponse).getList("$", SectionResponse.class);
     }

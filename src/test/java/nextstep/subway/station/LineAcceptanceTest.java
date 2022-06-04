@@ -30,13 +30,6 @@ public class LineAcceptanceTest {
     private StationResponse 잠실역;
     private StationResponse 모란역;
 
-    private StationResponse A역;
-    private StationResponse B역;
-    private StationResponse C역;
-    private StationResponse D역;
-    private StationResponse E역;
-    private StationResponse F역;
-
     @Autowired
     private DatabaseCleanup databaseCleanup;
 
@@ -51,13 +44,6 @@ public class LineAcceptanceTest {
         강남역 = 응답_객체_생성(지하철역_등록("강남역"), StationResponse.class);
         잠실역 = 응답_객체_생성(지하철역_등록("잠실역"), StationResponse.class);
         모란역 = 응답_객체_생성(지하철역_등록("모란역"), StationResponse.class);
-
-        A역 = 응답_객체_생성(지하철역_등록("A역"), StationResponse.class);
-        B역 = 응답_객체_생성(지하철역_등록("B역"), StationResponse.class);
-        C역 = 응답_객체_생성(지하철역_등록("C역"), StationResponse.class);
-        D역 = 응답_객체_생성(지하철역_등록("D역"), StationResponse.class);
-        E역 = 응답_객체_생성(지하철역_등록("E역"), StationResponse.class);
-        F역 = 응답_객체_생성(지하철역_등록("F역"), StationResponse.class);
     }
 
     /**

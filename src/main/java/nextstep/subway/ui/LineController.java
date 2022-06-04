@@ -1,10 +1,7 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.LineService;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.LineUpdateRequest;
-import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.*;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +22,11 @@ public class LineController {
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+    }
+
+    @GetMapping(value = "/lines/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<SectionResponse>> showLineSections(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findAllSections(id).getList());
     }
 
     @PostMapping("/lines/{id}/sections")

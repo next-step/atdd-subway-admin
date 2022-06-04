@@ -7,6 +7,7 @@ import nextstep.subway.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,10 +16,14 @@ import java.util.stream.Collectors;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+    private final SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository,
+                       StationRepository stationRepository,
+                       SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
@@ -53,6 +58,14 @@ public class LineService {
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
         return new LineResponses(list);
+    }
+
+    @Transactional(readOnly = true)
+    public SectionResponses findAllSections(Long lineId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(LineNotFoundException::new);
+        List<Section> sections = new ArrayList<>(sectionRepository.findByLine(line));
+        return SectionResponses.of(sections);
     }
 
     public void deleteLineById(Long id) {
