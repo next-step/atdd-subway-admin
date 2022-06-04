@@ -152,9 +152,9 @@ public class SectionAcceptanceTest {
     void 상행역을_제거한다() {
         ExtractableResponse<Response> 일호선_소요산_서울역_구간 = 지하철구간_생성(일호선.getId(), 소요산역.getId(), 서울역.getId(), 10);
 
-        ExtractableResponse<Response> extract = 지하철_구간_삭제(일호선.getId(), 소요산역.getId());
+        ExtractableResponse<Response> 상행역_삭제결과 = 지하철_구간_삭제(일호선.getId(), 소요산역.getId());
 
-        assertThat(extract.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(상행역_삭제결과.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     /**
@@ -166,9 +166,9 @@ public class SectionAcceptanceTest {
     void 하행역을_제거한다() {
         ExtractableResponse<Response> 일호선_소요산_서울역_구간 = 지하철구간_생성(일호선.getId(), 소요산역.getId(), 서울역.getId(), 10);
 
-        ExtractableResponse<Response> extract = 지하철_구간_삭제(일호선.getId(), 신창역.getId());
+        ExtractableResponse<Response> 하행역_삭제결과 = 지하철_구간_삭제(일호선.getId(), 신창역.getId());
 
-        assertThat(extract.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(하행역_삭제결과.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     /**
@@ -180,9 +180,17 @@ public class SectionAcceptanceTest {
     void 중간역을_제거한다() {
         ExtractableResponse<Response> 일호선_소요산_서울역_구간 = 지하철구간_생성(일호선.getId(), 소요산역.getId(), 서울역.getId(), 10);
 
-        ExtractableResponse<Response> extract = 지하철_구간_삭제(일호선.getId(), 서울역.getId());
+        ExtractableResponse<Response> 중간역_삭제결과 = 지하철_구간_삭제(일호선.getId(), 서울역.getId());
 
-        assertThat(extract.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(중간역_삭제결과.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @Test
+    void 삭제하려는_역이_노선에_없으면_제거할_수_없다() {
+        StationResponse 성대역 = 지하철역_생성("성대역").as(StationResponse.class);
+
+        ExtractableResponse<Response> 존재하지않는역_삭제결과 = 지하철_구간_삭제(일호선.getId(), 성대역.getId());
+
+        assertThat(존재하지않는역_삭제결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
