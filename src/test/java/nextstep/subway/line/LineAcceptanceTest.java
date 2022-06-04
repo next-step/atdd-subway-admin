@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -86,11 +87,40 @@ public class LineAcceptanceTest {
         assertThat(노선_조회_결과.jsonPath().getString("name")).isEqualTo("신분당선");
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다.
+     */
+    @DisplayName("지하철노선 수정")
+    @Test
+    void updateLine() {
+        // Given
+        ExtractableResponse 신분당선_생성_응답 = 신분당선_생성();
+
+        // When
+        Long 신분당선_ID = Long.valueOf((Integer) 신분당선_생성_응답.jsonPath().get("id"));
+        LineUpdateRequest lineUpdateRequest = new LineUpdateRequest( "다른분당선", "bg-100-1234");
+        ExtractableResponse<Response> 노선_수정_결과 = 노선_수정(신분당선_ID, lineUpdateRequest);
+
+        // Then
+        assertThat(노선_수정_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private ExtractableResponse<Response> 노선_수정(Long id, LineUpdateRequest lineUpdateRequest) {
+        return RestAssured
+                .given().log().all()
+                .body(lineUpdateRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/" + id)
+                .then().log().all().extract();
+    }
+
     private ExtractableResponse<Response> 노선_조회(Long id) {
         return RestAssured
                 .given().log().all()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/line/" + id)
+                .when().get("/lines/" + id)
                 .then().log().all().extract();
     }
 
@@ -129,13 +159,13 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> 신림선_상행_방향_역 = 신규_역_등록("신림역");
         ExtractableResponse<Response> 신림선_하행_방향_역 = 신규_역_등록("서원역");
 
-        Map<String, Object> line2Params = new HashMap<>();
-        line2Params.put("name", "신림선");
-        line2Params.put("color", "bg-red-100");
-        line2Params.put("upStationId", Long.parseLong(신림선_상행_방향_역.jsonPath().getString("id")));
-        line2Params.put("downStationId", Long.parseLong(신림선_하행_방향_역.jsonPath().getString("id")));
-        line2Params.put("distance", 7);
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "신림선");
+        params.put("color", "bg-red-100");
+        params.put("upStationId", Long.parseLong(신림선_상행_방향_역.jsonPath().getString("id")));
+        params.put("downStationId", Long.parseLong(신림선_하행_방향_역.jsonPath().getString("id")));
+        params.put("distance", 7);
 
-        return 노선_생성(line2Params);
+        return 노선_생성(params);
     }
 }
