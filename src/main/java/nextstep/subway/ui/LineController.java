@@ -5,10 +5,6 @@ import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionRequest;
-import nextstep.subway.exception.BothUpDownDoNotExistException;
-import nextstep.subway.exception.NoStationOnLineException;
-import nextstep.subway.exception.SameSectionRegistrationException;
-import nextstep.subway.exception.SectionLengthOverException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -71,7 +67,7 @@ public class LineController {
         return ResponseEntity.ok(lineService.removeSection(lineId, stationId));
     }
 
-    @ExceptionHandler({SectionLengthOverException.class, SameSectionRegistrationException.class, BothUpDownDoNotExistException.class, NoStationOnLineException.class, IllegalArgumentException.class})
+    @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }

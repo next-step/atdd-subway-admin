@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.NoStationOnLineException;
-
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -63,7 +61,7 @@ public class Line extends BaseEntity {
 
     public void remove(Station station) {
         if (!sections.isContain(station)) {
-            throw new NoStationOnLineException("노선에 없는 역입니다.");
+            throw new IllegalArgumentException("노선에 없는 역입니다.");
         }
         if (sections.getSections().size() <= MIN_SECTIONS_SIZE) {
             throw new IllegalArgumentException("구간이 1개이면 역을 제거할 수 없습니다.");
