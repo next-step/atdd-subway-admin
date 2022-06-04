@@ -5,6 +5,8 @@ import java.util.List;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.exception.BothStationAlreadyExistsException;
 import nextstep.subway.exception.ResourceNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
@@ -56,6 +58,13 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping(value = "/{id}/sections")
+    public ResponseEntity<LineResponse> addSection(@PathVariable final Long id,
+                                            @RequestBody final SectionRequest sectionRequest) {
+        final LineResponse line = lineService.addSection(id, sectionRequest);
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public <T> ResponseEntity<T> handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
@@ -64,5 +73,10 @@ public class LineController {
     @ExceptionHandler(ResourceNotFoundException.class)
     public <T> ResponseEntity<T> handleResourceNotFoundException() {
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(BothStationAlreadyExistsException.class)
+    public <T> ResponseEntity<T> handleBothStationAlreadyExistsException() {
+        return ResponseEntity.badRequest().build();
     }
 }

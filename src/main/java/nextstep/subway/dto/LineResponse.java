@@ -23,7 +23,7 @@ public class LineResponse {
         this.name = line.getName();
         this.color = line.getColor();
         this.stations = line.getSections()
-                .getStations()
+                .getSortedStations()
                 .stream()
                 .map(StationResponse::of)
                 .collect(

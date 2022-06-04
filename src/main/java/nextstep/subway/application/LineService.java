@@ -1,7 +1,5 @@
 package nextstep.subway.application;
 
-import static nextstep.subway.constant.ExceptionMessages.RESOURCE_NOT_FOUND;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
@@ -11,6 +9,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,11 +36,6 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    private Station findStationsById(final Long stationId) {
-        return stationRepository.findById(stationId)
-                .orElseThrow(() -> new ResourceNotFoundException(Station.class, RESOURCE_NOT_FOUND));
-    }
-
     public List<LineResponse> findAllLines() {
         final List<Line> lines = lineRepository.findAll();
 
@@ -52,19 +46,36 @@ public class LineService {
 
     public LineResponse findLine(final Long lineId) {
         final Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new ResourceNotFoundException(Line.class, RESOURCE_NOT_FOUND));
+                .orElseThrow(() -> new ResourceNotFoundException(Line.class));
         return LineResponse.of(line);
     }
 
     @Transactional
     public void updateLine(final Long id, final LineRequest lineRequest) {
         final Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(Line.class, RESOURCE_NOT_FOUND));
+                .orElseThrow(() -> new ResourceNotFoundException(Line.class));
         line.update(lineRequest);
     }
 
     @Transactional
     public void deleteLine(final Long id) {
         lineRepository.deleteById(id);
+    }
+
+    @Transactional
+    public LineResponse addSection(final Long id, final SectionRequest sectionRequest) {
+        final Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(Line.class));
+        final Station upStation = findStationsById(sectionRequest.getUpStationId());
+        final Station downStation = findStationsById(sectionRequest.getDownStationId());
+
+        line.addSection(sectionRequest.toSection(upStation, downStation));
+
+        return LineResponse.of(line);
+    }
+
+    private Station findStationsById(final Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new ResourceNotFoundException(Station.class));
     }
 }

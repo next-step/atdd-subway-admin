@@ -86,6 +86,7 @@ public class LineAcceptanceTest extends DoBeforeEachAbstract {
         assertThat(response.jsonPath().getLong("id")).isEqualTo(lineId);
         assertThat(response.jsonPath().getString("name")).isEqualTo("2호선");
         assertThat(response.jsonPath().getString("color")).isEqualTo("bg-green-600");
+        assertThat(response.jsonPath().getString("stations[0].name")).isEqualTo("강남역");
     }
 
     /**

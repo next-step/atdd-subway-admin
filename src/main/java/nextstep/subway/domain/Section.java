@@ -19,11 +19,11 @@ public class Section {
     @JoinColumn(name = "line_id")
     private Line line;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
@@ -57,5 +57,13 @@ public class Section {
 
     public Long getDistance() {
         return distance;
+    }
+
+    public void updateLine(final Line line) {
+        this.line = line;
+    }
+
+    public boolean isEqualToUpStation(final Station station) {
+        return this.getUpStation().equals(station);
     }
 }
