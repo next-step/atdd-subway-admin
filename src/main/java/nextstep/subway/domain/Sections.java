@@ -58,6 +58,12 @@ public class Sections {
     public void remove(Station station) {
         Section upMatchedSection = findSectionFromDownStation(station);
         Section downMatchedSection = findSectionFromUpStation(station);
+
+        if (upMatchedSection.isFirstSection()) {
+            upMatchedSection.setDownStation(downMatchedSection.getDownStation());
+            return;
+        }
+
         sections.remove(upMatchedSection);
         sections.remove(downMatchedSection);
 

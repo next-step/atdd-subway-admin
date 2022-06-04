@@ -224,9 +224,42 @@ public class SectionAcceptanceTest {
                 ).doesNotContain(stationId),
                 () -> assertThat(stations.size()).isEqualTo(2)
         );
-
     }
 
+    /**
+     * Given 지하철 노선에 구간을 추가하고
+     * <p>
+     * When 구간의 상행 종점을 제거하면
+     * <p>
+     * Then 그 다음 역이 상행 종점으로 변경된다
+     */
+    @DisplayName("지하철 노선의 상행 종점을 제거한다.")
+    @Test
+    void deleteUpStationSection() {
+        // given
+        String stationId = Integer.toString(지하철역_생성("구간역").jsonPath().get("id"));
+        구간_생성(lineUpStationId, stationId, "5");
+
+        // when
+        ExtractableResponse<Response> response = RestAssuredMethod.delete("/lines/{id}/sections",
+                new HashMap<String, String>() {{
+                    put("id", lineId);
+                }}, new HashMap<String, String>() {{
+                    put("stationId", lineUpStationId);
+                }});
+
+        // then
+        List<HashMap<String, ?>> stations = 지하철노선_한개_조회(Integer.valueOf(lineId)).get("stations");
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(
+                        stations.stream()
+                                .map(target -> target.get("id").toString())
+                                .collect(Collectors.toList())
+                ).doesNotContain(lineUpStationId),
+                () -> assertThat(stations.size()).isEqualTo(2)
+        );
+    }
 
     private ExtractableResponse<Response> 구간_생성(String upStationId, String downStationId, String distance) {
         Map<String, String> params = new HashMap<>();
