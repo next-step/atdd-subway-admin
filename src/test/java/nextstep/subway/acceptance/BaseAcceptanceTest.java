@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -67,6 +68,15 @@ public class BaseAcceptanceTest {
         return RestAssured
                 .given().log().all()
                 .when().delete(path + "/" + id)
+                .then().log().all()
+                .extract();
+    }
+
+    public static <T> ExtractableResponse<Response> delete(String path, Map<String, T> params) {
+        return RestAssured
+                .given().log().all()
+                .queryParams(params)
+                .when().delete(path)
                 .then().log().all()
                 .extract();
     }

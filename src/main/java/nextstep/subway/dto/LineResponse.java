@@ -28,7 +28,7 @@ public class LineResponse {
     }
 
     private static List<StationResponse> mapToStationResponse(Line line) {
-        return line.getSections().stream()
+        return line.getSections().get().stream()
                 .flatMap(LineResponse::mapToStationResponse)
                 .collect(Collectors.toList());
     }
