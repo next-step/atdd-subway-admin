@@ -109,12 +109,19 @@ public class Section extends BaseEntity {
         return this.upStation.equals(station);
     }
 
-    private boolean isSameDownStation(Station station) {
+    public boolean isSameDownStation(Station station) {
         return this.downStation.equals(station);
     }
 
     public boolean hasStation(Station station) {
         return isSameUpStation(station) || isSameDownStation(station);
+    }
+
+    public void remove(Section section) {
+        if (isSameUpStation(section.downStation)) {
+            this.upStation = section.upStation;
+            distance.add(section.distance);
+        }
     }
 
     @Override

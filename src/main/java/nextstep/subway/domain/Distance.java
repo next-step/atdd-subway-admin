@@ -29,4 +29,8 @@ public class Distance {
     public int value() {
         return value;
     }
+
+    public void add(Distance distance) {
+        this.value += distance.value;
+    }
 }

@@ -53,4 +53,18 @@ class SectionsTest {
         // then
         assertThat(sections.getElements()).hasSize(1);
     }
+
+    @Test
+    void 구간의_중간역을_삭제한다() {
+        // given
+        Station middleStation = new Station("정자역");
+        Section newSection = new Section(7, middleStation, new Station("광교역"));
+        sections.add(newSection);
+
+        // when
+        sections.remove(middleStation);
+
+        // then
+        assertThat(sections.getElements()).hasSize(1);
+    }
 }
