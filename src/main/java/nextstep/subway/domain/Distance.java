@@ -15,7 +15,7 @@ public class Distance {
     }
 
     public Distance(final Long distance) {
-        if (ZERO >= distance) {
+        if (ZERO > distance) {
             throw new IllegalArgumentException("invalid parameter");
         }
         this.distance = distance;

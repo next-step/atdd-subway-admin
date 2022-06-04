@@ -35,11 +35,11 @@ public class SectionTest {
         assertThat(구간_강남_인천_4L).isEqualTo(new Section(강남역, 인천역, 4L));
     }
 
-    @DisplayName("distance 값이 0보다 큰수를 가져야 한다.")
+    @DisplayName("distance 값은 음수를 가질수 없다.")
     @Test
     void invalidCreatedDistanceTest() {
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> new Section(강남역, 양재역, 0L));
+                .isThrownBy(() -> new Section(강남역, 양재역, -1L));
     }
 
     @DisplayName("downStationId or upStationId 는 optional 이지만 둘중 하나 값을 존재 해야 한다.")

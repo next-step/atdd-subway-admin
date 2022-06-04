@@ -6,6 +6,8 @@ import java.util.Objects;
 
 @Embeddable
 public class Section {
+    private static final Long ZERO = 0L;
+
     @ManyToOne
     @JoinColumn(name = "UPSTATION_ID")
     private Station upStation;
@@ -27,15 +29,15 @@ public class Section {
     }
 
     public Section(final Station upStation, final Station downStation, final Distance distance) {
-        validation(upStation, downStation, distance);
+        validation(upStation, downStation);
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
     public Section updatable(final Section section) {
-        if (isSameUpStationAndDownStation(section)) {
-            throw new IllegalArgumentException("already register this station");
+        if (isSameUpStationAndDownStation(section) || isZero(section.getDistance())) {
+            throw new IllegalArgumentException("invalid parameter");
         }
         if (section.isSameDownStation(this.upStation) || section.isSameUpStation(this.downStation)) {
             return section;
@@ -92,6 +94,10 @@ public class Section {
         return destination;
     }
 
+    private boolean isZero(final Distance distance) {
+        return Objects.equals(this.distance.subtract(distance), new Distance(ZERO));
+    }
+
     private Distance subtractDistanceBy(final Distance source) {
         return source.subtract(distance);
     }
@@ -104,7 +110,7 @@ public class Section {
         return Objects.equals(station, downStation);
     }
 
-    private void validation(final Station upStation, final Station downStation, final Distance distance) {
+    private void validation(final Station upStation, final Station downStation) {
         if (Objects.isNull(upStation) || Objects.isNull(downStation)) {
             throw new IllegalArgumentException("Either upStation or downStation must have a value");
         }
