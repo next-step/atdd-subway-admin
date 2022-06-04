@@ -57,12 +57,24 @@ public class Sections {
     }
 
     public void remove(Station station) {
+        validateRemoval();
+
         if (isEndPoint(station)) {
             elements.remove(findSection(station));
             return;
         }
         Section section = findSectionByDownStation(station);
         removeIntermediateSection(section);
+    }
+
+    private void validateRemoval() {
+        if (isLastSection()) {
+            throw new IllegalArgumentException("노선의 마지막 구간은 삭제할 수 없습니다.");
+        }
+    }
+
+    private boolean isLastSection() {
+        return elements.size() == END_POINT;
     }
 
     private void removeIntermediateSection(Section section) {

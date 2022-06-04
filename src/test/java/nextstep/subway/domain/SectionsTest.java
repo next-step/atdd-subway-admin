@@ -67,4 +67,15 @@ class SectionsTest {
         // then
         assertThat(sections.getElements()).hasSize(1);
     }
+
+    @Test
+    void 노선에_하나_남은_구간을_삭제한다() {
+        // given
+        Station station = new Station("정자역");
+
+        // when & then
+        assertThatThrownBy(() ->
+            sections.remove(station)
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
 }
