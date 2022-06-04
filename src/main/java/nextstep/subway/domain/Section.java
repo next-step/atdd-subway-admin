@@ -45,6 +45,16 @@ public class Section {
         return downStation;
     }
 
+    public Section updateUpStationBy(final Station upStation) {
+        this.upStation = upStation;
+        return this;
+    }
+
+    public Section updateDownStationBy(final Station downStation) {
+        this.downStation = downStation;
+        return this;
+    }
+
     private Section insertMiddle(final Section destination) {
         if (destination.isSameUpStation(upStation)) {
             return updateUpStationWithDistanceBy(destination);

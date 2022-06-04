@@ -46,7 +46,7 @@ public class SectionTest {
     @ParameterizedTest
     @MethodSource("upStation_downStation_제공하는_함수")
     void noHasStationInformationTest(final Station upStation, final Station downStation) {
-        assertThatThrownBy(() -> new Section( upStation, downStation, 1L))
+        assertThatThrownBy(() -> new Section(upStation, downStation, 1L))
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
@@ -89,6 +89,14 @@ public class SectionTest {
                 .isExactlyInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> 구간_강남_인천_4L.updatable(new Section(인천역, 강남역, 3L)))
                 .isExactlyInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("역 정보를 변경할수 있다.")
+    @Test
+    void updateStationTest() {
+        Section updatedUpStation = new Section(강남역, 양재역, 1L).updateUpStationBy(인천역);
+        assertThat(updatedUpStation).isEqualTo(new Section(인천역, 양재역, 1L));
+        assertThat(updatedUpStation.updateDownStationBy(강남역)).isEqualTo(new Section(인천역, 강남역, 1L));
     }
 
     private static Stream<Arguments> upStation_downStation_제공하는_함수() {
