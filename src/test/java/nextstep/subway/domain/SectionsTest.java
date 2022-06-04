@@ -27,7 +27,7 @@ class SectionsTest {
         // when
         final List<Section> sectionList = sections.getSections();
 
-        // when
+        // then
         assertThat(sectionList).containsExactly(강남역_삼성역, 삼성역_잠실역);
     }
 

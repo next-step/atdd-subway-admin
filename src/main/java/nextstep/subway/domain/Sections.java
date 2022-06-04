@@ -2,16 +2,16 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
 @Embeddable
 public class Sections {
     private static final int MINIMUM_DELETE_SECTION_SIZE = 1;
-    private static final int MINIMUM_STATION_SIZE = 1;
-    private static final String NO_DATA_EXCEPTION_MESSAGE = "조건에 부합하는 데이터가 없습니다.";
+    private static final String NO_STATION_IN_LINE_EXCEPTION_MESSAGE = "해당 노선에 존재하지 않는 역";
 
-    @OneToMany(mappedBy = "line", orphanRemoval = true)
+    @OneToMany(mappedBy = "line", orphanRemoval = true, cascade = CascadeType.PERSIST)
     private final List<Section> sections = new ArrayList<>();
 
     public List<Section> getSections() {
@@ -25,89 +25,19 @@ public class Sections {
         return sectionList;
     }
 
-    private Section findStartSection() {
-        return sections.stream()
-                .filter(section -> isStartOrEndStation(section.getUpStation()))
-                .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
-    }
-
-    private Section findNextSection(Station lastStation) {
-        return sections.stream()
-                .filter(section -> lastStation.equals(section.getUpStation()))
-                .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
-    }
-
     public void addSection(Section section) {
         if (!sections.isEmpty()) {
-            validAddSectionCheck(section);
             updateSection(section);
         }
         sections.add(section);
     }
 
     public void deleteSection(Station deleteStation) {
-        validDeleteSectionCheck(deleteStation);
-        deleteStation(deleteStation);
-    }
-
-    private void validAddSectionCheck(Section section) {
-        if (!isContainAnyStation(section)) {
-            throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 추가할 수 없음");
-        }
-
-        if (isContainAllStation(section)) {
-            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있으면 추가할 수 없음");
-        }
-    }
-
-    private void validDeleteSectionCheck(Station deleteStation) {
-        if (!isContainStation(deleteStation)) {
-            throw new IllegalArgumentException("해당 노선에 존재하지 않는 역");
-        }
-
         if (isLastSection()) {
             throw new IllegalArgumentException("마지막 구간은 삭제할 수 없음");
         }
-    }
 
-    private boolean isContainAnyStation(Section newSection) {
-        return sections.stream()
-                .anyMatch(currentSection -> currentSection.getLineStations().contains(newSection.getUpStation())
-                        || currentSection.getLineStations().contains(newSection.getDownStation()));
-    }
-
-    private boolean isContainAllStation(Section newSection) {
-        return sections.stream()
-                .anyMatch(currentSection -> currentSection.getLineStations().contains(newSection.getUpStation())
-                        && currentSection.getLineStations().contains(newSection.getDownStation()));
-    }
-
-    private void updateSection(Section section) {
-        Section targetSection = findTargetSection(section);
-        targetSection.changeStationInfo(section);
-    }
-
-    private Section findTargetSection(Section newSection) {
-        return sections.stream()
-                .filter(currentSection -> currentSection.getLineStations().contains(newSection.getUpStation())
-                        || currentSection.getLineStations().contains(newSection.getDownStation()))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException(NO_DATA_EXCEPTION_MESSAGE));
-    }
-
-    private boolean isContainStation(Station deleteStation) {
-        return sections.stream()
-                .flatMap(section -> section.getLineStations().stream())
-                .anyMatch(station -> station.equals(deleteStation));
-    }
-
-    private boolean isLastSection() {
-        return sections.size() <= MINIMUM_DELETE_SECTION_SIZE;
-    }
-
-    private void deleteStation(Station deleteStation) {
-        if (isStartOrEndStation(deleteStation)) {
+        if (isStartStation(deleteStation) || isEndStation(deleteStation)) {
             sections.remove(findDeleteTargetSection(deleteStation));
             return;
         }
@@ -115,33 +45,78 @@ public class Sections {
         Section beforeSection = findBeforeDeleteTargetSection(deleteStation);
         Section afterSection = findAfterDeleteTargetSection(deleteStation);
 
-        beforeSection.combineStationInfo(afterSection);
+        sections.add(beforeSection.combineSections(afterSection));
+        sections.remove(beforeSection);
         sections.remove(afterSection);
     }
 
-    private boolean isStartOrEndStation(Station station) {
+    private Section findStartSection() {
         return sections.stream()
-                .flatMap(section -> section.getLineStations().stream())
-                .filter(currentStation -> currentStation.equals(station))
-                .count() == MINIMUM_STATION_SIZE;
+                .filter(section -> isStartStation(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Section findNextSection(Station lastStation) {
+        return sections.stream()
+                .filter(section -> section.hasUpStation(lastStation))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private void updateSection(Section section) {
+        if (isContainAllStation(section)) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있으면 추가할 수 없음");
+        }
+
+        Section targetSection = findTargetSection(section);
+        targetSection.changeStationInfo(section);
+    }
+
+    private boolean isContainAllStation(Section newSection) {
+         return sections.stream()
+                .anyMatch(currentSection -> currentSection.hasAllStations(newSection));
+    }
+
+    private Section findTargetSection(Section newSection) {
+        return sections.stream()
+                .filter(currentSection -> currentSection.hasAnyStations(newSection))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 추가할 수 없음"));
+    }
+
+    private boolean isLastSection() {
+        return sections.size() <= MINIMUM_DELETE_SECTION_SIZE;
+    }
+
+    private boolean isStartStation(Station station) {
+        return sections.stream()
+                .noneMatch(currentStation -> currentStation.hasDownStation(station));
+    }
+
+    private boolean isEndStation(Station station) {
+        return sections.stream()
+                .noneMatch(currentStation -> currentStation.hasUpStation(station));
     }
 
     private Section findDeleteTargetSection(Station station) {
         return sections.stream()
-                .filter(currentSection -> currentSection.getUpStation().equals(station)
-                        || currentSection.getDownStation().equals(station))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException(NO_DATA_EXCEPTION_MESSAGE));
+                .filter(currentSection -> currentSection.hasStations(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(NO_STATION_IN_LINE_EXCEPTION_MESSAGE));
     }
 
     private Section findBeforeDeleteTargetSection(Station station) {
         return sections.stream()
-                .filter(currentSection -> currentSection.getDownStation().equals(station))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException(NO_DATA_EXCEPTION_MESSAGE));
+                .filter(currentSection -> currentSection.hasDownStation(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(NO_STATION_IN_LINE_EXCEPTION_MESSAGE));
     }
 
     private Section findAfterDeleteTargetSection(Station station) {
         return sections.stream()
-                .filter(currentSection -> currentSection.getUpStation().equals(station))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException(NO_DATA_EXCEPTION_MESSAGE));
+                .filter(currentSection -> currentSection.hasUpStation(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(NO_STATION_IN_LINE_EXCEPTION_MESSAGE));
     }
 }
