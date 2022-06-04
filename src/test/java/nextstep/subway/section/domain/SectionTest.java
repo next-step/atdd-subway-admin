@@ -52,4 +52,24 @@ class SectionTest {
                 () -> assertThat(defaultSection.getDistance()).isEqualTo(Distance.from(7))
         );
     }
+
+    @Test
+    @DisplayName("Section Merge 테스트: Default 구간: [상행역 - 중간역], Merge 구간: [중간역 - 하행역]")
+    void mergeSection(){
+        //given
+        Station 상행역 = createStation("상행역");
+        Station 중간역 = createStation("중간역");
+        Station 하행역 = createStation("하행역");
+        Section defaultSection = createSection(상행역, 중간역, DEFAULT_DISTANCE);
+        Section sectionToMerge = createSection(중간역, 하행역, DEFAULT_DISTANCE);
+
+        //when
+        defaultSection.mergeWith(sectionToMerge);
+
+        //then
+        assertAll(
+                () -> assertThat(defaultSection.getDownStation()).isEqualTo(하행역),
+                () -> assertThat(defaultSection.getDistance()).isEqualTo(Distance.from(DEFAULT_DISTANCE * 2))
+        );
+    }
 }
