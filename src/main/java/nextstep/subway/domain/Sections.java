@@ -169,7 +169,7 @@ public class Sections {
 
     private Section getFirstSection() {
         return sections.stream()
-                .filter(section -> Objects.isNull(section.getUpStation()))
+                .filter(Section::isFirstSection)
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
     }
@@ -214,7 +214,7 @@ public class Sections {
 
     private Optional<Section> matchUpStation(Section newSection) {
         Optional<Section> upMatchedSection = sections.stream()
-                .filter(section -> !Objects.isNull(section.getUpStation()))
+                .filter(section -> !section.isFirstSection())
                 .filter(section -> isMatchedUpStation(section.getUpStation(), newSection))
                 .findFirst();
         return upMatchedSection;
@@ -235,7 +235,7 @@ public class Sections {
 
     private Optional<Section> getNextStation(Section finalPreSection) {
         return sections.stream()
-                .filter(section -> !Objects.isNull(section.getUpStation()))
+                .filter(section -> !section.isFirstSection())
                 .filter(section -> isMatchedDownStation(section.getUpStation(), finalPreSection))
                 .findFirst();
     }
@@ -245,7 +245,7 @@ public class Sections {
     }
 
     private boolean isMatchedUpStation(Station station, Section section) {
-        if (Objects.isNull(section.getUpStation())) {
+        if (section.isFirstSection()) {
             return false;
         }
         return station.getId().equals(section.getUpStation().getId());

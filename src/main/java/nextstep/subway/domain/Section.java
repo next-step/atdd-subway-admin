@@ -42,6 +42,10 @@ public class Section {
         return upStation;
     }
 
+    public boolean isFirstSection() {
+        return Objects.isNull(upStation);
+    }
+
     public Station getDownStation() {
         return downStation;
     }
