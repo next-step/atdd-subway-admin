@@ -1,4 +1,6 @@
-package nextstep.subway.domain;
+package nextstep.subway.station.domain;
+
+import nextstep.subway.common.domain.BaseEntity;
 
 import javax.persistence.*;
 
@@ -10,7 +12,7 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    public Station() {
+    protected Station() {
     }
 
     public Station(String name) {
