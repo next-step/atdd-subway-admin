@@ -60,6 +60,10 @@ public class Line extends BaseEntity {
         sections.add(section);
     }
 
+    public void removeSection(Station station) {
+        sections.remove(station);
+    }
+
     public Long getId() {
         return id;
     }
@@ -74,6 +78,12 @@ public class Line extends BaseEntity {
 
     public List<Station> getStations() {
         return sections.getStations();
+    }
+
+    public Station getStationByStationId(Long stationId) {
+        return sections.getStations().stream()
+                .filter(station -> station.getId().equals(stationId))
+                .findFirst().orElseThrow(IllegalArgumentException::new);
     }
 
     private void validate(String name, String color, Station upStation, Station downStation) {

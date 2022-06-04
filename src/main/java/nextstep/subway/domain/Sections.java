@@ -55,6 +55,61 @@ public class Sections {
         throw new IllegalArgumentException(NOT_EXISTED_STATION.toString());
     }
 
+    public void remove(Station station) {
+        Section upMatchedSection = findSectionFromDownStation(station);
+        Section downMatchedSection = findSectionFromUpStation(station);
+        sections.remove(upMatchedSection);
+        sections.remove(downMatchedSection);
+
+        add(new Section(
+                upMatchedSection.getUpStation(),
+                downMatchedSection.getDownStation(),
+                upMatchedSection.getDistance().add(downMatchedSection.getDistance()))
+        );
+    }
+
+    private Section findSectionFromDownStation(Station downStation) {
+        Section preSection = getFirstSection();
+        Optional<Section> nextStation = getNextStation(preSection);
+        while (isLastSection(nextStation)) {
+            if (isMatchedDownStation(downStation, preSection)) {
+                return preSection;
+            }
+            preSection = nextStation.get();
+            nextStation = getNextStation(preSection);
+        }
+        throw new IllegalArgumentException(NOT_EXISTED_STATION.toString());
+    }
+
+    private Section findSectionFromUpStation(Station upStation) {
+        Section preSection = getFirstSection();
+        Optional<Section> nextStation = getNextStation(preSection);
+        while (isLastSection(nextStation)) {
+            if (isMatchedUpStation(upStation, preSection)) {
+                return preSection;
+            }
+            preSection = nextStation.get();
+            nextStation = getNextStation(preSection);
+        }
+        if (isMatchedUpStation(upStation, preSection)) {
+            return preSection;
+        }
+        throw new IllegalArgumentException(NOT_EXISTED_STATION.toString());
+    }
+
+    private Section findSection(Station upStation, Station downStation) {
+        Section preSection = getFirstSection();
+        Optional<Section> nextStation = getNextStation(preSection);
+        while (isLastSection(nextStation)) {
+            if (isMatchedUpStation(upStation, preSection) && isMatchedDownStation(downStation, preSection)) {
+                return preSection;
+            }
+            preSection = nextStation.get();
+            nextStation = getNextStation(preSection);
+        }
+        throw new IllegalArgumentException(NOT_EXISTED_STATION.toString());
+    }
+
     private boolean addLastSection(Section newSection) {
         Section lastSection = getLastSection();
         if (isMatchedDownStation(newSection.getUpStation(), lastSection)) {
@@ -190,6 +245,9 @@ public class Sections {
     }
 
     private boolean isMatchedUpStation(Station station, Section section) {
+        if (Objects.isNull(section.getUpStation())) {
+            return false;
+        }
         return station.getId().equals(section.getUpStation().getId());
     }
 
