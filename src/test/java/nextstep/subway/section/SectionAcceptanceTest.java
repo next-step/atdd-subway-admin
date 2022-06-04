@@ -153,6 +153,25 @@ public class SectionAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 구간 하나를 가진 노선이 있을 때
+     * When 역 사이에 새로운 역을 추가할 때, 기존 구간의 길이를 초과하는 구간을 추가하려 하면
+     * Then 400 에러가 전달된다
+     */
+    @DisplayName("기존 구간의 길이를 초과하는 구간을 추가하려 한다.")
+    @Test
+    void 길이_초과_구간_추가() {
+        // given
+        // 분당선(왕십리역-(7m)-선릉역)
+
+        // when
+        ExtractableResponse<Response> response = addSection(
+                "/lines/" + 분당선.getId(), new SectionRequest(왕십리역.getId(), 서울숲역.getId(), 7));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> addSection(String lineLocation, SectionRequest body) {
         return RestAssured.given().log().all()
                 .body(body)

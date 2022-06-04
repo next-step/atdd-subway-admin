@@ -71,4 +71,8 @@ public class Section extends BaseEntity {
     public boolean hasSameStations(Section other) {
         return this.upStation == other.upStation && this.downStation == other.downStation;
     }
+
+    public boolean canInsert(Section newSection) {
+        return distance <= 0 || distance > newSection.distance;
+    }
 }

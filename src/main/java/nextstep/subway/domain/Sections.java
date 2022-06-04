@@ -15,6 +15,7 @@ public class Sections {
     // TODO: add validations
     public void add(Section newSection) {
         validateDuplication(newSection);
+        validateDistance(newSection);
 
         if (list.isEmpty()) {
             list.add(newSection);
@@ -65,6 +66,18 @@ public class Sections {
                 .findAny()
                 .ifPresent(it -> {
                     throw new IllegalArgumentException("구간 중복");
+                });
+    }
+
+    private void validateDistance(Section newSection) {
+        list.stream()
+                .filter(section -> section.hasSameUpStationAs(newSection) ||
+                        section.hasSameDownStationAs(newSection))
+                .findFirst()
+                .ifPresent(section -> {
+                    if (!section.canInsert(newSection)) {
+                        throw new IllegalArgumentException("길이 오류");
+                    }
                 });
     }
 }
