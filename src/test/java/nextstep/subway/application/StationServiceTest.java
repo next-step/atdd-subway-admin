@@ -32,7 +32,7 @@ class StationServiceTest {
     }
 
     @Test
-    void 지하철역을_생성할_수_있어야_한다() {
+    void StationRequest_객체로_지하철역을_생성할_수_있어야_한다() {
         // given
         final StationRequest stationRequest = new StationRequest("양재역");
 
@@ -65,7 +65,7 @@ class StationServiceTest {
     }
 
     @Test
-    void 지하철역을_삭제할_수_있어야_한다() {
+    void 아이디로_지하철역을_삭제할_수_있어야_한다() {
         // given
         final Long givenStationId = givenStation.getId();
 
@@ -75,5 +75,17 @@ class StationServiceTest {
         // then
         final Optional<Station> deletedStation = stationRepository.findById(givenStationId);
         assertThat(deletedStation.isPresent()).isFalse();
+    }
+
+    @Test
+    void 아이디로_지하철역_1개를_조회할_수_있어야_한다() {
+        // given
+        final Long givenStationId = givenStation.getId();
+
+        // when
+        final StationResponse stationResponse = stationService.findStationById(givenStationId);
+
+        // then
+        assertThat(stationResponse).usingRecursiveComparison().isEqualTo(givenStation);
     }
 }
