@@ -2,7 +2,6 @@ package nextstep.subway.station;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.station.dto.StationRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 

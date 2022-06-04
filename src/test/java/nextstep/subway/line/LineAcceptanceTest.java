@@ -13,11 +13,6 @@ import static nextstep.subway.station.StationAcceptanceMethod.*;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends BaseAcceptanceTest {
-    private final String ID_KEY = "id";
-    private final String LINE_COLOR_RED = "bg-red-600";
-    private final String LINE_COLOR_GREEN = "bg-green-600";
-    private final int DISTANCE = 10;
-
     private Long 지하철역_ID;
     private Long 새로운지하철역_ID;
     private Long 또다른지하철역_ID;

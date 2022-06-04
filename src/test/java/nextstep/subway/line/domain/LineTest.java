@@ -10,7 +10,9 @@ class LineTest {
     @DisplayName("지하철 노선 생성")
     @Test
     void test_create() {
+        // given & when
         Line newLine = new Line("신분당선", "bg-red-600");
+        // then
         assertThat(newLine).isNotNull();
     }
 

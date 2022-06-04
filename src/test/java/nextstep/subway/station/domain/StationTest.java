@@ -9,7 +9,9 @@ class StationTest {
     @DisplayName("지하철역 생성")
     @Test
     void test_create() {
+        // given & when
         Station newStation = new Station("강남역");
+        // then
         assertThat(newStation).isNotNull();
     }
 

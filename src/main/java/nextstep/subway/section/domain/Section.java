@@ -1,7 +1,7 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.common.domain.BaseEntity;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -10,27 +10,27 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-public class Section extends BaseEntity {
-    private static final String UP_DOWN_STATION_NOT_NULL = "상/하행 방향 역은 빈값일 수 없습니다.";
-    private static final String UP_DOWN_STATION_NOT_EQUALS = "상/하행 방향 역은 동일할 수 없습니다.";
+public class Section {
+    private static final String UP_DOWN_STATION_NOT_NULL = "상/하행역은 빈값일 수 없습니다.";
+    private static final String UP_DOWN_STATION_NOT_EQUALS = "상/하행역은 동일할 수 없습니다.";
     private static final String DISTANCE_NOT_NULL = "지하철 구간 길이는 빈값일 수 없습니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "up_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_section_to_up_station"))
     private Station upStation;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "down_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_section_to_down_station"))
     private Station downStation;
 
     @Embedded
     private Distance distance;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "line_id", nullable = false, foreignKey = @ForeignKey(name = "fk_section_to_line"))
     private Line line;
 
@@ -61,12 +61,56 @@ public class Section extends BaseEntity {
         }
     }
 
-    public void toLine(Line line) {
+    public void assignLine(Line line) {
         this.line = line;
+    }
+
+    public SectionResponse toSectionResponse() {
+        return SectionResponse.from(this);
     }
 
     public List<Station> getStations() {
         return Arrays.asList(this.upStation, this.downStation);
+    }
+
+    public boolean isIncludedUpStation(List<Station> stations) {
+        return stations.contains(this.upStation);
+    }
+
+    public boolean isIncludedDownStation(List<Station> stations) {
+        return stations.contains(this.downStation);
+    }
+
+    public boolean isEqualsUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean isEqualsDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public void updateUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void updateDownStation(Station station) {
+        this.downStation = station;
+    }
+
+    public void decreaseDistance(Distance distance) {
+        this.distance.decrease(distance);
+    }
+
+    public Station getUpStation() {
+        return this.upStation;
+    }
+
+    public Station getDownStation() {
+        return this.downStation;
+    }
+
+    public Distance getDistance() {
+        return this.distance;
     }
 
     @Override
