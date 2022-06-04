@@ -22,6 +22,7 @@ public class Sections {
         checkBothStationAlreadyExists(addableSection);
         if (checkSectionIsBetween(addableSection)) {
             checkDistanceIsEqualOrGreaterThan(addableSection);
+            updateOriginSection(addableSection);
         }
         return sections.add(addableSection);
     }
@@ -65,6 +66,25 @@ public class Sections {
         if (originalSection.isDistanceEqualOrGreaterThan(addableSection)) {
             throw new DistanceIsEqualOrGreaterException();
         }
+    }
+
+    private void updateOriginSection(final Section addableSection) {
+        whenUpStationIsEqual(addableSection);
+        whenDownStationIsEqual(addableSection);
+    }
+
+    private void whenUpStationIsEqual(final Section addableSection) {
+        sections.stream()
+                .filter(section -> section.getUpStation().equals(addableSection.getUpStation()))
+                .findFirst()
+                .ifPresent(section -> section.updateUpStation(addableSection));
+    }
+
+    private void whenDownStationIsEqual(final Section addableSection) {
+        sections.stream()
+                .filter(section -> section.getDownStation().equals(addableSection.getDownStation()))
+                .findFirst()
+                .ifPresent(section -> section.updateDownStation(addableSection));
     }
 
     public List<Station> getSortedStations() {

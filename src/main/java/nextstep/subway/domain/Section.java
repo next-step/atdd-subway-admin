@@ -73,4 +73,14 @@ public class Section {
         }
         return false;
     }
+
+    public void updateUpStation(final Section addableSection) {
+        distance = distance - addableSection.getDistance();
+        this.upStation = addableSection.getDownStation();
+    }
+
+    public void updateDownStation(final Section addableSection) {
+        distance = distance - addableSection.getDistance();
+        this.downStation = addableSection.getUpStation();
+    }
 }

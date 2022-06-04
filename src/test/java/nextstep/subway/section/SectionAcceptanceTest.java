@@ -57,7 +57,7 @@ public class SectionAcceptanceTest extends DoBeforeEachAbstract {
 
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
     @Test
-    void addSectionBothStationAlreadyExists() {
+    void addSectionBothStationAlreadyExistsException() {
         // when
         // 지하철_노선에_지하철_구간_등록_요청
         final ExtractableResponse<Response> 결과 = 지하철구간_이미_둘다_등록된_노선_요청(lineId, lineUpStationId, lineDownStationId, 10L);
@@ -69,13 +69,49 @@ public class SectionAcceptanceTest extends DoBeforeEachAbstract {
 
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.")
     @Test
-    void addSectionBetween() {
+    void addSectionBetweenException() {
         // when
         // 지하철_노선에_지하철_구간_등록_요청
         final ExtractableResponse<Response> 상행_기점 = 지하철구간_상행_기점_생성됨(lineId, lineUpStationId, "용산역", 10L);
 
         // then
         assertThat(상행_기점.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("역 사이에 새로운 역을 상행 기점으로 등록할 수 있다.")
+    @Test
+    void addSectionBetweenUpstation() {
+        // when
+        // 지하철_노선에_지하철_구간_등록_요청
+        final ExtractableResponse<Response> 상행_기점 = 지하철구간_상행_기점_생성됨(lineId, lineUpStationId, "용산역", 5L);
+
+        // then
+        assertThat(상행_기점.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        // 지하철_노선에_지하철역_등록됨
+        final ExtractableResponse<Response> 노선 = 노선_조회(lineId);
+        assertThat(노선.jsonPath().getString("stations[0].name")).isEqualTo("노량진역");
+        assertThat(노선.jsonPath().getString("stations[1].name")).isEqualTo("용산역");
+        assertThat(노선.jsonPath().getString("stations[2].name")).isEqualTo("남영역");
+    }
+
+    @DisplayName("역 사이에 새로운 역을 하행 종점으로 등록할 수 있다.")
+    @Test
+    void addSectionBetweenDownStation() {
+        // when
+        // 지하철_노선에_지하철_구간_등록_요청
+        final ExtractableResponse<Response> 상행_기점 = 지하철구간_하행_종점_생성됨(lineId, "용산역", lineDownStationId, 5L);
+
+        // then
+        assertThat(상행_기점.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        // 지하철_노선에_지하철역_등록됨
+        final ExtractableResponse<Response> 노선 = 노선_조회(lineId);
+        assertThat(노선.jsonPath().getString("stations[0].name")).isEqualTo("노량진역");
+        assertThat(노선.jsonPath().getString("stations[1].name")).isEqualTo("용산역");
+        assertThat(노선.jsonPath().getString("stations[2].name")).isEqualTo("남영역");
     }
 
     private ExtractableResponse<Response> 노선_조회(Long lineId) {
