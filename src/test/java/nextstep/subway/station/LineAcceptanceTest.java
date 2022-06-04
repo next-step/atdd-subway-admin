@@ -64,14 +64,22 @@ public class LineAcceptanceTest extends BaseLineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        LineResponse line = createLineRequest(firstLine).jsonPath().getObject("", LineResponse.class);
+        LineResponse createdLine = createLineRequest(firstLine).jsonPath().getObject("", LineResponse.class);
 
         // then
-        List<LineResponse> allLines = findAllLinesRequest().jsonPath().getList("", LineResponse.class);
-        assertThat(allLines)
+        List<LineResponse> allFoundLines = findAllLinesRequest().jsonPath().getList("", LineResponse.class);
+        assertThat(allFoundLines)
                 .isNotEmpty()
-                .hasSize(1)
-                .contains(line);
+                .hasSize(1);
+        assertThat(allFoundLines.get(0))
+                .satisfies(foundLine -> {
+                    assertThat(foundLine.getId())
+                            .isEqualTo(createdLine.getId());
+                    assertThat(foundLine.getColor())
+                            .isEqualTo(createdLine.getColor());
+                    assertThat(foundLine.getName())
+                            .isEqualTo(createdLine.getName());
+                });
     }
 
     /**
@@ -83,17 +91,20 @@ public class LineAcceptanceTest extends BaseLineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        LineResponse firstLineResponse = createLineRequest(firstLine).jsonPath().getObject("", LineResponse.class);
-        LineResponse secondLineResponse = createLineRequest(secondLine).jsonPath().getObject("", LineResponse.class);
+        LineResponse firstCreatedLine = createLineRequest(firstLine).jsonPath().getObject("", LineResponse.class);
+        LineResponse secondCreatedLine = createLineRequest(secondLine).jsonPath().getObject("", LineResponse.class);
 
         // when
-        List<LineResponse> allLines = findAllLinesRequest().jsonPath().getList("", LineResponse.class);
+        List<LineResponse> allFoundLines = findAllLinesRequest().jsonPath().getList("", LineResponse.class);
 
         // then
-        assertThat(allLines)
+        assertThat(allFoundLines)
                 .isNotEmpty()
-                .hasSize(2)
-                .containsExactly(firstLineResponse, secondLineResponse);
+                .hasSize(2);
+        assertThat(allFoundLines.get(0).getId())
+                .isEqualTo(firstCreatedLine.getId());
+        assertThat(allFoundLines.get(1).getId())
+                .isEqualTo(secondCreatedLine.getId());
     }
 
 
