@@ -63,16 +63,16 @@ public class Sections {
         Section downMatchedSection = findSectionFromDownStation(station);
         Optional<Section> upMatchedSection = findSectionFromUpStation(station);
 
-        if (!isLastSection(upMatchedSection)) {
-            sections.remove(downMatchedSection);
+        if (removeLastSection(downMatchedSection, upMatchedSection)) {
             return;
         }
-
-        if (downMatchedSection.isFirstSection()) {
-            downMatchedSection.setDownStation(upMatchedSection.get().getDownStation());
+        if (removeFirstSection(downMatchedSection, upMatchedSection)) {
             return;
         }
+        removeMiddleSection(downMatchedSection, upMatchedSection);
+    }
 
+    private void removeMiddleSection(Section downMatchedSection, Optional<Section> upMatchedSection) {
         sections.remove(downMatchedSection);
         sections.remove(upMatchedSection.get());
 
@@ -81,6 +81,22 @@ public class Sections {
                 upMatchedSection.get().getDownStation(),
                 downMatchedSection.getDistance().add(upMatchedSection.get().getDistance()))
         );
+    }
+
+    private boolean removeFirstSection(Section downMatchedSection, Optional<Section> upMatchedSection) {
+        if (downMatchedSection.isFirstSection()) {
+            downMatchedSection.setDownStation(upMatchedSection.get().getDownStation());
+            return true;
+        }
+        return false;
+    }
+
+    private boolean removeLastSection(Section downMatchedSection, Optional<Section> upMatchedSection) {
+        if (!isLastSection(upMatchedSection)) {
+            sections.remove(downMatchedSection);
+            return true;
+        }
+        return false;
     }
 
     private Section findSectionFromDownStation(Station downStation) {
