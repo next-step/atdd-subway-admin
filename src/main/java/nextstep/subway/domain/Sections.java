@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import static nextstep.subway.domain.ErrorMessage.ALREADY_CREATED_SECTION;
+import static nextstep.subway.domain.ErrorMessage.CANNOT_DELETE_LAST_SECTION;
 import static nextstep.subway.domain.ErrorMessage.NOT_EXISTED_STATION;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import javax.persistence.OneToMany;
 
 @Embeddable
 public class Sections {
+    private static final int LAST_SECTION_SIZE = 2;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
     private List<Section> sections = new ArrayList<>();
@@ -56,6 +58,8 @@ public class Sections {
     }
 
     public void remove(Station station) {
+        validateLastSectionRemove();
+
         Section downMatchedSection = findSectionFromDownStation(station);
         Optional<Section> upMatchedSection = findSectionFromUpStation(station);
 
@@ -270,6 +274,12 @@ public class Sections {
     private void validateAlreadySection(Optional<Section> upMatchedSection, Optional<Section> downMatchedSection) {
         if (upMatchedSection.isPresent() && downMatchedSection.isPresent()) {
             throw new IllegalArgumentException(ALREADY_CREATED_SECTION.toString());
+        }
+    }
+
+    private void validateLastSectionRemove() {
+        if (this.sections.size() == LAST_SECTION_SIZE) {
+            throw new IllegalArgumentException(CANNOT_DELETE_LAST_SECTION.toString());
         }
     }
 }

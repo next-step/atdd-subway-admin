@@ -317,6 +317,52 @@ public class SectionAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 지하철 구간이 하나 밖에 없고
+     * <p>
+     * When 상행 종점을 제거하려 하면
+     * <p>
+     * Then 예외가 발생한다.
+     */
+    @DisplayName("지하철 구간이 하나 밖에 없고 상행 종점을 제거하려고 하면 예외 발생")
+    @Test
+    void deleteLastUpStationSection() {
+
+        // when
+        ExtractableResponse<Response> response = RestAssuredMethod.delete("/lines/{id}/sections",
+                new HashMap<String, String>() {{
+                    put("id", lineId);
+                }}, new HashMap<String, String>() {{
+                    put("stationId", lineUpStationId);
+                }});
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 지하철 구간이 하나 밖에 없고
+     * <p>
+     * When 하행 종점을 제거하려 하면
+     * <p>
+     * Then 예외가 발생한다.
+     */
+    @DisplayName("지하철 구간이 하나 밖에 없고 하행 종점을 제거하려고 하면 예외 발생")
+    @Test
+    void deleteLastDownStationSection() {
+
+        // when
+        ExtractableResponse<Response> response = RestAssuredMethod.delete("/lines/{id}/sections",
+                new HashMap<String, String>() {{
+                    put("id", lineId);
+                }}, new HashMap<String, String>() {{
+                    put("stationId", lineDownStationId);
+                }});
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> 구간_생성(String upStationId, String downStationId, String distance) {
         Map<String, String> params = new HashMap<>();
         params.put("distance", distance);
