@@ -46,7 +46,7 @@ public class Sections {
 
     public int totalDistanceLength() {
         return sections.stream()
-                .mapToInt(value -> value.getDistance().getDistance())
+                .mapToInt(Section::distanceValue)
                 .sum();
     }
 }
