@@ -56,4 +56,8 @@ public class LineService {
         }
         return ResponseEntity.noContent().build();
     }
+
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }

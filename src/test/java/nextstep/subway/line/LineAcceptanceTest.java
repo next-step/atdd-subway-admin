@@ -77,7 +77,7 @@ public class LineAcceptanceTest {
     @Test
     void showLine() {
         // Given
-        ExtractableResponse 신분당선_생성_응답 = 신분당선_생성();
+        ExtractableResponse<Response> 신분당선_생성_응답 = 신분당선_생성();
 
         // When
         Integer 신분당선_ID = 신분당선_생성_응답.jsonPath().get("id");
@@ -96,7 +96,7 @@ public class LineAcceptanceTest {
     @Test
     void updateLine() {
         // Given
-        ExtractableResponse 신분당선_생성_응답 = 신분당선_생성();
+        ExtractableResponse<Response> 신분당선_생성_응답 = 신분당선_생성();
 
         // When
         Long 신분당선_ID = Long.valueOf((Integer) 신분당선_생성_응답.jsonPath().get("id"));
@@ -105,6 +105,32 @@ public class LineAcceptanceTest {
 
         // Then
         assertThat(노선_수정_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철노선 삭제")
+    @Test
+    void deleteLine() {
+        // Given
+        ExtractableResponse<Response> 신분당선_생성_응답 = 신분당선_생성();
+
+        // When
+        Long 신분당선_ID = Long.valueOf((Integer) 신분당선_생성_응답.jsonPath().get("id"));
+        노선_삭제(신분당선_ID);
+
+        // Then
+        assertThat(노선_조회(신분당선_ID).jsonPath().getString("id")).isNull();
+    }
+
+    private ExtractableResponse<Response> 노선_삭제(Long id) {
+        return RestAssured
+                .given().log().all()
+                .when().delete("/lines/" + id)
+                .then().log().all().extract();
     }
 
     private ExtractableResponse<Response> 노선_수정(Long id, LineUpdateRequest lineUpdateRequest) {
