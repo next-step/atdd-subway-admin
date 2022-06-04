@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -123,8 +124,10 @@ public class StationAcceptanceTest {
                         .then().log().all()
                         .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList(".", StationResponse.class).size()).isEqualTo(2);
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(response.jsonPath().getList(".", StationResponse.class)).hasSize(2)
+        );
     }
 
     void createStation(String name) {
@@ -159,24 +162,26 @@ public class StationAcceptanceTest {
 
         //then
         //지하철역_삭제
-        ExtractableResponse<Response> response =
+        ExtractableResponse<Response> deleteResponse =
                 RestAssured.given().log().all()
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when().delete("/stations/1")
                         .then().log().all()
                         .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         //지하철역_조회
-        response =
+        ExtractableResponse<Response> getAllResponse =
                 RestAssured.given().log().all()
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when().get("/stations")
                         .then().log().all()
                         .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList(".", StationResponse.class).size()).isEqualTo(0);
+        assertAll(
+            () -> assertThat(getAllResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(getAllResponse.jsonPath().getList(".", StationResponse.class)).hasSize(0)
+        );
     }
 }
