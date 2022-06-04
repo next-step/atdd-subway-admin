@@ -8,6 +8,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
@@ -51,21 +52,36 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        removeUpstation(station);
+        Optional<Section> upSectionOptional = upSectionOptional(station);
+        Optional<Section> downSectionOptional = downSectionOptional(station);
+
+        if (upSectionOptional.isPresent() && downSectionOptional.isPresent()) {
+            sections.add(Section.of(upSectionOptional.get().getUpStation(), downSectionOptional.get().getDownStation(), upSectionOptional.get().distanceValue() + downSectionOptional.get().distanceValue()));
+        }
+
+        removeUpStation(station);
         removeDownStation(station);
     }
 
-    private void removeDownStation(Station station) {
-        sections.stream()
+    private Optional<Section> downSectionOptional(Station station) {
+        return sections.stream()
                 .filter(section -> section.isDownStation(station))
-                .findFirst()
+                .findFirst();
+    }
+
+    private Optional<Section> upSectionOptional(Station station) {
+        return sections.stream()
+                .filter(section -> section.isUpStation(station))
+                .findFirst();
+    }
+
+    private void removeDownStation(Station station) {
+        downSectionOptional(station)
                 .ifPresent(section -> sections.remove(section));
     }
 
-    private void removeUpstation(Station station) {
-        sections.stream()
-                .filter(section -> section.isUpStation(station))
-                .findFirst()
+    private void removeUpStation(Station station) {
+        upSectionOptional(station)
                 .ifPresent(section -> sections.remove(section));
     }
 }
