@@ -5,8 +5,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineStationRequest;
+import nextstep.subway.dto.LineStationResponse;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,9 +26,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 public class LineStationAcceptanceTest {
     @LocalServerPort
     int port;
-
-    @Autowired
-    private StationRepository stationRepository;
     @Autowired
     private LineRepository lineRepository;
 
@@ -88,5 +85,53 @@ public class LineStationAcceptanceTest {
         List<StationResponse> stations = response.jsonPath().getList("stations", StationResponse.class);
 
         assertThat(stations.contains(B역)).isTrue();
+    }
+
+    /**
+     * given 분당선에 B역-C역 구간을 등록하고
+     * when 분당선에 A역-B역 구간을 등록하면
+     * then 분당선에 A역-B역 구간이 등록된다. (A역-B역-C역).
+     */
+    @Test
+    @DisplayName("새로운역을 상행역으로 등록")
+    void 새로운역_상행역_등록() {
+        // given
+        LineStationRequest BC_지하철구간_등록_요청 = new LineStationRequest(B역.getId(), C역.getId(), 10L);
+        LineStationApi.지하철구간_생성(line.getId(), BC_지하철구간_등록_요청);
+
+        // when
+        LineStationRequest AB_지하철구간_등록_요청 = new LineStationRequest(A역.getId(), B역.getId(), 20L);
+        LineStationResponse AB_지하철구간_등록_응답 = LineStationApi.지하철구간_생성(line.getId(), AB_지하철구간_등록_요청)
+                .as(LineStationResponse.class);
+
+        // then
+        ExtractableResponse<Response> response = LineApi.지하철노선_상세_조회(line.getId());
+        List<LineStationResponse> lineStations = response.jsonPath().getList("lineStations", LineStationResponse.class);
+
+        assertThat(lineStations.contains(AB_지하철구간_등록_응답));
+    }
+
+    /**
+     * given 분당선에 A역-B역 구간을 등록하고
+     * when 분당선에 A역-C역 구간을 등록하면
+     * then 분당선에 A역-C역 구간이 등록된다. (A역-B역-C역).
+     */
+    @Test
+    @DisplayName("새로운역을 하행역으로 등록")
+    void 새로운역_하행역_등록() {
+        // given
+        LineStationRequest AB_지하철구간_등록_요청 = new LineStationRequest(A역.getId(), B역.getId(), 20L);
+        LineStationApi.지하철구간_생성(line.getId(), AB_지하철구간_등록_요청);
+
+        // when
+        LineStationRequest AC_지하철구간_등록_요청 = new LineStationRequest(A역.getId(), C역.getId(), 10L);
+        LineStationResponse AC_지하철구간_등록_응답 = LineStationApi.지하철구간_생성(line.getId(), AC_지하철구간_등록_요청)
+                .as(LineStationResponse.class);
+
+        // then
+        ExtractableResponse<Response> response = LineApi.지하철노선_상세_조회(line.getId());
+        List<LineStationResponse> lineStations = response.jsonPath().getList("lineStations", LineStationResponse.class);
+
+        assertThat(lineStations.contains(AC_지하철구간_등록_응답));
     }
 }

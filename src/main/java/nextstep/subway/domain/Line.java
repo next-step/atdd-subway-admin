@@ -32,7 +32,7 @@ public class Line {
     public Line(String name, String color) {
         this(null, name, color);
     }
-    
+
     public static Line of(LineRequest lineRequest) {
         return new Line(lineRequest.getName(), lineRequest.getColor());
     }
@@ -61,5 +61,15 @@ public class Line {
 
     public List<LineStation> getLineStations() {
         return lineStations.get();
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", lineStations=" + lineStations +
+                '}';
     }
 }

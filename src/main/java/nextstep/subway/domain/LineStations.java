@@ -5,7 +5,9 @@ import nextstep.subway.exception.ConflictException;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class LineStations {
@@ -23,7 +25,6 @@ public class LineStations {
 
     public void add(LineStation newLineStation) {
         validateCreationLineStation(newLineStation);
-
         lineStations.forEach(lineStation -> {
             updateUpStation(newLineStation, lineStation);
             updateDownStation(newLineStation, lineStation);
@@ -58,15 +59,35 @@ public class LineStations {
     }
 
     private void validateNotContainStation(LineStation newLineStation) {
+        List<Station> allStations = getStationsInLineStations();
+
         if (
-                lineStations.stream().noneMatch(lineStation -> lineStation.getUpStation().isSame(newLineStation.getUpStation())) &&
-                        lineStations.stream().noneMatch(lineStation -> lineStation.getDownStation().isSame(newLineStation.getDownStation()))
+                !allStations.contains(newLineStation.getUpStation()) &&
+                        !allStations.contains(newLineStation.getDownStation())
         ) {
             throw new BadRequestException("새로운 구간의 역이 상행역과 하행역 둘 중 하나에 포함되어야 합니다.");
         }
     }
 
+    public List<Station> getStationsInLineStations() {
+        List<Station> stations = lineStations.stream()
+                .map(LineStation::getStations)
+                .collect(Collectors.toList())
+                .stream()
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+
+        return stations.stream().distinct().sorted(Comparator.comparing(Station::getCreatedDate)).collect(Collectors.toList());
+    }
+
     public List<LineStation> get() {
         return lineStations;
+    }
+
+    @Override
+    public String toString() {
+        return "LineStations{" +
+                "lineStations=" + lineStations +
+                '}';
     }
 }

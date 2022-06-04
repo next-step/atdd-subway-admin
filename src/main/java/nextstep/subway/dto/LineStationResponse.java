@@ -42,7 +42,7 @@ public class LineStationResponse {
         return distance;
     }
 
-    public List<StationResponse> getStations() {
+    public List<StationResponse> inclueStations() {
         return Arrays.asList(upStation, downStation);
     }
 

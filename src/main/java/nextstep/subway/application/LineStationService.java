@@ -23,12 +23,11 @@ public class LineStationService {
     }
 
     public LineStationResponse createLineStation(Long lineId, LineStationRequest lineStationRequest) {
-        Line line = lineService.findLineById(lineId);
-
         Station upStation = stationService.findStationById(lineStationRequest.getUpStationId());
         Station downStation = stationService.findStationById(lineStationRequest.getDownStationId());
         LineStation newLineStation = LineStation.of(upStation, downStation, lineStationRequest.getDistance());
 
+        Line line = lineService.findLineById(lineId);
         line.addLineStation(newLineStation);
 
         return LineStationResponse.of(saveLineStation(newLineStation));

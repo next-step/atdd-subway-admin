@@ -3,6 +3,8 @@ package nextstep.subway.domain;
 import nextstep.subway.exception.BadRequestException;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -85,6 +87,10 @@ public class LineStation {
         return distance;
     }
 
+    public List<Station> getStations() {
+        return Arrays.asList(upStation, downStation);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -96,5 +102,16 @@ public class LineStation {
     @Override
     public int hashCode() {
         return Objects.hash(line, upStation, downStation);
+    }
+
+    @Override
+    public String toString() {
+        return "LineStation{" +
+                "id=" + id +
+                ", line=" + line +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
     }
 }

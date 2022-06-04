@@ -37,7 +37,7 @@ public class LineResponse {
 
     private static List<StationResponse> getStationsInLine(List<LineStationResponse> lineStations) {
         List<StationResponse> stations = lineStations.stream()
-                .map(LineStationResponse::getStations)
+                .map(LineStationResponse::inclueStations)
                 .collect(Collectors.toList())
                 .stream()
                 .flatMap(List::stream)

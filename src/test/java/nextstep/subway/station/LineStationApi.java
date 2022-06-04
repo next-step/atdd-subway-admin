@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineStationRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 public class LineStationApi {
@@ -17,7 +16,6 @@ public class LineStationApi {
                         .then().log().all()
                         .extract();
 
-        ApiAcceptance.API응답_검증(response.statusCode(), HttpStatus.CREATED.value());
         return response;
     }
 }
