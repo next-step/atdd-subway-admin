@@ -19,7 +19,7 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
-        validateSection(section);
+        validateAddSection(section);
         addAndChangeSection(section);
     }
 
@@ -40,12 +40,8 @@ public class Sections {
         return stations;
     }
 
-    public int size() {
-        return this.sections.size();
-    }
-
     public void remove(Station station) {
-        validateLineStation(station);
+        validateDeleteLineStation(station);
 
         Optional<Section> optionalUpStation = findByUpStation(station);
         Optional<Section> optionalDownStation = findByDownStation(station);
@@ -62,7 +58,11 @@ public class Sections {
         }
     }
 
-    private void validateLineStation(Station station) {
+    public int size() {
+        return this.sections.size();
+    }
+
+    private void validateDeleteLineStation(Station station) {
         if (this.canNotDelete()) {
             throw new IllegalArgumentException("노선에 남은 구간이 하나이기 떄문에 삭제할 수 없습니다.");
         }
@@ -73,7 +73,7 @@ public class Sections {
         }
     }
 
-    private void validateSection(Section section) {
+    private void validateAddSection(Section section) {
         Optional<Section> optionalUpSection = findByStation(section.getUpStation());
         Optional<Section> optionalDownSection = findByStation(section.getDownStation());
 
