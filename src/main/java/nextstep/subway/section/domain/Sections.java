@@ -3,10 +3,10 @@ package nextstep.subway.section.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
@@ -14,16 +14,13 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "line")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "line_id")
     private List<Section> sections = new ArrayList<>();
 
-    public void add(Section section, Line line) {
+    public void add(Section section) {
         validateSection(section);
-        addAndChangeSection(section, line);
-    }
-
-    public void addForInit(Section section, Line line) {
-        addSection(section, line);
+        addAndChangeSection(section);
     }
 
     public List<Station> orderStationsOfLine() {
@@ -41,6 +38,10 @@ public class Sections {
         }
 
         return stations;
+    }
+
+    public int size() {
+        return this.sections.size();
     }
 
     public void remove(Station station, Line line) {
@@ -76,7 +77,7 @@ public class Sections {
         Optional<Section> optionalUpSection = findByStation(section.getUpStation());
         Optional<Section> optionalDownSection = findByStation(section.getDownStation());
 
-        if (!optionalUpSection.isPresent() && !optionalDownSection.isPresent()) {
+        if (!sections.isEmpty() && !optionalUpSection.isPresent() && !optionalDownSection.isPresent()) {
             throw new IllegalArgumentException("종점역이 노선에 등록되어있지 않습니다.");
         }
 
@@ -85,17 +86,13 @@ public class Sections {
         }
     }
 
-    private void addAndChangeSection(Section section, Line line) {
+    private void addAndChangeSection(Section section) {
         Section currentSection = findCurrentSection(section);
         if (currentSection != null) {
             currentSection.changeSection(section);
         }
-        addSection(section, line);
-    }
 
-    private void addSection(Section section, Line line) {
-        sections.add(section);
-        section.changeLine(line);
+        this.sections.add(section);
     }
 
     private Section findStartSection(Section section) {

@@ -17,7 +17,7 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    public Station() {
+    protected Station() {
     }
 
     public Station(String name) {
@@ -25,6 +25,9 @@ public class Station extends BaseEntity {
     }
 
     public boolean isSame(Station station) {
+        if (station.getId() == null) {
+            return false;
+        }
         return Objects.equals(this.id, station.getId());
     }
 

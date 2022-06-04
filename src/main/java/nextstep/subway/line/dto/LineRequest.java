@@ -19,6 +19,9 @@ public class LineRequest {
         this.distance = distance;
     }
 
+    public LineRequest() {
+    }
+
     public Line toLine(Section section) {
         return new Line(name, color, section);
     }

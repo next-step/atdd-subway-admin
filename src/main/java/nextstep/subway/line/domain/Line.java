@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
@@ -25,18 +24,18 @@ public class Line {
     @Embedded
     private final Sections sections = new Sections();
 
-    protected Line() {
+    public Line() {
     }
 
     public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        this.sections.addForInit(section, this);
+        this.addSection(section);
     }
 
-    public void update(LineRequest lineRequest) {
-        this.name = lineRequest.getName();
-        this.color = lineRequest.getColor();
+    public void update(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 
     public List<Station> orderStationsOfLine() {
@@ -44,7 +43,7 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        this.sections.add(section, this);
+        this.sections.add(section);
     }
 
     public void removeSection(Station station) {
