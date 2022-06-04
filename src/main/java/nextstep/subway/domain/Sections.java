@@ -7,8 +7,10 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -83,5 +85,16 @@ public class Sections {
     private void removeUpStation(Station station) {
         upSectionOptional(station)
                 .ifPresent(section -> sections.remove(section));
+    }
+
+    public boolean isContain(Station station) {
+        return allStations().contains(station);
+    }
+
+    private List<Station> allStations() {
+        return sections.stream()
+                .map(section -> section.upDownStationPair())
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 }
