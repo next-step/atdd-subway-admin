@@ -39,14 +39,14 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
+        ExtractableResponse<Response> 생성_응답 = 지하철역_생성_요청("강남역");
 
         // then
-        지하철역_생성_성공_확인(response);
+        지하철역_생성_성공_확인(생성_응답);
 
         // then
-        List<String> stationNames = 지하철역_목록_조회().jsonPath().getList("name", String.class);
-        지하철역_포함_확인(stationNames, "강남역");
+        List<String> 지하철역_이름_목록 = 지하철역_목록_조회().jsonPath().getList("name", String.class);
+        지하철역_포함_확인(지하철역_이름_목록, "강남역");
     }
 
     /**
@@ -61,10 +61,10 @@ public class StationAcceptanceTest {
         지하철역_생성_요청("강남역");
 
         // when
-        ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
+        ExtractableResponse<Response> 생성_응답 = 지하철역_생성_요청("강남역");
 
         // then
-        지하철역_생성_실패_확인(response);
+        지하철역_생성_실패_확인(생성_응답);
     }
 
     /**
@@ -80,15 +80,15 @@ public class StationAcceptanceTest {
         지하철역_생성_요청("잠실역");
 
         // when
-        ExtractableResponse<Response> response = 지하철역_목록_조회();
+        ExtractableResponse<Response> 조회_응답 = 지하철역_목록_조회();
 
         // then
-        지하철역_조회_성공_확인(response);
+        지하철역_조회_성공_확인(조회_응답);
 
         // then
-        List<String> stationNames = response.jsonPath().getList("name", String.class);
-        지하철역_포함_확인(stationNames, "강남역");
-        지하철역_포함_확인(stationNames, "잠실역");
+        List<String> 지하철역_이름_목록 = 조회_응답.jsonPath().getList("name", String.class);
+        지하철역_포함_확인(지하철역_이름_목록, "강남역");
+        지하철역_포함_확인(지하철역_이름_목록, "잠실역");
     }
 
     /**
@@ -100,17 +100,17 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Long stationId = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
+        Long 역_ID = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> response = 지하철역_삭제_요청(stationId);
+        ExtractableResponse<Response> 삭제_응답 = 지하철역_삭제_요청(역_ID);
 
         // then
-        지하철역_삭제_성공_확인(response);
+        지하철역_삭제_성공_확인(삭제_응답);
 
         // then
-        List<String> stationNames = 지하철역_목록_조회().jsonPath().getList("name", String.class);
-        지하철역_미포함_확인(stationNames, "강남역");
+        List<String> 지하철역_이름_목록 = 지하철역_목록_조회().jsonPath().getList("name", String.class);
+        지하철역_미포함_확인(지하철역_이름_목록, "강남역");
     }
 
     private ExtractableResponse<Response> 지하철역_생성_요청(String stationName) {
