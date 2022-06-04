@@ -110,3 +110,6 @@ _______________________
     
     - 상행 , 하행 종점으로 등록한 경우
       - 그냥 추가 한다.
+  
+  - 리팩토링
+    - 기존의 line 에 upStation, downStation, distance 를 Section 으로 변경
