@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.ConflictException;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -27,16 +29,15 @@ public class LineStation {
     protected LineStation() {
     }
 
-    private LineStation(Long id, Line line, Station upStation, Station downStation, Long distance) {
+    private LineStation(Long id, Station upStation, Station downStation, Long distance) {
         this.id = id;
-        this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
-    public static LineStation of(Line line, Station upStation, Station downStation, Long distance) {
-        return new LineStation(null, line, upStation, downStation, distance);
+    public static LineStation of(Station upStation, Station downStation, Long distance) {
+        return new LineStation(null, upStation, downStation, distance);
     }
 
     public void toLine(Line line) {
@@ -47,8 +48,25 @@ public class LineStation {
         return this.equals(newLineStation);
     }
 
-    public boolean isSmallerThanNewLineDistance(LineStation newLineStation) {
-        return distance < newLineStation.getDistance();
+    public void updateUpStation(LineStation lineStation) {
+        updateDistance(distance - lineStation.getDistance());
+        upStation = lineStation.getDownStation();
+    }
+
+    public void downUpStation(LineStation lineStation) {
+        updateDistance(distance - lineStation.getDistance());
+        downStation = lineStation.getUpStation();
+    }
+
+    private void validateDistance(Long distance) {
+        if (distance >= this.distance) {
+            throw new ConflictException("새로운 구간의 길이가 기존 구간의 길이보다 작아야합니다.");
+        }
+    }
+
+    private void updateDistance(Long distance) {
+        validateDistance(distance);
+        this.distance = distance;
     }
 
     public Long getId() {
@@ -76,11 +94,11 @@ public class LineStation {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LineStation that = (LineStation) o;
-        return Objects.equals(line, that.line) && Objects.equals(upStation, that.upStation) && Objects.equals(downStation, that.downStation) && Objects.equals(distance, that.distance);
+        return Objects.equals(line, that.line) && Objects.equals(upStation, that.upStation) && Objects.equals(downStation, that.downStation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(line, upStation, downStation, distance);
+        return Objects.hash(line, upStation, downStation);
     }
 }

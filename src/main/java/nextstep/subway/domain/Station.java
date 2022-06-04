@@ -26,8 +26,8 @@ public class Station extends BaseEntity {
         this.name = name;
     }
 
-    public boolean isSame(Station upStation, Station newStation) {
-        return upStation.equals(newStation);
+    public boolean isSame(Station newStation) {
+        return this.equals(newStation);
     }
 
     public Long getId() {
@@ -51,11 +51,11 @@ public class Station extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Station station = (Station) o;
-        return Objects.equals(name, station.name) && Objects.equals(upLineStations, station.upLineStations) && Objects.equals(downLineStations, station.downLineStations);
+        return Objects.equals(id, station.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, upLineStations, downLineStations);
+        return Objects.hash(id);
     }
 }

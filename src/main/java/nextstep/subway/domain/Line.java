@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import nextstep.subway.dto.LineRequest;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,29 +17,24 @@ public class Line {
     @Column
     private String color;
 
-    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    private List<LineStation> lineStations = new ArrayList<>();
+    @Embedded
+    private final LineStations lineStations = LineStations.empty();
 
     protected Line() {
     }
 
-    private Line(Long id, String name, String color, List<LineStation> lineStations) {
+    private Line(Long id, String name, String color) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.lineStations = lineStations;
     }
 
     public Line(String name, String color) {
-        this(null, name, color, new ArrayList<>());
+        this(null, name, color);
     }
-
-    private Line(String name, String color, List<LineStation> lineStations) {
-        this(null, name, color, lineStations);
-    }
-
-    public static Line of(LineRequest lineRequest, List<LineStation> lineStations) {
-        return new Line(lineRequest.getName(), lineRequest.getColor(), lineStations);
+    
+    public static Line of(LineRequest lineRequest) {
+        return new Line(lineRequest.getName(), lineRequest.getColor());
     }
 
     public void update(String name, String color) {
@@ -48,9 +42,9 @@ public class Line {
         this.color = color;
     }
 
-    public void addLineStation(LineStation lineStation) {
-        lineStations.add(lineStation);
-        lineStation.toLine(this);
+    public void addLineStation(LineStation newLineStation) {
+        newLineStation.toLine(this);
+        lineStations.add(newLineStation);
     }
 
     public Long getId() {
@@ -66,6 +60,6 @@ public class Line {
     }
 
     public List<LineStation> getLineStations() {
-        return lineStations;
+        return lineStations.get();
     }
 }

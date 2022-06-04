@@ -10,7 +10,6 @@ import nextstep.subway.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,8 +28,8 @@ public class LineService {
         Station upStation = stationService.findStationById(lineRequest.getUpStationId());
         Station downStation = stationService.findStationById(lineRequest.getDownStationId());
 
-        Line line = Line.of(lineRequest, new ArrayList<>());
-        LineStation lineStation = LineStation.of(line, upStation, downStation, lineRequest.getDistance());
+        Line line = Line.of(lineRequest);
+        LineStation lineStation = LineStation.of(upStation, downStation, lineRequest.getDistance());
         line.addLineStation(lineStation);
 
         return LineResponse.of(saveLine(line));
