@@ -9,6 +9,13 @@ public class Section {
     private Station downStation;
     private Distance distance;
 
+    protected Section() {
+    }
+
+    public Section(final Station upStation, final Station downStation, final Long distance) {
+        this(1L, upStation, downStation, new Distance(distance));
+    }
+
     public Section(final long id, final Station upStation, final Station downStation, final Distance distance) {
         validation(upStation, downStation, distance);
         this.id = id;
@@ -21,22 +28,57 @@ public class Section {
         this(id, upStation, downStation, new Distance(distance));
     }
 
-    public Section updatable(Section section) {
-        validation(section);
+    public Section updatable(final Section section) {
+        if (isSameUpStationAndDownStation(section)) {
+            throw new IllegalArgumentException("already register this station");
+        }
         if (section.isSameDownStation(this.upStation) || section.isSameUpStation(this.downStation)) {
             return section;
         }
         return insertMiddle(section);
     }
 
-    private Section insertMiddle(final Section section) {
-        if (section.isSameUpStation(upStation)) {
+    private boolean isSameUpStationAndDownStation(final Section section) {
+       return section.isSameUpStation(this.upStation) && section.isSameDownStation(this.downStation) ||
+               section.isSameDownStation(this.upStation) && section.isSameUpStation(this.downStation);
+    }
 
+    public Long getId() {
+        return id;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    private Section insertMiddle(final Section destination) {
+        if (destination.isSameUpStation(upStation)) {
+            return updateUpStationWithDistanceBy(destination);
         }
-        if (section.isSameDownStation(downStation)) {
-
+        if (destination.isSameDownStation(downStation)) {
+            return updateDownStationWithDistanceBy(destination);
         }
         throw new IllegalArgumentException("no match station");
+    }
+
+    private Section updateDownStationWithDistanceBy(Section destination) {
+        this.downStation = destination.getUpStation();
+        this.distance = destination.subtractDistanceBy(distance);
+        return destination;
+    }
+
+    private Section updateUpStationWithDistanceBy(Section destination) {
+        this.upStation = destination.getDownStation();
+        this.distance = destination.subtractDistanceBy(distance);
+        return destination;
+    }
+
+    private Distance subtractDistanceBy(final Distance source) {
+        return source.subtract(distance);
     }
 
     private boolean isSameUpStation(final Station station) {
@@ -47,22 +89,9 @@ public class Section {
         return Objects.equals(station, downStation);
     }
 
-
-    private void validation(final Section section) {
-        if (!section.isBigDistance(this.distance)) {
-            throw new IllegalArgumentException("invalid distance");
-        }
-    }
-    private boolean isBigDistance(Distance distance) {
-        return this.distance.isBig(distance);
-    }
-
     private void validation(final Station upStation, final Station downStation, final Distance distance) {
         if (Objects.isNull(upStation) || Objects.isNull(downStation)) {
             throw new IllegalArgumentException("Either upStation or downStation must have a value");
-        }
-        if (!distance.isBig(new Distance(ZERO))) {
-            throw new IllegalArgumentException("distance must have more zero");
         }
     }
 
@@ -78,5 +107,4 @@ public class Section {
     public int hashCode() {
         return Objects.hash(id, upStation, downStation, distance);
     }
-
 }
