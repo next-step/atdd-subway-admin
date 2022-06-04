@@ -185,11 +185,28 @@ public class SectionAcceptanceTest {
         assertThat(중간역_삭제결과.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    /**
+     * Given 노선에 상행역, 하행역이 등록되어 있고
+     * When 존재하지않는 성대역을 제거하면
+     * Then 삭제를 실패한다.
+     */
     @Test
     void 삭제하려는_역이_노선에_없으면_제거할_수_없다() {
         StationResponse 성대역 = 지하철역_생성("성대역").as(StationResponse.class);
 
         ExtractableResponse<Response> 존재하지않는역_삭제결과 = 지하철_구간_삭제(일호선.getId(), 성대역.getId());
+
+        assertThat(존재하지않는역_삭제결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 노선에 상행역, 하행역 1개의 구간이 등록되어 있고
+     * When 역을 제거하면
+     * Then 삭제를 실패한다.
+     */
+    @Test
+    void 노선에_구간이_1개인경우_제거할_수_없다() {
+        ExtractableResponse<Response> 존재하지않는역_삭제결과 = 지하철_구간_삭제(일호선.getId(), 소요산역.getId());
 
         assertThat(존재하지않는역_삭제결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
