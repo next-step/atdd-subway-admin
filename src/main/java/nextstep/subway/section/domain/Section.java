@@ -19,7 +19,7 @@ public class Section {
     private Long id;
 
     @Column(name = "line_id")
-    private Long line;
+    private Long lineId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id", nullable = false)
@@ -53,10 +53,6 @@ public class Section {
 
     public boolean isPostSection(Section preSection) {
         return upStation != null && upStation.isSame(preSection.getDownStation());
-    }
-
-    public void changeLine(Line line) {
-        this.line = line;
     }
 
     public void changeSection(Section changeSection) {
