@@ -68,18 +68,17 @@ public class Section extends BaseEntity {
 
     public void separate(Section newSection) {
         if (this.upStation.equals(newSection.getUpStation())) {
-            System.out.println("!");
             this.upStation = newSection.getDownStation();
-            calculateDistance(newSection);
+            separateDistance(newSection);
 
         }
         if (this.downStation.equals(newSection.getDownStation())) {
             this.downStation = newSection.getUpStation();
-            calculateDistance(newSection);
+            separateDistance(newSection);
         }
     }
 
-    private void calculateDistance(Section newSection) {
+    private void separateDistance(Section newSection) {
         distance = distance.minus(newSection.distance);
     }
 
