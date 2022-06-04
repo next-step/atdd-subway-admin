@@ -70,11 +70,11 @@ public class Section {
     }
 
     private void validateUpDownStation(Station upStation, Station downStation) {
-        if (upStation == null && downStation == null) {
+        if (upStation == null || downStation == null) {
             throw new IllegalArgumentException("상행종점역, 하행종점역이 존재하지 않습니다.");
         }
 
-        if (upStation != null && upStation.equals(downStation)) {
+        if (upStation.isSame(downStation)) {
             throw new IllegalArgumentException("상행종점역과 하행종점역은 같을 수가 없습니다.");
         }
     }
@@ -99,6 +99,10 @@ public class Section {
 
     public Distance getDistance() {
         return this.distance;
+    }
+
+    public Long getId() {
+        return id;
     }
 
 }

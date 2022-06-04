@@ -25,6 +25,9 @@ public class Station extends BaseEntity {
     }
 
     public boolean isSame(Station station) {
+        if (station.getId() == null) {
+            return false;
+        }
         return Objects.equals(this.id, station.getId());
     }
 
