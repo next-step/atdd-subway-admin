@@ -51,8 +51,20 @@ public class Sections {
     }
 
     public void remove(Station station) {
+        removeUpstation(station);
+        removeDownStation(station);
+    }
+
+    private void removeDownStation(Station station) {
         sections.stream()
-                .filter(section -> section.isUpstation(station))
+                .filter(section -> section.isDownStation(station))
+                .findFirst()
+                .ifPresent(section -> sections.remove(section));
+    }
+
+    private void removeUpstation(Station station) {
+        sections.stream()
+                .filter(section -> section.isUpStation(station))
                 .findFirst()
                 .ifPresent(section -> sections.remove(section));
     }
