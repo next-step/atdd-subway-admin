@@ -52,7 +52,7 @@ public class Sections {
 
     public void remove(Station station) {
         sections.stream()
-                .filter(section1 -> section1.getUpStation().equals(station))
+                .filter(section -> section.isUpstation(station))
                 .findFirst()
                 .ifPresent(section -> sections.remove(section));
     }
