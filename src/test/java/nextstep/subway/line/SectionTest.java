@@ -39,14 +39,14 @@ public class SectionTest {
     @Test
     void invalidCreatedDistanceTest() {
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> new Section(1L, 강남역, 양재역, 0L));
+                .isThrownBy(() -> new Section(강남역, 양재역, 0L));
     }
 
     @DisplayName("downStationId or upStationId 는 optional 이지만 둘중 하나 값을 존재 해야 한다.")
     @ParameterizedTest
     @MethodSource("upStation_downStation_제공하는_함수")
     void noHasStationInformationTest(final Station upStation, final Station downStation) {
-        assertThatThrownBy(() -> new Section(1L, upStation, downStation, 1L))
+        assertThatThrownBy(() -> new Section( upStation, downStation, 1L))
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 

@@ -2,9 +2,8 @@ package nextstep.subway.domain;
 
 import java.util.Objects;
 
+
 public class Section {
-    private static final Long ZERO = 0L;
-    private Long id;
     private Station upStation;
     private Station downStation;
     private Distance distance;
@@ -13,19 +12,14 @@ public class Section {
     }
 
     public Section(final Station upStation, final Station downStation, final Long distance) {
-        this(1L, upStation, downStation, new Distance(distance));
+        this(upStation, downStation, new Distance(distance));
     }
 
-    public Section(final long id, final Station upStation, final Station downStation, final Distance distance) {
+    public Section(final Station upStation, final Station downStation, final Distance distance) {
         validation(upStation, downStation, distance);
-        this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-    }
-
-    public Section(final long id, final Station upStation, final Station downStation, final Long distance) {
-        this(id, upStation, downStation, new Distance(distance));
     }
 
     public Section updatable(final Section section) {
@@ -39,12 +33,8 @@ public class Section {
     }
 
     private boolean isSameUpStationAndDownStation(final Section section) {
-       return section.isSameUpStation(this.upStation) && section.isSameDownStation(this.downStation) ||
-               section.isSameDownStation(this.upStation) && section.isSameUpStation(this.downStation);
-    }
-
-    public Long getId() {
-        return id;
+        return section.isSameUpStation(this.upStation) && section.isSameDownStation(this.downStation) ||
+                section.isSameDownStation(this.upStation) && section.isSameUpStation(this.downStation);
     }
 
     public Station getUpStation() {
@@ -100,11 +90,11 @@ public class Section {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return Objects.equals(id, section.id) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(distance, section.distance);
+        return Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(distance, section.distance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, upStation, downStation, distance);
+        return Objects.hash(upStation, downStation, distance);
     }
 }
