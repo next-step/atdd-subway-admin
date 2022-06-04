@@ -32,4 +32,8 @@ public class Distance {
         }
         return new Distance(this.distance - distance.getDistance());
     }
+
+    public Distance plus(Distance distance) {
+        return new Distance(this.distance + distance.getDistance());
+    }
 }

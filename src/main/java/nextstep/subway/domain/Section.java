@@ -94,6 +94,14 @@ public class Section extends BaseEntity {
         return this.downStation.equals(station);
     }
 
+    public Section mergeSection(Section downSection) {
+        return Section.of(
+                this.upStation,
+                downSection.getDownStation(),
+                this.distance.plus(downSection.distance).getDistance()
+        );
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

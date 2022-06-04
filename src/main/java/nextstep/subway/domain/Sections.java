@@ -56,7 +56,7 @@ public class Sections {
         Optional<Section> downSectionOptional = downSectionOptional(station);
 
         if (upSectionOptional.isPresent() && downSectionOptional.isPresent()) {
-            sections.add(Section.of(upSectionOptional.get().getUpStation(), downSectionOptional.get().getDownStation(), upSectionOptional.get().distanceValue() + downSectionOptional.get().distanceValue()));
+            sections.add(upSectionOptional.get().mergeSection(downSectionOptional.get()));
         }
 
         removeUpStation(station);
