@@ -5,15 +5,14 @@ import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.common.RestAssuredTemplate;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -107,18 +106,15 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         assertThat(stationNames).isEmpty();
     }
 
-    private ExtractableResponse<Response> 지하철역_생성됨(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        return RestAssuredTemplate.post(params, "/stations");
+    public static ExtractableResponse<Response> 지하철역_생성됨(String name) {
+        return RestAssuredTemplate.post(new StationRequest(name), "/stations");
     }
 
-    private ExtractableResponse<Response> 지하철역_삭제(long stationId) {
+    public static ExtractableResponse<Response> 지하철역_삭제(long stationId) {
         return RestAssuredTemplate.delete("/stations/{id}", stationId);
     }
 
-    private List<String> 지하철역_전체_조회() {
+    public static List<String> 지하철역_전체_조회() {
         return RestAssuredTemplate.get("/stations").jsonPath().getList("name", String.class);
     }
 

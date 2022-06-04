@@ -3,15 +3,13 @@ package nextstep.subway.common;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.dto.RequestDTO;
 import org.springframework.http.MediaType;
-
-import java.util.Map;
 
 public final class RestAssuredTemplate {
 
     private RestAssuredTemplate() {
     }
-
 
     public static ExtractableResponse<Response> get(String path) {
         return RestAssured.given().log().all()
@@ -20,9 +18,9 @@ public final class RestAssuredTemplate {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> post(Map<String, String> params, String path) {
+    public static ExtractableResponse<Response> post(RequestDTO request, String path) {
         return RestAssured.given().log().all()
-                .body(params)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post(path)
                 .then().log().all()
