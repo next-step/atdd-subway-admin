@@ -59,4 +59,13 @@ public class RestAssuredMethod {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> delete(String path, Map<String, ?> pathParams,
+                                                       Map<String, ?> queryParams) {
+        return RestAssured.given().log().all()
+                .queryParams(queryParams)
+                .when().delete(path, pathParams)
+                .then().log().all()
+                .extract();
+    }
 }
