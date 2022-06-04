@@ -3,12 +3,12 @@ package nextstep.subway.section.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -44,22 +44,22 @@ public class Sections {
         return this.sections.size();
     }
 
-    public void remove(Station station, Line line) {
+    public void remove(Station station) {
         validateLineStation(station);
 
         Optional<Section> optionalUpStation = findByUpStation(station);
         Optional<Section> optionalDownStation = findByDownStation(station);
 
+        optionalUpStation.ifPresent(section -> this.sections.remove(section));
+        optionalDownStation.ifPresent(section -> this.sections.remove(section));
+
         if (optionalDownStation.isPresent() && optionalUpStation.isPresent()) {
             Section upSection = optionalDownStation.get();
             Section downSection = optionalUpStation.get();
 
-            Long distance = upSection.getDistance() + downSection.getDistance();
-            this.addSection(new Section(upSection.getUpStation(), downSection.getDownStation(), distance), line);
+            Distance distance = Distance.sumOf(upSection.getDistance(), downSection.getDistance());
+            this.add(new Section(upSection.getUpStation(), downSection.getDownStation(), distance));
         }
-
-        optionalUpStation.ifPresent(section -> this.sections.remove(section));
-        optionalDownStation.ifPresent(section -> this.sections.remove(section));
     }
 
     private void validateLineStation(Station station) {

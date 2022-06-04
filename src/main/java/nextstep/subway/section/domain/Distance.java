@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import java.util.Arrays;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
@@ -8,6 +9,12 @@ public class Distance {
 
     @Column(nullable = false)
     private Long distance;
+
+    public static Distance sumOf(Distance... distances) {
+        long sum = Arrays.stream(distances).mapToLong(Distance::getDistance).sum();
+
+        return new Distance(sum);
+    }
 
     protected Distance() {
     }
@@ -31,6 +38,10 @@ public class Distance {
         }
 
         this.distance = distance;
+    }
+
+    public Long getDistance() {
+        return distance;
     }
 
 }

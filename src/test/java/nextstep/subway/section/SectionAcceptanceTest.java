@@ -82,6 +82,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
 
     @ParameterizedTest(name = "{0}")
+    @DisplayName("노선에서 종점역이 삭제될 경우, 노선 조회시 역이 삭제되는지 확인한다.")
     @MethodSource("providerDeleteSectionCase")
     void deleteSection_success(String name, Long stationId) {
         // given
