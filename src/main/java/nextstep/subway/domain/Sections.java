@@ -5,17 +5,55 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST)
-    private List<Section> sections = new ArrayList<>();
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Section> list = new ArrayList<>();
 
-    protected Sections() {
+    // TODO: add validations
+    public void add(Section newSection) {
+        if (list.isEmpty()) {
+            list.add(newSection);
+            return;
+        }
+
+        updateWhenSameUpStation(newSection);
+
+        updateWhenSameDownStation(newSection);
+
+        list.add(newSection);
     }
 
-    public Sections(Station upStation, Station downStation) {
-        sections.add(new Section(null, upStation, 0));
-        sections.add(new Section(upStation, downStation, 7));
+    public List<Station> getStationsInOrder() {
+        Optional<Section> nextSection = list.stream()
+                .filter(it -> it.isFirstSection())
+                .findFirst();
+
+        List<Station> result = new ArrayList<>();
+        while (nextSection.isPresent()) {
+            Section currentSection = nextSection.get();
+            result.add(currentSection.getDownStation());
+            nextSection = list.stream()
+                    .filter(it -> it.isNextSectionOf(currentSection))
+                    .findFirst();
+        }
+
+        return result;
+    }
+
+    private void updateWhenSameDownStation(Section newSection) {
+        list.stream()
+                .filter(it -> it.hasSameDownStationAs(newSection))
+                .findFirst()
+                .ifPresent(it -> it.updateDownStationToUpStationOf(newSection));
+    }
+
+    private void updateWhenSameUpStation(Section newSection) {
+        list.stream()
+                .filter(it -> it.hasSameUpStationAs(newSection))
+                .findFirst()
+                .ifPresent(it -> it.updateUpStationToDownStationOf(newSection));
     }
 }

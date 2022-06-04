@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -18,15 +19,22 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private Sections sections;
+    private Sections sections = new Sections();
 
     protected Line() {
     }
 
-    public Line(String name, String color, Sections sections) {
+    private Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.sections = sections;
+    }
+
+    public static Line createLine(String name, String color, Station upStation, Station downStation, int distance) {
+        Line line = new Line(name, color);
+        line.addSection(new Section(null, upStation, 0));
+        line.addSection(new Section(upStation, downStation, distance));
+
+        return line;
     }
 
     public Long getId() {
@@ -44,5 +52,14 @@ public class Line extends BaseEntity {
     public void updateNameColor(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+        section.setLine(this);
+    }
+
+    public List<Station> getStationsInOrder() {
+        return sections.getStationsInOrder();
     }
 }

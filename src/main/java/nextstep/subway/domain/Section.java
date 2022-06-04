@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.util.Objects;
 
 @Entity
 public class Section extends BaseEntity {
@@ -33,5 +34,37 @@ public class Section extends BaseEntity {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
+    }
+
+    public boolean hasSameUpStationAs(Section newSection) {
+        return Objects.equals(this.upStation, newSection.upStation);
+    }
+
+    public boolean hasSameDownStationAs(Section newSection) {
+        return Objects.equals(this.downStation, newSection.downStation);
+    }
+
+    public void updateUpStationToDownStationOf(Section newSection) {
+        this.upStation = newSection.downStation;
+    }
+
+    public void updateDownStationToUpStationOf(Section newSection) {
+        this.downStation = newSection.upStation;
+    }
+
+    public boolean isFirstSection() {
+        return upStation == null;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public boolean isNextSectionOf(Section section) {
+        return Objects.equals(this.upStation, section.downStation);
     }
 }

@@ -222,7 +222,7 @@ public class LineAcceptanceTest {
                 .extract().jsonPath().getList(path, genericType);
     }
 
-    private ExtractableResponse<Response> getLine(String location) {
+    public static ExtractableResponse<Response> getLine(String location) {
         return RestAssured.given().log().all()
                 .when().get(location)
                 .then().log().all()
