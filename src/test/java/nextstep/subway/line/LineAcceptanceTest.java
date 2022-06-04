@@ -117,6 +117,29 @@ public class LineAcceptanceTest {
         지하철노선_이름_포함_확인(getResponse, "다른분당선");
     }
 
+    /**
+     * Given 지하철 노선을 생성하고 When 생성한 지하철 노선을 삭제하면 Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철역을 삭제한다.")
+    @Test
+    void deleteStation() {
+        //given
+        지하철역_생성_요청("강남역");
+        지하철역_생성_요청("판교역");
+        ExtractableResponse<Response> 신분당선 = 지하철노선_생성_요청("신분당선", "bg-red-600", 1L, 2L, 10L);
+
+        //when
+        ExtractableResponse<Response> deleteResponse = 지하철노선_삭제_요청(신분당선.jsonPath().getLong("id"));
+
+        //then
+        응답코드_확인(deleteResponse, HttpStatus.NO_CONTENT);
+        ExtractableResponse<Response> getResponse = 지하철노선_목록_조회_요청();
+        지하철노선_목록에_없음(getResponse, "신분당선");
+    }
+
+    private void 지하철노선_목록에_없음(ExtractableResponse<Response> getResponse, String name) {
+        assertThat(getResponse.jsonPath().getList("name")).doesNotContain(name);
+    }
 
     private void 지하철노선목록_이름_포함_확인(ExtractableResponse<Response> getResponse, List<String> names) {
         assertThat(getResponse.jsonPath().getList("name")).hasSameElementsAs(names);
@@ -150,6 +173,14 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all()
             .pathParam("id", id)
             .when().get("/lines/{id}")
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철노선_삭제_요청(Long id) {
+        return RestAssured.given().log().all()
+            .pathParam("id", id)
+            .when().delete("/lines/{id}")
             .then().log().all()
             .extract();
     }
