@@ -97,4 +97,10 @@ public class SectionTest {
         assertThat(updatedUpStation).isEqualTo(new Section(인천역, 양재역, 1L));
         assertThat(updatedUpStation.updateDownStationBy(강남역)).isEqualTo(new Section(인천역, 강남역, 1L));
     }
+
+    @DisplayName("upStation이 없으면 head 이다.")
+    @Test
+    void isHeadTest() {
+        assertThat(new Section(null, 강남역, 0L).isHead()).isTrue();
+    }
 }
