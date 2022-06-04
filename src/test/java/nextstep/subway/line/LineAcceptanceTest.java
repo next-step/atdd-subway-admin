@@ -115,7 +115,20 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
      */
     @Test
     void 지하철노선_삭제() {
+        // given
+        Long 지하철역_id = 지하철역_생성됨("지하철역").body().jsonPath().getLong("id");
+        Long 새로운지하철역_id = 지하철역_생성됨("새로운지하철역").body().jsonPath().getLong("id");
 
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성됨("신분당선", "bg-green-600", 10, 지하철역_id, 새로운지하철역_id);
+        long lineId = createResponse.body().jsonPath().getLong("id");
+
+        // when
+        지하철_노선_삭제(lineId);
+
+        // then
+        List<String> lineNames = 지하철_노선_전체_조회();
+
+        assertThat(lineNames).isEmpty();
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성됨(String name, String color, Integer distance, Long upStationId, Long downStationId) {
@@ -134,4 +147,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         return RestAssuredTemplate.put("/lines/" + lineId, new LineUpdateRequest(name, color));
     }
 
+    public static ExtractableResponse<Response> 지하철_노선_삭제(long lineId) {
+        return RestAssuredTemplate.delete("/lines/" + lineId);
+    }
 }
