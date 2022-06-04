@@ -10,6 +10,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import nextstep.subway.exception.BothStationAlreadyExistsException;
+import nextstep.subway.exception.DistanceIsEqualOrGreaterException;
 import nextstep.subway.exception.ResourceNotFoundException;
 
 @Embeddable
@@ -19,6 +20,9 @@ public class Sections {
 
     public boolean addSection(final Section addableSection) {
         checkBothStationAlreadyExists(addableSection);
+        if (checkSectionIsBetween(addableSection)) {
+            checkDistanceIsEqualOrGreaterThan(addableSection);
+        }
         return sections.add(addableSection);
     }
 
@@ -41,6 +45,26 @@ public class Sections {
                 .flatMap(stations -> stations.stream())
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    private boolean checkSectionIsBetween(final Section addableSection) {
+        return findBetweenSection(addableSection).isPresent();
+    }
+
+    private Optional<Section> findBetweenSection(final Section addableSection) {
+        return sections.stream()
+                .filter(section ->
+                        section.getUpStation().equals(addableSection.getUpStation()) ||
+                                section.getDownStation().equals(addableSection.getDownStation()))
+                .findFirst();
+    }
+
+    private void checkDistanceIsEqualOrGreaterThan(final Section addableSection) {
+        final Section originalSection = findBetweenSection(addableSection).orElseThrow(
+                () -> new ResourceNotFoundException(Section.class));
+        if (originalSection.isDistanceEqualOrGreaterThan(addableSection)) {
+            throw new DistanceIsEqualOrGreaterException();
+        }
     }
 
     public List<Station> getSortedStations() {

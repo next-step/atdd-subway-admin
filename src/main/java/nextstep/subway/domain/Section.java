@@ -66,4 +66,11 @@ public class Section {
     public boolean isEqualToUpStation(final Station station) {
         return this.getUpStation().equals(station);
     }
+
+    public boolean isDistanceEqualOrGreaterThan(final Section section) {
+        if(this.getDistance() <= section.getDistance()) {
+            return true;
+        }
+        return false;
+    }
 }

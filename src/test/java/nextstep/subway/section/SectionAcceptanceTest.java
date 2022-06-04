@@ -1,8 +1,10 @@
 package nextstep.subway.section;
 
+import static nextstep.subway.helper.DomainCreationHelper.지하철구간_상행_기점_생성됨;
 import static nextstep.subway.helper.DomainCreationHelper.지하철구간_상행_종점_생성됨;
 import static nextstep.subway.helper.DomainCreationHelper.지하철구간_이미_둘다_등록된_노선_요청;
 import static nextstep.subway.helper.DomainCreationHelper.지하철구간_하행_기점_생성됨;
+import static nextstep.subway.helper.DomainCreationHelper.지하철구간_하행_종점_생성됨;
 import static nextstep.subway.helper.DomainCreationHelper.지하철노선_생성됨;
 import static nextstep.subway.helper.DomainCreationHelper.지하철역_생성됨;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,6 +64,18 @@ public class SectionAcceptanceTest extends DoBeforeEachAbstract {
 
         // then
         assertThat(결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.")
+    @Test
+    void addSectionBetween() {
+        // when
+        // 지하철_노선에_지하철_구간_등록_요청
+        final ExtractableResponse<Response> 상행_기점 = 지하철구간_상행_기점_생성됨(lineId, lineUpStationId, "용산역", 10L);
+
+        // then
+        assertThat(상행_기점.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> 노선_조회(Long lineId) {
