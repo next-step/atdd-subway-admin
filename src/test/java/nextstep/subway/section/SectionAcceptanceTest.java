@@ -154,7 +154,7 @@ public class SectionAcceptanceTest {
 
         ExtractableResponse<Response> extract = 지하철_구간_삭제(일호선.getId(), 소요산역.getId());
 
-        assertThat(extract.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(extract.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
 }

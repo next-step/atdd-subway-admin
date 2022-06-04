@@ -11,7 +11,7 @@ import java.util.List;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public Sections() {
@@ -48,5 +48,12 @@ public class Sections {
         return sections.stream()
                 .mapToInt(Section::distanceValue)
                 .sum();
+    }
+
+    public void remove(Station station) {
+        sections.stream()
+                .filter(section1 -> section1.getUpStation().equals(station))
+                .findFirst()
+                .ifPresent(section -> sections.remove(section));
     }
 }
