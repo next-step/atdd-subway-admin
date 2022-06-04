@@ -5,12 +5,15 @@ import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.common.RestAssuredTemplate;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+
+import java.util.List;
 
 import static nextstep.subway.station.StationAcceptanceTest.지하철역_생성됨;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,8 +22,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineAcceptanceTest extends BaseAcceptanceTest {
 
     @BeforeEach
-    void setUp(@Autowired LineRepository lineRepository) {
+    void setUp(@Autowired LineRepository lineRepository,
+               @Autowired StationRepository stationRepository) {
         lineRepository.deleteAll();
+        stationRepository.deleteAll();
     }
 
     /**
@@ -29,12 +34,22 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
      */
     @Test
     void 지하철노선_생성() {
+        // given
+        String name = "신분당선";
+        Long 지하철역_id = 지하철역_생성됨("지하철역").body().jsonPath().getLong("id");
+        Long 새로운지하철역_id = 지하철역_생성됨("새로운지하철역").body().jsonPath().getLong("id");
+
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성됨("신분당선", "bg-red-600", 10);
+        ExtractableResponse<Response> response = 지하철_노선_생성됨(name, "bg-red-600", 10, 지하철역_id, 새로운지하철역_id);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        List<String> lineNames = 지하철_노선_전체_조회();
+        assertThat(lineNames).containsAnyOf(name);
     }
+
 
     /**
      * Given 2개의 지하철 노선을 생성하고
@@ -43,7 +58,19 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
      */
     @Test
     void 지하철노선_목록_조회() {
+        // given
+        Long 지하철역_id = 지하철역_생성됨("지하철역").body().jsonPath().getLong("id");
+        Long 새로운지하철역_id = 지하철역_생성됨("새로운지하철역").body().jsonPath().getLong("id");
+        Long 또다른지하철역_id = 지하철역_생성됨("또다른지하철역").body().jsonPath().getLong("id");
 
+        지하철_노선_생성됨("신분당선", "bg-red-600", 10, 지하철역_id, 새로운지하철역_id);
+        지하철_노선_생성됨("분당선", "bg-green-600", 10, 지하철역_id, 또다른지하철역_id);
+
+        // when
+        List<String> lineNames = 지하철_노선_전체_조회();
+
+        // then
+        assertThat(lineNames).containsExactly("신분당선", "분당선");
     }
 
     /**
@@ -53,11 +80,11 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
      */
     @Test
     void 지하철노선_조회() {
-        
+
     }
 
     /**
-     * Given 지하철 노선을 생성하고
+     * Given 지하철 노선을 생성하고
      * When 생성한 지하철 노선을 수정하면
      * Then 해당 지하철 노선 정보는 수정된다
      */
@@ -67,7 +94,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선을 생성하고
+     * Given 지하철 노선을 생성하고
      * When 생성한 지하철 노선을 삭제하면
      * Then 해당 지하철 노선 정보는 삭제된다
      */
@@ -76,11 +103,12 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성됨(String name, String color, Integer distance) {
-        Long upStationId = 지하철역_생성됨("지하철역").body().jsonPath().getLong("id");
-        Long downStationId = 지하철역_생성됨("새로운지하철역").body().jsonPath().getLong("id");
-
+    public static ExtractableResponse<Response> 지하철_노선_생성됨(String name, String color, Integer distance, Long upStationId, Long downStationId) {
         return RestAssuredTemplate.post(new LineRequest(name, color, upStationId, downStationId, distance), "/lines");
+    }
+
+    public static List<String> 지하철_노선_전체_조회() {
+        return RestAssuredTemplate.get("/lines").body().jsonPath().getList("name", String.class);
     }
 
 }
