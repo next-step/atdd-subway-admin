@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+    private static final int MIN_SECTIONS_SIZE = 1;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -51,6 +53,7 @@ public class Sections {
     }
 
     public void remove(Station station) {
+        removeValidate(station);
         Optional<Section> upSectionOptional = upSectionOptional(station);
         Optional<Section> downSectionOptional = downSectionOptional(station);
 
@@ -60,6 +63,15 @@ public class Sections {
 
         removeUpStation(station);
         removeDownStation(station);
+    }
+
+    private void removeValidate(Station station) {
+        if (!isContain(station)) {
+            throw new IllegalArgumentException("노선에 없는 역입니다.");
+        }
+        if (getSections().size() <= MIN_SECTIONS_SIZE) {
+            throw new IllegalArgumentException("구간이 1개이면 역을 제거할 수 없습니다.");
+        }
     }
 
     private Optional<Section> downSectionOptional(Station station) {
