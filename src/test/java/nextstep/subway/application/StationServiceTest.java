@@ -78,14 +78,14 @@ class StationServiceTest {
     }
 
     @Test
-    void 아이디로_지하철역_1개를_조회할_수_있어야_한다() {
+    void 아이디로_지하철역_엔티티_1개를_조회할_수_있어야_한다() {
         // given
         final Long givenStationId = givenStation.getId();
 
         // when
-        final StationResponse stationResponse = stationService.findStationById(givenStationId);
+        final Station station = stationService.getStationOrElseThrow(givenStationId);
 
         // then
-        assertThat(stationResponse).usingRecursiveComparison().isEqualTo(givenStation);
+        assertThat(station).isEqualTo(station);
     }
 }

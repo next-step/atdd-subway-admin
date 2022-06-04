@@ -32,16 +32,12 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public StationResponse findStationById(final Long id) {
-        return StationResponse.of(getStationOrElseThrow(id));
-    }
-
     @Transactional
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
     }
 
-    private Station getStationOrElseThrow(final Long id) {
+    Station getStationOrElseThrow(final Long id) {
         return stationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("지하철역 아이디가 유효하지 않습니다: %d}", id)));
     }
