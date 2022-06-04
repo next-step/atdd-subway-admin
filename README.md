@@ -84,5 +84,5 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ### to-do list
 
-- [ ] 인수 조건 검증하는 인수 테스트 작성
+- [X] 인수 조건 검증하는 인수 테스트 작성
 - [ ] 인수 테스트 충족하는 기능 구현
