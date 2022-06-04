@@ -190,4 +190,48 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(stations).containsExactly("상행역", "하행역")
         );
     }
+
+    /**
+     * Given 기본노선(상행역-중간역-하행역)을 생성하고
+     * When [상행역]구간을 제거하고 노선을 조회하면
+     * Then 중간역,하행역이 조회된다
+     */
+    @DisplayName("종점이 제거될 경우 다음으로 오던 역이 종점이 된다. (상행역 제거)")
+    @Test
+    void deleteFirstSection(){
+
+    }
+
+    /**
+     * Given 기본노선(상행역-중간역-하행역)을 생성하고
+     * When [하행역]구간을 제거하고 노선을 조회하면
+     * Then 상행역, 중간역이 조회된다
+     */
+    @DisplayName("종점이 제거될 경우 이전 역이 종점이 된다. (하행역 제거)")
+    @Test
+    void deleteLastSection(){
+
+    }
+
+    /**
+     * Given 기본노선(상행역-중간역-하행역)을 생성하고
+     * When [중간역]구간을 제거하고 노선을 조회하면
+     * Then 상행역,하행역이 조회된다
+     */
+    @DisplayName("중간역이 제거될 경우 재배치를 한다.")
+    @Test
+    void deleteMiddleSection(){
+
+    }
+
+
+    /**
+     * Given 기본노선(상행역-하행역)을 생성하고
+     * When [상행역]구간을 제거하면
+     * Then 예외가 발생한다
+     */
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 수 없다.")
+    @Test
+    void exception_deleteOne(){
+    }
 }
