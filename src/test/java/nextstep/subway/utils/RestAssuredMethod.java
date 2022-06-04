@@ -20,6 +20,15 @@ public class RestAssuredMethod {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> post(String path, Object params, Map<String, ?> pathParams) {
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(path, pathParams)
+                .then().log().all()
+                .extract();
+    }
+
     public static ExtractableResponse<Response> get(String path, Map<String, ?> pathParams) {
         return RestAssured.given().log().all()
                 .when().get(path, pathParams)

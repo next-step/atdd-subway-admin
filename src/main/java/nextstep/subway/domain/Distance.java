@@ -24,6 +24,14 @@ public class Distance {
         return new Distance(distance);
     }
 
+    public Distance add(Distance target) {
+        return Distance.from(distance + target.distance);
+    }
+
+    public Distance minus(Distance target) {
+        return Distance.from(distance - target.distance);
+    }
+
     private void validate(int distance) {
         if (distance <= MIN_DISTANCE) {
             throw new IllegalArgumentException(DISTANCE_UNDER_ZERO.toString());
