@@ -48,7 +48,7 @@ public class LineStationAcceptanceTest {
 
     @Test
     @DisplayName("지하철 구간을 등록한다.")
-    void testMethod() {
+    void 지하철구간_등록_테스트() {
         // given
         upStation = stationRepository.save(new Station("이매역"));
         downStation = stationRepository.save(new Station("서현역"));

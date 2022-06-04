@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Station extends BaseEntity {
@@ -25,6 +26,10 @@ public class Station extends BaseEntity {
         this.name = name;
     }
 
+    public boolean isSame(Station upStation, Station newStation) {
+        return upStation.equals(newStation);
+    }
+
     public Long getId() {
         return id;
     }
@@ -39,5 +44,18 @@ public class Station extends BaseEntity {
 
     public List<LineStation> getDownLineStations() {
         return downLineStations;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Station station = (Station) o;
+        return Objects.equals(name, station.name) && Objects.equals(upLineStations, station.upLineStations) && Objects.equals(downLineStations, station.downLineStations);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, upLineStations, downLineStations);
     }
 }
