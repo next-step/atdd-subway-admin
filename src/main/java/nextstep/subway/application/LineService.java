@@ -47,8 +47,7 @@ public class LineService {
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line persistLine = lineRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("지하철 노선 정보가 존재하지 않습니다."));
+        Line persistLine = findLineById(id);
         persistLine.update(lineRequest);
     }
 
