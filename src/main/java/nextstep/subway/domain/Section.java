@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import java.util.Objects;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import org.hibernate.Hibernate;
 
 @Entity
 public class Section {
@@ -54,5 +56,25 @@ public class Section {
 
     public void setUpStation(Station upStation) {
         this.upStation = upStation;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+
+        Section section = (Section) o;
+        return Objects.equals(id, section.id) && Objects.equals(distance, section.distance)
+                && Objects.equals(upStation, section.upStation) && Objects.equals(downStation,
+                section.downStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, distance, upStation, downStation);
     }
 }
