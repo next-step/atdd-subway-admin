@@ -70,7 +70,7 @@ class SectionsTest {
     }
 
     @Test
-    void 상행구간_구간삭제() {
+    void 상행역_삭제() {
 //        given
         Station 상행연장역 = new Station("상행연장역");
         Section 상행_연장_구간 = Section.of(상행연장역, upStation, 5);
@@ -86,7 +86,7 @@ class SectionsTest {
     }
 
     @Test
-    void 하행구간_구간삭제() {
+    void 하행역_삭제() {
 //        given
         Station 하행연장역 = new Station("하행연장역");
         Section 하행_연장_구간 = Section.of(downStation, 하행연장역, 5);
@@ -94,6 +94,22 @@ class SectionsTest {
 
 //        when
         sections.remove(하행연장역);
+
+//        then
+        List<Section> sections = this.sections.getSections();
+        assertThat(sections).hasSize(1);
+        assertThat(this.sections.totalDistanceLength()).isEqualTo(상행_하행구간_거리);
+    }
+
+    @Test
+    void 중간역_삭제() {
+//        given
+        Station 중간역 = new Station("중간역");
+        Section 상행_중간_구간 = Section.of(upStation, 중간역, 5);
+        sections.add(상행_중간_구간);
+
+//        when
+        sections.remove(중간역);
 
 //        then
         List<Section> sections = this.sections.getSections();
