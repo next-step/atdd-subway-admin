@@ -50,6 +50,13 @@ public class Section {
         this.distance = new Distance(distance);
     }
 
+    private Section(Station upStation, Station downStation, Distance distance, Line line) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+        this.line = line;
+    }
+
     public List<Station> getLineStations() {
         return Arrays.asList(upStation, downStation);
     }
@@ -66,38 +73,39 @@ public class Section {
         this.line = line;
     }
 
-    public Distance getDistance() {
-        return distance;
-    }
-
     public void changeStationInfo(Section section) {
-        if (upStation.equals(section.getUpStation())) {
-            changeUpStation(section.getDownStation());
-            changeDistance(section.getDistance());
+        if (upStation.equals(section.upStation)) {
+            this.upStation = section.downStation;
+            this.distance.subtractDistance(section.distance);
         }
-        if (downStation.equals(section.getDownStation())) {
-            changeDownStation(section.getUpStation());
-            changeDistance(section.getDistance());
+        if (downStation.equals(section.downStation)) {
+            this.downStation = section.upStation;
+            this.distance.subtractDistance(section.distance);
         }
     }
 
-    private void changeUpStation(Station downStation) {
-        this.upStation = downStation;
+    public Section combineSections(Section section) {
+        return new Section(this.upStation, section.downStation, this.distance.addDistance(section.distance), this.line);
     }
 
-    private void changeDownStation(Station upStation) {
-        this.downStation = upStation;
+    public boolean hasAnyStations(Section section) {
+        return hasStations(section.upStation) || hasStations(section.downStation);
     }
 
-    private void changeDistance(Distance newDistance) {
-        validDistanceCheck(newDistance);
-        this.distance = new Distance(this.distance.getDistance() - newDistance.getDistance());
+    public boolean hasAllStations(Section section) {
+        return hasStations(section.upStation) && hasStations(section.downStation);
     }
 
-    private void validDistanceCheck(Distance newDistance) {
-        if (!distance.isValidDistance(newDistance.getDistance())) {
-            throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같으면 추가할 수 없음");
-        }
+    public boolean hasStations(Station station) {
+        return hasUpStation(station) || hasDownStation(station);
+    }
+
+    public boolean hasUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean hasDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     @Override

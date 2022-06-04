@@ -55,7 +55,7 @@ public class Line extends BaseEntity {
 
     public List<Station> getLineStations() {
         return sections.getSections().stream()
-                .flatMap(s -> s.getLineStations().stream())
+                .flatMap(section -> section.getLineStations().stream())
                 .distinct()
                 .collect(Collectors.toList());
     }
@@ -63,6 +63,10 @@ public class Line extends BaseEntity {
     public void addSection(Section section) {
         sections.addSection(section);
         section.setLine(this);
+    }
+
+    public void deleteStation(Station deleteStation) {
+        sections.deleteSection(deleteStation);
     }
 
     public void changeLineInfo(String name, String color) {
