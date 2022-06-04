@@ -67,6 +67,33 @@ public class LineAcceptanceTest {
         assertThat(노선_목록_조회_결과.jsonPath().getList("name")).hasSize(2);
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("지하철노선 조회")
+    @Test
+    void showLine() {
+        // Given
+        ExtractableResponse 신분당선_생성_응답 = 신분당선_생성();
+
+        // When
+        Integer 신분당선_ID = 신분당선_생성_응답.jsonPath().get("id");
+        ExtractableResponse<Response> 노선_조회_결과 = 노선_조회(Long.valueOf(신분당선_ID));
+
+        // Then
+        assertThat(노선_조회_결과.jsonPath().getString("name")).isEqualTo("신분당선");
+    }
+
+    private ExtractableResponse<Response> 노선_조회(Long id) {
+        return RestAssured
+                .given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/line/" + id)
+                .then().log().all().extract();
+    }
+
     protected static ExtractableResponse<Response> 노선_목록_조회() {
         return RestAssured
                 .given().log().all()

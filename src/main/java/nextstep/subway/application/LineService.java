@@ -8,6 +8,7 @@ import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,5 +36,10 @@ public class LineService {
         return lines.stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public LineResponse findLine(Long id) {
+        Optional<Line> result = lineRepository.findById(id);
+        return result.map(LineResponse::of).orElseGet(LineResponse::new);
     }
 }
