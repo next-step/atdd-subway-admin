@@ -10,17 +10,30 @@ import io.restassured.mapper.ObjectMapperType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BaseSubwayTest;
+import nextstep.subway.domain.LineRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.UpdateLineRequest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 
 
 @DisplayName("지하철 노선 관련 기능")
+@DirtiesContext
 class LineAcceptanceTest extends BaseSubwayTest {
 
     private static final String LINES_PATH = "/lines";
+
+    @Autowired
+    LineRepository lineRepository;
+
+    @AfterEach
+    void tearDown() {
+        lineRepository.deleteAll();
+    }
 
     /**
      * When 지하철 노선을 생성하면
@@ -133,7 +146,7 @@ class LineAcceptanceTest extends BaseSubwayTest {
         final ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .delete(LINES_PATH + "/{id}", line.body().jsonPath().getInt("id"))
+                .delete(LINES_PATH + "/{id}", line.body().jsonPath().getLong("id"))
                 .then().log().all()
                 .extract();
 
