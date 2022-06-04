@@ -2,7 +2,7 @@ package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,12 +30,23 @@ public class LineResponse {
                 .map(LineStationResponse::of)
                 .collect(Collectors.toList());
 
-        List<StationResponse> stations = new ArrayList<>();
-        lineStations.forEach(lineStation -> {
-            stations.addAll(lineStation.getStations());
-        });
+        List<StationResponse> stations = getStationsInLine(lineStations);
 
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), lineStations, stations.stream().distinct().collect(Collectors.toList()));
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), lineStations, stations);
+    }
+
+    private static List<StationResponse> getStationsInLine(List<LineStationResponse> lineStations) {
+        List<StationResponse> stations = lineStations.stream()
+                .map(LineStationResponse::getStations)
+                .collect(Collectors.toList())
+                .stream()
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+
+        return stations.stream()
+                .distinct()
+                .sorted(Comparator.comparing(StationResponse::getCreatedDate))
+                .collect(Collectors.toList());
     }
 
     public Long getId() {

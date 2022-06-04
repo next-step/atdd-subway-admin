@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.ConflictException;
+import nextstep.subway.exception.BadRequestException;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -44,29 +44,25 @@ public class LineStation {
         this.line = line;
     }
 
-    public boolean isSame(LineStation newLineStation) {
-        return this.equals(newLineStation);
-    }
-
     public void updateUpStation(LineStation lineStation) {
-        updateDistance(distance - lineStation.getDistance());
+        updateDistance(lineStation.getDistance());
         upStation = lineStation.getDownStation();
     }
 
     public void downUpStation(LineStation lineStation) {
-        updateDistance(distance - lineStation.getDistance());
+        updateDistance(lineStation.getDistance());
         downStation = lineStation.getUpStation();
     }
 
-    private void validateDistance(Long distance) {
-        if (distance >= this.distance) {
-            throw new ConflictException("새로운 구간의 길이가 기존 구간의 길이보다 작아야합니다.");
+    private void validateDistance(Long newDistance) {
+        if (newDistance >= this.distance) {
+            throw new BadRequestException("새로운 구간의 길이가 기존 구간의 길이보다 작아야합니다.");
         }
     }
 
-    private void updateDistance(Long distance) {
-        validateDistance(distance);
-        this.distance = distance;
+    private void updateDistance(Long newDistance) {
+        validateDistance(newDistance);
+        this.distance = this.distance - newDistance;
     }
 
     public Long getId() {

@@ -75,14 +75,12 @@ public class LineStationAcceptanceTest {
     @Test
     @DisplayName("지하철 구간에 중간역 등록")
     void 지하철구간_중간역_등록() {
-        //TODO: distance 검증 체크
-
         // given
         LineStationRequest AC_지하철구간_등록_요청 = new LineStationRequest(A역.getId(), C역.getId(), 30L);
         LineStationApi.지하철구간_생성(line.getId(), AC_지하철구간_등록_요청);
 
         // when
-        LineStationRequest AB_지하철구간_등록_요청 = new LineStationRequest(A역.getId(), B역.getId(), 10L);
+        LineStationRequest AB_지하철구간_등록_요청 = new LineStationRequest(A역.getId(), B역.getId(), 20L);
         LineStationApi.지하철구간_생성(line.getId(), AB_지하철구간_등록_요청);
 
         // then

@@ -3,16 +3,14 @@ package nextstep.subway.domain;
 import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.exception.ConflictException;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Embeddable
 public class LineStations {
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OrderBy("id ASC")
     private List<LineStation> lineStations;
 
     protected LineStations() {
@@ -30,7 +28,7 @@ public class LineStations {
             updateUpStation(newLineStation, lineStation);
             updateDownStation(newLineStation, lineStation);
         });
-        
+
         lineStations.add(newLineStation);
     }
 
