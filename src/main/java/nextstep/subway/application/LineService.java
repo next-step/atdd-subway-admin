@@ -56,8 +56,7 @@ public class LineService {
 
     @Transactional
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("지하철노선이 없습니다."));
+        Line line = getLine(id);
         line.update(lineUpdateRequest.toLine());
     }
 
@@ -68,11 +67,25 @@ public class LineService {
 
     @Transactional
     public Line addSection(Long id, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("지하철노선이 없습니다."));
-        Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
-        Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
+        Line line = getLine(id);
+        Station upStation = getStation(sectionRequest.getUpStationId());
+        Station downStation = getStation(sectionRequest.getDownStationId());
         line.addSection(sectionRequest.createSection(upStation, downStation));
         return line;
+    }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = getLine(lineId);
+        Station station = getStation(stationId);
+        line.removeSectionByStation(station);
+    }
+
+    private Line getLine(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("지하철노선이 없습니다."));
+    }
+
+    private Station getStation(Long id) {
+        return stationService.findStationById(id);
     }
 }
