@@ -19,6 +19,10 @@ public class SectionResponses {
         this.list = list;
     }
 
+    public void setList(List<SectionResponse> list) {
+        this.list = list;
+    }
+
     public List<SectionResponse> getList() {
         return Collections.unmodifiableList(this.list);
     }
@@ -31,5 +35,12 @@ public class SectionResponses {
                 .map(SectionResponse::of)
                 .collect(Collectors.toList());
         return new SectionResponses(responseList);
+    }
+
+    @Override
+    public String toString() {
+        return "SectionResponses{" +
+                "list=" + list +
+                '}';
     }
 }

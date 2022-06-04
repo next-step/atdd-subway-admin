@@ -10,6 +10,16 @@ public class SectionResponse {
     private StationResponse downStation;
     private Integer distance;
 
+    public SectionResponse() {
+    }
+
+    public SectionResponse(Long id, Station upStation, Station downStation, int distance) {
+        this.id = id;
+        this.upStation = StationResponse.of(upStation);
+        this.downStation = StationResponse.of(downStation);
+        this.distance = distance;
+    }
+
     public SectionResponse(Long id, Station upStation, Station downStation, Distance distance) {
         this.id = id;
         this.upStation = StationResponse.of(upStation);
@@ -35,5 +45,15 @@ public class SectionResponse {
 
     public static SectionResponse of(Section section) {
         return new SectionResponse(section.getId(), section.getUpStation(), section.getDownStation(), section.getDistance());
+    }
+
+    @Override
+    public String toString() {
+        return "SectionResponse{" +
+                "id=" + id +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
     }
 }
