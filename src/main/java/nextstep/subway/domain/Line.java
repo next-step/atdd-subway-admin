@@ -25,23 +25,10 @@ public class Line extends BaseEntity {
     @Embedded
     private Sections sections = new Sections();
 
-    @Embedded
-    private Distance distance;
-
     protected Line() {
 
     }
 
-    public Line(String name, String color, Distance distance) {
-        valid(name, color);
-        this.name = name;
-        this.color = color;
-        this.distance = distance;
-    }
-
-    public Line(String name, String color, int distance) {
-        this(name, color, Distance.of(distance));
-    }
 
     private Line(String name, String color, Station upStation, Station downStation, Distance distance) {
         valid(name, color);
@@ -83,10 +70,6 @@ public class Line extends BaseEntity {
 
     public String getName() {
         return name;
-    }
-
-    public int getDistance() {
-        return distance.value();
     }
 
     public String getColor() {
