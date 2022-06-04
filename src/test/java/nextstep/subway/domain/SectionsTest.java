@@ -85,4 +85,20 @@ class SectionsTest {
         assertThat(this.sections.totalDistanceLength()).isEqualTo(상행_하행구간_거리);
     }
 
+    @Test
+    void 하행구간_구간삭제() {
+//        given
+        Station 하행연장역 = new Station("하행연장역");
+        Section 하행_연장_구간 = Section.of(downStation, 하행연장역, 5);
+        sections.add(하행_연장_구간);
+
+//        when
+        sections.remove(하행연장역);
+
+//        then
+        List<Section> sections = this.sections.getSections();
+        assertThat(sections).hasSize(1);
+        assertThat(this.sections.totalDistanceLength()).isEqualTo(상행_하행구간_거리);
+    }
+
 }
