@@ -57,20 +57,25 @@ public class Sections {
 
     public void remove(Station station) {
         Section downMatchedSection = findSectionFromDownStation(station);
-        Section upMatchedSection = findSectionFromUpStation(station);
+        Optional<Section> upMatchedSection = findSectionFromUpStation(station);
 
         if (downMatchedSection.isFirstSection()) {
-            downMatchedSection.setDownStation(upMatchedSection.getDownStation());
+            downMatchedSection.setDownStation(upMatchedSection.get().getDownStation());
+            return;
+        }
+
+        if (!upMatchedSection.isPresent()) {
+            sections.remove(downMatchedSection);
             return;
         }
 
         sections.remove(downMatchedSection);
-        sections.remove(upMatchedSection);
+        sections.remove(upMatchedSection.get());
 
         add(new Section(
                 downMatchedSection.getUpStation(),
-                upMatchedSection.getDownStation(),
-                downMatchedSection.getDistance().add(upMatchedSection.getDistance()))
+                upMatchedSection.get().getDownStation(),
+                downMatchedSection.getDistance().add(upMatchedSection.get().getDistance()))
         );
     }
 
@@ -84,23 +89,28 @@ public class Sections {
             preSection = nextStation.get();
             nextStation = getNextStation(preSection);
         }
+
+        if (isMatchedDownStation(downStation, preSection)) {
+            return preSection;
+        }
         throw new IllegalArgumentException(NOT_EXISTED_STATION.toString());
     }
 
-    private Section findSectionFromUpStation(Station upStation) {
+    private Optional<Section> findSectionFromUpStation(Station upStation) {
         Section preSection = getFirstSection();
         Optional<Section> nextStation = getNextStation(preSection);
         while (isLastSection(nextStation)) {
             if (isMatchedUpStation(upStation, preSection)) {
-                return preSection;
+                return Optional.of(preSection);
             }
             preSection = nextStation.get();
             nextStation = getNextStation(preSection);
         }
         if (isMatchedUpStation(upStation, preSection)) {
-            return preSection;
+            return Optional.of(preSection);
         }
-        throw new IllegalArgumentException(NOT_EXISTED_STATION.toString());
+
+        return Optional.ofNullable(null);
     }
 
     private Section findSection(Station upStation, Station downStation) {
