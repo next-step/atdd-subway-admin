@@ -9,10 +9,7 @@ import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,12 +40,11 @@ public class LineService {
 
     public List<LineResponse> getLines() {
         List<LineResponse> lines = new LinkedList<>();
-        List<Station> stations = stationRepository.findAllByLineIdIsNotNull();
+        Map<Long, List<Station>> stations = stationRepository.findAllByLineIdIsNotNull()
+                                                             .stream()
+                                                             .collect(Collectors.groupingBy(Station::getLineId));
         for (Line line : lineRepository.findAll()) {
-            lines.add(LineResponse.of(line, stations.stream()
-                                                    .filter(station -> station.getLineId() != null
-                                                            && station.getLineId().equals(line.getId()))
-                                                    .collect(Collectors.toList())));
+            lines.add(LineResponse.of(line, stations.get(line.getId())));
         }
         return lines;
     }
