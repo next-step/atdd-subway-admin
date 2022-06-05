@@ -1,8 +1,8 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineStation;
 import nextstep.subway.domain.LineStationRepository;
+import nextstep.subway.domain.LineStations;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.CreateLineStationRequest;
 import org.springframework.stereotype.Service;
@@ -20,19 +20,16 @@ public class LineStationService {
     }
 
     @Transactional
-    public LineStation saveLineStation(CreateLineStationRequest request, Line line) {
+    public LineStation saveLineStation(CreateLineStationRequest request) {
         Station upStation = stationService.getOrElseThrow(request.getUpStationId());
         Station downStation = stationService.getOrElseThrow(request.getDownStationId());
 
-        LineStation lineStation = lineStationRepository.save(new LineStation(request.getDistance(), upStation, downStation));
-
-        line.addLineStation(lineStation);
-        return lineStation;
+        return lineStationRepository.save(new LineStation(request.getDistance(), upStation, downStation));
     }
 
     @Transactional
-    public void deleteLineStationByStationId(Line line, Long stationId) {
+    public void deleteLineStationByStationId(LineStations lineStations, Long stationId) {
         Station station = stationService.getOrElseThrow(stationId);
-        line.deleteLineStation(station);
+        lineStations.delete(station);
     }
 }
