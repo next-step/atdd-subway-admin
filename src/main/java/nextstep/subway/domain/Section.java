@@ -36,11 +36,14 @@ public class Section {
     }
 
     public Section updatable(final Section section) {
-        if (isSameUpStationAndDownStation(section) || isZero(section.getDistance())) {
-            throw new IllegalArgumentException("invalid parameter");
+        if (isSameUpStationAndDownStation(section)) {
+            throw new IllegalArgumentException("already registered this section");
         }
         if (section.isSameDownStation(this.upStation) || section.isSameUpStation(this.downStation)) {
             return section;
+        }
+        if (isZero(section.getDistance())) {
+            throw new IllegalArgumentException("invalid distance");
         }
         return insertMiddle(section);
     }
