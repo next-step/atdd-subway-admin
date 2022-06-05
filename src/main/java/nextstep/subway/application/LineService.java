@@ -3,10 +3,10 @@ package nextstep.subway.application;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.application.exception.NotFoundException;
-import nextstep.subway.domain.line.Line;
-import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.dto.line.LineRequest;
 import nextstep.subway.dto.line.LineResponse;
 import nextstep.subway.dto.line.PutLineRequest;
@@ -65,5 +65,11 @@ public class LineService {
     public void updateLine(Long id, PutLineRequest putLineRequest) {
         Line line = findLineById(id);
         line.update(putLineRequest.getName(), putLineRequest.getColor());
+    }
+
+    @Transactional
+    public void deleteLine(Long id) {
+        Line line = findLineById(id);
+        lineRepository.delete(line);
     }
 }

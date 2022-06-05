@@ -112,7 +112,7 @@ public class LineAcceptanceTest {
      */
     @Test
     @DisplayName("특정 지하철노선의 정보를 수정할 수 있다.")
-    void 지하철_노선_수정() {
+    void 지하철노선_수정() {
         Long upStationId = 지하철역_생성("지하철역");
         Long downStationId1 = 지하철역_생성("새로운지하철역");
 
@@ -128,6 +128,30 @@ public class LineAcceptanceTest {
         // Then
         String name = 지하철노선_조회(lineId).jsonPath().getString("name");
         assertThat(name).isEqualTo("다른분당선");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @Test
+    @DisplayName("특정 지하철노선을 삭제할 수 있다.")
+    void 지하철노선_삭제() {
+        Long upStationId = 지하철역_생성("지하철역");
+        Long downStationId1 = 지하철역_생성("새로운지하철역");
+
+        // Given
+        LineRequest shinBundang = new LineRequest("신분당선", "bg-red-600", upStationId, downStationId1, 10);
+        Long lineId = 지하철노선_생성(shinBundang).jsonPath().getLong("id");
+
+        // When
+        ExtractableResponse<Response> response = 지하철노선_삭제(lineId);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        // Then
+        response = 지하철노선_조회(lineId);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     private ExtractableResponse<Response> 지하철노선_생성(LineRequest request) {
@@ -149,6 +173,13 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all()
                 .body(request).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/lines/" + lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철노선_삭제(Long lineId) {
+        return RestAssured.given().log().all()
+                .when().delete("/lines/" + lineId)
                 .then().log().all()
                 .extract();
     }
