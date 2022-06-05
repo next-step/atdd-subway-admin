@@ -46,8 +46,8 @@ public class LineService {
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line persistLine = findLineById(id);
-        persistLine.update(lineRequest.getName(), lineRequest.getColor());
+        Line line = findLineById(id);
+        line.update(lineRequest.getName(), lineRequest.getColor());
     }
 
     public void deleteLine(Long id) {
