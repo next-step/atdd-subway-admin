@@ -22,11 +22,10 @@ public class LineStations {
         this.lineStations.addAll(lineStations);
     }
 
-    public LineStation addLineStation(final LineStation lineStation) {
-        LineStation validLineStation = validation(lineStation);
-        LineStation station = validLineStation.addLineStation(lineStation);
-        this.lineStations.add(station);
-        return station;
+    public void addLineStation(final LineStation lineStation) {
+        Optional<LineStation> isLineStation = validation(lineStation);
+        isLineStation.ifPresent(station -> station.updateLineStation(lineStation));
+        this.lineStations.add(lineStation);
     }
 
     public boolean isContains(final LineStation lineStation) {
@@ -50,13 +49,16 @@ public class LineStations {
         }
     }
 
-    private LineStation validation(final LineStation lineStation) {
+    private Optional<LineStation> validation(final LineStation lineStation) {
+        if (this.lineStations.isEmpty()) {
+            return Optional.empty();
+        }
         Optional<LineStation> isPreStation = findCurrentStation(lineStation.getPreStation());
         Optional<LineStation> isCurrentStation = findCurrentStation(lineStation.getCurrentStation());
         if (Objects.equals(isPreStation.isPresent(), isCurrentStation.isPresent())) {
             throw new IllegalArgumentException("invalid Argument");
         }
-        return isPreStation.orElseGet(isCurrentStation::get);
+        return this.lineStations.stream().filter(item -> item.isAddLineStation(lineStation)).findAny();
     }
 
     private LineStation findStartStation() {

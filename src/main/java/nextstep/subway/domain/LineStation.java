@@ -5,7 +5,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "LINESTATION")
-public class LineStation extends BaseEntity{
+public class LineStation extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,26 +63,38 @@ public class LineStation extends BaseEntity{
         return Objects.equals(this.getPreStation(), station);
     }
 
-    public LineStation addLineStation(final LineStation newLineStation) {
-        validationLine(newLineStation);
-        return addLineStation(newLineStation, this.section.updatable(newLineStation.section));
+    public boolean isAddLineStation(final LineStation newLineStation) {
+        return Objects.equals(this.getPreStation(), newLineStation.getPreStation()) ||
+                Objects.equals(this.getCurrentStation(), newLineStation.getCurrentStation());
     }
 
-    private LineStation addLineStation(LineStation newLineStation, Section updatedSection) {
-        if (newLineStation.isSameSection(updatedSection)) {
-            return newLineStation;
+    public LineStation updateLineStation(final LineStation newLineStation) {
+        validationLine(newLineStation);
+        Section changedSection = this.section.updatable(newLineStation.getSection());
+        if (!Objects.equals(changedSection, newLineStation.getSection())) {
+            middleUpdateLineStation(newLineStation.getSection());
         }
-        return new LineStation(this.line, updatedSection);
+        return newLineStation;
+    }
+
+    public Section getSection() {
+        return section;
+    }
+
+    private void middleUpdateLineStation(Section section) {
+        final Distance updatedDistance = this.getDistance().subtract(section.getDistance());
+        this.section = Objects.equals(this.section.getUpStation(), section.getUpStation()) ?
+                new Section(section.getDownStation(), this.section.getDownStation(), updatedDistance) :
+                new Section(this.section.getUpStation(), section.getUpStation(), updatedDistance);
     }
 
     private void validationLine(LineStation newLineStation) {
-        if (!Objects.equals(this.line, newLineStation.getLine())) {
-            throw new IllegalArgumentException("Line is difference");   
+        if (Objects.isNull(newLineStation)) {
+            throw new IllegalArgumentException("invalid Parameter");
         }
-    }
-
-    private boolean isSameSection(final Section updatedSection) {
-        return Objects.equals(this.section, updatedSection);
+        if (!Objects.equals(this.line, newLineStation.getLine())) {
+            throw new IllegalArgumentException("Line is difference");
+        }
     }
 
     @Override
