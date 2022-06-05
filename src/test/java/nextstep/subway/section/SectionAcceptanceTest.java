@@ -50,13 +50,29 @@ public class SectionAcceptanceTest {
 
 
     @Test
-    @DisplayName("역사이에 역을 신규로 등록하는 경우 테스트")
+    @DisplayName("역사이에 역을 신규로 상행으로 등록하는 경우 테스트")
     void newStationBetweenTheStations() {
         ExtractableResponse<Response> 지하철노선_생성_결과 = 지하철노선_생성("2호선", "bg-green-600", 교대역_ID, 역삼역_ID);
         assertThat(지하철노선_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         Long 지하철노선_ID = 지하철노선_생성_결과.jsonPath().getLong("id");
 
+        ExtractableResponse<Response> 지하철노선_구간_등록_결과 = 지하철노선_구간_등록(지하철노선_ID, 교대역_ID, 강남역_ID, 5);
+
+        assertAll(
+                () -> assertThat(지하철노선_구간_등록_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(지하철노선_구간_등록_결과.jsonPath().getList("stations.name", String.class))
+                        .containsExactly("교대역", "강남역", "역삼역")
+        );
+    }
+
+    @Test
+    @DisplayName("역사이에 역을 신규로 하행으로 등록하는 경우 테스트")
+    void newStationBetweenTheStations2() {
+        ExtractableResponse<Response> 지하철노선_생성_결과 = 지하철노선_생성("2호선", "bg-green-600", 교대역_ID, 역삼역_ID);
+        assertThat(지하철노선_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        Long 지하철노선_ID = 지하철노선_생성_결과.jsonPath().getLong("id");
         ExtractableResponse<Response> 지하철노선_구간_등록_결과 = 지하철노선_구간_등록(지하철노선_ID, 강남역_ID, 역삼역_ID, 5);
 
         assertAll(
