@@ -21,7 +21,7 @@ class SectionTest {
         Station 기존_구간_downStation = new Station(2L, "테스트2");
         Section 기존_구간 = Section.of(기존_구간_upStation, 기존_구간_downStation, 10L);
 
-        Station 추가될_구간_upStation = new Station(1L, "테스트2");
+        Station 추가될_구간_upStation = new Station(1L, "테스트");
         Station 추가될_구간_downStation = new Station(3L, "테스트3");
         Section 추가될_구간 = Section.of(추가될_구간_upStation, 추가될_구간_downStation, 7L);
 
@@ -48,7 +48,7 @@ class SectionTest {
         Section 기존_구간 = Section.of(기존_구간_upStation, 기존_구간_downStation, 10L);
 
         Station 추가될_구간_upStation = new Station(5L, "테스트2");
-        Station 추가될_구간_downStation = new Station(2L, "테스트3");
+        Station 추가될_구간_downStation = new Station(2L, "테스트2");
         Section 추가될_구간 = Section.of(추가될_구간_upStation, 추가될_구간_downStation, 7L);
 
         // when

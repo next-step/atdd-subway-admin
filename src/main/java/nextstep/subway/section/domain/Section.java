@@ -102,11 +102,11 @@ public class Section extends BaseEntity {
     }
 
     public boolean isEqualsUpStation(Station station) {
-        return upStation == station || upStation.equals(station);
+        return upStation.equals(station);
     }
 
     public boolean isEqualsDownStation(Station station) {
-        return downStation == station || downStation.equals(station);
+        return downStation.equals(station);
     }
 
     public Long getId() {
@@ -142,9 +142,7 @@ public class Section extends BaseEntity {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+
         Section section = (Section) o;
         return Objects.equals(getId(), section.getId());
     }
