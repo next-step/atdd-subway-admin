@@ -1,4 +1,4 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,6 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import nextstep.subway.global.exception.CannotDeleteException;
 import nextstep.subway.global.exception.NotFoundException;
-import nextstep.subway.station.domain.Station;
 import nextstep.subway.global.exception.CannotRegisterException;
 import nextstep.subway.global.exception.ExceptionType;
 

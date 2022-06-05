@@ -1,6 +1,6 @@
-package nextstep.subway.section.dto;
+package nextstep.subway.dto;
 
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.domain.Section;
 
 public class SectionResponse {
 

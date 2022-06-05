@@ -1,4 +1,4 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.domain;
 
 import java.util.Objects;
 import javax.persistence.Embedded;
@@ -13,8 +13,6 @@ import javax.persistence.Table;
 import nextstep.subway.global.domain.BaseEntity;
 import nextstep.subway.global.exception.CannotRegisterException;
 import nextstep.subway.global.exception.ExceptionType;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.station.domain.Station;
 
 @Entity
 @Table(name = "section")

@@ -1,8 +1,8 @@
-package nextstep.subway.station.ui;
+package nextstep.subway.ui;
 
-import nextstep.subway.station.application.StationService;
-import nextstep.subway.station.dto.StationRequest;
-import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.application.StationService;
+import nextstep.subway.dto.StationRequest;
+import nextstep.subway.dto.StationResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

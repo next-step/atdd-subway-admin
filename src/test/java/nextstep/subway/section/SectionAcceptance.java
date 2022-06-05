@@ -3,7 +3,7 @@ package nextstep.subway.section;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.http.MediaType;
 
 public class SectionAcceptance {

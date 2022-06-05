@@ -1,11 +1,11 @@
-package nextstep.subway.station.application;
+package nextstep.subway.application;
 
 import nextstep.subway.global.exception.BadRequestException;
 import nextstep.subway.global.exception.ExceptionType;
-import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
-import nextstep.subway.station.dto.StationRequest;
-import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
+import nextstep.subway.dto.StationRequest;
+import nextstep.subway.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

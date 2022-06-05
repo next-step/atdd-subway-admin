@@ -1,4 +1,4 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.domain;
 
 import java.util.List;
 import java.util.Objects;
@@ -11,9 +11,6 @@ import javax.persistence.Id;
 import nextstep.subway.global.domain.BaseEntity;
 import nextstep.subway.global.exception.BadRequestException;
 import nextstep.subway.global.exception.ExceptionType;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.Sections;
-import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line extends BaseEntity {
