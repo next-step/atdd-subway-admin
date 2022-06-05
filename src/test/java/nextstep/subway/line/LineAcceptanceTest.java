@@ -9,12 +9,15 @@ import io.restassured.RestAssured;
 import io.restassured.mapper.ObjectMapperType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
 import nextstep.subway.BaseSubwayTest;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.UpdateLineRequest;
 import org.assertj.core.api.AbstractIntegerAssert;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +34,14 @@ class LineAcceptanceTest extends BaseSubwayTest {
     @Autowired
     LineRepository lineRepository;
 
-    @AfterEach
-    void tearDown() {
-        lineRepository.deleteAll();
+    @Autowired
+    StationRepository stationRepository;
+
+    @BeforeEach
+    protected void setUp() {
+        super.setUp();
+        stationRepository.saveAll(Arrays.asList(new Station("지하철역"),
+                new Station("새로운지하철역"), new Station("또다른지하철역")));
     }
 
     /**
