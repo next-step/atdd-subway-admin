@@ -4,12 +4,16 @@ import static nextstep.subway.station.LineSteps.*;
 import static nextstep.subway.station.StationSteps.지하철_생성_요청;
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
@@ -85,7 +89,16 @@ public class LineAcceptanceTest extends AcceptanceTest{
 	@DisplayName("지하철노선을 수정한다.")
 	@Test
 	void updateLine() {
+		// given
+		ExtractableResponse<Response> creationResponse = 노선_생성_요청("신분당선", "bg-red-600", 1L, 2L, 10);
+		Map<String, String> params = new HashMap<>();
+		params.put("name", "다른분당선");
+		params.put("color", "bg-red-600");
 
+		// when
+		ExtractableResponse<Response> response = 노선_수정_요청(creationResponse, params);
+
+		요청_응답_확인(response, HttpStatus.OK);
 	}
 
 	/**

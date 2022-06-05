@@ -56,4 +56,9 @@ public class LineService {
 		Line line = lineRepository.findById(id).orElseThrow(IllegalAccessError::new);
 		return LineResponse.of(line);
 	}
+
+	public void updateLine(Long id, LineRequest lineRequest) {
+		Line line = lineRepository.findById(id).orElseThrow(IllegalAccessError::new);
+		line.updateLine(lineRequest.getName(), lineRequest.getColor());
+	}
 }

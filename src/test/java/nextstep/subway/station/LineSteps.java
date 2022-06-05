@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.http.MediaType;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
@@ -38,6 +39,17 @@ public class LineSteps {
 
 		return RestAssured.given().log().all()
 			.get(uri)
+			.then().log().all()
+			.extract();
+	}
+
+	public static ExtractableResponse<Response> 노선_수정_요청(ExtractableResponse<Response> response, Map<String, String> params) {
+		String uri = response.header("Location");
+
+		return RestAssured.given().log().all()
+			.body(params)
+			.contentType(ContentType.JSON)
+			.put(uri)
 			.then().log().all()
 			.extract();
 	}
