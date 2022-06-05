@@ -48,7 +48,7 @@ public class LineAcceptanceTest extends AcceptanceTest{
 			.then().log().all()
 			.extract();
 
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+		요청_응답_확인(response, HttpStatus.CREATED);
 	}
 
 	/**
