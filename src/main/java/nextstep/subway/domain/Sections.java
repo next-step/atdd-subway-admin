@@ -73,6 +73,13 @@ public class Sections {
 
     }
 
+    public void deleteSectionStation(Station station) {
+        if (this.sectionElement.size() == INIT_SELECTIONS_SIZE) {
+            throw new IllegalStateException(SECTION_STATION_NO_DELETE_RESON_ONE_SECTION.toMessage());
+        }
+    }
+
+
     private Section findUpSection(Station findStation) {
         return this.sectionElement.stream()
                 .filter(section -> section.getUpStation().equals(findStation))

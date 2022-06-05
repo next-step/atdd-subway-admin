@@ -89,4 +89,20 @@ public class SectionsTest {
         assertThat(lastDownStation).isEqualTo(createStation("신림역"));
 
     }
+
+    @Test
+    @DisplayName("구간이 하나이면 제거 할수 없다.")
+    void oneSectionIsNoDelete() {
+        final Station 주안역 = createStation("주안역");
+        final Station 동인천역 = createStation("동인천역");
+        final Section initSection = Section.builder()
+                .distance(10)
+                .upStation(주안역)
+                .downStation(동인천역)
+                .build();
+
+        Sections sections = new Sections(initSection);
+
+        assertThatIllegalStateException().isThrownBy(() -> sections.deleteSectionStation(주안역));
+    }
 }

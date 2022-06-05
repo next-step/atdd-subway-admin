@@ -259,9 +259,9 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     then 중간역이 제거 된다. 
     then 중간역이 연결되어 있던 구간이 합쳐지며 거리가 합산된다.
 
-  - [ ] 구간이 하나인 역은 제거 할수 없다.
+  - [X] 구간이 하나인 역은 제거 할수 없다.
     given 지하철 역을 생성하고 지하철 노선을 추가한다.
-    when 구간역이 제거하면
+    when 구간이 하나인역을 제거하면
     then 제거되지 않는다.
 
   - [ ] 존재하지 않은 역을 제거한다.

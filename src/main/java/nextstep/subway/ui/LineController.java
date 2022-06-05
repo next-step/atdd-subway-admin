@@ -52,17 +52,4 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("lines/{lineId}/sections")
-    public ResponseEntity<List<SectionResponse>> searchSection(@PathVariable Long lineId) {
-        return ResponseEntity.ok()
-                .body(lineService.findAllSection(lineId));
-    }
-
-    @PostMapping("{lineId}/selections")
-    public ResponseEntity addSection(@PathVariable Long lineId,
-                                     @RequestBody SectionRequest sectionRequest) {
-
-        lineService.saveSection(lineId, sectionRequest);
-        return ResponseEntity.created(URI.create("lines/"+ lineId + "/sections")).build();
-    }
 }

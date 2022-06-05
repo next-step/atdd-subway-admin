@@ -192,11 +192,15 @@ public class SectionAcceptanceTest {
 
 
     //given 지하철 역을 생성하고 지하철 노선을 추가한다.
-    //when 구간역이 제거하면
+    //when 구간이 하나인역을 제거하면
     //then 제거되지 않는다.
     @Test
     @DisplayName("구간이 하나인 역 제거")
     void oneSectionDelete() {
+        //when 구간이 하나인역을 제거하면
+        ExtractableResponse<Response> 노선의_역을_제거한다 = 노선의_역을_제거(호선_1.getId(), 동인천역.getId());
+        //then 제거되지 않는다.
+        assertThat(노선의_역을_제거한다.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
     }
 

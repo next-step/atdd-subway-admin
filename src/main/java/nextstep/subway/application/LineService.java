@@ -96,6 +96,12 @@ public class LineService {
         line.getSections().addSection(newSection);
     }
 
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = getLine(lineId);
+        final Station deleteStation = getValidStation(stationId, ErrorMessage.STATION_IS_NO_SEARCH);
+        line.getSections().deleteSectionStation(deleteStation);
+    }
+
 
     private Line getLine(Long lindId) {
         return lineRepository
