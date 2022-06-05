@@ -62,19 +62,14 @@ public class SectionTest {
 
     @DisplayName("상행역과 일치하고 역 사이에 새로운 역을 등록할 경우")
     @Test
-    void insertMiddleWhenMatchUpStation() {
-        Section updatedSection = 구간_강남_양재_7L.updatable(구간_강남_인천_4L);
-        assertThat(구간_강남_양재_7L).isEqualTo(new Section(인천역, 양재역, 3L));
-        assertThat(updatedSection).isEqualTo(구간_강남_인천_4L);
+    void updatableMiddleWhenMatchUpStation() {
+        assertThat(구간_강남_양재_7L.updatable(구간_강남_인천_4L)).isEqualTo(구간_강남_양재_7L);
     }
 
     @DisplayName("새로운역을 상행 종점으로 동록할 경우")
     @Test
-    void insertStartPointTest() {
-        Section newSection = new Section(인천역, 강남역, 2L);
-        Section updatedSection = 구간_강남_양재_7L.updatable(newSection);
-        assertThat(구간_강남_양재_7L).isEqualTo(new Section(강남역, 양재역, 7L));
-        assertThat(updatedSection).isEqualTo(newSection);
+    void updatableStartPointTest() {
+        assertThat(구간_강남_양재_7L.updatable(new Section(인천역, 강남역, 2L))).isEqualTo(new Section(인천역, 강남역, 2L));
     }
 
     @DisplayName("상행역과 하행역이 이미 노선에 등록되어 있다면 추가할수 없음")

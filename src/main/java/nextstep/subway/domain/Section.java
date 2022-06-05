@@ -49,7 +49,7 @@ public class Section {
         if (isZero(section.getDistance())) {
             throw new IllegalArgumentException("invalid distance");
         }
-        return insertMiddle(section);
+        return isMiddle(section);
     }
 
     private boolean isSameUpStationAndDownStation(final Section section) {
@@ -79,12 +79,12 @@ public class Section {
         return this;
     }
 
-    private Section insertMiddle(final Section destination) {
+    private Section isMiddle(final Section destination) {
         if (destination.isSameUpStation(upStation)) {
-            return updateUpStationWithDistanceBy(destination);
+            return this;
         }
         if (destination.isSameDownStation(downStation)) {
-            return updateDownStationWithDistanceBy(destination);
+            return this;
         }
         throw new IllegalArgumentException("no match station");
     }
