@@ -3,33 +3,31 @@ package nextstep.subway.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import nextstep.subway.dto.SectionResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class LineTest {
+    private Line line;
+    private Station finalUpStation;
+    private Station finalDownStation;
+    private Long lineDistance;
+
+    @BeforeEach
+    void setUp() {
+        line = new Line("신분당선", "bg-red-600");
+        finalUpStation = new Station("강남역");
+        finalDownStation = new Station("정자역");
+        lineDistance = 30L;
+    }
+
     @Test
     void 이름과_색상으로_노선이_생성되어야_한다() {
         // when
-        final Line line = givenLine();
+        final Line line = new Line("이름", "색상");
 
         // then
         assertThat(line).isNotNull();
         assertThat(line).isInstanceOf(Line.class);
-    }
-
-    @Test
-    void 노선에_구간이_없을_때_구간을_추가할_수_있어야_한다() {
-        // given
-        final Line line = givenLine();
-        final Station finalUpStation = new Station("강남역");
-        final Station finalDownStation = new Station("정자역");
-        final Long lineDistance = 30L;
-        final Section section = new Section(line, finalUpStation, finalDownStation, lineDistance);
-
-        // when
-        line.addSection(section);
-
-        // then
-        assertThat(line.getSections().sections()).contains(SectionResponse.of(section));
     }
 
 //    @Test
@@ -64,9 +62,8 @@ public class LineTest {
     @Test
     void 노선을_수정할_수_있어야_한다() {
         // given
-        final Line line = givenLine();
         final String newName = "수정된이름";
-        final String newColor = "bg-modified-600";
+        final String newColor = "수정된색상";
 
         // when
         line.update(newName, newColor);
@@ -76,7 +73,15 @@ public class LineTest {
         assertThat(line.getColor()).isEqualTo(newColor);
     }
 
-    private Line givenLine() {
-        return new Line("신분당선", "bg-red-600");
+    @Test
+    void 노선에_구간을_추가할_수_있어야_한다() {
+        // given
+        final Section section = new Section(line, finalUpStation, finalDownStation, lineDistance);
+
+        // when
+        line.addSection(section);
+
+        // then
+        assertThat(line.getSections().sections()).contains(SectionResponse.of(section));
     }
 }
