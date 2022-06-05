@@ -31,8 +31,8 @@ public class LineStationService {
     }
 
     @Transactional
-    public void deleteSectionByStationId(Line line, Long stationId) {
+    public void deleteLineStationByStationId(Line line, Long stationId) {
         Station station = stationService.getOrElseThrow(stationId);
-        line.deleteSection(station);
+        line.deleteLineStation(station);
     }
 }

@@ -58,7 +58,7 @@ public class LineService {
     }
 
     @Transactional
-    public void createStations(Long id, LineStationRequest lineStationRequest) {
+    public void createLineStation(Long id, LineStationRequest lineStationRequest) {
         Line line = getOrElseThrow(id);
         lineStationService.saveLineStation(lineStationRequest, line);
     }
@@ -70,8 +70,8 @@ public class LineService {
     }
 
     @Transactional
-    public void deleteSectionByStationId(Long id, Long stationId) {
+    public void deleteLineStationByStationId(Long id, Long stationId) {
         Line line = getOrElseThrow(id);
-        lineStationService.deleteSectionByStationId(line, stationId);
+        lineStationService.deleteLineStationByStationId(line, stationId);
     }
 }
