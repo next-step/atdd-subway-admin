@@ -322,7 +322,7 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * Given 노선 및 구간을 설정한다.
+     * Given 노선 및 구간을 설정한다. (구간 추가만)
      * When, then 노선 내 순서대로 구간을 조회한다.
      */
     @DisplayName("노선에 포함된 구간 리스트 조회")
@@ -338,6 +338,29 @@ public class SectionAcceptanceTest {
         // when, then
         List<SectionResponse> responses = 구간_목록_조회(line.getId());
         assertThat(responses).hasSize(5);
+    }
+
+    /**
+     * Given 노선 및 구간을 설정한다. (구간 추가 삭제)
+     * When, then 노선 내 순서대로 구간을 조회한다.
+     */
+    @DisplayName("노선에 포함된 구간 리스트 조회")
+    @Test
+    void showLineSections2() {
+        // given
+        LineResponse line = 응답_객체_생성(노선_등록("2호선", "초록", 15, A역.getId(), D역.getId()), LineResponse.class);
+        구간_추가(A역.getId(), B역.getId(), 4, line.getId());
+        구간_삭제(line.getId(), B역.getId());
+        구간_추가(C역.getId(), D역.getId(), 3, line.getId());
+        구간_삭제(line.getId(), C역.getId());
+        구간_추가(E역.getId(), A역.getId(), 15, line.getId());
+        구간_삭제(line.getId(), E역.getId());
+        구간_추가(D역.getId(), F역.getId(), 30, line.getId());
+        구간_삭제(line.getId(), F역.getId());
+
+        // when, then
+        List<SectionResponse> responses = 구간_목록_조회(line.getId());
+        assertThat(responses).hasSize(1);
     }
 
     public static ValidatableResponse 구간_추가(long upStationId, long downStationId, int distance, long lineId) {
