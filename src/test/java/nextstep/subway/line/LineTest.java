@@ -19,7 +19,7 @@ class LineTest {
 
     @DisplayName("노선 이름이 없으면 예외가 발생해야 한다")
     @Test
-    void line_exception_test() {
+    void line_name_exception_test() {
         // given
         upStation = new Station("테스트1");
         downStation = new Station("테스트2");
@@ -32,7 +32,7 @@ class LineTest {
 
     @DisplayName("노선 색상이 없으면 예외가 발생해야 한다")
     @Test
-    void line_exception_test2() {
+    void line_color_exception_test() {
         // given
         upStation = new Station("테스트1");
         downStation = new Station("테스트2");

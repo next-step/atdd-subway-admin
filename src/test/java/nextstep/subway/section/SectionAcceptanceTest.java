@@ -74,7 +74,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("새로운 역을 상행 종점에 등록한다.")
     @TestFactory
-    Stream<DynamicTest> createSection2() {
+    Stream<DynamicTest> createSection_upStream_endPoint() {
         return Stream.of(
             dynamicTest("새로운 역을 상행 종점으로 등록한다" , () -> {
                 SectionRequest sectionRequest = new SectionRequest(신도림역_id, 대림역_id, 10L);
@@ -94,7 +94,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("새로운 역을 하행 종점에 등록한다.")
     @TestFactory
-    Stream<DynamicTest> createSection3() {
+    Stream<DynamicTest> createSection_downStream_endPoint() {
         return Stream.of(
             dynamicTest("새로운 역을 하행 종점으로 등록한다" , () -> {
                 SectionRequest sectionRequest = new SectionRequest(강남역_id, 신림역_id, 10L);
@@ -135,14 +135,14 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("종점에 있는 역을 제거한다.")
     @TestFactory
-    Stream<DynamicTest> deleteSection2() {
+    Stream<DynamicTest> deleteSection_endPoint() {
         return Stream.of(
             dynamicTest("삭제를 위해 구간을 등록한다" , () -> {
                 SectionRequest sectionRequest = new SectionRequest(강남역_id, 신림역_id, 10L);
                 ExtractableResponse<Response> saveResponse = 지하철_구간_등록(노선_id, sectionRequest);
                 assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
             }),
-            dynamicTest("중간 구간인 신림역을 삭제하면 정상적으로 삭제되어야 한다", () -> {
+            dynamicTest("종점역인 신림역을 삭제하면 정상적으로 삭제되어야 한다", () -> {
                 ExtractableResponse<Response> response = 지하철_구간_제거(노선_id, 신림역_id);
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
             }),
@@ -156,7 +156,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선 등록시 거리가 크거나 같으면 예외가 발생한다 ")
     @TestFactory
-    Stream<DynamicTest> createSection_exception() {
+    Stream<DynamicTest> createSection_distance_exception() {
         return Stream.of(
             dynamicTest("기존 노선의 길이보다 거리가 긴 노선을 역 사이에 등록하면 "
                 + "예외가 발생한다" , () -> {
@@ -170,7 +170,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선 등록시 두 역이 이미 모두 존재하면 예외가 발생한다")
     @TestFactory
-    Stream<DynamicTest> createSection_exception2() {
+    Stream<DynamicTest> createSection_stations_exists_exception() {
         return Stream.of(
             dynamicTest("신규 노선 등록시 기존 노선에 모두 존재하는 역을 등록하면 "
                 + "예외가 발생한다" , () -> {
@@ -184,7 +184,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선 등록시 두 역이 모두 존재하지 않으면 예외가 발생")
     @TestFactory
-    Stream<DynamicTest> createSection_exception3() {
+    Stream<DynamicTest> createSection_stations_empty_exception() {
         return Stream.of(
             dynamicTest("신규 노선 등록시 기존 노선에 모두 존재하지 않는 역을 등록하면 "
                 + "예외가 발생한다" , () -> {
@@ -198,7 +198,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("구간 삭제시 노선이 하나 이하라면 예외가 발생 ")
     @TestFactory
-    Stream<DynamicTest> deleteSection_exception() {
+    Stream<DynamicTest> deleteSection_lessThan_exception() {
         return Stream.of(
             dynamicTest("구간 삭제시 노선이 하나 이하라면 예외가 발생한다", () -> {
                 ExtractableResponse<Response> response = 지하철_구간_제거(노선_id, 강남역_id);
@@ -210,7 +210,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("구간 삭제시 해당 지하철역이 노선에 없다면 예외가 발생 ")
     @TestFactory
-    Stream<DynamicTest> deleteSection_exception2() {
+    Stream<DynamicTest> deleteSection_station_empty_exception() {
         return Stream.of(
             dynamicTest("구간이 두개 이상 되기 위해 구간을 등록한다" , () -> {
                 SectionRequest sectionRequest = new SectionRequest(강남역_id, 신림역_id, 10L);

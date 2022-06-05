@@ -41,7 +41,7 @@ class SectionTest {
     @DisplayName("기존 구간에 상행 구간이 추가되면 기존의 upStation 이 "
         + "target 의 downStation 으로 변경되고 distance 가 감소되어야 한다")
     @Test
-    void add_test2() {
+    void add_upStream_endPoint_test() {
         // given
         Station 기존_구간_upStation = new Station(1L, "테스트");
         Station 기존_구간_downStation = new Station(2L, "테스트2");

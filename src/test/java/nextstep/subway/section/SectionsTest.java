@@ -32,7 +32,7 @@ class SectionsTest {
 
     @DisplayName("기존 구간 하행종점에 구간이 추가되면 추가된 순서에 맞게 조회되어야 한다")
     @Test
-    void sections_add_test2() {
+    void sections_add_downStream_endPoint_test() {
         // given
         Station 신도림역 = new Station(1L, "신도림");
         Station 대림역 = new Station(2L, "대림");
@@ -53,7 +53,7 @@ class SectionsTest {
 
     @DisplayName("기존 구간의 중간에 새로운 구간이 추가되면 순서에 맞게 역이 조회되어야 한다")
     @Test
-    void sections_add_test3() {
+    void sections_add_between_test() {
         // given
         Station 신도림역 = new Station(1L, "신도림");
         Station 대림역 = new Station(2L, "대림");
