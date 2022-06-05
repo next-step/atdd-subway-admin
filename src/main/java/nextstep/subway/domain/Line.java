@@ -1,13 +1,18 @@
 package nextstep.subway.domain;
 
-import static java.util.Arrays.asList;
 
+import java.util.Arrays;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import nextstep.subway.dto.StationResponse;
+import nextstep.subway.generic.domain.distance.Distance;
 
 @Entity
 public class Line {
@@ -21,22 +26,27 @@ public class Line {
 
     private String color;
 
-    private long upStationId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "up_station_id")
+    private Station upStation;
 
-    private long downStationId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "down_station_id")
+    private Station downStation;
 
-    private long distance;
+    @Column(name = "distance")
+    private Distance distance;
 
     protected Line() {
     }
 
-    public Line(final String name, final String color, final long upStationId, final long downStationId,
+    public Line(final String name, final String color, final Station upStation, final Station downStation,
                 final long distance) {
         this.name = name;
         this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = Distance.valueOf(distance);
     }
 
     public Line(final String name, final String color) {
@@ -56,24 +66,24 @@ public class Line {
         return color;
     }
 
-    public long getUpStationId() {
-        return upStationId;
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public long getDownStationId() {
-        return downStationId;
+    public Station getDownStation() {
+        return downStation;
     }
 
-    public long getDistance() {
+    public Distance getDistance() {
         return distance;
-    }
-
-    public List<Long> getStationsIds() {
-        return asList(upStationId, downStationId);
     }
 
     public void update(final Line line) {
         this.name = line.name;
         this.color = line.color;
+    }
+
+    public List<Station> stations() {
+        return Arrays.asList(upStation, downStation);
     }
 }
