@@ -8,7 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import nextstep.subway.dto.SectionResponse;
 
 @Entity
 @Table(name = "line")
@@ -49,7 +48,7 @@ public class Line extends BaseEntity {
         color = newColor;
     }
 
-    public SectionResponse relateToSection(final Station upStation, final Station downStation, final Long distance) {
+    public Section relateToSection(final Station upStation, final Station downStation, final Long distance) {
         final Optional<LineStation> upRelation = lineStations.getByStation(upStation);
         final Optional<LineStation> downRelation = lineStations.getByStation(downStation);
         validateStations(upRelation, downRelation);
@@ -67,7 +66,7 @@ public class Line extends BaseEntity {
         }
         final Section section = new Section(this, upStation, downStation, distance);
         sections.add(section);
-        return SectionResponse.of(section);
+        return section;
     }
 
     public Long getId() {

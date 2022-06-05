@@ -65,14 +65,11 @@ public class LineTest {
         final Long distance = 10L;
 
         // when
-        final SectionResponse sectionResponse = line.relateToSection(finalUpStation, newStation, distance);
+        final Section section = line.relateToSection(finalUpStation, newStation, distance);
 
         // then
-        assertThat(sectionResponse).isNotNull();
-        assertThat(sectionResponse.getLineName()).isEqualTo(line.getName());
-        assertThat(sectionResponse.getUpStationName()).isEqualTo(finalUpStation.getName());
-        assertThat(sectionResponse.getDownStationName()).isEqualTo(newStation.getName());
-        assertThat(sectionResponse.getDistance()).isEqualTo(distance);
+        assertNewSection(section, line, finalUpStation, newStation, distance);
+
         assertThat(line.getSections().sections())
                 .contains(SectionResponse.of(new Section(line, finalUpStation, newStation, distance)));
         assertThat(line.getLineStations().stations()).contains(StationResponse.of(newStation));
@@ -88,14 +85,10 @@ public class LineTest {
         final Long distance = 10L;
 
         // when
-        final SectionResponse sectionResponse = line.relateToSection(newStation, finalDownStation, distance);
+        final Section section = line.relateToSection(newStation, finalDownStation, distance);
 
         // then
-        assertThat(sectionResponse).isNotNull();
-        assertThat(sectionResponse.getLineName()).isEqualTo(line.getName());
-        assertThat(sectionResponse.getUpStationName()).isEqualTo(newStation.getName());
-        assertThat(sectionResponse.getDownStationName()).isEqualTo(finalDownStation.getName());
-        assertThat(sectionResponse.getDistance()).isEqualTo(distance);
+        assertNewSection(section, line, newStation, finalDownStation, distance);
         assertThat(line.getSections().sections())
                 .contains(SectionResponse.of(new Section(line, newStation, finalDownStation, distance)));
         assertThat(line.getLineStations().stations()).contains(StationResponse.of(newStation));
@@ -111,14 +104,10 @@ public class LineTest {
         final Long distance = 10L;
 
         // when
-        final SectionResponse sectionResponse = line.relateToSection(newStation, finalUpStation, distance);
+        final Section section = line.relateToSection(newStation, finalUpStation, distance);
 
         // then
-        assertThat(sectionResponse).isNotNull();
-        assertThat(sectionResponse.getLineName()).isEqualTo(line.getName());
-        assertThat(sectionResponse.getUpStationName()).isEqualTo(newStation.getName());
-        assertThat(sectionResponse.getDownStationName()).isEqualTo(finalUpStation.getName());
-        assertThat(sectionResponse.getDistance()).isEqualTo(distance);
+        assertNewSection(section, line, newStation, finalUpStation, distance);
         assertThat(line.getSections().sections())
                 .contains(SectionResponse.of(new Section(line, newStation, finalUpStation, distance)));
         assertThat(line.getLineStations().stations()).contains(StationResponse.of(newStation));
@@ -132,16 +121,24 @@ public class LineTest {
         final Long distance = 10L;
 
         // when
-        final SectionResponse sectionResponse = line.relateToSection(finalDownStation, newStation, distance);
+        final Section section = line.relateToSection(finalDownStation, newStation, distance);
 
         // then
-        assertThat(sectionResponse).isNotNull();
-        assertThat(sectionResponse.getLineName()).isEqualTo(line.getName());
-        assertThat(sectionResponse.getUpStationName()).isEqualTo(finalDownStation.getName());
-        assertThat(sectionResponse.getDownStationName()).isEqualTo(newStation.getName());
-        assertThat(sectionResponse.getDistance()).isEqualTo(distance);
+        assertNewSection(section, line, finalDownStation, newStation, distance);
         assertThat(line.getSections().sections())
                 .contains(SectionResponse.of(new Section(line, finalDownStation, newStation, distance)));
         assertThat(line.getLineStations().stations()).contains(StationResponse.of(newStation));
+    }
+
+    private void assertNewSection(final Section newSection,
+                                  final Line line,
+                                  final Station upStation,
+                                  final Station downStation,
+                                  final Long distance) {
+        assertThat(newSection).isNotNull();
+        assertThat(newSection.getLine()).isEqualTo(line);
+        assertThat(newSection.getUpStation()).isEqualTo(upStation);
+        assertThat(newSection.getDownStation()).isEqualTo(downStation);
+        assertThat(newSection.getDistance()).isEqualTo(distance);
     }
 }
