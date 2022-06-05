@@ -42,6 +42,10 @@ public class LineStation {
         return this.section.getUpStation();
     }
 
+    public boolean isCurrentStation(final Station station) {
+        return Objects.equals(this.section.getDownStation(), station);
+    }
+
     public boolean isStartStation() {
         return Objects.isNull(getPreStation());
     }

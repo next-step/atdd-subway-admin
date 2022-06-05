@@ -66,6 +66,12 @@ public class LineStationTest {
                 .isEqualTo(신분당선);
     }
 
+    @DisplayName("입력값을 통해서 현재 역인지 확인할수 있다.")
+    @Test
+    void getCurrentStationTest() {
+        assertThat((new LineStation(신분당선, new Section(강남역, 양재역, new Distance(10L))).isCurrentStation(양재역))).isTrue();
+    }
+
     @DisplayName("전역과의 거리를 알수 있다.")
     @Test
     void getDistanceTest() {
