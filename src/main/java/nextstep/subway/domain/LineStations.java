@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Embeddable
 public class LineStations {
-    @OneToMany(mappedBy = "line")
+    @OneToMany(mappedBy = "line", orphanRemoval = true)
     private final List<LineStation> lineStations = new ArrayList<>();
 
     protected LineStations() {
