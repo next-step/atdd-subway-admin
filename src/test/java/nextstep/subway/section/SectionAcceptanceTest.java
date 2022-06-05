@@ -126,6 +126,51 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(sections).contains(registerResponse.body().as(SectionResponse.class));
     }
 
+    /**
+     * When 이미 등록된 구간을 등록하면
+     * Then 400 에러가 발생한다
+     */
+    @DisplayName("이미 등록된 구간을 등록")
+    @Test
+    void registerExistingSection() {
+        // when
+        final Long distance = 10L;
+        final ExtractableResponse<Response> registerResponse = 구간을_등록한다(GANGNAM, JUNGJA, distance);
+
+        // then
+        assertThat(registerResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 노선에 포함되지 않는 역으로만 구성된 구간을 등록하면
+     * Then 400 에러가 발생한다
+     */
+    @DisplayName("노선에 포함되지 않는 역으로만 구성된 구간을 등록")
+    @Test
+    void registerSectionWithAllStationsNotIncludedInLine() {
+        // when
+        final Long distance = 10L;
+        final ExtractableResponse<Response> registerResponse = 구간을_등록한다(SINNONHYUN, YANGJAE, distance);
+
+        // then
+        assertThat(registerResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 기존 구간보다 긴 구간을 등록하면
+     * Then 400 에러가 발생한다
+     */
+    @DisplayName("기존 구간보다 긴 구간을 등록")
+    @Test
+    void registerSectionLongerThanExistingSection() {
+        // when
+        final Long distance = DISTANCE_FROM_GANGNAME_TO_JUNGJA + 1L;
+        final ExtractableResponse<Response> registerResponse = 구간을_등록한다(GANGNAM, JUNGJA, distance);
+
+        // then
+        assertThat(registerResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> 구간을_등록한다(final long upStationId,
                                                    final long downStationId,
                                                    final long distance) {
