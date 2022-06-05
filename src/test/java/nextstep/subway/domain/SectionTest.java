@@ -41,4 +41,33 @@ class SectionTest {
                 .isThrownBy(() -> new Section(0, 강남역, 역삼역))
                 .withMessageContaining(DISTANCE_MINIMUM_LENGTH_ERROR);
     }
+
+    @Test
+    @DisplayName("지하철 구간에 상행역 정보를 변경 테스트")
+    void updateUpStation() {
+        Section section = new Section(거리, 강남역, 역삼역);
+        Station 선릉역 = new Station("선릉역");
+
+        section.updateUpStation(선릉역, 5);
+
+        Assertions.assertAll(
+                () -> assertThat(section.getDistance()).isEqualTo(5),
+                () -> assertThat(section.getUpStation()).isEqualTo(선릉역)
+        );
+    }
+
+
+    @Test
+    @DisplayName("지하철 구간에 하행역 정보를 변경 테스트")
+    void updateDownStation() {
+        Section section = new Section(거리, 강남역, 역삼역);
+        Station 양재역 = new Station("양재역");
+
+        section.updateDownStation(양재역, 5);
+
+        Assertions.assertAll(
+                () -> assertThat(section.getDistance()).isEqualTo(5),
+                () -> assertThat(section.getDownStation()).isEqualTo(양재역)
+        );
+    }
 }
