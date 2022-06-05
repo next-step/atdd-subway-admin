@@ -12,9 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
-import static nextstep.subway.common.Messages.DUPLICATE_SECTION_ERROR;
-import static nextstep.subway.common.Messages.NOT_MATCH_STATION_ERROR;
-import static nextstep.subway.domain.Section.DISTANCE_LENGTH_ERROR;
+import static nextstep.subway.common.Messages.*;
 import static nextstep.subway.utils.AcceptanceApiFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
