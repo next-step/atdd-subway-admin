@@ -22,14 +22,14 @@ public class LineSteps {
 		return RestAssured.given().log().all()
 			.body(params)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.post("/lines")
+			.when().post("/lines")
 			.then().log().all()
 			.extract();
 	}
 
 	public static ExtractableResponse<Response> 노선_목록_조회_요청() {
 		return RestAssured.given().log().all()
-			.get("/lines")
+			.when().get("/lines")
 			.then().log().all()
 			.extract();
 	}
@@ -38,7 +38,7 @@ public class LineSteps {
 		String uri = response.header("Location");
 
 		return RestAssured.given().log().all()
-			.get(uri)
+			.when().get(uri)
 			.then().log().all()
 			.extract();
 	}
@@ -49,7 +49,16 @@ public class LineSteps {
 		return RestAssured.given().log().all()
 			.body(params)
 			.contentType(ContentType.JSON)
-			.put(uri)
+			.when().put(uri)
+			.then().log().all()
+			.extract();
+	}
+
+	public static ExtractableResponse<Response> 노선_삭제_요청(ExtractableResponse<Response> response) {
+		String uri = response.header("Location");
+
+		return RestAssured.given().log().all()
+			.when().delete(uri)
 			.then().log().all()
 			.extract();
 	}
