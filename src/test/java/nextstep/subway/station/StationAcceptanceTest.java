@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -37,7 +36,7 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = createStation("강남역");
+        ExtractableResponse<Response> response = Station.createStation("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -57,11 +56,11 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        StationRequest request = createStationRequest("강남역");
-        createStation(request);
+        StationRequest request = Station.createStationRequest("강남역");
+        Station.createStation(request);
 
         // when
-        ExtractableResponse<Response> response = createStation(request);
+        ExtractableResponse<Response> response = Station.createStation(request);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -76,8 +75,8 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        createStation("강남역");
-        createStation("잠실역");
+        Station.createStation("강남역");
+        Station.createStation("잠실역");
 
         // when
         List<String> stationNames = findStations()
@@ -96,7 +95,7 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> response = createStation("강남역");
+        ExtractableResponse<Response> response = Station.createStation("강남역");
         int id = response.jsonPath().get("id");
 
         // when
@@ -105,24 +104,6 @@ public class StationAcceptanceTest {
         // then
         List<String> names = findStations().jsonPath().getList("name");
         assertThat(names).isEmpty();
-    }
-
-    private ExtractableResponse<Response> createStation(String name) {
-        StationRequest request = createStationRequest(name);
-        return createStation(request);
-    }
-
-    private ExtractableResponse<Response> createStation(StationRequest request) {
-        return RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private StationRequest createStationRequest(String name) {
-        return new StationRequest(name);
     }
 
     private ExtractableResponse<Response> deleteStation(int id) {
