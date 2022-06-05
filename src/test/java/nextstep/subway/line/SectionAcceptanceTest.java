@@ -208,6 +208,25 @@ class SectionAcceptanceTest {
         노선_하행종점역_조회_성공(노선, 인근역);
     }
 
+    /**
+     * Given 구간을 추가하고
+     * When 중간역을 제거하면
+     * Then 조회 시 중간역이 제거된다
+     */
+    @DisplayName("중간역을 제거한다.")
+    @Test
+    void deleteMidStation() {
+        // given
+        StationResponse 중간역 = 지하철역_생성("중간역");
+        구간추가_성공(노선, 상행선, 중간역, 3);
+
+        // when
+        구간삭제_성공(노선, 중간역);
+
+        // then
+        노선_순서대로_조회_성공(노선, 상행선, 하행선);
+    }
+
     StationResponse 지하철역_생성(String name) {
         return StationApi.create(name)
                 .as(StationResponse.class);
