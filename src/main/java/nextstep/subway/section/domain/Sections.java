@@ -20,6 +20,8 @@ public class Sections {
     private static final String NOT_FOUND_UP_SECTION = "상행 구간을 찾을 수 없습니다.";
     private static final String NOT_FOUND_DOWN_SECTION = "하행 구간을 찾을 수 없습니다.";
     private static final String NOT_CONTAINS_CONNECT_SECTION = "기존 구간과 연결된 역을 찾을 수 없습니다.";
+    private static final String NOT_REMOVED_ONLY_ONE_SECTION = "구간이 하나인 노선에서 역을 제거할 수 없습니다.";
+    private static final String DOES_NOT_CONTAIN_STATION = "노선에 등록되어 있지 않은 역은 제거할 수 없습니다.";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections;
@@ -49,8 +51,10 @@ public class Sections {
     }
 
     public void removeByStation(Station removeStation) {
-        Section removeSection = findRemoveSection(removeStation);
-        this.sections.remove(removeSection);
+        if (removableStation(removeStation)) {
+            Section removeSection = findRemoveSection(removeStation);
+            this.sections.remove(removeSection);
+        }
     }
 
     public int size() {
@@ -94,6 +98,16 @@ public class Sections {
 
     private boolean addableSection(Section addedSection) {
         return !this.sections.isEmpty() && !isEdgeSection(addedSection);
+    }
+
+    private boolean removableStation(Station removeStation) {
+        if (this.sections.size() == 1) {
+            throw new IllegalArgumentException(NOT_REMOVED_ONLY_ONE_SECTION);
+        }
+        if (!containsStation(removeStation)) {
+            throw new IllegalArgumentException(DOES_NOT_CONTAIN_STATION);
+        }
+        return !this.sections.isEmpty();
     }
 
     private boolean isEdgeSection(Section section) {
