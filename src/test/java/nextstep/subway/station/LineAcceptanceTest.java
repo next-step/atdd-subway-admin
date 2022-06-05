@@ -1,20 +1,13 @@
 package nextstep.subway.station;
 
-import static nextstep.subway.station.StationSteps.*;
-import static org.assertj.core.api.Assertions.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import static nextstep.subway.station.LineSteps.*;
+import static nextstep.subway.station.StationSteps.지하철_생성_요청;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
@@ -23,6 +16,7 @@ public class LineAcceptanceTest extends AcceptanceTest{
 
 	@BeforeEach
 	void init() {
+		// given
 		지하철_생성_요청("강남역");
 		지하철_생성_요청("역삼역");
 	}
@@ -34,20 +28,10 @@ public class LineAcceptanceTest extends AcceptanceTest{
 	@DisplayName("지하철노선을 생성한다.")
 	@Test
 	void createLine() {
-		Map<String, String> params = new HashMap<>();
-		params.put("name", "신분당선");
-		params.put("color", "bg-red-600");
-		params.put("upStationId", "1");
-		params.put("downStationId", "2");
-		params.put("distance", "10");
+		// when
+		ExtractableResponse<Response> response = 노선_생성_요청("신분당선", "bg-red-600", 1L, 2L, 10);
 
-		ExtractableResponse<Response> response = RestAssured.given().log().all()
-			.body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.post("/lines")
-			.then().log().all()
-			.extract();
-
+		// then
 		요청_응답_확인(response, HttpStatus.CREATED);
 	}
 
