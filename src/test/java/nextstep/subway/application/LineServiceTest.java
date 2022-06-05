@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -160,10 +162,23 @@ class LineServiceTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+    @Test
+    void SectionRequest_객체로_구간을_추가할_수_있어야_한다() {
+        // given
+        final Line line = givenLine();
+        final SectionRequest sectionRequest = new SectionRequest(gangnam.getId(), yangjae.getId(), 10L);
+
+        // when
+        lineService.addSection(line.getId(), sectionRequest);
+
+        // then
+        assertThat(line.getSections().sections())
+                .contains(SectionResponse.of(new Section(line, gangnam, yangjae, 10L)));
+    }
+
     private Line givenLine() {
         final Line givenLine = new Line("신분당선", "bg-red-600");
-//        givenLine.relateToStation(new LineStation(givenLine, gangnam));
-//        givenLine.relateToStation(new LineStation(givenLine, jungja, gangnam));
+        givenLine.relateToSection(gangnam, jungja, lineDistance);
         return lineRepository.save(givenLine);
     }
 }
