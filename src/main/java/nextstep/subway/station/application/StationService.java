@@ -8,12 +8,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 public class StationService {
+    public static final String UP_STATION_KEY = "upStation";
+    public static final String DOWN_STATION_KEY = "downStation";
+
     private StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
@@ -38,6 +43,23 @@ public class StationService {
         Station station = stationRepository.findById(id)
                                             .orElseThrow(EntityNotFoundException::new);
         return station;
+    }
+
+    public Map<String, Station> findUpDownStation(Long upStationId, Long downStationId) {
+        Map<String, Station> result = new HashMap<>();
+        List<Station> stations = stationRepository.findAll();
+
+        stations.stream()
+                .forEach(station -> {
+                    if(upStationId.equals(station.getId())) {
+                        result.put(UP_STATION_KEY, station);
+                    }
+                    if(downStationId.equals(station.getId())) {
+                        result.put(DOWN_STATION_KEY, station);
+                    }
+                });
+
+        return result;
     }
 
     @Transactional
