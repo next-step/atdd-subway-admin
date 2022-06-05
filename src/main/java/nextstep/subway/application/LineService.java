@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
@@ -62,12 +62,11 @@ public class LineService {
     @Transactional
     public SectionResponse addSection(final Long lineId, final SectionRequest sectionRequest) {
         final Line line = getLineOrElseThrow(lineId);
-        final Section section = line.relateToSection(
-                stationService.getStationOrElseThrow(sectionRequest.getUpStationId()),
-                stationService.getStationOrElseThrow(sectionRequest.getDownStationId()),
-                sectionRequest.getDistance());
+        final Station upStation = stationService.getStationOrElseThrow(sectionRequest.getUpStationId());
+        final Station downStation = stationService.getStationOrElseThrow(sectionRequest.getDownStationId());
+        line.relateToSection(upStation, downStation, sectionRequest.getDistance());
         lineRepository.save(line);
-        return SectionResponse.of(section);
+        return SectionResponse.of(line.getSections().getByUpStation(upStation));
     }
 
     public List<SectionResponse> findAllSections(final Long id) {

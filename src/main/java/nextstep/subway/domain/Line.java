@@ -48,7 +48,7 @@ public class Line extends BaseEntity {
         color = newColor;
     }
 
-    public Section relateToSection(final Station upStation, final Station downStation, final Long distance) {
+    public void relateToSection(final Station upStation, final Station downStation, final Long distance) {
         final Optional<LineStation> upRelation = lineStations.getByStation(upStation);
         final Optional<LineStation> downRelation = lineStations.getByStation(downStation);
         validateStations(upRelation, downRelation);
@@ -66,7 +66,6 @@ public class Line extends BaseEntity {
         }
         final Section section = new Section(this, upStation, downStation, distance);
         sections.add(section);
-        return section;
     }
 
     public Long getId() {
