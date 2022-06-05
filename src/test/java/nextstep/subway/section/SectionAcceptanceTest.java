@@ -139,11 +139,11 @@ public class SectionAcceptanceTest {
     /**
      * Given 구간 하나를 가진 노선이 있을 때
      * When 모든 케이스의 구간을 추가하면
-     * Then 추가된 역들을 확인할 수 있다
+     * Then 추가된 역들을 모두 확인할 수 있다
      */
     @DisplayName("모든 케이스의 구간을 추가한다.")
     @Test
-    void 구간_추가() {
+    void 다양한_구간_추가() {
         // given
         // 분당선(왕십리역-7m-선릉역)
 
@@ -164,7 +164,7 @@ public class SectionAcceptanceTest {
      * When 기존 구간과 같은 구간을 추가하면
      * Then 400 에러가 전달된다
      */
-    @DisplayName("기존 구간과 같은 구간을 추가한다.")
+    @DisplayName("기존 구간과 중복인 구간을 추가한다.")
     @Test
     void 중복_구간_추가_1() {
         // given
@@ -180,10 +180,10 @@ public class SectionAcceptanceTest {
 
     /**
      * Given 구간이 추가된 노선이 있을 때
-     * When 기존 구간과 중복인 구간을 추가하면
+     * When 상행 역이 조정된 기존 구간과 중복인 구간을 추가하면
      * Then 400 에러가 전달된다
      */
-    @DisplayName("기존 구간과 중복인 구간을 추가한다.")
+    @DisplayName("상행 역이 조정된 기존 구간과 중복인 구간을 추가한다.")
     @Test
     void 중복_구간_추가_2() {
         // given
@@ -192,7 +192,7 @@ public class SectionAcceptanceTest {
         // 분당선(null-청량리역, 청량리역-왕십리역, 왕십리역-선릉역)
         addSection("/lines/" + 분당선.getId(), new SectionRequest(청량리역.getId(), 왕십리역.getId(), 3));
 
-        // 분당선(null-청량리역, 청량리역-왕십리역, 왕십리역-서울숲역, 서울숲역-선릉역)
+        // 분당선(null-청량리역, 청량리역-왕십리역, 왕십리역-서울숲역, **서울숲역-선릉역**)
         addSection("/lines/" + 분당선.getId(), new SectionRequest(왕십리역.getId(), 서울숲역.getId(), 4));
 
         // when
@@ -210,7 +210,7 @@ public class SectionAcceptanceTest {
      */
     @DisplayName("기존 구간의 길이를 초과하는 구간을 추가하려 한다.")
     @Test
-    void 길이_초과_구간_추가() {
+    void 길이_초과_구간_추가_1() {
         // given
         // 분당선(왕십리역-(7m)-선릉역)
 
@@ -223,7 +223,29 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * Given 구간 하나를 가진 노선이 있을 때
+     * Given 구간이 추가되어 길이가 줄어든 구간을 가진 노선이 있을 때
+     * When 줄어든 기존 구간 역 사이에 역을 추가하기 위한 구간이 길이를 초과하면
+     * Then 400 에러가 전달된다
+     */
+    @DisplayName("줄어든 기존 구간의 길이를 초과하는 구간을 추가하려 한다.")
+    @Test
+    void 길이_초과_구간_추가_2() {
+        // given
+        // 분당선(null-0m-왕십리역, 왕십리역-7m-선릉역)
+
+        // 분당선(null-0m-왕십리역, 왕십리역-4m-서울숲역, **서울숲역-3m-선릉역**)
+        addSection("/lines/" + 분당선.getId(), new SectionRequest(왕십리역.getId(), 서울숲역.getId(), 4));
+
+        // when
+        ExtractableResponse<Response> response = addSection(
+                "/lines/" + 분당선.getId(), new SectionRequest(서울숲역.getId(), 강남구청역.getId(), 3));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 구간이 추가된 노선이 있을 때
      * When 겹치는 역이 없어서 추가할 수 없는 구간을 추가하려 하면
      * Then 400 에러가 전달된다
      */

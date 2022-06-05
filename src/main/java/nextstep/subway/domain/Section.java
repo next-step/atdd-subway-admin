@@ -50,10 +50,12 @@ public class Section extends BaseEntity {
 
     public void updateUpStationToDownStationOf(Section newSection) {
         this.upStation = newSection.downStation;
+        this.distance -= newSection.distance;
     }
 
     public void updateDownStationToUpStationOf(Section newSection) {
         this.downStation = newSection.upStation;
+        this.distance -= newSection.distance;
     }
 
     public boolean isFirstSection() {
@@ -73,7 +75,7 @@ public class Section extends BaseEntity {
     }
 
     public boolean canInsert(Section newSection) {
-        return distance <= 0 || distance > newSection.distance;
+        return distance > newSection.distance;
     }
 
     public boolean equalsAtLeastOneStation(Section other) {

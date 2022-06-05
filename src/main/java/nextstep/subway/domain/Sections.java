@@ -13,7 +13,6 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> list = new ArrayList<>();
 
-    // TODO: add validations
     public void add(Section newSection) {
 
         validate(newSection);
