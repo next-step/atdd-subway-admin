@@ -8,6 +8,8 @@ import java.util.Objects;
 
 @Entity
 public class Section {
+    public static final String SECTION_DISTANCE_MINUS_ERROR_MSG = "중간에 포함되는 구간이 길이가 감싸고 있는 구간보다 작아야합니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,12 +39,21 @@ public class Section {
     }
 
     public void updateUpSection(Section newSection) {
-        distance.minus(newSection.getDistance());
+        try {
+            distance.minus(newSection.getDistance());
+        } catch (IllegalArgumentException exception) {
+            throw new IllegalArgumentException(SECTION_DISTANCE_MINUS_ERROR_MSG);
+        }
         this.upStation = newSection.getDownStation();
     }
 
     public void updateDownSection(Section newSection) {
-        distance.minus(newSection.getDistance());
+        try {
+            distance.minus(newSection.getDistance());
+        } catch (IllegalArgumentException exception) {
+            throw new IllegalArgumentException(SECTION_DISTANCE_MINUS_ERROR_MSG);
+        }
+
         this.downStation = newSection.getUpStation();
     }
 

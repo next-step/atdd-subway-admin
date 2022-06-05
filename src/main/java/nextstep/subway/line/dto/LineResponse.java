@@ -29,7 +29,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        List<StationResponse> stationResponses = line.getSections().getStationsSorted()
+        List<StationResponse> stationResponses = line.getStationsSorted()
                                                     .stream()
                                                     .map(StationResponse::of)
                                                     .collect(Collectors.toList());

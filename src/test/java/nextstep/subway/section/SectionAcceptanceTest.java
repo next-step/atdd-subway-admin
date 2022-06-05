@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Distance;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.section.dto.SectionRequest;
@@ -124,7 +125,7 @@ public class SectionAcceptanceTest {
 
         ExtractableResponse<Response> response = 구간을_생성한다(칠호선.getId(), 뚝섬유원지역.getId(), 건대역.getId(), 11);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.asString()).contains(Distance.SECTION_DISTANCE_MINUS_ERROR_MSG);
+        assertThat(response.asString()).contains(Section.SECTION_DISTANCE_MINUS_ERROR_MSG);
     }
 
     /**
