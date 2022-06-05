@@ -53,11 +53,11 @@ public class LineAcceptanceTest {
 
     @BeforeEach
     void beforeEach() {
-        createStations();
-
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+
+        createStations();
     }
 
     @AfterEach
@@ -82,7 +82,7 @@ public class LineAcceptanceTest {
     void createLine() {
         // given
         // - 노선명, 노선색상, 첫 출발 지하철역, 마지막 지하철역, 노선길이
-        LineRequest request = new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10);
+        LineRequest request = new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L);
 
         // when
         ExtractableResponse<Response> created = createLine(request);
@@ -90,13 +90,6 @@ public class LineAcceptanceTest {
         // then
         // - 노선에 역을 매핑하진 않지만 조회 시 포함된 역 목록이 함께 반환된다
         assertThat(created.as(LineResponse.class).getId()).isNotNull();
-    }
-
-    ExtractableResponse<Response> createLine(LineRequest request) {
-        return RestAssured.given().log().all()
-                          .body(request).contentType(MediaType.APPLICATION_JSON_VALUE)
-                          .when().post("/lines").then().log().all()
-                          .extract();
     }
 
     /**
@@ -108,8 +101,8 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10));
-        createLine(new LineRequest("2호선", "bg-blue-200", sinchon.getId(), sillim.getId(), 80));
+        createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L));
+        createLine(new LineRequest("2호선", "bg-blue-200", sinchon.getId(), sillim.getId(), 80L));
 
         // when
         List<String> lineNames = getLineNames();
@@ -117,12 +110,6 @@ public class LineAcceptanceTest {
         // then
         assertThat(lineNames).contains("신분당선", "2호선");
         assertThat(lineNames.size()).isEqualTo(2);
-    }
-
-    List<String> getLineNames() {
-        return RestAssured.given().log().all()
-                          .when().get("/lines").then().log().all()
-                          .extract().jsonPath().getList("name", String.class);
     }
 
     /**
@@ -134,24 +121,17 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         // given
-        Long id = createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10))
+        Long id = createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L))
                 .body().jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> response = getLineById(id);
+        ExtractableResponse<Response> response = getLine(id);
 
         // then
         Arrays.stream(response.as(LineResponse[].class))
               .forEach(
                       line -> assertThat(line.getId()).isNotNull()
               );
-    }
-
-    ExtractableResponse<Response> getLineById(Long id) {
-        return RestAssured.given().log().all()
-                          .when().queryParam("id", id).get("/lines")
-                          .then().log().all()
-                          .extract();
     }
 
     /**
@@ -163,28 +143,20 @@ public class LineAcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Long id = createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10))
+        Long id = createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L))
                 .body().jsonPath().getLong("id");
 
         // when
-        updateLineById(id, new LineRequest("뉴신분당선", "bg-white-400"));
+        updateLine(id, new LineRequest("뉴신분당선", "bg-white-400"));
 
         // then
-        Arrays.stream(getLineById(id).as(LineResponse[].class))
+        Arrays.stream(getLine(id).as(LineResponse[].class))
               .forEach(
                       line -> assertAll(
                               () -> assertEquals(line.getName(), "뉴신분당선"),
                               () -> assertEquals(line.getColor(), "bg-white-400")
                       )
               );
-    }
-
-    void updateLineById(Long id, LineRequest request) {
-        RestAssured.given().log().all()
-                   .body(request).contentType(MediaType.APPLICATION_JSON_VALUE)
-                   .when().put("/lines/{id}", id)
-                   .then().log().all()
-                   .extract();
     }
 
     /**
@@ -196,17 +168,45 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Long id = createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10))
+        Long id = createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L))
                 .body().jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> response = deleteLineById(id);
+        ExtractableResponse<Response> response = deleteLine(id);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    ExtractableResponse<Response> deleteLineById(Long id) {
+    ExtractableResponse<Response> createLine(LineRequest request) {
+        return RestAssured.given().log().all()
+                          .body(request).contentType(MediaType.APPLICATION_JSON_VALUE)
+                          .when().post("/lines").then().log().all()
+                          .extract();
+    }
+
+    ExtractableResponse<Response> getLine(Long id) {
+        return RestAssured.given().log().all()
+                          .when().queryParam("id", id).get("/lines")
+                          .then().log().all()
+                          .extract();
+    }
+
+    List<String> getLineNames() {
+        return RestAssured.given().log().all()
+                          .when().get("/lines").then().log().all()
+                          .extract().jsonPath().getList("name", String.class);
+    }
+
+    void updateLine(Long id, LineRequest request) {
+        RestAssured.given().log().all()
+                   .body(request).contentType(MediaType.APPLICATION_JSON_VALUE)
+                   .when().put("/lines/{id}", id)
+                   .then().log().all()
+                   .extract();
+    }
+
+    ExtractableResponse<Response> deleteLine(Long id) {
         return RestAssured.given().log().all()
                           .when().delete("/lines/{id}", id)
                           .then().log().all()
