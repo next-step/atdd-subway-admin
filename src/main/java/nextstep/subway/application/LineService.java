@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.LineStation;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -26,10 +25,7 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(final LineRequest request) {
         final Line line = request.toLine();
-        final Station upStation = stationService.getStationOrElseThrow(request.getUpStationId());
-        final Station downStation = stationService.getStationOrElseThrow(request.getDownStationId());
-        line.relateToStation(new LineStation(line, upStation));
-        line.relateToStation(new LineStation(line, downStation, upStation));
+        createSection(line, request.getUpStationId(), request.getDownStationId(), request.getDistance());
         lineRepository.save(line);
         return LineResponse.of(line);
     }
@@ -58,13 +54,17 @@ public class LineService {
         lineRepository.delete(line);
     }
 
+    private void createSection(final Line line,
+                               final Long upStationId,
+                               final Long downStationId,
+                               final Long distance) {
+        final Station upStation = stationService.getStationOrElseThrow(upStationId);
+        final Station downStation = stationService.getStationOrElseThrow(downStationId);
+        line.relateToSection(upStation, downStation, distance);
+    }
+
     private Line getLineOrElseThrow(final Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("지하철 노선 아이디가 유효하지 않습니다: %d}", id)));
     }
-
-//    private Station getStationOrElseThrow(final Long id) {
-//        return stationRepository.findById(id)
-//                .orElseThrow(() -> new IllegalArgumentException(String.format("지하철역 아이디가 유효하지 않습니다: %d}", id)));
-//    }
 }

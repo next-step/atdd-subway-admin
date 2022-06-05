@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.LineStation;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +30,9 @@ class LineServiceTest {
 
     private Station gangnam = new Station("강남역");
     private Station yangjae = new Station("양재역");
+    private Station jungja = new Station("정자역");
+
+    private Long lineDistance = 30L;
 
     @BeforeEach
     void setUp() {
@@ -38,6 +41,7 @@ class LineServiceTest {
 
         stationRepository.save(gangnam);
         stationRepository.save(yangjae);
+        stationRepository.save(jungja);
     }
 
     @Test
@@ -45,7 +49,7 @@ class LineServiceTest {
         // given
         final String lineName = "신분당선";
         final String color = "bg-red-600";
-        final LineRequest lineRequest = new LineRequest(lineName, color, gangnam.getId(), yangjae.getId());
+        final LineRequest lineRequest = new LineRequest(lineName, color, gangnam.getId(), jungja.getId(), lineDistance);
 
         // when
         final LineResponse lineResponse = lineService.saveLine(lineRequest);
@@ -54,12 +58,19 @@ class LineServiceTest {
         assertThat(lineResponse).isNotNull();
         assertThat(lineResponse.getId()).isGreaterThan(0L);
         assertThat(lineResponse.getName()).isEqualTo(lineName);
-        assertThat(lineResponse.getStations())
-                .containsExactly(StationResponse.of(gangnam), StationResponse.of(yangjae));
 
         final Line createdLine = lineRepository.findById(lineResponse.getId()).get();
         assertThat(createdLine.getLineStations().getPreviousOf(gangnam)).isNull();
-        assertThat(createdLine.getLineStations().getPreviousOf(yangjae)).isEqualTo(gangnam);
+        assertThat(createdLine.getLineStations().getPreviousOf(jungja)).isEqualTo(gangnam);
+
+        final List<StationResponse> stationResponses = lineResponse.getStations();
+        assertThat(stationResponses).containsExactly(StationResponse.of(gangnam), StationResponse.of(jungja));
+
+        final List<SectionResponse> sectionResponses = lineResponse.getSections();
+        assertThat(sectionResponses.size()).isEqualTo(1);
+        assertThat(sectionResponses.get(0).getUpStationName()).isEqualTo(gangnam.getName());
+        assertThat(sectionResponses.get(0).getDownStationName()).isEqualTo(jungja.getName());
+        assertThat(sectionResponses.get(0).getDistance()).isEqualTo(lineDistance);
     }
 
     @Test
@@ -68,11 +79,9 @@ class LineServiceTest {
         final Line line1 = givenLine();
 
         final Line line2 = new Line("2호선", "bg-green-600");
-        line2.relateToStation(new LineStation(line2, gangnam));
         lineRepository.save(line2);
 
         final Line line3 = new Line("3호선", "bg-orange-600");
-        line3.relateToStation(new LineStation(line3, yangjae));
         lineRepository.save(line3);
 
         // when
@@ -153,8 +162,8 @@ class LineServiceTest {
 
     private Line givenLine() {
         final Line givenLine = new Line("신분당선", "bg-red-600");
-        givenLine.relateToStation(new LineStation(givenLine, gangnam));
-        givenLine.relateToStation(new LineStation(givenLine, yangjae, gangnam));
+//        givenLine.relateToStation(new LineStation(givenLine, gangnam));
+//        givenLine.relateToStation(new LineStation(givenLine, jungja, gangnam));
         return lineRepository.save(givenLine);
     }
 }

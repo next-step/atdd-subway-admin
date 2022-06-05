@@ -7,11 +7,11 @@ import nextstep.subway.domain.Section;
 public class SectionResponse {
     private Long id;
 
-    private LineResponse line;
+    private String lineName;
 
-    private StationResponse upStation;
+    private String upStationName;
 
-    private StationResponse downStation;
+    private String downStationName;
 
     private Long distance;
 
@@ -19,17 +19,20 @@ public class SectionResponse {
 
     private LocalDateTime modifiedDate;
 
+    public SectionResponse() {
+    }
+
     public SectionResponse(final Long id,
-                           final LineResponse line,
-                           final StationResponse upStation,
-                           final StationResponse downStation,
+                           final String lineName,
+                           final String upStationName,
+                           final String downStationName,
                            final Long distance,
                            final LocalDateTime createdDate,
                            final LocalDateTime modifiedDate) {
         this.id = id;
-        this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
+        this.lineName = lineName;
+        this.upStationName = upStationName;
+        this.downStationName = downStationName;
         this.distance = distance;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
@@ -38,21 +41,49 @@ public class SectionResponse {
     public static SectionResponse of(final Section section) {
         return new SectionResponse(
                 section.getId(),
-                LineResponse.of(section.getLine()),
-                StationResponse.of(section.getUpStation()),
-                StationResponse.of(section.getDownStation()),
+                section.getLine().getName(),
+                section.getUpStation().getName(),
+                section.getDownStation().getName(),
                 section.getDistance(),
                 section.getCreatedDate(),
                 section.getModifiedDate());
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getLineName() {
+        return lineName;
+    }
+
+    public String getUpStationName() {
+        return upStationName;
+    }
+
+    public String getDownStationName() {
+        return downStationName;
+    }
+
+    public Long getDistance() {
+        return distance;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public LocalDateTime getModifiedDate() {
+        return modifiedDate;
     }
 
     @Override
     public String toString() {
         return "SectionResponse{" +
                 "id=" + id +
-                ", line=" + line +
-                ", upStation=" + upStation +
-                ", downStation=" + downStation +
+                ", lineName='" + lineName + '\'' +
+                ", upStationName='" + upStationName + '\'' +
+                ", downStationName='" + downStationName + '\'' +
                 ", distance=" + distance +
                 ", createdDate=" + createdDate +
                 ", modifiedDate=" + modifiedDate +
@@ -69,9 +100,9 @@ public class SectionResponse {
         }
         final SectionResponse that = (SectionResponse) o;
         return Objects.equals(id, that.id)
-                && Objects.equals(line, that.line)
-                && Objects.equals(upStation, that.upStation)
-                && Objects.equals(downStation, that.downStation)
+                && Objects.equals(lineName, that.lineName)
+                && Objects.equals(upStationName, that.upStationName)
+                && Objects.equals(downStationName, that.downStationName)
                 && Objects.equals(distance, that.distance)
                 && Objects.equals(createdDate, that.createdDate)
                 && Objects.equals(modifiedDate, that.modifiedDate);
@@ -79,6 +110,6 @@ public class SectionResponse {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, line, upStation, downStation, distance, createdDate, modifiedDate);
+        return Objects.hash(id, lineName, upStationName, downStationName, distance, createdDate, modifiedDate);
     }
 }

@@ -36,15 +36,11 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void addSection(final Section section) {
-        sections.add(section);
-    }
-
-    public void relateToStation(final LineStation lineStation) {
-        if (this != lineStation.getLine()) {
-            throw new IllegalArgumentException("다른 노선의 연관관계는 추가할 수 없습니다.");
-        }
-        lineStations.add(lineStation);
+    public void relateToSection(final Station upStation, final Station downStation, final Long distance) {
+        final Station previous = lineStations.getPreviousOf(upStation);
+        relateToStation(new LineStation(this, upStation, previous));
+        relateToStation(new LineStation(this, downStation, upStation));
+        sections.add(new Section(this, upStation, downStation, distance));
     }
 
     public void update(final String newName, final String newColor) {
@@ -70,5 +66,9 @@ public class Line extends BaseEntity {
 
     public Sections getSections() {
         return sections;
+    }
+
+    private void relateToStation(final LineStation lineStation) {
+        lineStations.add(lineStation);
     }
 }

@@ -33,6 +33,10 @@ public class LineStations {
     }
 
     public Station getPreviousOf(final Station current) {
+        if (lineStations.size() == 0) {
+            return null;
+        }
+
         return lineStations
                 .stream()
                 .filter(lineStation -> lineStation.getStation().equals(current))
