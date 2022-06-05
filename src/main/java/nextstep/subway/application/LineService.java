@@ -47,8 +47,16 @@ public class LineService {
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
-        return lines.stream()
-                .map(line -> LineResponse.from(line))
-                .collect(Collectors.toList());
+        return lines.stream().map(line -> LineResponse.from(line)).collect(Collectors.toList());
+    }
+
+    public LineResponse findLine(Long id) {
+        Line line = findLineById(id);
+        return LineResponse.from(line);
+    }
+
+    private Line findLineById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("입력한 아이디(%d)의 지하철 노선을 찾을 수 없습니다.", id)));
     }
 }

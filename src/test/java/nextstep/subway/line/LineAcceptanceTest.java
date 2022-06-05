@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -30,7 +31,8 @@ public class LineAcceptanceTest {
     }
 
     /**
-     * When 지하철 노선을 생성하면 Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
+     * When 지하철 노선을 생성하면
+     * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
      */
     @Test
     @DisplayName("지하철노선을 생성한다.")
@@ -73,6 +75,33 @@ public class LineAcceptanceTest {
 
         // Then
         assertThat(lineIds).hasSize(2);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @Test
+    @DisplayName("아이디로 지하철노선을 조회한다.")
+    void 지하철노선_조회() {
+        Long upStationId = 지하철역_생성("지하철역");
+        Long downStationId1 = 지하철역_생성("새로운지하철역");
+
+        // Given
+        LineRequest shinBundang = new LineRequest("신분당선", "bg-red-600", upStationId, downStationId1, 10);
+        Long lineId = 지하철노선_생성(shinBundang).jsonPath().getLong("id");
+
+        // When
+        ExtractableResponse<Response> response = RestAssured.given().log().all().when().get("/lines/" + lineId).then()
+                .log().all().extract();
+
+        // Then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getLong("id")).isEqualTo(lineId),
+                () -> assertThat(response.jsonPath().getString("name")).isEqualTo(shinBundang.getName()),
+                () -> assertThat(response.jsonPath().getString("color")).isEqualTo(shinBundang.getColor()));
     }
 
     private ExtractableResponse<Response> 지하철노선_생성(LineRequest request) {
