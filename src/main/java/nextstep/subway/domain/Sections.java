@@ -87,7 +87,7 @@ public class Sections {
 
     private Section existingDownStation(Station station) {
         return sections.stream()
-                .filter(section -> section.isEqualsUpStation(station))
+                .filter(section -> section.isEqualsDownStation(station))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("하행역을 찾을 수 없습니다."));
     }

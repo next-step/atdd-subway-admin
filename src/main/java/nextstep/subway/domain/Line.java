@@ -13,7 +13,6 @@ import static nextstep.subway.common.Messages.NOT_FOUND_SECTION;
 @Where(clause = "deleted=false")
 public class Line {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
