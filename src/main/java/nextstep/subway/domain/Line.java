@@ -20,7 +20,7 @@ public class Line extends BaseEntity {
 
     @Transient
     @Embedded
-    private Section section = new Section();
+    private final Section section = new Section();
 
     @Embedded
     private final LineStations lineStations = new LineStations();
@@ -29,26 +29,8 @@ public class Line extends BaseEntity {
     }
 
     public Line(final String name, final String color) {
-        this(name, color, new Distance(0L));
-    }
-
-    public Line(final String name, final String color, final Distance distance) {
-        this(name, color, new Station(), new Station(), distance);
-    }
-
-    public Line(final String name, final String color, final Station upStation, final Station downStation, final Distance distance) {
-        this(null, name, color, upStation, downStation, distance);
-    }
-
-    public Line(Long id, String name, String color, Station upStation, Station downStation, Distance distance) {
-        this.id = id;
         this.name = name;
         this.color = color;
-        this.section = new Section(upStation, downStation, distance);
-    }
-
-    public Line(Long id, String name, String color, Station upStation, Station downStation, Long distance) {
-        this(id, name, color, upStation, downStation, new Distance(distance));
     }
 
     public Long getId() {
@@ -102,8 +84,11 @@ public class Line extends BaseEntity {
         return this;
     }
 
-    public LineStations getLineStations() {
-        return lineStations;
+
+    public void addLineStation(final LineStation lineStation) {
+        if (!this.lineStations.isContains(lineStation)) {
+            this.lineStations.addLineStation(lineStation);
+        }
     }
 
     @Override

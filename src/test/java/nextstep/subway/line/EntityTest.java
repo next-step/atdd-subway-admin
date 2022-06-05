@@ -28,7 +28,8 @@ public class EntityTest {
     void setUp() {
         S1 = stationRepository.save(new Station("지하철역"));
         S2 = stationRepository.save(new Station("새로운지하철역"));
-        this.line = new Line("신분당선", "bg-red-600", S1, S2, new Distance(10L));
+        this.line = new Line("신분당선", "bg-red-600")
+                .upStationBy(S1).downStationBy(S2);
     }
 
     @DisplayName("동등성 비교 테스트")

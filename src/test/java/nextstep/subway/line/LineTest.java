@@ -14,15 +14,15 @@ public class LineTest extends EntityTest {
     @Test
     void createTest() {
         assertThat(line)
-                .isEqualTo(new Line("신분당선", "bg-red-600", S1, S2, new Distance(10L)));
+                .isEqualTo(new Line("신분당선", "bg-red-600").upStationBy(S1).upStationBy(S2));
     }
 
 
     @DisplayName("라인은 외부로 부터 upStation 과 downStation 을 업데이트 할수 있다.")
     @Test
     void updateByTest() {
-        assertThat(line.upStationBy(S2)).isEqualTo(new Line(line.getId(), line.getName(), line.getColor(), S2, S2, line.getDistance()));
-        assertThat(line.downStationBy(S1)).isEqualTo(new Line(line.getId(), line.getName(), line.getColor(), S2, S1, line.getDistance()));
+        assertThat(line.upStationBy(S2).getUpStation()).isEqualTo(S2);
+        assertThat(line.downStationBy(S1).getDownStation()).isEqualTo(S1);
     }
 
     @DisplayName("update 테스트")
