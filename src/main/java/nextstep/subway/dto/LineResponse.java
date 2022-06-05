@@ -2,6 +2,7 @@ package nextstep.subway.dto;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 
 public class LineResponse {
@@ -17,17 +18,20 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(Line line) {
+    public LineResponse(final Line line) {
         this.id = line.getId();
         this.name = line.getName();
         this.color = line.getColor();
-        this.stations = Arrays.asList(
-                StationResponse.of(line.getUpStation()),
-                StationResponse.of(line.getDownStation())
-        );
+        this.stations = line.getSections()
+                .getSortedStations()
+                .stream()
+                .map(StationResponse::of)
+                .collect(
+                        Collectors.toList()
+                );
     }
 
-    public static LineResponse of(Line line) {
+    public static LineResponse of(final Line line) {
         return new LineResponse(line);
     }
 

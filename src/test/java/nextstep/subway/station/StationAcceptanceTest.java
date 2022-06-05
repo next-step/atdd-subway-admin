@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.abstracts.DoBeforeEachAbstract;
 import nextstep.subway.helper.DatabaseCleaner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,26 +18,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static nextstep.subway.helper.DomainCreationHelper.createStationRequest;
+import static nextstep.subway.helper.DomainCreationHelper.지하철역_생성됨;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    private DatabaseCleaner databaseCleaner;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-            databaseCleaner.afterPropertiesSet();
-        }
-        databaseCleaner.cleanDatabase();
-    }
+public class StationAcceptanceTest extends DoBeforeEachAbstract {
 
     /**
      * When 지하철역을 생성하면 Then 지하철역이 생성된다 Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
@@ -104,8 +90,8 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        createStationRequest("강남역");
-        createStationRequest("잠실역");
+        지하철역_생성됨("강남역");
+        지하철역_생성됨("잠실역");
 
         //when
         final List<String> stationNames = RestAssured.given().log().all()
@@ -126,8 +112,8 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         //given
-        createStationRequest("강남역");
-        final Long jamsil = createStationRequest("잠실역").jsonPath().getLong("id");
+        지하철역_생성됨("강남역");
+        final Long jamsil = 지하철역_생성됨("잠실역").jsonPath().getLong("id");
 
         //when
         RestAssured.given().log().all()
