@@ -24,6 +24,10 @@ public class Section {
     protected Section() {
     }
 
+    public Section(final Long distance) {
+        this(new Station(), new Station(), distance);
+    }
+
     public Section(final Station upStation, final Station downStation, final Long distance) {
         this(upStation, downStation, new Distance(distance));
     }
