@@ -63,40 +63,39 @@ public class Sections {
         Section downMatchedSection = findSectionFromDownStation(station);
         Optional<Section> upMatchedSection = findSectionFromUpStation(station);
 
-        if (removeLastSection(downMatchedSection, upMatchedSection)) {
+        if (isLastStation(station)) {
+            removeLastSection(downMatchedSection);
             return;
         }
-        if (removeFirstSection(downMatchedSection, upMatchedSection)) {
+
+        if (!upMatchedSection.isPresent()) {
+            throw new IllegalArgumentException(NOT_EXISTED_STATION.toString());
+        }
+
+        if (downMatchedSection.isFirstSection()) {
+            removeFirstSection(downMatchedSection, upMatchedSection.get());
             return;
         }
-        removeMiddleSection(downMatchedSection, upMatchedSection);
+        removeMiddleSection(downMatchedSection, upMatchedSection.get());
     }
 
-    private void removeMiddleSection(Section downMatchedSection, Optional<Section> upMatchedSection) {
+    private void removeMiddleSection(Section downMatchedSection, Section upMatchedSection) {
         sections.remove(downMatchedSection);
-        sections.remove(upMatchedSection.get());
+        sections.remove(upMatchedSection);
 
         add(new Section(
                 downMatchedSection.getUpStation(),
-                upMatchedSection.get().getDownStation(),
-                downMatchedSection.getDistance().add(upMatchedSection.get().getDistance()))
+                upMatchedSection.getDownStation(),
+                downMatchedSection.getDistance().add(upMatchedSection.getDistance()))
         );
     }
 
-    private boolean removeFirstSection(Section downMatchedSection, Optional<Section> upMatchedSection) {
-        if (downMatchedSection.isFirstSection()) {
-            downMatchedSection.setDownStation(upMatchedSection.get().getDownStation());
-            return true;
-        }
-        return false;
+    private void removeFirstSection(Section downMatchedSection, Section upMatchedSection) {
+        downMatchedSection.setDownStation(upMatchedSection.getDownStation());
     }
 
-    private boolean removeLastSection(Section downMatchedSection, Optional<Section> upMatchedSection) {
-        if (!isLastSection(upMatchedSection)) {
-            sections.remove(downMatchedSection);
-            return true;
-        }
-        return false;
+    private void removeLastSection(Section downMatchedSection) {
+        sections.remove(downMatchedSection);
     }
 
     private Section findSectionFromDownStation(Station downStation) {
@@ -285,6 +284,14 @@ public class Sections {
             return false;
         }
         return station.getId().equals(section.getUpStation().getId());
+    }
+
+    private boolean isLastStation(Station station) {
+        Station lastStation = getLastSection().getDownStation();
+        if (lastStation.equals(station)) {
+            return true;
+        }
+        return false;
     }
 
     private void validateAlreadySection(Optional<Section> upMatchedSection, Optional<Section> downMatchedSection) {
