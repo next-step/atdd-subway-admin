@@ -122,6 +122,36 @@ class LineTest {
     }
 
     @Test
+    void 노선_상행종점역_지하철역_삭제() {
+        // given
+        Line line = new Line("2호선", "초록", 15, A역, C역);
+
+        // when
+        line.insertSection(new Section(5, B역, C역));
+        line.deleteSection(A역);
+
+        // then
+        Sections sections = line.getSections();
+        assertThat(sections.getList()).hasSize(1);
+        assertThat(sections.getSortedLineStations()).hasSize(2);
+    }
+
+    @Test
+    void 노선_하행종점역_지하철역_삭제() {
+        // given
+        Line line = new Line("2호선", "초록", 15, A역, C역);
+
+        // when
+        line.insertSection(new Section(5, B역, C역));
+        line.deleteSection(C역);
+
+        // then
+        Sections sections = line.getSections();
+        assertThat(sections.getList()).hasSize(1);
+        assertThat(sections.getSortedLineStations()).hasSize(2);
+    }
+
+    @Test
     void 구간_추가_상행역으로_거리오류() {
         // given
         Line line = new Line("2호선", "초록", 10, A역, C역);
