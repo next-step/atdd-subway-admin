@@ -170,6 +170,44 @@ class SectionAcceptanceTest {
         구간추가_실패(노선, 신규역1, 신규역2, 3);
     }
 
+    /**
+     * Given 구간을 추가하고
+     * When 상행 종점역을 제거하면
+     * Then 조회 시 인근역이 상행 종점역이 된다
+     */
+    @DisplayName("상행종점역을 제거한다.")
+    @Test
+    void deleteBeginStation() {
+        // given
+        StationResponse 인근역 = 지하철역_생성("인근역");
+        구간추가_성공(노선, 상행선, 인근역, 3);
+
+        // when
+        구간삭제_성공(노선, 상행선);
+
+        // then
+        노선_상행종점역_조회_성공(노선, 인근역);
+    }
+
+    /**
+     * Given 구간을 추가하고
+     * When 하행 종점역을 제거하면
+     * Then 조회 시 인근역이 하행 종점역이 된다
+     */
+    @DisplayName("하행종점역을 제거한다.")
+    @Test
+    void deleteEndStation() {
+        // given
+        StationResponse 인근역 = 지하철역_생성("인근역");
+        구간추가_성공(노선, 인근역, 하행선, 3);
+
+        // when
+        구간삭제_성공(노선, 하행선);
+
+        // then
+        노선_하행종점역_조회_성공(노선, 인근역);
+    }
+
     StationResponse 지하철역_생성(String name) {
         return StationApi.create(name)
                 .as(StationResponse.class);
@@ -212,5 +250,10 @@ class SectionAcceptanceTest {
                 .jsonPath()
                 .getLong("stations[-1].id");
         assertThat(findBeginId).isEqualTo(station.getId());
+    }
+
+    void 구간삭제_성공(String lineLocation, StationResponse station) {
+        ExtractableResponse<Response> response = LineApi.removeSection(lineLocation, station.getId());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }

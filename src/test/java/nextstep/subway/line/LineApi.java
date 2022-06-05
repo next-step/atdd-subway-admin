@@ -3,9 +3,9 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.dto.AddSectionRequest;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineUpdateRequest;
-import nextstep.subway.dto.AddSectionRequest;
 import org.springframework.http.MediaType;
 
 public class LineApi {
@@ -61,6 +61,16 @@ public class LineApi {
                 .body(body)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post(linelocation + "/sections")
+                .then().log().all()
+                .extract();
+
+        return response;
+    }
+
+    public static ExtractableResponse<Response> removeSection(String linelocation, Long stationId) {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .param("stationId", stationId)
+                .when().delete(linelocation + "/sections")
                 .then().log().all()
                 .extract();
 
