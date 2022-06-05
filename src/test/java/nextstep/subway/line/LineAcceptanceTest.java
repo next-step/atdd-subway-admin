@@ -4,32 +4,44 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineUpdateRequest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
+import nextstep.subway.DatabaseCleanup;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static nextstep.subway.station.StationAcceptanceTest.신규_역_등록;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("classpath:/createstation.sql")
 public class LineAcceptanceTest {
 
     @LocalServerPort
     int port;
+
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
 
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+    }
+
+    @AfterEach
+    public void clearDatabase() {
+        databaseCleanup.execute();
     }
 
 
@@ -168,28 +180,28 @@ public class LineAcceptanceTest {
     }
 
     private ExtractableResponse<Response> 신분당선_생성() {
-        ExtractableResponse<Response> 신분당선_상행_방향_역 = 신규_역_등록("강남역");
-        ExtractableResponse<Response> 신분당선_하행_방향_역 = 신규_역_등록("양재역");
+        final long 강남역_ID = 1L;
+        final long 양재역_ID = 2L;
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
-        params.put("upStationId", Long.parseLong(신분당선_상행_방향_역.jsonPath().getString("id")));
-        params.put("downStationId", Long.parseLong(신분당선_하행_방향_역.jsonPath().getString("id")));
+        params.put("upStationId", 강남역_ID);
+        params.put("downStationId", 양재역_ID);
         params.put("distance", 10);
 
         return 노선_생성(params);
     }
 
     private ExtractableResponse<Response> 신림선_생성() {
-        ExtractableResponse<Response> 신림선_상행_방향_역 = 신규_역_등록("신림역");
-        ExtractableResponse<Response> 신림선_하행_방향_역 = 신규_역_등록("서원역");
+        final long 신림역_ID = 3L;
+        final long 서원역_ID = 4L;
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "신림선");
         params.put("color", "bg-red-100");
-        params.put("upStationId", Long.parseLong(신림선_상행_방향_역.jsonPath().getString("id")));
-        params.put("downStationId", Long.parseLong(신림선_하행_방향_역.jsonPath().getString("id")));
+        params.put("upStationId", 신림역_ID);
+        params.put("downStationId", 서원역_ID);
         params.put("distance", 7);
 
         return 노선_생성(params);
