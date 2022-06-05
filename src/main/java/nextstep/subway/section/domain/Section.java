@@ -19,7 +19,7 @@ public class Section {
     private Long id;
 
     @Column(name = "line_id")
-    private Long line;
+    private Long lineId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id", nullable = false)

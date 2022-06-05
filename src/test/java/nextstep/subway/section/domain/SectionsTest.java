@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 import nextstep.subway.line.repository.LineRepository;
 import nextstep.subway.station.domain.Station;
@@ -32,7 +33,7 @@ class SectionsTest {
     private static Station newDownStation = new Station("낙성대역");
     private static Section section;
     private static Sections sections;
-    
+
     @BeforeEach
     public void init() {
         stationRepository.saveAll(Arrays.asList(upStation, downStation, newDownStation, newUpStation));
@@ -69,6 +70,51 @@ class SectionsTest {
         sections.add(newSection);
 
         assertThat(sections.orderStationsOfLine()).containsExactly(upStation, newUpStation, downStation);
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("노선에서 특정 지하철역을 삭제할 때, 발생할 수 있는 예외처리 확인")
+    @MethodSource("providerRemoveStationInSection_failCase")
+    void removeStationInSection_fail(String name, Station removeStation) {
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> sections.removeStationInSection(removeStation));
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("노선에서 특정 지하철역을 삭제되었을 떄, 남은 노선의 구간 개수를 확인한다.")
+    @MethodSource("providerRemoveStationInSection_successCase")
+    void removeStationInSection_success(String name, Station removeStation, List<Station> resultStations) {
+        Section newSection = new Section(upStation, newDownStation, new Distance(5L));
+        sections.add(newSection);
+
+        sections.removeStationInSection(removeStation);
+
+        assertThat(sections.orderStationsOfLine()).containsExactly(resultStations.toArray(new Station[0]));
+    }
+
+    static Stream<Arguments> providerRemoveStationInSection_successCase() {
+        return Stream.of(
+            Arguments.of(
+                "상행종점역이 삭제되었을 때", upStation, Arrays.asList(newDownStation, downStation)
+            ),
+            Arguments.of(
+                "하행종점역이 삭제되었을 때", downStation, Arrays.asList(upStation, newDownStation)
+            ),
+            Arguments.of(
+                "상하행종점역 사이의 역이 삭제되었을 때", newDownStation, Arrays.asList(upStation, downStation)
+            )
+        );
+    }
+
+    static Stream<Arguments> providerRemoveStationInSection_failCase() {
+        return Stream.of(
+            Arguments.of(
+                "노선에 남은 구간이 하나일 때", upStation
+            ),
+            Arguments.of(
+                "노선에 해당 지하철역이 없을 때", newDownStation
+            )
+        );
     }
 
     static Stream<Arguments> providerCreateSection_add_failCase(){

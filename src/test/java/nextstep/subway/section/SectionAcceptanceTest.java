@@ -1,5 +1,6 @@
 package nextstep.subway.section;
 
+import static nextstep.subway.line.LineAcceptanceTest.노션_조회;
 import static nextstep.subway.line.LineAcceptanceTest.지하철역과_노선_동시_생성;
 import static nextstep.subway.station.StationAcceptanceTest.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,6 +17,7 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -66,6 +68,56 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(response.getStations()).hasSize(resultSize);
     }
 
+
+    @Test
+    @DisplayName("노선이 하나일 경우 삭제에 실패한다.")
+    void deleteSection_fail() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제(lineResponse.getStations().get(0).getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("노선에서 종점역이 삭제될 경우, 노선 조회시 역이 삭제되는지 확인한다.")
+    @MethodSource("providerDeleteSectionCase")
+    void deleteSection_success(String name, Long stationId) {
+        // given
+        List<StationResponse> preStations = lineResponse.getStations();
+        SectionRequest sectionRequest = new SectionRequest(preStations.get(0).getId(), newStationResponse.getId(), 5L);
+        지하철_구간_등록(sectionRequest, lineResponse.getId());
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제(stationId);
+
+        // then
+        List<Object> stations = 노션_조회(lineResponse.getId()).jsonPath().getList("stations");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(stations).hasSize(2);
+    }
+
+    static Stream<Arguments> providerDeleteSectionCase() {
+        List<StationResponse> preStations = lineResponse.getStations();
+
+        return Stream.of(
+            Arguments.of(
+                "상행종점역이 삭제되는 경우",
+                preStations.get(0).getId()
+            ),
+            Arguments.arguments(
+                "하행종점역이 삭제되는 경우",
+                preStations.get(preStations.size() - 1).getId()
+            ),
+            Arguments.arguments(
+                "상하행종점역 사이의 역이 삭제되는 경우",
+                newStationResponse.getId()
+            )
+        );
+    }
+
     static Stream<Arguments> providerCreateSectionCase() {
         List<StationResponse> preStations = lineResponse.getStations();
 
@@ -86,6 +138,13 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
                 lineResponse.getStations().size() + 1
             )
         );
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_구간_삭제(Long stationId) {
+        return RestAssured.given().log().all()
+            .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineResponse.getId(), stationId)
+            .then().log().all()
+            .extract();
     }
 
     private ExtractableResponse<Response> 지하철_구간_등록(SectionRequest sectionRequest, Long lineId) {

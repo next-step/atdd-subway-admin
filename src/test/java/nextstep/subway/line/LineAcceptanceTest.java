@@ -139,7 +139,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> 노션_조회(Long lineId) {
+    public static ExtractableResponse<Response> 노션_조회(Long lineId) {
         return RestAssured.given().log().all()
             .when().get("/lines/{lineId}", lineId)
             .then().log().all()
