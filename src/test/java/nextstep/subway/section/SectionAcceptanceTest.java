@@ -34,6 +34,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
      * Then 구간 목록 조회 시 생성한 구간을 찾을 수 있다
      * Then 기존 구간의 길이가 새로 생성된 구간의 길이만큼 줄어든다
      */
+    @DisplayName("하행종점역이 아닌 기존 역을 상행선으로 새 구간을 등록한다")
     @Test
     void registerSectionWithExistingUpStation() {
         // when
@@ -50,6 +51,34 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         // then
         final SectionResponse modifiedSection = sections.stream()
                 .filter(sectionResponse -> sectionResponse.getDownStationName().equals("정자역"))
+                .findFirst()
+                .get();
+        assertThat(modifiedSection.getDistance()).isEqualTo(DISTANCE_FROM_GANGNAME_TO_JUNGJA - 10);
+    }
+
+    /**
+     * When 상행종점역이 아닌 기존 역을 하행선으로 새로운 구간을 등록하면
+     * Then 새로운 구간이 등록된다
+     * Then 구간 목록 조회 시 생성한 구간을 찾을 수 있다
+     * Then 기존 구간의 길이가 새로 생성된 구간의 길이만큼 줄어든다
+     */
+    @DisplayName("상행종점역이 아닌 기존 역을 하행선으로 새 구간을 등록한다")
+    @Test
+    void registerSectionWithExistingDownStation() {
+        // when
+        final Long distance = 10L;
+        final ExtractableResponse<Response> registerResponse = 구간을_등록한다(YANGJAE, JUNGJA, distance);
+
+        // then
+        assertThat(registerResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        final List<SectionResponse> sections = 구간_목록을_조회한다().jsonPath().getList(".", SectionResponse.class);
+        assertThat(sections).contains(registerResponse.body().as(SectionResponse.class));
+
+        // then
+        final SectionResponse modifiedSection = sections.stream()
+                .filter(sectionResponse -> sectionResponse.getUpStationName().equals("강남역"))
                 .findFirst()
                 .get();
         assertThat(modifiedSection.getDistance()).isEqualTo(DISTANCE_FROM_GANGNAME_TO_JUNGJA - 10);
