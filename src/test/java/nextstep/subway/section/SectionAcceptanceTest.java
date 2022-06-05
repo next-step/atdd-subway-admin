@@ -19,9 +19,11 @@ import org.springframework.test.context.jdbc.Sql;
 @DisplayName("구간 관련 기능")
 @Sql({"classpath:section_acceptance_test.sql"})
 public class SectionAcceptanceTest extends BaseAcceptanceTest {
-    private final long GANGNAM = 1L;
-    private final long YANGJAE = 2L;
+    private final long SINNONHYUN = 1L;
+    private final long GANGNAM = 2L;
+    private final long YANGJAE = 3L;
     private final long JUNGJA = 4L;
+    private final long MIGEUM = 5L;
 
     private final long SINBUNDANGSUN = 1L;
 
@@ -82,6 +84,46 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
                 .findFirst()
                 .get();
         assertThat(modifiedSection.getDistance()).isEqualTo(DISTANCE_FROM_GANGNAME_TO_JUNGJA - 10);
+    }
+
+    /**
+     * When 상행종점역을 하행선으로 새로운 구간을 등록하면
+     * Then 새로운 구간이 등록된다
+     * Then 구간 목록 조회 시 생성한 구간을 찾을 수 있다
+     */
+    @DisplayName("상행종점역을 하행선으로 새 구간을 등록한다")
+    @Test
+    void registerSectionWithFinalUpStationAsDownStation() {
+        // when
+        final Long distance = 10L;
+        final ExtractableResponse<Response> registerResponse = 구간을_등록한다(SINNONHYUN, GANGNAM, distance);
+
+        // then
+        assertThat(registerResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        final List<SectionResponse> sections = 구간_목록을_조회한다().jsonPath().getList(".", SectionResponse.class);
+        assertThat(sections).contains(registerResponse.body().as(SectionResponse.class));
+    }
+
+    /**
+     * When 하행종점역을 상행선으로 새로운 구간을 등록하면
+     * Then 새로운 구간이 등록된다
+     * Then 구간 목록 조회 시 생성한 구간을 찾을 수 있다
+     */
+    @DisplayName("하행종점역을 상행선으로 새 구간을 등록한다")
+    @Test
+    void registerSectionWithFinalDownStationAsUpStation() {
+        // when
+        final Long distance = 10L;
+        final ExtractableResponse<Response> registerResponse = 구간을_등록한다(JUNGJA, MIGEUM, distance);
+
+        // then
+        assertThat(registerResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        final List<SectionResponse> sections = 구간_목록을_조회한다().jsonPath().getList(".", SectionResponse.class);
+        assertThat(sections).contains(registerResponse.body().as(SectionResponse.class));
     }
 
     private ExtractableResponse<Response> 구간을_등록한다(final long upStationId,
