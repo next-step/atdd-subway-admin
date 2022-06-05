@@ -58,6 +58,10 @@ public class LineStation {
         return this.section.getDistance();
     }
 
+    public boolean isPreStation(Station station) {
+        return Objects.equals(this.getPreStation(), station);
+    }
+
     public LineStation addLineStation(final LineStation newLineStation) {
         validationLine(newLineStation);
         return addLineStation(newLineStation, this.section.updatable(newLineStation.section));
