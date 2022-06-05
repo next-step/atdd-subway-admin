@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
@@ -65,7 +66,15 @@ public class LineAcceptanceTest extends AcceptanceTest{
 	@DisplayName("지하철노선을 조회한다.")
 	@Test
 	void getLine() {
+		// given
+		ExtractableResponse<Response> creationResponse = 노선_생성_요청("신분당선", "bg-red-600", 1L, 2L, 10);
 
+		// when
+		ExtractableResponse<Response> response = 노선_조회_요청(creationResponse);
+
+		// then
+		요청_응답_확인(response, HttpStatus.OK);
+		assertThat(response.jsonPath().getString("name")).isEqualTo("신분당선");
 	}
 
 	/**

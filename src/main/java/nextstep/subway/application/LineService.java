@@ -51,4 +51,9 @@ public class LineService {
 			.map(LineResponse::of)
 			.collect(Collectors.toList());
 	}
+
+	public LineResponse findById(Long id) {
+		Line line = lineRepository.findById(id).orElseThrow(IllegalAccessError::new);
+		return LineResponse.of(line);
+	}
 }
