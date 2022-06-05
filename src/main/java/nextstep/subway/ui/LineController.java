@@ -5,6 +5,8 @@ import java.util.List;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.SectionResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -51,5 +53,12 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable final Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<Void> registerSection(@PathVariable Long id,
+                                                @RequestBody final SectionRequest sectionRequest) {
+        final SectionResponse sectionResponse = lineService.addSection(id, sectionRequest);
+        return ResponseEntity.created(URI.create("/lines/" + id + "/sections/" + sectionResponse.getId())).build();
     }
 }
