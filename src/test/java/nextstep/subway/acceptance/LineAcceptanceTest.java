@@ -3,9 +3,12 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.application.StationService;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.StationRequest;
+import nextstep.subway.dto.StationResponse;
 import nextstep.subway.util.DatabaseCleaner;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("지하철노선 관련 기능")
-@Sql(value = {"classpath:db/data.sql"})
 @ActiveProfiles(value = "acceptance")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestPropertySource(locations = "classpath:application-test.properties")
@@ -37,13 +38,23 @@ public class LineAcceptanceTest {
     int port;
 
     @Autowired
+    DatabaseCleaner cleaner;
+
+    @Autowired
     LineRepository lines;
 
     @Autowired
-    DatabaseCleaner cleaner;
+    StationService stations;
+
+    StationResponse gangnam;
+    StationResponse gyodae;
+    StationResponse sinchon;
+    StationResponse sillim;
 
     @BeforeEach
-    public void beforeEach() {
+    void beforeEach() {
+        createStations();
+
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
@@ -52,6 +63,13 @@ public class LineAcceptanceTest {
     @AfterEach
     public void afterEach() {
         cleaner.execute();
+    }
+
+    void createStations() {
+        gangnam = stations.saveStation(new StationRequest("gangnam"));
+        gyodae = stations.saveStation(new StationRequest("gyodae"));
+        sinchon = stations.saveStation(new StationRequest("sinchon"));
+        sillim = stations.saveStation(new StationRequest("sillim"));
     }
 
     /**
@@ -64,7 +82,7 @@ public class LineAcceptanceTest {
     void createLine() {
         // given
         // - 노선명, 노선색상, 첫 출발 지하철역, 마지막 지하철역, 노선길이
-        LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        LineRequest request = new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10);
 
         // when
         ExtractableResponse<Response> created = createLine(request);
@@ -90,8 +108,8 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10));
-        createLine(new LineRequest("2호선", "bg-blue-200", 3L, 4L, 80));
+        createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10));
+        createLine(new LineRequest("2호선", "bg-blue-200", sinchon.getId(), sillim.getId(), 80));
 
         // when
         List<String> lineNames = getLineNames();
@@ -116,7 +134,7 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         // given
-        Long id = createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10))
+        Long id = createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10))
                 .body().jsonPath().getLong("id");
 
         // when
@@ -145,7 +163,7 @@ public class LineAcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Long id = createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10))
+        Long id = createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10))
                 .body().jsonPath().getLong("id");
 
         // when
@@ -178,7 +196,7 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Long id = createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10))
+        Long id = createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10))
                 .body().jsonPath().getLong("id");
 
         // when
