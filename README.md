@@ -245,3 +245,27 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   accept: */*
   host: localhost:52165
 ```
+
+### 인수 조건 
+  - [ ] 종점역을 제거 한다.
+    given 지하철 역을 생성하고 지하철 노선을 추가한다.
+    when 종점을 제거한다.
+    then 종점이 제거된다.
+    then 이전 역이 종점이 된다.
+
+  - [ ] 중간역을 제거 한다.
+    given 지하철 역을 생성하고 지하철 노선을 추가한다.
+    when 중간역이 제거하면
+    then 중간역이 제거 된다. 
+    then 중간역이 연결되어 있던 구간이 합쳐지며 거리가 합산된다.
+
+  - [ ] 구간이 하나인 역은 제거 할수 없다.
+    given 지하철 역을 생성하고 지하철 노선을 추가한다.
+    when 구간역이 제거하면
+    then 제거되지 않는다.
+
+  - [ ] 존재하지 않은 역을 제거한다.
+    given 다구간 호선을 생성 한다.
+    given 존재 하지 않은 역을 추가한다.
+    when 존재하지 않은 역을 제거 하면
+    then 제거되지 않는다.

@@ -190,6 +190,47 @@ public class SectionAcceptanceTest {
         );
     }
 
+
+    //given 지하철 역을 생성하고 지하철 노선을 추가한다.
+    //when 구간역이 제거하면
+    //then 제거되지 않는다.
+    @Test
+    @DisplayName("구간이 하나인 역 제거")
+    void oneSectionDelete() {
+
+    }
+
+    //given 다구간 호선을 생성 한다.
+    //given 존재 하지 않은 역을 추가한다.
+    //when 존재하지 않은 역을 제거 하면
+    //then 제거되지 않는다.
+    @Test
+    @DisplayName("존재하지 않은 역 제거")
+    void noExistStationDelete() {
+
+    }
+
+
+    //given 지하철 역을 생성하고 지하철 노선을 추가한다.
+    //when 종점을 제거한다.
+    //then 종점이 제거된다.
+    //then 이전 역이 종점이 된다.
+    @Test
+    @DisplayName("종점역을 제거 한다.")
+    void lastStationDelete() {
+
+    }
+
+    //given 지하철 역을 생성하고 지하철 노선을 추가한다.
+    //when 종점을 제거한다.
+    //then 종점이 제거된다.
+    //then 이전 역이 종점이 된다.
+    @Test
+    @DisplayName("중간역을 제거 한다")
+    void middleStationDelete() {
+
+    }
+
     private static ExtractableResponse<Response> 노선의_구간을_추가한다(Long lineId, SectionRequest sectionRequest) {
         return RestAssured.given().log().all()
                 .body(sectionRequest)
