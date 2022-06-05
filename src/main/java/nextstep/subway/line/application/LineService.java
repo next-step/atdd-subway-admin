@@ -80,7 +80,7 @@ public class LineService {
     }
 
     private List<StationResponse> generateStationResponses(Line line) {
-        return StationResponse.from(line.getSections());
+        return StationResponse.from(line.sections());
     }
 
     private Station findStation(Long id) {

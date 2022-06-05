@@ -4,8 +4,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.Arrays;
-import java.util.List;
 
 @Entity
 public class Section{
@@ -42,20 +40,20 @@ public class Section{
     }
 
     public void divideWith(Section newSection) {
-        if (isSameUpStation(newSection.getUpStation())) {
-            upStation = newSection.getDownStation();
-            distance.subtract(newSection.getDistance());
+        if (isSameUpStation(newSection.upStation())) {
+            upStation = newSection.downStation();
+            distance.subtract(newSection.distance());
             return;
         }
-        if (isSameDownStation(newSection.getDownStation())) {
-            downStation = newSection.getUpStation();
-            distance.subtract(newSection.getDistance());
+        if (isSameDownStation(newSection.downStation())) {
+            downStation = newSection.upStation();
+            distance.subtract(newSection.distance());
         }
     }
 
     public void mergeWith(Section nextSection) {
         downStation = nextSection.downStation;
-        distance.add(nextSection.getDistance());
+        distance.add(nextSection.distance());
     }
 
     public boolean isSameUpStation(Station station){
@@ -66,20 +64,16 @@ public class Section{
         return downStation.equals(station);
     }
 
-    public Station getUpStation() {
+    public Station upStation() {
         return upStation;
     }
 
-    public Station getDownStation() {
+    public Station downStation() {
         return downStation;
     }
 
-    public Distance getDistance() {
+    public Distance distance() {
         return distance;
-    }
-
-    public Line getLine() {
-        return line;
     }
 
     public void updateLine(Line line) {

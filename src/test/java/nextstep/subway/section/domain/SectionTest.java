@@ -1,8 +1,6 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.testutils.FactoryMethods;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -28,8 +26,8 @@ class SectionTest {
 
         //then
         assertAll(
-                () -> assertThat(defaultSection.getUpStation()).isEqualTo(신규역),
-                () -> assertThat(defaultSection.getDistance()).isEqualTo(Distance.from(7))
+                () -> assertThat(defaultSection.upStation()).isEqualTo(신규역),
+                () -> assertThat(defaultSection.distance()).isEqualTo(Distance.from(7))
         );
     }
 
@@ -48,8 +46,8 @@ class SectionTest {
 
         //then
         assertAll(
-                () -> assertThat(defaultSection.getDownStation()).isEqualTo(신규역),
-                () -> assertThat(defaultSection.getDistance()).isEqualTo(Distance.from(7))
+                () -> assertThat(defaultSection.downStation()).isEqualTo(신규역),
+                () -> assertThat(defaultSection.distance()).isEqualTo(Distance.from(7))
         );
     }
 
@@ -68,8 +66,8 @@ class SectionTest {
 
         //then
         assertAll(
-                () -> assertThat(defaultSection.getDownStation()).isEqualTo(하행역),
-                () -> assertThat(defaultSection.getDistance()).isEqualTo(Distance.from(DEFAULT_DISTANCE * 2))
+                () -> assertThat(defaultSection.downStation()).isEqualTo(하행역),
+                () -> assertThat(defaultSection.distance()).isEqualTo(Distance.from(DEFAULT_DISTANCE * 2))
         );
     }
 }
