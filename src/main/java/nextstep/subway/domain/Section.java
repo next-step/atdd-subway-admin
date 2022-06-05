@@ -75,8 +75,10 @@ public class Section {
         distance = distance - updateDistance;
     }
 
-    public void updateDownStation(Station station) {
-        downStation = station;
+    public void updateDownStation(Station updateStation, int updateDistance) {
+        validateDistance(updateDistance);
+        downStation = updateStation;
+        distance = distance - updateDistance;
     }
 
     public void setLine(Line line) {

@@ -66,7 +66,7 @@ public class Sections {
 
         if (matchDownStation(downStation)) {
             Section existingUpStation = existingDownStation(downStation);
-            existingUpStation.updateDownStation(section.getUpStation());
+            existingUpStation.updateDownStation(section.getUpStation(), section.getDistance());
         }
     }
 
