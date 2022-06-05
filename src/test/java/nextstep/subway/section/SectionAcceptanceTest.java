@@ -36,6 +36,7 @@ public class SectionAcceptanceTest {
     StationResponse 청량리역;
     StationResponse 왕십리역;
     StationResponse 서울숲역;
+    StationResponse 강남구청역;
     StationResponse 선릉역;
     StationResponse 도곡역;
     LineResponse 분당선;
@@ -47,6 +48,7 @@ public class SectionAcceptanceTest {
         청량리역 = StationAcceptanceTest.createStation(new StationRequest("청량리역")).as(StationResponse.class);
         왕십리역 = StationAcceptanceTest.createStation(new StationRequest("왕십리역")).as(StationResponse.class);
         서울숲역 = StationAcceptanceTest.createStation(new StationRequest("서울숲역")).as(StationResponse.class);
+        강남구청역 = StationAcceptanceTest.createStation(new StationRequest("강남구청역")).as(StationResponse.class);
         선릉역 = StationAcceptanceTest.createStation(new StationRequest("선릉역")).as(StationResponse.class);
         도곡역 = StationAcceptanceTest.createStation(new StationRequest("도곡역")).as(StationResponse.class);
         분당선 = LineAcceptanceTest.createLine(new LineRequest(
@@ -136,18 +138,66 @@ public class SectionAcceptanceTest {
 
     /**
      * Given 구간 하나를 가진 노선이 있을 때
+     * When 모든 케이스의 구간을 추가하면
+     * Then 추가된 역들을 확인할 수 있다
+     */
+    @DisplayName("모든 케이스의 구간을 추가한다.")
+    @Test
+    void 구간_추가() {
+        // given
+        // 분당선(왕십리역-7m-선릉역)
+
+        // when
+        addSection("/lines/" + 분당선.getId(), new SectionRequest(청량리역.getId(), 왕십리역.getId(), 3));
+        addSection("/lines/" + 분당선.getId(), new SectionRequest(왕십리역.getId(), 서울숲역.getId(), 4));
+        addSection("/lines/" + 분당선.getId(), new SectionRequest(강남구청역.getId(), 선릉역.getId(), 2));
+        addSection("/lines/" + 분당선.getId(), new SectionRequest(선릉역.getId(), 도곡역.getId(), 2));
+
+        // then
+        List<String> stationNames = LineAcceptanceTest.getLine("/lines/" + 분당선.getId())
+                .jsonPath().getList("stations.name", String.class);
+        assertThat(stationNames).containsExactly("청량리역","왕십리역", "서울숲역", "강남구청역", "선릉역", "도곡역");
+    }
+
+    /**
+     * Given 구간 하나를 가진 노선이 있을 때
      * When 기존 구간과 같은 구간을 추가하면
      * Then 400 에러가 전달된다
      */
     @DisplayName("기존 구간과 같은 구간을 추가한다.")
     @Test
-    void 중복_구간_추가() {
+    void 중복_구간_추가_1() {
         // given
         // 분당선(왕십리역-선릉역)
 
         // when
         ExtractableResponse<Response> response = addSection(
                 "/lines/" + 분당선.getId(), new SectionRequest(왕십리역.getId(), 선릉역.getId(), 4));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 구간이 추가된 노선이 있을 때
+     * When 기존 구간과 중복인 구간을 추가하면
+     * Then 400 에러가 전달된다
+     */
+    @DisplayName("기존 구간과 중복인 구간을 추가한다.")
+    @Test
+    void 중복_구간_추가_2() {
+        // given
+        // 분당선(null-왕십리역, 왕십리역-선릉역)
+
+        // 분당선(null-청량리역, 청량리역-왕십리역, 왕십리역-선릉역)
+        addSection("/lines/" + 분당선.getId(), new SectionRequest(청량리역.getId(), 왕십리역.getId(), 3));
+
+        // 분당선(null-청량리역, 청량리역-왕십리역, 왕십리역-서울숲역, 서울숲역-선릉역)
+        addSection("/lines/" + 분당선.getId(), new SectionRequest(왕십리역.getId(), 서울숲역.getId(), 4));
+
+        // when
+        ExtractableResponse<Response> response = addSection(
+                "/lines/" + 분당선.getId(), new SectionRequest(서울숲역.getId(), 선릉역.getId(), 4));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
