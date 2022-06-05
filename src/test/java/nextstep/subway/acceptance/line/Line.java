@@ -13,7 +13,7 @@ public final class Line {
     }
 
     static Long 지하철역_생성(String stationName) {
-        ExtractableResponse<Response> response = Station.createStation(stationName);
+        ExtractableResponse<Response> response = Station.지하철역_추가(stationName);
         return response.jsonPath().getLong("id");
     }
 
