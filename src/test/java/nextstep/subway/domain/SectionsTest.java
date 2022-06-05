@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static nextstep.subway.common.Messages.DUPLICATE_SECTION_ERROR;
-import static nextstep.subway.common.Messages.NOT_MATCH_STATION_ERROR;
+import static nextstep.subway.common.Messages.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
@@ -67,6 +66,19 @@ class SectionsTest {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> sections.addSections(신도림_대림_지하철_구간))
                 .withMessageContaining(NOT_MATCH_STATION_ERROR);
+    }
+
+    @Test
+    @DisplayName("지하철 구간 등록시 구간 길이가 초과되는 실패 테스트")
+    void addSectionsDistanceLengthError() {
+        Sections sections = new Sections();
+        Section 강남역_교대역_지하철_구간 = new Section(100, 강남역, 교대역);
+
+        sections.addSections(강남_역삼_지하철_구간);
+
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> sections.addSections(강남역_교대역_지하철_구간))
+                .withMessageContaining(DISTANCE_LENGTH_ERROR);
     }
 
     @Test
