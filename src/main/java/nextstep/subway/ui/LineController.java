@@ -11,6 +11,7 @@ import nextstep.subway.exception.BothStationNotExistsException;
 import nextstep.subway.exception.DistanceIsEqualOrGreaterException;
 import nextstep.subway.exception.ResourceNotFoundException;
 import nextstep.subway.exception.SectionLessOrEqualThanOneException;
+import nextstep.subway.exception.StationNotRegisteredInLineException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -88,7 +89,8 @@ public class LineController {
 
     @ExceptionHandler(value = {BothStationAlreadyExistsException.class, BothStationNotExistsException.class,
             DistanceIsEqualOrGreaterException.class,
-            SectionLessOrEqualThanOneException.class})
+            SectionLessOrEqualThanOneException.class,
+            StationNotRegisteredInLineException.class})
     public <T> ResponseEntity<T> handleBusinessLogicException() {
         return ResponseEntity.badRequest().build();
     }

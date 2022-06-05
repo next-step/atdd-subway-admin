@@ -14,6 +14,7 @@ import nextstep.subway.exception.BothStationNotExistsException;
 import nextstep.subway.exception.DistanceIsEqualOrGreaterException;
 import nextstep.subway.exception.ResourceNotFoundException;
 import nextstep.subway.exception.SectionLessOrEqualThanOneException;
+import nextstep.subway.exception.StationNotRegisteredInLineException;
 
 @Embeddable
 public class Sections {
@@ -152,11 +153,20 @@ public class Sections {
 
     public void removeSectionByStationId(final Long stationId) {
         checkSectionLessOrEqualThanOne();
+        checkStationRegistered(stationId);
     }
 
     private void checkSectionLessOrEqualThanOne() {
         if (sections.size() <= 1) {
             throw new SectionLessOrEqualThanOneException();
         }
+    }
+
+    private void checkStationRegistered(final Long stationId) {
+        final List<Station> stations = getAllStations();
+        stations.stream()
+                .filter(station -> station.isIdEqualTo(stationId))
+                .findFirst()
+                .orElseThrow(() -> new StationNotRegisteredInLineException());
     }
 }
