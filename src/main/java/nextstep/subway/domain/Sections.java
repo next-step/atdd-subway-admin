@@ -112,19 +112,28 @@ public class Sections {
     }
 
     public Station getLineUpStation() {
-        Set<Station> staionSet = new HashSet<>();
-        for (Section section : this.list) {
-            staionSet.add(section.getUpStation());
-            staionSet.add(section.getDownStation());
-        }
-
-        for (Section section : this.list) {
-            staionSet.remove(section.getDownStation());
-        }
-
-        return staionSet.stream()
+        Set<Station> stationSet = getStationSet();
+        this.list.forEach(section -> stationSet.remove(section.getDownStation()));
+        return stationSet.stream()
                 .findFirst()
                 .orElseThrow(StationNotFoundException::new);
+    }
+
+    public Station getLineDownStation() {
+        Set<Station> stationSet = getStationSet();
+        this.list.forEach(section -> stationSet.remove(section.getUpStation()));
+        return stationSet.stream()
+                .findFirst()
+                .orElseThrow(StationNotFoundException::new);
+    }
+
+    private Set<Station> getStationSet() {
+        Set<Station> stationSet = new HashSet<>();
+        for (Section section : this.list) {
+            stationSet.add(section.getUpStation());
+            stationSet.add(section.getDownStation());
+        }
+        return stationSet;
     }
 
     public Section getLineUpSection() {
@@ -135,22 +144,6 @@ public class Sections {
                 .orElseThrow(() -> {
                     throw new SectionNotFoundException("노선 내 구간을 찾을 수 없습니다");
                 });
-    }
-
-    public Station getLineDownStation() {
-        Set<Station> staionSet = new HashSet<>();
-        for (Section section : this.list) {
-            staionSet.add(section.getUpStation());
-            staionSet.add(section.getDownStation());
-        }
-
-        for (Section section : this.list) {
-            staionSet.remove(section.getUpStation());
-        }
-
-        return staionSet.stream()
-                .findFirst()
-                .orElseThrow(StationNotFoundException::new);
     }
 
     public Section getLineDownSection() {
