@@ -1,9 +1,6 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.LineStationRepository;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
@@ -28,10 +25,12 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(final LineRequest lineRequest) {
-        final Line line = lineRequest.toLine()
-                .upStationBy(stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(EntityNotFoundException::new))
-                .downStationBy(stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(EntityNotFoundException::new));
-        return LineResponse.of(lineRepository.save(line));
+        final Line line = lineRequest.toLine();
+        final Section section = new Section(lineRequest.getDistance())
+                .updateUpStationBy(stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(EntityNotFoundException::new))
+                .updateDownStationBy(stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(EntityNotFoundException::new));
+        LineStation savedLineStation = lineStationRepository.save(new LineStation(line, section));
+        return LineResponse.of(savedLineStation.getLine());
     }
 
     public List<LineResponse> findAllLine() {
