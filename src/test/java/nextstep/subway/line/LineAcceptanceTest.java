@@ -1,4 +1,4 @@
-package nextstep.subway.station;
+package nextstep.subway.line;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -10,8 +10,6 @@ import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -20,19 +18,14 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest extends BaseLineAcceptanceTest {
-    @LocalServerPort
-    int port;
-
     private LineRequest firstLine;
     private LineRequest secondLine;
 
     @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
+    void init() {
+        super.setUp();
+
         setDefaultLine();
     }
 
@@ -120,7 +113,7 @@ public class LineAcceptanceTest extends BaseLineAcceptanceTest {
         ExtractableResponse<Response> response = createLineRequest(firstLine);
         int lineId = response.jsonPath().get("id");
 
-        List<StationResponse> stations = response.jsonPath().getList("stations", StationResponse.class);
+        List<StationResponse> stations = response.jsonPath().getList("finalStations", StationResponse.class);
         StationResponse upStation = stations.get(0);
         StationResponse downStation = stations.get(1);
 
@@ -134,8 +127,10 @@ public class LineAcceptanceTest extends BaseLineAcceptanceTest {
                             .isEqualTo(firstLine.getName());
                     assertThat(line.getColor())
                             .isEqualTo(firstLine.getColor());
-                    assertThat(line.getStations())
-                            .containsExactly(upStation, downStation);
+                    assertThat(line.getFinalStations().get(0).getId())
+                            .isEqualTo(upStation.getId());
+                    assertThat(line.getFinalStations().get(1).getId())
+                            .isEqualTo(downStation.getId());
                 });
     }
 
