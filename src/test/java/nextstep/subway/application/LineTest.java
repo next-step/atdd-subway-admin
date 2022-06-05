@@ -93,4 +93,16 @@ class LineTest {
         //then
         assertThatThrownBy(() -> line.addSection(upStation, addedStation, 10)).isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    public void 구간_추가시_같은_역_구간은_추가가_불가능하다() {
+        //then
+        assertThatThrownBy(() -> line.addSection(addedStation, addedStation, 5)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void 구간_추가시_이미_존재하는_구간은_구간_추가가_불가능하다() {
+        //then
+        assertThatThrownBy(() -> line.addSection(upStation, downStation, 5)).isInstanceOf(IllegalArgumentException.class);
+    }
 }
