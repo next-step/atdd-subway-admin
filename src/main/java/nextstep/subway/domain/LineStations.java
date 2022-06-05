@@ -66,6 +66,7 @@ public class LineStations {
     private Optional<LineStation> findPreStation(final Station station) {
         return this.lineStations.stream()
                 .filter(savedLineStation -> savedLineStation.isPreStation(station))
+                .filter(savedLineStation -> !savedLineStation.isCurrentStation(station))
                 .findFirst();
     }
 

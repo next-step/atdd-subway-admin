@@ -34,7 +34,7 @@ public class Section {
 
     public Section(final Station upStation, final Station downStation, final Distance distance) {
         validation(upStation, downStation);
-        this.upStation = upStation;
+        this.upStation = Objects.nonNull(upStation) ? upStation : downStation;
         this.downStation = downStation;
         this.distance = distance;
     }

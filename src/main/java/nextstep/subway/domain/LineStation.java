@@ -27,7 +27,7 @@ public class LineStation extends BaseEntity{
     }
 
     public LineStation(final Line line, final Station station) {
-        this(line, new Section(null, station, new Distance(0L)));
+        this(line, new Section(station, station, new Distance(0L)));
     }
 
     public Long getId() {
@@ -51,7 +51,7 @@ public class LineStation extends BaseEntity{
     }
 
     public boolean isStartStation() {
-        return Objects.isNull(getPreStation());
+        return Objects.equals(getPreStation(), getCurrentStation());
     }
 
     public Distance getDistance() {
