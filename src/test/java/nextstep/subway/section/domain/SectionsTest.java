@@ -12,12 +12,14 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 class SectionsTest {
     public static final Distance addDistance = Distance.from(4);
+    private Distance initDistance;
     private Section initSection;
     private Sections sections;
 
     @BeforeEach
     void setUp() {
-        this.initSection = new Section(SectionTest.강남역, SectionTest.역삼역, SectionTest.distance);
+        this.initDistance = Distance.from(10);
+        this.initSection = new Section(SectionTest.강남역, SectionTest.역삼역, this.initDistance);
         this.sections = Sections.from(new ArrayList<>(Arrays.asList(this.initSection)));
     }
 
