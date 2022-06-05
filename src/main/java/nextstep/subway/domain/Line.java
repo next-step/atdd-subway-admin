@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -16,27 +17,30 @@ public class Line extends BaseEntity {
     private String color;
 
     @ManyToOne
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
+    @JoinColumn(name = "up_final_station_id")
+    private Station upFinalStation;
 
     @ManyToOne
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
+    @JoinColumn(name = "down_final_station_id")
+    private Station downFinalStation;
+
+    @Embedded
+    private Sections sections = new Sections();     // TODO: 처음 save 할 때 section 도 add
 
     @Column(nullable = false)
-    private int distance;
+    private Integer distance;
 
     protected Line() {
     }
 
-    private Line(String name, String color, Station upStation, Station downStation, Integer distance) {
+    private Line(String name, String color, Station upFinalStation, Station downFinalStation, Integer distance) {
         validateDistance(distance);
-        validateUpDownStations(upStation, downStation);
+        validateUpDownStations(upFinalStation, downFinalStation);
 
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
+        this.upFinalStation = upFinalStation;
+        this.downFinalStation = downFinalStation;
         this.distance = distance;
     }
 
@@ -46,14 +50,14 @@ public class Line extends BaseEntity {
         }
     }
 
-    private void validateUpDownStations(Station upStation, Station downStation) {
-        if (upStation.equals(downStation)) {
+    private void validateUpDownStations(Station upFinalStation, Station downFinalStation) {
+        if (upFinalStation.equals(downFinalStation)) {
             throw new IllegalArgumentException("상행종점역과 하행종점역은 같을 수 없습니다.");
         }
     }
 
-    public static Line of(String name, String color, Station upStation, Station downStation, Integer distance) {
-        return new Line(name, color, upStation, downStation, distance);
+    public static Line of(String name, String color, Station upFinalStation, Station downFinalStation, Integer distance) {
+        return new Line(name, color, upFinalStation, downFinalStation, distance);
     }
 
     public void update(String name, String color) {
@@ -73,12 +77,24 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public Station getUpFinalStation() {
+        return upFinalStation;
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public Station getDownFinalStation() {
+        return downFinalStation;
+    }
+
+    public Integer getDistance() {
+        return distance;
+    }
+
+    public Sections getSections() {
+        return sections;
+    }
+
+    public List<Section> getAllSections() {
+        return sections.getSections();
     }
 
     @Override
@@ -86,16 +102,11 @@ public class Line extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return Objects.equals(distance, line.distance)
-                && Objects.equals(id, line.id)
-                && Objects.equals(name, line.name)
-                && Objects.equals(color, line.color)
-                && Objects.equals(upStation, line.upStation)
-                && Objects.equals(downStation, line.downStation);
+        return Objects.equals(id, line.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, upStation, downStation, distance);
+        return Objects.hash(id);
     }
 }
