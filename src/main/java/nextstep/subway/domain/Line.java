@@ -53,10 +53,6 @@ public class Line {
         this.deleted = true;
     }
 
-    public boolean isDelete() {
-        return this.deleted;
-    }
-
     public Long getId() {
         return id;
     }
@@ -67,10 +63,6 @@ public class Line {
 
     public String getColor() {
         return color;
-    }
-
-    public Sections getSections() {
-        return sections;
     }
 
     public Section getFirstSection() {
@@ -113,10 +105,6 @@ public class Line {
         return sections.getSections().stream()
                 .filter(section -> section.isEqualsUpStation(firstSection.getDownStation()))
                 .findFirst().orElse(null);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
     }
 
     public void addSection(Section section) {
