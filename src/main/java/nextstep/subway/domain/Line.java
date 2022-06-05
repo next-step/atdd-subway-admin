@@ -65,6 +65,49 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    public void addSection(Section section) {
+        validateSection(section);
+        section.updateLine(this);
+
+        Station newUpStation = section.getUpStation();
+        Station newDownStation = section.getDownStation();
+
+        if (sections.isEmpty()) {
+            sections.addFirstSection(section);
+            return;
+        }
+        if (upFinalStation.equals(newDownStation)) {
+            sections.addUpFinalSection(section);
+            updateUpFinalStation(newUpStation);
+            return;
+        }
+        if (downFinalStation.equals(newUpStation)) {
+            sections.addDownFinalSection(section);
+            updateDownFinalStation(newDownStation);
+            return;
+        }
+        sections.addMiddleSection(section);
+    }
+
+    private void validateSection(Section section) {
+        Station newUpStation = section.getUpStation();
+        Station newDownStation = section.getDownStation();
+        Integer newDistance = section.getDistance();
+
+        if (sections.isEmpty()) {
+            return;
+        }
+        if (sections.containsSection(section)) {
+            throw new IllegalArgumentException("추가할 구간은 모두 이미 노선에 등록되어 있습니다.");
+        }
+        if (!sections.containsStation(newUpStation) && !sections.containsStation(newDownStation)) {
+            throw new IllegalArgumentException("추가할 구간의 상행역과 하행역 중 하나 이상은 노선에 포함되어 있어야 합니다.");
+        }
+        if (distance <= newDistance) {
+            throw new IllegalArgumentException("추가할 구간의 길이는 노선의 길이보다 작아야 합니다.");
+        }
+    }
+
     public Long getId() {
         return id;
     }
