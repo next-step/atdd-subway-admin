@@ -10,6 +10,7 @@ import nextstep.subway.exception.BothStationAlreadyExistsException;
 import nextstep.subway.exception.BothStationNotExistsException;
 import nextstep.subway.exception.DistanceIsEqualOrGreaterException;
 import nextstep.subway.exception.ResourceNotFoundException;
+import nextstep.subway.exception.SectionLessOrEqualThanOneException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -62,9 +64,16 @@ public class LineController {
 
     @PostMapping(value = "/{id}/sections")
     public ResponseEntity<LineResponse> addSection(@PathVariable final Long id,
-                                            @RequestBody final SectionRequest sectionRequest) {
+                                                   @RequestBody final SectionRequest sectionRequest) {
         final LineResponse line = lineService.addSection(id, sectionRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+    }
+
+    @DeleteMapping(value = "/{lineId}/sections")
+    public ResponseEntity deleteSection(@PathVariable final Long lineId,
+                                        @RequestParam final Long stationId) {
+        lineService.removeSectionByStationId(lineId, stationId);
+        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -77,7 +86,9 @@ public class LineController {
         return ResponseEntity.notFound().build();
     }
 
-    @ExceptionHandler(value = {BothStationAlreadyExistsException.class, BothStationNotExistsException.class, DistanceIsEqualOrGreaterException.class})
+    @ExceptionHandler(value = {BothStationAlreadyExistsException.class, BothStationNotExistsException.class,
+            DistanceIsEqualOrGreaterException.class,
+            SectionLessOrEqualThanOneException.class})
     public <T> ResponseEntity<T> handleBusinessLogicException() {
         return ResponseEntity.badRequest().build();
     }

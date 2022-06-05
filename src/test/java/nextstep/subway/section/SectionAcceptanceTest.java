@@ -9,6 +9,7 @@ import static nextstep.subway.helper.DomainCreationHelper.지하철구간_중간
 import static nextstep.subway.helper.DomainCreationHelper.지하철구간_하행_기점_생성됨;
 import static nextstep.subway.helper.DomainCreationHelper.지하철노선_생성됨;
 import static nextstep.subway.helper.DomainCreationHelper.지하철역_생성됨;
+import static nextstep.subway.helper.DomainDeletionHelper.지하철구간_삭제_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
@@ -170,6 +171,16 @@ public class SectionAcceptanceTest extends DoBeforeEachAbstract {
         // when
         // 지하철_노선에_지하철_구간_등록_요청
         final ExtractableResponse<Response> 결과 = 지하철구간_상행_하행_새로_생성됨(lineId, "신길역", "시청역", 18L);
+
+        // then
+        assertThat(결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("구간이 하나만 남아있을 때 역을 제거 시도하면 실패한다.")
+    @Test
+    void removeSectionOneRemained() {
+        // when
+        final ExtractableResponse<Response> 결과 = 지하철구간_삭제_요청(lineId, lineUpStationId);
 
         // then
         assertThat(결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

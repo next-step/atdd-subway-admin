@@ -13,6 +13,7 @@ import nextstep.subway.exception.BothStationAlreadyExistsException;
 import nextstep.subway.exception.BothStationNotExistsException;
 import nextstep.subway.exception.DistanceIsEqualOrGreaterException;
 import nextstep.subway.exception.ResourceNotFoundException;
+import nextstep.subway.exception.SectionLessOrEqualThanOneException;
 
 @Embeddable
 public class Sections {
@@ -147,5 +148,15 @@ public class Sections {
                         section.isEqualToUpStation(station))
                 .findFirst();
         return nextSection.map(section -> section.getDownStation());
+    }
+
+    public void removeSectionByStationId(final Long stationId) {
+        checkSectionLessOrEqualThanOne();
+    }
+
+    private void checkSectionLessOrEqualThanOne() {
+        if (sections.size() <= 1) {
+            throw new SectionLessOrEqualThanOneException();
+        }
     }
 }
