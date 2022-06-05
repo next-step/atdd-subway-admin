@@ -26,7 +26,10 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(final LineRequest request) {
         final Line line = request.toLine();
-        createSection(line, request.getUpStationId(), request.getDownStationId(), request.getDistance());
+        line.setFinalStations(
+                stationService.getStationOrElseThrow(request.getUpStationId()),
+                stationService.getStationOrElseThrow(request.getDownStationId()),
+                request.getDistance());
         lineRepository.save(line);
         return LineResponse.of(line);
     }

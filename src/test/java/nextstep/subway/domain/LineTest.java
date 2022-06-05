@@ -32,6 +32,18 @@ public class LineTest {
     }
 
     @Test
+    void 상행종점과_하행종점을_설정할_수_있어야_한다() {
+        // when
+        line.setFinalStations(finalUpStation, finalDownStation, lineDistance);
+
+        // then
+        assertThat(line.getSections().sections())
+                .containsExactly(SectionResponse.of(new Section(line, finalUpStation, finalDownStation, lineDistance)));
+        assertThat(line.getLineStations().stations())
+                .containsExactly(StationResponse.of(finalUpStation), StationResponse.of(finalDownStation));
+    }
+
+    @Test
     void 노선을_수정할_수_있어야_한다() {
         // given
         final String newName = "수정된이름";
@@ -46,7 +58,7 @@ public class LineTest {
     }
 
     @Test
-    void 구간과_연관관계를_맺으면_구간_및_지하철역들과의_연관관계가_추가되어야_한다() {
+    void 구간과_연관관계를_맺으면_구간_및_새로운_지하철역과의_연관관계가_추가되어야_한다() {
         // when
         line.relateToSection(finalUpStation, finalDownStation, lineDistance);
 

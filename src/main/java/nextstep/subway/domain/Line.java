@@ -36,16 +36,22 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void relateToSection(final Station upStation, final Station downStation, final Long distance) {
-        final Station previous = lineStations.getPreviousOf(upStation);
-        relateToStation(new LineStation(this, upStation, previous));
-        relateToStation(new LineStation(this, downStation, upStation));
-        sections.add(new Section(this, upStation, downStation, distance));
+    public void setFinalStations(final Station finalUpStation, final Station finalDownStation, final Long distance) {
+        relateToStation(new LineStation(this, finalUpStation, null));
+        relateToStation(new LineStation(this, finalDownStation, finalUpStation));
+        sections.add(new Section(this, finalUpStation, finalDownStation, distance));
     }
 
     public void update(final String newName, final String newColor) {
         name = newName;
         color = newColor;
+    }
+
+    public void relateToSection(final Station upStation, final Station downStation, final Long distance) {
+        final Station previous = lineStations.getPreviousOf(upStation);
+        relateToStation(new LineStation(this, upStation, previous));
+        relateToStation(new LineStation(this, downStation, upStation));
+        sections.add(new Section(this, upStation, downStation, distance));
     }
 
     public Long getId() {
