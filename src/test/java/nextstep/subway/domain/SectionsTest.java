@@ -200,24 +200,52 @@ class SectionsTest {
         assertThat(find.getUpStation()).isEqualTo(F역);
     }
 
-    @DisplayName("구간 추가")
+    @DisplayName("자유로운 구간 추가")
     @Test
-    public void insertSection() {
+    void insertSection() {
         // given
         Sections sections = new Sections(sectionList);
-        Station 상행종점역 = new Station(101L, "상행종점역");
-        Station 하행종점역 = new Station(102L, "하행종점역");
-        Station F역 = new Station(103L, "F역");
-        Station G역 = new Station(104L, "G역");
+        Station X역 = new Station(51L, "X역");
+        Station Y역 = new Station(52L, "Y역");
+        Station Z역 = new Station(53L, "Z역");
 
         // when
-        sections.insertSection(null, new Section(10, 상행종점역, A역));
-        sections.insertSection(null, new Section(15, D역, G역));
-        sections.insertSection(null, new Section(10, D역, F역));
-        sections.insertSection(null, new Section(10, G역, 하행종점역));
+        sections.insertSection(null, new Section(15, X역, A역));
+        sections.insertSection(null, new Section(7, Y역, D역));
+        sections.insertSection(null, new Section(10, D역, Z역));
 
         // then
-        assertThat(sections.getLineUpStation()).isEqualTo(상행종점역);
-        assertThat(sections.getLineDownStation()).isEqualTo(하행종점역);
+        assertThat(sections.getLineUpStation()).isEqualTo(X역);
+        assertThat(sections.getLineDownStation()).isEqualTo(Z역);
+    }
+
+    @DisplayName("정렬된 구간 정보 가져오기")
+    @Test
+    void getSortedSections() {
+        // given
+        Sections sections = new Sections(sectionList);
+
+        // when
+        List<Section> list = sections.getSortedSections().getList();
+
+        // then
+        assertThat(list.get(0).getUpStation()).isEqualTo(A역);
+        assertThat(list.get(0).getDownStation()).isEqualTo(B역);
+        assertThat(list.get(list.size() - 1).getUpStation()).isEqualTo(C역);
+        assertThat(list.get(list.size() - 1).getDownStation()).isEqualTo(D역);
+    }
+
+    @DisplayName("정렬된 지하철역 정보 가져오기")
+    @Test
+    void getSortedLineStations() {
+        // given
+        Sections sections = new Sections(sectionList);
+
+        // when
+        List<Station> list = sections.getSortedLineStations();
+
+        // then
+        assertThat(list.get(0)).isEqualTo(A역);
+        assertThat(list.get(list.size() - 1)).isEqualTo(D역);
     }
 }
