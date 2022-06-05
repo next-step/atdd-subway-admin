@@ -7,12 +7,13 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade=CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
+
     public Sections() {
     }
 
@@ -41,6 +42,58 @@ public class Sections {
 
         if (addType == AddSectionType.NEW_STATION) {
             insertStation(section);
+        }
+    }
+
+    public void removeSection(Station deleteStation) {
+        List<Section> containingDeleteStationSections = findSectionsContainingStation(deleteStation);
+
+        if (containingDeleteStationSections.size() == 0) {
+            throw new IllegalArgumentException(ErrorMessage.NOT_FOUND_STATION_FOR_DELETE_SECTION.getMessage());
+        }
+
+        checkDeletableSection();
+
+        if (containingDeleteStationSections.size() > 1) {
+            relocateStation(deleteStation);
+        }
+
+        sections.removeIf(section -> section.getUpStation() == deleteStation || section.getDownStation() == deleteStation);
+    }
+
+    private void relocateStation(Station station) {
+        // deleteStation - x
+        Section containingUpStation = findSectionContainingUpStationForDelete(station);
+        // x - deleteStation
+        Section containingDownStation = findSectionContainingDownStationForDelete(station);
+
+        int containingUpStationIndex = this.sections.indexOf(containingUpStation);
+        containingUpStation.updateUpStationAndDistance(containingDownStation.getUpStation(), containingUpStation.getDistance() + containingDownStation.getDistance());
+        this.sections.set(containingUpStationIndex, containingUpStation);
+    }
+
+    private List<Section> findSectionsContainingStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.getUpStation() == station || section.getDownStation() == station)
+                .collect(Collectors.toList());
+    }
+
+    private Section findSectionContainingUpStationForDelete(Station station) {
+        return sections.stream()
+                .filter(section -> section.getUpStation() == station)
+                .findAny().orElseThrow(() -> new IllegalArgumentException(ErrorMessage.NOT_FOUND_STATION_FOR_DELETE_SECTION.getMessage()));
+    }
+
+    private Section findSectionContainingDownStationForDelete(Station station) {
+        return sections.stream()
+                .filter(section -> section.getDownStation() == station)
+                .findAny().orElseThrow(() -> new IllegalArgumentException(ErrorMessage.NOT_FOUND_STATION_FOR_DELETE_SECTION.getMessage()));
+    }
+
+    private void checkDeletableSection() {
+        int deletableSectionSize = 1;
+        if (sections.size() == deletableSectionSize) {
+            throw new IllegalArgumentException(ErrorMessage.NOT_DELETABLE_SIZE_SECTION.getMessage());
         }
     }
 
@@ -108,12 +161,12 @@ public class Sections {
     private void insertStation(Section section) {
         Section originSection = sections.stream().filter(s ->
           s.getUpStation() == section.getUpStation() && s.getDownStation() != null
-        ).findAny().orElseThrow(() -> new IllegalArgumentException(ErrorMessage.NOT_FOUND_STATION_FOR_SECTION.getMessage()));
+        ).findAny().orElseThrow(() -> new IllegalArgumentException(ErrorMessage.NOT_FOUND_STATION_FOR_ADD_SECTION.getMessage()));
 
         checkDistanceForNewStation(section, originSection);
 
         int originalSectionIndex = this.sections.indexOf(originSection);
-        originSection.updateUpStationAndDistance(section.getUpStation(), originSection.getDistance() - section.getDistance());
+        originSection.updateUpStationAndDistance(section.getDownStation(), originSection.getDistance() - section.getDistance());
         sections.set(originalSectionIndex,originSection);
 
         int addSectionIndex = Math.max((originalSectionIndex - 1), 0);
