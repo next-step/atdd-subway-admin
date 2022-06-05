@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.dto.LineUpdateRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,28 +23,8 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("classpath:/createstation.sql")
-public class LineAcceptanceTest {
-
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-    }
-
-    @AfterEach
-    public void clearDatabase() {
-        databaseCleanup.execute();
-    }
-
+public class LineAcceptanceTest extends BaseAcceptanceTest {
 
     /**
      * When 지하철 노선을 생성하면
