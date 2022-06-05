@@ -171,7 +171,7 @@ class SectionAcceptanceTest {
     }
 
     /**
-     * Given 구간을 추가하고
+     * Given 구간(상행종점역-인근역)을 추가하고
      * When 상행 종점역을 제거하면
      * Then 조회 시 인근역이 상행 종점역이 된다
      */
@@ -190,7 +190,7 @@ class SectionAcceptanceTest {
     }
 
     /**
-     * Given 구간을 추가하고
+     * Given 구간(인근역-하행종점역)을 추가하고
      * When 하행 종점역을 제거하면
      * Then 조회 시 인근역이 하행 종점역이 된다
      */
