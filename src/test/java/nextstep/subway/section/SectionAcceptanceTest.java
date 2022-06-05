@@ -286,7 +286,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      * When [새로운역]구간을 제거하면
      * Then 예외가 발생한다
      */
-    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 수 없다.")
+    @DisplayName("노선에 존재하지 않는 구간은 제거할 수 없다.")
     @Test
     void exception_deleteUnknownSection(){
         //given
