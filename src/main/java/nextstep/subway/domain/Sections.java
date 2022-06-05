@@ -91,6 +91,21 @@ public class Sections {
         section.updateLine(null);
     }
 
+    public void deleteSection(Line line, Station station) {
+        Section leftSection = findSectionWithDownStation(station)
+                .orElseThrow(SectionNotFoundException::new);
+        deleteSection(leftSection);
+
+        Section rightSection = findSectionWithUpStation(station)
+                .orElseThrow(SectionNotFoundException::new);
+        deleteSection(rightSection);
+
+        Distance plusDistance = leftSection.getDistance().plusDistance(rightSection.getDistance());
+        addSectionWithLine(new Section(plusDistance, leftSection.getUpStation(), rightSection.getDownStation()), line);
+        deleteSection(leftSection);
+        deleteSection(rightSection);
+    }
+
     public boolean isLineUpStation(Station station) {
         return getLineUpStation().equals(station);
     }

@@ -41,6 +41,10 @@ public class Line extends BaseEntity {
         sections.insertSection(this, section);
     }
 
+    public void deleteSection(Station station) {
+        sections.deleteSection(this, station);
+    }
+
     private void validateSection(Section section) {
         if (sections.containBothStation(section)) {
             throw new InvalidSectionException("이미 노선에 포함된 구간은 추가할 수 없습니다.");
