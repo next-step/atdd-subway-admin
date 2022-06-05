@@ -57,7 +57,7 @@ public class Section extends BaseEntity {
     }
 
     public boolean isFirstSection() {
-        return upStation == null;
+        return Objects.isNull(upStation);
     }
 
     public Station getDownStation() {
@@ -74,5 +74,12 @@ public class Section extends BaseEntity {
 
     public boolean canInsert(Section newSection) {
         return distance <= 0 || distance > newSection.distance;
+    }
+
+    public boolean equalsAtLeastOneStation(Section other) {
+        return other.upStation.equals(upStation) ||
+                other.upStation.equals(downStation) ||
+                other.downStation.equals(upStation) ||
+                other.downStation.equals(downStation);
     }
 }

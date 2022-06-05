@@ -5,6 +5,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Embeddable
@@ -14,13 +15,8 @@ public class Sections {
 
     // TODO: add validations
     public void add(Section newSection) {
-        validateDuplication(newSection);
-        validateDistance(newSection);
 
-        if (list.isEmpty()) {
-            list.add(newSection);
-            return;
-        }
+        validate(newSection);
 
         updateWhenSameUpStation(newSection);
 
@@ -60,7 +56,13 @@ public class Sections {
                 .ifPresent(it -> it.updateUpStationToDownStationOf(newSection));
     }
 
-    private void validateDuplication(Section newSection) {
+    private void validateSectionIsNull(Section newSection) {
+        if (Objects.isNull(newSection)) {
+            throw new IllegalArgumentException("추가할 구간이 null");
+        }
+    }
+
+    private void checkDuplication(Section newSection) {
         list.stream()
                 .filter(section -> section.hasSameStations(newSection))
                 .findAny()
@@ -74,10 +76,33 @@ public class Sections {
                 .filter(section -> section.hasSameUpStationAs(newSection) ||
                         section.hasSameDownStationAs(newSection))
                 .findFirst()
-                .ifPresent(section -> {
-                    if (!section.canInsert(newSection)) {
+                .ifPresent(foundSection -> {
+                    if (foundSection.isFirstSection()) {
+                        return;
+                    }
+
+                    if (!foundSection.canInsert(newSection)) {
                         throw new IllegalArgumentException("길이 오류");
                     }
                 });
+    }
+
+    private void validateStations(Section newSection) {
+        list.stream()
+                .filter(section -> section.equalsAtLeastOneStation(newSection))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("추가 불가 - 일치 역 없음"));
+    }
+
+    private void validate(Section newSection) {
+        validateSectionIsNull(newSection);
+
+        if (list.isEmpty()) {
+            return;
+        }
+
+        checkDuplication(newSection);
+        validateDistance(newSection);
+        validateStations(newSection);
     }
 }

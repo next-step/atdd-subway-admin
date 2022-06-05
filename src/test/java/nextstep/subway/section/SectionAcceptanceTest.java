@@ -172,6 +172,25 @@ public class SectionAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 구간 하나를 가진 노선이 있을 때
+     * When 겹치는 역이 없어서 추가할 수 없는 구간을 추가하려 하면
+     * Then 400 에러가 전달된다
+     */
+    @DisplayName("기존의 어떤 구간들과도 역이 겹치지 않는 구간을 추가하려 한다.")
+    @Test
+    void 일치_역_없는_구간_추가() {
+        // given
+        // 분당선(왕십리역-선릉역)
+
+        // when
+        ExtractableResponse<Response> response = addSection(
+                "/lines/" + 분당선.getId(), new SectionRequest(청량리역.getId(), 서울숲역.getId(), 7));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> addSection(String lineLocation, SectionRequest body) {
         return RestAssured.given().log().all()
                 .body(body)
