@@ -79,4 +79,15 @@ public class LineService {
         line = lineRepository.save(line);
         return LineResponse.of(line);
     }
+
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        if (!lineRepository.existsById(lineId)) {
+            throw new NoSuchElementFoundException(ErrorMessage.NOT_FOUND_LINE);
+        }
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchElementFoundException(ErrorMessage.NOT_FOUND_LINE));
+        Station deleteStation = findStationById(stationId);
+
+        line.removeSection(deleteStation);
+    }
 }
