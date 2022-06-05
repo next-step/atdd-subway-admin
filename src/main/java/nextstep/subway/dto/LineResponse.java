@@ -25,7 +25,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        Sections sections = line.getSections();
+        Sections sections = line.getSections().getSortedSections();
         List<StationResponse> stationResponses = sections.getSortedLineStations()
                 .stream()
                 .map(StationResponse::of)

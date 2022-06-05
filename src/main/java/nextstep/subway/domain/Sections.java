@@ -42,39 +42,46 @@ public class Sections {
     public void insertSectionWhenSectionIsHead(Line line, Section section) {
         Station beforeLineUpStation = getLineUpStation();
         if (beforeLineUpStation.equals(section.getDownStation())) {
-            addSectionWithLine(line, section);
+            addSectionWithLine(section, line);
         }
     }
 
     public void insertSectionWhenSectionIsTail(Line line, Section section) {
         Station beforeLineDownStation = getLineDownStation();
         if (beforeLineDownStation.equals(section.getUpStation())) {
-            addSectionWithLine(line, section);
+            addSectionWithLine(section, line);
         }
     }
 
-    private void addSectionWithLine(Line line, Section section) {
+    public void insertSectionWhenStationIsIncluded(Line line, Section insertSection) {
+        Optional<Section> frontSection = findSectionWithUpStation(insertSection.getUpStation());
+        Optional<Section> rearSection = findSectionWithDownStation(insertSection.getDownStation());
+        frontSection.ifPresent(section -> insertSectionFromFront(line, section, insertSection));
+        rearSection.ifPresent(section -> insertSectionFromRear(line, section, insertSection));
+    }
+
+    public void insertSectionFromFront(Line line, Section section, Section insertSection) {
+        Distance restDistance = section.getDistance().minusDistance(insertSection.getDistance());
+        addSectionWithLine(insertSection, line);
+        addSectionWithLine(new Section(restDistance, insertSection.getDownStation(), section.getDownStation()), line);
+        deleteSection(section);
+    }
+
+    public void insertSectionFromRear(Line line, Section section, Section insertSection) {
+        Distance restDistance = section.getDistance().minusDistance(insertSection.getDistance());
+        addSectionWithLine(insertSection, line);
+        addSectionWithLine(new Section(restDistance, section.getUpStation(), insertSection.getUpStation()), line);
+        deleteSection(section);
+    }
+
+    private void addSectionWithLine(Section section, Line line) {
         section.updateLine(line);
         list.add(section);
     }
 
-    public void insertSectionWhenStationIsIncluded(Line line, Section section) {
-        Optional<Section> frontSection = findSectionWithUpStation(section.getUpStation());
-        Optional<Section> rearSection = findSectionWithDownStation(section.getDownStation());
-        frontSection.ifPresent(front -> insertSectionFromFront(line, front, section));
-        rearSection.ifPresent(rear -> insertSectionFromRear(line, section, rear));
-    }
-
-    public void insertSectionFromFront(Line line, Section frontSection, Section rearSection) {
-        Distance restDistance = frontSection.getDistance().minusDistance(rearSection.getDistance());
-        list.add(new Section(restDistance, rearSection.getDownStation(), frontSection.getDownStation(), line));
-        frontSection.updateSection(frontSection.getUpStation(), rearSection.getDownStation(), rearSection.getDistance());
-    }
-
-    public void insertSectionFromRear(Line line, Section frontSection, Section rearSection) {
-        Distance restDistance = rearSection.getDistance().minusDistance(frontSection.getDistance());
-        list.add(new Section(frontSection.getDistance(), frontSection.getUpStation(), rearSection.getDownStation(), line));
-        rearSection.updateSection(rearSection.getUpStation(), frontSection.getUpStation(), restDistance);
+    private void deleteSection(Section section) {
+        list.remove(section);
+        section.updateLine(null);
     }
 
     public boolean isLineUpStation(Station station) {
@@ -113,12 +120,6 @@ public class Sections {
                 .orElseThrow(StationNotFoundException::new);
     }
 
-    /*
-    public Station getLineUpStation() {
-        return getLineUpSection().getDownStation();
-    }
-    */
-
     public Section getLineUpSection() {
         Station lineUpStation = getLineUpStation();
         return list.stream()
@@ -145,12 +146,6 @@ public class Sections {
                 .orElseThrow(StationNotFoundException::new);
     }
 
-    /*
-    public Station getLineDownStation() {
-        return getLineDownSection().getUpStation();
-    }
-     */
-
     public Section getLineDownSection() {
         Station lineDownStation = getLineDownStation();
         return list.stream()
@@ -173,36 +168,27 @@ public class Sections {
         return !containStation(section.getUpStation()) && !containStation(section.getDownStation());
     }
 
-    public void sort() {
-        Section head = findSectionWithUpStation(getLineUpStation())
-                .orElseThrow(SectionNotFoundException::new);
-        Section tail = findSectionWithDownStation(getLineDownStation())
-                .orElseThrow(SectionNotFoundException::new);
-
-        if (head == tail) {
-            return;
-        }
-
+    public Sections getSortedSections() {
+        Section currentSection = findSectionWithUpStation(getLineUpStation()).orElseThrow(SectionNotFoundException::new);
+        Section tailSection = findSectionWithDownStation(getLineDownStation()).orElseThrow(SectionNotFoundException::new);
         List<Section> sorted = new ArrayList<>();
-        sorted.add(head);
-        do {
-            Section find = findSectionWithUpStation(head.getDownStation())
-                    .orElseThrow(SectionNotFoundException::new);
-            sorted.add(find);
-            head = findSectionWithUpStation(head.getDownStation())
-                    .orElseThrow(SectionNotFoundException::new);
-        } while (head != tail);
-        this.list = sorted;
+        sorted.add(currentSection);
+        while (currentSection != tailSection) {
+            currentSection = findSectionWithUpStation(currentSection.getDownStation()).orElseThrow(SectionNotFoundException::new);
+            sorted.add(currentSection);
+        }
+        return new Sections(sorted);
     }
 
     public List<Station> getSortedLineStations() {
-        sort();
-        List<Station> stations = new ArrayList<>();
-        stations.add(this.list.get(0).getUpStation());
-        for (Section section : this.list) {
-            stations.add(section.getDownStation());
+        List<Section> sectionList = getSortedSections().getList();
+        Station lineUpStation = sectionList.get(0).getUpStation();
+        List<Station> stationList = new ArrayList<>();
+        stationList.add(lineUpStation);
+        for (Section section : sectionList) {
+            stationList.add(section.getDownStation());
         }
-        return stations;
+        return stationList;
     }
 
     @Override

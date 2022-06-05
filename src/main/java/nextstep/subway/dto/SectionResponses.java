@@ -28,9 +28,8 @@ public class SectionResponses {
     }
 
     public static SectionResponses of(List<Section> list) {
-        Sections sections = new Sections(list);
-        sections.sort();
-        List<SectionResponse> responseList = sections.getList().stream()
+        Sections sorted = new Sections(list).getSortedSections();
+        List<SectionResponse> responseList = sorted.getList().stream()
                 .filter(Section::isValidSection)
                 .map(SectionResponse::of)
                 .collect(Collectors.toList());
