@@ -75,10 +75,6 @@ public class Section {
         return this;
     }
 
-    public boolean isHead() {
-        return Objects.isNull(this.upStation);
-    }
-
     private Section insertMiddle(final Section destination) {
         if (destination.isSameUpStation(upStation)) {
             return updateUpStationWithDistanceBy(destination);
