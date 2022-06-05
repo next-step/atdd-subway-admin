@@ -2,7 +2,7 @@ package nextstep.subway.dto.line;
 
 import java.util.Arrays;
 import java.util.List;
-import nextstep.subway.domain.Line;
+import nextstep.subway.domain.line.Line;
 
 public class LineResponse {
     private final Long id;

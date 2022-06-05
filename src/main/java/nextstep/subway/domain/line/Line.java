@@ -1,6 +1,8 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.line;
 
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -8,16 +10,19 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import nextstep.subway.domain.Station;
 
 @Entity
 public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
-    private String name;
-    @Column(unique = true)
-    private String color;
+
+    @Embedded
+    private LineName name;
+
+    @Embedded
+    private LineColor color;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id", nullable = false)
@@ -27,18 +32,18 @@ public class Line {
     @JoinColumn(name = "down_station_id", nullable = false)
     private Station downStation;
 
-    @Column(nullable = false)
-    private int distance;
+    @Embedded
+    private LineDistance distance;
 
     protected Line() {
     }
 
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
-        this.name = name;
-        this.color = color;
+        this.name = new LineName(name);
+        this.color = new LineColor(color);
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new LineDistance(distance);
     }
 
     public Long getId() {
@@ -46,11 +51,11 @@ public class Line {
     }
 
     public String getName() {
-        return name;
+        return name.value();
     }
 
     public String getColor() {
-        return color;
+        return color.value();
     }
 
     public Station getUpStation() {
@@ -59,5 +64,10 @@ public class Line {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public void update(String name, String color) {
+        this.name = new LineName(name);
+        this.color = new LineColor(color);
     }
 }

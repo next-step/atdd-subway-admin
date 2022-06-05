@@ -3,12 +3,13 @@ package nextstep.subway.application;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.application.exception.NotFoundException;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.line.LineRequest;
 import nextstep.subway.dto.line.LineResponse;
+import nextstep.subway.dto.line.PutLineRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,5 +59,11 @@ public class LineService {
     private Line findLineById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("입력한 아이디(%d)의 지하철 노선을 찾을 수 없습니다.", id)));
+    }
+
+    @Transactional
+    public void updateLine(Long id, PutLineRequest putLineRequest) {
+        Line line = findLineById(id);
+        line.update(putLineRequest.getName(), putLineRequest.getColor());
     }
 }
