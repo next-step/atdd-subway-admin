@@ -83,9 +83,6 @@ public class Section {
         if (destination.isSameUpStation(upStation)) {
             return this;
         }
-        if (destination.isSameDownStation(downStation)) {
-            return this;
-        }
         throw new IllegalArgumentException("no match station");
     }
 
