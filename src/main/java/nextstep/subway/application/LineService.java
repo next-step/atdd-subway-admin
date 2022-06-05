@@ -66,6 +66,6 @@ public class LineService {
     public void updateLineById(Long id, Line param) {
         Line line = lineRepository.findById(id)
                                   .orElseThrow(() -> new NoSuchElementException("지하철 노선이 존재하지 않습니다"));
-        line.setNameAndColor(param);
+        line.setNameColor(param);
     }
 }

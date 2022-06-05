@@ -39,17 +39,13 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public void setNameAndColor(Line line) {
+    public void setNameColor(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
     }
 
     public List<Station> getStations() {
         return stations;
-    }
-
-    public void setStations(List<Station> stations) {
-        this.stations = stations;
     }
 
     public void addStation(Station station) {
