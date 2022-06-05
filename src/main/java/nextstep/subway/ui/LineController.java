@@ -3,6 +3,7 @@ package nextstep.subway.ui;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,20 +31,26 @@ public class LineController {
     }
 
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> getLineById(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
         LineResponse response = lineService.getLineById(id);
         return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/lines/{id}")
-    public ResponseEntity<Void> deleteLineById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/lines/{id}")
-    public ResponseEntity<Void> updateLineById(@PathVariable Long id, @RequestBody LineRequest request) {
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest request) {
         lineService.updateLineById(id, request.getLine());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity<Void> addSection(@PathVariable Long lineId, @RequestBody SectionRequest request) {
+        lineService.addSection(lineId, request);
         return ResponseEntity.ok().build();
     }
 }
