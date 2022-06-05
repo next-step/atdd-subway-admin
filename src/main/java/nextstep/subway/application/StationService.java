@@ -33,7 +33,7 @@ public class StationService {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-                .map(station -> StationResponse.of(station))
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 
@@ -45,6 +45,11 @@ public class StationService {
 
     private Station findStationById(Long id) {
         return stationRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(NOT_FOUND_STATION_ERROR));
+    }
+
+    public Station findStation(Long stationId) {
+        return stationRepository.findById(stationId)
                 .orElseThrow(() -> new NoSuchElementException(NOT_FOUND_STATION_ERROR));
     }
 }

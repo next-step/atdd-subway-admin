@@ -1,6 +1,7 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.LineService;
+import nextstep.subway.application.SectionService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import org.springframework.http.MediaType;
@@ -14,9 +15,11 @@ import java.util.List;
 @RequestMapping("/lines")
 public class LineController {
     private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping
@@ -26,8 +29,11 @@ public class LineController {
     }
 
     @PostMapping(value = "/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> createLineSections(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        LineResponse lineResponse = lineService.saveSections(id, lineRequest);
+    public ResponseEntity<LineResponse> createLineSections(
+            @PathVariable Long id,
+            @RequestBody LineRequest lineRequest
+    ) {
+        LineResponse lineResponse = sectionService.saveSections(id, lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
