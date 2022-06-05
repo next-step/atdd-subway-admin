@@ -220,7 +220,7 @@ public class LineAcceptanceTest {
         return get("/lines");
     }
 
-    private ExtractableResponse<Response> fetchLineById(Long id) {
+    public static ExtractableResponse<Response> fetchLineById(Long id) {
         Map<String, Object> pathParams = new HashMap<>();
         pathParams.put("id", id);
         return get("/lines/{id}", pathParams);
@@ -263,7 +263,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> get(String path, Map<String, ?> pathParams) {
+    private static ExtractableResponse<Response> get(String path, Map<String, ?> pathParams) {
         RequestSpecification restAssured = RestAssured.given().log().all();
 
         return restAssured
