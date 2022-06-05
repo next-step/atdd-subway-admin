@@ -52,3 +52,15 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+
+---
+
+## Step1. 지하철역 인수 테스트 작성
+
+### 기능 요구사항
+
+- [ ] 기존에 작성된 테스트코드를 기반으로 어플리케이션 파악
+- [ ] 지하철역 목록 조회 인수 테스트 작성하기
+- [ ] 지하철역 삭제 인수 테스트 작성하기
+- [ ] 인수테스트의 재사용성, 가독성, 빠른 테스트 의도 파악을 위해 인수테스트 리팩토링
