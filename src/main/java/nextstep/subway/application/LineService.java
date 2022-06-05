@@ -35,6 +35,7 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> line = lineRepository.findAll();
         return line.stream()
@@ -42,6 +43,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public LineResponse getLineResponseById(Long id) {
         Line line = findByIdOrElseThrow(id);
         return LineResponse.of(line);
@@ -60,6 +62,7 @@ public class LineService {
         lineRepository.delete(line);
     }
 
+    @Transactional
     public void addSection(Long id, SectionRequest sectionRequest) {
         Line line = findByIdOrElseThrow(id);
         Station upStation = stationService.findByIdOrElseThrow(sectionRequest.getUpStationId());
@@ -68,16 +71,17 @@ public class LineService {
         lineRepository.save(line);
     }
 
-    private Line findByIdOrElseThrow(Long id) {
-        return lineRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("노선이 존재하지 않습니다."));
-    }
-
+    @Transactional(readOnly = true)
     public List<SectionResponse> findSectionsById(Long id) {
         Line line = findByIdOrElseThrow(id);
         return line.sections()
                 .stream()
                 .map(SectionResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    private Line findByIdOrElseThrow(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("노선이 존재하지 않습니다.", id));
     }
 }

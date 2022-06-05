@@ -234,7 +234,7 @@ public class LineAcceptanceTest {
     @DisplayName("노선을 등록하고 조회한다")
     void findLineWithSection() {
         //when
-        addSection(_2호선_lineId, 1, 2, 10);
+        addSection(_2호선_lineId, 1, 2, 9);
 
         //then
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -306,17 +306,19 @@ public class LineAcceptanceTest {
     }
 
     /**
-     * When 등록된 구간보다 거리가 길면
+     * When 등록된 구간보다 거리가 길거나 같으면
      * Then 에러가 발생한다
      */
     @Test
-    @DisplayName("등록된 구간보다 거리가 길면 에러가 발생한다")
+    @DisplayName("등록된 구간보다 거리가 길거나 같으면 에러가 발생한다")
     void sectionDistanceError() {
         //when
         ExtractableResponse<Response> response = addSection(_2호선_lineId, 1, 2, 11);
+        ExtractableResponse<Response> response2 = addSection(_2호선_lineId, 1, 2, 10);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> createLine(String name, String color, String upStationId, String downStationId, String distance) {

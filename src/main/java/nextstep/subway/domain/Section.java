@@ -52,25 +52,25 @@ public class Section {
         return distance;
     }
 
-    public void updateUpStation(Station station, int distance) {
+    public void updateUpStationAndDistance(Station station, int distance) {
         validateStation(this.upStation, station);
-        this.distance = calculateDistance(distance);
+        this.distance = calculateNewDistance(distance);
         this.upStation = station;
     }
 
-    public void updateDownStation(Station station, int distance) {
+    public void updateDownStationAndDistance(Station station, int distance) {
         validateStation(station, this.downStation);
-        this.distance = calculateDistance(distance);
+        this.distance = calculateNewDistance(distance);
         this.downStation = station;
     }
 
-    private int calculateDistance(int distance) {
+    private int calculateNewDistance(int distance) {
         validateDistance(distance);
         return this.distance - distance;
     }
 
     private void validateDistance(int distance) {
-        if (this.distance < distance) {
+        if (this.distance <= distance) {
             throw new IllegalArgumentException("역 사이의 거리가 초과되었습니다.");
         }
     }

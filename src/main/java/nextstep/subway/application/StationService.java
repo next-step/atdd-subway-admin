@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class StationService {
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
@@ -26,6 +26,7 @@ public class StationService {
         return StationResponse.of(persistStation);
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
 
@@ -34,9 +35,10 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public Station findByIdOrElseThrow(Long id) {
         return stationRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("지하철 역이 존재하지 않습니다."));
+                .orElseThrow(() -> new DataNotFoundException("지하철 역이 존재하지 않습니다.", id));
     }
 
     @Transactional
