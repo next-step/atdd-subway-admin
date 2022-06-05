@@ -26,8 +26,9 @@ public class LineService {
         Station upStation = findStationById(lineRequest.getUpStationId());
         Station downStation = findStationById(lineRequest.getDownStationId());
 
-        Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
-        return LineResponse.of(persistLine);
+        Line line = lineRepository.save(lineRequest.toLine(upStation, downStation));
+        line.addSection(Section.of(upStation, downStation, line, line.getDistance()));
+        return LineResponse.of(line);
     }
 
     @Transactional(readOnly = true)
