@@ -91,7 +91,7 @@ class LineAcceptanceTest extends BaseSubwayTest {
         final ExtractableResponse<Response> line = 지하철노선_생성(LineRequest.of("신분당선", "bg-red-600", 1, 2, 10));
 
         // when
-        final ExtractableResponse<Response> actual = 지하철노선_조회(line.body().jsonPath().getLong("id"));
+        final ExtractableResponse<Response> actual = 지하철노선_조회(아이디찾기(line));
 
         // then
         assertAll(
@@ -110,7 +110,7 @@ class LineAcceptanceTest extends BaseSubwayTest {
     void updateLine() {
         // given
         final ExtractableResponse<Response> line = 지하철노선_생성(LineRequest.of("신분당선", "bg-red-600", 1, 2, 10));
-        final long id = line.body().jsonPath().getLong("id");
+        final long id = 아이디찾기(line);
 
         // when
         final ExtractableResponse<Response> updateResponse = 지하철노선_수정(id, UpdateLineRequest.of("다른분당선", "bg-red-600"));
@@ -138,7 +138,7 @@ class LineAcceptanceTest extends BaseSubwayTest {
         final ExtractableResponse<Response> line = 지하철노선_생성(LineRequest.of("신분당선", "bg-red-600", 1, 2, 10));
 
         // when
-        final ExtractableResponse<Response> deleteResponse = 지하철노선_삭제(line.body().jsonPath().getLong("id"));
+        final ExtractableResponse<Response> deleteResponse = 지하철노선_삭제(아이디찾기(line));
 
         // then
         assertAll(
@@ -192,6 +192,10 @@ class LineAcceptanceTest extends BaseSubwayTest {
                 .delete(LINES_PATH + "/{id}", id)
                 .then().log().all()
                 .extract();
+    }
+
+    private long 아이디찾기(final ExtractableResponse<Response> line) {
+        return line.body().jsonPath().getLong("id");
     }
 
     private AbstractIntegerAssert<?> 성공_응답_검증(final ExtractableResponse<Response> updateResponse) {
