@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SectionAcceptanceTest {
 
     public static final String SECTIONS = "/sections";
+    public static final String LINES = "/lines";
 
     @LocalServerPort
     int port;
@@ -68,7 +69,7 @@ public class SectionAcceptanceTest {
         // 분당선(왕십리역-선릉역)
 
         // when
-        addSection("/lines/" + 분당선.getId(), new SectionRequest(왕십리역.getId(), 서울숲역.getId(), 4));
+        addSection(분당선.getId(), new SectionRequest(왕십리역.getId(), 서울숲역.getId(), 4));
 
         // then
         List<String> stationNames = LineAcceptanceTest.getLine("/lines/" + 분당선.getId())
@@ -88,7 +89,7 @@ public class SectionAcceptanceTest {
         // 분당선(왕십리역-선릉역)
 
         // when
-        addSection("/lines/" + 분당선.getId(), new SectionRequest(서울숲역.getId(), 선릉역.getId(), 4));
+        addSection(분당선.getId(), new SectionRequest(서울숲역.getId(), 선릉역.getId(), 4));
 
         // then
         List<String> stationNames = LineAcceptanceTest.getLine("/lines/" + 분당선.getId())
@@ -108,7 +109,7 @@ public class SectionAcceptanceTest {
         // 분당선(왕십리역-선릉역)
 
         // when
-        addSection("/lines/" + 분당선.getId(), new SectionRequest(청량리역.getId(), 왕십리역.getId(), 4));
+        addSection(분당선.getId(), new SectionRequest(청량리역.getId(), 왕십리역.getId(), 4));
 
         // then
         List<String> stationNames = LineAcceptanceTest.getLine("/lines/" + 분당선.getId())
@@ -128,7 +129,7 @@ public class SectionAcceptanceTest {
         // 분당선(왕십리역-선릉역)
 
         // when
-        addSection("/lines/" + 분당선.getId(), new SectionRequest(선릉역.getId(), 도곡역.getId(), 4));
+        addSection(분당선.getId(), new SectionRequest(선릉역.getId(), 도곡역.getId(), 4));
 
         // then
         List<String> stationNames = LineAcceptanceTest.getLine("/lines/" + 분당선.getId())
@@ -148,10 +149,10 @@ public class SectionAcceptanceTest {
         // 분당선(왕십리역-7m-선릉역)
 
         // when
-        addSection("/lines/" + 분당선.getId(), new SectionRequest(청량리역.getId(), 왕십리역.getId(), 3));
-        addSection("/lines/" + 분당선.getId(), new SectionRequest(왕십리역.getId(), 서울숲역.getId(), 4));
-        addSection("/lines/" + 분당선.getId(), new SectionRequest(강남구청역.getId(), 선릉역.getId(), 2));
-        addSection("/lines/" + 분당선.getId(), new SectionRequest(선릉역.getId(), 도곡역.getId(), 2));
+        addSection(분당선.getId(), new SectionRequest(청량리역.getId(), 왕십리역.getId(), 3));
+        addSection(분당선.getId(), new SectionRequest(왕십리역.getId(), 서울숲역.getId(), 4));
+        addSection(분당선.getId(), new SectionRequest(강남구청역.getId(), 선릉역.getId(), 2));
+        addSection(분당선.getId(), new SectionRequest(선릉역.getId(), 도곡역.getId(), 2));
 
         // then
         List<String> stationNames = LineAcceptanceTest.getLine("/lines/" + 분당선.getId())
@@ -172,7 +173,7 @@ public class SectionAcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = addSection(
-                "/lines/" + 분당선.getId(), new SectionRequest(왕십리역.getId(), 선릉역.getId(), 4));
+                분당선.getId(), new SectionRequest(왕십리역.getId(), 선릉역.getId(), 4));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -190,14 +191,14 @@ public class SectionAcceptanceTest {
         // 분당선(null-왕십리역, 왕십리역-선릉역)
 
         // 분당선(null-청량리역, 청량리역-왕십리역, 왕십리역-선릉역)
-        addSection("/lines/" + 분당선.getId(), new SectionRequest(청량리역.getId(), 왕십리역.getId(), 3));
+        addSection(분당선.getId(), new SectionRequest(청량리역.getId(), 왕십리역.getId(), 3));
 
         // 분당선(null-청량리역, 청량리역-왕십리역, 왕십리역-서울숲역, **서울숲역-선릉역**)
-        addSection("/lines/" + 분당선.getId(), new SectionRequest(왕십리역.getId(), 서울숲역.getId(), 4));
+        addSection(분당선.getId(), new SectionRequest(왕십리역.getId(), 서울숲역.getId(), 4));
 
         // when
         ExtractableResponse<Response> response = addSection(
-                "/lines/" + 분당선.getId(), new SectionRequest(서울숲역.getId(), 선릉역.getId(), 4));
+                분당선.getId(), new SectionRequest(서울숲역.getId(), 선릉역.getId(), 4));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -216,7 +217,7 @@ public class SectionAcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = addSection(
-                "/lines/" + 분당선.getId(), new SectionRequest(왕십리역.getId(), 서울숲역.getId(), 7));
+                분당선.getId(), new SectionRequest(왕십리역.getId(), 서울숲역.getId(), 7));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -234,11 +235,11 @@ public class SectionAcceptanceTest {
         // 분당선(null-0m-왕십리역, 왕십리역-7m-선릉역)
 
         // 분당선(null-0m-왕십리역, 왕십리역-4m-서울숲역, **서울숲역-3m-선릉역**)
-        addSection("/lines/" + 분당선.getId(), new SectionRequest(왕십리역.getId(), 서울숲역.getId(), 4));
+        addSection(분당선.getId(), new SectionRequest(왕십리역.getId(), 서울숲역.getId(), 4));
 
         // when
         ExtractableResponse<Response> response = addSection(
-                "/lines/" + 분당선.getId(), new SectionRequest(서울숲역.getId(), 강남구청역.getId(), 3));
+                분당선.getId(), new SectionRequest(서울숲역.getId(), 강남구청역.getId(), 3));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -257,17 +258,17 @@ public class SectionAcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = addSection(
-                "/lines/" + 분당선.getId(), new SectionRequest(청량리역.getId(), 서울숲역.getId(), 7));
+                분당선.getId(), new SectionRequest(청량리역.getId(), 서울숲역.getId(), 7));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private ExtractableResponse<Response> addSection(String lineLocation, SectionRequest body) {
+    private ExtractableResponse<Response> addSection(Long lineId, SectionRequest body) {
         return RestAssured.given().log().all()
                 .body(body)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(lineLocation + SECTIONS)
+                .when().post(LINES + "/" + lineId + SECTIONS)
                 .then().log().all()
                 .extract();
     }
