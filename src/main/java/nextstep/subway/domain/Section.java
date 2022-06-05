@@ -3,6 +3,8 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.Objects;
 
+import static nextstep.subway.consts.Constraint.MIN_DISTANCE;
+
 @Entity
 public class Section extends BaseEntity {
     @Id
@@ -27,6 +29,9 @@ public class Section extends BaseEntity {
     }
 
     private Section(Station upStation, Station downStation, Line line, Integer distance) {
+        validateDistance(distance);
+        validateUpDownStations(upStation, downStation);
+
         this.upStation = upStation;
         this.downStation = downStation;
         this.line = line;
@@ -35,6 +40,18 @@ public class Section extends BaseEntity {
 
     public static Section of(Station upStation, Station downStation, Line line, Integer distance) {
         return new Section(upStation, downStation, line, distance);
+    }
+
+    private void validateDistance(Integer distance) {
+        if (distance <= MIN_DISTANCE) {
+            throw new IllegalArgumentException("지하철 구간의 거리는 양수만 입력해 주세요.");
+        }
+    }
+
+    private void validateUpDownStations(Station upFinalStation, Station downFinalStation) {
+        if (upFinalStation.equals(downFinalStation)) {
+            throw new IllegalArgumentException("상행역과 하행역은 같을 수 없습니다.");
+        }
     }
 
     public void updateLine(Line line) {

@@ -4,6 +4,8 @@ import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
 
+import static nextstep.subway.consts.Constraint.MIN_DISTANCE;
+
 @Entity
 public class Line extends BaseEntity {
     @Id
@@ -25,7 +27,7 @@ public class Line extends BaseEntity {
     private Station downFinalStation;
 
     @Embedded
-    private Sections sections = new Sections();     // TODO: 처음 save 할 때 section 도 add
+    private Sections sections = new Sections();
 
     @Column(nullable = false)
     private Integer distance;
@@ -45,7 +47,7 @@ public class Line extends BaseEntity {
     }
 
     private void validateDistance(Integer distance) {
-        if (distance <= 0) {
+        if (distance <= MIN_DISTANCE) {
             throw new IllegalArgumentException("지하철 노선의 거리는 양수만 입력해 주세요.");
         }
     }
