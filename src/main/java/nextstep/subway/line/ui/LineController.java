@@ -54,9 +54,7 @@ public class LineController {
     public ResponseEntity addSection(
             @PathVariable Long lineId,
             @RequestBody SectionRequest sectionRequest) {
-        Station upStation = stationService.findById(sectionRequest.getUpStation_id());
-        Station downStation = stationService.findById(sectionRequest.getDownStation_id());
-        lineService.saveSection(lineId, upStation, downStation, sectionRequest.getDistance());
+        lineService.saveSection(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         return ResponseEntity.ok().build();
     }
 

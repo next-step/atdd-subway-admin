@@ -61,8 +61,10 @@ public class LineService {
     }
 
     @Transactional
-    public void saveSection(Long id, Station upStation, Station downStation, Integer distance) {
+    public void saveSection(Long id, Long upStationId, Long downStationId, Integer distance) {
         Line line = lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException(NO_ELEMENT_SEARCH_BY_ID_MSG));
+        Station upStation = stationService.findById(upStationId);
+        Station downStation = stationService.findById(downStationId);
         Section section = new Section(upStation, downStation, distance);
         line.addSection(section);
     }
