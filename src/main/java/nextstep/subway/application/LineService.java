@@ -67,6 +67,10 @@ public class LineService {
                 sectionRequest.getDistance());
     }
 
+    public List<SectionResponse> findAllSections(final Long id) {
+        return getLineOrElseThrow(id).getSections().sections();
+    }
+
     private Line getLineOrElseThrow(final Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("지하철 노선 아이디가 유효하지 않습니다: %d}", id)));

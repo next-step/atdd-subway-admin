@@ -56,9 +56,16 @@ public class LineController {
     }
 
     @PostMapping("/{id}/sections")
-    public ResponseEntity<Void> registerSection(@PathVariable Long id,
-                                                @RequestBody final SectionRequest sectionRequest) {
+    public ResponseEntity<SectionResponse> registerSection(@PathVariable Long id,
+                                                           @RequestBody final SectionRequest sectionRequest) {
         final SectionResponse sectionResponse = lineService.addSection(id, sectionRequest);
-        return ResponseEntity.created(URI.create("/lines/" + id + "/sections/" + sectionResponse.getId())).build();
+        return ResponseEntity
+                .created(URI.create("/lines/" + id + "/sections/" + sectionResponse.getId()))
+                .body(sectionResponse);
+    }
+
+    @GetMapping("/{id}/sections")
+    public ResponseEntity<List<SectionResponse>> showSections(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findAllSections(id));
     }
 }
