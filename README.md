@@ -77,4 +77,4 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ### 인수테스트 목록
 - [x] 종점을 제거한다
 - [x] 중간역을 제거한다
-- [ ] 구간이 하나인 노선에서 역을 제거할 수 없다
+- [x] 구간이 하나인 노선에서 역을 제거할 수 없다

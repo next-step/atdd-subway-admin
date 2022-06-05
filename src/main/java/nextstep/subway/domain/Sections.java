@@ -60,14 +60,41 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        List<Section> matchSections = sections.stream()
+        if (isLastSection()) {
+            throw new IllegalArgumentException("마지막 구간은 삭제할 수 없습니다");
+        }
+        if (isMidStation(station)) {
+            removeMid(station);
+            return;
+        }
+        removeEnd(station);
+    }
+
+    private boolean isLastSection() {
+        return sections.size() == 1;
+    }
+
+    private boolean isMidStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.contains(station))
+                .count() >= 2;
+    }
+
+    private void removeMid(Station station) {
+        removeAll(station).stream()
+                .reduce(Section::merge)
+                .ifPresent(this.sections::add);
+    }
+
+    private void removeEnd(Station station) {
+        removeAll(station);
+    }
+
+    private List<Section> removeAll(Station station) {
+        List<Section> removeSections = sections.stream()
                 .filter(section -> section.contains(station))
                 .collect(Collectors.toList());
-        matchSections.forEach(sections::remove);
-        if (matchSections.size() >= 2) {
-            matchSections.stream()
-                    .reduce(Section::merge)
-                    .ifPresent(sections::add);
-        }
+        removeSections.forEach(this.sections::remove);
+        return removeSections;
     }
 }

@@ -125,4 +125,11 @@ class SectionsTest {
         line.removeSection(stationB);
         assertThat(line.stations()).containsExactly(stationA, stationC);
     }
+
+    @DisplayName("노선의 마지막 구간은 삭제할 수 없다.")
+    @Test
+    void removeLastSection() {
+        assertThatThrownBy(() -> line.removeSection(stationA))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

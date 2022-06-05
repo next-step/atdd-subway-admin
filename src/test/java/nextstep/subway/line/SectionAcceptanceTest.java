@@ -227,6 +227,18 @@ class SectionAcceptanceTest {
         노선_순서대로_조회_성공(노선, 상행선, 하행선);
     }
 
+    /**
+     * When 마지막 구간을 지우면
+     * Then 실패한다
+     */
+    @DisplayName("노선의 마지막 구간은 삭제할 수 없다.")
+    @Test
+    void deleteLastSection() {
+        // when
+        // then
+        구간삭제_실패(노선, 상행선);
+    }
+
     StationResponse 지하철역_생성(String name) {
         return StationApi.create(name)
                 .as(StationResponse.class);
@@ -274,5 +286,10 @@ class SectionAcceptanceTest {
     void 구간삭제_성공(String lineLocation, StationResponse station) {
         ExtractableResponse<Response> response = LineApi.removeSection(lineLocation, station.getId());
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    void 구간삭제_실패(String lineLocation, StationResponse station) {
+        ExtractableResponse<Response> response = LineApi.removeSection(lineLocation, station.getId());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
