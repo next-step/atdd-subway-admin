@@ -25,7 +25,7 @@ public class Distance {
         return destination.subtractBy(this.distance);
     }
 
-    public  Distance plus(Distance destination) {
+    public Distance plus(Distance destination) {
         return destination.plus(this.distance);
     }
 
