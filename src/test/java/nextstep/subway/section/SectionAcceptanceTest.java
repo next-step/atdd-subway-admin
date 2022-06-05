@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nextstep.subway.BaseAcceptanceTest;
-import nextstep.subway.dto.SectionRespone;
+import nextstep.subway.dto.SectionResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -43,8 +43,8 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        final List<SectionRespone> sections = 구간_목록을_조회한다().jsonPath().getList(".", SectionRespone.class);
-        assertThat(sections).contains(createResponse.body().as(SectionRespone.class));
+        final List<SectionResponse> sections = 구간_목록을_조회한다().jsonPath().getList(".", SectionResponse.class);
+        assertThat(sections).contains(createResponse.body().as(SectionResponse.class));
     }
 
     private ExtractableResponse<Response> 구간을_생성한다(final long upStationId,

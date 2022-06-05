@@ -25,12 +25,19 @@ public class Line extends BaseEntity {
     @Embedded
     private LineStations lineStations = new LineStations();
 
+    @Embedded
+    private Sections sections = new Sections();
+
     public Line() {
     }
 
     public Line(final String name, final String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public void addSection(final Section section) {
+        sections.add(section);
     }
 
     public void relateToStation(final LineStation lineStation) {
@@ -59,5 +66,9 @@ public class Line extends BaseEntity {
 
     public LineStations getLineStations() {
         return lineStations;
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 }

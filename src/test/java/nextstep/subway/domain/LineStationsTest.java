@@ -51,8 +51,7 @@ class LineStationsTest {
     private LineStations givenLineStations() {
         final List<LineStation> lineStationList = Arrays.asList(
                 new LineStation(line, station1),
-                new LineStation(line, station2, station1)
-        );
+                new LineStation(line, station2, station1));
         return new LineStations(lineStationList);
     }
 }
