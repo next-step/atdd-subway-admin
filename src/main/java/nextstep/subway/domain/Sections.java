@@ -154,6 +154,8 @@ public class Sections {
     public void removeSectionByStationId(final Long stationId) {
         checkSectionLessOrEqualThanOne();
         checkStationRegistered(stationId);
+        final List<Section> matchedSections = findSectionsByStationId(stationId);
+        sections.removeAll(matchedSections);
     }
 
     private void checkSectionLessOrEqualThanOne() {
@@ -168,5 +170,11 @@ public class Sections {
                 .filter(station -> station.isIdEqualTo(stationId))
                 .findFirst()
                 .orElseThrow(() -> new StationNotRegisteredInLineException());
+    }
+
+    private List<Section> findSectionsByStationId(final Long stationId) {
+        return sections.stream()
+                .filter(section -> section.isEqualToUpOrDownStation(stationId))
+                .collect(Collectors.toList());
     }
 }

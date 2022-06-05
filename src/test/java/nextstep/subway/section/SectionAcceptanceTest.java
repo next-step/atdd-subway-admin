@@ -199,6 +199,27 @@ public class SectionAcceptanceTest extends DoBeforeEachAbstract {
         assertThat(결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("종점이 제거될 경우 다음으로 오던 역이 종점이 된다.")
+    @Test
+    void removeSectionLastStation() {
+        // given
+        지하철구간_중간역_하행역_교체_생성됨(lineId, "용산역", lineDownStationId, 5L);
+
+        // when
+        final ExtractableResponse<Response> 결과 = 지하철구간_삭제_요청(lineId, lineDownStationId);
+
+        // then
+        assertThat(결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then
+        final ExtractableResponse<Response> 노선 = 노선_조회(lineId);
+        final List<String> actual = 노선.jsonPath().getList("stations.", StationResponse.class).stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+
+        assertThat(actual).containsExactly("노량진역", "용산역");
+    }
+
     private ExtractableResponse<Response> 노선_조회(Long lineId) {
         return RestAssured.given().log().all()
                 .when().get("/lines/" + lineId)
