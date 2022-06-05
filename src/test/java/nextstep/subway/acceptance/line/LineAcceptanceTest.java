@@ -1,4 +1,4 @@
-package nextstep.subway.line;
+package nextstep.subway.acceptance.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -10,7 +10,7 @@ import java.util.List;
 import nextstep.subway.application.DatabaseCleanup;
 import nextstep.subway.dto.line.LineRequest;
 import nextstep.subway.dto.line.PutLineRequest;
-import nextstep.subway.station.Station;
+import nextstep.subway.acceptance.station.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
