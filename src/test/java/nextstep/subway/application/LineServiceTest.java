@@ -52,7 +52,7 @@ class LineServiceTest {
     @Test
     void createLine() {
         // given
-        LineRequest request = new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10);
+        LineRequest request = new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L);
 
         // when
         LineResponse response = lines.createLine(request);
@@ -65,8 +65,8 @@ class LineServiceTest {
     @Test
     void getLines() {
         // given
-        lines.createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10));
-        lines.createLine(new LineRequest("2호선", "bg-blue-200", sinchon.getId(), sillim.getId(), 80));
+        lines.createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L));
+        lines.createLine(new LineRequest("2호선", "bg-blue-200", sinchon.getId(), sillim.getId(), 80L));
 
         // when
         List<LineResponse> lines = this.lines.getLines();
@@ -79,7 +79,7 @@ class LineServiceTest {
     @Test
     void getLine() {
         // given
-        LineResponse response = lines.createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10));
+        LineResponse response = lines.createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L));
 
         // when
         LineResponse line = lines.getLineById(response.getId());
@@ -92,7 +92,7 @@ class LineServiceTest {
     @Test
     void deleteLine() {
         // given
-        LineResponse response = lines.createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10));
+        LineResponse response = lines.createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L));
 
         // when
         lines.deleteLineById(response.getId());
@@ -105,7 +105,7 @@ class LineServiceTest {
     @Test
     void updateLine() {
         // given
-        LineResponse response = lines.createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10));
+        LineResponse response = lines.createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L));
 
         // when
         lines.updateLineById(response.getId(), new Line("다른분당선", "bg-blue-100"));
