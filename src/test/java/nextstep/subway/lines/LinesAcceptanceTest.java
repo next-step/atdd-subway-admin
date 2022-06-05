@@ -4,7 +4,8 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.helper.DatabaseCleanup;
-import nextstep.subway.helper.RequestHelper;
+import nextstep.subway.helper.LineRequest;
+import nextstep.subway.helper.StationRequest;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,7 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,8 +24,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("acceptance")
 public class LinesAcceptanceTest {
-    private final String LINE_PATH = "/lines";
-    private final String STATION_PATH = "/stations";
 
     @LocalServerPort
     int port;
@@ -41,6 +41,30 @@ public class LinesAcceptanceTest {
     }
 
     /**
+     * When 상행 또는 하행역 정보없이 노선을 생성하면
+     * Then 지하철 생성이 실패되어야 한다
+     */
+    @DisplayName("상행 또는 하행역 정보 없이 노선을 생성하면 실패해야 한다")
+    @Test
+    void createLineWithoutStationTest() {
+        // given
+        Long StationId = StationRequest.createStationThenReturnId("지하철역");
+
+        // when
+        ExtractableResponse<Response> nonExistUpStationResponse = LineRequest
+                .createLine("노선1", "bg-red-600", null, StationId, 10L);
+        ExtractableResponse<Response> nonExistDownStationResponse = LineRequest
+                .createLine("노선2", "bg-red-600", StationId, null, 10L);
+        ExtractableResponse<Response> nonExistStationResponse = LineRequest
+                .createLine("노선3", "bg-red-600", null, null, 10L);
+
+        // then
+        assertThat(nonExistUpStationResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+        assertThat(nonExistDownStationResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+        assertThat(nonExistStationResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+    }
+
+    /**
      * When 지하철 노선을 생성하면
      * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
      */
@@ -48,19 +72,20 @@ public class LinesAcceptanceTest {
     @Test
     void createLinesTest() {
         // given
-        Long upStationId = Long.parseLong(saveStationAndGetInfo("지하철역").get("id"));
-        Long downStationId = Long.parseLong(saveStationAndGetInfo("새로운지하철역").get("id"));
-        Map<String, Object> lineRequest = createLineRequest("신분당선", "bg-red-600", upStationId, downStationId, 10L);
+        String lineName = "신분당선";
+        Long upStationId = StationRequest.createStationThenReturnId("신사역");
+        Long downStationId = StationRequest.createStationThenReturnId("논현역");
+        ExtractableResponse<Response> response = LineRequest
+                .createLine(lineName, "bg-red-600", upStationId, downStationId, 10L);
 
         // when
-        ExtractableResponse<Response> response = RequestHelper.postRequest(LINE_PATH, new HashMap<>(), lineRequest);
-        List<String> lineNames = RequestHelper.getRequest(LINE_PATH, new HashMap<>())
+        List<String> lineNames = LineRequest.getAllLines()
                 .jsonPath()
                 .getList("name", String.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_CREATED);
-        assertThat(lineNames).containsAnyOf("신분당선");
+        assertThat(lineNames).containsAnyOf(lineName);
     }
 
     /**
@@ -72,30 +97,20 @@ public class LinesAcceptanceTest {
     @Test
     void getAllLinesTest() {
         // given
-        List<Long> stationIds = Arrays.asList(
-                Long.parseLong(saveStationAndGetInfo("지하철역").get("id")),
-                Long.parseLong(saveStationAndGetInfo("새로운지하철역").get("id")),
-                Long.parseLong(saveStationAndGetInfo("또다른지하철역").get("id"))
-        );
-        RequestHelper.postRequest(
-                LINE_PATH,
-                new HashMap<>(),
-                createLineRequest("신분당선", "bg-red-600", stationIds.get(0), stationIds.get(1), 10L)
-        );
-        RequestHelper.postRequest(
-                LINE_PATH,
-                new HashMap<>(),
-                createLineRequest("분당선", "bg-green-600", stationIds.get(1), stationIds.get(2), 10L)
-        );
+        String lineName1 = "신분당선";
+        String lineName2 = "분당선";
+        Long upStationId = StationRequest.createStationThenReturnId("미금역");
+        Long downStationId = StationRequest.createStationThenReturnId("정자역");
+        LineRequest.createLine(lineName1, "bg-red-600", upStationId, downStationId, 10L);
+        LineRequest.createLine(lineName2, "bg-yellow-600", upStationId, downStationId, 10L);
 
         // when
-        List<String> lineNames = RequestHelper.getRequest(LINE_PATH, new HashMap<>())
+        List<String> lineNames = LineRequest.getAllLines()
                 .jsonPath()
                 .getList("name", String.class);
 
-
         // then
-        assertThat(lineNames).containsAnyOf("신분당선", "분당선");
+        assertThat(lineNames).containsAnyOf(lineName1, lineName2);
     }
 
     /**
@@ -107,29 +122,24 @@ public class LinesAcceptanceTest {
     @Test
     void getLinesTest() {
         // given
-        List<Long> stationIds = Arrays.asList(
-                Long.parseLong(saveStationAndGetInfo("지하철역").get("id")),
-                Long.parseLong(saveStationAndGetInfo("새로운지하철역").get("id"))
+        String lineName = "2호선";
+        Long upStationId = StationRequest.createStationThenReturnId("잠실역");
+        Long downStationId = StationRequest.createStationThenReturnId("잠실새내");
+        Long createdLineId = LineRequest.createLineThenReturnId(
+                lineName, "bg-green-600", upStationId, downStationId, 10L
         );
-        String createdLineId = RequestHelper.postRequest(
-                LINE_PATH,
-                new HashMap<>(),
-                createLineRequest("신분당선", "bg-red-600", stationIds.get(0), stationIds.get(1), 10L)
-        ).jsonPath()
-                .getString("id");
 
         // when
-        ExtractableResponse<Response> response = RequestHelper
-                .getRequest(LINE_PATH + "/{id}", new HashMap<>(), createdLineId);
+        ExtractableResponse<Response> response = LineRequest.getLineById(createdLineId);
         List<String> stationNames = response.jsonPath()
                 .getList("stations.name", String.class);
-        String lineName = response.jsonPath()
+        String getResultLineName = response.jsonPath()
                 .get("name");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(stationNames).containsAll(Arrays.asList("지하철역", "새로운지하철역"));
-        assertThat(lineName).isEqualTo("신분당선");
+        assertThat(stationNames).containsAll(Arrays.asList(stationNames.get(0), stationNames.get(0)));
+        assertThat(getResultLineName).isEqualTo(lineName);
     }
 
     /**
@@ -141,27 +151,25 @@ public class LinesAcceptanceTest {
     @Test
     void updateLinesTest() {
         // given
-        String createdLineId = RequestHelper.postRequest(
-                LINE_PATH,
-                new HashMap<>(),
-                createLineRequest("신분당선", "bg-red-600", null, null, 10L)
-        ).jsonPath()
-                .getString("id");
-        Map<String, Object> updateRequest = new HashMap<>();
-        updateRequest.put("name", "다른분당선");
-        updateRequest.put("color", "bg-red-600");
+        String lineName = "1호선";
+        Long upStationId = StationRequest.createStationThenReturnId("시청역");
+        Long downStationId = StationRequest.createStationThenReturnId("신도림역");
+        Long createdLineId = LineRequest.createLineThenReturnId(
+                lineName, "bg-blue-600", upStationId, downStationId, 10L
+        );
 
         // when
-        ExtractableResponse<Response> response = RequestHelper
-                .putRequest(LINE_PATH + "/{id}", new HashMap<>(), updateRequest, createdLineId);
-        String changedName = RequestHelper.getRequest(LINE_PATH + "/{id}", new HashMap<>(), createdLineId)
+        String updateName = "2호선";
+        ExtractableResponse<Response> response = LineRequest
+                .updateLine(createdLineId, updateName, "bg-green-600");
+        String changedName = LineRequest.getLineById(createdLineId)
                 .jsonPath()
                 .get("name");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_NO_CONTENT);
-        assertThat(changedName).isNotEqualTo("신분당선");
-        assertThat(changedName).isEqualTo("다른분당선");
+        assertThat(changedName).isNotEqualTo(lineName);
+        assertThat(changedName).isEqualTo(updateName);
     }
 
     /**
@@ -173,55 +181,156 @@ public class LinesAcceptanceTest {
     @Test
     void deleteLinesTest() {
         // given
-        String createdLineId = RequestHelper.postRequest(
-                LINE_PATH,
-                new HashMap<>(),
-                createLineRequest("신분당선", "bg-red-600", null, null, 10L)
-        ).jsonPath()
-                .getString("id");
+        Long upStationId = StationRequest.createStationThenReturnId("양재시민의숲");
+        Long downStationId = StationRequest.createStationThenReturnId("청계산입구");
+        Long createdLineId = LineRequest.createLineThenReturnId(
+                "신분당선", "bg-red-600", upStationId, downStationId, 10L
+        );
 
         // when
-        ExtractableResponse<Response> deleteResponse = RequestHelper
-                .deleteRequest(LINE_PATH + "/{id}", new HashMap<>(), createdLineId);
-        List<String> lineIds = RequestHelper.getRequest(LINE_PATH, new HashMap<>())
+        ExtractableResponse<Response> deleteResponse = LineRequest.deleteLine(createdLineId);
+        List<Long> lineIds = LineRequest.getAllLines()
                 .jsonPath()
-                .getList("id", String.class);
+                .getList("id", Long.class);
 
         // then
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.SC_NO_CONTENT);
         assertThat(lineIds).doesNotContain(createdLineId);
     }
 
-    private Map<String, String> saveStationAndGetInfo(String stationName) {
-        Map<String, String> result = new HashMap<>();
-        ExtractableResponse<Response> stationResponse = RequestHelper
-                .postRequest(STATION_PATH, new HashMap<>(), Collections.singletonMap("name", stationName));
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선 중간에 지하철을 추가하면
+     * Then 해당 지하철 노선 정보가 추가된다
+     */
+    @DisplayName("기존 지하철 노선에 중간 노선을 추가한다")
+    @Test
+    void addMiddleSection() {
+        // given
+        Long upStationId = StationRequest.createStationThenReturnId("광교역");
+        Long downStationId = StationRequest.createStationThenReturnId("상현역");
+        Long middleStationId = StationRequest.createStationThenReturnId("광교중앙역");
+        Long createdLineId = LineRequest.createLineThenReturnId(
+                "신분당선", "bg-red-600", upStationId, downStationId, 10L
+        );
 
-        result.put("id", stationResponse.jsonPath().getString("id"));
-        result.put("name", stationResponse.jsonPath().getString("name"));
+        // when
+        ExtractableResponse<Response> addLineResponse = LineRequest
+                .addSection(createdLineId, upStationId, middleStationId, 4L);
 
-        return result;
+        // then
+        assertThat(addLineResponse.statusCode()).isEqualTo(HttpStatus.SC_CREATED);
+        assertThat(addLineResponse.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(upStationId, middleStationId, downStationId);
     }
 
-    private Map<String, Object> createLineRequest(String name, String color, Long upStationId, Long downStationId, Long distance) {
-        Map<String, Object> lineRequest = new HashMap<>();
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 하행 종점, 상행 종점을 추가하면
+     * Then 해당 지하철 노선 정보가 추가된다
+     */
+    @DisplayName("기존 지하철 노선에 하행 종점, 상행 종점을 추가한다")
+    @Test
+    void addFirstOrLastSection() {
+        // given
+        Long upStationId = StationRequest.createStationThenReturnId("정왕역");
+        Long downStationId = StationRequest.createStationThenReturnId("신길온천역");
+        Long otherStationId = StationRequest.createStationThenReturnId("오이도역");
+        Long anotherStationId = StationRequest.createStationThenReturnId("안산역");
+        Long createdLineId1 = LineRequest.createLineThenReturnId(
+                "분당선", "bg-yellow-600", upStationId, downStationId, 10L
+        );
+        Long createdLineId2 = LineRequest.createLineThenReturnId(
+                "4호선", "bg-sky-600", upStationId, downStationId, 10L
+        );
 
-        if (name != null) {
-            lineRequest.put("name", name);
-        }
-        if (color != null) {
-            lineRequest.put("color", color);
-        }
-        if (upStationId != null) {
-            lineRequest.put("upStationId", upStationId);
-        }
-        if (downStationId != null) {
-            lineRequest.put("downStationId", downStationId);
-        }
-        if (distance != null) {
-            lineRequest.put("distance", distance);
-        }
+        // when
+        ExtractableResponse<Response> newFirstResponse = LineRequest
+                .addSection(createdLineId1, otherStationId, upStationId, 4L);
+        ExtractableResponse<Response> newLastResponse = LineRequest
+                .addSection(createdLineId2, downStationId, anotherStationId, 4L);
 
-        return lineRequest;
+        // then
+        assertThat(newFirstResponse.statusCode()).isEqualTo(HttpStatus.SC_CREATED);
+        assertThat(newLastResponse.statusCode()).isEqualTo(HttpStatus.SC_CREATED);
+        assertThat(newFirstResponse.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(otherStationId, upStationId, downStationId);
+        assertThat(newLastResponse.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(upStationId, downStationId, anotherStationId);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선 중간에 원본 노선의 길이보다 크거나 같은 노선을 추가하면
+     * Then 해당 지하철 노선 추가가 실패된다
+     */
+    @DisplayName("기존 지하철 노선의 길이보다 크거나 같은 중간 노선을 추가하면 실패된다")
+    @Test
+    void addMiddleSectionByLongerOrSameDistance() {
+        // given
+        Long upStationId = StationRequest.createStationThenReturnId("성복역");
+        Long downStationId = StationRequest.createStationThenReturnId("수지구청역");
+        Long otherStationId = StationRequest.createStationThenReturnId("동천역");
+        Long createdLineId = LineRequest.createLineThenReturnId(
+                "신분당선", "bg-red-600", upStationId, downStationId, 10L
+        );
+
+        // when
+        ExtractableResponse<Response> sameDistanceResponse = LineRequest
+                .addSection(createdLineId, upStationId, otherStationId, 10L);
+        ExtractableResponse<Response> longerDistanceResponse = LineRequest
+                .addSection(createdLineId, upStationId, otherStationId, 11L);
+
+        // then
+        assertThat(sameDistanceResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+        assertThat(longerDistanceResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 해당 노선의 상행, 하행 노선이 같은 노선을 추가하면
+     * Then 해당 지하철 노선 추가가 실패된다
+     */
+    @DisplayName("추가하려는 노선의 상행, 하행 노선이 추가되는 노선의 상행, 하행이 같은 노선을 추가하면 실패한다")
+    @Test
+    void addSameUpAndDownStationLine() {
+        // given
+        Long upStationId = StationRequest.createStationThenReturnId("인천역");
+        Long downStationId = StationRequest.createStationThenReturnId("신포역");
+        Long createdLineId = LineRequest.createLineThenReturnId(
+                "분당선", "bg-yellow-600", upStationId, downStationId, 10L
+        );
+
+        // when
+        ExtractableResponse<Response> sameStationLineResponse = LineRequest
+                .addSection(createdLineId, upStationId, downStationId, 7L);
+
+        // then
+        assertThat(sameStationLineResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 해당 노선에 존재하지 않는 상/하행을 추가하면
+     * Then 해당 지하철 노선 추가가 실패된다
+     */
+    @DisplayName("추가하려는 노선의 상행, 하행 노선이 추가되는 노선에 포함되어있지 않으면 노선 추가가 실패된다")
+    @Test
+    void addNothingMatchUpAndDownStationLine() {
+        // given
+        Long upStationId = StationRequest.createStationThenReturnId("호구포역");
+        Long downStationId = StationRequest.createStationThenReturnId("인천논현");
+        Long otherStationId = StationRequest.createStationThenReturnId("송도역");
+        Long anotherStationId = StationRequest.createStationThenReturnId("연수역");
+        Long createdLineId = LineRequest.createLineThenReturnId(
+                "분당선", "bg-yellow-600", upStationId, downStationId, 10L
+        );
+
+        // when
+        ExtractableResponse<Response> sameStationLineResponse = LineRequest
+                .addSection(createdLineId, otherStationId, anotherStationId, 7L);
+
+        // then
+        assertThat(sameStationLineResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
     }
 }

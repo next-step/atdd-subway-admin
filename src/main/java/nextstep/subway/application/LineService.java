@@ -4,10 +4,10 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
-import nextstep.subway.error.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service
@@ -27,26 +27,29 @@ public class LineService {
 
     public Line findById(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id + " 에 해당하는 지하철 노선이 존재하지 않습니다."));
+                .orElseThrow(() -> new EntityNotFoundException(id + " 에 해당하는 지하철 노선이 존재하지 않습니다."));
     }
 
     @Transactional
     public Line saveLine(LineRequest.Create lineCreateRequest) {
-        Station upStation = null;
-        Station downStation = null;
-
-        if (lineCreateRequest.getUpStationId() != null) {
-            upStation = stationService.getStation(lineCreateRequest.getUpStationId());
-        }
-        if (lineCreateRequest.getDownStationId() != null) {
-            downStation = stationService.getStation(lineCreateRequest.getDownStationId());
-        }
+        Station upStation = stationService.getStation(lineCreateRequest.getUpStationId());
+        Station downStation = stationService.getStation(lineCreateRequest.getDownStationId());
 
         return lineRepository.save(lineCreateRequest.toLine(upStation, downStation));
     }
 
     @Transactional
-    public void modifyLine(Long id, LineRequest.Modify modify) {
+    public Line addSection(Long id, LineRequest.Section lineSectionRequest) {
+        Line line = findById(id);
+        Station upStation = stationService.getStation(lineSectionRequest.getUpStationId());
+        Station downStation = stationService.getStation(lineSectionRequest.getDownStationId());
+        line.addSection(upStation, downStation, lineSectionRequest.getDistance());
+
+        return this.lineRepository.save(line);
+    }
+
+    @Transactional
+    public void modifyLine(Long id, LineRequest.Modification modify) {
         lineRepository.save(findById(id).modify(modify));
     }
 

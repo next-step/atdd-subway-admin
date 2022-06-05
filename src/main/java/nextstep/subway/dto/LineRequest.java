@@ -35,11 +35,11 @@ public class LineRequest {
         }
 
         public Line toLine(Station upStation, Station downStation) {
-            return new Line(name, color, upStation, downStation);
+            return new Line(name, color, distance, upStation, downStation);
         }
     }
 
-    public static class Modify {
+    public static class Modification {
         private String name;
         private String color;
 
@@ -53,6 +53,24 @@ public class LineRequest {
 
         public String getColor() {
             return color;
+        }
+    }
+
+    public static class Section {
+        private Long downStationId;
+        private Long upStationId;
+        private Long distance;
+
+        public Long getDownStationId() {
+            return downStationId;
+        }
+
+        public Long getUpStationId() {
+            return upStationId;
+        }
+
+        public Long getDistance() {
+            return distance;
         }
     }
 }

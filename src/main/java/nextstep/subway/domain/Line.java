@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.dto.LineRequest;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -14,26 +15,27 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Station downStation;
+    @Embedded
+    private LineStations lineStations = new LineStations();
 
     protected Line() {}
 
-    public Line(String name, String color, Station upStation, Station downStation) {
+    public Line(String name, String color, Long distance, Station upStation, Station downStation) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
+
+        addSection(upStation, downStation, distance);
     }
 
-    public Line modify(LineRequest.Modify modify) {
+    public Line modify(LineRequest.Modification modify) {
         this.name = modify.getName();
         this.color = modify.getColor();
 
         return this;
+    }
+
+    public void addSection(Station upStation, Station downStation, Long distance) {
+        lineStations.add(upStation, downStation, new Distance(distance));
     }
 
     public Long getId() {
@@ -48,11 +50,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
+    public List<Station> getStationOrderedUpToDown() {
+        return this.lineStations.getStationsSortedByUpToDown();
     }
 }

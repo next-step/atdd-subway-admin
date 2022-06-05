@@ -10,18 +10,15 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private List<LineStationInfo> stations = new ArrayList<>();
+    private List<LineStation> stations = new ArrayList<>();
 
-    public LineResponse(Long id, String name, String color, Station upStation, Station downStation) {
+    public LineResponse(Long id, String name, String color, List<Station> orderedUpToDownStations) {
         this.id = id;
         this.name = name;
         this.color = color;
 
-        if (upStation != null) {
-            this.stations.add(new LineStationInfo(upStation));
-        }
-        if (downStation != null) {
-            this.stations.add(new LineStationInfo(downStation));
+        for (Station station : orderedUpToDownStations) {
+            stations.add(new LineStation(station));
         }
     }
 
@@ -33,19 +30,19 @@ public class LineResponse {
         return this.name;
     }
 
-    public List<LineStationInfo> getStations() {
+    public List<LineStation> getStations() {
         return this.stations;
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getUpStation(), line.getDownStation());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStationOrderedUpToDown());
     }
 
-    private class LineStationInfo {
+    private class LineStation {
         private Long id;
         private String name;
 
-        public LineStationInfo(Station station) {
+        public LineStation(Station station) {
             this.id = station.getId();
             this.name = station.getName();
         }
