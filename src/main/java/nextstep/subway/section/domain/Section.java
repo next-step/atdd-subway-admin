@@ -42,11 +42,12 @@ public class Section{
     }
 
     public void divideWith(Section newSection) {
-        if (upStation.equals(newSection.getUpStation())) {
+        if (isSameUpStation(newSection.getUpStation())) {
             upStation = newSection.getDownStation();
             distance.subtract(newSection.getDistance());
+            return;
         }
-        if (downStation.equals(newSection.getDownStation())) {
+        if (isSameDownStation(newSection.getDownStation())) {
             downStation = newSection.getUpStation();
             distance.subtract(newSection.getDistance());
         }
@@ -55,6 +56,14 @@ public class Section{
     public void mergeWith(Section nextSection) {
         downStation = nextSection.downStation;
         distance.add(nextSection.getDistance());
+    }
+
+    public boolean isSameUpStation(Station station){
+        return upStation.equals(station);
+    }
+
+    public boolean isSameDownStation(Station station){
+        return downStation.equals(station);
     }
 
     public Station getUpStation() {

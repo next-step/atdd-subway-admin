@@ -40,11 +40,11 @@ public class Sections{
     }
 
     private void validateSectionToAdd(Section section) {
-        validateAtLeastOneStationIsNew(section);
-        validateAtLeastOneStationIsRegistered(section);
+        validateDuplicated(section);
+        validateAddable(section);
     }
 
-    private void validateAtLeastOneStationIsNew(Section section) {
+    private void validateDuplicated(Section section) {
         if (hasStation(section.getUpStation()) && hasStation(section.getDownStation())) {
             throw new IllegalArgumentException(
                     String.format(ErrorMessage.ERROR_SECTION_ALREADY_REGISTERED_STATIONS,
@@ -53,7 +53,7 @@ public class Sections{
         }
     }
 
-    private void validateAtLeastOneStationIsRegistered(Section section) {
+    private void validateAddable(Section section) {
         if (!hasStation(section.getUpStation()) && !hasStation(section.getDownStation())) {
             throw new IllegalArgumentException(
                     String.format(ErrorMessage.ERROR_SECTION_UNKNOWN_STATIONS,
@@ -70,7 +70,9 @@ public class Sections{
 
     public List<Station> getSortedStations(){
         sortSections();
-        List<Station> stations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
+        List<Station> stations = sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
         if(!stations.isEmpty()) {
             stations.add(getLastDownStation());
         }
@@ -87,7 +89,7 @@ public class Sections{
 
     private void sortSections() {
         sections.sort((Section section1, Section section2) -> {
-            if (section1.getDownStation().equals(section2.getUpStation())) {
+            if (section1.isSameDownStation(section2.getUpStation())) {
                 return -1;
             }
             return 1;
@@ -137,7 +139,7 @@ public class Sections{
 
     private Section getPreviousSection(Station station) {
         return sections.stream()
-                .filter(section -> section.getDownStation().equals(station))
+                .filter(section -> section.isSameDownStation(station))
                 .findFirst().orElseThrow(() -> new IllegalArgumentException(
                         String.format(ErrorMessage.ERROR_PREVIOUS_SECTION_NOT_FOUND, station.getName()))
                 );
@@ -145,7 +147,7 @@ public class Sections{
 
     private Section getPostSection(Station station) {
         return sections.stream()
-                .filter(section -> section.getUpStation().equals(station))
+                .filter(section -> section.isSameUpStation(station))
                 .findFirst().orElseThrow(() -> new IllegalArgumentException(
                         String.format(ErrorMessage.ERROR_POST_SECTION_NOT_FOUND, station.getName()))
                 );
@@ -153,7 +155,7 @@ public class Sections{
 
     private Section getEndSection(Station station) {
         return sections.stream()
-                .filter(section -> section.getDownStation().equals(station) || section.getUpStation().equals(station))
+                .filter(section -> section.isSameDownStation(station) || section.isSameUpStation(station))
                 .findFirst().orElseThrow(() -> new IllegalArgumentException(
                         String.format(ErrorMessage.ERROR_END_SECTION_NOT_FOUND, station.getName()))
                 );
