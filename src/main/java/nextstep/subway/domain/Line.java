@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import static nextstep.subway.common.Messages.NOT_FOUND_SECTION;
+
 @Entity
 @Where(clause = "deleted=false")
 public class Line {
-    private static String NOT_FOUND_SECTION = "등록된 지하철 노선이 없습니다.";
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

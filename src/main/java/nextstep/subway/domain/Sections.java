@@ -5,11 +5,11 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.*;
 
+import static nextstep.subway.common.Messages.DUPLICATE_SECTION_ERROR;
+import static nextstep.subway.common.Messages.NOT_MATCH_STATION_ERROR;
+
 @Embeddable
 public class Sections {
-    public static String DUPLICATE_SECTION_ERROR = "중복된 지하철 노선을 등록할 수 없습니다.";
-    public static String NOT_MATCH_STATION_ERROR = "상행역과 하행역 둘 중 하나도 포함되지 않은 경우 지하철 노선을 등록할 수 없습니다.";
-
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 

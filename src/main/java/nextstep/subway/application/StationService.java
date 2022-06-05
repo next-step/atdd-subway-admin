@@ -11,10 +11,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.common.Messages.NOT_FOUND_STATION_ERROR;
+
 @Service
 @Transactional(readOnly = true)
 public class StationService {
-    private final String NOT_FOUND_STATION_ERROR = "지하철역을 찾을 수 없습니다.";
 
     private final StationRepository stationRepository;
 
