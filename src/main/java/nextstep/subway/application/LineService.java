@@ -1,6 +1,8 @@
 package nextstep.subway.application;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,5 +43,12 @@ public class LineService {
 		}
 
 		return LineResponse.of(persistLine);
+	}
+
+	public List<LineResponse> findAllLines() {
+		List<Line> lines = lineRepository.findAll();
+		return lines.stream()
+			.map(LineResponse::of)
+			.collect(Collectors.toList());
 	}
 }

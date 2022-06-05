@@ -2,6 +2,7 @@ package nextstep.subway.station;
 
 import static nextstep.subway.station.LineSteps.*;
 import static nextstep.subway.station.StationSteps.지하철_생성_요청;
+import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +19,8 @@ public class LineAcceptanceTest extends AcceptanceTest{
 	void init() {
 		// given
 		지하철_생성_요청("강남역");
-		지하철_생성_요청("역삼역");
+		지하철_생성_요청("새로운지하철역");
+		지하철_생성_요청("또다른지하철역");
 	}
 
 	/**
@@ -43,7 +45,16 @@ public class LineAcceptanceTest extends AcceptanceTest{
 	@DisplayName("지하철노선 목록을 조회한다.")
 	@Test
 	void getLines() {
+		// given
+		노선_생성_요청("신분당선", "bg-red-600", 1L, 2L, 10);
+		노선_생성_요청("분당선", "bg-red-600", 1L, 3L, 5);
 
+		// when
+		ExtractableResponse<Response> response = 노선_목록_조회_요청();
+
+		// then
+		요청_응답_확인(response, HttpStatus.OK);
+		assertThat(response.jsonPath().getList("name")).contains("신분당선", "분당선");
 	}
 
 	/**
