@@ -2,6 +2,8 @@ package nextstep.subway.domain;
 
 import static nextstep.subway.message.ErrorMessage.SECTION_ADD_DISTANCE_IS_BIG;
 import static nextstep.subway.message.ErrorMessage.SECTION_IS_NO_SEARCH;
+import static nextstep.subway.message.ErrorMessage.SECTION_STATION_IS_NO_SEARCH;
+import static nextstep.subway.message.ErrorMessage.SECTION_STATION_NO_DELETE_RESON_ONE_SECTION;
 import static nextstep.subway.message.ErrorMessage.SECTION_UP_STATION_AND_DOWN_STATION_EXIST;
 import static nextstep.subway.message.ErrorMessage.SECTION_UP_STATION_AND_DOWN_STATION_NO_EXIST;
 import static nextstep.subway.message.ErrorMessage.STATION_IS_NO_SEARCH;
@@ -25,6 +27,7 @@ public class Sections {
     @OneToMany(cascade = {CascadeType.PERSIST})
     @JoinColumn(name = "sectionId")
     private List<Section> sectionElement = new ArrayList<>();
+    private static final int INIT_SELECTIONS_SIZE = 1;
 
     protected Sections() {
 
@@ -74,9 +77,23 @@ public class Sections {
     }
 
     public void deleteSectionStation(Station station) {
+        validDeleteSectionStation(station);
+    }
+
+    private void validDeleteSectionStation(Station station) {
         if (this.sectionElement.size() == INIT_SELECTIONS_SIZE) {
             throw new IllegalStateException(SECTION_STATION_NO_DELETE_RESON_ONE_SECTION.toMessage());
         }
+
+        if (!isContainStation(station)) {
+            throw new IllegalStateException(SECTION_STATION_IS_NO_SEARCH.toMessage());
+        }
+    }
+
+    private boolean isContainStation(Station station) {
+        return this.sectionElement.stream()
+                .anyMatch(section ->
+                        section.getUpStation().equals(station) || section.getDownStation().equals(station));
     }
 
 

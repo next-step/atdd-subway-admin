@@ -264,7 +264,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     when 구간이 하나인역을 제거하면
     then 제거되지 않는다.
 
-  - [ ] 존재하지 않은 역을 제거한다.
+  - [X] 존재하지 않은 역을 제거한다.
     given 다구간 호선을 생성 한다.
     given 존재 하지 않은 역을 추가한다.
     when 존재하지 않은 역을 제거 하면

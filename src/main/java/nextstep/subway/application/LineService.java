@@ -109,8 +109,6 @@ public class LineService {
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.LINE_NONE_EXIST.toMessage()));
     }
 
-
-
     private Station getValidStation(Long stationId, ErrorMessage msg) {
         final Optional<Station> findStation = stationRepository.findById(stationId);
         if (!findStation.isPresent()) {

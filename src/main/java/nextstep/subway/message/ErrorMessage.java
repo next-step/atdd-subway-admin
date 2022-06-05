@@ -24,6 +24,7 @@ public enum ErrorMessage {
     SECTION_IS_NO_SEARCH("구간을 찾을수 없습니다."),
     STATION_IS_NO_SEARCH("역을 찾을수 없습니다."),
     SECTION_STATION_NO_DELETE_RESON_ONE_SECTION("구간이 하나임으로 제거할 수 없습니다."),
+    SECTION_STATION_IS_NO_SEARCH("구간에 존재하지 않은 역입니다"),
 
     DATA_INTEGRITY_VIOLATION_ERROR_MESSAGE("처리 할수 없는 데이터 양식입니다.");
 

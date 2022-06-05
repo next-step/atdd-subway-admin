@@ -105,4 +105,11 @@ public class SectionsTest {
 
         assertThatIllegalStateException().isThrownBy(() -> sections.deleteSectionStation(주안역));
     }
+
+    @Test
+    @DisplayName("구간에 존재하지 않은 역은 제거 할수 없다.")
+    void isNotContainStationIsNoDelete() {
+        assertThatIllegalStateException().isThrownBy(()
+                -> sections.deleteSectionStation(createStation("광명역")));
+    }
 }
