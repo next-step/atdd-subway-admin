@@ -108,6 +108,22 @@ public class Line extends BaseEntity {
         }
     }
 
+    public void updateDistance(Integer distance) {
+        this.distance = distance;
+    }
+
+    public void updateUpFinalStation(Station upStation) {
+        this.upFinalStation = upStation;
+    }
+
+    public void updateDownFinalStation(Station downStation) {
+        this.downFinalStation = downStation;
+    }
+
+    public void addDistance(Integer distance) {
+        this.distance += distance;
+    }
+
     public Long getId() {
         return id;
     }
