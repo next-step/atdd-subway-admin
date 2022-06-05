@@ -24,7 +24,7 @@ public class Sections {
         stations.add(rootStation);
         Station nextStation = getNextStation(rootStation);
 
-        while(Objects.nonNull(nextStation)) {
+        while (Objects.nonNull(nextStation)) {
             stations.add(nextStation);
             nextStation = getNextStation(nextStation);
         }
@@ -38,8 +38,9 @@ public class Sections {
                 .findFirst()
                 .orElse(null);
 
-        if(Objects.nonNull(nextSection))
+        if(Objects.nonNull(nextSection)) {
             return nextSection.getDownStation();
+        }
 
         return null;
     }
@@ -65,33 +66,36 @@ public class Sections {
     }
 
     private boolean hasUpStationAndDownStation(Section newSection) {
-        return getStations().contains(newSection.getUpStation()) &&
-                getStations().contains(newSection.getDownStation());
+        return newSection.isUpAndDownStationContains(includeStations());
     }
 
     private boolean hasNotUpStationAndDownStation(Section newSection) {
-        return !getStations().contains(newSection.getUpStation()) &&
-                !getStations().contains(newSection.getDownStation());
+        return newSection.isUpAndDownStationNotContains(includeStations());
+    }
+
+    public Set<Station> includeStations() {
+        return sections.stream()
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .collect(Collectors.toSet());
     }
     
     private void updateExistSection(Section newSection) {
-        //역과 역사이 (상행이 같을 때)
+        updateEqualsUpStation(newSection);
+        updateEqualsDownStation(newSection);
+    }
+
+    private void updateEqualsUpStation(Section newSection) {
         sections.stream()
                 .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
                 .findFirst()
                 .ifPresent(section -> section.updateUpSection(newSection));
+    }
 
-        //역과 역사이 (하행이 같을 때)
+    private void updateEqualsDownStation(Section newSection) {
         sections.stream()
                 .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
                 .findFirst()
                 .ifPresent(section -> section.updateDownSection(newSection));
-    }
-
-    public Set<Station> getStations() {
-        return sections.stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                .collect(Collectors.toSet());
     }
 
     private Station getRootStation() {

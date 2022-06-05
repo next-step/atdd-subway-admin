@@ -4,7 +4,9 @@ import nextstep.subway.station.domain.Station;
 import nextstep.subway.line.domain.Line;
 
 import javax.persistence.*;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 public class Section {
@@ -61,7 +63,15 @@ public class Section {
         return this.upStation.equals(downStation);
     }
 
-    public void addLine(Line line) {
+    public boolean isUpAndDownStationContains (Set<Station> stations) {
+        return stations.containsAll(Arrays.asList(upStation, downStation));
+    }
+
+    public boolean isUpAndDownStationNotContains (Set<Station> stations) {
+        return !stations.contains(upStation) && !stations.contains(downStation);
+    }
+
+    public void setLine(Line line) {
         this.line = line;
     }
 
