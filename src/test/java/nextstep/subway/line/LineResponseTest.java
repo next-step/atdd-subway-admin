@@ -1,6 +1,5 @@
 package nextstep.subway.line;
 
-import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +17,7 @@ public class LineResponseTest {
 
     @BeforeEach
     void setUp() {
-        stations = Arrays.asList(new Station(1L,"지하철역"), new Station(2L, "새로운지하철역"));
+        stations = Arrays.asList(new Station(1L, "지하철역"), new Station(2L, "새로운지하철역"));
         lineResponse = new LineResponse(1L, "신분당선", "bg-red-600", stations, LocalDateTime.now(), LocalDateTime.now());
     }
 

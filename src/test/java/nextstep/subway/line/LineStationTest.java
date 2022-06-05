@@ -86,9 +86,9 @@ public class LineStationTest {
         assertThat(startStation.updateLineStation(신분당선_양재역)).isEqualTo(신분당선_양재역);
 
         Station 신논현역 = new Station("신논현역");
-        LineStation 신분당선_신논현역 = new LineStation(신분당선, new Section(강남역,신논현역, 2L));
+        LineStation 신분당선_신논현역 = new LineStation(신분당선, new Section(강남역, 신논현역, 2L));
         신분당선_양재역.updateLineStation(신분당선_신논현역);
-        assertThat(신분당선_양재역).isEqualTo(new LineStation(신분당선, new Section(신논현역,양재역, 1L)));
+        assertThat(신분당선_양재역).isEqualTo(new LineStation(신분당선, new Section(신논현역, 양재역, 1L)));
     }
 
     @DisplayName("같은 노선인 아닐 경우 역을 추가하면 에러를 발생한다.")

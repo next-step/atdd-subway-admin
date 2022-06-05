@@ -76,6 +76,6 @@ public class LineStationsTest {
 
 
         LineStations 신분당선_노선들 = new LineStations(Arrays.asList(신분당선_양재역, 신분당선_강남역, 신분당선_신사역, 신분당선_논현, 신분당선_신논현));
-        assertThat(신분당선_노선들.getStation().stream().map(Station::getName).toArray()).containsExactly( "신사역","논현","신논현","강남역","양재역" );
+        assertThat(신분당선_노선들.getStation().stream().map(Station::getName).toArray()).containsExactly("신사역", "논현", "신논현", "강남역", "양재역");
     }
 }
