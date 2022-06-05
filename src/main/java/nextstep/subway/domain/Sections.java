@@ -92,18 +92,30 @@ public class Sections {
     }
 
     public void deleteSection(Line line, Station station) {
-        Section leftSection = findSectionWithDownStation(station)
-                .orElseThrow(SectionNotFoundException::new);
-        deleteSection(leftSection);
+        Optional<Section> leftSection = deleteLeftSection(station);
+        Optional<Section> rightSection = deleteRightSection(station);
+        if (leftSection.isPresent() && rightSection.isPresent()) {
+            Distance plusDistance = leftSection.get().getDistance().plusDistance(rightSection.get().getDistance());
+            addSectionWithLine(new Section(plusDistance, leftSection.get().getUpStation(), rightSection.get().getDownStation()), line);
+        }
+    }
 
-        Section rightSection = findSectionWithUpStation(station)
-                .orElseThrow(SectionNotFoundException::new);
-        deleteSection(rightSection);
+    private Optional<Section> deleteLeftSection(Station station) {
+        Optional<Section> leftSection = findSectionWithDownStation(station);
+        if (leftSection.isPresent()) {
+            Section deleteSection = leftSection.get();
+            deleteSection(deleteSection);
+        }
+        return leftSection;
+    }
 
-        Distance plusDistance = leftSection.getDistance().plusDistance(rightSection.getDistance());
-        addSectionWithLine(new Section(plusDistance, leftSection.getUpStation(), rightSection.getDownStation()), line);
-        deleteSection(leftSection);
-        deleteSection(rightSection);
+    private Optional<Section> deleteRightSection(Station station) {
+        Optional<Section> rightSection = findSectionWithUpStation(station);
+        if (rightSection.isPresent()) {
+            Section deleteSection = rightSection.get();
+            deleteSection(deleteSection);
+        }
+        return rightSection;
     }
 
     public boolean isLineUpStation(Station station) {
