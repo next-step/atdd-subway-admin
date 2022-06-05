@@ -41,6 +41,30 @@ public class LinesAcceptanceTest {
     }
 
     /**
+     * When 상행 또는 하행역 정보없이 노선을 생성하면
+     * Then 지하철 생성이 실패되어야 한다
+     */
+    @DisplayName("상행 또는 하행역 정보 없이 노선을 생성하면 실패해야 한다")
+    @Test
+    void createLineWithoutStationTest() {
+        // given
+        Long StationId = StationRequest.createStationThenReturnId("지하철역");
+
+        // when
+        ExtractableResponse<Response> nonExistUpStationResponse = LineRequest
+                .createLine("노선1", "bg-red-600", null, StationId, 10L);
+        ExtractableResponse<Response> nonExistDownStationResponse = LineRequest
+                .createLine("노선2", "bg-red-600", StationId, null, 10L);
+        ExtractableResponse<Response> nonExistStationResponse = LineRequest
+                .createLine("노선3", "bg-red-600", null, null, 10L);
+
+        // then
+        assertThat(nonExistUpStationResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+        assertThat(nonExistDownStationResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+        assertThat(nonExistStationResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+    }
+
+    /**
      * When 지하철 노선을 생성하면
      * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
      */
@@ -49,8 +73,8 @@ public class LinesAcceptanceTest {
     void createLinesTest() {
         // given
         String lineName = "신분당선";
-        Long upStationId = StationRequest.createStationThenReturnId("지하철역");
-        Long downStationId = StationRequest.createStationThenReturnId("새로운지하철역");
+        Long upStationId = StationRequest.createStationThenReturnId("신사역");
+        Long downStationId = StationRequest.createStationThenReturnId("논현역");
         ExtractableResponse<Response> response = LineRequest
                 .createLine(lineName, "bg-red-600", upStationId, downStationId, 10L);
 
@@ -75,10 +99,10 @@ public class LinesAcceptanceTest {
         // given
         String lineName1 = "신분당선";
         String lineName2 = "분당선";
-        Long upStationId = StationRequest.createStationThenReturnId("지하철역");
-        Long downStationId = StationRequest.createStationThenReturnId("새로운지하철역");
+        Long upStationId = StationRequest.createStationThenReturnId("미금역");
+        Long downStationId = StationRequest.createStationThenReturnId("정자역");
         LineRequest.createLine(lineName1, "bg-red-600", upStationId, downStationId, 10L);
-        LineRequest.createLine(lineName2, "bg-green-600", upStationId, downStationId, 10L);
+        LineRequest.createLine(lineName2, "bg-yellow-600", upStationId, downStationId, 10L);
 
         // when
         List<String> lineNames = LineRequest.getAllLines()
@@ -98,11 +122,11 @@ public class LinesAcceptanceTest {
     @Test
     void getLinesTest() {
         // given
-        String lineName = "신분당선";
-        Long upStationId = StationRequest.createStationThenReturnId("지하철역");
-        Long downStationId = StationRequest.createStationThenReturnId("새로운지하철역");
+        String lineName = "2호선";
+        Long upStationId = StationRequest.createStationThenReturnId("잠실역");
+        Long downStationId = StationRequest.createStationThenReturnId("잠실새내");
         Long createdLineId = LineRequest.createLineThenReturnId(
-                lineName, "bg-red-600", upStationId, downStationId, 10L
+                lineName, "bg-green-600", upStationId, downStationId, 10L
         );
 
         // when
@@ -127,17 +151,17 @@ public class LinesAcceptanceTest {
     @Test
     void updateLinesTest() {
         // given
-        String lineName = "신분당선";
-        Long upStationId = StationRequest.createStationThenReturnId("지하철역");
-        Long downStationId = StationRequest.createStationThenReturnId("새로운지하철역");
+        String lineName = "1호선";
+        Long upStationId = StationRequest.createStationThenReturnId("시청역");
+        Long downStationId = StationRequest.createStationThenReturnId("신도림역");
         Long createdLineId = LineRequest.createLineThenReturnId(
-                lineName, "bg-red-600", upStationId, downStationId, 10L
+                lineName, "bg-blue-600", upStationId, downStationId, 10L
         );
 
         // when
-        String updateName = "다른분당선";
+        String updateName = "2호선";
         ExtractableResponse<Response> response = LineRequest
-                .updateLine(createdLineId, updateName, "bg-red-600");
+                .updateLine(createdLineId, updateName, "bg-green-600");
         String changedName = LineRequest.getLineById(createdLineId)
                 .jsonPath()
                 .get("name");
@@ -157,8 +181,8 @@ public class LinesAcceptanceTest {
     @Test
     void deleteLinesTest() {
         // given
-        Long upStationId = StationRequest.createStationThenReturnId("지하철역");
-        Long downStationId = StationRequest.createStationThenReturnId("새로운지하철역");
+        Long upStationId = StationRequest.createStationThenReturnId("양재시민의숲");
+        Long downStationId = StationRequest.createStationThenReturnId("청계산입구");
         Long createdLineId = LineRequest.createLineThenReturnId(
                 "신분당선", "bg-red-600", upStationId, downStationId, 10L
         );
@@ -183,9 +207,9 @@ public class LinesAcceptanceTest {
     @Test
     void addMiddleSection() {
         // given
-        Long upStationId = StationRequest.createStationThenReturnId("지하철역");
-        Long downStationId = StationRequest.createStationThenReturnId("새로운지하철역");
-        Long middleStationId = StationRequest.createStationThenReturnId("다른지하철역");
+        Long upStationId = StationRequest.createStationThenReturnId("광교역");
+        Long downStationId = StationRequest.createStationThenReturnId("상현역");
+        Long middleStationId = StationRequest.createStationThenReturnId("광교중앙역");
         Long createdLineId = LineRequest.createLineThenReturnId(
                 "신분당선", "bg-red-600", upStationId, downStationId, 10L
         );
@@ -209,15 +233,15 @@ public class LinesAcceptanceTest {
     @Test
     void addFirstOrLastSection() {
         // given
-        Long upStationId = StationRequest.createStationThenReturnId("지하철역");
-        Long downStationId = StationRequest.createStationThenReturnId("새로운지하철역");
-        Long otherStationId = StationRequest.createStationThenReturnId("다른지하철역");
-        Long anotherStationId = StationRequest.createStationThenReturnId("또다른지하철역");
+        Long upStationId = StationRequest.createStationThenReturnId("정왕역");
+        Long downStationId = StationRequest.createStationThenReturnId("신길온천역");
+        Long otherStationId = StationRequest.createStationThenReturnId("오이도역");
+        Long anotherStationId = StationRequest.createStationThenReturnId("안산역");
         Long createdLineId1 = LineRequest.createLineThenReturnId(
-                "신분당선", "bg-red-600", upStationId, downStationId, 10L
+                "분당선", "bg-yellow-600", upStationId, downStationId, 10L
         );
         Long createdLineId2 = LineRequest.createLineThenReturnId(
-                "분당선", "bg-green-600", upStationId, downStationId, 10L
+                "4호선", "bg-sky-600", upStationId, downStationId, 10L
         );
 
         // when
@@ -244,9 +268,9 @@ public class LinesAcceptanceTest {
     @Test
     void addMiddleSectionByLongerOrSameDistance() {
         // given
-        Long upStationId = StationRequest.createStationThenReturnId("지하철역");
-        Long downStationId = StationRequest.createStationThenReturnId("새로운지하철역");
-        Long otherStationId = StationRequest.createStationThenReturnId("다른지하철역");
+        Long upStationId = StationRequest.createStationThenReturnId("성복역");
+        Long downStationId = StationRequest.createStationThenReturnId("수지구청역");
+        Long otherStationId = StationRequest.createStationThenReturnId("동천역");
         Long createdLineId = LineRequest.createLineThenReturnId(
                 "신분당선", "bg-red-600", upStationId, downStationId, 10L
         );
@@ -271,10 +295,10 @@ public class LinesAcceptanceTest {
     @Test
     void addSameUpAndDownStationLine() {
         // given
-        Long upStationId = StationRequest.createStationThenReturnId("지하철역");
-        Long downStationId = StationRequest.createStationThenReturnId("새로운지하철역");
+        Long upStationId = StationRequest.createStationThenReturnId("인천역");
+        Long downStationId = StationRequest.createStationThenReturnId("신포역");
         Long createdLineId = LineRequest.createLineThenReturnId(
-                "신분당선", "bg-red-600", upStationId, downStationId, 10L
+                "분당선", "bg-yellow-600", upStationId, downStationId, 10L
         );
 
         // when
@@ -290,16 +314,16 @@ public class LinesAcceptanceTest {
      * When 해당 노선에 존재하지 않는 상/하행을 추가하면
      * Then 해당 지하철 노선 추가가 실패된다
      */
-    @DisplayName("추가하려는 노선의 상행, 하행 노선이 추가되는 노선의 상행, 하행의 모든 노선과 다른 노선을 추가하면 실패한다")
+    @DisplayName("추가하려는 노선의 상행, 하행 노선이 추가되는 노선에 포함되어있지 않으면 노선 추가가 실패된다")
     @Test
     void addNothingMatchUpAndDownStationLine() {
         // given
-        Long upStationId = StationRequest.createStationThenReturnId("지하철역");
-        Long downStationId = StationRequest.createStationThenReturnId("새로운지하철역");
-        Long otherStationId = StationRequest.createStationThenReturnId("다른지하철역");
-        Long anotherStationId = StationRequest.createStationThenReturnId("또다른지하철역");
+        Long upStationId = StationRequest.createStationThenReturnId("호구포역");
+        Long downStationId = StationRequest.createStationThenReturnId("인천논현");
+        Long otherStationId = StationRequest.createStationThenReturnId("송도역");
+        Long anotherStationId = StationRequest.createStationThenReturnId("연수역");
         Long createdLineId = LineRequest.createLineThenReturnId(
-                "신분당선", "bg-red-600", upStationId, downStationId, 10L
+                "분당선", "bg-yellow-600", upStationId, downStationId, 10L
         );
 
         // when

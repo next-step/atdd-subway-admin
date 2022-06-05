@@ -1,6 +1,5 @@
 package nextstep.subway.application;
 
-import javassist.NotFoundException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -8,6 +7,7 @@ import nextstep.subway.dto.LineRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service
@@ -25,31 +25,31 @@ public class LineService {
         return lineRepository.findAll();
     }
 
-    public Line findById(Long id) throws NotFoundException {
+    public Line findById(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id + " 에 해당하는 지하철 노선이 존재하지 않습니다."));
+                .orElseThrow(() -> new EntityNotFoundException(id + " 에 해당하는 지하철 노선이 존재하지 않습니다."));
     }
 
     @Transactional
-    public Line saveLine(LineRequest.Create lineCreateRequest) throws NotFoundException {
-        Station upStation = stationService.getStationByIdIfIdIsNotNull(lineCreateRequest.getUpStationId());
-        Station downStation = stationService.getStationByIdIfIdIsNotNull(lineCreateRequest.getDownStationId());
+    public Line saveLine(LineRequest.Create lineCreateRequest) {
+        Station upStation = stationService.getStation(lineCreateRequest.getUpStationId());
+        Station downStation = stationService.getStation(lineCreateRequest.getDownStationId());
 
         return lineRepository.save(lineCreateRequest.toLine(upStation, downStation));
     }
 
     @Transactional
-    public Line addSection(Long id, LineRequest.Section lineSectionRequest) throws NotFoundException {
+    public Line addSection(Long id, LineRequest.Section lineSectionRequest) {
         Line line = findById(id);
-        Station upStation = stationService.getStationByIdIfIdIsNotNull(lineSectionRequest.getUpStationId());
-        Station downStation = stationService.getStationByIdIfIdIsNotNull(lineSectionRequest.getDownStationId());
+        Station upStation = stationService.getStation(lineSectionRequest.getUpStationId());
+        Station downStation = stationService.getStation(lineSectionRequest.getDownStationId());
         line.addSection(upStation, downStation, lineSectionRequest.getDistance());
 
         return this.lineRepository.save(line);
     }
 
     @Transactional
-    public void modifyLine(Long id, LineRequest.Modification modify) throws NotFoundException {
+    public void modifyLine(Long id, LineRequest.Modification modify) {
         lineRepository.save(findById(id).modify(modify));
     }
 

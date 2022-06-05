@@ -8,7 +8,8 @@ public class LineStation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long distance;
+    @Embedded
+    private Distance distance = new Distance();
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Station upStation;
@@ -22,8 +23,8 @@ public class LineStation {
 
     protected LineStation() {}
 
-    public LineStation(Long distance, Station upStation, Station downStation, boolean isFirstAdd) {
-        validation(distance, upStation, downStation);
+    public LineStation(Distance distance, Station upStation, Station downStation, boolean isFirstAdd) {
+        validation(upStation, downStation);
 
         this.distance = distance;
         this.upStation = upStation;
@@ -51,7 +52,7 @@ public class LineStation {
         return this.isLast && this.downStation.isSameId(upStation.getId());
     }
 
-    public LineStation addStation(Station upStation, Station downStation, Long distance) {
+    public LineStation addStation(Station upStation, Station downStation, Distance distance) {
         LineStation addResult = new LineStation(distance, upStation, downStation, false);
 
         if (isAddNewFirst(downStation)) {
@@ -85,19 +86,23 @@ public class LineStation {
     }
 
     private LineStation addUpToMiddle(LineStation addResult) {
+        checkPossibleAddSection(addResult.getDistance());
+
         addResult.isStart = this.isStart;
         this.isStart = false;
         this.upStation = addResult.downStation;
-        this.distance -= addResult.distance;
+        this.distance.subtract(addResult.distance);
 
         return addResult;
     }
 
     private LineStation addMiddleToDown(LineStation addResult) {
+        checkPossibleAddSection(addResult.getDistance());
+
         addResult.isLast = this.isLast;
         this.isLast = false;
         this.downStation = addResult.upStation;
-        this.distance -= addResult.distance;
+        this.distance.subtract(addResult.distance);
 
         return addResult;
     }
@@ -110,11 +115,8 @@ public class LineStation {
         return this.downStation.isSameId(downStationId);
     }
 
-    private void validation(Long distance, Station upStation, Station downStation) {
+    private void validation(Station upStation, Station downStation) {
         // spring validator 로 대체 가능
-        if (distance <= 0) {
-            throw new IllegalArgumentException("거리는 0 보다 커야 합니다.");
-        }
         if (upStation == null) {
             throw new IllegalArgumentException("상행역 정보는 필수입니다.");
         }
@@ -123,11 +125,17 @@ public class LineStation {
         }
     }
 
+    private void checkPossibleAddSection(Distance distance) {
+        if (this.distance.isLessThenOrSame(distance)) {
+            throw new IllegalArgumentException("기존 노선의 길이와 같거나 긴 노선을 추가할 수 없습니다.");
+        }
+    }
+
     public Long getId() {
         return id;
     }
 
-    public Long getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 

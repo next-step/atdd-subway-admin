@@ -1,12 +1,12 @@
 package nextstep.subway.ui;
 
-import javassist.NotFoundException;
 import nextstep.subway.application.LineService;
 import nextstep.subway.domain.Line;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -32,7 +32,7 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest.Create lineCreateRequest) throws NotFoundException {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest.Create lineCreateRequest) {
         Line createResult = lineService.saveLine(lineCreateRequest);
         return ResponseEntity
                 .created(URI.create("/lines/" + createResult.getId()))
@@ -40,13 +40,13 @@ public class LineController {
     }
 
     @GetMapping("/lines/{id}")
-    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) throws NotFoundException {
+    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
         return ResponseEntity.ok()
                 .body(LineResponse.of(lineService.findById(id)));
     }
 
     @PutMapping("/lines/{id}")
-    public ResponseEntity modifyLine(@PathVariable Long id, @RequestBody LineRequest.Modification modify) throws NotFoundException {
+    public ResponseEntity modifyLine(@PathVariable Long id, @RequestBody LineRequest.Modification modify) {
         lineService.modifyLine(id, modify);
         return ResponseEntity.noContent().build();
     }
@@ -58,7 +58,7 @@ public class LineController {
     }
 
     @PostMapping("/lines/{id}/sections")
-    public ResponseEntity<LineResponse> addSection(@PathVariable Long id, @RequestBody LineRequest.Section lineSectionRequest) throws NotFoundException {
+    public ResponseEntity<LineResponse> addSection(@PathVariable Long id, @RequestBody @Validated LineRequest.Section lineSectionRequest) {
         Line addSectionResult = lineService.addSection(id, lineSectionRequest);
         return ResponseEntity.created(URI.create("/lines/" + addSectionResult.getId()))
                 .body(LineResponse.of(addSectionResult));

@@ -14,14 +14,12 @@ public class LineStations {
     @JoinColumn(name = "line_id")
     private List<LineStation> lineStations = new ArrayList<>();
 
-    public void add(Station upStation, Station downStation, Long distance) {
+    public void add(Station upStation, Station downStation, Distance distance) {
         if (this.lineStations.isEmpty())  {
             lineStations.add(new LineStation(distance, upStation, downStation, true));
             return;
         }
         LineStation addTarget = findAddTarget(upStation, downStation);
-
-        checkPossibleAddSection(addTarget, distance);
 
         this.lineStations.add(
                 addTarget.addStation(upStation, downStation, distance)
@@ -58,12 +56,6 @@ public class LineStations {
             return findByUpStation;
         }
         return findByDownStation;
-    }
-
-    private void checkPossibleAddSection(LineStation addTarget, Long distance) {
-        if (addTarget.getDistance() <= distance) {
-            throw new IllegalArgumentException("기존 노선의 길이와 같거나 긴 노선을 추가할 수 없습니다.");
-        }
     }
 
     private LineStation findLineStationByUpStationId(Station upStation) {
