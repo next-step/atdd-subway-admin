@@ -3,9 +3,12 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.Objects;
 
+import static nextstep.subway.common.Messages.DISTANCE_LENGTH_ERROR;
+import static nextstep.subway.common.Messages.DISTANCE_MINIMUM_LENGTH_ERROR;
+
 @Entity
 public class Section {
-    public static final String DISTANCE_LENGTH_ERROR = "역 사이 길이보다 크거나 같을 수 없습니다.";
+    private static int MINIMUM_LENGTH = 1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,9 +33,16 @@ public class Section {
     }
 
     public Section(int distance, Station upStation, Station downStation) {
+        validateSection(distance);
         this.distance = distance;
         this.upStation = upStation;
         this.downStation = downStation;
+    }
+
+    private void validateSection(int distance) {
+        if (MINIMUM_LENGTH > distance) {
+            throw new IllegalArgumentException(DISTANCE_MINIMUM_LENGTH_ERROR);
+        }
     }
 
     public static Section of(int distance, Station upStation, Station downStation) {
