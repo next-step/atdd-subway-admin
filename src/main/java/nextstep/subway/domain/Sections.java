@@ -33,9 +33,11 @@ public class Sections {
     public void insertSection(Line line, Section section) {
         insertSectionWhenSectionIsHead(line, section);
         insertSectionWhenSectionIsTail(line, section);
+
         if (containBothStation(section)) {
             return;
         }
+
         insertSectionWhenStationIsIncluded(line, section);
     }
 
@@ -55,8 +57,13 @@ public class Sections {
 
     public void insertSectionWhenStationIsIncluded(Line line, Section insertSection) {
         Optional<Section> frontSection = findSectionWithUpStation(insertSection.getUpStation());
-        Optional<Section> rearSection = findSectionWithDownStation(insertSection.getDownStation());
         frontSection.ifPresent(section -> insertSectionFromFront(line, section, insertSection));
+
+        if (containBothStation(insertSection)) {
+            return;
+        }
+
+        Optional<Section> rearSection = findSectionWithDownStation(insertSection.getDownStation());
         rearSection.ifPresent(section -> insertSectionFromRear(line, section, insertSection));
     }
 
