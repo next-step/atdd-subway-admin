@@ -112,13 +112,7 @@ class LineAcceptanceTest extends BaseSubwayTest {
         final long id = line.body().jsonPath().getLong("id");
 
         // when
-        final ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .body(UpdateLineRequest.of("다른분당선", "bg-red-600"), ObjectMapperType.JACKSON_2)
-                .put(LINES_PATH + "/{id}", id)
-                .then().log().all()
-                .extract();
+        final ExtractableResponse<Response> updateResponse = 지하철노선_수정(id, UpdateLineRequest.of("다른분당선", "bg-red-600"));
 
         final ExtractableResponse<Response> getResponse = 지하철노선_조회(id);
 
@@ -143,12 +137,7 @@ class LineAcceptanceTest extends BaseSubwayTest {
         final ExtractableResponse<Response> line = 지하철노선_생성(LineRequest.of("신분당선", "bg-red-600", 1, 2, 10));
 
         // when
-        final ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete(LINES_PATH + "/{id}", line.body().jsonPath().getLong("id"))
-                .then().log().all()
-                .extract();
+        final ExtractableResponse<Response> deleteResponse = 지하철노선_삭제(line.body().jsonPath().getLong("id"));
 
         // then
         assertAll(
@@ -181,6 +170,25 @@ class LineAcceptanceTest extends BaseSubwayTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .get(LINES_PATH + "/{id}", id)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철노선_수정(final long id, final UpdateLineRequest request) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .body(request, ObjectMapperType.JACKSON_2)
+                .put(LINES_PATH + "/{id}", id)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철노선_삭제(final long id) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete(LINES_PATH + "/{id}", id)
                 .then().log().all()
                 .extract();
     }
