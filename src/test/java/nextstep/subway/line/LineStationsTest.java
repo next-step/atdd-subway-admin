@@ -45,8 +45,7 @@ public class LineStationsTest {
     @Test
     void addLineStationTest() {
         LineStation lineStation = new LineStation(신분당선, new Section(강남역, 양재역, 10L));
-        LineStation addLineStation = 신분당선_역정보들.addLineStation(lineStation);
-        assertThat(addLineStation).isEqualTo(lineStation);
+        신분당선_역정보들.addLineStation(lineStation);
         assertThat(신분당선_역정보들.isContains(lineStation)).isTrue();
     }
 

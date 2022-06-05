@@ -83,12 +83,11 @@ public class LineStationTest {
     void addLineStationTest() {
         final LineStation startStation = new LineStation(신분당선, 강남역);
         LineStation 신분당선_양재역 = new LineStation(신분당선, new Section(강남역, 양재역, 3L));
-        assertThat(startStation.addLineStation(신분당선_양재역)).isEqualTo(신분당선_양재역);
+        assertThat(startStation.updateLineStation(신분당선_양재역)).isEqualTo(신분당선_양재역);
 
         Station 신논현역 = new Station("신논현역");
         LineStation 신분당선_신논현역 = new LineStation(신분당선, new Section(강남역,신논현역, 2L));
-        LineStation updatedLineStation = 신분당선_양재역.addLineStation(신분당선_신논현역);
-        assertThat(updatedLineStation).isEqualTo(신분당선_신논현역);
+        신분당선_양재역.updateLineStation(신분당선_신논현역);
         assertThat(신분당선_양재역).isEqualTo(new LineStation(신분당선, new Section(신논현역,양재역, 1L)));
     }
 
@@ -96,7 +95,7 @@ public class LineStationTest {
     @Test
     void invalidAddLineStationTest() {
         LineStation addLineStation = new LineStation(new Line("1호선", "bg-blue-600"), new Section(강남역, 수원역, 10L));
-        assertThatThrownBy(() -> new LineStation(신분당선, 강남역).addLineStation(addLineStation))
+        assertThatThrownBy(() -> new LineStation(신분당선, 강남역).updateLineStation(addLineStation))
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 }
