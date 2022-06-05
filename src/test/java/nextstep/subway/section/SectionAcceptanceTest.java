@@ -21,7 +21,6 @@ import org.springframework.test.context.jdbc.Sql;
 public class SectionAcceptanceTest extends BaseAcceptanceTest {
     private final long GANGNAM_FINAL_UP_STATION = 1L;
     private final long YANGJAE = 2L;
-    private final long PANGYO = 3L;
     private final long JUNGJA_FINAL_DOWN_STATION = 4L;
 
     private final long SINBUNDANGSUN = 1L;
@@ -30,24 +29,20 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
 
     /**
-     * When 새로운 구간을 생성하면
-     * Then 새로운 구간이 생성된다
+     * When 하행종점역이 아닌 기존 역을 상행선으로 새로운 구간을 등록하면
+     * Then 새로운 구간이 등록된다
      * Then 구간 목록 조회 시 생성한 구간을 찾을 수 있다
      */
     @Test
-    void createSection() {
+    void registerSectionWithExistingUpStation() {
         // when
-        final ExtractableResponse<Response> createResponse = 구간을_생성한다(GANGNAM_FINAL_UP_STATION, YANGJAE, 10);
+        final ExtractableResponse<Response> registerResponse = 구간을_등록한다(GANGNAM_FINAL_UP_STATION, YANGJAE, 10);
 
         // then
-        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        // then
-        final List<SectionResponse> sections = 구간_목록을_조회한다().jsonPath().getList(".", SectionResponse.class);
-        assertThat(sections).contains(createResponse.body().as(SectionResponse.class));
+        구간이_등록되었다(registerResponse);
     }
 
-    private ExtractableResponse<Response> 구간을_생성한다(final long upStationId,
+    private ExtractableResponse<Response> 구간을_등록한다(final long upStationId,
                                                    final long downStationId,
                                                    final int distance) {
         final Map<String, Object> params = new HashMap<>();
@@ -71,5 +66,13 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
                 .when().get("/lines/{id}/sections", SINBUNDANGSUN)
                 .then().log().all()
                 .extract();
+    }
+
+    private void 구간이_등록되었다(final ExtractableResponse<Response> registerResponse) {
+        assertThat(registerResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        final List<SectionResponse> sections = 구간_목록을_조회한다().jsonPath().getList(".", SectionResponse.class);
+        assertThat(sections).contains(registerResponse.body().as(SectionResponse.class));
     }
 }
