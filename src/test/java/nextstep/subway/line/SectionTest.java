@@ -89,4 +89,17 @@ class SectionTest {
         assertThatThrownBy(() -> section.modifyBy(new Section(line, new Station("서초역"), stationB, DEFAULT_DISTANCE)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("두 구간을 합친다")
+    @Test
+    void merge() {
+        Station stationC = new Station("서초역");
+        Section newSection = new Section(line, stationB, stationC, 3);
+        section.merge(newSection);
+        assertSoftly(softAssertions -> {
+            softAssertions.assertThat(section.getUpStation()).isEqualTo(stationA);
+            softAssertions.assertThat(section.getDownStation()).isEqualTo(stationC);
+            softAssertions.assertThat(section.getDistance()).isEqualTo(DEFAULT_DISTANCE + 3);
+        });
+    }
 }

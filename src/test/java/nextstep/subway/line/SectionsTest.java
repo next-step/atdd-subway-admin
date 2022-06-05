@@ -98,4 +98,31 @@ class SectionsTest {
         assertThatThrownBy(() -> line.addSection(new Station("서초역"), new Station("낙성대역"), 3))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("상행종점역 삭제")
+    @Test
+    void removeBeginSection() {
+        Station stationC = new Station("서초역");
+        line.addSection(stationA, stationC, 3);
+        line.removeSection(stationA);
+        assertThat(line.stations()).containsExactly(stationC, stationB);
+    }
+
+    @DisplayName("하행종점역 삭제")
+    @Test
+    void removeEndSection() {
+        Station stationC = new Station("서초역");
+        line.addSection(stationA, stationC, 3);
+        line.removeSection(stationB);
+        assertThat(line.stations()).containsExactly(stationA, stationC);
+    }
+
+    @DisplayName("중간역 삭제")
+    @Test
+    void removeMidStation() {
+        Station stationC = new Station("서초역");
+        line.addSection(stationB, stationC, 3);
+        line.removeSection(stationB);
+        assertThat(line.stations()).containsExactly(stationA, stationC);
+    }
 }

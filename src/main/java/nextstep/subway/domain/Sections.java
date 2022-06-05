@@ -5,10 +5,11 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Section> sections = new LinkedList<>();
 
     public void add(Section section) {
@@ -56,5 +57,17 @@ public class Sections {
 
     public List<Station> stations() {
         return new SectionNavigator(sections).orderedStations();
+    }
+
+    public void remove(Station station) {
+        List<Section> matchSections = sections.stream()
+                .filter(section -> section.contains(station))
+                .collect(Collectors.toList());
+        matchSections.forEach(sections::remove);
+        if (matchSections.size() >= 2) {
+            matchSections.stream()
+                    .reduce(Section::merge)
+                    .ifPresent(sections::add);
+        }
     }
 }

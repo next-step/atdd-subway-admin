@@ -67,4 +67,13 @@ public class LineService {
                 .orElseThrow(IllegalArgumentException::new);
         lineRepository.findByIdWithSections(id).ifPresent(line -> line.addSection(upStation, downStation, sectionRequest.getDistance()));
     }
+
+    @Transactional
+    public void removeSection(Long id, Long stationId) {
+        Optional<Line> line = lineRepository.findByIdWithSections(id);
+        Optional<Station> station = stationRepository.findById(stationId);
+        if (line.isPresent() && station.isPresent()) {
+            line.get().removeSection(station.get());
+        }
+    }
 }
