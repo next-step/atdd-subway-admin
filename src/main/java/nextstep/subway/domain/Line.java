@@ -1,9 +1,7 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -13,9 +11,6 @@ import javax.persistence.Id;
 import nextstep.subway.global.domain.BaseEntity;
 import nextstep.subway.global.exception.BadRequestException;
 import nextstep.subway.global.exception.ExceptionType;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.Sections;
-import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line extends BaseEntity {
@@ -101,19 +96,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
-        Section section = this.sections.getFirstSection();
-        stations.add(section.getUpStation());
-        stations.add(section.getDownStation());
-
-        Optional<Section> optionalNextSection = this.sections.getNextSection(section);
-        while (optionalNextSection.isPresent()) {
-            Section nextSection = optionalNextSection.get();
-            stations.add(nextSection.getDownStation());
-            optionalNextSection = this.sections.getNextSection(nextSection);
-        }
-
-        return stations;
+        return sections.getOrderedStations();
     }
 
     public void registerSection(Section section) {
@@ -122,5 +105,9 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section) {
         this.sections.add(section);
+    }
+
+    public void deleteSection(Station station) {
+        this.sections.deleteStation(station);
     }
 }

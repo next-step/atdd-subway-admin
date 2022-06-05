@@ -1,4 +1,4 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.domain;
 
 import java.util.List;
 import java.util.Optional;

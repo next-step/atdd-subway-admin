@@ -1,4 +1,4 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.domain;
 
 import java.util.Objects;
 import javax.persistence.Column;
@@ -29,6 +29,10 @@ public class Distance {
     public void minus(Distance target) {
         validateDistanceValue(target);
         this.value = value - target.getValue();
+    }
+
+    public void plus(Distance target) {
+        this.value = value + target.getValue();
     }
 
     private void validateDistanceValue(Distance target) {

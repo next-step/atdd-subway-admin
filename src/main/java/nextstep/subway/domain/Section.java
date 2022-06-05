@@ -1,4 +1,4 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.domain;
 
 import java.util.Objects;
 import javax.persistence.Embedded;
@@ -13,8 +13,6 @@ import javax.persistence.Table;
 import nextstep.subway.global.domain.BaseEntity;
 import nextstep.subway.global.exception.CannotRegisterException;
 import nextstep.subway.global.exception.ExceptionType;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.station.domain.Station;
 
 @Entity
 @Table(name = "section")
@@ -80,8 +78,13 @@ public class Section extends BaseEntity {
         return section;
     }
 
+    public void relocate(Section target) {
+        this.downStation = target.downStation;
+        this.distance.plus(target.getDistance());
+    }
+
     public boolean isContains(Station station) {
-        return upStation == station || downStation == station;
+        return isEqualsUpStation(station) || isEqualsDownStation(station);
     }
 
     public boolean isStationConnectable(Section newSection) {
@@ -97,11 +100,11 @@ public class Section extends BaseEntity {
     }
 
     public boolean isEqualsUpStation(Station station) {
-        return upStation == station;
+        return upStation.equals(station);
     }
 
     public boolean isEqualsDownStation(Station station) {
-        return downStation == station;
+        return downStation.equals(station);
     }
 
     public Long getId() {
@@ -137,9 +140,7 @@ public class Section extends BaseEntity {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+
         Section section = (Section) o;
         return Objects.equals(getId(), section.getId());
     }
@@ -147,5 +148,19 @@ public class Section extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(getId());
+    }
+
+    public static Section empty() {
+        return new Section();
+    }
+
+    public boolean isEmpty() {
+        if (this.id != null) return false;
+        if (this.upStation != null) return false;
+        if (this.downStation != null) return false;
+        if (this.line != null) return false;
+        if (this.distance != null) return false;
+
+        return true;
     }
 }
