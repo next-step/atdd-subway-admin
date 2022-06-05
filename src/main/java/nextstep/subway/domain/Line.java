@@ -42,7 +42,7 @@ public class Line extends BaseEntity {
     }
 
     public void deleteSection(Station station) {
-        validateDeleteSection();
+        validateDeleteSection(station);
         sections.deleteSection(this, station);
     }
 
@@ -56,8 +56,12 @@ public class Line extends BaseEntity {
         }
     }
 
-    private void validateDeleteSection() {
+    private void validateDeleteSection(Station station) {
         if (sections.getList().size() == 1) {
+            throw new InvalidSectionException("하나만 남은 구간은 삭제할 수 없습니다.");
+        }
+
+        if (!sections.containStation(station)) {
             throw new InvalidSectionException("하나만 남은 구간은 삭제할 수 없습니다.");
         }
     }

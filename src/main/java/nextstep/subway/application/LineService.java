@@ -82,4 +82,12 @@ public class LineService {
         Section section = new Section(request.getDistance(), upStation, downStation);
         line.insertSection(section);
     }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(LineNotFoundException::new);
+        Station station = stationRepository.findById(stationId)
+                .orElseThrow(StationNotFoundException::new);
+        line.deleteSection(station);
+    }
 }
