@@ -1,5 +1,6 @@
 package nextstep.subway.section;
 
+import static nextstep.subway.helper.DomainCreationHelper.지하철구간_사이_등록;
 import static nextstep.subway.helper.DomainCreationHelper.지하철구간_상행_기점_생성됨;
 import static nextstep.subway.helper.DomainCreationHelper.지하철구간_상행_종점_생성됨;
 import static nextstep.subway.helper.DomainCreationHelper.지하철구간_상행_하행_새로_생성됨;
@@ -239,6 +240,29 @@ public class SectionAcceptanceTest extends DoBeforeEachAbstract {
                 .collect(Collectors.toList());
 
         assertThat(actual).containsExactly("용산역", "남영역");
+    }
+
+    @DisplayName("중간역이 제거될 경우 재배치를 한다.")
+    @Test
+    void removeSectionBetweenStation() {
+        // given
+        final Long betweenStationId = 지하철역_생성됨("용산역").jsonPath().getLong("id");
+        지하철구간_사이_등록(lineId, betweenStationId, lineDownStationId, 5L);
+
+        // when
+        final ExtractableResponse<Response> 결과 = 지하철구간_삭제_요청(lineId, betweenStationId);
+
+        // then
+        assertThat(결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then
+        final ExtractableResponse<Response> 노선 = 노선_조회(lineId);
+        final List<String> actual = 노선.jsonPath().getList("stations.", StationResponse.class).stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+
+        assertThat(노선.jsonPath().getLong("sections[0].distance")).isEqualTo(10L);
+        assertThat(actual).containsExactly("노량진역", "남영역");
     }
 
     private ExtractableResponse<Response> 노선_조회(Long lineId) {

@@ -97,4 +97,12 @@ public class Section {
         return this.getUpStation().isIdEqualTo(stationId) ||
                 this.getDownStation().isIdEqualTo(stationId);
     }
+
+    public void updateDownStation(final Station downStation) {
+        this.downStation = downStation;
+    }
+
+    public void updateDistance(final Long mergedDistance) {
+        this.distance = mergedDistance;
+    }
 }

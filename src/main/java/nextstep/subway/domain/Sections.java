@@ -23,6 +23,8 @@ public class Sections {
 
     private final static long BOTH_ALL_MATCHED_COUNT = 2;
     private final static long BOTH_NON_MATCHED_COUNT = 0;
+    private final static long BOTH_MATCHED_SECTIONS_COUNT = 2;
+    private final static long ONE_MATCHED_SECTIONS_COUNT = 1;
 
     public boolean addSection(final Section addableSection) {
         checkBothStationExists(addableSection);
@@ -155,6 +157,36 @@ public class Sections {
         checkSectionLessOrEqualThanOne();
         checkStationRegistered(stationId);
         final List<Section> matchedSections = findSectionsByStationId(stationId);
+        if (isBetweenTwoSections(matchedSections)) {
+            removeAndMergeSections(matchedSections);
+            return;
+        }
+        if (isEndpointSection(matchedSections)) {
+            removeSection(matchedSections);
+        }
+    }
+
+    private boolean isBetweenTwoSections(final List<Section> matchedSections) {
+        return matchedSections.size() == BOTH_MATCHED_SECTIONS_COUNT;
+    }
+
+    private void removeAndMergeSections(final List<Section> matchedSections) {
+        final Long mergedDistance = matchedSections.stream()
+                .mapToLong(section ->
+                        section.getDistance())
+                .sum();
+        final Section firstSection = matchedSections.get(0);
+        final Section secondSection = matchedSections.get(1);
+        firstSection.updateDistance(mergedDistance);
+        firstSection.updateDownStation(secondSection.getDownStation());
+        sections.remove(secondSection);
+    }
+
+    private boolean isEndpointSection(final List<Section> matchedSections) {
+        return matchedSections.size() == ONE_MATCHED_SECTIONS_COUNT;
+    }
+
+    private void removeSection(final List<Section> matchedSections) {
         sections.removeAll(matchedSections);
     }
 
@@ -176,5 +208,9 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.isEqualToUpOrDownStation(stationId))
                 .collect(Collectors.toList());
+    }
+
+    public List<Section> toList() {
+        return sections;
     }
 }
