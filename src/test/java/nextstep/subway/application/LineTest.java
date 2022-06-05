@@ -19,9 +19,9 @@ class LineTest {
 
     @BeforeEach
     public void setUp() {
-        upStation = new Station("상행");
-        downStation = new Station("하행");
-        addedStation = new Station( "새로운 지하철역");
+        upStation = new Station(1L, "상행");
+        downStation = new Station(2L, "하행");
+        addedStation = new Station( 3L, "새로운 지하철역");
         line = new Line("1호선", "bg-blue-300", 10, upStation, downStation);
     }
 
@@ -31,15 +31,15 @@ class LineTest {
         line.addSection(null, addedStation, 10);
 
         //then
-        LineStation ascEnd = line.getAscEnd();
+        LineStation ascEnd = line.getAscEndSection();
         assertThat(ascEnd.getDistance()).isEqualTo(0);
         assertThat(ascEnd.getName()).isEqualTo("새로운 지하철역");
 
-        LineStation descEnd = line.getDescEnd();
+        LineStation descEnd = line.getDescEndSection();
         assertThat(descEnd.getDistance()).isEqualTo(20);
         assertThat(descEnd.getName()).isEqualTo("하행");
 
-        assertThat(line.getLineStations().stream().map(LineStation::getName).collect(Collectors.toList())).containsExactly("새로운 지하철역", "상행", "하행");
+        assertThat(line.getAllSections().stream().map(LineStation::getName).collect(Collectors.toList())).containsExactly("새로운 지하철역", "상행", "하행");
     }
 
     @Test
@@ -48,15 +48,15 @@ class LineTest {
         line.addSection(downStation, addedStation, 10);
 
         //then
-        LineStation ascEnd = line.getAscEnd();
+        LineStation ascEnd = line.getAscEndSection();
         assertThat(ascEnd.getDistance()).isEqualTo(0);
         assertThat(ascEnd.getName()).isEqualTo("상행");
 
-        LineStation descEnd = line.getDescEnd();
+        LineStation descEnd = line.getDescEndSection();
         assertThat(descEnd.getDistance()).isEqualTo(20);
         assertThat(descEnd.getName()).isEqualTo("새로운 지하철역");
 
-        assertThat(line.getLineStations().stream().map(LineStation::getName).collect(Collectors.toList())).containsExactly("상행", "하행", "새로운 지하철역");
+        assertThat(line.getAllSections().stream().map(LineStation::getName).collect(Collectors.toList())).containsExactly("상행", "하행", "새로운 지하철역");
     }
 
     @Test
@@ -65,27 +65,27 @@ class LineTest {
         line.addSection(upStation, addedStation, 5);
 
         //then
-        LineStation ascEnd = line.getAscEnd();
+        LineStation ascEnd = line.getAscEndSection();
         assertThat(ascEnd.getDistance()).isEqualTo(0);
         assertThat(ascEnd.getName()).isEqualTo("상행");
 
-        LineStation descEnd = line.getDescEnd();
+        LineStation descEnd = line.getDescEndSection();
         assertThat(descEnd.getDistance()).isEqualTo(10);
         assertThat(descEnd.getName()).isEqualTo("하행");
 
-        assertThat(line.getLineStations().stream().map(LineStation::getName).collect(Collectors.toList())).containsExactly("상행", "새로운 지하철역", "하행");
+        assertThat(line.getAllSections().stream().map(LineStation::getName).collect(Collectors.toList())).containsExactly("상행", "새로운 지하철역", "하행");
 
         //when
-        line.addSection(addedStation, new Station("새로추가된 역에 또 하나 더 추가함"), 2);
+        line.addSection(addedStation, new Station(4L, "새로추가된 역에 또 하나 더 추가함"), 2);
 
         //then
-        assertThat(line.getLineStations().stream().map(LineStation::getName).collect(Collectors.toList())).containsExactly("상행", "새로운 지하철역", "새로추가된 역에 또 하나 더 추가함", "하행");
+        assertThat(line.getAllSections().stream().map(LineStation::getName).collect(Collectors.toList())).containsExactly("상행", "새로운 지하철역", "새로추가된 역에 또 하나 더 추가함", "하행");
 
         //when
-        line.addSection(upStation, new Station( "더 추가하기"), 4);
+        line.addSection(upStation, new Station(5L,  "더 추가하기"), 4);
 
         //then
-        assertThat(line.getLineStations().stream().map(LineStation::getName).collect(Collectors.toList())).containsExactly("상행", "더 추가하기", "새로운 지하철역", "새로추가된 역에 또 하나 더 추가함", "하행");
+        assertThat(line.getAllSections().stream().map(LineStation::getName).collect(Collectors.toList())).containsExactly("상행", "더 추가하기", "새로운 지하철역", "새로추가된 역에 또 하나 더 추가함", "하행");
     }
 
     @Test

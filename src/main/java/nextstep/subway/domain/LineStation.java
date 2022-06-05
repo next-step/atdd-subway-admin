@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "line_station")
@@ -20,7 +21,7 @@ public class LineStation implements Comparable<LineStation> {
     private Station preStation;
     private Integer distance;
 
-    public LineStation(Line line, Station station, Station preStation, Integer distance) {
+    private LineStation(Line line, Station station, Station preStation, Integer distance) {
         this.line = line;
         this.station = station;
         this.preStation = preStation;
@@ -28,6 +29,14 @@ public class LineStation implements Comparable<LineStation> {
     }
 
     protected LineStation() {}
+
+    public static LineStation ascEndSection(Line line, Station station) {
+        return new LineStation(line, station, null, 0);
+    }
+
+    public static LineStation section(Line line, Station station, Station preStation, Integer distance) {
+        return new LineStation(line, station, preStation, distance);
+    }
 
     public Station getPreStation() {
         return this.preStation;
@@ -59,7 +68,7 @@ public class LineStation implements Comparable<LineStation> {
 
     @Override
     public int compareTo(LineStation o) {
-        if (this.station == o.preStation)
+        if (Objects.equals(this.station, o.preStation))
             return -1;
         return this.distance - o.distance;
     }

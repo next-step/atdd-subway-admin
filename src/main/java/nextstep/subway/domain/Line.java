@@ -29,8 +29,8 @@ public class Line extends BaseEntity {
         this.name = name;
         this.color = color;
 
-        this.lineStations.add(new LineStation(this, upStation, null, 0));
-        this.lineStations.add(new LineStation(this, downStation, upStation, distance));
+        this.lineStations.add(LineStation.ascEndSection(this, upStation));
+        this.lineStations.add(LineStation.section(this, downStation, upStation, distance));
     }
 
     public Long getId() {
@@ -45,16 +45,18 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<LineStation> getLineStations() {
+    public List<LineStation> getAllSections() {
         return lineStations.stream().sorted().collect(Collectors.toList());
     }
 
-    public LineStation getAscEnd() {
-        return getLineStations().stream().filter(it -> it.getPreStation() == null).findFirst().orElseThrow(RuntimeException::new);
+    public LineStation getAscEndSection() {
+        return getAllSections().stream().filter(it -> it.getPreStation() == null).findFirst()
+                .orElseThrow(RuntimeException::new);
     }
 
-    public LineStation getDescEnd() {
-        return getLineStations().get(getLineStations().size() - 1);
+    public LineStation getDescEndSection() {
+        List<LineStation> sections = getAllSections();
+        return sections.get(sections.size() - 1);
     }
 
     public void update(String name, String color) {
@@ -80,50 +82,69 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Station preStation, Station station, Integer distance) {
+        checkSame(preStation, station);
+        checkAlreadyAdded(preStation, station);
+
         if (isAscEnd(preStation)) {
-            addAscEnd(station, distance);
+            changeAscEnd(station, distance);
             return;
         }
 
         if (isDescEnd(preStation)) {
-            addDescEnd(preStation, station, distance);
+            changeDescEnd(station, distance);
             return;
         }
 
         addBetweenEndToEnd(preStation, station, distance);
     }
 
-    private void addDescEnd(Station preStation, Station station, Integer distance) {
-        LineStation descEnd = getDescEnd();
-        this.lineStations.add(new LineStation(this, station, preStation, descEnd.getDistance() + distance));
+    private void checkSame(Station preStation, Station station) {
+        if (Objects.equals(preStation, station)) {
+            throw new IllegalArgumentException("구간은 서로 같은 역을 포함할 수 없습니다.");
+        }
     }
 
-    private boolean isAscEnd(Station preStation) {
-        return preStation == null;
+    private void checkAlreadyAdded(Station preStation, Station station) {
+        if (getAllSections().stream().anyMatch(section -> Objects.equals(section.getStation(), station) && Objects.equals(section.getPreStation(), preStation))) {
+            throw new IllegalArgumentException("이미 존재하는 구간입니다.");
+        }
     }
 
-    private boolean isDescEnd(Station preStation) {
-        return getDescEnd().getStation() == preStation;
+    private boolean isAscEnd(Station station) {
+        return Objects.equals(station, null);
+    }
+
+    private boolean isDescEnd(Station station) {
+        return Objects.equals(getDescEndSection().getStation(), station);
     }
 
     private void addBetweenEndToEnd(Station preStation, Station station, Integer distance) {
-        LineStation upLineStation =
-                getLineStations().stream().filter(it -> it.getStation() == preStation).findFirst().orElseThrow(IllegalAccessError::new);
-        LineStation downLineStation = getLineStations().get(getLineStations().indexOf(upLineStation) + 1);
+        LineStation startSection = getAllSections().stream().filter(it -> Objects.equals(preStation, it.getStation())).findFirst()
+                .orElseThrow(IllegalAccessError::new);
+        LineStation endSection = getAllSections().get(getAllSections().indexOf(startSection) + 1);
 
-        if (downLineStation.getDistance() - upLineStation.getDistance() <= distance)
+        if (endSection.getDistance() - startSection.getDistance() <= distance) {
             throw new IllegalArgumentException("distance 는 기존 역 구간 내에 속할 수 있는 값이어야 합니다.");
+        }
 
-        downLineStation.updatePreStation(station);
-        this.lineStations.add(new LineStation(this, station, preStation, upLineStation.getDistance() + distance));
+        endSection.updatePreStation(station);
+        this.lineStations.add(LineStation.section(this, station, preStation, startSection.getDistance() + distance));
     }
 
-    private void addAscEnd(Station station, Integer distance) {
-        getLineStations().forEach(lineStation -> lineStation.updateDuration(lineStation.getDistance() + distance));
+    private void changeAscEnd(Station station, Integer distance) {
+        for (LineStation section : getAllSections()) {
+            section.updateDuration(section.getDistance() + distance);
+        }
 
-        LineStation preAscEnd = getAscEnd();
-        preAscEnd.updatePreStation(station);
+        LineStation ascEndSection = getAscEndSection();
+        ascEndSection.updatePreStation(station);
 
-        this.lineStations.add(new LineStation(this, station, null, 0));
+        this.lineStations.add(LineStation.ascEndSection(this, station));
+    }
+
+    private void changeDescEnd(Station station, Integer distance) {
+        LineStation descEndSection = getDescEndSection();
+        this.lineStations.add(LineStation.section(this, station, descEndSection.getStation(),
+                descEndSection.getDistance() + distance));
     }
 }
