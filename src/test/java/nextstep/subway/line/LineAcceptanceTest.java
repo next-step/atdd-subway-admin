@@ -13,6 +13,7 @@ import nextstep.subway.BaseSubwayTest;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.UpdateLineRequest;
+import org.assertj.core.api.AbstractIntegerAssert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -70,7 +71,7 @@ class LineAcceptanceTest extends BaseSubwayTest {
 
         // then
         assertAll(
-                () -> assertThat(actual.statusCode()).isEqualTo(OK.value()),
+                () -> 성공_응답_검증(actual),
                 () -> assertThat(actual.body().jsonPath().getList("$")).hasSize(2),
                 () -> assertThat(actual.body().jsonPath().getList("name")).contains("신분당선", "분당선")
         );
@@ -94,7 +95,7 @@ class LineAcceptanceTest extends BaseSubwayTest {
 
         // then
         assertAll(
-                () -> assertThat(actual.statusCode()).isEqualTo(OK.value()),
+                () -> 성공_응답_검증(actual),
                 () -> assertThat(actual.body().jsonPath().getString("name")).isEqualTo("신분당선")
         );
     }
@@ -118,7 +119,7 @@ class LineAcceptanceTest extends BaseSubwayTest {
 
         // then
         assertAll(
-                () -> assertThat(updateResponse.statusCode()).isEqualTo(OK.value()),
+                () -> 성공_응답_검증(updateResponse),
                 () -> assertThat(getResponse.body().jsonPath().getString("name")).isEqualTo("다른분당선"),
                 () -> assertThat(getResponse.body().jsonPath().getString("color")).isEqualTo("bg-red-600")
         );
@@ -141,7 +142,7 @@ class LineAcceptanceTest extends BaseSubwayTest {
 
         // then
         assertAll(
-                () -> assertThat(deleteResponse.statusCode()).isEqualTo(NO_CONTENT.value()),
+                () -> 성공_빈_내용_검증(deleteResponse),
                 () -> assertThat(지하철노선_목록조회().body().jsonPath().getList("$")).hasSize(0)
         );
     }
@@ -191,5 +192,13 @@ class LineAcceptanceTest extends BaseSubwayTest {
                 .delete(LINES_PATH + "/{id}", id)
                 .then().log().all()
                 .extract();
+    }
+
+    private AbstractIntegerAssert<?> 성공_응답_검증(final ExtractableResponse<Response> updateResponse) {
+        return assertThat(updateResponse.statusCode()).isEqualTo(OK.value());
+    }
+
+    private AbstractIntegerAssert<?> 성공_빈_내용_검증(final ExtractableResponse<Response> deleteResponse) {
+        return assertThat(deleteResponse.statusCode()).isEqualTo(NO_CONTENT.value());
     }
 }
