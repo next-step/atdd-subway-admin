@@ -33,6 +33,10 @@ public class Distance {
         this.distance -= distance.distance;
     }
 
+    public void increase(Distance distance) {
+        this.distance += distance.distance;
+    }
+
     public int get() {
         return this.distance;
     }

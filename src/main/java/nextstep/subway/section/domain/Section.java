@@ -101,6 +101,10 @@ public class Section {
         this.distance.decrease(distance);
     }
 
+    public void increaseDistance(Distance distance) {
+        this.distance.increase(distance);
+    }
+
     public Station getUpStation() {
         return this.upStation;
     }
@@ -118,7 +122,7 @@ public class Section {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return Objects.equals(id, section.id);
+        return Objects.equals(this.upStation, section.upStation) && Objects.equals(this.downStation, section.downStation);
     }
 
     @Override
