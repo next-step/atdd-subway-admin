@@ -1,10 +1,8 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.LineUpdateRequest;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,24 +17,20 @@ public class Line extends BaseEntity {
     private String name;
     @Column(unique = true)
     private String color;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private Station upStation;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private Station downStation;
     @Column(nullable = false)
-    private Long distance;
+    private Integer distance;
+    private LineStations lineStations = new LineStations();
 
     protected Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, Long distance) {
+    public Line(String name, String color, Integer distance, Station upStation, Station downStation) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
         this.distance = distance;
+
+        this.lineStations.add(new LineStation(this, upStation, null, 0));
+        this.lineStations.add(new LineStation(this, downStation, upStation, distance));
     }
 
     public Long getId() {
@@ -51,8 +45,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getStations() {
-        return Arrays.asList(this.upStation, this.downStation);
+    public List<LineStation> getLineStations() {
+        return lineStations.getLineStations();
     }
 
     public void update(String name, String color) {
@@ -75,5 +69,15 @@ public class Line extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(getId());
+    }
+
+    public void addSection(Station preStation, Station station, Integer duration) {
+        LineStation preLineStation = getLineStations().stream().filter(it -> it.getStation() == preStation).findFirst()
+                .orElseThrow(RuntimeException::new);
+        if (preLineStation.getDuration() >= duration || distance <= duration) {
+            throw new RuntimeException();
+        }
+
+        this.lineStations.add(new LineStation(this, station, preStation, duration));
     }
 }

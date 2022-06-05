@@ -28,7 +28,7 @@ class LineRepositoryTest {
         Station downStation = new Station("하행");
         testEntityManager.persistAndFlush(downStation);
 
-        line = new Line("신분당선", "bg-red-600", upStation, downStation, 10L);
+        line = new Line("신분당선", "bg-red-600", 10, upStation, downStation);
         testEntityManager.persistAndFlush(line);
 
         testEntityManager.clear();

@@ -4,6 +4,7 @@ import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +45,12 @@ public class LineController {
         return lineService.findLine(id);
     }
 
+    @PostMapping(path = { "/{id}/sections" }, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> createSection(@PathVariable Long id,
+            @RequestBody SectionRequest sectionRequest) {
+        LineResponse response = lineService.addSection(id, sectionRequest);
+        return ResponseEntity.created(URI.create("/lines/" + response.getId() + "/sections")).body(response);
+    }
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<LineResponse> showAllLine() {
         return lineService.findAllLines();

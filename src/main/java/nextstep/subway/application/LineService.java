@@ -7,6 +7,7 @@ import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +39,14 @@ public class LineService {
         Station upStation = findStationById(lineRequest.getUpStationId());
         Station downStation = findStationById(lineRequest.getDownStationId());
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
+        return LineResponse.of(persistLine);
+    }
+
+    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
+        Station upStation = findStationById(sectionRequest.getUpStationId());
+        Station downStation = findStationById(sectionRequest.getDownStationId());
+        Line persistLine = findLineById(lineId);
+        persistLine.addSection(upStation, downStation, sectionRequest.getDistance());
         return LineResponse.of(persistLine);
     }
 

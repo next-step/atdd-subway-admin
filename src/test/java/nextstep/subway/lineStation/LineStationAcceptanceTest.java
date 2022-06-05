@@ -7,6 +7,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.utils.AcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +43,7 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
         upStation = stationRepository.save(new Station("강남"));
         downStation = stationRepository.save(new Station("광교중앙"));
         newStation = stationRepository.save(new Station("양재"));
-        line = lineRepository.save(new Line("신분당선", "bg-red-600", upStation, downStation, 10L));
+        line = lineRepository.save(new Line("신분당선", "bg-red-600", 10, upStation, downStation));
     }
 
     /**
