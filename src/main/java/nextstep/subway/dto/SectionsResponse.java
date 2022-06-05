@@ -3,6 +3,7 @@ package nextstep.subway.dto;
 import nextstep.subway.domain.Line;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 public class SectionsResponse {
@@ -25,5 +26,12 @@ public class SectionsResponse {
 
     public List<SectionResponse> getSections() {
         return sections;
+    }
+
+    public Long findSectionId() {
+        return sections.stream()
+                .mapToLong(SectionResponse::getId)
+                .max()
+                .orElseThrow(() -> new NoSuchElementException("id를 찾을 수 없습니다."));
     }
 }

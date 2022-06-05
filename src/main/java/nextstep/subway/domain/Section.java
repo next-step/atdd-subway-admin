@@ -13,11 +13,11 @@ public class Section extends BaseEntity {
     @Embedded
     private Distance distance = new Distance();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_up_station"))
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_down_station"))
     private Station downStation;
 
@@ -109,8 +109,19 @@ public class Section extends BaseEntity {
         return this.upStation.equals(station);
     }
 
-    private boolean isSameDownStation(Station station) {
+    public boolean isSameDownStation(Station station) {
         return this.downStation.equals(station);
+    }
+
+    public boolean hasStation(Station station) {
+        return isSameUpStation(station) || isSameDownStation(station);
+    }
+
+    public void remove(Section section) {
+        if (isSameUpStation(section.downStation)) {
+            this.upStation = section.upStation;
+            distance.add(section.distance);
+        }
     }
 
     @Override

@@ -55,4 +55,41 @@ class SectionTest {
         // then
         assertThat(result).isFalse();
     }
+
+    @Test
+    void 구간에_해당_역이_존재하는지_확인한다() {
+        // given
+        Station station = new Station("정자역");
+
+        // when
+        boolean result = section.hasStation(station);
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void 구간에_해당_역이_존재하지_않는다() {
+        // given
+        Station station = new Station("판교역");
+
+        // when
+        boolean result = section.hasStation(station);
+
+        // then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void 구간의_중간역을_삭제하면_두_구간의_거리가_합쳐진다() {
+        // given
+        Section newSection = new Section(7, new Station("정자역"), new Station("광교역"));
+
+        // when
+        newSection.remove(section);
+
+        // then
+        assertThat(newSection.getDistance()).isEqualTo(17);
+    }
+
 }

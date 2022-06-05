@@ -11,6 +11,8 @@ import java.util.Optional;
 
 @Embeddable
 public class Sections {
+    public static final int END_POINT = 1;
+
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> elements = new ArrayList<>();
 
@@ -52,5 +54,54 @@ public class Sections {
 
     public List<Section> getElements() {
         return Collections.unmodifiableList(elements);
+    }
+
+    public void remove(Station station) {
+        validateRemoval();
+
+        if (isEndPoint(station)) {
+            elements.remove(findSection(station));
+            return;
+        }
+        Section section = findSectionByDownStation(station);
+        removeIntermediateSection(section);
+    }
+
+    private void validateRemoval() {
+        if (isLastSection()) {
+            throw new IllegalArgumentException("노선의 마지막 구간은 삭제할 수 없습니다.");
+        }
+    }
+
+    private boolean isLastSection() {
+        return elements.size() == END_POINT;
+    }
+
+    private void removeIntermediateSection(Section section) {
+        for (Section element : elements) {
+            element.remove(section);
+        }
+        elements.remove(section);
+    }
+
+    private Section findSection(Station station) {
+        return elements.stream()
+                .filter(section -> section.hasStation(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당역을 포함하는 구간이 존재하지 않습니다."));
+    }
+
+    private Section findSectionByDownStation(Station station) {
+        return elements.stream()
+                .filter(section -> section.isSameDownStation(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당역을 포함하는 구간이 존재하지 않습니다."));
+    }
+
+    private boolean isEndPoint(Station station) {
+        long stationCount = elements.stream()
+                .filter(section -> section.hasStation(station))
+                .count();
+        return stationCount == END_POINT;
     }
 }

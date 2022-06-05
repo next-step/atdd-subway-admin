@@ -17,4 +17,9 @@ public class ControllerAdvice {
     public ResponseEntity<Void> handleIllegalArgumentException() {
         return ResponseEntity.badRequest().build();
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Void> handleRuntimeException() {
+        return ResponseEntity.badRequest().build();
+    }
 }
