@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.dto.StationResponse;
 
 @Embeddable
 public class LineStations {
@@ -23,10 +24,11 @@ public class LineStations {
         lineStations.add(lineStation);
     }
 
-    public List<Station> getStations() {
+    public List<StationResponse> stations() {
         return lineStations
                 .stream()
                 .map(LineStation::getStation)
+                .map(station -> StationResponse.of(station))
                 .collect(Collectors.toList());
     }
 

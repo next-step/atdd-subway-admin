@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
+import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.Test;
 
 class LineStationsTest {
@@ -21,7 +22,7 @@ class LineStationsTest {
         lineStations.add(lineStation);
 
         // then
-        assertThat(lineStations.getStations().size()).isEqualTo(1);
+        assertThat(lineStations.stations().size()).isEqualTo(1);
     }
 
     @Test
@@ -30,10 +31,10 @@ class LineStationsTest {
         final LineStations lineStations = givenLineStations();
 
         // when
-        final List<Station> stations = lineStations.getStations();
+        final List<StationResponse> stations = lineStations.stations();
 
         // then
-        assertThat(stations).containsExactly(station1, station2);
+        assertThat(stations).containsExactly(StationResponse.of(station1), StationResponse.of(station2));
     }
 
     @Test
