@@ -23,4 +23,20 @@ public class Sections {
                 .map(section -> SectionResponse.of(section))
                 .collect(Collectors.toList());
     }
+
+    public Section getByUpStation(final Station upStation) {
+        return sections
+                .stream()
+                .filter(section -> section.getUpStation().equals(upStation))
+                .findFirst()
+                .get();
+    }
+
+    public Section getByDownStation(final Station downStation) {
+        return sections
+                .stream()
+                .filter(section -> section.getDownStation().equals(downStation))
+                .findFirst()
+                .get();
+    }
 }

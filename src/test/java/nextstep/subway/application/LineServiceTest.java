@@ -62,8 +62,8 @@ class LineServiceTest {
         assertThat(lineResponse.getName()).isEqualTo(lineName);
 
         final Line createdLine = lineRepository.findById(lineResponse.getId()).get();
-        assertThat(createdLine.getLineStations().getPreviousOf(gangnam)).isNull();
-        assertThat(createdLine.getLineStations().getPreviousOf(jungja)).isEqualTo(gangnam);
+        assertThat(createdLine.getLineStations().getByStation(gangnam).get().getPrevious()).isNull();
+        assertThat(createdLine.getLineStations().getByStation(jungja).get().getPrevious()).isEqualTo(gangnam);
 
         final List<StationResponse> stationResponses = lineResponse.getStations();
         assertThat(stationResponses).containsExactly(StationResponse.of(gangnam), StationResponse.of(jungja));
@@ -114,7 +114,7 @@ class LineServiceTest {
     }
 
     @Test
-    void 아이디와_LineRequest_객체를_파라미터로_노선을_수정할_수_있어야_한다() {
+    void 아이디와_LineRequest_객체로_노선을_수정할_수_있어야_한다() {
         // given
         final Line givenLine = givenLine();
 
@@ -131,18 +131,6 @@ class LineServiceTest {
     }
 
     @Test
-    void 없는_아이디로_노선_수정_시_IllegalArgumentException이_발생해야_한다() {
-        // given
-        final String newName = "수정된이름";
-        final String newColor = "bg-modified-600";
-        final LineRequest lineRequest = new LineRequest(newName, newColor);
-
-        // when and then
-        assertThatThrownBy(() -> lineService.modifyLine(1L, lineRequest))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
     void 아이디로_노선을_삭제할_수_있어야_한다() {
         // given
         final Line givenLine = givenLine();
@@ -156,24 +144,18 @@ class LineServiceTest {
     }
 
     @Test
-    void 없는_아이디로_노선_삭제_시_IllegalArgumentException이_발생해야_한다() {
-        // when and then
-        assertThatThrownBy(() -> lineService.deleteLineById(1L))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void SectionRequest_객체로_구간을_추가할_수_있어야_한다() {
+    void 노선_아이디와_SectionRequest_객체로_구간을_등록할_수_있어야_한다() {
         // given
         final Line line = givenLine();
-        final SectionRequest sectionRequest = new SectionRequest(gangnam.getId(), yangjae.getId(), 10L);
+        final Long distance = 10L;
+        final SectionRequest sectionRequest = new SectionRequest(gangnam.getId(), yangjae.getId(), distance);
 
         // when
-        lineService.addSection(line.getId(), sectionRequest);
+        final SectionResponse sectionResponse = lineService.addSection(line.getId(), sectionRequest);
 
         // then
-        assertThat(line.getSections().sections())
-                .contains(SectionResponse.of(new Section(line, gangnam, yangjae, 10L)));
+        assertThat(sectionResponse)
+                .isEqualTo(SectionResponse.of(new Section(line, gangnam, yangjae, distance)));
     }
 
     private Line givenLine() {

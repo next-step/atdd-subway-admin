@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.SectionResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,22 +59,12 @@ public class LineService {
     }
 
     @Transactional
-    public void addSection(final Long lineId, final SectionRequest sectionRequest) {
+    public SectionResponse addSection(final Long lineId, final SectionRequest sectionRequest) {
         final Line line = getLineOrElseThrow(lineId);
-        createSection(
-                line,
-                sectionRequest.getUpStationId(),
-                sectionRequest.getDownStationId(),
+        return line.relateToSection(
+                stationService.getStationOrElseThrow(sectionRequest.getUpStationId()),
+                stationService.getStationOrElseThrow(sectionRequest.getDownStationId()),
                 sectionRequest.getDistance());
-    }
-
-    private void createSection(final Line line,
-                               final Long upStationId,
-                               final Long downStationId,
-                               final Long distance) {
-        final Station upStation = stationService.getStationOrElseThrow(upStationId);
-        final Station downStation = stationService.getStationOrElseThrow(downStationId);
-        line.relateToSection(upStation, downStation, distance);
     }
 
     private Line getLineOrElseThrow(final Long id) {

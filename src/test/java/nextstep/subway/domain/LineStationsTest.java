@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +16,7 @@ class LineStationsTest {
     @Test
     void 연관관계를_추가할_수_있어야_한다() {
         // given
-        final LineStation lineStation = new LineStation(line, station1);
+        final LineStation lineStation = new LineStation(line, station1, null, station2);
         final LineStations lineStations = new LineStations();
 
         // when
@@ -26,7 +27,7 @@ class LineStationsTest {
     }
 
     @Test
-    void 지하철역_목록을_확인할_수_있어야_한다() {
+    void 지하철역_목록을_조회할_수_있어야_한다() {
         // given
         final LineStations lineStations = givenLineStations();
 
@@ -38,21 +39,22 @@ class LineStationsTest {
     }
 
     @Test
-    void 특정_지하철역의_이전_역을_확인할_수_있어야_한다() {
+    void 지하철역으로_LineStation_객체를_조회할_수_있어야_한다() {
         // given
         final LineStations lineStations = givenLineStations();
 
         // when
-        final Station previous = lineStations.getPreviousOf(station2);
+        final Optional<LineStation> lineStation = lineStations.getByStation(station1);
 
         // then
-        assertThat(previous).isEqualTo(station1);
+        assertThat(lineStation.isPresent()).isTrue();
+        assertThat(lineStation.get().getStation()).isEqualTo(station1);
     }
 
     private LineStations givenLineStations() {
         final List<LineStation> lineStationList = Arrays.asList(
-                new LineStation(line, station1),
-                new LineStation(line, station2, station1));
+                new LineStation(line, station1, null, station2),
+                new LineStation(line, station2, station1, null));
         return new LineStations(lineStationList);
     }
 }
