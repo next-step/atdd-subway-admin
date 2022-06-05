@@ -65,18 +65,6 @@ public class Line {
         return color;
     }
 
-    public Section getFirstSection() {
-        List<Station> upStation = new ArrayList<>();
-        List<Station> downStation = new ArrayList<>();
-        sections.getSections().forEach(section -> {
-            upStation.add(section.getUpStation());
-            downStation.add(section.getDownStation());
-        });
-
-        upStation.removeAll(downStation);
-        return findFirstSection(upStation.get(0));
-    }
-
     public List<Station> sortByStation() {
         List<Station> stations = new ArrayList<>();
         Section section = getFirstSection();
@@ -92,6 +80,18 @@ public class Line {
         }
 
         return stations;
+    }
+
+    private Section getFirstSection() {
+        List<Station> upStation = new ArrayList<>();
+        List<Station> downStation = new ArrayList<>();
+        sections.getSections().forEach(section -> {
+            upStation.add(section.getUpStation());
+            downStation.add(section.getDownStation());
+        });
+
+        upStation.removeAll(downStation);
+        return findFirstSection(upStation.get(0));
     }
 
     private Section findFirstSection(Station station) {
