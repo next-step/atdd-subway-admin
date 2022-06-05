@@ -3,8 +3,6 @@ package nextstep.subway.domain;
 import nextstep.subway.dto.LineRequest;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -20,11 +18,12 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private String color;
 
+    @Transient
     @Embedded
-    private Section section;
+    private Section section = new Section();
 
     @Embedded
-    private LineStations lineStations;
+    private final LineStations lineStations = new LineStations();
 
     protected Line() {
     }
