@@ -48,20 +48,9 @@ public class Line {
         this.color = color;
     }
 
-    public void delete() {
-        this.deleted = true;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
+    public void addSection(Section section) {
+        sections.addSections(section);
+        section.setLine(this);
     }
 
     public List<Station> sortByStation() {
@@ -106,8 +95,23 @@ public class Line {
                 .findFirst().orElse(null);
     }
 
-    public void addSection(Section section) {
-        sections.addSections(section);
-        section.setLine(this);
+    public void delete() {
+        this.deleted = true;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 }
