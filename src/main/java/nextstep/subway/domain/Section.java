@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -48,6 +49,10 @@ public class Section {
         this.distance = distance;
     }
 
+    public void updateLine(Line line) {
+        this.line = line;
+    }
+
     public boolean containsStation(Station station) {
         return station.equals(getUpStation())
                 || station.equals(getDownStation());
@@ -71,6 +76,22 @@ public class Section {
 
     public Line getLine() {
         return line;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return Objects.equals(distance, section.distance) &&
+                Objects.equals(upStation, section.upStation) &&
+                Objects.equals(downStation, section.downStation) &&
+                Objects.equals(line, section.line);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(distance, upStation, downStation, line);
     }
 
     @Override

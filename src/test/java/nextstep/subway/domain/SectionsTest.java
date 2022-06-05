@@ -29,11 +29,9 @@ class SectionsTest {
         F역 = new Station(6L, "F역");
 
         sectionList = new ArrayList<>();
-        sectionList.add(new Section(1, null, A역));
         sectionList.add(new Section(10, A역, B역));
         sectionList.add(new Section(10, B역, C역));
         sectionList.add(new Section(10, C역, D역));
-        sectionList.add(new Section(1, D역, null));
     }
 
     @DisplayName("구간 리스트 내 지하철 역 포함")
@@ -75,8 +73,7 @@ class SectionsTest {
         Sections sections = new Sections(sectionList);
 
         // when
-        Section section = sections.findSectionWithUpStation(B역)
-                .orElseThrow(StationNotFoundException::new);
+        Section section = sections.findSectionWithUpStation(B역).get();
 
         // then
         assertThat(section.getUpStation()).isEqualTo(B역);
@@ -90,8 +87,7 @@ class SectionsTest {
         Sections sections = new Sections(sectionList);
 
         // when
-        Section section = sections.findSectionWithDownStation(D역)
-                .orElseThrow(StationNotFoundException::new);
+        Section section = sections.findSectionWithDownStation(D역).get();
 
         // then
         assertThat(section.getUpStation()).isEqualTo(C역);
@@ -108,8 +104,8 @@ class SectionsTest {
         Section section = sections.getLineUpSection();
 
         // then
-        assertThat(section.getUpStation()).isNull();
-        assertThat(section.getDownStation()).isEqualTo(A역);
+        assertThat(section.getUpStation()).isEqualTo(A역);
+        assertThat(section.getDownStation()).isEqualTo(B역);
     }
 
     @DisplayName("하행종점역 포함한 구간 정보 조회")
@@ -122,8 +118,8 @@ class SectionsTest {
         Section section = sections.getLineDownSection();
 
         // then
-        assertThat(section.getUpStation()).isEqualTo(D역);
-        assertThat(section.getDownStation()).isNull();
+        assertThat(section.getUpStation()).isEqualTo(C역);
+        assertThat(section.getDownStation()).isEqualTo(D역);
     }
 
     @DisplayName("상행 종점역 확인")

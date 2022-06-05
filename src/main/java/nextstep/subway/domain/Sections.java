@@ -1,13 +1,12 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.SectionNotFoundException;
+import nextstep.subway.exception.StationNotFoundException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Embeddable
 public class Sections {
@@ -41,26 +40,29 @@ public class Sections {
     }
 
     public void insertSectionWhenSectionIsHead(Line line, Section section) {
-        if (isLineUpStation(section.getDownStation())) {
-            Section lineUpSection = getLineUpSection();
-            lineUpSection.updateSection(section.getUpStation(), lineUpSection.getDownStation(), section.getDistance());
-            list.add(new Section(new Distance(1), null, section.getUpStation(), line));
+        Station beforeLineUpStation = getLineUpStation();
+        if (beforeLineUpStation.equals(section.getDownStation())) {
+            addSectionWithLine(line, section);
         }
     }
 
     public void insertSectionWhenSectionIsTail(Line line, Section section) {
-        if (isLineDownStation(section.getUpStation())) {
-            Section lineDownSection = getLineDownSection();
-            lineDownSection.updateSection(lineDownSection.getUpStation(), section.getDownStation(), section.getDistance());
-            list.add(new Section(new Distance(1), section.getDownStation(), null, line));
+        Station beforeLineDownStation = getLineDownStation();
+        if (beforeLineDownStation.equals(section.getUpStation())) {
+            addSectionWithLine(line, section);
         }
     }
 
+    private void addSectionWithLine(Line line, Section section) {
+        section.updateLine(line);
+        list.add(section);
+    }
+
     public void insertSectionWhenStationIsIncluded(Line line, Section section) {
-        Optional<Section> upStation = findSectionWithUpStation(section.getUpStation());
-        Optional<Section> downStation = findSectionWithDownStation(section.getDownStation());
-        upStation.ifPresent(frontSection -> insertSectionFromFront(line, frontSection, section));
-        downStation.ifPresent(rearSection -> insertSectionFromRear(line, section, rearSection));
+        Optional<Section> frontSection = findSectionWithUpStation(section.getUpStation());
+        Optional<Section> rearSection = findSectionWithDownStation(section.getDownStation());
+        frontSection.ifPresent(front -> insertSectionFromFront(line, front, section));
+        rearSection.ifPresent(rear -> insertSectionFromRear(line, section, rear));
     }
 
     public void insertSectionFromFront(Line line, Section frontSection, Section rearSection) {
@@ -95,22 +97,32 @@ public class Sections {
                 .findFirst();
     }
 
-    public Section getLineUpSection() {
-        return list.stream()
-                .filter(section -> section.getUpStation() == null)
+    public Station getLineUpStation() {
+        Set<Station> staionSet = new HashSet<>();
+        for (Section section : this.list) {
+            staionSet.add(section.getUpStation());
+            staionSet.add(section.getDownStation());
+        }
+
+        for (Section section : this.list) {
+            staionSet.remove(section.getDownStation());
+        }
+
+        return staionSet.stream()
                 .findFirst()
-                .orElseThrow(() -> {
-                    throw new SectionNotFoundException("노선 내 구간을 찾을 수 없습니다");
-                });
+                .orElseThrow(StationNotFoundException::new);
     }
 
+    /*
     public Station getLineUpStation() {
         return getLineUpSection().getDownStation();
     }
+    */
 
-    public Section getLineDownSection() {
+    public Section getLineUpSection() {
+        Station lineUpStation = getLineUpStation();
         return list.stream()
-                .filter(section -> section.getDownStation() == null)
+                .filter(section -> section.getUpStation() == lineUpStation)
                 .findFirst()
                 .orElseThrow(() -> {
                     throw new SectionNotFoundException("노선 내 구간을 찾을 수 없습니다");
@@ -118,7 +130,35 @@ public class Sections {
     }
 
     public Station getLineDownStation() {
+        Set<Station> staionSet = new HashSet<>();
+        for (Section section : this.list) {
+            staionSet.add(section.getUpStation());
+            staionSet.add(section.getDownStation());
+        }
+
+        for (Section section : this.list) {
+            staionSet.remove(section.getUpStation());
+        }
+
+        return staionSet.stream()
+                .findFirst()
+                .orElseThrow(StationNotFoundException::new);
+    }
+
+    /*
+    public Station getLineDownStation() {
         return getLineDownSection().getUpStation();
+    }
+     */
+
+    public Section getLineDownSection() {
+        Station lineDownStation = getLineDownStation();
+        return list.stream()
+                .filter(section -> section.getDownStation() == lineDownStation)
+                .findFirst()
+                .orElseThrow(() -> {
+                    throw new SectionNotFoundException("노선 내 구간을 찾을 수 없습니다");
+                });
     }
 
     public boolean containStation(Station station) {
@@ -134,14 +174,35 @@ public class Sections {
     }
 
     public void sort() {
-        List<Section> sorted = new ArrayList<>();
-        Section section = getLineUpSection();
-        sorted.add(section);
-        while (section.getDownStation() != null) {
-            section = findSectionWithUpStation(section.getDownStation()).get();
-            sorted.add(section);
+        Section head = findSectionWithUpStation(getLineUpStation())
+                .orElseThrow(SectionNotFoundException::new);
+        Section tail = findSectionWithDownStation(getLineDownStation())
+                .orElseThrow(SectionNotFoundException::new);
+
+        if (head == tail) {
+            return;
         }
+
+        List<Section> sorted = new ArrayList<>();
+        sorted.add(head);
+        do {
+            Section find = findSectionWithUpStation(head.getDownStation())
+                    .orElseThrow(SectionNotFoundException::new);
+            sorted.add(find);
+            head = findSectionWithUpStation(head.getDownStation())
+                    .orElseThrow(SectionNotFoundException::new);
+        } while (head != tail);
         this.list = sorted;
+    }
+
+    public List<Station> getSortedLineStations() {
+        sort();
+        List<Station> stations = new ArrayList<>();
+        stations.add(this.list.get(0).getUpStation());
+        for (Section section : this.list) {
+            stations.add(section.getDownStation());
+        }
+        return stations;
     }
 
     @Override
