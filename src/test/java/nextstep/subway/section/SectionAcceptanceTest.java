@@ -268,7 +268,7 @@ public class SectionAcceptanceTest {
      * <p>
      * Then 그 전 역이 하행 종점으로 변경된다
      */
-    @DisplayName("지하철 노선의 상행 종점을 제거한다.")
+    @DisplayName("지하철 노선의 하행 종점을 제거한다.")
     @Test
     void deleteDownStationSection() {
         // given
