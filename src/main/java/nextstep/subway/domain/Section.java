@@ -68,7 +68,7 @@ public class Section {
     }
 
     public boolean isDistanceEqualOrGreaterThan(final Section section) {
-        if(this.getDistance() <= section.getDistance()) {
+        if (this.getDistance() <= section.getDistance()) {
             return true;
         }
         return false;
@@ -82,5 +82,14 @@ public class Section {
     public void updateDownStation(final Section addableSection) {
         distance = distance - addableSection.getDistance();
         this.downStation = addableSection.getUpStation();
+    }
+
+    public boolean isEqualToUpOrDownStation(final Station station) {
+        return station == this.getUpStation() || station == this.getDownStation();
+    }
+
+    public boolean isEqualToUpOrDownStation(Section addableSection) {
+        return this.getUpStation().equals(addableSection.getUpStation()) ||
+                this.getDownStation().equals(addableSection.getDownStation());
     }
 }

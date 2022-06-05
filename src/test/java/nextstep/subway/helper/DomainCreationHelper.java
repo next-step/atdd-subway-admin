@@ -126,6 +126,46 @@ public class DomainCreationHelper {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 지하철구간_중간역_상행역_교체_생성됨(
+            final Long lineId,
+            final Long lineUpStationId,
+            final String stationName,
+            final Long distance
+    ) {
+        final Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", lineUpStationId);
+        params.put("downStationId", 지하철역_생성됨(stationName).jsonPath().getLong("id"));
+        params.put("distance", distance);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .pathParam("id", lineId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines/{id}/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철구간_중간역_하행역_교체_생성됨(
+            final Long lineId,
+            final String stationName,
+            final Long lineDownStationId,
+            final Long distance
+    ) {
+        final Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", 지하철역_생성됨(stationName).jsonPath().getLong("id"));
+        params.put("downStationId", lineDownStationId);
+        params.put("distance", distance);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .pathParam("id", lineId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines/{id}/sections")
+                .then().log().all()
+                .extract();
+    }
+
     public static ExtractableResponse<Response> 지하철구간_하행_종점_생성됨(
             final Long lineId,
             final String stationName,

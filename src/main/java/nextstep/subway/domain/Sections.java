@@ -19,6 +19,9 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
+    private final static long BOTH_ALL_MATCHED_COUNT = 2;
+    private final static long BOTH_NON_MATCHED_COUNT = 0;
+
     public boolean addSection(final Section addableSection) {
         checkBothStationExists(addableSection);
         if (checkSectionIsBetween(addableSection)) {
@@ -34,16 +37,21 @@ public class Sections {
         }
 
         final long matchedCount = getAllStations().stream()
-                .filter(station ->
-                        station == addableSection.getUpStation() ||
-                                station == addableSection.getDownStation())
+                .filter(station -> addableSection.isEqualToUpOrDownStation(station))
                 .count();
 
-        if (matchedCount == 2) {
+        validateDuplicate(matchedCount);
+        validateBothStationNotExists(matchedCount);
+    }
+
+    private void validateDuplicate(final long matchedCount) {
+        if (matchedCount == BOTH_ALL_MATCHED_COUNT) {
             throw new BothStationAlreadyExistsException();
         }
+    }
 
-        if (matchedCount == 0) {
+    private void validateBothStationNotExists(final long matchedCount) {
+        if (matchedCount == BOTH_NON_MATCHED_COUNT) {
             throw new BothStationNotExistsException();
         }
     }
@@ -63,9 +71,7 @@ public class Sections {
 
     private Optional<Section> findBetweenSection(final Section addableSection) {
         return sections.stream()
-                .filter(section ->
-                        section.getUpStation().equals(addableSection.getUpStation()) ||
-                                section.getDownStation().equals(addableSection.getDownStation()))
+                .filter(section -> section.isEqualToUpOrDownStation(addableSection))
                 .findFirst();
     }
 
