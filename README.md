@@ -192,3 +192,5 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 * Service
   * LineService.java
     * 구간 추가 및 조회 메서드 추가
+
+#### [코드리뷰 피드백](https://github.com/next-step/atdd-subway-admin/pull/739) (리뷰어: 김재연 님)
