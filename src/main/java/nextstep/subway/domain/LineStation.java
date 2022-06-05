@@ -22,7 +22,7 @@ public class LineStation {
 
 
     public LineStation(final Line line, final Section section) {
-        updateLine(line);
+        this.line = line;
         this.section = section;
     }
 
@@ -82,13 +82,6 @@ public class LineStation {
 
     private boolean isSameSection(final Section updatedSection) {
         return Objects.equals(this.section, updatedSection);
-    }
-
-    private void updateLine(final Line line) {
-        if (Objects.isNull(this.line)) {
-            this.line = line;
-            this.line.getLineStations().add(this);
-        }
     }
 
     @Override

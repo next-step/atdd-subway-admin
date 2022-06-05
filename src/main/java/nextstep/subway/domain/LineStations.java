@@ -1,12 +1,16 @@
 package nextstep.subway.domain;
 
+import javax.persistence.Embeddable;
 import javax.persistence.EntityExistsException;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@Embeddable
 public class LineStations {
+    @OneToMany(mappedBy = "line")
     private final List<LineStation> lineStations = new ArrayList<>();
 
     protected LineStations() {
@@ -17,7 +21,6 @@ public class LineStations {
         validation(lineStations);
         this.lineStations.addAll(lineStations);
     }
-
 
     public LineStation addLineStation(final LineStation lineStation) {
         LineStation validLineStation = validation(lineStation);

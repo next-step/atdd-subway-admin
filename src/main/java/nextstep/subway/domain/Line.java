@@ -23,8 +23,8 @@ public class Line extends BaseEntity {
     @Embedded
     private Section section;
 
-    @OneToMany(mappedBy = "line")
-    List<LineStation> lineStations = new ArrayList<>();
+    @Embedded
+    private LineStations lineStations;
 
     protected Line() {
     }
@@ -103,7 +103,7 @@ public class Line extends BaseEntity {
         return this;
     }
 
-    public List<LineStation> getLineStations() {
+    public LineStations getLineStations() {
         return lineStations;
     }
 
