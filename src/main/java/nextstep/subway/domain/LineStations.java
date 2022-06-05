@@ -97,13 +97,15 @@ public class LineStations {
         validateDelete(station);
         sort();
 
-        boolean isDeleted = false;
-        for (int i = 0; i < lineStations.size(); i++) {
-            isDeleted = deleteByUpStation(station, i);
+        boolean isNotYetDeleted = true;
+        for (int i = 0; i < lineStations.size() && isNotYetDeleted; i++) {
+            if (deleteByUpStation(station, i)) {
+                isNotYetDeleted = false;
+            }
         }
 
-        if (!isDeleted) {
-            deleteLastSection();
+        if (isNotYetDeleted) {
+            deleteLastLineStation();
         }
     }
 
@@ -125,7 +127,7 @@ public class LineStations {
             return false;
         }
 
-        if (index > 0 && index < lineStations.size()) {
+        if (isMiddle(index)) {
             LineStation lineStation = lineStations.get(index - 1);
 
             long distance = lineStation.getDistance() + willDeletedLineStation.getDistance();
@@ -135,7 +137,11 @@ public class LineStations {
         return true;
     }
 
-    private void deleteLastSection() {
+    private boolean isMiddle(int index) {
+        return index > 0 && index < lineStations.size();
+    }
+
+    private void deleteLastLineStation() {
         lineStations.remove(lineStations.size() - 1);
     }
 
