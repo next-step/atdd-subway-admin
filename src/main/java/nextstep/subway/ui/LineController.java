@@ -45,9 +45,8 @@ public class LineController {
         return lineService.findLine(id);
     }
 
-    @PostMapping(path = { "/{id}/sections" }, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> createSection(@PathVariable Long id,
-            @RequestBody SectionRequest sectionRequest) {
+    @PostMapping(path = { "/{id}/sections"}, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> createSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
         LineResponse response = lineService.addSection(id, sectionRequest);
         return ResponseEntity.created(URI.create("/lines/" + response.getId() + "/sections")).body(response);
     }
@@ -59,5 +58,10 @@ public class LineController {
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<Void> handleNoSuchElementException() {
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Void> handleIllegalArgumentException() {
+        return ResponseEntity.badRequest().build();
     }
 }

@@ -67,6 +67,48 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
         assertThat(stationNames).containsExactlyInAnyOrder("강남", "양재", "광교중앙");
     }
 
+    /**
+     * When 지하철_노선에_지하철역_등록_요청
+     * Then  지하철_노선에_지하철역_등록됨
+     */
+    @DisplayName("노선에 상행 종점 구간을 등록한다.")
+    @Test
+    void addAscEndSection() {
+        // when
+        ExtractableResponse<Response> response = addSection(line.getId(), new SectionRequest(null,
+                newUpStation.getId(),
+                5)
+        );
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        List<String> stationNames = getOne(line.getId()).jsonPath().getList("stations.name");
+        assertThat(stationNames).containsExactlyInAnyOrder("신사", "강남", "광교중앙");
+    }
+
+    /**
+     * When 지하철_노선에_지하철역_등록_요청
+     * Then  지하철_노선에_지하철역_등록됨
+     */
+    @DisplayName("노선에 하행 종점 구간을 등록한다.")
+    @Test
+    void addDescEndSection() {
+        // when
+        ExtractableResponse<Response> response = addSection(line.getId(), new SectionRequest(downStation.getId(),
+                newDownStation.getId(),
+                5)
+        );
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        List<String> stationNames = getOne(line.getId()).jsonPath().getList("stations.name");
+        assertThat(stationNames).containsExactlyInAnyOrder("강남", "광교중앙", "광교");
+    }
+
     private ExtractableResponse<Response> addSection(long lineId, SectionRequest sectionRequest) {
         return RestAssured.given().log().all()
                 .body(sectionRequest)

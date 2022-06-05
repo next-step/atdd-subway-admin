@@ -4,9 +4,14 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface LineRepository extends JpaRepository<Line, Long> {
     @Override
     @EntityGraph(attributePaths = { "lineStations" })
-    public List<Line> findAll();
+    Optional<Line> findById(Long id);
+
+    @Override
+    @EntityGraph(attributePaths = { "lineStations" })
+    List<Line> findAll();
 }
