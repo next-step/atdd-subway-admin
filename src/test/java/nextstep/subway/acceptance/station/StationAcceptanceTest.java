@@ -6,35 +6,14 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-import nextstep.subway.application.DatabaseCleanup;
+import nextstep.subway.acceptance.AcceptanceTest;
 import nextstep.subway.dto.StationRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("acceptance")
-public class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-        databaseCleanup.execute();
-    }
-
+public class StationAcceptanceTest extends AcceptanceTest {
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다
@@ -47,7 +26,7 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = Station.createStation("강남역");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        응답코드_검증(response, HttpStatus.CREATED);
 
         // then
         List<String> stationNames = findStations()
@@ -71,7 +50,7 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = Station.createStation(request);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        응답코드_검증(response, HttpStatus.BAD_REQUEST);
     }
 
     /**
