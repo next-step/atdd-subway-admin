@@ -31,8 +31,7 @@ public class EntityTest {
     void setUp() {
         S1 = stationRepository.save(new Station("지하철역"));
         S2 = stationRepository.save(new Station("새로운지하철역"));
-        this.line = new Line("신분당선", "bg-red-600")
-                .upStationBy(S1).downStationBy(S2);
+        this.line = new Line("신분당선", "bg-red-600");
     }
 
     @DisplayName("동등성 비교 테스트")
@@ -40,13 +39,5 @@ public class EntityTest {
     void identityTest() {
         Line savedLine = lineRepository.save(line);
         AssertionsForClassTypes.assertThat(lineRepository.findById(savedLine.getId()).orElseThrow(EntityNotFoundException::new)).isEqualTo(savedLine);
-    }
-
-    @DisplayName("Station 과 연관 관계 테스트")
-    @Test
-    void relatedTest() {
-        Line savedLine = lineRepository.save(line);
-        assertThat(stationRepository.findById(savedLine.getUpStation().getId()).orElseThrow(EntityNotFoundException::new)).isEqualTo(S1);
-        assertThat(stationRepository.findById(savedLine.getDownStation().getId()).orElseThrow(EntityNotFoundException::new)).isEqualTo(S2);
     }
 }

@@ -29,7 +29,7 @@ public class LineService {
         final Section section = new Section(lineRequest.getDistance())
                 .updateUpStationBy(stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(EntityNotFoundException::new))
                 .updateDownStationBy(stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(EntityNotFoundException::new));
-        return LineResponse.of(lineStationRepository.save(new LineStation(line, section)).getLine());
+        return LineResponse.of(lineStationRepository.save(new LineStation(line, section)));
     }
 
     public List<LineResponse> findAllLine() {

@@ -18,10 +18,6 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private String color;
 
-    @Transient
-    @Embedded
-    private final Section section = new Section();
-
     @Embedded
     private final LineStations lineStations = new LineStations();
 
@@ -45,18 +41,6 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return section.getUpStation();
-    }
-
-    public Station getDownStation() {
-        return section.getDownStation();
-    }
-
-    public Distance getDistance() {
-        return section.getDistance();
-    }
-
     public void updateName(String name) {
         if (!name.isEmpty() && !Objects.equals(this.name, name)) {
             this.name = name;
@@ -69,21 +53,10 @@ public class Line extends BaseEntity {
         }
     }
 
-    public Line upStationBy(final Station upStation) {
-        this.section.updateUpStationBy(upStation);
-        return this;
-    }
-
     public void updateBy(LineRequest request) {
         this.updateName(request.getName());
         this.updateColor(request.getColor());
     }
-
-    public Line downStationBy(Station downStation) {
-        this.section.updateDownStationBy(downStation);
-        return this;
-    }
-
 
     public void addLineStation(final LineStation lineStation) {
         if (!this.lineStations.isContains(lineStation)) {
