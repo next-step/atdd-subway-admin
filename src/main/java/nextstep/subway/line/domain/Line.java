@@ -4,6 +4,7 @@ import nextstep.subway.common.domain.BaseEntity;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -43,6 +44,10 @@ public class Line extends BaseEntity {
     public void update(Line line) {
         this.name = line.name;
         this.color = line.color;
+    }
+
+    public void removeSectionByStation(Station removeStation) {
+        this.sections.removeByStation(removeStation);
     }
 
     public LineResponse toLineResponse() {

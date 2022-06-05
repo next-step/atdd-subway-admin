@@ -206,7 +206,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     void deleteSection() {
         // given
         SectionRequest 새로운역_구간_요청 = SectionRequest.of(this.강남역_ID, this.새로운역_ID, 4);
-        ExtractableResponse<Response> 새로운역_추가_응답 = 지하철_구간_추가(this.신분당선_생성_응답, 새로운역_구간_요청);
+        지하철_구간_추가(this.신분당선_생성_응답, 새로운역_구간_요청);
 
         // when
         지하철_구간_제거(this.신분당선_생성_응답, this.새로운역_ID);
