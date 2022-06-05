@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class LineStations {
@@ -40,8 +41,17 @@ public class LineStations {
         return new LineStations(result);
     }
 
+    public List<Station> getStation() {
+        List<LineStation> lineStationList = getLineStationBySorted().getLineStations();
+        return lineStationList.stream().map(LineStation::getCurrentStation).collect(Collectors.toList());
+    }
+
+    public List<LineStation> getLineStations() {
+        return lineStations;
+    }
+
     private void insertLineStationBySorted(List<LineStation> result, LineStation startStation) {
-        Optional<LineStation> preStation = findPreStation(startStation.getCurrentStation());
+        Optional<LineStation> preStation = comparePreStation(startStation.getCurrentStation());
         while (preStation.isPresent()) {
             LineStation station = preStation.get();
             result.add(station);
@@ -49,16 +59,16 @@ public class LineStations {
         }
     }
 
-    private Optional<LineStation> validation(final LineStation lineStation) {
+    Optional<LineStation> validation(final LineStation lineStation) {
         if (this.lineStations.isEmpty()) {
             return Optional.empty();
         }
-        Optional<LineStation> isPreStation = findCurrentStation(lineStation.getPreStation());
-        Optional<LineStation> isCurrentStation = findCurrentStation(lineStation.getCurrentStation());
+        Optional<LineStation> isPreStation = comparePreStation(lineStation.getPreStation());
+        Optional<LineStation> isCurrentStation = compareCurrentStation(lineStation.getCurrentStation());
         if (Objects.equals(isPreStation.isPresent(), isCurrentStation.isPresent())) {
             throw new IllegalArgumentException("invalid Argument");
         }
-        return this.lineStations.stream().filter(item -> item.isAddLineStation(lineStation)).findAny();
+        return isPreStation.isPresent() ? isPreStation : isCurrentStation;
     }
 
     private LineStation findStartStation() {
@@ -68,11 +78,22 @@ public class LineStations {
     private Optional<LineStation> findPreStation(final Station station) {
         return this.lineStations.stream()
                 .filter(savedLineStation -> savedLineStation.isPreStation(station))
-                .filter(savedLineStation -> !savedLineStation.isCurrentStation(station))
                 .findFirst();
     }
 
-    private Optional<LineStation> findCurrentStation(final Station station) {
+    private Optional<LineStation> comparePreStation(final Station station) {
+        List<LineStation> collect = this.lineStations.stream()
+                .filter(savedLineStation -> savedLineStation.isPreStation(station) || savedLineStation.isCurrentStation(station))
+                .collect(Collectors.toList());
+        if (collect.size() > 1) {
+            return collect.stream()
+                    .filter(lineStation -> !Objects.equals(lineStation.getPreStation(), lineStation.getCurrentStation()))
+                    .findFirst();
+        }
+        return collect.size() > 0 ? Optional.of(collect.get(0)) : Optional.empty();
+    }
+
+    private Optional<LineStation> compareCurrentStation(final Station station) {
         return this.lineStations.stream()
                 .filter(savedLineStation -> savedLineStation.isCurrentStation(station))
                 .findFirst();

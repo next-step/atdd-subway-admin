@@ -23,12 +23,17 @@ public class LineStation extends BaseEntity {
 
 
     public LineStation(final Line line, final Section section) {
-        this.line = line;
         this.section = section;
+        addLine(line);
     }
 
     public LineStation(final Line line, final Station station) {
-        this(line, new Section(station, station, new Distance(0L)));
+        this(line, new Section(null, station, new Distance(0L)));
+    }
+
+    private void addLine(final Line line) {
+        this.line = line;
+        this.line.addLineStation(this);
     }
 
     public Long getId() {
