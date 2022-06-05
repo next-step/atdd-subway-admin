@@ -22,7 +22,27 @@ public class Sections {
     public static Sections from(List<Section> sections) {
         return new Sections(sections);
     }
-    
+
+    public boolean isEmpty() {
+        return sections == null || sections.isEmpty();
+    }
+
+    public boolean containsSection(Section section) {
+        Station newUpStation = section.getUpStation();
+        Station newDownStation = section.getDownStation();
+
+        return containsStation(newUpStation) && containsStation(newDownStation);
+    }
+
+    public boolean containsStation(Station station) {
+        boolean hasStation = false;
+        for (Section oldSection : sections) {
+            hasStation |= oldSection.getUpStation().equals(station);
+            hasStation |= oldSection.getDownStation().equals(station);
+        }
+        return hasStation;
+    }
+
     public List<Section> getSections() {
         return sections;
     }
