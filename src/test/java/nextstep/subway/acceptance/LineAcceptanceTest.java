@@ -128,10 +128,7 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> response = getLine(id);
 
         // then
-        Arrays.stream(response.as(LineResponse[].class))
-              .forEach(
-                      line -> assertThat(line.getId()).isNotNull()
-              );
+        assertThat(response.as(LineResponse[].class)[0].getId()).isNotNull();
     }
 
     /**
@@ -150,13 +147,11 @@ public class LineAcceptanceTest {
         updateLine(id, new LineRequest("뉴신분당선", "bg-white-400"));
 
         // then
-        Arrays.stream(getLine(id).as(LineResponse[].class))
-              .forEach(
-                      line -> assertAll(
-                              () -> assertEquals(line.getName(), "뉴신분당선"),
-                              () -> assertEquals(line.getColor(), "bg-white-400")
-                      )
-              );
+        LineResponse response = getLine(id).as(LineResponse[].class)[0];
+        assertAll(
+                () -> assertEquals(response.getName(), "뉴신분당선"),
+                () -> assertEquals(response.getColor(), "bg-white-400")
+        );
     }
 
     /**
