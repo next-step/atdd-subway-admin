@@ -125,9 +125,9 @@ class LineTest {
     void 노선_상행종점역_지하철역_삭제() {
         // given
         Line line = new Line("2호선", "초록", 15, A역, C역);
+        line.insertSection(new Section(5, B역, C역));
 
         // when
-        line.insertSection(new Section(5, B역, C역));
         line.deleteSection(A역);
 
         // then
@@ -140,15 +140,37 @@ class LineTest {
     void 노선_하행종점역_지하철역_삭제() {
         // given
         Line line = new Line("2호선", "초록", 15, A역, C역);
+        line.insertSection(new Section(5, B역, C역));
 
         // when
-        line.insertSection(new Section(5, B역, C역));
         line.deleteSection(C역);
 
         // then
         Sections sections = line.getSections();
         assertThat(sections.getList()).hasSize(1);
         assertThat(sections.getSortedLineStations()).hasSize(2);
+    }
+
+    @Test
+    void 하나만_남은_구간은_삭제불가1() {
+        // given
+        Line line = new Line("2호선", "초록", 15, A역, C역);
+
+        // when, then
+        assertThatThrownBy(() -> {
+            line.deleteSection(A역);
+        }).isInstanceOf(InvalidSectionException.class);
+    }
+
+    @Test
+    void 하나만_남은_구간은_삭제불가2() {
+        // given
+        Line line = new Line("2호선", "초록", 15, A역, C역);
+
+        // when, then
+        assertThatThrownBy(() -> {
+            line.deleteSection(C역);
+        }).isInstanceOf(InvalidSectionException.class);
     }
 
     @Test
