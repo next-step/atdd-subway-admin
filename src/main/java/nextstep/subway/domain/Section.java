@@ -58,8 +58,8 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public Distance getDistance() {
-        return distance;
+    public int distanceValue() {
+        return distance.getDistance();
     }
 
     public void setLine(Line line) {
@@ -68,23 +68,38 @@ public class Section extends BaseEntity {
 
     public void separate(Section newSection) {
         if (this.upStation.equals(newSection.getUpStation())) {
-            System.out.println("!");
             this.upStation = newSection.getDownStation();
-            calculateDistance(newSection);
+            separateDistance(newSection);
 
         }
         if (this.downStation.equals(newSection.getDownStation())) {
             this.downStation = newSection.getUpStation();
-            calculateDistance(newSection);
+            separateDistance(newSection);
         }
     }
 
-    private void calculateDistance(Section newSection) {
+    private void separateDistance(Section newSection) {
         distance = distance.minus(newSection.distance);
     }
 
     public List<Station> upDownStationPair() {
         return Arrays.asList(upStation, downStation);
+    }
+
+    public boolean isUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean isDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public Section mergeSection(Section downSection) {
+        return Section.of(
+                this.upStation,
+                downSection.getDownStation(),
+                this.distance.plus(downSection.distance).getDistance()
+        );
     }
 
     @Override

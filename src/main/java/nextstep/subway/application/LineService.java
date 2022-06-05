@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,6 +75,18 @@ public class LineService {
                 .orElseThrow(() -> new IllegalStateException("하행종점역이 존재하지 않습니다."));
 
         line.addSection(Section.of(upStation, downStation, sectionRequest.getDistance()));
+
+        return LineResponse.of(line);
+    }
+
+    @Transactional
+    public LineResponse removeSection(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new IllegalStateException("존재하지 않는 노선입니다."));
+        Station station = stationRepository.findById(stationId)
+                .orElseThrow(() -> new NoSuchElementException("역이 존재하지 않습니다."));
+
+        line.remove(station);
 
         return LineResponse.of(line);
     }

@@ -21,6 +21,15 @@ public class SectionAcceptanceFactory {
                 .when().post("/lines/{id}/sections", lineId)
                 .then().log().all()
                 .extract();
+    }
 
+    public static ExtractableResponse<Response> 지하철_구간_삭제(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParam("lineId", lineId)
+                .pathParam("stationId", stationId)
+                .when().delete("/lines/{lineId}/sections?stationId={stationId}")
+                .then().log().all()
+                .extract();
     }
 }

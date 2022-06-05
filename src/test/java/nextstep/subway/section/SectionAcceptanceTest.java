@@ -18,6 +18,7 @@ import java.util.List;
 
 import static nextstep.subway.line.LineAcceptanceFactory.ID값으로_지하철노선_조회;
 import static nextstep.subway.line.LineAcceptanceFactory.지하철노선_생성;
+import static nextstep.subway.section.SectionAcceptanceFactory.지하철_구간_삭제;
 import static nextstep.subway.section.SectionAcceptanceFactory.지하철구간_생성;
 import static nextstep.subway.station.StationAcceptanceFactory.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -139,5 +140,74 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> 일호선_수원_신창_구간등록 = 지하철구간_생성(일호선.getId(), 인천역.getId(), 동인천.getId(), 10);
 
         assertThat(일호선_수원_신창_구간등록.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+
+    /**
+     * Given 노선에 상행역, 중간역, 하행역이 등록되어 있고
+     * When 상행역을 제거하면
+     * Then 중간역 - 하행역 구간으로 재배치된다.
+     */
+    @Test
+    void 상행역을_제거한다() {
+        ExtractableResponse<Response> 일호선_소요산_서울역_구간 = 지하철구간_생성(일호선.getId(), 소요산역.getId(), 서울역.getId(), 10);
+
+        ExtractableResponse<Response> 상행역_삭제결과 = 지하철_구간_삭제(일호선.getId(), 소요산역.getId());
+
+        assertThat(상행역_삭제결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Given 노선에 상행역, 중간역, 하행역이 등록되어 있고
+     * When 하행역을 제거하면
+     * Then 상행역 - 중간역 구간으로 재배치된다.
+     */
+    @Test
+    void 하행역을_제거한다() {
+        ExtractableResponse<Response> 일호선_소요산_서울역_구간 = 지하철구간_생성(일호선.getId(), 소요산역.getId(), 서울역.getId(), 10);
+
+        ExtractableResponse<Response> 하행역_삭제결과 = 지하철_구간_삭제(일호선.getId(), 신창역.getId());
+
+        assertThat(하행역_삭제결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Given 노선에 상행역, 중간역, 하행역이 등록되어 있고
+     * When 중간역을 제거하면
+     * Then 상행역 - 하행역 구간으로 재배치된다.
+     */
+    @Test
+    void 중간역을_제거한다() {
+        ExtractableResponse<Response> 일호선_소요산_서울역_구간 = 지하철구간_생성(일호선.getId(), 소요산역.getId(), 서울역.getId(), 10);
+
+        ExtractableResponse<Response> 중간역_삭제결과 = 지하철_구간_삭제(일호선.getId(), 서울역.getId());
+
+        assertThat(중간역_삭제결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Given 노선에 상행역, 하행역이 등록되어 있고
+     * When 존재하지않는 성대역을 제거하면
+     * Then 삭제를 실패한다.
+     */
+    @Test
+    void 삭제하려는_역이_노선에_없으면_제거할_수_없다() {
+        StationResponse 성대역 = 지하철역_생성("성대역").as(StationResponse.class);
+
+        ExtractableResponse<Response> 존재하지않는역_삭제결과 = 지하철_구간_삭제(일호선.getId(), 성대역.getId());
+
+        assertThat(존재하지않는역_삭제결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 노선에 상행역, 하행역 1개의 구간이 등록되어 있고
+     * When 역을 제거하면
+     * Then 삭제를 실패한다.
+     */
+    @Test
+    void 노선에_구간이_1개인경우_제거할_수_없다() {
+        ExtractableResponse<Response> 존재하지않는역_삭제결과 = 지하철_구간_삭제(일호선.getId(), 소요산역.getId());
+
+        assertThat(존재하지않는역_삭제결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

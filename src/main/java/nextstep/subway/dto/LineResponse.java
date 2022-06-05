@@ -1,5 +1,6 @@
 package nextstep.subway.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
@@ -12,19 +13,19 @@ public class LineResponse {
     private final Long id;
     private final String name;
     private final String color;
-    private final List<Station> stations;
+    private final List<StationResponse> stations;
 
 
-    public LineResponse(Long id, String name, String color, List<Station> stations) {
+    public LineResponse(Long id, String name, String color, List<StationResponse> stationResponses) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = stations;
+        this.stations = stationResponses;
     }
 
     public static LineResponse of(Line line) {
         List<Station> stations = new ArrayList<>();
-        for(Section section:line.getSections()){
+        for (Section section : line.getSections()) {
             stations.add(section.getUpStation());
             stations.add(section.getDownStation());
         }
@@ -34,6 +35,7 @@ public class LineResponse {
                 line.getColor(),
                 stations.stream()
                         .distinct()
+                        .map(StationResponse::of)
                         .collect(Collectors.toList())
         );
     }
@@ -50,9 +52,14 @@ public class LineResponse {
         return color;
     }
 
+    public List<StationResponse> getStations() {
+        return stations;
+    }
+
+    @JsonIgnore
     public List<String> getStationNames() {
         return stations.stream()
-                .map(Station::getName)
+                .map(StationResponse::getName)
                 .collect(Collectors.toList());
     }
 }

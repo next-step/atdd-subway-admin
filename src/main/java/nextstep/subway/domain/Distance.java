@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.SectionLengthOverException;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
@@ -28,8 +26,12 @@ public class Distance {
 
     public Distance minus(Distance distance) {
         if (this.distance - distance.getDistance() <= MIN) {
-            throw new SectionLengthOverException("기존 역 사이 거리보다 작을 수 없습니다.");
+            throw new IllegalArgumentException("기존 역 사이 거리보다 작을 수 없습니다.");
         }
         return new Distance(this.distance - distance.getDistance());
+    }
+
+    public Distance plus(Distance distance) {
+        return new Distance(this.distance + distance.getDistance());
     }
 }
