@@ -2,6 +2,10 @@ package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class LineResponse {
     private final Long id;
 
@@ -9,26 +13,40 @@ public class LineResponse {
 
     private final String color;
 
-    private final Long distance;
+    private final List<LineStationResponse> lineStations;
+    private final List<StationResponse> stations;
 
-    private final StationResponse upStation;
-
-    private final StationResponse downStation;
-
-    public LineResponse(Long id, String name, String color, Long distance, StationResponse upStation, StationResponse downStation) {
+    public LineResponse(Long id, String name, String color, List<LineStationResponse> lineStations, List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.distance = distance;
-        this.upStation = upStation;
-        this.downStation = downStation;
+        this.lineStations = lineStations;
+        this.stations = stations;
     }
 
     public static LineResponse of(Line line) {
-        StationResponse upStationResponse = StationResponse.of(line.getUpStation());
-        StationResponse downStationResponse = StationResponse.of(line.getDownStation());
+        List<LineStationResponse> lineStations = line.getLineStations()
+                .stream()
+                .map(LineStationResponse::of)
+                .collect(Collectors.toList());
 
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getDistance(), upStationResponse, downStationResponse);
+        List<StationResponse> stations = getStationsInLine(lineStations);
+
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), lineStations, stations);
+    }
+
+    private static List<StationResponse> getStationsInLine(List<LineStationResponse> lineStations) {
+        List<StationResponse> stations = lineStations.stream()
+                .map(LineStationResponse::inclueStations)
+                .collect(Collectors.toList())
+                .stream()
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+
+        return stations.stream()
+                .distinct()
+                .sorted(Comparator.comparing(StationResponse::getCreatedDate))
+                .collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -43,15 +61,11 @@ public class LineResponse {
         return color;
     }
 
-    public Long getDistance() {
-        return distance;
+    public List<LineStationResponse> getLineStations() {
+        return lineStations;
     }
 
-    public StationResponse getUpStation() {
-        return upStation;
-    }
-
-    public StationResponse getDownStation() {
-        return downStation;
+    public List<StationResponse> getStations() {
+        return stations;
     }
 }

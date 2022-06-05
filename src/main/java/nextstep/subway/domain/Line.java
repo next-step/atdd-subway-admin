@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.dto.LineRequest;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Line {
@@ -16,40 +17,34 @@ public class Line {
     @Column
     private String color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
-
-    @Column
-    private Long distance;
+    @Embedded
+    private final LineStations lineStations = LineStations.empty();
 
     protected Line() {
     }
 
-    public Line(Long id, String name, String color, Station upStation, Station downStation, Long distance) {
+    private Line(Long id, String name, String color) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, Long distance) {
-        this(null, name, color, upStation, downStation, distance);
+    public Line(String name, String color) {
+        this(null, name, color);
     }
 
-    public static Line of(LineRequest lineRequest, Station upStation, Station downStation) {
-        return new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
+    public static Line of(LineRequest lineRequest) {
+        return new Line(lineRequest.getName(), lineRequest.getColor());
     }
 
     public void update(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public void addLineStation(LineStation newLineStation) {
+        newLineStation.toLine(this);
+        lineStations.add(newLineStation);
     }
 
     public Long getId() {
@@ -64,15 +59,17 @@ public class Line {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public List<LineStation> getLineStations() {
+        return lineStations.get();
     }
 
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public Long getDistance() {
-        return distance;
+    @Override
+    public String toString() {
+        return "Line{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", lineStations=" + lineStations +
+                '}';
     }
 }

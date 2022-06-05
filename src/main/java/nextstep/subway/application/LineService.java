@@ -2,8 +2,8 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.LineStation;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.exception.NotFoundException;
@@ -17,20 +17,26 @@ import java.util.stream.Collectors;
 @Transactional
 public class LineService {
     private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private StationService stationService;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
     public LineResponse createLine(LineRequest lineRequest) {
-        Station upStation = findStationById(lineRequest.getUpStationId());
-        Station downStation = findStationById(lineRequest.getDownStationId());
+        Station upStation = stationService.findStationById(lineRequest.getUpStationId());
+        Station downStation = stationService.findStationById(lineRequest.getDownStationId());
 
-        Line line = lineRepository.save(Line.of(lineRequest, upStation, downStation));
+        Line line = Line.of(lineRequest);
+        LineStation lineStation = LineStation.of(upStation, downStation, lineRequest.getDistance());
+        line.addLineStation(lineStation);
 
-        return LineResponse.of(line);
+        return LineResponse.of(saveLine(line));
+    }
+
+    private Line saveLine(Line line) {
+        return lineRepository.save(line);
     }
 
     @Transactional(readOnly = true)
@@ -39,6 +45,12 @@ public class LineService {
         return lines.stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Line findLineById(Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new NotFoundException("노선을 찾을 수 없습니다."));
     }
 
     public LineResponse updateLine(Long lineId, LineRequest lineRequest) {
@@ -56,15 +68,5 @@ public class LineService {
     public void deleteLine(Long lineId) {
         Line line = findLineById(lineId);
         lineRepository.delete(line);
-    }
-
-    private Line findLineById(Long lineId) {
-        return lineRepository.findById(lineId)
-                .orElseThrow(() -> new NotFoundException("노선을 찾을 수 없습니다."));
-    }
-
-    private Station findStationById(Long stationId) {
-        return stationRepository.findById(stationId)
-                .orElseThrow(() -> new NotFoundException("지하철역을 찾을 수 없습니다."));
     }
 }
