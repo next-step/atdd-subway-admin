@@ -1,8 +1,11 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
+@Table(name = "line")
 public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,6 +16,9 @@ public class Line extends BaseEntity {
 
     @Column(nullable = false)
     private String color;
+
+    @OneToMany(mappedBy = "line", fetch = FetchType.EAGER)
+    private List<Station> stations = new LinkedList<>();
 
     public Line() {
     }
@@ -33,8 +39,20 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public void update(Line line) {
+    public void setNameAndColor(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public List<Station> getStations() {
+        return stations;
+    }
+
+    public void setStations(List<Station> stations) {
+        this.stations = stations;
+    }
+
+    public void addStation(Station station) {
+        this.stations.add(station);
     }
 }

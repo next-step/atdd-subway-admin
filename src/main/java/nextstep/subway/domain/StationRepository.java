@@ -8,6 +8,5 @@ import java.util.List;
 public interface StationRepository extends JpaRepository<Station, Long> {
     @Override
     List<Station> findAll();
-    List<Station> findAllByLineIdIsNotNull();
-    List<Station> findAllByLineId(@Param(value = "lineId")Long lineId);
+    List<Station> findAllByLineId(Long lineId);
 }
