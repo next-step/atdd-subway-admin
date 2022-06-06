@@ -74,7 +74,7 @@ public class Sections {
 
     private List<Section> findSectionsContainingStation(Station station) {
         return sections.stream()
-                .filter(section -> section.getUpStation() == station || section.getDownStation() == station)
+                .filter(section -> section.hasStation(station))
                 .collect(Collectors.toList());
     }
 
