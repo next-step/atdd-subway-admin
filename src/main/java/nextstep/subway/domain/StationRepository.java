@@ -7,6 +7,4 @@ import java.util.List;
 public interface StationRepository extends JpaRepository<Station, Long> {
     @Override
     List<Station> findAll();
-
-    Station findStationById(Long id);
 }

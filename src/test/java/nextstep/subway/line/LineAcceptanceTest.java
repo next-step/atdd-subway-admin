@@ -37,6 +37,32 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     }
 
     /**
+     * Given 존재하지 않는 역 정보를 이용하여
+     * When 지하철 노선을 생성하면
+     * Then 오류 메시지와 함께 노선이 생성되지 않는다.
+     */
+    @DisplayName("존재하지 않는 역을 이용한 지하철노선 생성")
+    @Test
+    void createLineWithNotSavedStation() {
+        // Given
+        final long 미존재_상행역_ID = 100L;
+        final long 미존재_하행역_ID = 101L;
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        params.put("upStationId", 미존재_상행역_ID);
+        params.put("downStationId", 미존재_하행역_ID);
+        params.put("distance", 10);
+
+        // when
+        ExtractableResponse<Response> 노선_생성_에러_응답 = 노선_생성(params);
+
+        // Then
+        assertThat(노선_생성_에러_응답.statusCode()).isEqualTo(400);
+    }
+
+    /**
      * Given 2개의 지하철 노선을 생성하고
      * When 지하철 노선 목록을 조회하면
      * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
