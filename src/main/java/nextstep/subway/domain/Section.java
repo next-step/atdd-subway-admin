@@ -5,7 +5,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.util.Objects;
 
@@ -22,7 +21,6 @@ public class Section extends BaseEntity {
     private Station upStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
     private Station downStation;
 
     private int distance;
@@ -34,6 +32,10 @@ public class Section extends BaseEntity {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 
     public void setLine(Line line) {
@@ -50,39 +52,47 @@ public class Section extends BaseEntity {
 
     public void updateUpStationToDownStationOf(Section newSection) {
         this.upStation = newSection.downStation;
-        this.distance -= newSection.distance;
+        this.distance = Math.max(this.distance - newSection.distance, 0);
     }
 
     public void updateDownStationToUpStationOf(Section newSection) {
         this.downStation = newSection.upStation;
-        this.distance -= newSection.distance;
+        this.distance = Math.max(this.distance - newSection.distance, 0);
     }
 
     public boolean isFirstSection() {
         return Objects.isNull(upStation);
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public boolean isLastSection() {
+        return Objects.isNull(downStation);
     }
 
     public boolean isNextSectionOf(Section section) {
         return Objects.equals(this.upStation, section.downStation);
     }
 
-    public boolean hasSameStations(Section other) {
-        return this.upStation == other.upStation && this.downStation == other.downStation;
-    }
-
     public boolean canInsert(Section newSection) {
         return distance > newSection.distance;
     }
 
-    public boolean equalsAtLeastOneStation(Section other) {
-        return other.upStation.equals(upStation) ||
-                other.upStation.equals(downStation) ||
-                other.downStation.equals(upStation) ||
-                other.downStation.equals(downStation);
+    public boolean equalsAtLeastOneStation(Section newSection) {
+        return newSection.upStation.equals(downStation) ||
+                newSection.downStation.equals(upStation);
+    }
+
+    public Section generateFirstSection() {
+        Section firstSection = new Section(null, upStation, 0);
+        firstSection.line = line;
+
+        return firstSection;
+    }
+
+    public Section generateLastSection() {
+        Section lastSection = new Section(downStation, null, 0);
+        lastSection.line = line;
+
+        return lastSection;
     }
 
     @Override

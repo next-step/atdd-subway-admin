@@ -24,16 +24,42 @@ public class SectionsTest {
         선릉역 = new Station("선릉역");
         도곡역 = new Station("도곡역");
 
-        sections.add(new Section(null, 왕십리역, 0));
     }
 
     @Test
-    void 구간_추가_하행_상행_일치() {
+    void 첫_구간_추가() {
         sections.add(new Section(왕십리역, 선릉역, 7));
 
         assertThat(sections.getList()).contains(
                 new Section(null, 왕십리역, 0),
-                new Section(왕십리역, 선릉역, 7));
+                new Section(왕십리역, 선릉역, 7),
+                new Section(선릉역, null, 0));
+    }
+
+    @Test
+    void 구간_추가_새로운_상행_종점() {
+        sections.add(new Section(서울숲역, 선릉역, 5));
+
+        sections.add(new Section(왕십리역, 서울숲역, 2));
+
+        assertThat(sections.getList()).contains(
+                new Section(null, 왕십리역, 0),
+                new Section(왕십리역, 서울숲역, 2),
+                new Section(서울숲역, 선릉역, 5),
+                new Section(선릉역, null, 0));
+    }
+
+    @Test
+    void 구간_추가_새로운_하행_종점() {
+        sections.add(new Section(서울숲역, 선릉역, 5));
+
+        sections.add(new Section(선릉역, 도곡역, 2));
+
+        assertThat(sections.getList()).contains(
+                new Section(null, 서울숲역, 0),
+                new Section(서울숲역, 선릉역, 5),
+                new Section(선릉역, 도곡역, 2),
+                new Section(도곡역, null, 0));
     }
 
     @Test
@@ -45,7 +71,8 @@ public class SectionsTest {
         assertThat(sections.getList()).contains(
                 new Section(null, 왕십리역, 0),
                 new Section(왕십리역, 서울숲역, 4),
-                new Section(서울숲역, 선릉역, 3));
+                new Section(서울숲역, 선릉역, 3),
+                new Section(선릉역, null, 0));
     }
 
     @Test
@@ -57,7 +84,8 @@ public class SectionsTest {
         assertThat(sections.getList()).contains(
                 new Section(null, 왕십리역, 0),
                 new Section(왕십리역, 서울숲역, 4),
-                new Section(서울숲역, 선릉역, 3));
+                new Section(서울숲역, 선릉역, 3),
+                new Section(선릉역, null, 0));
     }
 
     @Test

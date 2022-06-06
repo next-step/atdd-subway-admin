@@ -19,7 +19,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private Sections sections = new Sections();
+    private final Sections sections = new Sections();
 
     protected Line() {
     }
@@ -54,14 +54,8 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section newSection) {
-        if (sections.isEmpty()) {
-            Section firstSection = new Section(null, newSection.getDownStation(), 0);
-            sections.add(firstSection);
-            firstSection.setLine(this);
-        }
-
-        sections.add(newSection);
         newSection.setLine(this);
+        sections.add(newSection);
     }
 
     public List<Station> getStationsInOrder() {
