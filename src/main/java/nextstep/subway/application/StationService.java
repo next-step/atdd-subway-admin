@@ -6,6 +6,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.exception.InvalidStationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class StationService {
 
+    private static final String INVALID_STATION = "%d : 유효하지 않은 지하철역입니다.";
     private StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
@@ -36,5 +38,10 @@ public class StationService {
     @Transactional
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
+    }
+
+    public Station findStationById(Long stationId) {
+        return stationRepository.findById(stationId)
+            .orElseThrow(() -> new InvalidStationException(String.format(INVALID_STATION, stationId)));
     }
 }

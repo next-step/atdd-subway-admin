@@ -22,29 +22,30 @@ public class LineService {
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    private static final String INVALID_STATION = "유효하지 않은 지하철역입니다.";
+    private final StationService stationService;
     private static final String INVALID_LINE = "%d : 유효하지 않은 지하철 노선입니다.";
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository,
+        StationRepository stationRepository, StationService stationService) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = findStationById(lineRequest.getUpStationId());
-        Station downStation = findStationById(lineRequest.getDownStationId());
+        Station upStation = stationService.findStationById(lineRequest.getUpStationId());
+        Station downStation = stationService.findStationById(lineRequest.getDownStationId());
         Line newLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.of(newLine);
     }
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
-        Optional<Line> lineOptional = lineRepository.findById(id);
-        String lineName = lineOptional.orElse(null).getName();
-        String lineColor = lineOptional.orElse(null).getColor();
+        String lineName = lineRequest.getName();
+        String lineColor = lineRequest.getColor();
         Line foundLine = lineRepository.findById(id).orElseThrow(
-            () -> new InvalidLineException(String.format(INVALID_LINE, lineName))
+            () -> new InvalidLineException(String.format(INVALID_LINE, id))
         );
         foundLine.update(lineName, lineColor);
     }
@@ -65,26 +66,17 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        Optional<Line> lineOptional = lineRepository.findById(id);
-        String lineName = lineOptional.orElse(null).getName();
-        return LineResponse.of(lineOptional
-            .orElseThrow(() -> new InvalidLineException(String.format(INVALID_LINE, lineName))));
-    }
-
-    public Station findStationById(Long stationId) {
-        return stationRepository.findById(stationId)
-            .orElseThrow(() -> new InvalidStationException(INVALID_STATION));
+        return LineResponse.of(lineRepository.findById(id)
+            .orElseThrow(() -> new InvalidLineException(String.format(INVALID_LINE, id))));
     }
 
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
-        Optional<Line> lineOptional = lineRepository.findById(lineId);
-        String lineName = lineOptional.orElse(null).getName();
         Line findLine = lineRepository.findById(lineId).orElseThrow(
-            () -> new InvalidLineException(String.format(INVALID_LINE, lineName))
+            () -> new InvalidLineException(String.format(INVALID_LINE, lineId))
         );
-        Station upStation = findStationById(sectionRequest.getUpStationId());
-        Station downStation = findStationById(sectionRequest.getDownStationId());
+        Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
         findLine.addSection(Section.of(upStation, downStation, sectionRequest.getDistance()));
     }
 
