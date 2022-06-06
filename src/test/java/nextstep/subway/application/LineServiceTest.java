@@ -150,7 +150,7 @@ class LineServiceTest {
         final SectionRequest sectionRequest = new SectionRequest(gangnam.getId(), yangjae.getId(), distance);
 
         // when
-        final SectionResponse sectionResponse = lineService.addSection(line.getId(), sectionRequest);
+        final SectionResponse sectionResponse = lineService.registerSection(line.getId(), sectionRequest);
 
         // then
         assertThat(sectionResponse)

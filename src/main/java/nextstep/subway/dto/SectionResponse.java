@@ -2,7 +2,6 @@ package nextstep.subway.dto;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-import nextstep.subway.domain.Section;
 
 public class SectionResponse {
     private String lineName;
@@ -32,16 +31,6 @@ public class SectionResponse {
         this.distance = distance;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-    }
-
-    public static SectionResponse of(final Section section) {
-        return new SectionResponse(
-                section.getLine().getName(),
-                section.getUpStation().getName(),
-                section.getDownStation().getName(),
-                section.getDistance(),
-                section.getCreatedDate(),
-                section.getModifiedDate());
     }
 
     public String getLineName() {
