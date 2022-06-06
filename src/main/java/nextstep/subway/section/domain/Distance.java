@@ -22,7 +22,7 @@ public class Distance {
     }
 
     public void minus(Integer distance) {
-        if(this.distance - distance <= 0) {
+        if (this.distance - distance <= 0) {
             throw new IllegalArgumentException(DISTANCE_MINUS_ERROR_MSG);
         }
         this.distance -= distance;

@@ -38,7 +38,7 @@ public class Sections {
                 .findFirst()
                 .orElse(null);
 
-        if(Objects.nonNull(nextSection)) {
+        if (Objects.nonNull(nextSection)) {
             return nextSection.getDownStation();
         }
 
@@ -46,7 +46,7 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-        if(sections.isEmpty()) {
+        if (sections.isEmpty()) {
             sections.add(section);
             return;
         }
@@ -56,11 +56,11 @@ public class Sections {
     }
 
     private void addSectionValid(Section section) {
-        if(hasUpStationAndDownStation(section)) {
+        if (hasUpStationAndDownStation(section)) {
             throw new IllegalArgumentException(HAS_UP_AND_DOWN_STATION_MSG);
         }
 
-        if(hasNotUpStationAndDownStation(section)) {
+        if (hasNotUpStationAndDownStation(section)) {
             throw new IllegalArgumentException(HAS_NOT_UP_AND_DOWN_STATION_MSG);
         }
     }
