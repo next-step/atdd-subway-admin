@@ -45,11 +45,9 @@ public class LineService {
     public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
         Line persistLine = findLineById(lineId);
         Station station = findStationById(sectionRequest.getStationId());
-        Station preStation = null;
-        if (sectionRequest.hasPreStation()) {
-            preStation = findStationById(sectionRequest.getPreStationId());
-        }
-        persistLine.addSection(preStation, station, sectionRequest.getDistance());
+        Station previousStation = findStationByIdOrElseNull(sectionRequest.getPreviousStationId());
+        Station nextStation = findStationByIdOrElseNull(sectionRequest.getNextStationId());
+        persistLine.addSection(station, sectionRequest.getDistance(), previousStation, nextStation);
         return LineResponse.from(persistLine);
     }
 
@@ -71,5 +69,9 @@ public class LineService {
 
     private Station findStationById(Long stationId) {
         return stationRepository.findById(stationId).orElseThrow(NoSuchElementException::new);
+    }
+
+    private Station findStationByIdOrElseNull(Long stationId) {
+        return stationRepository.findById(stationId).orElse(null);
     }
 }

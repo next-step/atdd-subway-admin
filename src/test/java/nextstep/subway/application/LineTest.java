@@ -28,57 +28,57 @@ class LineTest {
     @Test
     public void 상행_구간_연장() {
         //when
-        line.addSection(null, addedStation, 10);
+        line.addSection(addedStation, 10, null, upStation);
 
         //then
-        assertThat(line.getAllSections().stream().map(Section::getName).collect(Collectors.toList())).containsExactly("새로운 지하철역", "상행", "하행");
+        assertThat(line.getAllSectionsSorted().stream().map(Section::getName).collect(Collectors.toList())).containsExactly("새로운 지하철역", "상행", "하행");
     }
 
     @Test
     public void 하행_구간_연장() {
         //when
-        line.addSection(downStation, addedStation, 10);
+        line.addSection(addedStation, 10, downStation, null);
 
         //then
-        assertThat(line.getAllSections().stream().map(Section::getName).collect(Collectors.toList())).containsExactly("상행", "하행", "새로운 지하철역");
+        assertThat(line.getAllSectionsSorted().stream().map(Section::getName).collect(Collectors.toList())).containsExactly("상행", "하행", "새로운 지하철역");
     }
 
     @Test
     public void 상행_하행_사이_구간_추가() {
         //when
-        line.addSection(upStation, addedStation, 5);
+        line.addSection(addedStation,9, upStation, downStation);
 
         //then
-        assertThat(line.getAllSections().stream().map(Section::getName).collect(Collectors.toList())).containsExactly("상행", "새로운 지하철역", "하행");
+        assertThat(line.getAllSectionsSorted().stream().map(Section::getName).collect(Collectors.toList())).containsExactly("상행", "새로운 지하철역", "하행");
 
         //when
-        line.addSection(addedStation, new Station(4L, "새로추가된 역에 또 하나 더 추가함"), 2);
+        line.addSection(new Station(4L, "새로추가된 역에 또 하나 더 추가함"), 2, addedStation, downStation);
 
         //then
-        assertThat(line.getAllSections().stream().map(Section::getName).collect(Collectors.toList())).containsExactly("상행", "새로운 지하철역", "새로추가된 역에 또 하나 더 추가함", "하행");
+        assertThat(line.getAllSectionsSorted().stream().map(Section::getName).collect(Collectors.toList())).containsExactly("상행", "새로운 지하철역", "새로추가된 역에 또 하나 더 추가함", "하행");
 
         //when
-        line.addSection(upStation, new Station(5L,  "더 추가하기"), 4);
+        line.addSection(new Station(5L,  "더 추가하기"), 4, upStation, addedStation);
 
         //then
-        assertThat(line.getAllSections().stream().map(Section::getName).collect(Collectors.toList())).containsExactly("상행", "더 추가하기", "새로운 지하철역", "새로추가된 역에 또 하나 더 추가함", "하행");
+        assertThat(line.getAllSectionsSorted().stream().map(Section::getName).collect(Collectors.toList())).containsExactly("상행", "더 추가하기", "새로운 지하철역", "새로추가된 역에 또 하나 더 추가함", "하행");
     }
 
     @Test
     public void 사이_구간_추가시_범위_벗어나는_경우_구간_추가가_불가능하다() {
         //then
-        assertThatThrownBy(() -> line.addSection(upStation, addedStation, 10)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> line.addSection(addedStation, 10, upStation, downStation)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void 구간_추가시_같은_역_구간은_추가가_불가능하다() {
         //then
-        assertThatThrownBy(() -> line.addSection(addedStation, addedStation, 5)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> line.addSection(addedStation, 5, upStation, upStation)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void 구간_추가시_이미_존재하는_구간은_구간_추가가_불가능하다() {
         //then
-        assertThatThrownBy(() -> line.addSection(upStation, downStation, 5)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> line.addSection(upStation,  5, upStation, downStation)).isInstanceOf(IllegalArgumentException.class);
     }
 }
