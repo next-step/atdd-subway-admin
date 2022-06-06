@@ -21,7 +21,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("구간 관련 기능")
-public class LineStationAcceptanceTest extends AcceptanceTest {
+public class SectionAcceptanceTest extends AcceptanceTest {
     @Autowired
     private StationRepository stationRepository;
     @Autowired

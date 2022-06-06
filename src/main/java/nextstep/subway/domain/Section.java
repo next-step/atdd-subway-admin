@@ -6,7 +6,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "line_station")
-public class LineStation implements Comparable<LineStation> {
+public class Section implements Comparable<Section> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,21 +21,25 @@ public class LineStation implements Comparable<LineStation> {
     private Station preStation;
     private Integer distance;
 
-    private LineStation(Line line, Station station, Station preStation, Integer distance) {
+    private Section(Line line, Station station, Station preStation, Integer distance) {
         this.line = line;
         this.station = station;
         this.preStation = preStation;
         this.distance = distance;
     }
 
-    protected LineStation() {}
+    protected Section() {}
 
-    public static LineStation ascEndSection(Line line, Station station) {
-        return new LineStation(line, station, null, 0);
+    public static Section ascendEndPoint(Line line, Station station) {
+        return new Section(line, station, null, 0);
     }
 
-    public static LineStation section(Line line, Station station, Station preStation, Integer distance) {
-        return new LineStation(line, station, preStation, distance);
+    public static Section of(Line line, Station station, Station preStation, Integer distance) {
+        return new Section(line, station, preStation, distance);
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Station getPreStation() {
@@ -67,7 +71,7 @@ public class LineStation implements Comparable<LineStation> {
     }
 
     @Override
-    public int compareTo(LineStation o) {
+    public int compareTo(Section o) {
         if (Objects.equals(this.station, o.preStation))
             return -1;
         return this.distance - o.distance;

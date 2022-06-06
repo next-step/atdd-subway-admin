@@ -59,8 +59,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ### 요구사항
 - [X] 지하철 구간 추가 기능을 구현한다.
-    - [X] Line 과 Station 사이에 구간을 표현할 수 있는 LineStation 테이블을 추가한다.
-    - [X] Line 이 LineStation 을 여러개 포함 할 수 있는 구조로 바꾼다.
+    - [X] Line 과 Station 사이에 구간을 표현할 수 있는 Section을 추가한다.
+    - [X] Line 이 Section 을 여러개 포함 할 수 있는 구조로 바꾼다.
     - [X] 도메인 로직에 구간 추가 에 대한 validation 조건을 추가한다. (상행, 하행, 거리)
 
 

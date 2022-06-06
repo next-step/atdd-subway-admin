@@ -1,7 +1,7 @@
 package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineStation;
+import nextstep.subway.domain.Section;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,7 +12,7 @@ public class LineResponse {
     private String color;
     private List<StationResponse> stations;
 
-    private LineResponse(Long id, String name, String color, List<LineStation> stations) {
+    private LineResponse(Long id, String name, String color, List<Section> stations) {
         this.id = id;
         this.name = name;
         this.color = color;

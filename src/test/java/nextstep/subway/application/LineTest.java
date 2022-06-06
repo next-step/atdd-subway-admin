@@ -1,7 +1,7 @@
 package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineStation;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,15 +31,15 @@ class LineTest {
         line.addSection(null, addedStation, 10);
 
         //then
-        LineStation ascEnd = line.getAscEndSection();
-        assertThat(ascEnd.getDistance()).isEqualTo(0);
-        assertThat(ascEnd.getName()).isEqualTo("새로운 지하철역");
+        Section ascendEndpoint = line.getAscendEndpoint();
+        assertThat(ascendEndpoint.getDistance()).isEqualTo(0);
+        assertThat(ascendEndpoint.getName()).isEqualTo("새로운 지하철역");
 
-        LineStation descEnd = line.getDescEndSection();
-        assertThat(descEnd.getDistance()).isEqualTo(20);
-        assertThat(descEnd.getName()).isEqualTo("하행");
+        Section descendEndpoint = line.getDescendEndpoint();
+        assertThat(descendEndpoint.getDistance()).isEqualTo(20);
+        assertThat(descendEndpoint.getName()).isEqualTo("하행");
 
-        assertThat(line.getAllSections().stream().map(LineStation::getName).collect(Collectors.toList())).containsExactly("새로운 지하철역", "상행", "하행");
+        assertThat(line.getAllSections().stream().map(Section::getName).collect(Collectors.toList())).containsExactly("새로운 지하철역", "상행", "하행");
     }
 
     @Test
@@ -48,15 +48,15 @@ class LineTest {
         line.addSection(downStation, addedStation, 10);
 
         //then
-        LineStation ascEnd = line.getAscEndSection();
-        assertThat(ascEnd.getDistance()).isEqualTo(0);
-        assertThat(ascEnd.getName()).isEqualTo("상행");
+        Section ascendEndpoint = line.getAscendEndpoint();
+        assertThat(ascendEndpoint.getDistance()).isEqualTo(0);
+        assertThat(ascendEndpoint.getName()).isEqualTo("상행");
 
-        LineStation descEnd = line.getDescEndSection();
-        assertThat(descEnd.getDistance()).isEqualTo(20);
-        assertThat(descEnd.getName()).isEqualTo("새로운 지하철역");
+        Section descendEndpoint = line.getDescendEndpoint();
+        assertThat(descendEndpoint.getDistance()).isEqualTo(20);
+        assertThat(descendEndpoint.getName()).isEqualTo("새로운 지하철역");
 
-        assertThat(line.getAllSections().stream().map(LineStation::getName).collect(Collectors.toList())).containsExactly("상행", "하행", "새로운 지하철역");
+        assertThat(line.getAllSections().stream().map(Section::getName).collect(Collectors.toList())).containsExactly("상행", "하행", "새로운 지하철역");
     }
 
     @Test
@@ -65,27 +65,27 @@ class LineTest {
         line.addSection(upStation, addedStation, 5);
 
         //then
-        LineStation ascEnd = line.getAscEndSection();
-        assertThat(ascEnd.getDistance()).isEqualTo(0);
-        assertThat(ascEnd.getName()).isEqualTo("상행");
+        Section ascendEndpoint = line.getAscendEndpoint();
+        assertThat(ascendEndpoint.getDistance()).isEqualTo(0);
+        assertThat(ascendEndpoint.getName()).isEqualTo("상행");
 
-        LineStation descEnd = line.getDescEndSection();
-        assertThat(descEnd.getDistance()).isEqualTo(10);
-        assertThat(descEnd.getName()).isEqualTo("하행");
+        Section descendEndpoint = line.getDescendEndpoint();
+        assertThat(descendEndpoint.getDistance()).isEqualTo(10);
+        assertThat(descendEndpoint.getName()).isEqualTo("하행");
 
-        assertThat(line.getAllSections().stream().map(LineStation::getName).collect(Collectors.toList())).containsExactly("상행", "새로운 지하철역", "하행");
+        assertThat(line.getAllSections().stream().map(Section::getName).collect(Collectors.toList())).containsExactly("상행", "새로운 지하철역", "하행");
 
         //when
         line.addSection(addedStation, new Station(4L, "새로추가된 역에 또 하나 더 추가함"), 2);
 
         //then
-        assertThat(line.getAllSections().stream().map(LineStation::getName).collect(Collectors.toList())).containsExactly("상행", "새로운 지하철역", "새로추가된 역에 또 하나 더 추가함", "하행");
+        assertThat(line.getAllSections().stream().map(Section::getName).collect(Collectors.toList())).containsExactly("상행", "새로운 지하철역", "새로추가된 역에 또 하나 더 추가함", "하행");
 
         //when
         line.addSection(upStation, new Station(5L,  "더 추가하기"), 4);
 
         //then
-        assertThat(line.getAllSections().stream().map(LineStation::getName).collect(Collectors.toList())).containsExactly("상행", "더 추가하기", "새로운 지하철역", "새로추가된 역에 또 하나 더 추가함", "하행");
+        assertThat(line.getAllSections().stream().map(Section::getName).collect(Collectors.toList())).containsExactly("상행", "더 추가하기", "새로운 지하철역", "새로추가된 역에 또 하나 더 추가함", "하행");
     }
 
     @Test
