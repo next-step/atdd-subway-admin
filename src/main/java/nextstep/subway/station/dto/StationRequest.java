@@ -1,5 +1,7 @@
 package nextstep.subway.station.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import nextstep.subway.station.domain.Station;
 
 import java.util.Objects;
@@ -7,11 +9,8 @@ import java.util.Objects;
 public class StationRequest {
     private final String name;
 
-    private StationRequest() {
-        this.name = null;
-    }
-
-    public StationRequest(final String name) {
+    @JsonCreator
+    public StationRequest(final @JsonProperty("name") String name) {
         this.name = name;
     }
 

@@ -2,31 +2,19 @@ package nextstep.subway.station.dto;
 
 import nextstep.subway.station.domain.Station;
 
-import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class StationResponse {
     private final Long id;
     private final String name;
-    private final LocalDateTime createdDate;
-    private final LocalDateTime modifiedDate;
 
     public static StationResponse of(final Station station) {
-        return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate());
+        return new StationResponse(station.getId(), station.getName());
     }
 
-    public StationResponse() {
-        this.id = null;
-        this.name = null;
-        this.createdDate = null;
-        this.modifiedDate = null;
-
-    }
-
-    public StationResponse(final Long id, final String name, final LocalDateTime createdDate, final LocalDateTime modifiedDate) {
+    public StationResponse(final Long id, final String name) {
         this.id = id;
         this.name = name;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
     }
 
     public Long getId() {
@@ -37,11 +25,24 @@ public class StationResponse {
         return name;
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
+    @Override
+    public String toString() {
+        return "StationResponse{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final StationResponse that = (StationResponse) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }
