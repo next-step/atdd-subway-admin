@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.Test;
 
@@ -49,6 +50,19 @@ class LineStationsTest {
         // then
         assertThat(lineStation.isPresent()).isTrue();
         assertThat(lineStation.get().getStation()).isEqualTo(station1);
+    }
+
+    @Test
+    void 구간_목록을_반환할_수_있어야_한다() {
+        // given
+        final LineStations lineStations = givenLineStations();
+
+        // when
+        final List<SectionResponse> sections = lineStations.sections();
+
+        // then
+        assertThat(sections).containsExactly(
+                new SectionResponse(line.getName(), station1.getName(), station2.getName(), 30L));
     }
 
     private LineStations givenLineStations() {

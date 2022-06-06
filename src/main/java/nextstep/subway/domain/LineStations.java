@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.dto.StationResponse;
 
 @Embeddable
@@ -38,5 +39,23 @@ public class LineStations {
                 .stream()
                 .filter(lineStation -> lineStation.getStation().equals(station))
                 .findFirst();
+    }
+
+    public List<SectionResponse> sections() {
+        final List<SectionResponse> sections = new ArrayList<>();
+        if (!lineStations.isEmpty()) {
+            lineStations.forEach(lineStation -> addSection(sections, lineStation));
+        }
+        return sections;
+    }
+
+    private void addSection(final List<SectionResponse> sections, final LineStation lineStation) {
+        if (null != lineStation.getNext()) {
+            sections.add(new SectionResponse(
+                    lineStation.getLine().getName(),
+                    lineStation.getStation().getName(),
+                    lineStation.getNext().getName(),
+                    lineStation.getDistanceToNext()));
+        }
     }
 }
