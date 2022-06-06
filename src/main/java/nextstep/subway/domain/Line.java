@@ -40,12 +40,9 @@ public class Line {
     protected Line() {
     }
 
-    public Line(final String name, final String color, final Station upStation, final Station downStation,
-                final long distance) {
+    public Line(final String name, final String color, final long distance) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
         this.distance = Distance.valueOf(distance);
     }
 
@@ -85,5 +82,10 @@ public class Line {
 
     public List<Station> stations() {
         return Arrays.asList(upStation, downStation);
+    }
+
+    public void bindStations(final Station upStation, final Station downStation) {
+        this.upStation = upStation;
+        this.downStation = downStation;
     }
 }

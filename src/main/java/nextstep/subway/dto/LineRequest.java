@@ -50,7 +50,7 @@ public class LineRequest {
         return distance;
     }
 
-    public Line toLine(final Station upStation, final Station downStation) {
-        return new Line(name, color, upStation, downStation, distance);
+    public Line toLine() {
+        return new Line(name, color, distance);
     }
 }

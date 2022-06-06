@@ -27,12 +27,15 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(final LineRequest lineRequest) {
-        return LineResponse.of(lineRepository.save(lineRequest.toLine(findStationById(lineRequest.getUpStationId()),
-                findStationById(lineRequest.getDownStationId()))));
+        Line line = lineRequest.toLine();
+        line.bindStations(upStation(lineRequest), downStation(lineRequest));
+        lineRepository.save(line);
+        return LineResponse.of(line);
     }
 
     public List<LineResponse> findAllLines() {
-        return lineRepository.findAll().stream()
+        return lineRepository.findAll()
+                .stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
@@ -55,6 +58,14 @@ public class LineService {
     @Transactional
     public void deleteLine(final Long id) {
         lineRepository.deleteById(id);
+    }
+
+    private Station upStation(final LineRequest lineRequest) {
+        return findStationById(lineRequest.getUpStationId());
+    }
+
+    private Station downStation(final LineRequest lineRequest) {
+        return findStationById(lineRequest.getDownStationId());
     }
 
     private Station findStationById(final long id) {
