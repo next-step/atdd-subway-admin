@@ -5,8 +5,6 @@ import java.util.Objects;
 import nextstep.subway.domain.Section;
 
 public class SectionResponse {
-    private Long id;
-
     private String lineName;
 
     private String upStationName;
@@ -22,14 +20,12 @@ public class SectionResponse {
     public SectionResponse() {
     }
 
-    public SectionResponse(final Long id,
-                           final String lineName,
+    public SectionResponse(final String lineName,
                            final String upStationName,
                            final String downStationName,
                            final Long distance,
                            final LocalDateTime createdDate,
                            final LocalDateTime modifiedDate) {
-        this.id = id;
         this.lineName = lineName;
         this.upStationName = upStationName;
         this.downStationName = downStationName;
@@ -40,17 +36,12 @@ public class SectionResponse {
 
     public static SectionResponse of(final Section section) {
         return new SectionResponse(
-                section.getId(),
                 section.getLine().getName(),
                 section.getUpStation().getName(),
                 section.getDownStation().getName(),
                 section.getDistance(),
                 section.getCreatedDate(),
                 section.getModifiedDate());
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getLineName() {
@@ -80,8 +71,7 @@ public class SectionResponse {
     @Override
     public String toString() {
         return "SectionResponse{" +
-                "id=" + id +
-                ", lineName='" + lineName + '\'' +
+                "lineName='" + lineName + '\'' +
                 ", upStationName='" + upStationName + '\'' +
                 ", downStationName='" + downStationName + '\'' +
                 ", distance=" + distance +
@@ -99,8 +89,7 @@ public class SectionResponse {
             return false;
         }
         final SectionResponse that = (SectionResponse) o;
-        return Objects.equals(id, that.id)
-                && Objects.equals(lineName, that.lineName)
+        return Objects.equals(lineName, that.lineName)
                 && Objects.equals(upStationName, that.upStationName)
                 && Objects.equals(downStationName, that.downStationName)
                 && Objects.equals(distance, that.distance)
@@ -110,6 +99,6 @@ public class SectionResponse {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, lineName, upStationName, downStationName, distance, createdDate, modifiedDate);
+        return Objects.hash(lineName, upStationName, downStationName, distance, createdDate, modifiedDate);
     }
 }

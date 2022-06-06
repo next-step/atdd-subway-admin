@@ -59,9 +59,7 @@ public class LineController {
     public ResponseEntity<SectionResponse> registerSection(@PathVariable Long id,
                                                            @RequestBody final SectionRequest sectionRequest) {
         final SectionResponse sectionResponse = lineService.addSection(id, sectionRequest);
-        return ResponseEntity
-                .created(URI.create("/lines/" + id + "/sections/" + sectionResponse.getId()))
-                .body(sectionResponse);
+        return ResponseEntity.ok(sectionResponse);
     }
 
     @GetMapping("/{id}/sections")

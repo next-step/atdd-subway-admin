@@ -44,7 +44,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         final ExtractableResponse<Response> registerResponse = 구간을_등록한다(GANGNAM, YANGJAE, distance);
 
         // then
-        assertThat(registerResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(registerResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
         final List<SectionResponse> sections = 구간_목록을_조회한다().jsonPath().getList(".", SectionResponse.class);
@@ -72,7 +72,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         final ExtractableResponse<Response> registerResponse = 구간을_등록한다(YANGJAE, JUNGJA, distance);
 
         // then
-        assertThat(registerResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(registerResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
         final List<SectionResponse> sections = 구간_목록을_조회한다().jsonPath().getList(".", SectionResponse.class);
@@ -99,7 +99,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         final ExtractableResponse<Response> registerResponse = 구간을_등록한다(SINNONHYUN, GANGNAM, distance);
 
         // then
-        assertThat(registerResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(registerResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
         final List<SectionResponse> sections = 구간_목록을_조회한다().jsonPath().getList(".", SectionResponse.class);
@@ -119,7 +119,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         final ExtractableResponse<Response> registerResponse = 구간을_등록한다(JUNGJA, MIGEUM, distance);
 
         // then
-        assertThat(registerResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(registerResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
         final List<SectionResponse> sections = 구간_목록을_조회한다().jsonPath().getList(".", SectionResponse.class);
@@ -195,13 +195,5 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
                 .when().get("/lines/{id}/sections", SINBUNDANGSUN)
                 .then().log().all()
                 .extract();
-    }
-
-    private void 구간이_등록되었다(final ExtractableResponse<Response> registerResponse) {
-        assertThat(registerResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        // then
-        final List<SectionResponse> sections = 구간_목록을_조회한다().jsonPath().getList(".", SectionResponse.class);
-        assertThat(sections).contains(registerResponse.body().as(SectionResponse.class));
     }
 }
