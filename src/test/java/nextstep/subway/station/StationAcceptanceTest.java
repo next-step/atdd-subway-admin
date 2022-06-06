@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -110,15 +111,18 @@ public class StationAcceptanceTest {
         // when
         Long stationId = createdResponse.jsonPath().getLong("id");
         ExtractableResponse<Response> deleteResponse = requestDeleteStation(stationId);
-        assertStatusCode(deleteResponse.statusCode(), HttpStatus.NO_CONTENT.value());
 
         // then
         ExtractableResponse<Response> getResponse = requestGetStations();
-        assertStatusCode(getResponse.statusCode(), HttpStatus.OK.value());
-
-        List<String> findStations = getResponse.jsonPath().getList("name", String.class);
-        assertStatusCode(findStations.size(), 0);
-        assertThat(findStations).doesNotContain(stationNames.get(1));
+        assertAll(
+            () -> assertStatusCode(deleteResponse.statusCode(), HttpStatus.NO_CONTENT.value()),
+            () -> assertStatusCode(getResponse.statusCode(), HttpStatus.OK.value()),
+            () -> {
+                List<String> findStations = getResponse.jsonPath().getList("name", String.class);
+                assertStatusCode(findStations.size(), 0);
+                assertThat(findStations).doesNotContain(stationNames.get(1));
+            }
+        );
     }
 
     private ExtractableResponse<Response> requestDeleteStation(Long stationId) {
