@@ -8,12 +8,14 @@ import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class LineService {
     private LineRepository lineRepository;
 
@@ -24,6 +26,7 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
+    @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Line persistLine = lineRepository.save(lineRequest.toLine(
                 stationRepository.findStationById(lineRequest.getUpStationId()),
@@ -45,6 +48,7 @@ public class LineService {
         return result.map(LineResponse::of).orElseGet(LineResponse::new);
     }
 
+    @Transactional
     public ResponseEntity updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
         Optional<Line> line = lineRepository.findById(id);
         if (line.isPresent()) {
@@ -57,6 +61,7 @@ public class LineService {
         return ResponseEntity.noContent().build();
     }
 
+    @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
