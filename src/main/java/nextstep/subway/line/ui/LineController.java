@@ -6,6 +6,7 @@ import nextstep.subway.station.domain.Station;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -54,7 +55,7 @@ public class LineController {
     public ResponseEntity addSection(
             @PathVariable Long lineId,
             @RequestBody SectionRequest sectionRequest) {
-        lineService.saveSection(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        lineService.saveSection(lineId, sectionRequest);
         return ResponseEntity.ok().build();
     }
 
@@ -63,5 +64,12 @@ public class LineController {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(exception.getMessage());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity handleDatabaseException(RuntimeException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .build();
     }
 }

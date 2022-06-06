@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -61,11 +62,11 @@ public class LineService {
     }
 
     @Transactional
-    public void saveSection(Long id, Long upStationId, Long downStationId, Integer distance) {
+    public void saveSection(Long id, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException(NO_ELEMENT_SEARCH_BY_ID_MSG));
-        Station upStation = stationService.findById(upStationId);
-        Station downStation = stationService.findById(downStationId);
-        Section section = new Section(upStation, downStation, distance);
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
+        Section section = new Section(upStation, downStation, sectionRequest.getDistance());
         line.addSection(section);
     }
 }
