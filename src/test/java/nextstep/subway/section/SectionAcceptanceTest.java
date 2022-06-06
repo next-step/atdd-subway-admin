@@ -189,6 +189,20 @@ public class SectionAcceptanceTest {
         );
     }
 
+    @Test
+    @DisplayName("지하철 지하철 노선이 1개인 경우 삭제 실패 테스트")
+    void removeLineNotMatchStation() {
+        ExtractableResponse<Response> 지하철노선_생성_결과 = 지하철노선_생성("2호선", "bg-green-600", 교대역_ID, 역삼역_ID);
+        assertThat(지하철노선_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Long 지하철노선_ID = 지하철노선_생성_결과.jsonPath().getLong("id");
+
+        ExtractableResponse<Response> 지하철노선_제거_결과 = 지하철노선_제거(지하철노선_ID, 교대역_ID);
+
+        assertAll(
+                () -> assertThat(지하철노선_제거_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(지하철노선_제거_결과.jsonPath().getString("message")).isEqualTo(NOT_MATCH_STATION_DELETE_ERROR)
+        );
+    }
 
     @Test
     @DisplayName("지하철 노선 제거 성공 테스트")
