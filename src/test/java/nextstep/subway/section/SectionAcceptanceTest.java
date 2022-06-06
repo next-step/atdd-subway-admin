@@ -45,7 +45,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = LineTestUtil.getLine(defaultLineId);
-        assertThat(response.jsonPath().getList("..name", String.class)).containsAnyOf("동천역");
+        assertThat(response.jsonPath().getList("stations.name", String.class)).containsAnyOf("동천역");
     }
 
     /**
@@ -63,9 +63,9 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = SectionTestUtil.getAllSections(defaultLineId);
-        assertThat(response.jsonPath().getLong("$[0].upStationId")).isEqualTo(upStationId);
-        assertThat(response.jsonPath().getLong("$[0].downStationId")).isEqualTo(defaultUpStationId);
-        assertThat(response.jsonPath().getInt("$[0].distance")).isEqualTo(5);
+        assertThat(response.jsonPath().getLong("[0].upStation.id")).isEqualTo(upStationId);
+        assertThat(response.jsonPath().getLong("[0].downStation.id")).isEqualTo(defaultUpStationId);
+        assertThat(response.jsonPath().getInt("[0].distance")).isEqualTo(5);
     }
 
     /**
@@ -83,15 +83,15 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = SectionTestUtil.getAllSections(defaultLineId);
-        assertThat(response.jsonPath().getLong("$[-1].upStationId")).isEqualTo(defaultDownStationId);
-        assertThat(response.jsonPath().getLong("$[-1].downStationId")).isEqualTo(downStationId);
-        assertThat(response.jsonPath().getInt("$[-1].distance")).isEqualTo(7);
+        assertThat(response.jsonPath().getLong("[1].upStation.id")).isEqualTo(defaultDownStationId);
+        assertThat(response.jsonPath().getLong("[1].downStation.id")).isEqualTo(downStationId);
+        assertThat(response.jsonPath().getInt("[1].distance")).isEqualTo(7);
     }
 
     /**
      * Given 지하철 노선을 생성하고 When 지하철 중간 구간을 추가하면 Then 구간 목록 조회시 중간 구간으로 조회된다.
      */
-    @DisplayName("지하철 하행 종점 추가")
+    @DisplayName("지하철 중간 구간 추가")
     @Test
     void addMiddleSection() {
         // when
@@ -106,9 +106,9 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = SectionTestUtil.getAllSections(defaultLineId);
-        assertThat(response.jsonPath().getLong("$[1].upStationId")).isEqualTo(middleStationId);
-        assertThat(response.jsonPath().getLong("$[1].downStationId")).isEqualTo(defaultDownStationId);
-        assertThat(response.jsonPath().getInt("$[1].distance")).isEqualTo(3);
+        assertThat(response.jsonPath().getLong("[1].upStation.id")).isEqualTo(middleStationId);
+        assertThat(response.jsonPath().getLong("[1].downStation.id")).isEqualTo(defaultDownStationId);
+        assertThat(response.jsonPath().getInt("[1].distance")).isEqualTo(3);
     }
 
     /**
