@@ -49,12 +49,14 @@ public class LineService {
 
     @Transactional
     public void update(Long id, LineUpdateRequest request) {
-        lineRepository.findById(id).ifPresent(line -> line.modifyBy(request));
+        lineRepository.findById(id)
+                .ifPresent(line -> line.modifyBy(request));
     }
 
     @Transactional
     public void deleteById(Long id) {
-        lineRepository.deleteById(id);
+        lineRepository.findByIdWithSections(id)
+                .ifPresent(lineRepository::delete);
     }
 
     @Transactional
@@ -64,5 +66,14 @@ public class LineService {
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
                 .orElseThrow(IllegalArgumentException::new);
         lineRepository.findByIdWithSections(id).ifPresent(line -> line.addSection(upStation, downStation, sectionRequest.getDistance()));
+    }
+
+    @Transactional
+    public void removeSection(Long id, Long stationId) {
+        Optional<Line> line = lineRepository.findByIdWithSections(id);
+        Optional<Station> station = stationRepository.findById(stationId);
+        if (line.isPresent() && station.isPresent()) {
+            line.get().removeSection(station.get());
+        }
     }
 }

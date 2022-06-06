@@ -58,6 +58,10 @@ public class Section {
         distance -= length;
     }
 
+    private void increaseBy(int length) {
+        distance += length;
+    }
+
     public boolean matchOutside(Section section) {
         return upStation == section.downStation || downStation == section.upStation;
     }
@@ -68,6 +72,16 @@ public class Section {
 
     public boolean contains(Station station) {
         return upStation == station || downStation == station;
+    }
+
+    public Section merge(Section section) {
+        increaseBy(section.distance);
+        if (downStation == section.upStation) {
+            downStation = section.downStation;
+            return this;
+        }
+        upStation = section.upStation;
+        return this;
     }
 
     public Station getUpStation() {
