@@ -97,17 +97,33 @@ public class Sections {
     }
 
     private boolean addableSection(Section addedSection) {
-        return !this.sections.isEmpty() && !isEdgeSection(addedSection);
+        return isNotEmpty() && isNotEdgeSection(addedSection);
     }
 
     private boolean removableStation(Station removeStation) {
-        if (this.sections.size() == 1) {
+        if (onlyOneSection()) {
             throw new IllegalArgumentException(NOT_REMOVED_ONLY_ONE_SECTION);
         }
-        if (!containsStation(removeStation)) {
+        if (doseNotContainStation(removeStation)) {
             throw new IllegalArgumentException(DOES_NOT_CONTAIN_STATION);
         }
+        return isNotEmpty();
+    }
+
+    private boolean isNotEmpty() {
         return !this.sections.isEmpty();
+    }
+
+    private boolean isNotEdgeSection(Section section) {
+        return !isEdgeSection(section);
+    }
+
+    private boolean onlyOneSection() {
+        return this.sections.size() == 1;
+    }
+
+    private boolean doseNotContainStation(Station station) {
+        return !containsStation(station);
     }
 
     private boolean isEdgeSection(Section section) {
@@ -127,11 +143,11 @@ public class Sections {
     }
 
     private boolean isEdgeUpSectionByStation(Station station) {
-        return findEdgeUpSection().getUpStation().equals(station);
+        return findEdgeUpSection().isEqualsUpStation(station);
     }
 
     private boolean isEdgeDownSectionByStation(Station station) {
-        return findEdgeDownSection().getDownStation().equals(station);
+        return findEdgeDownSection().isEqualsDownStation(station);
     }
 
     private Section findRemoveSection(Station removeStation) {
@@ -157,7 +173,7 @@ public class Sections {
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
         return this.sections.stream()
-                .filter(section -> !section.isIncludedUpStation(downStations))
+                .filter(section -> section.isNotIncludedUpStation(downStations))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_EDGE_UP_SECTION));
     }
@@ -167,7 +183,7 @@ public class Sections {
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
         return this.sections.stream()
-                .filter(section -> !section.isIncludedDownStation(upStations))
+                .filter(section -> section.isNotIncludedDownStation(upStations))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_EDGE_DOWN_SECTION));
     }

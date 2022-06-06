@@ -73,12 +73,12 @@ public class Section {
         return Arrays.asList(this.upStation, this.downStation);
     }
 
-    public boolean isIncludedUpStation(List<Station> stations) {
-        return stations.contains(this.upStation);
+    public boolean isNotIncludedUpStation(List<Station> stations) {
+        return !stations.contains(this.upStation);
     }
 
-    public boolean isIncludedDownStation(List<Station> stations) {
-        return stations.contains(this.downStation);
+    public boolean isNotIncludedDownStation(List<Station> stations) {
+        return !stations.contains(this.downStation);
     }
 
     public boolean isEqualsUpStation(Station station) {
