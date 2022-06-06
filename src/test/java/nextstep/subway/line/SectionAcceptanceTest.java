@@ -131,7 +131,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("노선에 상행 종점 구간을 등록한다.")
     @Test
-    void addAscEndSection() {
+    void addAscendEndpointSection() {
         // when
         ExtractableResponse<Response> response =
                 addSection(line.getId(), new SectionRequest(null, upStation.getId(), newUpStation.getId(), 5));
@@ -150,7 +150,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("노선에 하행 종점 구간을 등록한다.")
     @Test
-    void addDescEndSection() {
+    void addDescendEndpointSection() {
         // when
         ExtractableResponse<Response> response =
                 addSection(line.getId(), new SectionRequest(downStation.getId(), null, newDownStation.getId(), 5));

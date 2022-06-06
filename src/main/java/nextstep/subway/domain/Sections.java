@@ -48,7 +48,7 @@ public class Sections {
             return null;
         }
 
-        return this.sections.stream().filter(it -> Objects.equals(station, it.getStation())).findFirst()
+        return this.sections.stream().filter(section -> Objects.equals(station, section.getStation())).findFirst()
                 .orElseThrow(NoSuchElementException::new);
     }
 

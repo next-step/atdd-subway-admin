@@ -43,7 +43,7 @@ class LineRepositoryTest {
     @DisplayName("전체 노선을 가져올 때, 각 노선의 모든 구간 정보까지 가져올 수 있다.")
     void findAll() {
         List<Line> lines = lineRepository.findAll();
-        assertThat(lines).allMatch(it -> !it.getAllSectionsSorted().isEmpty());
+        assertThat(lines).allMatch(line -> !line.getAllSectionsSorted().isEmpty());
     }
 
     @Test
