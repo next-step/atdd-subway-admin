@@ -6,14 +6,17 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SectionResponse {
-    private final Long id;
-    private final Integer distance;
-    private final List<StationResponse> stations;
+    private Long id;
+    private Integer distance;
+    private List<StationResponse> stations;
 
     private SectionResponse(Long id, Integer distance, List<StationResponse> stations) {
         this.id = id;
         this.distance = distance;
         this.stations = stations;
+    }
+
+    private SectionResponse(){
     }
 
     public static SectionResponse of(Section section) {

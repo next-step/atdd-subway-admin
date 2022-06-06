@@ -7,12 +7,15 @@ import java.util.Arrays;
 import java.util.List;
 
 public class LineResponse {
-    private final Long id;
-    private final String name;
-    private final String color;
-    private final Integer distance;
-    private final List<StationResponse> finalStations;
-    private final List<SectionResponse> sections;
+    private Long id;
+    private String name;
+    private String color;
+    private Integer distance;
+    private List<StationResponse> finalStations;
+    private List<SectionResponse> sections;
+
+    private LineResponse() {
+    }
 
     private LineResponse(Long id, String name, String color, Integer distance, List<StationResponse> finalStations, List<SectionResponse> sections) {
         this.id = id;
