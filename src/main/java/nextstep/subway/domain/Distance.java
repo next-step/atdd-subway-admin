@@ -21,6 +21,10 @@ public class Distance {
         this.distance = distance;
     }
 
+    public Long getDistance() {
+        return distance;
+    }
+
     public Distance subtract(final Distance destination) {
         return destination.subtractBy(this.distance);
     }
@@ -48,5 +52,12 @@ public class Distance {
     @Override
     public int hashCode() {
         return Objects.hash(distance);
+    }
+
+    @Override
+    public String toString() {
+        return "Distance{" +
+                "distance=" + distance +
+                '}';
     }
 }
