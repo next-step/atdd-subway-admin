@@ -5,10 +5,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.exception.InvalidLineException;
 import nextstep.subway.exception.InvalidStationException;
 import org.springframework.stereotype.Service;
@@ -30,12 +32,9 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        String name = lineRequest.getName();
-        String color = lineRequest.getColor();
         Station upStation = findStationById(lineRequest.getUpStationId());
         Station downStation = findStationById(lineRequest.getDownStationId());
-        Long distance = lineRequest.getDistance();
-        Line newLine = lineRepository.save(new Line(name, color, upStation, downStation, distance));
+        Line newLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.of(newLine);
     }
 
@@ -43,15 +42,11 @@ public class LineService {
     public void updateLine(Long id, LineRequest lineRequest) {
         Optional<Line> lineOptional = lineRepository.findById(id);
         String lineName = lineOptional.orElse(null).getName();
+        String lineColor = lineOptional.orElse(null).getColor();
         Line foundLine = lineRepository.findById(id).orElseThrow(
             () -> new InvalidLineException(String.format(INVALID_LINE, lineName))
         );
-        String name = lineRequest.getName();
-        String color = lineRequest.getColor();
-        Station upStation = findStationById(foundLine.getUpStation().getId());
-        Station downStation = findStationById(foundLine.getDownStation().getId());
-        Long distance = lineRequest.getDistance();
-        foundLine.update(name, color, upStation, downStation, distance);
+        foundLine.update(lineName, lineColor);
     }
 
     @Transactional(readOnly = true)
@@ -76,9 +71,21 @@ public class LineService {
             .orElseThrow(() -> new InvalidLineException(String.format(INVALID_LINE, lineName))));
     }
 
-    private Station findStationById(Long stationId) {
+    public Station findStationById(Long stationId) {
         return stationRepository.findById(stationId)
             .orElseThrow(() -> new InvalidStationException(INVALID_STATION));
+    }
+
+    @Transactional
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
+        Optional<Line> lineOptional = lineRepository.findById(lineId);
+        String lineName = lineOptional.orElse(null).getName();
+        Line findLine = lineRepository.findById(lineId).orElseThrow(
+            () -> new InvalidLineException(String.format(INVALID_LINE, lineName))
+        );
+        Station upStation = findStationById(sectionRequest.getUpStationId());
+        Station downStation = findStationById(sectionRequest.getDownStationId());
+        findLine.addSection(Section.of(upStation, downStation, sectionRequest.getDistance()));
     }
 
 }
