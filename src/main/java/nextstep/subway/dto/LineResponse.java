@@ -1,9 +1,9 @@
 package nextstep.subway.dto;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 
 public class LineResponse {
@@ -26,9 +26,11 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        List<StationResponse> stations = new ArrayList<>();
-        stations.add(StationResponse.of(line.getUpStation()));
-        stations.add(StationResponse.of(line.getDownStation()));
+        List<StationResponse> stations = line.getSections().stations()
+            .stream()
+            .map(StationResponse::of)
+            .collect(Collectors.toList());
+
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stations,
             line.getCreatedDate(), line.getModifiedDate());
     }
@@ -39,22 +41,6 @@ public class LineResponse {
 
     public String getName() {
         return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public List<StationResponse> getStations() {
-        return stations;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
     }
 
     @Override
