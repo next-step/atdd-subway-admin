@@ -6,6 +6,7 @@ import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.common.RestAssuredTemplate;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineUpdateRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends BaseAcceptanceTest {
 
+    private Long 지하철역_ID;
+    private Long 새로운지하철역_ID;
+    private Long 또다른지하철역_ID;
+
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+
+        지하철역_ID = 지하철역_생성됨("지하철역").body().jsonPath().getLong("id");
+        새로운지하철역_ID = 지하철역_생성됨("새로운지하철역").body().jsonPath().getLong("id");
+        또다른지하철역_ID = 지하철역_생성됨("또다른지하철역").body().jsonPath().getLong("id");
+    }
+
     /**
      * When 지하철 노선을 생성하면
      * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
@@ -26,11 +40,9 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     void 지하철노선_생성() {
         // given
         String name = "신분당선";
-        Long 지하철역_id = 지하철역_생성됨("지하철역").body().jsonPath().getLong("id");
-        Long 새로운지하철역_id = 지하철역_생성됨("새로운지하철역").body().jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성됨(name, "bg-red-600", 10, 지하철역_id, 새로운지하철역_id);
+        ExtractableResponse<Response> response = 지하철_노선_생성됨(name, "bg-red-600", 10, 지하철역_ID, 새로운지하철역_ID);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -49,12 +61,8 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 지하철노선_목록_조회() {
         // given
-        Long 지하철역_id = 지하철역_생성됨("지하철역").body().jsonPath().getLong("id");
-        Long 새로운지하철역_id = 지하철역_생성됨("새로운지하철역").body().jsonPath().getLong("id");
-        Long 또다른지하철역_id = 지하철역_생성됨("또다른지하철역").body().jsonPath().getLong("id");
-
-        지하철_노선_생성됨("신분당선", "bg-red-600", 10, 지하철역_id, 새로운지하철역_id);
-        지하철_노선_생성됨("분당선", "bg-green-600", 10, 지하철역_id, 또다른지하철역_id);
+        지하철_노선_생성됨("신분당선", "bg-red-600", 10, 지하철역_ID, 새로운지하철역_ID);
+        지하철_노선_생성됨("분당선", "bg-green-600", 10, 지하철역_ID, 또다른지하철역_ID);
 
         // when
         List<String> lineNames = 지하철_노선_전체_조회();
@@ -71,11 +79,8 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 지하철노선_조회() {
         // given
-        Long 지하철역_id = 지하철역_생성됨("지하철역").body().jsonPath().getLong("id");
-        Long 새로운지하철역_id = 지하철역_생성됨("새로운지하철역").body().jsonPath().getLong("id");
-
         String name = "신분당선";
-        ExtractableResponse<Response> response = 지하철_노선_생성됨(name, "bg-red-600", 10, 지하철역_id, 새로운지하철역_id);
+        ExtractableResponse<Response> response = 지하철_노선_생성됨(name, "bg-red-600", 10, 지하철역_ID, 새로운지하철역_ID);
         long lineId = response.body().jsonPath().getLong("id");
 
         // when
@@ -93,10 +98,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 지하철노선_수정() {
         // given
-        Long 지하철역_id = 지하철역_생성됨("지하철역").body().jsonPath().getLong("id");
-        Long 새로운지하철역_id = 지하철역_생성됨("새로운지하철역").body().jsonPath().getLong("id");
-
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성됨("신분당선", "bg-green-600", 10, 지하철역_id, 새로운지하철역_id);
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성됨("신분당선", "bg-green-600", 10, 지하철역_ID, 새로운지하철역_ID);
         long lineId = createResponse.body().jsonPath().getLong("id");
 
         // when
@@ -116,10 +118,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 지하철노선_삭제() {
         // given
-        Long 지하철역_id = 지하철역_생성됨("지하철역").body().jsonPath().getLong("id");
-        Long 새로운지하철역_id = 지하철역_생성됨("새로운지하철역").body().jsonPath().getLong("id");
-
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성됨("신분당선", "bg-green-600", 10, 지하철역_id, 새로운지하철역_id);
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성됨("신분당선", "bg-green-600", 10, 지하철역_ID, 새로운지하철역_ID);
         long lineId = createResponse.body().jsonPath().getLong("id");
 
         // when
