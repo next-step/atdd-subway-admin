@@ -74,6 +74,10 @@ public class Section extends BaseEntity {
 		return isUpStation(station) || isDownStation(station);
 	}
 
+	public boolean isEqualOrLongerThan(int distance) {
+		return this.distance >= distance;
+	}
+
 	private boolean isEqualUpStationAndDownStation(Station upStation, Station downStation) {
 		return isUpStation(upStation) && isDownStation(downStation);
 	}

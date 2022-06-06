@@ -81,6 +81,7 @@ public class Sections {
 		}
 
 		Section foundSection = sections.get(index);
+		validateDistance(foundSection, distance);
 
 		/** A - B
 		 *  A  ---  C
@@ -100,6 +101,12 @@ public class Sections {
 				foundSection.getDistance() - distance);
 
 			updateSection(index, updatingSection);
+		}
+	}
+
+	private void validateDistance(Section section, int distance) {
+		if(!section.isEqualOrLongerThan(distance)) {
+			throw new IllegalArgumentException();
 		}
 	}
 

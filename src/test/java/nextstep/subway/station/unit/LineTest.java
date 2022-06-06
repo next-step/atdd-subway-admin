@@ -74,7 +74,7 @@ public class LineTest {
 		assertThat(sinbundangLine.getStation()).containsExactly(gangnamStation, gwanggyoStaion, jeongjaStation);
 	}
 
-	@DisplayName("구간이 이미 등록 되어 있는 경우")
+	@DisplayName("구간이 이미 등록 되어 있는 경우 오류")
 	@Test
 	void errorIfDuplicate() {
 		// given
@@ -85,7 +85,7 @@ public class LineTest {
 			.isInstanceOf(IllegalArgumentException.class);
 	}
 
-	@DisplayName("상행역과 하행역 둘 중 하나도 포함 있지 않은 경우")
+	@DisplayName("상행역과 하행역 둘 중 하나도 포함 있지 않은 경우 오류")
 	@Test
 	void errorIfNotIncludeStation() {
 		// given
@@ -95,6 +95,17 @@ public class LineTest {
 
 		// when then
 		assertThatThrownBy(() -> sinbundangLine.addSection(gyodaeStation, jamsilStation, 10))
+			.isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같을 경우 오류")
+	@Test
+	void errorIfEqualOrLongerDistance() {
+		// given
+		sinbundangLine.addSection(gangnamStation, gwanggyoStaion, 30);
+
+		// when then
+		assertThatThrownBy(() -> sinbundangLine.addSection(gangnamStation, jeongjaStation, 40))
 			.isInstanceOf(IllegalArgumentException.class);
 	}
 }
