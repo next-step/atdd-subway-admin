@@ -44,15 +44,15 @@ public class Line {
         return id;
     }
 
-    public LineName getName() {
-        return name;
+    public String name() {
+        return name.getName();
     }
 
-    public LineColor getColor() {
-        return color;
+    public String color() {
+        return color.getColor();
     }
 
-    public Sections getSections() {
+    public Sections sections() {
         return sections;
     }
 
@@ -67,5 +67,9 @@ public class Line {
     public void addSection(Section section) {
         section.updateLine(this);
         sections.addSection(section);
+    }
+
+    public void removeStation(Station station) {
+        sections.removeStation(station);
     }
 }

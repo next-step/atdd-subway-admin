@@ -1,35 +1,35 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.testutils.FactoryMethods;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static nextstep.subway.testutils.FactoryMethods.*;
+import static nextstep.subway.testutils.FactoryMethods.createStation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SectionsTest {
     public static final int DEFAULT_DISTANCE = 10;
-    private Station 상행역;
-    private Station 하행역;
-    private Station 신규역;
-    private Section defaultSection;
-
-    @BeforeEach
-    void initialize(){
-        상행역 = Station.from("first");
-        하행역 = Station.from("last");
-        신규역 = Station.from("new");
-        defaultSection = Section.of(상행역, 하행역, DEFAULT_DISTANCE);
-    }
 
     @Test
     @DisplayName("Sections에 존재하는 Stations 조회")
     void Stations_조회(){
+        //given
+        Station 상행역 = createStation("상행역");
+        Station 하행역 = createStation("하행역");
+        Station 신규역 = createStation("신규역");
+        Section defaultSection = createSection(상행역, 하행역, DEFAULT_DISTANCE);
+
+        //when
         Sections sections = Sections.from(defaultSection);
         List<Station> stations = sections.getSortedStations();
+
+        //then
         assertThat(stations).containsExactly(상행역, 하행역);
     }
 
@@ -37,10 +37,14 @@ class SectionsTest {
     @DisplayName("기존 존재하는 구간 사이에 새로운 구간 등록 : [상행역 - 신규역] 구간 등록")
     void 상행역_신규역_구간_등록(){
         //given
-        Sections sections = Sections.from(defaultSection);
-        sections.addSection(Section.of(상행역, 신규역, 5));
+        Station 상행역 = createStation("상행역");
+        Station 하행역 = createStation("하행역");
+        Station 신규역 = createStation("신규역");
+        Section defaultSection = createSection(상행역, 하행역, DEFAULT_DISTANCE);
 
         //when
+        Sections sections = Sections.from(defaultSection);
+        sections.addSection(Section.of(상행역, 신규역, 5));
         List<Station> sortedStations = sections.getSortedStations();
 
         //then
@@ -51,10 +55,14 @@ class SectionsTest {
     @DisplayName("기존 존재하는 구간 사이에 새로운 구간 등록 : [신규역 - 하행역] 구간 등록")
     void 신규역_하행역_구간_등록(){
         //given
-        Sections sections = Sections.from(defaultSection);
-        sections.addSection(Section.of(신규역, 하행역, 5));
+        Station 상행역 = createStation("상행역");
+        Station 하행역 = createStation("하행역");
+        Station 신규역 = createStation("신규역");
+        Section defaultSection = createSection(상행역, 하행역, DEFAULT_DISTANCE);
 
         //when
+        Sections sections = Sections.from(defaultSection);
+        sections.addSection(Section.of(신규역, 하행역, 5));
         List<Station> sortedStations = sections.getSortedStations();
 
         //then
@@ -65,10 +73,14 @@ class SectionsTest {
     @DisplayName("새로운 상행종점 구간 등록 : [신규역 - 상행역] 구간 등록")
     void 신규역_상행역_구간_등록(){
         //given
-        Sections sections = Sections.from(defaultSection);
-        sections.addSection(Section.of(신규역, 상행역, 5));
+        Station 상행역 = createStation("상행역");
+        Station 하행역 = createStation("하행역");
+        Station 신규역 = createStation("신규역");
+        Section defaultSection = createSection(상행역, 하행역, DEFAULT_DISTANCE);
 
         //when
+        Sections sections = Sections.from(defaultSection);
+        sections.addSection(Section.of(신규역, 상행역, 5));
         List<Station> sortedStations = sections.getSortedStations();
 
         //then
@@ -79,10 +91,14 @@ class SectionsTest {
     @DisplayName("새로운 하행종점 구간 등록 : [하행역 - 신규역] 구간 등록")
     void 하행역_신규역_구간_등록(){
         //given
-        Sections sections = Sections.from(defaultSection);
-        sections.addSection(Section.of(하행역, 신규역, 5));
+        Station 상행역 = createStation("상행역");
+        Station 하행역 = createStation("하행역");
+        Station 신규역 = createStation("신규역");
+        Section defaultSection = createSection(상행역, 하행역, DEFAULT_DISTANCE);
 
         //when
+        Sections sections = Sections.from(defaultSection);
+        sections.addSection(Section.of(하행역, 신규역, 5));
         List<Station> sortedStations = sections.getSortedStations();
 
         //then
@@ -93,6 +109,12 @@ class SectionsTest {
     @DisplayName("예외처리 : 역 사이에 새로운 역을 등록할 경우, 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다")
     void Exception_Invalid_Distance(){
         //given
+        Station 상행역 = createStation("상행역");
+        Station 하행역 = createStation("하행역");
+        Station 신규역 = createStation("신규역");
+        Section defaultSection = createSection(상행역, 하행역, DEFAULT_DISTANCE);
+
+        //when
         Sections sections = Sections.from(defaultSection);
 
         //then
@@ -104,6 +126,11 @@ class SectionsTest {
     @DisplayName("예외처리 : 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다")
     void Exception_Already_Exist_Section(){
         //given
+        Station 상행역 = createStation("상행역");
+        Station 하행역 = createStation("하행역");
+        Section defaultSection = createSection(상행역, 하행역, DEFAULT_DISTANCE);
+
+        //when
         Sections sections = Sections.from(defaultSection);
 
         //then
@@ -116,6 +143,12 @@ class SectionsTest {
     @DisplayName("예외처리 : 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다")
     void Exception_Unknown_Stations(){
         //given
+        Station 상행역 = createStation("상행역");
+        Station 하행역 = createStation("하행역");
+        Station 신규역 = createStation("신규역");
+        Section defaultSection = createSection(상행역, 하행역, DEFAULT_DISTANCE);
+
+        //when
         Sections sections = Sections.from(defaultSection);
         Station 신규역2 = Station.from("new2");
 
@@ -123,5 +156,95 @@ class SectionsTest {
         assertThrows(IllegalArgumentException.class,
                 () -> sections.addSection(Section.of(신규역, 신규역2, 5)));
 
+    }
+
+    @Test
+    @DisplayName("종점 제거 : [상행역 - 중간역 - 하행역] 구간 중 [상행역] 제거")
+    void 상행역_제거(){
+        //given
+        Station 상행역 = createStation("상행역");
+        Station 중간역 = createStation("중간역");
+        Station 하행역 = createStation("하행역");
+        Section defaultSection = createSection(상행역, 하행역, DEFAULT_DISTANCE);
+        Sections sections = Sections.from(defaultSection);
+        sections.addSection(Section.of(상행역, 중간역, 5));
+
+        //when
+        sections.removeStation(상행역);
+
+        //then
+        List<Station> sortedStations = sections.getSortedStations();
+        assertThat(sortedStations).containsExactly(중간역, 하행역);
+    }
+
+    @Test
+    @DisplayName("종점 제거 : [상행역 - 중간역 - 하행역] 구간 중 [하행역] 제거")
+    void 하행역_제거(){
+        //given
+        Station 상행역 = createStation("상행역");
+        Station 중간역 = createStation("중간역");
+        Station 하행역 = createStation("하행역");
+        Section defaultSection = createSection(상행역, 하행역, DEFAULT_DISTANCE);
+        Sections sections = Sections.from(defaultSection);
+        sections.addSection(Section.of(상행역, 중간역, 5));
+
+        //when
+        sections.removeStation(하행역);
+
+        //then
+        List<Station> sortedStations = sections.getSortedStations();
+        assertThat(sortedStations).containsExactly(상행역, 중간역);
+    }
+
+    @Test
+    @DisplayName("중간역 제거 : [상행역 - 중간역 - 하행역] 구간 중 [중간역] 제거")
+    void 중간역_제거(){
+        //given
+        Station 상행역 = createStation("상행역");
+        Station 중간역 = createStation("중간역");
+        Station 하행역 = createStation("하행역");
+        Section defaultSection = createSection(상행역, 하행역, DEFAULT_DISTANCE);
+        Sections sections = Sections.from(defaultSection);
+        sections.addSection(Section.of(상행역, 중간역, 5));
+
+        //when
+        sections.removeStation(중간역);
+
+        //then
+        List<Station> sortedStations = sections.getSortedStations();
+        assertThat(sortedStations).containsExactly(상행역, 하행역);
+    }
+
+    @Test
+    @DisplayName("예외처리 : 존재하지 않는 역을 삭제할 수 없다")
+    void Exception_존재하지_않는_역_삭제(){
+        //given
+        Station 상행역 = createStation("상행역");
+        Station 중간역 = createStation("중간역");
+        Station 하행역 = createStation("하행역");
+        Section defaultSection = createSection(상행역, 하행역, DEFAULT_DISTANCE);
+        Sections sections = Sections.from(defaultSection);
+        sections.addSection(Section.of(상행역, 중간역, 5));
+
+        //when
+        Station 새로운역 = createStation("새로운역");
+
+        //then
+        assertThrows(IllegalArgumentException.class,
+                () -> sections.removeStation(새로운역));
+    }
+
+    @Test
+    @DisplayName("예외처리 : 구간이 하나인 노선에서 구간을 삭제할 수 없다")
+    void Exception_구간이_하나일때_삭제(){
+        //given
+        Station 상행역 = createStation("상행역");
+        Station 하행역 = createStation("하행역");
+        Section defaultSection = createSection(상행역, 하행역, DEFAULT_DISTANCE);
+        Sections sections = Sections.from(defaultSection);
+
+        //then
+        assertThrows(IllegalArgumentException.class,
+                () -> sections.removeStation(상행역));
     }
 }
