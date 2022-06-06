@@ -102,6 +102,39 @@ public class LineAcceptanceTest {
         );
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("노선을 수정한다.")
+    @Test
+    void deleteLine() {
+        // given
+        ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", "광교역", "신사역", 10L);
+
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "new 신분당선");
+        params.put("color", "bg-green-600");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when().put("/lines/" + createResponse.as(LineResponse.class).getId())
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then
+        LineResponse lineResponse = selectLine(createResponse.as(LineResponse.class).getId()).as(LineResponse.class);
+        assertAll(
+                () -> assertThat(lineResponse.getName()).isEqualTo("new 신분당선"),
+                () -> assertThat(lineResponse.getColor()).isEqualTo("bg-green-600")
+        );
+    }
+
     public ExtractableResponse<Response> createLine(String name, String color, String upStation, String downStation, Long distance) {
         Map<String, String> params = createParams(name, color, upStation, downStation, distance);
         ExtractableResponse<Response> response =
