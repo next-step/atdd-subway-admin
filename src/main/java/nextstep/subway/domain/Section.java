@@ -25,7 +25,7 @@ public class Section {
     }
 
     public Section(final Long distance) {
-        this(new Station(), new Station(), distance);
+        this(null, new Station(), distance);
     }
 
     public Section(final Station upStation, final Station downStation, final Long distance) {
@@ -34,7 +34,7 @@ public class Section {
 
     public Section(final Station upStation, final Station downStation, final Distance distance) {
         validation(upStation, downStation);
-        this.upStation = Objects.nonNull(upStation) ? upStation : downStation;
+        this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
