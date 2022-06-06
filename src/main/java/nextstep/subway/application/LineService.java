@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Section.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
@@ -75,7 +75,7 @@ public class LineService {
     public List<SectionResponse> findAllSection(Long lineId) {
         return getLine(lineId)
                 .getSections()
-                .getList()
+                .sortedSectionList()
                 .stream()
                 .map(SectionResponse::of)
                 .collect(Collectors.toList());

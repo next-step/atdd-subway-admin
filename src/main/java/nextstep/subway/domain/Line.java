@@ -10,6 +10,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import nextstep.subway.domain.Section.Section;
+import nextstep.subway.domain.Section.Sections;
 import nextstep.subway.message.ErrorMessage;
 import org.springframework.util.ObjectUtils;
 

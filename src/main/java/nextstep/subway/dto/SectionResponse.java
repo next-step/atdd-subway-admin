@@ -1,7 +1,7 @@
 package nextstep.subway.dto;
 
 import nextstep.subway.domain.Distance;
-import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Section.Section;
 
 public class SectionResponse {
     private StationResponse upStation;
