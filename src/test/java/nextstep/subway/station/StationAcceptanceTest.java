@@ -45,8 +45,7 @@ public class StationAcceptanceTest {
         지하철역_생성_성공_확인(생성_응답);
 
         // then
-        List<String> 지하철역_이름_목록 = 지하철역_목록_조회().jsonPath().getList("name", String.class);
-        지하철역_포함_확인(지하철역_이름_목록, "강남역");
+        지하철역_포함_확인("강남역");
     }
 
     /**
@@ -86,9 +85,8 @@ public class StationAcceptanceTest {
         지하철역_조회_성공_확인(조회_응답);
 
         // then
-        List<String> 지하철역_이름_목록 = 조회_응답.jsonPath().getList("name", String.class);
-        지하철역_포함_확인(지하철역_이름_목록, "강남역");
-        지하철역_포함_확인(지하철역_이름_목록, "잠실역");
+        지하철역_포함_응답_확인(조회_응답, "강남역");
+        지하철역_포함_응답_확인(조회_응답, "잠실역");
     }
 
     /**
@@ -109,8 +107,7 @@ public class StationAcceptanceTest {
         지하철역_삭제_성공_확인(삭제_응답);
 
         // then
-        List<String> 지하철역_이름_목록 = 지하철역_목록_조회().jsonPath().getList("name", String.class);
-        지하철역_미포함_확인(지하철역_이름_목록, "강남역");
+        지하철역_미포함_확인("강남역");
     }
 
     private ExtractableResponse<Response> 지하철역_생성_요청(String stationName) {
@@ -156,11 +153,18 @@ public class StationAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private void 지하철역_포함_확인(List<String> stationNames, String stationName) {
+    private void 지하철역_포함_응답_확인(ExtractableResponse<Response> response, String stationName) {
+        List<String> stationNames = response.jsonPath().getList("name", String.class);
         assertThat(stationNames).containsAnyOf(stationName);
     }
 
-    private void 지하철역_미포함_확인(List<String> stationNames, String stationName) {
+    private void 지하철역_포함_확인(String stationName) {
+        List<String> stationNames = 지하철역_목록_조회().jsonPath().getList("name", String.class);
+        assertThat(stationNames).containsAnyOf(stationName);
+    }
+
+    private void 지하철역_미포함_확인(String stationName) {
+        List<String> stationNames = 지하철역_목록_조회().jsonPath().getList("name", String.class);
         assertThat(stationNames).doesNotContain(stationName);
     }
 }
