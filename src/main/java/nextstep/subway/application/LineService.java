@@ -64,7 +64,7 @@ public class LineService {
         final Line line = getLineOrElseThrow(lineId);
         final Station upStation = stationService.getStationOrElseThrow(sectionRequest.getUpStationId());
         final Station downStation = stationService.getStationOrElseThrow(sectionRequest.getDownStationId());
-        line.relateToSection(upStation, downStation, sectionRequest.getDistance());
+        line.registerSection(upStation, downStation, sectionRequest.getDistance());
         lineRepository.save(line);
         return SectionResponse.of(line.getSections().getByUpStation(upStation));
     }

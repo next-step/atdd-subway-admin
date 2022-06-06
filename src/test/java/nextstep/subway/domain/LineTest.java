@@ -58,20 +58,19 @@ public class LineTest {
     }
 
     @Test
-    void 하행종점역이_아닌_기존_역을_상행역으로_새로운_구간을_추가할_수_있어야_한다() {
+    void 하행종점역이_아닌_기존_역을_상행역으로_새로운_구간을_등록할_수_있어야_한다() {
         // given
         line.setFinalStations(finalUpStation, finalDownStation, lineDistance);
         final Station newStation = new Station("양재역");
         final Long distance = 10L;
 
         // when
-        line.relateToSection(finalUpStation, newStation, distance);
+        final SectionResponse sectionResponse = line.registerSection(finalUpStation, newStation, distance);
 
         // then
-        final Section section = line.getSections().getByUpStation(finalUpStation);
-        assertNewSection(section, line, finalUpStation, newStation, distance);
+        assertRegisteredSection(sectionResponse, finalUpStation, newStation, distance);
         assertThat(line.getLineStations().stations()).contains(StationResponse.of(newStation));
-        assertThat(line.getSections().getByDownStation(finalDownStation).getDistance())
+        assertThat(line.getLineStations().getByStation(finalDownStation).get().getDistanceToPrevious())
                 .isEqualTo(lineDistance - distance);
     }
 
@@ -83,13 +82,12 @@ public class LineTest {
         final Long distance = 10L;
 
         // when
-        line.relateToSection(newStation, finalDownStation, distance);
+        final SectionResponse sectionResponse = line.registerSection(newStation, finalDownStation, distance);
 
         // then
-        final Section section = line.getSections().getByUpStation(newStation);
-        assertNewSection(section, line, newStation, finalDownStation, distance);
+        assertRegisteredSection(sectionResponse, newStation, finalDownStation, distance);
         assertThat(line.getLineStations().stations()).contains(StationResponse.of(newStation));
-        assertThat(line.getSections().getByUpStation(finalUpStation).getDistance())
+        assertThat(line.getLineStations().getByStation(finalUpStation).get().getDistanceToNext())
                 .isEqualTo(lineDistance - distance);
     }
 
@@ -101,11 +99,10 @@ public class LineTest {
         final Long distance = 10L;
 
         // when
-        line.relateToSection(newStation, finalUpStation, distance);
+        final SectionResponse sectionResponse = line.registerSection(newStation, finalUpStation, distance);
 
         // then
-        final Section section = line.getSections().getByUpStation(newStation);
-        assertNewSection(section, line, newStation, finalUpStation, distance);
+        assertRegisteredSection(sectionResponse, newStation, finalUpStation, distance);
         assertThat(line.getLineStations().stations()).contains(StationResponse.of(newStation));
     }
 
@@ -117,23 +114,21 @@ public class LineTest {
         final Long distance = 10L;
 
         // when
-        line.relateToSection(finalDownStation, newStation, distance);
+        final SectionResponse sectionResponse = line.registerSection(finalDownStation, newStation, distance);
 
         // then
-        final Section section = line.getSections().getByUpStation(finalDownStation);
-        assertNewSection(section, line, finalDownStation, newStation, distance);
+        assertRegisteredSection(sectionResponse, finalDownStation, newStation, distance);
         assertThat(line.getLineStations().stations()).contains(StationResponse.of(newStation));
     }
 
-    private void assertNewSection(final Section newSection,
-                                  final Line line,
-                                  final Station upStation,
-                                  final Station downStation,
-                                  final Long distance) {
+    private void assertRegisteredSection(final SectionResponse newSection,
+                                         final Station upStation,
+                                         final Station downStation,
+                                         final Long distance) {
         assertThat(newSection).isNotNull();
-        assertThat(newSection.getLine()).isEqualTo(line);
-        assertThat(newSection.getUpStation()).isEqualTo(upStation);
-        assertThat(newSection.getDownStation()).isEqualTo(downStation);
+        assertThat(newSection.getLineName()).isEqualTo(line.getName());
+        assertThat(newSection.getUpStationName()).isEqualTo(upStation.getName());
+        assertThat(newSection.getDownStationName()).isEqualTo(downStation.getName());
         assertThat(newSection.getDistance()).isEqualTo(distance);
     }
 }
