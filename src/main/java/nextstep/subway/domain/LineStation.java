@@ -68,11 +68,6 @@ public class LineStation extends BaseEntity {
         return Objects.equals(this.getPreStation(), station);
     }
 
-    public boolean isAddLineStation(final LineStation newLineStation) {
-        return Objects.equals(this.getPreStation(), newLineStation.getPreStation()) ||
-                Objects.equals(this.getCurrentStation(), newLineStation.getCurrentStation());
-    }
-
     public LineStation updateLineStation(final LineStation newLineStation) {
         validationLine(newLineStation);
         Section changedSection = this.section.updatable(newLineStation.getSection());
