@@ -159,8 +159,13 @@ public class LineAcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        ExtractableResponse<Response> afterDelete = selectLine(createResponse.as(LineResponse.class).getId());
+
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(afterDelete.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
+        );
     }
 
     public ExtractableResponse<Response> createLine(String name, String color, String upStation, String downStation, Long distance) {
