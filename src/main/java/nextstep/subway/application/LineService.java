@@ -53,13 +53,13 @@ public class LineService {
 	}
 
 	public LineResponse findById(Long id) {
-		Line line = lineRepository.findById(id).orElseThrow(IllegalAccessError::new);
+		Line line = lineRepository.findById(id).get();
 		return LineResponse.of(line);
 	}
 
 	@Transactional
 	public void updateLine(Long id, LineRequest lineRequest) {
-		Line line = lineRepository.findById(id).orElseThrow(IllegalAccessError::new);
+		Line line = lineRepository.findById(id).get();
 		line.updateLine(lineRequest.getName(), lineRequest.getColor());
 	}
 
