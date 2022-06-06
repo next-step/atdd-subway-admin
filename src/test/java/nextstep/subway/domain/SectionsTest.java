@@ -127,4 +127,16 @@ public class SectionsTest {
             assertThat(sections.getLastUpStation()).isEqualTo(createStation("동인천역"));
         });
     }
+
+    @Test
+    @DisplayName("하행역 종점을 제거 한다.")
+    void lastDownStationRemove() {
+        final Station 서울역 = createStation("서울역");
+        sections.deleteSectionStation(서울역);
+        final List<Section> list = sections.getList();
+        assertAll(() -> {
+            assertThat(list).hasSize(1);
+            assertThat(sections.getLastDownStation()).isEqualTo(createStation("동인천역"));
+        });
+    }
 }

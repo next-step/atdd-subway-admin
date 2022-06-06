@@ -29,6 +29,7 @@ public class Sections {
     private List<Section> sectionElement = new ArrayList<>();
     private static final int INIT_SELECTIONS_SIZE = 1;
 
+
     protected Sections() {
 
     }
@@ -78,14 +79,24 @@ public class Sections {
 
     public void deleteSectionStation(Station station) {
         validDeleteSectionStation(station);
-        sortedSections();
-        if (station.equals(getLastUpStation())) {
-            this.sectionElement.remove(0);
-        }
-        if (station.equals(getLastDownStation())) {
-            this.sectionElement.remove(this.sectionElement.size() - 1);
-        }
 
+        if (isLastUpStation(station)) {
+            this.sectionElement.remove(findUpSection(station));
+            return;
+        }
+        if (isLastDownStation(station)) {
+            this.sectionElement.remove(findDownSection(station));
+            return;
+        }
+        sortedSections();
+    }
+
+    private boolean isLastDownStation(Station station) {
+        return station.equals(getLastDownStation());
+    }
+
+    private boolean isLastUpStation(Station station) {
+        return station.equals(getLastUpStation());
     }
 
     private void validDeleteSectionStation(Station station) {
@@ -108,6 +119,12 @@ public class Sections {
     private Section findUpSection(Station findStation) {
         return this.sectionElement.stream()
                 .filter(section -> section.getUpStation().equals(findStation))
+                .findFirst().get();
+    }
+
+    private Section findDownSection(Station findStation) {
+        return this.sectionElement.stream()
+                .filter(section -> section.getDownStation().equals(findStation))
                 .findFirst().get();
     }
 

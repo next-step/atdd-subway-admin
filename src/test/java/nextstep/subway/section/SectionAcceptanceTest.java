@@ -246,9 +246,6 @@ public class SectionAcceptanceTest {
                 () -> assertThat(노선의_구간을_전부_조회.getString("upStation.name[0]")).isEqualTo("인천역"),
                 () -> assertThat(노선의_구간을_전부_조회.getString("downStation.name[0]")).isEqualTo("동인천역")
         );
-
-
-
     }
 
     //given 다구간 호선을 생성 한다.
@@ -258,6 +255,15 @@ public class SectionAcceptanceTest {
     @Test
     @DisplayName("하행종점역을 제거 한다.")
     void lastDownStationDelete() {
+        ExtractableResponse<Response> 하행종점_역을_제거한다 = 노선의_역을_제거(다구간호선.getId(), 동인천역.getId());
+        JsonPath 노선의_구간을_전부_조회 = 노선의_구간을_전부_조회(다구간호선.getId()).jsonPath();
+        assertAll(
+                //then 종점이 제거된다.
+                () -> assertThat(하행종점_역을_제거한다.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                //then 다음 하행역이 종점이 된다.
+                () -> assertThat(노선의_구간을_전부_조회.getString("upStation.name[0]")).isEqualTo("서울역"),
+                () -> assertThat(노선의_구간을_전부_조회.getString("downStation.name[0]")).isEqualTo("인천역")
+        );
 
     }
 
