@@ -69,7 +69,7 @@ public class LineStation extends BaseEntity {
 
     public void updateNext(final Station next, final Long distance) {
         this.next = next;
-        this.distanceToNext = distance;
+        distanceToNext = distance;
     }
 
     public Long getId() {
