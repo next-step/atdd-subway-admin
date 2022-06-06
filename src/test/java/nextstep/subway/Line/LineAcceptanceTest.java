@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.Db.DatabaseCleanup;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.StationResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -176,12 +177,20 @@ public class LineAcceptanceTest {
     }
 
     public Map<String, String> createParams(String name, String color, String upStation, String downStation, Long distance) {
+        Long upStationId = StationAcceptanceTest.createStation(upStation)
+                .as(StationResponse.class)
+                .getId();
+
+        Long downStationId = StationAcceptanceTest.createStation(downStation)
+                .as(StationResponse.class)
+                .getId();
+
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
-        params.put("upStationId", String.valueOf(StationAcceptanceTest.createStation(upStation)));
-        params.put("downStationId", String.valueOf(StationAcceptanceTest.createStation(downStation)));
-        params.put("distance", "10");
+        params.put("upStationId", String.valueOf(upStationId));
+        params.put("downStationId", String.valueOf(downStationId));
+        params.put("distance", String.valueOf(distance));
 
         return params;
     }
