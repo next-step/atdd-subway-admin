@@ -11,6 +11,8 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -20,11 +22,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
     static final String requestPath = "/stations";
+    static final List<String> stationNames = new ArrayList<>(Arrays.asList("수락산역", "마들역"));
     @LocalServerPort
     int port;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
@@ -39,15 +42,15 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
+        ExtractableResponse<Response> response = 지하철역_생성_요청(stationNames.get(0));
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertStatusCode(response.statusCode(), HttpStatus.CREATED.value());
 
         // then
         ExtractableResponse<Response> getResponse = requestGetStations();
-        List<String> stationNames = getResponse.jsonPath().getList("name", String.class);
-        assertThat(stationNames).containsAnyOf("강남역");
+        List<String> stationNamesOfResponse = getResponse.jsonPath().getList("name", String.class);
+        assertThat(stationNamesOfResponse).containsAnyOf(stationNames.get(0));
     }
 
     /**
@@ -59,13 +62,13 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        지하철역_생성_요청("강남역");
+        지하철역_생성_요청(stationNames.get(0));
 
         // when
-        ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
+        ExtractableResponse<Response> response = 지하철역_생성_요청(stationNames.get(0));
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertStatusCode(response.statusCode(), HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -77,8 +80,7 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        String[] stations = new String[]{"수락산역", "마들역"};
-        for (String station : stations) {
+        for (String station : stationNames) {
             지하철역_생성_요청(station);
         }
 
@@ -86,11 +88,11 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = requestGetStations();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertStatusCode(response.statusCode(), HttpStatus.OK.value());
 
         List<String> findStations = response.jsonPath().getList("name", String.class);
-        assertThat(findStations.size()).isEqualTo(stations.length);
-        assertThat(findStations).contains(stations);
+        assertStatusCode(findStations.size(), stationNames.size());
+        assertThat(findStations).contains(stationNames.toArray(new String[0]));
     }
 
 
@@ -103,21 +105,20 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        String station = "수락산역";
-        ExtractableResponse<Response> createdResponse = 지하철역_생성_요청(station);
+        ExtractableResponse<Response> createdResponse = 지하철역_생성_요청(stationNames.get(1));
 
         // when
         Long stationId = createdResponse.jsonPath().getLong("id");
         ExtractableResponse<Response> deleteResponse = requestDeleteStation(stationId);
-        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertStatusCode(deleteResponse.statusCode(), HttpStatus.NO_CONTENT.value());
 
         // then
         ExtractableResponse<Response> getResponse = requestGetStations();
-        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertStatusCode(getResponse.statusCode(), HttpStatus.OK.value());
 
         List<String> findStations = getResponse.jsonPath().getList("name", String.class);
-        assertThat(findStations.size()).isEqualTo(0);
-        assertThat(findStations).doesNotContain(station);
+        assertStatusCode(findStations.size(), 0);
+        assertThat(findStations).doesNotContain(stationNames.get(1));
     }
 
     private ExtractableResponse<Response> requestDeleteStation(Long stationId) {
@@ -146,4 +147,9 @@ public class StationAcceptanceTest {
             .then().log().all()
             .extract();
     }
+
+    private void assertStatusCode(int actual, int expect) {
+        assertThat(actual).isEqualTo(expect);
+    }
+
 }
