@@ -20,7 +20,7 @@ import static nextstep.subway.station.StationResponse.지하철역_삭제_성공
 import static nextstep.subway.station.StationResponse.지하철역_생성_성공;
 import static nextstep.subway.station.StationResponse.지하철역_생성_요청_실패;
 
-@DisplayName("지하철역 관련 기능")
+@DisplayName("지하철역 인수테스트")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
     private static final String 강남역 = "강남역";

@@ -17,7 +17,7 @@ import static nextstep.subway.section.acceptance.SectionAcceptanceRequest.지하
 import static nextstep.subway.section.acceptance.SectionAcceptanceResponse.지하철구간_생성_성공;
 import static nextstep.subway.section.acceptance.SectionAcceptanceResponse.지하철구간_생성_실패;
 
-@DisplayName("구간기능")
+@DisplayName("지하철구간 인수테스트")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SectionAcceptanceTest {
     @LocalServerPort

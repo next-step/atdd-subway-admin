@@ -27,7 +27,7 @@ import static nextstep.subway.line.accecptance.LineAcceptanceResponse.지하철�
 import static nextstep.subway.line.accecptance.LineAcceptanceResponse.지하철노선_조회_실패;
 import static nextstep.subway.station.StationRequest.지하철역_존재;
 
-@DisplayName("지하철 노선 기능")
+@DisplayName("지하철 노선 인수테스트")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
     @LocalServerPort
