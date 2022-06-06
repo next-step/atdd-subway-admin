@@ -16,10 +16,10 @@ public class Section {
     @JoinColumn(nullable = false)
     private Station station;
     private Integer distance;
-    @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
     @JoinColumn
     private Section previous;
-    @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
     @JoinColumn
     private Section next;
 
