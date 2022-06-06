@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 import nextstep.subway.domain.Station;
 
-public class SectionsValidator {
+class SectionsValidator {
     private static final int INIT_SELECTIONS_SIZE = 1;
 
     static void validDeleteSectionStation(Sections sections, Station station) {
