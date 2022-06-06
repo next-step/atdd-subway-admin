@@ -191,10 +191,11 @@ public class SectionAcceptanceTest extends DoBeforeEachAbstract {
     @Test
     void removeSectionNotRegistered() {
         // given
+        final long 노선에_등록되지_않은_역_ID = 지하철역_생성됨("의정부역").jsonPath().getLong("id");
         지하철구간_중간역_하행역_교체_생성됨(lineId, "용산역", lineDownStationId, 5L);
 
         // when
-        final ExtractableResponse<Response> 결과 = 지하철구간_삭제_요청(lineId, -1L);
+        final ExtractableResponse<Response> 결과 = 지하철구간_삭제_요청(lineId, 노선에_등록되지_않은_역_ID);
 
         // then
         assertThat(결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

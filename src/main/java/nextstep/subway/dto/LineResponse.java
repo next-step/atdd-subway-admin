@@ -23,20 +23,12 @@ public class LineResponse {
         this.id = line.getId();
         this.name = line.getName();
         this.color = line.getColor();
-        this.sections = line.getSections()
-                .toList()
-                .stream()
+        this.sections = line.getSections().toList().stream()
                 .map(SectionResponse::of)
-                .collect(
-                        Collectors.toList()
-                );
-        this.stations = line.getSections()
-                .getSortedStations()
-                .stream()
+                .collect(Collectors.toList());
+        this.stations = line.getSections().getSortedStations().stream()
                 .map(StationResponse::of)
-                .collect(
-                        Collectors.toList()
-                );
+                .collect(Collectors.toList());
     }
 
     public static LineResponse of(final Line line) {

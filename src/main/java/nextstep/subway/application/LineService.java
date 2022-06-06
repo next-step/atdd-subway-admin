@@ -75,11 +75,11 @@ public class LineService {
     }
 
     @Transactional
-    public void removeSectionByStationId(final Long lineId, final Long stationId) {
+    public void removeSection(final Long lineId, final Long stationId) {
         final Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new ResourceNotFoundException(Line.class));
 
-        line.removeSectionByStationId(stationId);
+        line.removeSectionBy(stationId);
     }
 
     private Station findStationsById(final Long stationId) {

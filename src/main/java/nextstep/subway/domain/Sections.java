@@ -25,6 +25,7 @@ public class Sections {
     private final static long BOTH_NON_MATCHED_COUNT = 0;
     private final static long BOTH_MATCHED_SECTIONS_COUNT = 2;
     private final static long ONE_MATCHED_SECTIONS_COUNT = 1;
+    private final static int MINIMUM_SIZE = 1;
 
     public boolean addSection(final Section addableSection) {
         checkBothStationExists(addableSection);
@@ -150,11 +151,11 @@ public class Sections {
                 .filter(section ->
                         section.isEqualToUpStation(station))
                 .findFirst();
-        return nextSection.map(section -> section.getDownStation());
+        return nextSection.map(Section::getDownStation);
     }
 
-    public void removeSectionByStationId(final Long stationId) {
-        checkSectionLessOrEqualThanOne();
+    public void removeSectionBy(final Long stationId) {
+        checkRemovableSize();
         checkStationRegistered(stationId);
         final List<Section> matchedSections = findSectionsByStationId(stationId);
         if (isBetweenTwoSections(matchedSections)) {
@@ -190,8 +191,8 @@ public class Sections {
         sections.removeAll(matchedSections);
     }
 
-    private void checkSectionLessOrEqualThanOne() {
-        if (sections.size() <= 1) {
+    private void checkRemovableSize() {
+        if (sections.size() <= MINIMUM_SIZE) {
             throw new SectionLessOrEqualThanOneException();
         }
     }
