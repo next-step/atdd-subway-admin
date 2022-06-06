@@ -108,7 +108,7 @@ public class Sections {
 	}
 
 	private void sectionIncreaseOrder(int index) {
-		sections.stream().filter(Section -> Section.getSectionOrder() > index).forEach(Section::orderIncrease);
+		sections.stream().filter(Section -> Section.getSectionOrder() >= index).forEach(Section::orderIncrease);
 	}
 
 	private void sectionsAdd(Section section) {
