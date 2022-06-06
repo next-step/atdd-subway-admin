@@ -1,20 +1,18 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.List;
 
+import static nextstep.subway.station.BaseStationAcceptanceTest.createStationRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
@@ -30,23 +28,14 @@ public class LineAcceptanceTest extends BaseLineAcceptanceTest {
     }
 
     private void setDefaultLine() {
-        StationResponse firstLineUpStation = createStationRequest("강남역");
-        StationResponse firstLineDownStation = createStationRequest("광교역");
+        StationResponse firstLineUpStation = createStationRequest("강남역").as(StationResponse.class);
+        StationResponse firstLineDownStation = createStationRequest("광교역").as(StationResponse.class);;
 
-        StationResponse secondLineUpStation = createStationRequest("대화역");
-        StationResponse secondLineDownStation = createStationRequest("오금역");
+        StationResponse secondLineUpStation = createStationRequest("대화역").as(StationResponse.class);;
+        StationResponse secondLineDownStation = createStationRequest("오금역").as(StationResponse.class);;
 
         firstLine = LineRequest.of("신분당선", "bg-red-600", firstLineUpStation.getId(), firstLineDownStation.getId(), 10);
         secondLine = LineRequest.of("3호선", "bg-bisque", secondLineUpStation.getId(), secondLineDownStation.getId(), 20);
-    }
-
-    private StationResponse createStationRequest(String stationName) {
-        return RestAssured.given().log().all()
-                .body(StationRequest.from(stationName))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract().jsonPath().getObject("", StationResponse.class);
     }
 
     /**
@@ -188,8 +177,8 @@ public class LineAcceptanceTest extends BaseLineAcceptanceTest {
     @Test
     void createLine_wrong_distance() {
         // when
-        StationResponse upStation = createStationRequest("인천역");
-        StationResponse downStation = createStationRequest("왕십리역");
+        StationResponse upStation = createStationRequest("인천역").as(StationResponse.class);;
+        StationResponse downStation = createStationRequest("왕십리역").as(StationResponse.class);;
 
         LineRequest wrongLine = LineRequest.of("분당선", "bg-light-gray", upStation.getId(), downStation.getId(), -10);
 
@@ -207,7 +196,7 @@ public class LineAcceptanceTest extends BaseLineAcceptanceTest {
     @Test
     void createLine_duplicate_UpDownStation() {
         // when
-        StationResponse upStation = createStationRequest("인천역");
+        StationResponse upStation = createStationRequest("인천역").as(StationResponse.class);;
         LineRequest wrongLine = LineRequest.of("분당선", "bg-light-gray", upStation.getId(), upStation.getId(), 10);
 
         // then
