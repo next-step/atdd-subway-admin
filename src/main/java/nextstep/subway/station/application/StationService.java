@@ -1,5 +1,6 @@
 package nextstep.subway.station.application;
 
+import nextstep.subway.station.domain.SectionStations;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
@@ -45,21 +46,11 @@ public class StationService {
         return station;
     }
 
-    public Map<String, Station> findUpDownStation(Long upStationId, Long downStationId) {
-        Map<String, Station> result = new HashMap<>();
+    public SectionStations findUpDownStation(Long upStationId, Long downStationId) {
         List<Station> stations = stationRepository.findAll();
-
-        stations.stream()
-                .forEach(station -> {
-                    if (upStationId.equals(station.getId())) {
-                        result.put(UP_STATION_KEY, station);
-                    }
-                    if (downStationId.equals(station.getId())) {
-                        result.put(DOWN_STATION_KEY, station);
-                    }
-                });
-
-        return result;
+        SectionStations sectionStations = new SectionStations();
+        sectionStations.findUpAndDownStations(stations, upStationId, downStationId);
+        return sectionStations;
     }
 
     @Transactional

@@ -2,11 +2,9 @@ package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.station.application.StationService;
-import nextstep.subway.station.domain.Station;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -59,7 +57,7 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
-    @ExceptionHandler({DataIntegrityViolationException.class, EmptyResultDataAccessException.class, IllegalArgumentException.class})
+    @ExceptionHandler({EmptyResultDataAccessException.class, IllegalArgumentException.class})
     public ResponseEntity handleIllegalArgsException(RuntimeException exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
@@ -67,7 +65,7 @@ public class LineController {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleDatabaseException(RuntimeException exception) {
+    public ResponseEntity handleDatabaseException(DataIntegrityViolationException exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .build();

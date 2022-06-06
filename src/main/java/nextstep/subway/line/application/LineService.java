@@ -5,6 +5,7 @@ import nextstep.subway.station.application.StationService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.SectionStations;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -33,10 +34,10 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Line persistLine = lineRequest.toLine();
         lineRepository.save(persistLine);
-        Map<String, Station> upAndDownStations = stationService.findUpDownStation(lineRequest.getUpStationId(),
-                                                                                    lineRequest.getDownStationId());
-        Section section = new Section(upAndDownStations.get(stationService.UP_STATION_KEY)
-                                      ,upAndDownStations.get(stationService.DOWN_STATION_KEY)
+        SectionStations sectionStations = stationService.findUpDownStation(lineRequest.getUpStationId(),
+                                                                           lineRequest.getDownStationId());
+        Section section = new Section(sectionStations.getUpStation()
+                                      ,sectionStations.getDownStation()
                                       ,lineRequest.getDistance());
         persistLine.addSection(section);
 
