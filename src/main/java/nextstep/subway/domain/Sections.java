@@ -78,6 +78,14 @@ public class Sections {
 
     public void deleteSectionStation(Station station) {
         validDeleteSectionStation(station);
+        sortedSections();
+        if (station.equals(getLastUpStation())) {
+            this.sectionElement.remove(0);
+        }
+        if (station.equals(getLastDownStation())) {
+            this.sectionElement.remove(this.sectionElement.size() - 1);
+        }
+
     }
 
     private void validDeleteSectionStation(Station station) {
@@ -103,7 +111,7 @@ public class Sections {
                 .findFirst().get();
     }
 
-    private Predicate<Station> stationsIsNotContains (List<Station> searchStations) {
+    private Predicate<Station> stationsIsNotContains(List<Station> searchStations) {
         return station -> !searchStations.contains(station);
     }
 

@@ -41,6 +41,6 @@ public class SectionController {
                                      @RequestParam Long stationId) {
 
         lineService.deleteSection(lineId, stationId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }

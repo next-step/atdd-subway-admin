@@ -4,7 +4,9 @@ import static nextstep.subway.domain.Station.createStation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -111,5 +113,18 @@ public class SectionsTest {
     void isNotContainStationIsNoDelete() {
         assertThatIllegalStateException().isThrownBy(()
                 -> sections.deleteSectionStation(createStation("광명역")));
+    }
+
+
+    @Test
+    @DisplayName("상행역 종점을 제거 한다.")
+    void lastUpStationRemove() {
+        final Station 주안역 = createStation("주안역");
+        sections.deleteSectionStation(주안역);
+        final List<Section> list = sections.getList();
+        assertAll(() -> {
+            assertThat(list).hasSize(1);
+            assertThat(sections.getLastUpStation()).isEqualTo(createStation("동인천역"));
+        });
     }
 }

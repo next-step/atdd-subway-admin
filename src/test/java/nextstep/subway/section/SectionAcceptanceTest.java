@@ -31,10 +31,12 @@ public class SectionAcceptanceTest {
     int port;
     StationResponse 인천역;
     StationResponse 동인천역;
+    StationResponse 서울역;
     LineResponse 호선_1;
     LineRequest 생성_요청한_1호선;
 
     LineResponse 다구간호선;
+
 
     //초기 거리
     private final static int INIT_DISTANCE = 10;
@@ -52,9 +54,11 @@ public class SectionAcceptanceTest {
         LineRequest 생성_요청한_1호선 = new LineRequest("1호선", "파랑색",INIT_DISTANCE, 인천역.getId(), 동인천역.getId());
         호선_1 = 노선을_생성한다(생성_요청한_1호선).as(LineResponse.class);
 
+        //given 다구간 호선을 생성한다.
+        서울역 = 지하철역을_생성_한다("서울역").as(StationResponse.class);
         LineRequest 다구간호선요청 = new LineRequest("다구간호선", "파랑색",INIT_DISTANCE, 인천역.getId(), 동인천역.getId());
         다구간호선 =  노선을_생성한다(다구간호선요청).as(LineResponse.class);
-        노선의_구간을_추가한다(다구간호선.getId(), new SectionRequest(지하철역을_생성_한다("서울역").as(StationResponse.class).getId(), 인천역.getId(), 3));
+        노선의_구간을_추가한다(다구간호선.getId(), new SectionRequest(서울역.getId(), 인천역.getId(), 3));
 
     }
 
@@ -218,24 +222,46 @@ public class SectionAcceptanceTest {
     void noExistStationDelete() {
         final StationResponse 존재하지않은역 = 지하철역을_생성_한다("존재하지않은역").as(StationResponse.class);
         //when 존재 하지 않은역을 제거요청한다.
-        ExtractableResponse<Response> 노선의_역을_제거한다 = 노선의_역을_제거(다구간호선.getId(),존재하지않은역.getId());
+        ExtractableResponse<Response> 노선의_역을_제거한다 = 노선의_역을_제거(다구간호선.getId(), 존재하지않은역.getId());
         //then 제거가 되지 않는다.
         assertThat(노선의_역을_제거한다.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
     }
 
 
-    //given 지하철 역을 생성하고 지하철 노선을 추가한다.
-    //when 종점을 제거한다.
+    //given 다구간 호선을 생성 한다.
+    //when 상행종점을 제거한다.
     //then 종점이 제거된다.
-    //then 이전 역이 종점이 된다.
+    //then 다음 하행역이 종점이 된다.
     @Test
-    @DisplayName("종점역을 제거 한다.")
-    void lastStationDelete() {
+    @DisplayName("상행종점역을 제거 한다.")
+    void lastUpStationDelete() {
+        //when 종점을 제거한다.
+        ExtractableResponse<Response> 상행종점_역을_제거한다 = 노선의_역을_제거(다구간호선.getId(), 서울역.getId());
+        JsonPath 노선의_구간을_전부_조회 = 노선의_구간을_전부_조회(다구간호선.getId()).jsonPath();
+        assertAll(
+                //then 종점이 제거된다.
+                () -> assertThat(상행종점_역을_제거한다.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                //then 다음 하행역이 종점이 된다.
+                () -> assertThat(노선의_구간을_전부_조회.getString("upStation.name[0]")).isEqualTo("인천역"),
+                () -> assertThat(노선의_구간을_전부_조회.getString("downStation.name[0]")).isEqualTo("동인천역")
+        );
+
+
 
     }
 
-    //given 지하철 역을 생성하고 지하철 노선을 추가한다.
+    //given 다구간 호선을 생성 한다.
+    //when 하행종점역을 제거한다.
+    //then 하행종점역이 제거된다.
+    //then 이전 상행역이 종점이 된다.
+    @Test
+    @DisplayName("하행종점역을 제거 한다.")
+    void lastDownStationDelete() {
+
+    }
+
+    //given 다구간 호선을 생성 한다.
     //when 종점을 제거한다.
     //then 종점이 제거된다.
     //then 이전 역이 종점이 된다.
