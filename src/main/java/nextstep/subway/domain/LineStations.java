@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class LineStations {
-    private static final int ONE = 1;
-
     @OneToMany(mappedBy = "line", orphanRemoval = true)
     private final List<LineStation> lineStations = new ArrayList<>();
 
@@ -17,13 +15,17 @@ public class LineStations {
     }
 
     public LineStations(List<LineStation> lineStations) {
-        validation(lineStations);
+        if (Objects.isNull(lineStations)) {
+            throw new IllegalArgumentException("invalid argument");
+        }
         this.lineStations.addAll(lineStations);
     }
 
     public void addLineStation(final LineStation lineStation) {
-        Optional<LineStation> isLineStation = validation(lineStation);
-        isLineStation.ifPresent(station -> station.updateLineStation(lineStation));
+        if (!this.lineStations.isEmpty()) {
+            LineStation findLineStation = findInsertPosition(lineStation).orElseThrow(IllegalArgumentException::new);
+            findLineStation.updateLineStation(lineStation);
+        }
         this.lineStations.add(lineStation);
     }
 
@@ -31,7 +33,7 @@ public class LineStations {
         return this.lineStations.contains(lineStation);
     }
 
-    public LineStations getLineStationBySorted() {
+    public LineStations getSortedLineStations() {
         List<LineStation> result = new ArrayList<>();
         findStartStation().ifPresent(startStation -> {
             result.add(startStation);
@@ -40,9 +42,16 @@ public class LineStations {
         return new LineStations(result);
     }
 
-    public List<Station> getStation() {
-        List<LineStation> lineStationList = getLineStationBySorted().getLineStations();
+    public List<Station> getStations() {
+        List<LineStation> lineStationList = getSortedLineStations().getLineStations();
         return lineStationList.stream().map(LineStation::getCurrentStation).collect(Collectors.toList());
+    }
+
+    public List<Station> getSortedStationsByStationId() {
+        List<Station> stations = this.lineStations.stream()
+                .map(lineStation -> Arrays.asList(lineStation.getPreStation(), lineStation.getCurrentStation()))
+                .collect(ArrayList::new, List::addAll, List::addAll);
+        return stations.stream().distinct().sorted().collect(Collectors.toList());
     }
 
     public List<Section> getSections() {
@@ -53,14 +62,9 @@ public class LineStations {
         return lineStations;
     }
 
-    public List<Station> getSortedStationsByStationId() {
-        List<Station> stations = this.lineStations.stream().map(lineStation -> Arrays.asList(lineStation.getPreStation(), lineStation.getCurrentStation()))
-                .collect(ArrayList::new, List::addAll, List::addAll);
-        return stations.stream().distinct().sorted().collect(Collectors.toList());
-    }
 
     private void insertLineStationBySorted(List<LineStation> result, LineStation startStation) {
-        Optional<LineStation> preStation = comparePreStation(startStation.getCurrentStation());
+        Optional<LineStation> preStation = findByComparePreStation(startStation.getCurrentStation());
         while (preStation.isPresent()) {
             LineStation station = preStation.get();
             result.add(station);
@@ -68,16 +72,39 @@ public class LineStations {
         }
     }
 
-    private Optional<LineStation> validation(final LineStation lineStation) {
-        if (this.lineStations.isEmpty()) {
-            return Optional.empty();
+    private Optional<LineStation> findInsertPosition(LineStation lineStation) {
+        Optional<LineStation> isMiddle = isInsertPositionMiddle(lineStation);
+        if (isMiddle.isPresent()) return isMiddle;
+        Optional<LineStation> isStart = isInsertPositionStart(lineStation);
+        if (isStart.isPresent()) return isStart;
+        return isInsertEnd(lineStation);
+    }
+
+    private Optional<LineStation> isInsertEnd(LineStation lineStation) {
+        Optional<LineStation> isMatchCurrentAndPreStation = findByCompareCurrentStation(lineStation.getPreStation());
+        Optional<LineStation> isMatchCurrentAndCurrentStation = findByCompareCurrentStation(lineStation.getCurrentStation());
+        if (isMatchCurrentAndPreStation.isPresent() && !isMatchCurrentAndCurrentStation.isPresent()) {
+            return isMatchCurrentAndPreStation;
         }
-        Optional<LineStation> isPreStation = comparePreStation(lineStation.getPreStation());
-        Optional<LineStation> isCurrentStation = compareCurrentStation(lineStation.getCurrentStation());
-        if (Objects.equals(isPreStation.isPresent(), isCurrentStation.isPresent())) {
-            throw new IllegalArgumentException("invalid Argument");
+        return Optional.empty();
+    }
+
+    private Optional<LineStation> isInsertPositionStart(LineStation lineStation) {
+        Optional<LineStation> isMatchPreAndPreStation = findByComparePreStation(lineStation.getPreStation());
+        Optional<LineStation> isMatchPreAndCurrentStation = findByComparePreStation(lineStation.getCurrentStation());
+        if (!isMatchPreAndPreStation.isPresent() && isMatchPreAndCurrentStation.isPresent()) {
+            return isMatchPreAndCurrentStation;
         }
-        return isPreStation.isPresent() ? isPreStation : isCurrentStation;
+        return Optional.empty();
+    }
+
+    private Optional<LineStation> isInsertPositionMiddle(final LineStation lineStation) {
+        Optional<LineStation> isMatchPreAndPreStation = findByComparePreStation(lineStation.getPreStation());
+        Optional<LineStation> isMatchCurrentAndCurrentStation = findByCompareCurrentStation(lineStation.getCurrentStation());
+        if (isMatchPreAndPreStation.isPresent() && !isMatchCurrentAndCurrentStation.isPresent()) {
+            return isMatchPreAndPreStation;
+        }
+        return Optional.empty();
     }
 
     private Optional<LineStation> findStartStation() {
@@ -90,34 +117,15 @@ public class LineStations {
                 .findFirst();
     }
 
-    private Optional<LineStation> comparePreStation(final Station station) {
-        final List<LineStation> searchPreStation = this.lineStations.stream()
-                .filter(savedLineStation -> savedLineStation.isPreStation(station) || savedLineStation.isCurrentStation(station))
-                .collect(Collectors.toList());
-        if (searchPreStation.size() > ONE) {
-            findStartStation().ifPresent(searchPreStation::remove);
-        }
-        return getExpectedInsertSection(station, searchPreStation);
+    private Optional<LineStation> findByComparePreStation(final Station station) {
+        return this.lineStations.stream()
+                .filter(savedLineStation -> savedLineStation.isPreStation(station)).findAny();
     }
 
-    private Optional<LineStation> getExpectedInsertSection(Station station, List<LineStation> searchPreStation) {
-        if (searchPreStation.isEmpty()) {
-            return Optional.empty();
-        }
-        Optional<LineStation> matchPreStation = searchPreStation.stream().filter(item -> item.isPreStation(station)).findFirst();
-        return matchPreStation.isPresent() ? matchPreStation : searchPreStation.stream().findFirst();
-    }
-
-    private Optional<LineStation> compareCurrentStation(final Station station) {
+    private Optional<LineStation> findByCompareCurrentStation(final Station station) {
         return this.lineStations.stream()
                 .filter(savedLineStation -> savedLineStation.isCurrentStation(station))
                 .findFirst();
-    }
-
-    private void validation(List<LineStation> lineStations) {
-        if (Objects.isNull(lineStations)) {
-            throw new IllegalArgumentException("invalid argument");
-        }
     }
 
     @Override
