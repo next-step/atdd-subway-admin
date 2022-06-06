@@ -3,7 +3,10 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static nextstep.subway.common.Messages.DUPLICATE_SECTION_ERROR;
 import static nextstep.subway.common.Messages.NOT_MATCH_STATION_ERROR;
@@ -56,8 +59,8 @@ public class Sections {
         Station upStation = section.getUpStation();
 
         if (matchUpStation(upStation)) {
-            Section existingUpStation = existingUpStation(upStation);
-            existingUpStation.updateUpStation(section.getDownStation(), section.getDistance());
+            Section station = findUpStation(upStation);
+            station.updateUpStation(section.getDownStation(), section.getDistance());
         }
     }
 
@@ -65,8 +68,8 @@ public class Sections {
         Station downStation = section.getDownStation();
 
         if (matchDownStation(downStation)) {
-            Section existingUpStation = existingDownStation(downStation);
-            existingUpStation.updateDownStation(section.getUpStation(), section.getDistance());
+            Section station = findDownStation(downStation);
+            station.updateDownStation(section.getUpStation(), section.getDistance());
         }
     }
 
@@ -74,21 +77,21 @@ public class Sections {
         return sections.stream().anyMatch(section -> section.isEqualsUpStation(station));
     }
 
-    private Section existingUpStation(Station station) {
+    private Section findUpStation(Station station) {
         return sections.stream()
                 .filter(section -> section.isEqualsUpStation(station))
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("상행역을 찾을 수 없습니다."));
+                .orElseGet(Section::new);
     }
 
     private boolean matchDownStation(Station station) {
         return sections.stream().anyMatch(section -> section.isEqualsDownStation(station));
     }
 
-    private Section existingDownStation(Station station) {
+    private Section findDownStation(Station station) {
         return sections.stream()
                 .filter(section -> section.isEqualsDownStation(station))
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("하행역을 찾을 수 없습니다."));
+                .orElseGet(Section::new);
     }
 }
