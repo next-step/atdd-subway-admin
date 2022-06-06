@@ -29,7 +29,7 @@ public class SectionController {
     }
 
     @PostMapping("{lineId}/selections")
-    public ResponseEntity addSection(@PathVariable Long lineId,
+    public ResponseEntity<Void> addSection(@PathVariable Long lineId,
                                      @RequestBody SectionRequest sectionRequest) {
 
         lineService.saveSection(lineId, sectionRequest);
@@ -37,7 +37,7 @@ public class SectionController {
     }
 
     @DeleteMapping("{lineId}/selections")
-    public ResponseEntity addSection(@PathVariable Long lineId,
+    public ResponseEntity<Void> addSection(@PathVariable Long lineId,
                                      @RequestParam Long stationId) {
 
         lineService.deleteSection(lineId, stationId);
