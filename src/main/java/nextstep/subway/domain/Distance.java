@@ -41,6 +41,10 @@ public class Distance {
         this.distance += number;
     }
 
+    public static Distance sumDistance(Distance source, Distance target) {
+        return Distance.of(source.value() + target.value());
+    }
+
     private void valid(int distance) {
         if (MIN_DISTANCE >= distance) {
             throw DISTANCE_VALID_EXCEPTION;

@@ -29,7 +29,6 @@ public class Sections {
     private List<Section> sectionElement = new ArrayList<>();
     private static final int INIT_SELECTIONS_SIZE = 1;
 
-
     protected Sections() {
 
     }
@@ -55,8 +54,17 @@ public class Sections {
         this.sectionElement.add(newSection);
     }
 
+    public void deleteSectionStation(Station station) {
+        validDeleteSectionStation(station);
+        if (isBetweenRemoveStation(station)) {
+            betweenRemoveStation(station);
+            return;
+        }
+        lastStationRemove(station);
+    }
+
     //상행종점
-    public Station getLastUpStation() {
+    Station getLastUpStation() {
         List<Station> downStations = getDownStations()
                 .collect(Collectors.toList());
 
@@ -66,7 +74,7 @@ public class Sections {
                 .orElseThrow(() -> new IllegalArgumentException(STATION_IS_NO_SEARCH.toMessage()));
     }
 
-    public Station getLastDownStation() {
+    Station getLastDownStation() {
         List<Station> upStations = getUpStations()
                 .collect(Collectors.toList());
 
@@ -77,26 +85,39 @@ public class Sections {
 
     }
 
-    public void deleteSectionStation(Station station) {
-        validDeleteSectionStation(station);
+    private void betweenRemoveStation(Station station) {
+        final Section upSection = findUpSection(station);
+        final Section downSection = findDownSection(station);
+        this.sectionElement.remove(upSection);
+        this.sectionElement.remove(downSection);
 
-        if (isLastUpStation(station)) {
-            this.sectionElement.remove(findUpSection(station));
-            return;
-        }
-        if (isLastDownStation(station)) {
+        this.sectionElement.add(Section.builder()
+                .upStation(downSection.getUpStation())
+                .downStation(upSection.getDownStation())
+                .distance(Distance.sumDistance(upSection.getDistance(), downSection.getDistance()))
+                .build());
+    }
+
+    private void lastStationRemove(Station station) {
+        if (hasDownStation(station)) {
             this.sectionElement.remove(findDownSection(station));
             return;
         }
-        sortedSections();
+        if (hasUpStation(station)) {
+            this.sectionElement.remove(findUpSection(station));
+        }
     }
 
-    private boolean isLastDownStation(Station station) {
-        return station.equals(getLastDownStation());
+    private boolean isBetweenRemoveStation(Station station) {
+        return hasDownStation(station) && hasUpStation(station);
     }
 
-    private boolean isLastUpStation(Station station) {
-        return station.equals(getLastUpStation());
+    private boolean hasDownStation(Station station) {
+        return getDownStations().anyMatch((downStation) -> downStation.equals(station));
+    }
+
+    private boolean hasUpStation(Station station) {
+        return getUpStations().anyMatch((upStation) -> upStation.equals(station));
     }
 
     private void validDeleteSectionStation(Station station) {

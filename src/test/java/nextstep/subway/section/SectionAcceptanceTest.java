@@ -268,12 +268,25 @@ public class SectionAcceptanceTest {
     }
 
     //given 다구간 호선을 생성 한다.
-    //when 종점을 제거한다.
-    //then 종점이 제거된다.
-    //then 이전 역이 종점이 된다.
+    //when 중간역을 제거한다.
+    //then 중간역이 제거된다.
+    //then 구간의 하행역이 이전역의 새로운 하행역이 된다.
+    //then 거리는 삭제된 구간이 합계가 된다.
     @Test
     @DisplayName("중간역을 제거 한다")
     void middleStationDelete() {
+        //when 중간역을 제거한다.
+        ExtractableResponse<Response> 중간역을_제거한다 = 노선의_역을_제거(다구간호선.getId(), 인천역.getId());
+        JsonPath 노선의_구간을_전부_조회 = 노선의_구간을_전부_조회(다구간호선.getId()).jsonPath();
+        assertAll(
+                //then 종점이 제거된다.
+                () -> assertThat(중간역을_제거한다.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                //then 구간의 하행역이 이전역의 새로운 하행역이 된다.
+                () -> assertThat(노선의_구간을_전부_조회.getString("upStation.name[0]")).isEqualTo("서울역"),
+                () -> assertThat(노선의_구간을_전부_조회.getString("downStation.name[0]")).isEqualTo("동인천역"),
+                //then 거리는 삭제된 구간이 합계가 된다.
+                () -> assertThat(노선의_구간을_전부_조회.getInt("distance[0]")).isEqualTo(13)
+        );
 
     }
 

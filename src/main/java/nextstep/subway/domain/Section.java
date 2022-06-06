@@ -68,6 +68,10 @@ public class Section {
         return distance;
     }
 
+    public int getDistanceValue() {
+        return distance.value();
+    }
+
     public void minusDistance(Distance distance) {
         this.distance.minusDistance(distance.value());
     }

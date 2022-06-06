@@ -139,4 +139,20 @@ public class SectionsTest {
             assertThat(sections.getLastDownStation()).isEqualTo(createStation("동인천역"));
         });
     }
+
+    @Test
+    @DisplayName("구간역을 제거 한다.")
+    void betweenRemoveStation() {
+        final Station 동인천역 = createStation("동인천역");
+        final int sumDistance = sections.getList().stream().mapToInt((Section::getDistanceValue)).sum();
+
+        sections.deleteSectionStation(동인천역);
+        final List<Section> list = sections.getList();
+
+        assertAll(
+                () -> assertThat(list).hasSize(1),
+                () -> assertThat(list.get(0).getUpStation()).isEqualTo(createStation("주안역")),
+                () -> assertThat(sumDistance).isEqualTo(list.get(0).getDistanceValue())
+        );
+    }
 }
