@@ -1,4 +1,4 @@
-package nextstep.subway.line;
+package nextstep.subway.section;
 
 import nextstep.subway.domain.Distance;
 import org.junit.jupiter.api.DisplayName;
