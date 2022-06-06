@@ -123,16 +123,20 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         // given
         StationResponse upStation = createStationWithStationName("강남역").as(StationResponse.class);
         StationResponse downStation = createStationWithStationName("양재역").as(StationResponse.class);
-        Long createdLineId = createLineWithLineName("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10)
-            .jsonPath().getLong("id");
+        ExtractableResponse<Response> createLine = createLineWithLineName("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
 
         // when
         LineRequest lineRequest = new LineRequest("신분당선_NEW", "bg-gray-600", downStation.getId(), upStation.getId(), 10);
-        System.out.println(lineRequest);
-        ExtractableResponse<Response> updateResponse = updateLineWithLindId(createdLineId, lineRequest, upStation.getId(), downStation.getId());
+        ExtractableResponse<Response> updateResponse = updateLineWithLindId(createLine.jsonPath().getLong("id"), lineRequest);
 
         // then
-        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> updatedLine = findLineById(createLine.jsonPath().getLong("id"));
+        assertAll(
+            () -> assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(updatedLine.jsonPath().getString("name")).isEqualTo("신분당선_NEW"),
+            () -> assertThat(updatedLine.jsonPath().getString("color")).isEqualTo("bg-gray-600")
+        );
+
     }
 
     private ExtractableResponse<Response> createLineWithLineName(String name, String color, Long upStationId, Long downStationId, int distance){
@@ -163,8 +167,10 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> updateLineWithLindId(Long id, LineRequest lineRequest, Long upStationId, Long downStationId){
-        Map<String, String> params = createLineMap(lineRequest.getName(), lineRequest.getColor(), upStationId, downStationId, lineRequest.getDistance());
+    private ExtractableResponse<Response> updateLineWithLindId(Long id, LineRequest lineRequest){
+        Map<String, String> params = new HashMap<>();
+        params.put("name", lineRequest.getName());
+        params.put("color", lineRequest.getColor());
 
         return RestAssured
             .given().log().all()
@@ -187,5 +193,12 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         }
         params.put("distance", String.valueOf(distance));
         return params;
+    }
+
+    private ExtractableResponse<Response> findLineById(Long id) {
+        return RestAssured.given().log().all()
+            .when().get("/lines/{id}", id)
+            .then().log().all()
+            .extract();
     }
 }

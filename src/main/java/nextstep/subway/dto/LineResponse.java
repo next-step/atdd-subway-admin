@@ -43,6 +43,10 @@ public class LineResponse {
         return name;
     }
 
+    public String getColor() {
+        return color;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
