@@ -19,6 +19,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관련기능 테스트")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -136,9 +137,9 @@ public class LineStationAcceptanceTest {
     }
 
     /**
-     * given: 구간을 등록하고
-     * when: 종점을 삭제하면
-     * then: 다음으로 오던역이 종점이 된다.
+     * given: A역-B역 구간, A역-C역 구간을 등록하고
+     * when: A-C역 구간을 삭제하면
+     * then: A-C역 구간이 삭제되고, B역이 종점이 된다.
      */
     @Test
     @DisplayName("종점 삭제")
@@ -157,5 +158,32 @@ public class LineStationAcceptanceTest {
         List<LineStationResponse> lineStations = response.jsonPath().getList("lineStations", LineStationResponse.class);
 
         assertThat(lineStations.size()).isEqualTo(1);
+    }
+
+    /**
+     * given: A역-B역 구간, B역-C역 구간을 등록하고
+     * when: A-B역 구간을 삭제하면
+     * then: 역이 재배치된다.
+     */
+    @Test
+    @DisplayName("중간역 삭제")
+    void 지하철구간_중간역삭제() {
+        // given
+        LineStationRequest AC_지하철구간_등록_요청 = new LineStationRequest(A역.getId(), C역.getId(), 30L);
+        LineStationApi.지하철구간_생성(line.getId(), AC_지하철구간_등록_요청);
+        LineStationRequest AB_지하철구간_등록_요청 = new LineStationRequest(A역.getId(), B역.getId(), 20L);
+        ExtractableResponse<Response> AB_지하철구간_등록_응답 = LineStationApi.지하철구간_생성(line.getId(), AB_지하철구간_등록_요청);
+
+        // when
+        LineStationApi.지하철구간_삭제(AB_지하철구간_등록_응답.jsonPath().getLong("id"));
+
+        // then
+        ExtractableResponse<Response> response = LineApi.지하철노선_상세_조회(line.getId());
+        List<LineStationResponse> lineStations = response.jsonPath().getList("lineStations", LineStationResponse.class);
+
+        assertAll(
+                () -> assertThat(lineStations.size()).isEqualTo(1),
+                () -> assertThat(lineStations.size()).isEqualTo(1)
+        );
     }
 }
