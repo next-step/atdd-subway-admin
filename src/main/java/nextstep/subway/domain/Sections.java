@@ -43,24 +43,22 @@ public class Sections {
         return Collections.unmodifiableList(sectionElement);
     }
 
-    public void addSection(Section newSection) {
-        validExistUpStationAndDownStation(newSection); // 구간 존재
-        validNoExistUpStationAndDownStation(newSection); // 상행선 하행선 존재하지 않음
+    private void sortedSections() {
+        List<Section> list = new ArrayList<>();
 
-        if (isBetweenAddSection(newSection)) {
-            addBetweenSection(newSection);
-            return;
+        while (!sectionElement.isEmpty()) {
+            Section lastUpSection = findUpSection(getLastUpStation());
+            list.add(lastUpSection);
+            sectionElement.remove(lastUpSection);
         }
-        this.sectionElement.add(newSection);
+
+        sectionElement = list;
     }
 
-    public void deleteSectionStation(Station station) {
-        validDeleteSectionStation(station);
-        if (isBetweenRemoveStation(station)) {
-            betweenRemoveStation(station);
-            return;
-        }
-        lastStationRemove(station);
+    private Section findUpSection(Station findStation) {
+        return this.sectionElement.stream()
+                .filter(section -> section.getUpStation().equals(findStation))
+                .findFirst().get();
     }
 
     //상행종점
@@ -74,50 +72,77 @@ public class Sections {
                 .orElseThrow(() -> new IllegalArgumentException(STATION_IS_NO_SEARCH.toMessage()));
     }
 
-    Station getLastDownStation() {
-        List<Station> upStations = getUpStations()
-                .collect(Collectors.toList());
+    public void addSection(Section newSection) {
+        validExistUpStationAndDownStation(newSection); // 구간 존재
+        validNoExistUpStationAndDownStation(newSection); // 상행선 하행선 존재하지 않음
 
-        return getDownStations()
-                .filter(stationsIsNotContains(upStations))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(STATION_IS_NO_SEARCH.toMessage()));
-
-    }
-
-    private void betweenRemoveStation(Station station) {
-        final Section upSection = findUpSection(station);
-        final Section downSection = findDownSection(station);
-        this.sectionElement.remove(upSection);
-        this.sectionElement.remove(downSection);
-
-        this.sectionElement.add(Section.builder()
-                .upStation(downSection.getUpStation())
-                .downStation(upSection.getDownStation())
-                .distance(Distance.sumDistance(upSection.getDistance(), downSection.getDistance()))
-                .build());
-    }
-
-    private void lastStationRemove(Station station) {
-        if (hasDownStation(station)) {
-            this.sectionElement.remove(findDownSection(station));
+        if (isBetweenAddSection(newSection)) {
+            addBetweenSection(newSection);
             return;
         }
-        if (hasUpStation(station)) {
-            this.sectionElement.remove(findUpSection(station));
+        this.sectionElement.add(newSection);
+    }
+
+    private void validExistUpStationAndDownStation(Section newSection) {
+        if (isExistUpStation(newSection) && isExistDownStation(newSection)) {
+            throw new IllegalArgumentException(SECTION_UP_STATION_AND_DOWN_STATION_EXIST.toMessage());
         }
     }
 
-    private boolean isBetweenRemoveStation(Station station) {
-        return hasDownStation(station) && hasUpStation(station);
+    private boolean isExistDownStation(Section newSection) {
+        return sectionElement.stream()
+                .anyMatch(section -> section.getDownStation().equals(newSection.getDownStation()));
     }
 
-    private boolean hasDownStation(Station station) {
-        return getDownStations().anyMatch((downStation) -> downStation.equals(station));
+    private boolean isExistUpStation(Section newSection) {
+        return sectionElement.stream()
+                .anyMatch(section -> section.getUpStation().equals(newSection.getUpStation()));
     }
 
-    private boolean hasUpStation(Station station) {
-        return getUpStations().anyMatch((upStation) -> upStation.equals(station));
+    private void validNoExistUpStationAndDownStation(Section newSection) {
+        Set<Station> distinctSet = new HashSet<>();
+        sectionElement.forEach((section -> {
+            distinctSet.add(section.getDownStation());
+            distinctSet.add(section.getUpStation());
+        }));
+
+        if (!distinctSet.contains(newSection.getUpStation()) && !distinctSet.contains(newSection.getDownStation())) {
+            throw new IllegalStateException(SECTION_UP_STATION_AND_DOWN_STATION_NO_EXIST.toMessage());
+        }
+    }
+
+    private boolean isBetweenAddSection(Section newSection) {
+        return isExistDownStation(newSection);
+    }
+
+    private void addBetweenSection(Section newSection) {
+        Section beforeSection = findAddSection(newSection);
+        validDistance(newSection, beforeSection);
+
+        beforeSection.minusDistance(newSection.getDistance());
+        this.sectionElement.add(newSection);
+    }
+
+    private Section findAddSection(Section newSection) {
+        return sectionElement.stream()
+                .filter((section -> section.getDownStation().equals(newSection.getDownStation())))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(SECTION_IS_NO_SEARCH.toMessage()));
+    }
+
+    private void validDistance(Section newSection, Section beforeSection) {
+        if (!newSection.getDistance().isLess(beforeSection.getDistance())) {
+            throw new IllegalStateException(SECTION_ADD_DISTANCE_IS_BIG.toMessage());
+        }
+    }
+
+    public void deleteSectionStation(Station station) {
+        validDeleteSectionStation(station);
+        if (isBetweenRemoveStation(station)) {
+            betweenRemoveStation(station);
+            return;
+        }
+        lastStationRemove(station);
     }
 
     private void validDeleteSectionStation(Station station) {
@@ -136,11 +161,21 @@ public class Sections {
                         section.getUpStation().equals(station) || section.getDownStation().equals(station));
     }
 
+    private boolean isBetweenRemoveStation(Station station) {
+        return hasDownStation(station) && hasUpStation(station);
+    }
 
-    private Section findUpSection(Station findStation) {
-        return this.sectionElement.stream()
-                .filter(section -> section.getUpStation().equals(findStation))
-                .findFirst().get();
+    private void betweenRemoveStation(Station station) {
+        final Section upSection = findUpSection(station);
+        final Section downSection = findDownSection(station);
+        this.sectionElement.remove(upSection);
+        this.sectionElement.remove(downSection);
+
+        this.sectionElement.add(Section.builder()
+                .upStation(downSection.getUpStation())
+                .downStation(upSection.getDownStation())
+                .distance(Distance.sumDistance(upSection.getDistance(), downSection.getDistance()))
+                .build());
     }
 
     private Section findDownSection(Station findStation) {
@@ -149,10 +184,23 @@ public class Sections {
                 .findFirst().get();
     }
 
-    private Predicate<Station> stationsIsNotContains(List<Station> searchStations) {
-        return station -> !searchStations.contains(station);
+    private void lastStationRemove(Station station) {
+        if (hasDownStation(station)) {
+            this.sectionElement.remove(findDownSection(station));
+            return;
+        }
+        if (hasUpStation(station)) {
+            this.sectionElement.remove(findUpSection(station));
+        }
     }
 
+    private boolean hasDownStation(Station station) {
+        return getDownStations().anyMatch((downStation) -> downStation.equals(station));
+    }
+
+    private boolean hasUpStation(Station station) {
+        return getUpStations().anyMatch((upStation) -> upStation.equals(station));
+    }
 
     private Stream<Station> getDownStations() {
         return this.sectionElement
@@ -166,71 +214,20 @@ public class Sections {
                 .map(Section::getUpStation);
     }
 
-    private void addBetweenSection(Section newSection) {
-        Section beforeSection = findAddSection(newSection);
-        validDistance(newSection, beforeSection);
 
-        beforeSection.minusDistance(newSection.getDistance());
-        this.sectionElement.add(newSection);
-    }
+    Station getLastDownStation() {
+        List<Station> upStations = getUpStations()
+                .collect(Collectors.toList());
 
-
-    private void sortedSections() {
-        List<Section> list = new ArrayList<>();
-
-        while (!sectionElement.isEmpty()) {
-            Section lastUpSection = findUpSection(getLastUpStation());
-            list.add(lastUpSection);
-            sectionElement.remove(lastUpSection);
-        }
-
-        sectionElement = list;
-    }
-
-
-    private void validDistance(Section newSection, Section beforeSection) {
-        if (!newSection.getDistance().isLess(beforeSection.getDistance())) {
-            throw new IllegalStateException(SECTION_ADD_DISTANCE_IS_BIG.toMessage());
-        }
-    }
-
-    private boolean isBetweenAddSection(Section newSection) {
-        return isExistDownStation(newSection);
-    }
-
-    private Section findAddSection(Section newSection) {
-        return sectionElement.stream()
-                .filter((section -> section.getDownStation().equals(newSection.getDownStation())))
+        return getDownStations()
+                .filter(stationsIsNotContains(upStations))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(SECTION_IS_NO_SEARCH.toMessage()));
+                .orElseThrow(() -> new IllegalArgumentException(STATION_IS_NO_SEARCH.toMessage()));
+
     }
 
-    private void validExistUpStationAndDownStation(Section newSection) {
-        if (isExistUpStation(newSection) && isExistDownStation(newSection)) {
-            throw new IllegalArgumentException(SECTION_UP_STATION_AND_DOWN_STATION_EXIST.toMessage());
-        }
-    }
-
-    private void validNoExistUpStationAndDownStation(Section newSection) {
-        Set<Station> distinctSet = new HashSet<>();
-        sectionElement.forEach((section -> {
-            distinctSet.add(section.getDownStation());
-            distinctSet.add(section.getUpStation());
-        }));
-
-        if (!distinctSet.contains(newSection.getUpStation()) && !distinctSet.contains(newSection.getDownStation())) {
-            throw new IllegalStateException(SECTION_UP_STATION_AND_DOWN_STATION_NO_EXIST.toMessage());
-        }
-    }
-
-    private boolean isExistDownStation(Section newSection) {
-        return sectionElement.stream()
-                .anyMatch(section -> section.getDownStation().equals(newSection.getDownStation()));
-    }
-
-    private boolean isExistUpStation(Section newSection) {
-        return sectionElement.stream()
-                .anyMatch(section -> section.getUpStation().equals(newSection.getUpStation()));
+    private Predicate<Station> stationsIsNotContains(List<Station> searchStations) {
+        return station -> !searchStations.contains(station);
     }
 
 }
