@@ -97,16 +97,20 @@ public class LineStations {
         validateDelete(station);
         sort();
 
-        boolean isNotYetDeleted = true;
-        for (int i = 0; i < lineStations.size() && isNotYetDeleted; i++) {
-            if (deleteByUpStation(station, i)) {
-                isNotYetDeleted = false;
-            }
-        }
+        LineStation willDeletedLineStation = preprocessAndGetDeletedLineStation(station);
+        lineStations.remove(willDeletedLineStation);
+    }
 
-        if (isNotYetDeleted) {
-            deleteLastLineStation();
-        }
+    private LineStation preprocessAndGetDeletedLineStation(Station station) {
+        Optional<LineStation> willDeletedLineStation = lineStations.stream()
+                .filter(it -> it.equalsUpStation(station))
+                .findAny();
+
+        willDeletedLineStation
+                .filter(this::isMiddle)
+                .ifPresent(this::preprocessDeleteInMiddle);
+
+        return willDeletedLineStation.orElseGet(() -> lineStations.get(size() - 1));
     }
 
     private void validateDelete(Station station) {
@@ -121,28 +125,18 @@ public class LineStations {
         return !hasMatchedSameStation;
     }
 
-    private boolean deleteByUpStation(Station station, int index) {
-        LineStation willDeletedLineStation = lineStations.get(index);
-        if (!willDeletedLineStation.equalsUpStation(station)) {
-            return false;
-        }
+    private void preprocessDeleteInMiddle(LineStation willDeletedLineStation) {
+        lineStations.stream()
+                .filter(it -> it.equalsDownStation(willDeletedLineStation.getUpStation()))
+                .forEach(it -> {
+                    long distance = it.getDistance() + willDeletedLineStation.getDistance();
+                    it.updateDownStation(distance, willDeletedLineStation.getDownStation());
+                });
 
-        if (isMiddle(index)) {
-            LineStation lineStation = lineStations.get(index - 1);
-
-            long distance = lineStation.getDistance() + willDeletedLineStation.getDistance();
-            lineStation.updateDownStation(distance, willDeletedLineStation.getDownStation());
-        }
-        lineStations.remove(index);
-        return true;
     }
 
-    private boolean isMiddle(int index) {
-        return index > 0 && index < lineStations.size();
-    }
-
-    private void deleteLastLineStation() {
-        lineStations.remove(lineStations.size() - 1);
+    private boolean isMiddle(LineStation lineStation) {
+        return lineStation.equals(lineStations.get(0)) || lineStation.equals(lineStations.get(size() - 1));
     }
 
     public List<Station> getSortedStations() {

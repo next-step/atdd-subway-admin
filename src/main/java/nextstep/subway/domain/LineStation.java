@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.util.Objects;
 
 @Entity
 public class LineStation extends BaseEntity {
@@ -70,4 +71,16 @@ public class LineStation extends BaseEntity {
         return downStation.equals(station);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LineStation that = (LineStation) o;
+        return Objects.equals(id, that.id) && Objects.equals(distance, that.distance) && Objects.equals(upStation, that.upStation) && Objects.equals(downStation, that.downStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, distance, upStation, downStation);
+    }
 }
