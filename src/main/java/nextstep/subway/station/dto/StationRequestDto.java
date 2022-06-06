@@ -1,13 +1,13 @@
-package nextstep.subway.dto;
+package nextstep.subway.station.dto;
 
-import nextstep.subway.domain.Station;
+import nextstep.subway.station.Station;
 
-public class StationRequest {
+public class StationRequestDto {
     private String name;
 
-    protected StationRequest() {}
+    private StationRequestDto() {}
 
-    public StationRequest(String name) {
+    public StationRequestDto(String name) {
         this.name = name;
     }
 
