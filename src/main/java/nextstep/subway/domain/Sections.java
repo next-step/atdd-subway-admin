@@ -52,16 +52,17 @@ public class Sections {
 			return;
 		}
 
+		updateSectionInMiddle(line, upStation, downStation, distance);
+		sections.add(new Section(line, upStation, downStation, distance));
+	}
+
+	private void updateSectionInMiddle(Line line, Station upStation, Station downStation, int distance) {
 		int index = searchUpStationOrDownStation(upStation, downStation);
 
 		if(index == NOT_FOUND) {
 			return;
 		}
 
-		createSectionInMiddle(line, upStation, downStation, distance, index);
-	}
-
-	private void createSectionInMiddle(Line line, Station upStation, Station downStation, int distance, int index) {
 		Section foundSection = sections.get(index);
 
 		/** A - B
@@ -83,8 +84,6 @@ public class Sections {
 
 			updateSection(index, updatingSection);
 		}
-
-		sections.add(new Section(line, upStation, downStation, distance));
 	}
 
 	private void updateSection(int index, Section updatingSection) {

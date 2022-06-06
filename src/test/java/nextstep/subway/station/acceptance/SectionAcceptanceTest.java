@@ -58,8 +58,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	 */
 	@DisplayName("기존 구간 앞에 새로운 구간을 생성한다.")
 	@Test
-	void addSectionInUpStation() {
+	void addSectionInFrontOfUpStation() {
+		// when
+		구간_생성_요청(신분당선.getId(), 정자역.getId(), 강남역.getId(), 10);
+		ExtractableResponse<Response> response = 노선_조회_요청(신분당선.getId());
 
+		// then
+		요청_응답_확인(response, HttpStatus.OK);
+		지하철노선_역_목록_확인(response, 정자역.getName(), 강남역.getName(), 광교역.getName());
 	}
 
 	/**

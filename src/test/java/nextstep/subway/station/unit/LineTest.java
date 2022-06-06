@@ -46,4 +46,17 @@ public class LineTest {
 		// then
 		assertThat(sinbundangLine.getStation()).containsExactly(gangnamStation, jeongjaStation, gwanggyoStaion);
 	}
+
+	@DisplayName("상행역 앞에 새로운 구간 생성")
+	@Test
+	void createSectionInFrontOfUpStation() {
+		// given
+		sinbundangLine.addSection(gangnamStation, gwanggyoStaion, 30);
+
+		// when
+		sinbundangLine.addSection(jeongjaStation, gangnamStation, 10);
+
+		// then
+		assertThat(sinbundangLine.getStation()).containsExactly(jeongjaStation, gangnamStation, gwanggyoStaion);
+	}
 }
