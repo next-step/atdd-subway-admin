@@ -51,11 +51,7 @@ public class LineAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        ExtractableResponse<Response> lineResponse =
-                RestAssured.given().log().all()
-                        .when().get("/lines/" + response.as(LineResponse.class).getId())
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> lineResponse = selectLine(response.as(LineResponse.class).getId());
         assertThat(lineResponse.as(LineResponse.class).getName()).isEqualTo("신분당선");
     }
 
@@ -64,7 +60,7 @@ public class LineAcceptanceTest {
      * When 지하철 노선 목록을 조회하면
      * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다
      */
-    @DisplayName("노선을 조회한다.")
+    @DisplayName("노선 목록을 조회한다.")
     @Test
     void getLines() {
         // when
@@ -80,6 +76,29 @@ public class LineAcceptanceTest {
                 () -> assertThat(lines).hasSize(2),
                 () -> assertThat(lines.stream().map(lineResponse -> lineResponse.getName()).collect(Collectors.toList())).contains("신분당선"),
                 () -> assertThat(lines.stream().map(lineResponse -> lineResponse.getName()).collect(Collectors.toList())).contains("2호선")
+        );
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다
+     */
+    @DisplayName("노선을 조회한다.")
+    @Test
+    void getLine() {
+        // given
+        ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", "광교역", "신사역", 10L);
+
+        // when
+        ExtractableResponse<Response> response = selectLine(createResponse.as(LineResponse.class).getId());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then
+        LineResponse line = response.as(LineResponse.class);
+        assertAll(
+                () -> assertThat(line.getName()).isEqualTo("신분당선"),
+                () -> assertThat(line.getColor()).isEqualTo("bg-red-600")
         );
     }
 
@@ -111,6 +130,13 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    public ExtractableResponse<Response> selectLine(Long id) {
+        return  RestAssured.given().log().all()
+                .when().get("/lines/" + String.valueOf(id))
                 .then().log().all()
                 .extract();
     }
