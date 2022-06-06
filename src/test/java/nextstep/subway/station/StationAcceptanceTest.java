@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.ui.StationController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
-    static final String requestPath = "/stations";
     static final List<String> stationNames = new ArrayList<>(Arrays.asList("수락산역", "마들역"));
     @LocalServerPort
     int port;
@@ -136,14 +136,14 @@ public class StationAcceptanceTest {
                 }
             })
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post(requestPath)
+            .when().post(StationController.rootPath)
             .then().log().all()
             .extract();
     }
 
     private ExtractableResponse<Response> requestGetStations() {
         return RestAssured.given().log().all()
-            .when().get(requestPath)
+            .when().get(StationController.rootPath)
             .then().log().all()
             .extract();
     }

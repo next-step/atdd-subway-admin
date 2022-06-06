@@ -13,24 +13,25 @@ import java.util.List;
 
 @RestController
 public class StationController {
+    public static final String rootPath = "/stations";
     private StationService stationService;
 
     public StationController(StationService stationService) {
         this.stationService = stationService;
     }
 
-    @PostMapping("/stations")
+    @PostMapping(rootPath)
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         StationResponse station = stationService.saveStation(stationRequest);
         return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(station);
     }
 
-    @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = rootPath, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
         return ResponseEntity.ok().body(stationService.findAllStations());
     }
 
-    @DeleteMapping("/stations/{id}")
+    @DeleteMapping(rootPath + "/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationService.deleteStationById(id);
         return ResponseEntity.noContent().build();
