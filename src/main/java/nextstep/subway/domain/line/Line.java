@@ -9,6 +9,7 @@ import nextstep.subway.domain.section.Sections;
 import nextstep.subway.domain.station.Station;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Line extends BaseEntity {
@@ -80,6 +81,9 @@ public class Line extends BaseEntity {
     }
 
     public void setTerminus(Station upStation, Station downStation) {
+        lineStations.remove(this, upStation);
+        lineStations.remove(this, downStation);
+
         lineStations.add(LineStation.create(this, upStation));
         lineStations.add(LineStation.create(this, downStation));
 
@@ -90,5 +94,23 @@ public class Line extends BaseEntity {
     public void modify(String name, String color) {
         this.name = LineName.of(name);
         this.color = LineColor.of(color);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Line line = (Line) o;
+
+        if (!Objects.equals(name, line.name)) return false;
+        return Objects.equals(color, line.color);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (color != null ? color.hashCode() : 0);
+        return result;
     }
 }
