@@ -62,4 +62,18 @@ public class LineSteps {
 			.then().log().all()
 			.extract();
 	}
+
+	public static ExtractableResponse<Response> 구간_생성_요청(Long lineId, Long upStationId, Long downStationId, int distance) {
+		Map<String, String> params = new HashMap<>();
+		params.put("upStationId", String.valueOf(upStationId));
+		params.put("downStationId", String.valueOf(downStationId));
+		params.put("distance", String.valueOf(distance));
+
+		return RestAssured.given().log().all()
+			.body(params)
+			.contentType(ContentType.JSON)
+			.when().post("/lines/{lineId}/sections", lineId)
+			.then().log().all()
+			.extract();
+	}
 }

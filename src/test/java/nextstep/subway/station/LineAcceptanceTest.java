@@ -16,7 +16,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
 @DisplayName("지하철 노선 관련 기능")
-public class LineAcceptanceTest extends AcceptanceTest{
+public class LineAcceptanceTest extends AcceptanceTest {
 
 	@BeforeEach
 	void init() {

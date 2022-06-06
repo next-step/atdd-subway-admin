@@ -12,6 +12,7 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 
 @Service
 @Transactional(readOnly = true)
@@ -34,12 +35,13 @@ public class LineService {
 			lineRequest.getColor()
 		));
 
-		if(lineRequest.getUpStationId() != null && lineRequest.getDownStationId() != null) {
+		if(lineRequest.getUpStationId() != null
+			&& lineRequest.getDownStationId() != null
+			&& lineRequest.getDistance() > 0) {
 			Station upStation = stationService.findById(lineRequest.getUpStationId());
 			Station downStation = stationService.findById(lineRequest.getDownStationId());
 
-			persistLine.setUpStation(upStation);
-			persistLine.setDownStation(downStation);
+			persistLine.addSection(upStation, downStation, lineRequest.getDistance());
 		}
 
 		return LineResponse.of(persistLine);
@@ -66,5 +68,13 @@ public class LineService {
 	@Transactional
 	public void deleteLine(Long id) {
 		lineRepository.deleteById(id);
+	}
+
+	public void addSection(Long lineId, SectionRequest sectionRequest) {
+		Station upStation = stationService.findById(sectionRequest.getUpStationId());
+		Station downStation = stationService.findById(sectionRequest.getDownStationId());
+		Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+
+		line.addSection(upStation, downStation, sectionRequest.getDistance());
 	}
 }
