@@ -3,7 +3,7 @@ package nextstep.subway.Line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.DatabaseCleanup;
+import nextstep.subway.Db.DatabaseCleanup;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
