@@ -9,20 +9,13 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class LineTest extends EntityTest {
 
-    @DisplayName("라인은 이름, 컬러, 상행역 , 하행역, 거리 정보를 가진다.")
+    @DisplayName("라인은 이름, 컬러 정보를 가진다.")
     @Test
     void createTest() {
         assertThat(line)
-                .isEqualTo(new Line("신분당선", "bg-red-600").upStationBy(S1).upStationBy(S2));
+                .isEqualTo(new Line("신분당선", "bg-red-600"));
     }
 
-
-    @DisplayName("라인은 외부로 부터 upStation 과 downStation 을 업데이트 할수 있다.")
-    @Test
-    void updateByTest() {
-        assertThat(line.upStationBy(S2).getUpStation()).isEqualTo(S2);
-        assertThat(line.downStationBy(S1).getDownStation()).isEqualTo(S1);
-    }
 
     @DisplayName("update 테스트")
     @Test
