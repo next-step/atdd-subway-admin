@@ -20,6 +20,7 @@ public class Sections {
     }
 
     public void addSection(Line line, Station preStation, Station station, Integer distance) {
+        checkDistance(distance);
         checkSame(preStation, station);
         checkAlreadyAdded(preStation, station);
 
@@ -44,6 +45,12 @@ public class Sections {
     private Section getDescendEndpoint() {
         List<Section> sections = getAll();
         return sections.get(sections.size() - 1);
+    }
+
+    private void checkDistance(Integer distance) {
+        if (distance < 1) {
+            throw new IllegalArgumentException("거리값은 1 이상 되어야 합니다.");
+        }
     }
 
     private void checkSame(Station preStation, Station station) {
