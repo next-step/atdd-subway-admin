@@ -48,12 +48,12 @@ public class Line extends BaseEntity {
         return this.sections.getAll();
     }
 
-    public Section getAscendEndpoint() {
+    private Section getAscendEndpoint() {
         return getAllSections().stream().filter(it -> it.getPreStation() == null).findFirst()
                 .orElseThrow(NoSuchElementException::new);
     }
 
-    public Section getDescendEndpoint() {
+    private Section getDescendEndpoint() {
         List<Section> sections = getAllSections();
         return sections.get(sections.size() - 1);
     }
