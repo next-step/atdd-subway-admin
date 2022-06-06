@@ -97,4 +97,36 @@ class SectionsTest {
                 () -> assertThat(stations).contains(강남역, 교대역, 역삼역)
         );
     }
+
+    @Test
+    @DisplayName("지하철 구간 삭제 테스트")
+    void deleteSections() {
+        Sections sections = new Sections();
+        Section 교대역_강남역_지하철_구간 = new Section(거리, 교대역, 강남역);
+
+        sections.addSections(강남_역삼_지하철_구간);
+        sections.addSections(교대역_강남역_지하철_구간);
+
+        Section section = sections.deleteSectionByStation(강남역);
+
+        Assertions.assertAll(
+                () -> assertThat(section.getUpStation().getName()).isEqualTo("교대역"),
+                () -> assertThat(section.getDownStation().getName()).isEqualTo("역삼역")
+        );
+    }
+
+    @Test
+    @DisplayName("지하철 구간 삭제시 조회되지 않은 지하철역 실패 테스트")
+    void deleteSectionsNotMatch() {
+        Station 신도림역 = new Station("신도림");
+        Sections sections = new Sections();
+        Section 교대역_강남역_지하철_구간 = new Section(거리, 교대역, 강남역);
+
+        sections.addSections(강남_역삼_지하철_구간);
+        sections.addSections(교대역_강남역_지하철_구간);
+
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> sections.deleteSectionByStation(신도림역))
+                .withMessageContaining(NOT_MATCH_STATION_DELETE_ERROR);
+    }
 }
