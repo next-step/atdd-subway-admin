@@ -15,16 +15,16 @@ public class Section extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_line_station_to_line"))
 	private Line line;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "upStationId", foreignKey = @ForeignKey(name = "fk_up_station"))
+	@ManyToOne
+	@JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_up_station"))
 	private Station upStation;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "downStationId", foreignKey = @ForeignKey(name = "fk_down_station"))
+	@ManyToOne
+	@JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_down_station"))
 	private Station downStation;
 
 	private int distance;
@@ -57,5 +57,9 @@ public class Section extends BaseEntity {
 
 	public boolean isUpStation(Station station) {
 		return this.upStation.equals(station);
+	}
+
+	public boolean isDownStation(Station station) {
+		return this.downStation.equals(station);
 	}
 }

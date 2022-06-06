@@ -34,6 +34,13 @@ public class LineSteps {
 			.extract();
 	}
 
+	public static ExtractableResponse<Response> 노선_조회_요청(Long lineId) {
+		return RestAssured.given().log().all()
+			.when().get("/lines/{longId}", lineId)
+			.then().log().all()
+			.extract();
+	}
+
 	public static ExtractableResponse<Response> 노선_조회_요청(ExtractableResponse<Response> response) {
 		String uri = response.header("Location");
 

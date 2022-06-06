@@ -2,6 +2,9 @@ package nextstep.subway.station.acceptance;
 
 import static nextstep.subway.station.acceptance.LineSteps.*;
 import static nextstep.subway.station.acceptance.StationSteps.지하철_생성_요청;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,34 +33,28 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	}
 
 	/**
-	 *	When 지하철 노선에 구간 추가를 요청하면
-	 * 	Then 지하철 노선에 새로운 구간이 생성된다.
-	 */
-	@DisplayName("새로운 구간을 생성한다.")
-	@Test
-	void createSection() {
-		ExtractableResponse<Response> response = 구간_생성_요청(신분당선.getId(), 강남역.getId(), 광교역.getId(), 10);
-
-		요청_응답_확인(response, HttpStatus.OK);
-	}
-
-
-
-	/**
 	 *  Given 지하철 노선에 구간을 생성하고
 	 *	When 기존 구간 사이에 새로운 구간을 요청하면
 	 * 	Then 지하철 노선에 새로운 구간이 생성된다.
+	 * 	Then 지하철역 목록 조회 시 생성한 역들을 찾을 수 있다.
 	 */
 	@DisplayName("기존 구간 사이에 새로운 구간을 생성한다.")
 	@Test
 	void addSectionInMiddle() {
+		// when
+		구간_생성_요청(신분당선.getId(), 강남역.getId(), 정자역.getId(), 10);
+		ExtractableResponse<Response> response = 노선_조회_요청(신분당선.getId());
 
+		// then
+		요청_응답_확인(response, HttpStatus.OK);
+		지하철노선_역_목록_확인(response, 강남역.getName(), 정자역.getName(), 광교역.getName());
 	}
 
 	/**
 	 *  Given 지하철 노선에 구간을 생성하고
 	 *	When 기존 구간 앞 상행역에 새로운 구간을 요청하면
 	 * 	Then 지하철 노선에 새로운 구간이 생성된다.
+	 * 	Then 지하철역 목록 조회 시 생성한 역들을 찾을 수 있다.
 	 */
 	@DisplayName("기존 구간 앞에 새로운 구간을 생성한다.")
 	@Test
@@ -69,10 +66,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	 *  Given 지하철 노선에 구간을 생성하고
 	 *	When 기존 구간 뒤 하행역에 새로운 구간을 요청하면
 	 * 	Then 지하철 노선에 새로운 구간이 생성된다.
+	 * 	Then 지하철역 목록 조회 시 생성한 역들을 찾을 수 있다.
 	 */
 	@DisplayName("기존 구간 뒤에 새로운 구간을 생성한다.")
 	@Test
 	void addSectionInDownStation() {
 
+	}
+
+	private void 지하철노선_역_목록_확인(ExtractableResponse<Response> response, String ...stationNames) {
+		assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly(stationNames);
 	}
 }

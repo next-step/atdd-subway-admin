@@ -70,6 +70,7 @@ public class LineService {
 		lineRepository.deleteById(id);
 	}
 
+	@Transactional
 	public void addSection(Long lineId, SectionRequest sectionRequest) {
 		Station upStation = stationService.findById(sectionRequest.getUpStationId());
 		Station downStation = stationService.findById(sectionRequest.getDownStationId());

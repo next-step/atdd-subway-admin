@@ -1,5 +1,7 @@
 package nextstep.subway.station.unit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +27,23 @@ public class LineTest {
 	@DisplayName("지하철에 구간 생성")
 	@Test
 	void createSection() {
-		sinbundangLine.addSection(gangnamStation, jeongjaStation, 30);
+		// when
+		sinbundangLine.addSection(gangnamStation, gwanggyoStaion, 30);
+
+		// then
+		assertThat(sinbundangLine.getStation()).containsExactly(gangnamStation, gwanggyoStaion);
+	}
+
+	@DisplayName("구간 사이에 새로운 구간 생성")
+	@Test
+	void createSectionInMiddle() {
+		// given
+		sinbundangLine.addSection(gangnamStation, gwanggyoStaion, 30);
+
+		// when
+		sinbundangLine.addSection(gangnamStation, jeongjaStation, 10);
+
+		// then
+		assertThat(sinbundangLine.getStation()).containsExactly(gangnamStation, jeongjaStation, gwanggyoStaion);
 	}
 }
