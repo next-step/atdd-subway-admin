@@ -175,7 +175,7 @@ public class LineAcceptanceTest extends BaseLineAcceptanceTest {
      */
     @DisplayName("지하철 노선 생성 시 입력받은 거리가 0 이하이면 BAD REQUEST 응답을 보낸다.")
     @Test
-    void createLine_wrong_distance() {
+    void createLineWrongDistance() {
         // when
         StationResponse upStation = createStationRequest("인천역").as(StationResponse.class);;
         StationResponse downStation = createStationRequest("왕십리역").as(StationResponse.class);;
@@ -194,7 +194,7 @@ public class LineAcceptanceTest extends BaseLineAcceptanceTest {
      */
     @DisplayName("지하철 노선 생성시 상하행 종점역이 같으면 BAD REQUEST 응답을 보낸다.")
     @Test
-    void createLine_duplicate_UpDownStation() {
+    void createLineDuplicateUpDownStation() {
         // when
         StationResponse upStation = createStationRequest("인천역").as(StationResponse.class);;
         LineRequest wrongLine = LineRequest.of("분당선", "bg-light-gray", upStation.getId(), upStation.getId(), 10);
