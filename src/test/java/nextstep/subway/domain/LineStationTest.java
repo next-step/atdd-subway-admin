@@ -6,34 +6,72 @@ import org.junit.jupiter.api.Test;
 
 class LineStationTest {
     private final Line line = new Line("신분당선", "bg-red-600");
-    private final Station sinnonhyun = new Station("신논현역");
-    private final Station gangnam = new Station("강남역");
-    private final Station yangjae = new Station("양재역");
+    private final Station station1 = new Station("신논현역");
+    private final Station station2 = new Station("강남역");
+    private final Station station3 = new Station("양재역");
+    private final Long from1To2 = 10L;
+    private final Long from2To3 = 15L;
 
     @Test
-    void 노선과_지하철역과_이전_역과_다음_역으로_LineStation_객체가_생성되어야_한다() {
+    void 노선_지하철역_이전_역과_그_거리_다음_역과_그_거리로_LineStation_객체가_생성되어야_한다() {
         // when
-        final LineStation lineStation = new LineStation(line, gangnam, sinnonhyun, yangjae);
+        final LineStation lineStation = givenLineStation();
 
         // then
         assertThat(lineStation).isNotNull();
         assertThat(lineStation).isInstanceOf(LineStation.class);
         assertThat(lineStation.getLine()).isEqualTo(line);
-        assertThat(lineStation.getStation()).isEqualTo(gangnam);
-        assertThat(lineStation.getPrevious()).isEqualTo(sinnonhyun);
-        assertThat(lineStation.getNext()).isEqualTo(yangjae);
+        assertThat(lineStation.getStation()).isEqualTo(station2);
+        assertThat(lineStation.getPrevious()).isEqualTo(station1);
+        assertThat(lineStation.getDistanceToPrevious()).isEqualTo(from1To2);
+        assertThat(lineStation.getNext()).isEqualTo(station3);
+        assertThat(lineStation.getDistanceToNext()).isEqualTo(from2To3);
     }
 
     @Test
     void 이전_역과_다음_역을_변경할_수_있어야_한다() {
         // given
-        final LineStation lineStation = new LineStation(line, gangnam, null, null);
+        final LineStation lineStation = givenLineStation();
 
         // when
-        lineStation.update(sinnonhyun, yangjae);
+        lineStation.update(station1, station3);
 
         // then
-        assertThat(lineStation.getPrevious()).isEqualTo(sinnonhyun);
-        assertThat(lineStation.getNext()).isEqualTo(yangjae);
+        assertThat(lineStation.getPrevious()).isEqualTo(station1);
+        assertThat(lineStation.getNext()).isEqualTo(station3);
+    }
+
+    @Test
+    void 이전_역과_그_거리를_변경할_수_있어야_한다() {
+        // given
+        final LineStation lineStation = givenLineStation();
+        final Station newPrevious = new Station("new");
+        final Long distance = 5L;
+
+        // when
+        lineStation.updatePrevious(newPrevious, distance);
+
+        // then
+        assertThat(lineStation.getPrevious()).isEqualTo(newPrevious);
+        assertThat(lineStation.getDistanceToPrevious()).isEqualTo(distance);
+    }
+
+    @Test
+    void 다음_역과_그_거리를_변경할_수_있어야_한다() {
+        // given
+        final LineStation lineStation = givenLineStation();
+        final Station newNext = new Station("new");
+        final Long distance = 5L;
+
+        // when
+        lineStation.updateNext(newNext, distance);
+
+        // then
+        assertThat(lineStation.getNext()).isEqualTo(newNext);
+        assertThat(lineStation.getDistanceToNext()).isEqualTo(distance);
+    }
+
+    private LineStation givenLineStation() {
+        return new LineStation(line, station2, station1, from1To2, station3, from2To3);
     }
 }

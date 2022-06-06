@@ -38,8 +38,8 @@ public class Line extends BaseEntity {
     }
 
     public void setFinalStations(final Station finalUpStation, final Station finalDownStation, final Long distance) {
-        relateToStation(new LineStation(this, finalUpStation, null, finalDownStation));
-        relateToStation(new LineStation(this, finalDownStation, finalUpStation, null));
+        relateToStation(new LineStation(this, finalUpStation, null, 0L, finalDownStation, distance));
+        relateToStation(new LineStation(this, finalDownStation, finalUpStation, distance, null, 0L));
         sections.add(new Section(this, finalUpStation, finalDownStation, distance));
     }
 
@@ -58,11 +58,11 @@ public class Line extends BaseEntity {
         }
         if (isFinalDownStation(upRelation)) {
             upRelation.get().update(upRelation.get().getPrevious(), downStation);
-            relateToStation(new LineStation(this, downStation, upStation, null));
+            relateToStation(new LineStation(this, downStation, upStation, distance, null, 0L));
         }
         if (isFinalUpStation(downRelation)) {
             downRelation.get().update(upStation, downRelation.get().getNext());
-            relateToStation(new LineStation(this, upStation, null, downStation));
+            relateToStation(new LineStation(this, upStation, null, 0L, downStation, distance));
         }
         final Section section = new Section(this, upStation, downStation, distance);
         sections.add(section);
@@ -121,7 +121,13 @@ public class Line extends BaseEntity {
             final LineStation downRelation = lineStations.getByStation(existingSection.getDownStation()).get();
             downRelation.update(newStation, downRelation.getNext());
             relateToStation(
-                    new LineStation(this, newStation, upRelation.get().getStation(), downRelation.getStation()));
+                    new LineStation(
+                            this,
+                            newStation,
+                            upRelation.get().getStation(),
+                            distance,
+                            downRelation.getStation(),
+                            existingSection.getDistance() - distance));
         }
     }
 
@@ -137,7 +143,13 @@ public class Line extends BaseEntity {
             final LineStation upRelation = lineStations.getByStation(existingSection.getUpStation()).get();
             upRelation.update(upRelation.getPrevious(), newStation);
             relateToStation(
-                    new LineStation(this, newStation, upRelation.getStation(), downRelation.get().getStation()));
+                    new LineStation(
+                            this,
+                            newStation,
+                            upRelation.getStation(),
+                            existingSection.getDistance() - distance,
+                            downRelation.get().getStation(),
+                            distance));
         }
     }
 

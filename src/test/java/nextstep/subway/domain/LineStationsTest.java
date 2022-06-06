@@ -16,7 +16,7 @@ class LineStationsTest {
     @Test
     void 연관관계를_추가할_수_있어야_한다() {
         // given
-        final LineStation lineStation = new LineStation(line, station1, null, station2);
+        final LineStation lineStation = new LineStation(line, station1, null, 0L, station2, 30L);
         final LineStations lineStations = new LineStations();
 
         // when
@@ -53,8 +53,8 @@ class LineStationsTest {
 
     private LineStations givenLineStations() {
         final List<LineStation> lineStationList = Arrays.asList(
-                new LineStation(line, station1, null, station2),
-                new LineStation(line, station2, station1, null));
+                new LineStation(line, station1, null, 0L, station2, 30L),
+                new LineStation(line, station2, station1, 30L, null, 0L));
         return new LineStations(lineStationList);
     }
 }
