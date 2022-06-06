@@ -3,7 +3,6 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.domain.Station;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,7 +12,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -152,8 +150,7 @@ public class StationAcceptanceTest {
         );
     }
 
-    @DisplayName("name 값으로 지하철역을 생성한다.")
-    void createStation(String name) {
+    public static Long createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
@@ -164,9 +161,10 @@ public class StationAcceptanceTest {
                         .when().post("/stations")
                         .then().log().all()
                         .extract();
+
+        return when.as(StationResponse.class).getId();
     }
 
-    @DisplayName("지하철을 생성하지 않고 지하철역만 조회한다.")
     ExtractableResponse<Response> selectAllStation() {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
