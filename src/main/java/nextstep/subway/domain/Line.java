@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -60,8 +59,7 @@ public class Line extends BaseEntity {
         if (downRelation.isPresent()) {
             relateToStationWithNext(downRelation.get(), upStation, distance);
         }
-        final LocalDateTime now = LocalDateTime.now();
-        return new SectionResponse(name, upStation.getName(), downStation.getName(), distance, now, now);
+        return new SectionResponse(name, upStation.getName(), downStation.getName(), distance);
     }
 
     public Long getId() {
