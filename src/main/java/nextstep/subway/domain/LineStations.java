@@ -82,15 +82,15 @@ public class LineStations {
     }
 
     private Optional<LineStation> comparePreStation(final Station station) {
-        List<LineStation> collect = this.lineStations.stream()
+        final List<LineStation> searchPreStation = this.lineStations.stream()
                 .filter(savedLineStation -> savedLineStation.isPreStation(station) || savedLineStation.isCurrentStation(station))
                 .collect(Collectors.toList());
-        if (collect.size() > 1) {
-            return collect.stream()
-                    .filter(lineStation -> !Objects.equals(lineStation.getPreStation(), lineStation.getCurrentStation()))
-                    .findFirst();
+        if (searchPreStation.isEmpty()) {
+            return Optional.empty();
         }
-        return collect.size() > 0 ? Optional.of(collect.get(0)) : Optional.empty();
+        final LineStation startStation = findStartStation();
+        searchPreStation.remove(startStation);
+        return searchPreStation.isEmpty() ? Optional.of(startStation) : searchPreStation.stream().findFirst();
     }
 
     private Optional<LineStation> compareCurrentStation(final Station station) {
