@@ -31,14 +31,6 @@ class LineTest {
         line.addSection(null, addedStation, 10);
 
         //then
-        Section ascendEndpoint = line.getAscendEndpoint();
-        assertThat(ascendEndpoint.getDistance()).isEqualTo(0);
-        assertThat(ascendEndpoint.getName()).isEqualTo("새로운 지하철역");
-
-        Section descendEndpoint = line.getDescendEndpoint();
-        assertThat(descendEndpoint.getDistance()).isEqualTo(20);
-        assertThat(descendEndpoint.getName()).isEqualTo("하행");
-
         assertThat(line.getAllSections().stream().map(Section::getName).collect(Collectors.toList())).containsExactly("새로운 지하철역", "상행", "하행");
     }
 
@@ -48,14 +40,6 @@ class LineTest {
         line.addSection(downStation, addedStation, 10);
 
         //then
-        Section ascendEndpoint = line.getAscendEndpoint();
-        assertThat(ascendEndpoint.getDistance()).isEqualTo(0);
-        assertThat(ascendEndpoint.getName()).isEqualTo("상행");
-
-        Section descendEndpoint = line.getDescendEndpoint();
-        assertThat(descendEndpoint.getDistance()).isEqualTo(20);
-        assertThat(descendEndpoint.getName()).isEqualTo("새로운 지하철역");
-
         assertThat(line.getAllSections().stream().map(Section::getName).collect(Collectors.toList())).containsExactly("상행", "하행", "새로운 지하철역");
     }
 
@@ -65,14 +49,6 @@ class LineTest {
         line.addSection(upStation, addedStation, 5);
 
         //then
-        Section ascendEndpoint = line.getAscendEndpoint();
-        assertThat(ascendEndpoint.getDistance()).isEqualTo(0);
-        assertThat(ascendEndpoint.getName()).isEqualTo("상행");
-
-        Section descendEndpoint = line.getDescendEndpoint();
-        assertThat(descendEndpoint.getDistance()).isEqualTo(10);
-        assertThat(descendEndpoint.getName()).isEqualTo("하행");
-
         assertThat(line.getAllSections().stream().map(Section::getName).collect(Collectors.toList())).containsExactly("상행", "새로운 지하철역", "하행");
 
         //when
