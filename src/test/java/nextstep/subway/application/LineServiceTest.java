@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
@@ -155,12 +154,12 @@ class LineServiceTest {
 
         // then
         assertThat(sectionResponse)
-                .isEqualTo(SectionResponse.of(new Section(line, gangnam, yangjae, distance)));
+                .isEqualTo(SectionResponse.of(line.getSections().getByUpStation(gangnam)));
     }
 
     private Line givenLine() {
         final Line givenLine = new Line("신분당선", "bg-red-600");
-        givenLine.relateToSection(gangnam, jungja, lineDistance);
+        givenLine.setFinalStations(gangnam, jungja, lineDistance);
         return lineRepository.save(givenLine);
     }
 }
