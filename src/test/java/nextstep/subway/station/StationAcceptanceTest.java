@@ -107,7 +107,8 @@ public class StationAcceptanceTest {
 
         // when
         Long stationId = createdResponse.jsonPath().getLong("id");
-        requestDeleteStation(stationId);
+        ExtractableResponse<Response> deleteResponse = requestDeleteStation(stationId);
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         // then
         ExtractableResponse<Response> getResponse = requestGetStations();
