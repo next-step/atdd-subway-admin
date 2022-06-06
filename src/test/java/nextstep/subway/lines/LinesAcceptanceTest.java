@@ -318,6 +318,30 @@ public class LinesAcceptanceTest {
     @Test
     void addNothingMatchUpAndDownStationLine() {
         // given
+        Long upStationId = StationRequest.createStationThenReturnId("인천논현");
+        Long downStationId = StationRequest.createStationThenReturnId("소래포구");
+        Long otherStationId = StationRequest.createStationThenReturnId("송도역");
+        Long anotherStationId = StationRequest.createStationThenReturnId("연수역");
+        Long createdLineId = LineRequest.createLineThenReturnId(
+                "분당선", "bg-yellow-600", upStationId, downStationId, 10L
+        );
+
+        // when
+        ExtractableResponse<Response> sameStationLineResponse = LineRequest
+                .addSection(createdLineId, otherStationId, anotherStationId, 7L);
+
+        // then
+        assertThat(sameStationLineResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+    }
+
+    /**
+     * Given 2개 이상의 구간을 가진 지하철 노선을 생성하고
+     * When 지하철 노선의 중간 구간을 삭제하면
+     * Then 해당 구간은 삭제가 되고 해당 구간의 앞뒤 구간이 연결이 되어야 한다
+     */
+    @DisplayName("노선의 중간 구간을 삭제하면 해당 구간의 앞뒤 구간이 연결이 되고 길이도 삭제된 구간을 포함한 길이가 되어야 한다")
+    @Test
+    void deleteMiddleSection() {
         Long upStationId = StationRequest.createStationThenReturnId("호구포역");
         Long downStationId = StationRequest.createStationThenReturnId("인천논현");
         Long otherStationId = StationRequest.createStationThenReturnId("송도역");
@@ -332,5 +356,118 @@ public class LinesAcceptanceTest {
 
         // then
         assertThat(sameStationLineResponse.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+    }
+
+    /**
+     * Given 2개 이상의 구간을 가진 지하철 노선을 생성하고
+     * When 구간을 삭제하면
+     * Then 해당 구간이 삭제되고, 해당 구간의 앞/뒤 구간이 연결되고 길이는 합이 되어야 한다
+     */
+    @DisplayName("지하철 노선의 구간을 삭제하면 해당 구간이 삭제되고 해당 구간의 상/하행이 연결되고 길이는 합이 되어야 한다")
+    @Test
+    void deleteSection() {
+        // given
+        Long station1 = StationRequest.createStationThenReturnId("소요산역");
+        Long station2 = StationRequest.createStationThenReturnId("동두천역");
+        Long station3 = StationRequest.createStationThenReturnId("보산역");
+        Long station4 = StationRequest.createStationThenReturnId("동두천중앙역");
+        Long createdLineId = LineRequest.createLineThenReturnId(
+                "1호선", "bg-blue-600", station1, station2, 10L
+        );
+        LineRequest.addSection(createdLineId, station2, station3, 10L);
+        LineRequest.addSection(createdLineId, station3, station4, 10L);
+
+        // when
+        ExtractableResponse<Response> response = LineRequest.deleteSection(createdLineId, station3);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_NO_CONTENT);
+        assertThat(response.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(station1, station2, station4);
+    }
+
+    /**
+     * Given 2개 이상의 구간을 가진 지하철 노선을 생성하고
+     * When 상행, 하행의 종점을 삭제하면
+     * Then 해당 구간은 삭제가 되고 해당 구간과 연결된 구간이 새로운 상행, 하행의 종점이 되어야 한다
+     */
+    @DisplayName("노선의 상/하행 종점을 삭제하면 삭제되는 구간과 연결된 구간이 새로운 상/하행 종점이 되어야 한다")
+    @Test
+    void deleteFirstOrLastSection() {
+        // given
+        Long station1 = StationRequest.createStationThenReturnId("배방역");
+        Long station2 = StationRequest.createStationThenReturnId("신창역");
+        Long station3 = StationRequest.createStationThenReturnId("온양온천역");
+        Long createdLineId1 = LineRequest.createLineThenReturnId(
+                "1호선", "bg-blue-600", station1, station3, 10L
+        );
+        Long createdLineId2 = LineRequest.createLineThenReturnId(
+                "1호선", "bg-blue-600", station3, station1, 10L
+        );
+        LineRequest.addSection(createdLineId1, station1, station2, 5L);
+        LineRequest.addSection(createdLineId2, station3, station2, 5L);
+
+        // when
+        ExtractableResponse<Response> newUpStationResponse = LineRequest.deleteSection(createdLineId1, station1);
+        ExtractableResponse<Response> newDownStationResponse = LineRequest.deleteSection(createdLineId2, station1);
+
+        // then
+        assertThat(newUpStationResponse.statusCode()).isEqualTo(HttpStatus.SC_NO_CONTENT);
+        assertThat(newDownStationResponse.statusCode()).isEqualTo(HttpStatus.SC_NO_CONTENT);
+        assertThat(newUpStationResponse.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(station2, station3);
+        assertThat(newDownStationResponse.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(station3, station2);
+    }
+
+    /**
+     * Given 구간이 1개인 지하철 노선을 생성하고
+     * When 마지막 구간을 삭제하면
+     * Then 해당 삭제는 실패하고 예외가 발생해야 한다
+     */
+    @DisplayName("하나의 구간만 존재하는 노선의 구간을 삭제하면 예외가 발생하면서 실패해야 한다")
+    @Test
+    void deleteOneRemainingSection() {
+        // given
+        Long upStation = StationRequest.createStationThenReturnId("진접역");
+        Long downStation = StationRequest.createStationThenReturnId("오남역");
+        Long createdLineId = LineRequest.createLineThenReturnId(
+                "4호선", "bg-sky-600", upStation, downStation, 10L
+        );
+
+        // when
+        ExtractableResponse<Response> response = LineRequest.deleteSection(createdLineId, upStation);
+        ExtractableResponse<Response> getLineResponse = LineRequest.getLineById(createdLineId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+        assertThat(getLineResponse.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(upStation, downStation);
+    }
+
+    /**
+     * Given 노선을 생성하고
+     * When 해당 노선에 존재하지 않는 구간을 삭제하면
+     * Then 해당 삭제는 실패하고 예외가 발생해야 한다
+     */
+    @DisplayName("노선에 존재하지 않는 구간을 삭제하면 예외가 발생하면서 실패해야 한다")
+    @Test
+    void deleteNotIncludeSection() {
+        // given
+        Long upStation = StationRequest.createStationThenReturnId("당고개역");
+        Long downStation = StationRequest.createStationThenReturnId("노원역");
+        Long station = StationRequest.createStationThenReturnId("상계역");
+        Long createdLineId = LineRequest.createLineThenReturnId(
+                "4호선", "bg-sky-600", upStation, downStation, 10L
+        );
+
+        // when
+        ExtractableResponse<Response> response = LineRequest.deleteSection(createdLineId, station);
+        ExtractableResponse<Response> getLineResponse = LineRequest.getLineById(createdLineId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+        assertThat(getLineResponse.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(upStation, downStation);
     }
 }
