@@ -59,7 +59,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> 노선_생성_에러_응답 = 노선_생성(params);
 
         // Then
-        assertThat(노선_생성_에러_응답.statusCode()).isEqualTo(400);
+        assertThat(노선_생성_에러_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -118,6 +118,22 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
         // Then
         assertThat(노선_수정_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * When 존재하지 않는 지하철 노선을 수정하려고 하는 경우
+     * Then 오류가 발생한다.
+     */
+    @DisplayName("존재하지 않는 지하철노선 수정")
+    @Test
+    void updateLineWithNotSavedLine() {
+        // When
+        long 존재하지_않는_노선_ID = 100L;
+        LineUpdateRequest lineUpdateRequest = new LineUpdateRequest( "다른분당선", "bg-100-1234");
+        ExtractableResponse<Response> 노선_수정_결과 = 노선_수정(존재하지_않는_노선_ID, lineUpdateRequest);
+
+        // Then
+        assertThat(노선_수정_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**

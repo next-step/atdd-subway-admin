@@ -54,14 +54,15 @@ public class LineService {
     @Transactional
     public ResponseEntity updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
         Optional<Line> line = lineRepository.findById(id);
-        if (line.isPresent()) {
-            Line persistLine = line.get();
-            persistLine.setName(lineUpdateRequest.getName());
-            persistLine.setColor(lineUpdateRequest.getColor());
-            lineRepository.save(persistLine);
-            return ResponseEntity.ok().build();
+        if (!line.isPresent()) {
+            throw new NoSuchElementException("수정하고자 하는 지하철역을 찾을 수 없습니다.");
         }
-        return ResponseEntity.noContent().build();
+
+        Line persistLine = line.get();
+        persistLine.setName(lineUpdateRequest.getName());
+        persistLine.setColor(lineUpdateRequest.getColor());
+        lineRepository.save(persistLine);
+        return ResponseEntity.ok().build();
     }
 
     @Transactional
