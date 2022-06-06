@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.exception.CustomException;
 import nextstep.subway.exception.ErrorCode;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 @Embeddable
 public class LineStations {
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "line_id")
     private List<LineStation> lineStations = new ArrayList<>();
 
@@ -35,7 +36,7 @@ public class LineStations {
         }
 
         if (hasMatchedSameStation(lineStation)) {
-            throw new CustomException(ErrorCode.NON_VALID_LINE_STATION);
+            throw new CustomException(ErrorCode.NON_VALID_CREATE_LINE_STATION);
         }
 
         addAboutMatchStation(lineStation);
@@ -48,27 +49,31 @@ public class LineStations {
     }
 
     private void addAboutMatchStation(LineStation lineStation) {
-        Optional<LineStation> matchedMiddle = getMatchedMiddle(lineStation);
+        Optional<LineStation> matchedMiddle = getMatched(lineStation.getUpStation(), lineStation.getDownStation());
         if (matchedMiddle.isPresent()) {
             updateMatchedMiddle(lineStation, matchedMiddle.get());
             lineStations.add(lineStation);
             return;
         }
 
-        Optional<LineStation> matchedStartOrEnd = getMatchedStartOrEnd(lineStation);
+        Optional<LineStation> matchedStartOrEnd = getMatched(lineStation.getDownStation(), lineStation.getUpStation());
         if (matchedStartOrEnd.isPresent()) {
             lineStations.add(lineStation);
             return;
         }
 
-        throw new CustomException(ErrorCode.NON_VALID_LINE_STATION);
+        throw new CustomException(ErrorCode.NON_VALID_CREATE_LINE_STATION);
     }
 
-    private Optional<LineStation> getMatchedMiddle(LineStation lineStation) {
+    private Optional<LineStation> getMatched(Station upStation, Station downStation) {
         return lineStations.stream()
-                .filter(item -> item.equalsUpStation(lineStation.getUpStation())
-                        || item.equalsDownStation(lineStation.getDownStation()))
+                .filter(item -> isEqualUpStationOrDownStation(item, upStation, downStation))
                 .findAny();
+    }
+
+    private boolean isEqualUpStationOrDownStation(LineStation item, Station upStation, Station downStation) {
+        return item.equalsUpStation(upStation)
+                || item.equalsDownStation(downStation);
     }
 
     private void updateMatchedMiddle(LineStation lineStation, LineStation matchedStation) {
@@ -82,17 +87,56 @@ public class LineStations {
 
     private Long calculateDistance(LineStation matchedStation, LineStation lineStation) {
         if (matchedStation.getDistance() <= lineStation.getDistance()) {
-            throw new CustomException(ErrorCode.NON_VALID_LINE_STATION);
+            throw new CustomException(ErrorCode.NON_VALID_CREATE_LINE_STATION);
         }
 
         return matchedStation.getDistance() - lineStation.getDistance();
     }
 
-    private Optional<LineStation> getMatchedStartOrEnd(LineStation lineStation) {
-        return lineStations.stream()
-                .filter(item -> item.equalsUpStation(lineStation.getDownStation())
-                        || item.equalsDownStation(lineStation.getUpStation()))
+    public void delete(Station station) {
+        validateDelete(station);
+        sort();
+
+        LineStation willDeletedLineStation = preprocessAndGetDeletedLineStation(station);
+        lineStations.remove(willDeletedLineStation);
+    }
+
+    private LineStation preprocessAndGetDeletedLineStation(Station station) {
+        Optional<LineStation> willDeletedLineStation = lineStations.stream()
+                .filter(it -> it.equalsUpStation(station))
                 .findAny();
+
+        willDeletedLineStation
+                .filter(this::isMiddle)
+                .ifPresent(this::preprocessDeleteInMiddle);
+
+        return willDeletedLineStation.orElseGet(() -> lineStations.get(size() - 1));
+    }
+
+    private void validateDelete(Station station) {
+        if (lineStations.size() <= 1 || hasNotMatchedSameStation(station)) {
+            throw new CustomException(ErrorCode.NON_VALID_DELETE_LINE_STATION);
+        }
+    }
+
+    private boolean hasNotMatchedSameStation(Station station) {
+        boolean hasMatchedSameStation = lineStations.stream()
+                .anyMatch(item -> isEqualUpStationOrDownStation(item, station, station));
+        return !hasMatchedSameStation;
+    }
+
+    private void preprocessDeleteInMiddle(LineStation willDeletedLineStation) {
+        lineStations.stream()
+                .filter(it -> it.equalsDownStation(willDeletedLineStation.getUpStation()))
+                .forEach(it -> {
+                    long distance = it.getDistance() + willDeletedLineStation.getDistance();
+                    it.updateDownStation(distance, willDeletedLineStation.getDownStation());
+                });
+
+    }
+
+    private boolean isMiddle(LineStation lineStation) {
+        return lineStation.equals(lineStations.get(0)) || lineStation.equals(lineStations.get(size() - 1));
     }
 
     public List<Station> getSortedStations() {

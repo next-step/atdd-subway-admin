@@ -2,6 +2,9 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.LineStation;
+import nextstep.subway.domain.Station;
+import nextstep.subway.dto.CreateLineStationRequest;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineStationRequest;
@@ -27,9 +30,14 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Line line = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-        lineStationService.saveLineStation(lineRequest, line);
+        addLineStation(lineRequest, line);
 
         return LineResponse.of(line);
+    }
+
+    private void addLineStation(CreateLineStationRequest createLineStationRequest, Line line) {
+        LineStation lineStation = lineStationService.saveLineStation(createLineStationRequest);
+        line.addLineStation(lineStation);
     }
 
     public List<LineResponse> findAllLines() {
@@ -58,14 +66,21 @@ public class LineService {
     }
 
     @Transactional
-    public void createStations(Long id, LineStationRequest lineStationRequest) {
+    public void createLineStation(Long id, LineStationRequest lineStationRequest) {
         Line line = getOrElseThrow(id);
-        lineStationService.saveLineStation(lineStationRequest, line);
+        addLineStation(lineStationRequest, line);
     }
 
 
     private Line getOrElseThrow(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.LINE_NOT_FOUND));
+    }
+
+    @Transactional
+    public void deleteLineStationByStationId(Long id, Long stationId) {
+        Line line = getOrElseThrow(id);
+        Station station = lineStationService.getStation(stationId);
+        line.deleteStation(station);
     }
 }

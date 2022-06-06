@@ -59,9 +59,9 @@ public class LineStationAcceptanceTests {
     @ParameterizedTest
     @CsvSource(value = {"0,2,0,2,1", "2,0,2,0,1", "1,2,0,1,2"})
     // middle 추가, 상행 종점 추가, 하행 종점 추가
-    void createSectionTest(int newUpStationId, int newDownStationId, int firstId, int secondId, int thirdId) {
+    void createLineStationTest(int newUpStationId, int newDownStationId, int firstId, int secondId, int thirdId) {
         // Given
-        createSection(lineId, 5L, stationIds.get(newUpStationId), stationIds.get(newDownStationId));
+        createLineStation(lineId, 5L, stationIds.get(newUpStationId), stationIds.get(newDownStationId));
 
         // Then
         List<Long> result = getLine(lineId).jsonPath().getList("stations.id", Long.class);
@@ -75,9 +75,9 @@ public class LineStationAcceptanceTests {
     @DisplayName("노선 추가시 거리가 크거나 같으면 등록할 수 없다")
     @ParameterizedTest
     @ValueSource(longs = {10L, 11L})
-    void validateDistance_createSection(Long distance) {
+    void validateDistance_createLineStation(Long distance) {
         // Given
-        int statusCode = createSection(lineId, distance, upStationId, newStationId).statusCode();
+        int statusCode = createLineStation(lineId, distance, upStationId, newStationId).statusCode();
 
         // Then
         assertThat(statusCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -89,9 +89,9 @@ public class LineStationAcceptanceTests {
      */
     @DisplayName("상,하행선이 이미 노선에 모두 등록되어 있으면 등록할 수 없다")
     @Test
-    void validateDuplicate_createSection() {
+    void validateDuplicate_createLineStation() {
         // Given
-        int statusCode = createSection(lineId, 5L, upStationId, downStationId).statusCode();
+        int statusCode = createLineStation(lineId, 5L, upStationId, downStationId).statusCode();
 
         // Then
         assertThat(statusCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -104,18 +104,84 @@ public class LineStationAcceptanceTests {
      */
     @DisplayName("상,하행선이 모두 노선에 없으면 등록할 수 없다")
     @Test
-    void validateNoMatch_createSection() {
+    void validateNoMatch_createLineStation() {
         // Given
         Long otherStationId = createTestStation("신규지하철역").jsonPath().getLong("id");
 
         // Given
-        int statusCode = createSection(lineId, 5L, newStationId, otherStationId).statusCode();
+        int statusCode = createLineStation(lineId, 5L, newStationId, otherStationId).statusCode();
 
         // Then
         assertThat(statusCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private ExtractableResponse<Response> createSection(Long lineId, Long distance, Long upStationId, Long downStationId) {
+    /**
+     * Given 추가 구간을 등록하고
+     * When 구간을 제거하면
+     * Then 해당 지하철 노선을 조회할 때 제거된 것을 확인할 수 있다.
+     */
+    @DisplayName("구간을 제거할 수 있다")
+    @ParameterizedTest
+    @CsvSource(value = {"0,1,2", "1,0,2", "2,0,1"})
+    // 상행 종점 삭제, middle 삭제, 하행 종점 삭제
+    void deleteLineStationTest(int stationId, int firstStationId, int secondStationId) {
+        // Given
+        createLineStation(lineId, 5L, downStationId, newStationId);
+
+        // When
+        deleteLineStation(lineId, stationIds.get(stationId));
+
+        // Then
+        List<Long> result = getLine(lineId).jsonPath().getList("stations.id", Long.class);
+        assertThat(result).containsExactly(stationIds.get(firstStationId), stationIds.get(secondStationId));
+    }
+
+    /**
+     * When 하나만 있는 구간을 제거하면
+     * Then 제거할 수 없다.
+     */
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 수 없다")
+    @Test
+    void validateLastLineStation_deleteLineStation() {
+        // When
+        int statusCode = deleteLineStation(lineId, upStationId).statusCode();
+
+        // Then
+        assertThat(statusCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 추가 구간을 등록하고
+     * Given 추가 역을 등록하고
+     * When 추가된 역을 제거하면
+     * Then 제거할 수 없다.
+     */
+    @DisplayName("노선에 없는 역은 제거할 수 없다")
+    @Test
+    void validateNonMatch_deleteLineStation() {
+        // Given
+        createLineStation(lineId, 5L, downStationId, newStationId);
+
+        // Given
+        long newStationId = createTestStation("신규지하철역").jsonPath().getLong("id");
+
+        // When
+        int statusCode = deleteLineStation(lineId, newStationId).statusCode();
+
+        // Then
+        assertThat(statusCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ExtractableResponse<Response> deleteLineStation(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .queryParam("stationId", stationId)
+                .when().delete("/lines/{id}/stations", lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> createLineStation(Long lineId, Long distance, Long upStationId, Long downStationId) {
         Map<String, String> params = createStationRequestMap(distance, upStationId, downStationId);
 
         return RestAssured.given().log().all()

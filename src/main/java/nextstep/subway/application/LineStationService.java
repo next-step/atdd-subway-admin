@@ -1,6 +1,5 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineStation;
 import nextstep.subway.domain.LineStationRepository;
 import nextstep.subway.domain.Station;
@@ -20,13 +19,14 @@ public class LineStationService {
     }
 
     @Transactional
-    public LineStation saveLineStation(CreateLineStationRequest request, Line line) {
+    public LineStation saveLineStation(CreateLineStationRequest request) {
         Station upStation = stationService.getOrElseThrow(request.getUpStationId());
         Station downStation = stationService.getOrElseThrow(request.getDownStationId());
 
-        LineStation lineStation = lineStationRepository.save(new LineStation(request.getDistance(), upStation, downStation));
+        return lineStationRepository.save(new LineStation(request.getDistance(), upStation, downStation));
+    }
 
-        line.addLineStation(lineStation);
-        return lineStation;
+    public Station getStation(Long stationId) {
+        return stationService.getOrElseThrow(stationId);
     }
 }
