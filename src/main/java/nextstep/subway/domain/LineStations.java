@@ -3,10 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.Embeddable;
 import javax.persistence.EntityExistsException;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -48,6 +45,12 @@ public class LineStations {
 
     public List<LineStation> getLineStations() {
         return lineStations;
+    }
+
+    public List<Station> getSortedStationsByStationId() {
+        List<Station> stations = this.lineStations.stream().map(lineStation -> Arrays.asList(lineStation.getPreStation(), lineStation.getCurrentStation()))
+                .collect(ArrayList::new, List::addAll, List::addAll);
+        return stations.stream().distinct().sorted().collect(Collectors.toList());
     }
 
     private void insertLineStationBySorted(List<LineStation> result, LineStation startStation) {
