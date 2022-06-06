@@ -53,10 +53,10 @@ public class LineStation {
     }
 
     public boolean isSameLine(Line line) {
-        return Objects.equals(this.line.getId(), line.getId());
+        return Objects.equals(this.line, line);
     }
 
     public boolean isSameStation(Station station) {
-        return Objects.equals(this.station.getId(), station.getId());
+        return Objects.equals(this.station, station);
     }
 }

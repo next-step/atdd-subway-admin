@@ -1,5 +1,6 @@
 package nextstep.subway.domain.LineStation;
 
+import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.station.Station;
 
 import javax.persistence.CascadeType;
@@ -8,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Embeddable
 public class LineStations {
@@ -44,5 +46,14 @@ public class LineStations {
         return lineStations.stream()
                 .map(LineStation::getStation)
                 .anyMatch(storedStation -> storedStation.equals(station));
+    }
+
+    public void remove(Line line, Station station) {
+        Optional<LineStation> optionalLineStation = lineStations.stream()
+                .filter(lineStation -> lineStation.isSameLine(line))
+                .filter(lineStation -> lineStation.isSameStation(station))
+                .findAny();
+
+        optionalLineStation.ifPresent(lineStation -> lineStations.remove(lineStation));
     }
 }
