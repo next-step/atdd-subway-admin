@@ -18,12 +18,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        String 강남역 = "강남역";
-        ExtractableResponse<Response> 강남역_생성_응답 = 지하철_역_생성(강남역);
+        ExtractableResponse<Response> 강남역_생성_응답 = 지하철_역_생성("강남역");
 
         생성_성공_확인(강남역_생성_응답);
 
-        생성된_지하철_역_찾기(강남역);
+        생성된_지하철_역_찾기("강남역");
     }
 
     /**
@@ -34,10 +33,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
     void createStationWithDuplicateName() {
-        String 강남역 = "강남역";
-        지하철_역_생성(강남역);
+        지하철_역_생성("강남역");
 
-        ExtractableResponse<Response> 강남역_생성응답 = 지하철_역_생성(강남역);
+        ExtractableResponse<Response> 강남역_생성응답 = 지하철_역_생성("강남역");
 
         생성_실패_확인(강남역_생성응답);
     }
@@ -50,12 +48,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
-        String 논현역 = "논현역";
-        String 신논현역 = "신논현역";
-        지하철_역_생성(논현역);
-        지하철_역_생성(신논현역);
+        지하철_역_생성("논현역");
+        지하철_역_생성("신논현역");
 
-        생성된_지하철_역_찾기(논현역, 신논현역);
+        생성된_지하철_역_찾기("논현역", "신논현역");
     }
 
     /**
@@ -66,11 +62,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
-        String 논현역 = "논현역";
-        Long 논현역_생성_ID = 지하철_역_생성_ID_추출(논현역);
+        Long 논현역_생성_ID = 지하철_역_생성_ID_추출("논현역");
 
         지하철_역_삭제(논현역_생성_ID);
 
-        생성된_지하철_역_찾을_수_없음(논현역);
+        생성된_지하철_역_찾을_수_없음("논현역");
     }
 }
