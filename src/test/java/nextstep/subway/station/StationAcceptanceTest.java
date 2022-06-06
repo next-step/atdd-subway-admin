@@ -39,7 +39,7 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = requestCreateStation("강남역");
+        ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -59,10 +59,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        requestCreateStation("강남역");
+        지하철역_생성_요청("강남역");
 
         // when
-        ExtractableResponse<Response> response = requestCreateStation("강남역");
+        ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -79,7 +79,7 @@ public class StationAcceptanceTest {
         // given
         String[] stations = new String[]{"수락산역", "마들역"};
         for (String station : stations) {
-            requestCreateStation(station);
+            지하철역_생성_요청(station);
         }
 
         // when
@@ -104,7 +104,7 @@ public class StationAcceptanceTest {
     void deleteStation() {
         // given
         String station = "수락산역";
-        ExtractableResponse<Response> createdResponse = requestCreateStation(station);
+        ExtractableResponse<Response> createdResponse = 지하철역_생성_요청(station);
 
         // when
         Long stationId = createdResponse.jsonPath().getLong("id");
@@ -127,7 +127,7 @@ public class StationAcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> requestCreateStation(String name) {
+    private ExtractableResponse<Response> 지하철역_생성_요청(String name) {
         return RestAssured.given().log().all()
             .body(new HashMap<String, String>() {
                 {
