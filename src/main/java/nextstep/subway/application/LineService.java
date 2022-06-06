@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class LineService {
@@ -36,7 +37,11 @@ public class LineService {
         upStation.setLine(newLine);
         downStation.setLine(newLine);
 
-        sectionRepository.save(new Section(upStation, downStation, request.getDistance()));
+        Section upSection = sectionRepository.save(new Section(newLine, upStation));
+        Section downSection = sectionRepository.save(new Section(upSection, newLine, downStation, request.getDistance()));
+
+        upSection.setLine(newLine);
+        downSection.setLine(newLine);
 
         return LineResponse.of(newLine, newLine.getStations());
     }
@@ -52,7 +57,32 @@ public class LineService {
     public LineResponse getLineById(Long id) {
         Line line = lineRepository.findById(id)
                                   .orElseThrow(() -> new NoSuchElementException("지하철 노선이 존재하지 않습니다"));
-        return LineResponse.of(line, line.getStations());
+
+        List<Section> sections = sectionRepository.findAllByLineId(id);
+        List<Station> stations = new LinkedList<>();
+        Long sectionId = null;
+
+        for (Section section : sections) {
+            if (section.getParent() == null) {
+                sectionId = section.getId();
+                stations.add(section.getStation());
+                sections.remove(section);
+                break;
+            }
+        }
+
+        while (sections.size() > 0) {
+            for (Section section : sections) {
+                if (section.getParent().getId().equals(sectionId)) {
+                    stations.add(section.getStation());
+                    sectionId = section.getId();
+                    sections.remove(section);
+                    break;
+                }
+            }
+        }
+
+        return LineResponse.of(line, stations);
     }
 
     @Transactional
@@ -61,63 +91,43 @@ public class LineService {
         for (Station station : stations) {
             station.setLine(null);
         }
+        List<Section> sections = sectionRepository.findAllByLineId(id);
+        for (Section section : sections) {
+            section.setLine(null);
+        }
         lineRepository.deleteById(id);
     }
 
     @Transactional
-    public void updateLineById(Long id, Line param) {
+    public void updateLineById(Long id, LineRequest request) {
         Line line = lineRepository.findById(id)
                                   .orElseThrow(() -> new NoSuchElementException("지하철 노선이 존재하지 않습니다"));
-        line.setNameColor(param);
+        line.setName(request.getName());
+        line.setColor(request.getColor());
     }
 
+    @Transactional
     public void addSection(Long lineId, SectionRequest request) {
         Line line = lineRepository.findById(lineId)
-                                  .get();
+                                  .orElseThrow(() -> new NoSuchElementException("지하철 노선이 존재하지 않습니다"));
 
-        for (Section section : sectionRepository.findAll()) {
-            // 노선 중간에 등록
-            if (section.getUpStation().getId()
-                       .equals(request.getUpStationId())) {
-                Station newDownStation = stationRepository.findById(request.getDownStationId())
-                                                       .get();
-                newDownStation.setLine(line); // 노선 등록
+        Station upStation = stationRepository.findById(request.getUpStationId()).get();
+        Station downStation = stationRepository.findById(request.getDownStationId()).get();
 
-                if (section.getDistance() - request.getDistance() <= 0) {
-                    throw new RuntimeException("구간 길이 예외");
+        upStation.setLine(line);
+        downStation.setLine(line);
+
+        List<Station> stations = stationRepository.findAllByLineId(lineId);
+        List<Section> sections = sectionRepository.findAllByLineId(lineId);
+
+        if (stations.contains(downStation)) {
+            for (Section section : sections) {
+                if (section.getStation().getId().equals(downStation.getId())) {
+                    Section newSection = sectionRepository.save(new Section(line, upStation));
+                    section.setParent(newSection);
+                    section.setDistance(request.getDistance());
+                    break;
                 }
-
-                sectionRepository.save(new Section(newDownStation, section.getDownStation(), section.getDistance() - request.getDistance()));
-
-                section.setDistance(request.getDistance()); // 길이 조정
-                section.setDownStation(newDownStation); // 중간역
-
-                return;
-            }
-
-            // 노선 마지막에 등록
-            if (section.getDownStation().getId()
-                       .equals(request.getUpStationId())) {
-                Station upStation = section.getUpStation();
-                Station downStation = stationRepository.findById(request.getDownStationId())
-                                                       .get();
-                downStation.setLine(line);
-
-                sectionRepository.save(new Section(upStation, downStation, request.getDistance()));
-                return;
-            }
-
-            // 노선 시작에 등록
-            if (section.getUpStation().getId()
-                       .equals(request.getDownStationId())) {
-                Station upStation = stationRepository.findById(request.getUpStationId())
-                                                     .get();
-
-                upStation.setLine(line);
-
-                sectionRepository.save(new Section(upStation, section.getDownStation(), request.getDistance()));
-
-                return;
             }
         }
     }

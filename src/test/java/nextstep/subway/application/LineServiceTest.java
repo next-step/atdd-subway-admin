@@ -1,23 +1,17 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.StationRequest;
-import nextstep.subway.dto.StationResponse;
-import nextstep.subway.util.DatabaseCleaner;
-import org.junit.jupiter.api.AfterEach;
+import nextstep.subway.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -42,10 +36,10 @@ class LineServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        gangnam = stations.saveStation(new StationRequest("gangnam"));
-        gyodae = stations.saveStation(new StationRequest("gyodae"));
-        sinchon = stations.saveStation(new StationRequest("sinchon"));
-        sillim = stations.saveStation(new StationRequest("sillim"));
+        gangnam = stations.saveStation(new StationRequest("강남역"));
+        gyodae = stations.saveStation(new StationRequest("교대역"));
+        sinchon = stations.saveStation(new StationRequest("신촌역"));
+        sillim = stations.saveStation(new StationRequest("신림역"));
     }
 
     @DisplayName("지하철 노선을 생성한다")
@@ -108,7 +102,7 @@ class LineServiceTest {
         LineResponse response = lines.createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L));
 
         // when
-        lines.updateLineById(response.getId(), new Line("다른분당선", "bg-blue-100"));
+        lines.updateLineById(response.getId(), new LineRequest("다른분당선", "bg-blue-100", gangnam.getId(), gyodae.getId(), 10L));
 
         // then
         LineResponse line = lines.getLineById(response.getId());
@@ -116,5 +110,22 @@ class LineServiceTest {
                 () -> assertEquals("다른분당선", line.getName()),
                 () -> assertEquals("bg-blue-100", line.getColor())
         );
+    }
+
+    @DisplayName("노선 시작 구간을 추가한다.")
+    @Test
+    void addHeadSection() {
+        // given
+        LineResponse response = lines.createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L));
+
+        // when
+        lines.addSection(response.getId(), new SectionRequest(sinchon.getId(), gangnam.getId(), 10L));
+
+        // then
+        List<String> names = lines.getLineById(response.getId()).getStations()
+                                   .stream()
+                                   .map(LineResponse.StationDto::getName)
+                                   .collect(Collectors.toList());
+        assertThat(names).contains("신촌역", "강남역", "교대역");
     }
 }

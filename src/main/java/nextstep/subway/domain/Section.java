@@ -10,22 +10,29 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "up_station")
-    private Station upStation;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Section parent = null;
 
-    @ManyToOne
-    @JoinColumn(name = "down_station")
-    private Station downStation;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Line line;
 
-    private Long distance;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Station station;
+
+    private Long distance = 0L;
 
     public Section() {
     }
 
-    public Section(Station upStation, Station downStation, Long distance) {
-        this.upStation = upStation;
-        this.downStation = downStation;
+    public Section(Line line, Station station) {
+        this.line = line;
+        this.station = station;
+    }
+
+    public Section(Section parent, Line line, Station station, Long distance) {
+        this.parent = parent;
+        this.line = line;
+        this.station = station;
         this.distance = distance;
     }
 
@@ -33,16 +40,30 @@ public class Section {
         return id;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public Section getParent() {
+        return parent;
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public void setParent(Section parent) {
+        this.parent = parent;
     }
 
-    public void setDownStation(Station downStation) {
-        this.downStation = downStation;
+    public Line getLine() {
+        return line;
+    }
+
+    public void setLine(Line line) {
+        if (this.line != null) {
+            this.line.getSections().remove(this);
+        }
+        this.line = line;
+        if (this.line != null && !this.line.getSections().contains(this)) {
+            this.line.addSection(this);
+        }
+    }
+
+    public Station getStation() {
+        return station;
     }
 
     public Long getDistance() {
