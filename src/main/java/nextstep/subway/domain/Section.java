@@ -46,10 +46,14 @@ public class Section {
         if (section.isSameDownStation(this.upStation) || section.isSameUpStation(this.downStation)) {
             return section;
         }
-        if (isZero(section.getDistance())) {
+        if (isInvalidDistance(section.getDistance())) {
             throw new IllegalArgumentException("invalid distance");
         }
         return isMiddle(section);
+    }
+
+    public boolean isSameSection(final Section section) {
+        return Objects.equals(this, section);
     }
 
     private boolean isSameUpStationAndDownStation(final Section section) {
@@ -86,24 +90,9 @@ public class Section {
         throw new IllegalArgumentException("no match station");
     }
 
-    private Section updateDownStationWithDistanceBy(Section destination) {
-        this.downStation = destination.getUpStation();
-        this.distance = destination.subtractDistanceBy(distance);
-        return destination;
-    }
 
-    private Section updateUpStationWithDistanceBy(Section destination) {
-        this.upStation = destination.getDownStation();
-        this.distance = destination.subtractDistanceBy(distance);
-        return destination;
-    }
-
-    private boolean isZero(final Distance distance) {
+    private boolean isInvalidDistance(final Distance distance) {
         return Objects.equals(this.distance.subtract(distance), new Distance(ZERO));
-    }
-
-    private Distance subtractDistanceBy(final Distance source) {
-        return source.subtract(distance);
     }
 
     private boolean isSameUpStation(final Station station) {
