@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,11 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest lineRequest) {
         Line persistLine = lineRepository.save(lineRequest.toLine());
+
+        Section firstSection = new Section(persistLine.getId(), new Station(lineRequest.getUpStationId()),
+                new Station(lineRequest.getDownStationId()), lineRequest.getDistance());
+        persistLine.addSection(firstSection);
+
         return LineResponse.from(persistLine);
     }
 

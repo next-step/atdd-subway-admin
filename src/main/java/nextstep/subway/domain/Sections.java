@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -17,10 +18,24 @@ public class Sections {
 
     @OneToMany(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "line_id")
-    @OrderBy("order ASC")
+    @OrderBy("orderNumber ASC")
     private final List<Section> sections = new LinkedList<>();
 
     protected Sections() {
+    }
+
+    public List<Station> getStationList() {
+        if(sections.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Station> stations = new ArrayList<>();
+        stations.add(sections.get(0).getUpStation());
+        for(Section section : sections) {
+            stations.add(section.getDownStation());
+        }
+
+        return stations;
     }
 
     public void addSection(Section section) {
@@ -81,14 +96,14 @@ public class Sections {
     }
 
     private void addSectionToList(Section section, int index) {
-        section.updateOrder(index);
+        section.updateOrderNumber(index);
         sections.add(index, section);
         increaseOrderOfNextSections(index + 1);
     }
 
     private void increaseOrderOfNextSections(int index) {
         for (int i = index; i < sections.size(); i++) {
-            sections.get(i).increaseOrder();
+            sections.get(i).increaseOrderNumber();
         }
     }
 
@@ -112,5 +127,9 @@ public class Sections {
     private boolean checkExistsStation(Station station) {
         return sections.stream().anyMatch(x -> x.getUpStation().equals(station)
                 || x.getDownStation().equals(station));
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }
