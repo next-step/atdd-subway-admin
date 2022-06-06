@@ -84,4 +84,17 @@ public class LineTest {
 		assertThatThrownBy(() -> sinbundangLine.addSection(gangnamStation, gwanggyoStaion, 10))
 			.isInstanceOf(IllegalArgumentException.class);
 	}
+
+	@DisplayName("상행역과 하행역 둘 중 하나도 포함 있지 않은 경우")
+	@Test
+	void errorIfNotIncludeStation() {
+		// given
+		Station gyodaeStation = new Station("교대역");
+		Station jamsilStation = new Station("잠실역");
+		sinbundangLine.addSection(gangnamStation, gwanggyoStaion, 30);
+
+		// when then
+		assertThatThrownBy(() -> sinbundangLine.addSection(gyodaeStation, jamsilStation, 10))
+			.isInstanceOf(IllegalArgumentException.class);
+	}
 }

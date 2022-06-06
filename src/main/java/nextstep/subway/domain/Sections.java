@@ -53,6 +53,7 @@ public class Sections {
 		}
 
 		validateDuplication(upStation, downStation);
+		validateInclusion(upStation, downStation);
 
 		updateSectionInMiddle(line, upStation, downStation, distance);
 		sections.add(new Section(line, upStation, downStation, distance));
@@ -63,6 +64,13 @@ public class Sections {
 			.filter(it -> it.isDuplicated(upStation, downStation))
 			.findFirst()
 			.ifPresent(it -> { throw new IllegalArgumentException(); });
+	}
+
+	private void validateInclusion(Station upStation, Station downStation) {
+		sections.stream()
+			.filter(it -> it.isInclude(upStation) || it.isInclude(downStation))
+			.findFirst()
+			.orElseThrow(IllegalArgumentException::new);
 	}
 
 	private void updateSectionInMiddle(Line line, Station upStation, Station downStation, int distance) {
