@@ -25,16 +25,20 @@ public class LineService {
         this.stationService = stationService;
     }
 
-    @Transactional
-    public LineResponse saveLine(LineRequest lineRequest) {
+    public LineResponse createLine(LineRequest lineRequest) {
         Section section = Section.of(
                 lineRequest.getDistance(),
                 stationService.findStation(lineRequest.getUpStationId()),
                 stationService.findStation(lineRequest.getDownStationId())
         );
 
-        Line response = lineRepository.save(Line.of(lineRequest.getName(), lineRequest.getColor(), section));
+        Line response = saveLine(Line.of(lineRequest.getName(), lineRequest.getColor(), section));
         return LineResponse.of(response);
+    }
+
+    @Transactional
+    public Line saveLine(Line line) {
+        return lineRepository.save(line);
     }
 
     public List<LineResponse> findAllLines() {
