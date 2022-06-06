@@ -3,6 +3,7 @@ package nextstep.subway.application;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.LineStation;
+import nextstep.subway.domain.Station;
 import nextstep.subway.dto.CreateLineStationRequest;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -79,6 +80,7 @@ public class LineService {
     @Transactional
     public void deleteLineStationByStationId(Long id, Long stationId) {
         Line line = getOrElseThrow(id);
-        lineStationService.deleteLineStationByStationId(line.getLineStations(), stationId);
+        Station station = lineStationService.getStation(stationId);
+        line.deleteStation(station);
     }
 }
