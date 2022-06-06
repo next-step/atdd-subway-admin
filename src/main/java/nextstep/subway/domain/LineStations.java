@@ -97,7 +97,15 @@ public class LineStations {
         if (searchPreStation.size() > ONE) {
             findStartStation().ifPresent(searchPreStation::remove);
         }
-        return searchPreStation.isEmpty() ? Optional.empty() : searchPreStation.stream().findFirst();
+        return getExpectedInsertSection(station, searchPreStation);
+    }
+
+    private Optional<LineStation> getExpectedInsertSection(Station station, List<LineStation> searchPreStation) {
+        if (searchPreStation.isEmpty()) {
+            return Optional.empty();
+        }
+        Optional<LineStation> matchPreStation = searchPreStation.stream().filter(item -> item.isPreStation(station)).findFirst();
+        return matchPreStation.isPresent() ? matchPreStation : searchPreStation.stream().findFirst();
     }
 
     private Optional<LineStation> compareCurrentStation(final Station station) {

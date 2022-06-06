@@ -63,6 +63,15 @@ public class LineStationsTest {
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
+    @DisplayName("기존에 등록된 역 가운데 새로운 역을 추가시 distance 가 기존보다 크면 에러가 발생한다.")
+    @Test
+    void invalidAddLineStationWhenDistanceIsBigTest() {
+        신분당선_역정보들.addLineStation(new LineStation(신분당선, new Section(강남역, 양재역, 10L)));
+        신분당선_역정보들.addLineStation(new LineStation(신분당선, new Section(양재역, 논현역, 10L)));
+
+        assertThatThrownBy(() -> 신분당선_역정보들.addLineStation(new LineStation(신분당선, new Section(new Station("양재역"), new Station("수원역"), 11L))))
+                .isExactlyInstanceOf(IllegalArgumentException.class);
+    }
 
     @DisplayName("순서대로 LineStation 정보 가져오기")
     @Test
