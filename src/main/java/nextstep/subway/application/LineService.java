@@ -9,7 +9,7 @@ import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.dto.line.LineRequest;
 import nextstep.subway.dto.line.LineResponse;
-import nextstep.subway.dto.line.PutLineRequest;
+import nextstep.subway.dto.line.UpdateLineRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,11 +25,11 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse saveStation(LineRequest lineRequest) {
+    public LineResponse createLine(LineRequest lineRequest) {
         Station upStation = findStationById(lineRequest.getUpStationId());
         Station downStation = findStationById(lineRequest.getDownStationId());
 
-        return saveLine(lineRequest, upStation, downStation);
+        return createLine(lineRequest, upStation, downStation);
     }
 
     private Station findStationById(Long stationId) {
@@ -37,8 +37,7 @@ public class LineService {
                 .orElseThrow(() -> new NotFoundException(String.format("입력한 역을 찾을 수 없습니다. (역: %d)", stationId)));
     }
 
-    @Transactional
-    public LineResponse saveLine(LineRequest lineRequest, Station upStation, Station downStation) {
+    private LineResponse createLine(LineRequest lineRequest, Station upStation, Station downStation) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation,
                 lineRequest.getDistance());
         Line persistLine = lineRepository.save(line);
@@ -48,7 +47,9 @@ public class LineService {
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
-        return lines.stream().map(line -> LineResponse.from(line)).collect(Collectors.toList());
+        return lines.stream()
+                .map(line -> LineResponse.from(line))
+                .collect(Collectors.toList());
     }
 
     public LineResponse findLine(Long id) {
@@ -62,9 +63,9 @@ public class LineService {
     }
 
     @Transactional
-    public void updateLine(Long id, PutLineRequest putLineRequest) {
+    public void updateLine(Long id, UpdateLineRequest updateLineRequest) {
         Line line = findLineById(id);
-        line.update(putLineRequest.getName(), putLineRequest.getColor());
+        line.update(updateLineRequest.getName(), updateLineRequest.getColor());
     }
 
     @Transactional

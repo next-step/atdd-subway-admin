@@ -1,13 +1,13 @@
 package nextstep.subway.dto.line;
 
-public class PutLineRequest {
+public class UpdateLineRequest {
     private String name;
     private String color;
 
-    protected PutLineRequest() {
+    protected UpdateLineRequest() {
     }
 
-    public PutLineRequest(String name, String color) {
+    public UpdateLineRequest(String name, String color) {
         this.name = name;
         this.color = color;
     }

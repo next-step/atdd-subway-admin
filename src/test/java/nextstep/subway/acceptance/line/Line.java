@@ -5,7 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.acceptance.station.Station;
 import nextstep.subway.dto.line.LineRequest;
-import nextstep.subway.dto.line.PutLineRequest;
+import nextstep.subway.dto.line.UpdateLineRequest;
 import org.springframework.http.MediaType;
 
 public final class Line {
@@ -30,7 +30,7 @@ public final class Line {
         return RestAssured.given().log().all().when().get("/lines").then().log().all().extract();
     }
 
-    static ExtractableResponse<Response> 지하철노선_정보_수정(Long lineId, PutLineRequest request) {
+    static ExtractableResponse<Response> 지하철노선_정보_수정(Long lineId, UpdateLineRequest request) {
         return RestAssured.given().log().all().body(request).contentType(MediaType.APPLICATION_JSON_VALUE).when()
                 .put("/lines/" + lineId).then().log().all().extract();
     }

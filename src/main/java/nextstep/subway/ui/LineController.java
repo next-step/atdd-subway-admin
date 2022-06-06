@@ -5,7 +5,7 @@ import java.util.List;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.line.LineRequest;
 import nextstep.subway.dto.line.LineResponse;
-import nextstep.subway.dto.line.PutLineRequest;
+import nextstep.subway.dto.line.UpdateLineRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,8 +25,8 @@ public class LineController {
     }
 
     @PostMapping(value = "/lines")
-    public ResponseEntity<LineResponse> createStation(@RequestBody LineRequest lineRequest) {
-        LineResponse line = lineService.saveStation(lineRequest);
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+        LineResponse line = lineService.createLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
@@ -42,8 +42,8 @@ public class LineController {
 
     @PutMapping(value = "/lines/{id}")
     public ResponseEntity<LineResponse> updateLine(@PathVariable("id") Long id,
-                                                   @RequestBody PutLineRequest putLineRequest) {
-        lineService.updateLine(id, putLineRequest);
+                                                   @RequestBody UpdateLineRequest updateLineRequest) {
+        lineService.updateLine(id, updateLineRequest);
         return ResponseEntity.ok().build();
     }
 

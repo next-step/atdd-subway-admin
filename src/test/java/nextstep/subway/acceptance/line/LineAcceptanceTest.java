@@ -14,7 +14,7 @@ import io.restassured.response.Response;
 import java.util.List;
 import nextstep.subway.acceptance.AcceptanceTest;
 import nextstep.subway.dto.line.LineRequest;
-import nextstep.subway.dto.line.PutLineRequest;
+import nextstep.subway.dto.line.UpdateLineRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -110,7 +110,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long lineId = 지하철노선_생성(신분당선).jsonPath().getLong("id");
 
         // When
-        PutLineRequest request = new PutLineRequest(다른분당선, "bg-red-600");
+        UpdateLineRequest request = new UpdateLineRequest(다른분당선, "bg-red-600");
         ExtractableResponse<Response> response = 지하철노선_정보_수정(lineId, request);
         응답코드_검증(response, HttpStatus.OK);
 
