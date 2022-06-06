@@ -24,20 +24,16 @@ public class Sections {
     }
 
     public List<Station> getStationsInOrder() {
-        Optional<Section> nextSection = list.stream()
-                .filter(it -> it.isFirstSection())
-                .findFirst();
-
         List<Station> result = new ArrayList<>();
-        while (nextSection.isPresent()) {
-            Section currentSection = nextSection.get();
+        Section currentSection = firstSection();
+        while (true) {
             result.add(currentSection.getDownStation());
-            nextSection = list.stream()
-                    .filter(it -> it.isNextSectionOf(currentSection))
-                    .findFirst();
+            Optional<Section> nextSection = getNextSectionOf(currentSection);
+            if (!nextSection.isPresent()) {
+                return result;
+            }
+            currentSection = nextSection.get();
         }
-
-        return result;
     }
 
     private void updateWhenSameDownStation(Section newSection) {
@@ -110,5 +106,18 @@ public class Sections {
 
     public List<Section> getList() {
         return list;
+    }
+
+    public Section firstSection() {
+        return list.stream()
+                .filter(section -> section.isFirstSection())
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("첫 번째 구간이 없음"));
+    }
+
+    private Optional<Section> getNextSectionOf(Section section) {
+        return list.stream()
+                .filter(it -> it.isNextSectionOf(section))
+                .findFirst();
     }
 }
