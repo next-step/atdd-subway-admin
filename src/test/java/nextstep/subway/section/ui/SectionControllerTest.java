@@ -1,10 +1,12 @@
 package nextstep.subway.section.ui;
 
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.application.SectionService;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.section.exception.SectionDuplicationException;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +33,13 @@ public class SectionControllerTest {
     @DisplayName("구간 생성한다")
     @Test
     void createSection() throws Exception {
-        String downStationId = "2";
-        String upStationId = "1";
+        Station upStation = new Station("강남역");
+        Station downStation = new Station("잠실역");
+        Line line = new Line("2호선", upStation, downStation);
         int distance = 10;
 
-        when(sectionService.createSection(any(SectionRequest.class)))
-                .thenReturn(SectionResponse.of(new Section(downStationId, upStationId, distance)));
+        when(sectionService.createSection(any(Long.class), any(SectionRequest.class)))
+                .thenReturn(SectionResponse.of(new Section(line, upStation, downStation, distance)));
 
         mockMvc.perform(post("/lines/1/sections")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -48,7 +51,7 @@ public class SectionControllerTest {
     @DisplayName("중복된 구간을 생성요청하면 예외를 던진다")
     @Test
     void createSectionWithDuplication() throws Exception {
-        when(sectionService.createSection(any(SectionRequest.class)))
+        when(sectionService.createSection(any(Long.class), any(SectionRequest.class)))
                 .thenThrow(new SectionDuplicationException());
 
         mockMvc.perform(post("/lines/1/sections")

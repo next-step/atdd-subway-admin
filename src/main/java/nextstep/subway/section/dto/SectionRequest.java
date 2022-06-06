@@ -1,30 +1,32 @@
 package nextstep.subway.section.dto;
 
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 
 public class SectionRequest {
-    private String downStationId;
-    private String upStationId;
+    private Long upStationId;
+    private Long downStationId;
     private int distance;
 
     public SectionRequest() {
     }
 
-    private SectionRequest(String downStationId, String upStationId, int distance) {
-        this.downStationId = downStationId;
+    private SectionRequest(Long upStationId, Long downStationId, int distance) {
         this.upStationId = upStationId;
+        this.downStationId = downStationId;
         this.distance = distance;
     }
 
-    public static SectionRequest of(String downStationId, String upStationId, int distance) {
-        return new SectionRequest(downStationId, upStationId, distance);
+    public static SectionRequest of(Long upStationId, Long downStationId, int distance) {
+        return new SectionRequest(upStationId, downStationId, distance);
     }
 
-    public String getDownStationId() {
+    public Long getDownStationId() {
         return downStationId;
     }
 
-    public String getUpStationId() {
+    public Long getUpStationId() {
         return upStationId;
     }
 
@@ -32,7 +34,7 @@ public class SectionRequest {
         return distance;
     }
 
-    public Section toSection() {
-        return new Section(downStationId, upStationId, distance);
+    public Section toSection(Line line, Station upStation, Station downStation) {
+        return new Section(line, upStation, downStation, distance);
     }
 }

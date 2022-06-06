@@ -4,32 +4,32 @@ import nextstep.subway.section.domain.Section;
 
 public class SectionResponse {
     private Long id;
-    private String downStationId;
-    private String upStationId;
+    private Long upStationId;
+    private Long downStationId;
     private int distance;
 
     public SectionResponse() {
     }
 
-    private SectionResponse(String downStationId, String upStationId, int distance) {
-        this.downStationId = downStationId;
+    private SectionResponse(Long upStationId, Long downStationId, int distance) {
         this.upStationId = upStationId;
+        this.downStationId = downStationId;
         this.distance = distance;
     }
 
     public static SectionResponse of(Section section) {
-        return new SectionResponse(section.getDownStationId(), section.getUpStationId(), section.getDistance());
+        return new SectionResponse(section.getUpStation().getId(),section.getDownStation().getId(), section.getDistance());
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getDownStationId() {
+    public Long getDownStationId() {
         return downStationId;
     }
 
-    public String getUpStationId() {
+    public Long getUpStationId() {
         return upStationId;
     }
 
