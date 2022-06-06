@@ -6,26 +6,26 @@ import javax.persistence.*;
 
 @Entity
 public class Station extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(unique = true)
-    private String name;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	@Column(unique = true)
+	private String name;
 
-    protected Station() {
-    }
+	protected Station() {
+	}
 
-    public Station(String name) {
-        this.name = name;
-    }
+	public Station(String name) {
+		this.name = name;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
 	@Override
 	public int hashCode() {
@@ -42,5 +42,10 @@ public class Station extends BaseEntity {
 			return false;
 		Station other = (Station) obj;
 		return Objects.equals(id, other.id);
+	}
+
+	@Override
+	public String toString() {
+		return "Station [id=" + id + ", name=" + name + "]";
 	}
 }

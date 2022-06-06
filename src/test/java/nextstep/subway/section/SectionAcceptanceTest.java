@@ -53,7 +53,10 @@ public class SectionAcceptanceTest extends CustomExtractableResponse{
 	void addSection() {
 		ExtractableResponse<Response> CreateResponse = 
 				구간_등록_요청(lines.get("신분당선"), stations.get("지하철역").toString(), stations.get("또다른지하철역").toString(), "4");
-		노선_조회_요청();
+		
+		ExtractableResponse<Response> response = 노선_조회_요청();
+		System.out.println(response.jsonPath().getList(""));
+		
 		assertThat(CreateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
@@ -61,7 +64,7 @@ public class SectionAcceptanceTest extends CustomExtractableResponse{
 	@Test
 	void addFirstSection() {
 		ExtractableResponse<Response> CreateResponse = 
-				구간_등록_요청(lines.get("신분당선"), stations.get("또다른지하철역").toString(), stations.get("지하철역").toString(), "4");
+				구간_등록_요청(lines.get("신분당선"), stations.get("또다른지하철역").toString(), stations.get("지하철역").toString(), "10");
 		assertThat(CreateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 

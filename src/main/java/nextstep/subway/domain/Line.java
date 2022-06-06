@@ -21,12 +21,12 @@ public class Line extends BaseEntity {
 	@NotNull
 	private String color;
 
-    @Embedded
-    private Sections sections = new Sections();
+	@Embedded
+	private Sections sections = new Sections();
 
 	protected Line() {
 	}
-	
+
 	public Line(String name, String color, Section section) {
 		this.name = name;
 		this.color = color;
@@ -53,7 +53,7 @@ public class Line extends BaseEntity {
 	public String getColor() {
 		return color;
 	}
-	
+
 	public Sections getSections() {
 		return sections;
 	}
@@ -81,5 +81,10 @@ public class Line extends BaseEntity {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Line [id=" + id + ", name=" + name + ", color=" + color + ", sections=" + sections + "]";
 	}
 }

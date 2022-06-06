@@ -24,7 +24,8 @@ public class LineService {
 	private final LineRepository lineRepository;
 	private final SectionRepository sectionRepository;
 
-	public LineService(StationRepository stationRepository, LineRepository lineRepository, SectionRepository sectionRepository) {
+	public LineService(StationRepository stationRepository, LineRepository lineRepository,
+			SectionRepository sectionRepository) {
 		this.stationRepository = stationRepository;
 		this.lineRepository = lineRepository;
 		this.sectionRepository = sectionRepository;
@@ -34,7 +35,7 @@ public class LineService {
 	public LineResponse saveLine(LineRequest lineRequest) {
 		Optional<Station> upStation = stationRepository.findById(lineRequest.getUpStationId());
 		Optional<Station> downStation = stationRepository.findById(lineRequest.getDownStationId());
-		
+
 		Section section = sectionRepository.save(lineRequest.toSection(upStation.get(), downStation.get()));
 		Line line = lineRepository.save(lineRequest.toLine(section));
 		return LineResponse.of(line);
@@ -43,10 +44,7 @@ public class LineService {
 	public List<LineResponse> findAllLines() {
 		List<Line> lines = lineRepository.findAll();
 
-		return lines
-				.stream()
-					.map(line -> LineResponse.of(line))
-					.collect(Collectors.toList());
+		return lines.stream().map(line -> LineResponse.of(line)).collect(Collectors.toList());
 	}
 
 	public LineResponse findLine(Long lineId) {
@@ -69,14 +67,14 @@ public class LineService {
 	public void addSection(Long lineId, SectionRequest sectionRequest) {
 		Optional<Station> upStation = stationRepository.findById(sectionRequest.getUpStationId());
 		Optional<Station> downStation = stationRepository.findById(sectionRequest.getDownStationId());
-		validationStaion(upStation, downStation);
+		validationStation(upStation, downStation);
 		Section section = sectionRepository.save(sectionRequest.toSection(upStation.get(), downStation.get()));
 		Line line = lineRepository.getById(lineId);
 		line.add(section);
 	}
 
-	private void validationStaion(Optional<Station> upStation, Optional<Station> downStation) {
-		if(!upStation.isPresent() || !downStation.isPresent()) {
+	private void validationStation(Optional<Station> upStation, Optional<Station> downStation) {
+		if (!upStation.isPresent() || !downStation.isPresent()) {
 			throw new RuntimeException("역 정보를 찾지 못했습니다.");
 		}
 	}
