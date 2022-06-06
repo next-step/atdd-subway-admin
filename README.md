@@ -13,6 +13,7 @@
 <br>
 
 # 지하철 노선도 미션
+
 [ATDD 강의](https://edu.nextstep.camp/c/R89PYi5H) 실습을 위한 지하철 노선도 애플리케이션
 
 <br>
@@ -20,25 +21,34 @@
 ## 🚀 Getting Started
 
 ### Install
+
 #### npm 설치
+
 ```
 cd frontend
 npm install
 ```
+
 > `frontend` 디렉토리에서 수행해야 합니다.
 
 ### Usage
+
 #### webpack server 구동
+
 ```
 npm run dev
 ```
+
 #### application 구동
+
 ```
 ./gradlew bootRun
 ```
+
 <br>
 
 ## ✏️ Code Review Process
+
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
 <br>
@@ -61,6 +71,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ### 기능 요구사항
 
 - [x] 기존에 작성된 테스트코드를 기반으로 어플리케이션 파악
-- [ ] 지하철역 목록 조회 인수 테스트 작성하기
+- [x] 지하철역 목록 조회 인수 테스트 작성하기
 - [ ] 지하철역 삭제 인수 테스트 작성하기
 - [ ] 인수테스트의 재사용성, 가독성, 빠른 테스트 의도 파악을 위해 인수테스트 리팩토링
