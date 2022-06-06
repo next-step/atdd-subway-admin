@@ -38,6 +38,10 @@ public class Section {
         return upStation;
     }
 
+    public boolean hasStation(Station station) {
+        return this.upStation == station || this.downStation == station;
+    }
+
     public Long getId() {
         return id;
     }
