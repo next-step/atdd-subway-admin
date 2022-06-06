@@ -1,6 +1,8 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.*;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
@@ -10,26 +12,25 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.common.Messages.NOT_FOUND_LINE_ERROR;
+
 @Service
 @Transactional(readOnly = true)
 public class LineService {
-    private final String NOT_FOUND_STATION_ERROR = "지하철역을 찾을 수 없습니다.";
-    private final String NOT_FOUND_LINE_ERROR = "지하철 노선을 찾을 수 없습니다.";
-
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
+    private final StationService stationService;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Section section = createSection(
+        Section section = Section.of(
                 lineRequest.getDistance(),
-                lineRequest.getUpStationId(),
-                lineRequest.getDownStationId()
+                stationService.findStation(lineRequest.getUpStationId()),
+                stationService.findStation(lineRequest.getDownStationId())
         );
 
         Line response = lineRepository.save(Line.of(lineRequest.getName(), lineRequest.getColor(), section));
@@ -61,16 +62,7 @@ public class LineService {
         line.delete();
     }
 
-    private Section createSection(int distance, Long upStationId, Long downStationId) {
-        return Section.of(distance, findStation(upStationId), findStation(downStationId));
-    }
-
-    private Station findStation(Long stationId) {
-        return stationRepository.findById(stationId)
-                .orElseThrow(() -> new NoSuchElementException(NOT_FOUND_STATION_ERROR));
-    }
-
-    private Line findLineById(Long id) {
+    public Line findLineById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(NOT_FOUND_LINE_ERROR));
     }

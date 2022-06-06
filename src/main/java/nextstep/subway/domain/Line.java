@@ -3,6 +3,11 @@ package nextstep.subway.domain;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import static nextstep.subway.common.Messages.NOT_FOUND_SECTION;
 
 @Entity
 @Where(clause = "deleted=false")
@@ -34,12 +39,8 @@ public class Line {
 
     public static Line of(String name, String color, Section section) {
         Line line = new Line(name, color);
-        line.addSections(section);
+        line.addSection(section);
         return line;
-    }
-
-    public void addSections(Section section) {
-        this.sections.addSections(section);
     }
 
     public void update(String name, String color) {
@@ -47,12 +48,55 @@ public class Line {
         this.color = color;
     }
 
-    public void delete() {
-        this.deleted = true;
+    public void addSection(Section section) {
+        sections.addSections(section);
+        section.setLine(this);
     }
 
-    public boolean isDelete() {
-        return this.deleted;
+    public List<Station> sortByStation() {
+        List<Station> stations = new ArrayList<>();
+        Section section = getFirstSection();
+
+        stations.add(section.getUpStation());
+        stations.add(section.getDownStation());
+
+        // 다음역 찾기
+        while (NextSection(section) != null) {
+            Section nextSection = NextSection(section);
+            stations.add(nextSection.getDownStation());
+            section = nextSection;
+        }
+
+        return stations;
+    }
+
+    private Section getFirstSection() {
+        List<Station> upStation = new ArrayList<>();
+        List<Station> downStation = new ArrayList<>();
+        sections.getSections().forEach(section -> {
+            upStation.add(section.getUpStation());
+            downStation.add(section.getDownStation());
+        });
+
+        upStation.removeAll(downStation);
+        return findFirstSection(upStation.get(0));
+    }
+
+    private Section findFirstSection(Station station) {
+        return sections.getSections().stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException(NOT_FOUND_SECTION));
+    }
+
+    private Section NextSection(Section firstSection) {
+        return sections.getSections().stream()
+                .filter(section -> section.isEqualsUpStation(firstSection.getDownStation()))
+                .findFirst().orElse(null);
+    }
+
+    public void delete() {
+        this.deleted = true;
     }
 
     public Long getId() {
@@ -68,10 +112,6 @@ public class Line {
     }
 
     public Sections getSections() {
-        return this.sections;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
+        return sections;
     }
 }
