@@ -9,6 +9,9 @@ public class StationRequest {
         return name;
     }
 
+    private StationRequest() {
+    }
+
     public Station toStation() {
         return new Station(name);
     }

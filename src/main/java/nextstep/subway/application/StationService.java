@@ -9,13 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class StationService {
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
@@ -27,20 +26,19 @@ public class StationService {
         return StationResponse.of(persistStation);
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-                .map(station -> StationResponse.of(station))
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 
-    public Station findStationById(Long id) {
-        Optional<Station> station = stationRepository.findById(id);
-        if (!station.isPresent()) {
-            throw new DataNotFoundException("지하철 역이 존재하지 않습니다.");
-        }
-        return station.get();
+    @Transactional(readOnly = true)
+    public Station findByIdOrElseThrow(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("지하철 역이 존재하지 않습니다.", id));
     }
 
     @Transactional

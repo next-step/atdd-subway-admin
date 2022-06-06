@@ -123,3 +123,74 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   * Request 필드를 따로 받도록
   * repository.find 시 null 리턴 대신 예외가 발생하도록
   * 특정 상황에서 dto 내부 메소드로 새로운 객체 생성 방법 부적절
+
+## 3단계 - 구간 추가 기능
+### 요구사항
+  #### 기능 요구사항
+  * 요구사항 설명에서 제공되는 요구사항을 기반으로 지하철 구간 추가 기능을 구현하세요.
+  * 요구사항을 정의한 인수 조건을 조출하세요.
+  * 인수 조건을 검증하는 인수 테스트를 작성하세요.
+  * 예외 케이스에 대한 검증도 포함하세요.
+  
+  #### 프로그래밍 요구사항
+  * 인수 테스트 주도 개발 프로세스에 맞춰서 기능을 구현하세요.
+  * 요구사항 설명을 참고하여 인수 조건을 정의
+  * 인수 조건을 검증하는 인수 테스트 작성
+  * 인수 테스트를 충족하는 기능 구현
+  * 인수 조건은 인수 테스트 메서드 상단에 주석으로 작성하세요.
+  * 뼈대 코드의 인수 테스트를 참고
+  * 인수 테스트의 결과가 다른 인수 테스트에 영향을 끼치지 않도록 인수 테스트를 서로 격리 시키세요.
+  * 인수 테스트의 재사용성과 가독성, 그리고 빠른 테스트 의도 파악을 위해 인수 테스트를 리팩터링 하세요.
+
+
+### 요구사항 설명
+  #### API 명세
+* 구간 등록 API request
+  ```
+  POST /lines/1/sections HTTP/1.1
+  accept: */*
+  content-type: application/json; charset=UTF-8
+  host: localhost:52165
+  
+  {
+  "downStationId": "4",
+  "upStationId": "2",
+  "distance": 10
+  }
+  ```
+  
+#### 지하철 구간 등록 인수 테스트 작성과 기능 구현
+* 역 사이에 새로운 역을 등록할 경우
+  * 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정
+  > ![img.png](img.png)
+  * 새로운 역을 상행 종점으로 등록할 경우
+  > ![img_1.png](img_1.png)
+  * 새로운 역을 하행 종점으로 등록할 경우
+  > ![img_3.png](img_3.png) 
+* 구간 등록 시 예외 케이스를 고려하기
+  * 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
+  > ![img_4.png](img_4.png)
+  * 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
+    * 아래의 이미지 에서 A-B, B-C 구간이 등록된 상황에서 B-C 구간을 등록할 수 없음(A-C 구간도 등록할 수 없음)
+  > ![img_5.png](img_5.png)
+  * 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
+  > ![img_6.png](img_6.png)
+
+#### 구현목록
+* Domain
+  * Section.java (Entity)
+    * 구간 Entity
+    * 구간정보 업데이트
+  * Sections.java (Embeddable)
+    * 구간 리스트를 가진 일급 컬렉션 
+    * 구간 정보를 추가하고 유효성 체크
+  * Line.java
+    * 상행 하행만 있던 필드를 제거하고 Sections 필드 추가
+* Controller
+  * LineController.java
+    * 구간 추가 및 조회 메서드 추가 
+* Service
+  * LineService.java
+    * 구간 추가 및 조회 메서드 추가
+
+#### [코드리뷰 피드백](https://github.com/next-step/atdd-subway-admin/pull/739) (리뷰어: 김재연 님)

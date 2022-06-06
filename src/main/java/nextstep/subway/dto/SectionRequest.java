@@ -1,13 +1,11 @@
 package nextstep.subway.dto;
 
-public class LineRequest {
-    private String name;
-    private String color;
+public class SectionRequest {
     private Long upStationId;
     private Long downStationId;
     private int distance;
 
-    private LineRequest() {
+    private SectionRequest() {
     }
 
     public Long getUpStationId() {
@@ -16,14 +14,6 @@ public class LineRequest {
 
     public Long getDownStationId() {
         return downStationId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
     }
 
     public int getDistance() {
