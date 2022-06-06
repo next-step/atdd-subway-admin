@@ -64,6 +64,10 @@ public class Line extends BaseEntity {
         }
     }
 
+    public LineStations getLineStations() {
+        return lineStations;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
