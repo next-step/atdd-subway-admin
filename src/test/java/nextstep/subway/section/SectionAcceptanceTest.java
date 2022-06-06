@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import javax.transaction.Transactional;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,20 +27,26 @@ import static nextstep.subway.utils.RequestUtil.요청_성공_실패_여부_확�
 
 public class SectionAcceptanceTest extends BasicAcceptance {
 
-    private Station 강남역;
-    private Station 양재역;
 
     LineResponse 생성된_신분당선;
 
     @Autowired
     LineStationRepository lineStationRepository;
 
+    private Map<String, Long> 저장된역정보테이블;
+
     @Override
     protected void beforeEachInit() {
-        강남역 = 역_객체로_변환(지하철역_생성("강남역"));
-        양재역 = 역_객체로_변환(지하철역_생성(("양재역")));
+        저장된역정보테이블 = new HashMap<String, Long>() {{
+            put("강남역", 역_객체로_변환(지하철역_생성("강남역")).getId());
+            put("양재역", 역_객체로_변환(지하철역_생성(("양재역"))).getId());
+            put("수원역", 역_객체로_변환(지하철역_생성("수원역")).getId());
+            put("세류역", 역_객체로_변환(지하철역_생성("세류역")).getId());
+            put("병점역", 역_객체로_변환(지하철역_생성(("병점역"))).getId());
+            put("양재시민의숲", 역_객체로_변환(지하철역_생성("양재시민의숲")).getId());
+        }};
 
-        final LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 양재역.getId(), 10L);
+        final LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 저장된역정보테이블.get("강남역"), 저장된역정보테이블.get("양재역"), 10L);
 
         // then
         생성된_신분당선 = 지하철_노선_생성됨(지하철_노선_생성(신분당선)).as(LineResponse.class);
@@ -56,23 +63,109 @@ public class SectionAcceptanceTest extends BasicAcceptance {
     void addSectionTest() {
         // Given
         지하철_노선_검색됨(지하철_노선_일부_검색(생성된_신분당선.getId()), "신분당선");
-        Station 양재시민의숲 = 역_객체로_변환(지하철역_생성("양재시민의숲"));
 
         List<LineStation> lineStationsByLineId = lineStationRepository.findLineStationsByLineId(생성된_신분당선.getId());
 
         // When
-        ExtractableResponse<Response> 구간_생성_요청_결과 = 구간_생성_요청(생성된_신분당선.getId(), 구간_요청_객체_생성(양재역.getId(), 양재시민의숲.getId(), 10L));
+        ExtractableResponse<Response> 구간_생성_요청_결과 = 구간_생성_요청(생성된_신분당선.getId(), 구간_요청_객체_생성(저장된역정보테이블.get("양재역"), 저장된역정보테이블.get("양재시민의숲"), 10L));
 
         //Then
         구간_생성됨(구간_생성_요청_결과);
     }
+
+    /**
+     * Given 요청할려고 하는 구간이 등록된 지하철 노선에
+     * When 다시 동일 구간을 요청하면
+     * Then 등록되지 않는다.
+     */
+    @DisplayName("동일한 구간 저장시 저장되지 않는다.")
+    @Test
+    void requestSameSectionTest() {
+        // Given
+        구간_생성됨(구간_생성_요청(생성된_신분당선.getId(), 구간_요청_객체_생성(저장된역정보테이블.get("양재역"), 저장된역정보테이블.get("양재시민의숲"), 10L)));
+
+        // When
+        ExtractableResponse<Response> 같은_구간_요청_결과 = 구간_생성_요청(생성된_신분당선.getId(), 구간_요청_객체_생성(저장된역정보테이블.get("양재역"), 저장된역정보테이블.get("양재시민의숲"), 5L));
+
+        // Then
+        구간_생성_실패됨(같은_구간_요청_결과);
+    }
+
+    /**
+     * Given 등록된 지하철 노선에
+     * When 구간 사이에 Distance 가 기존보다 작은 새로운 구간을 요청하면
+     * Then 등록된다.
+     */
+    @DisplayName("구간사이에 Distance 가 기존보다 작을 경우 사이에 등록된다.")
+    @Test
+    void insertToMiddleTest() {
+
+        final LineResponse 생성된_일호선 = 초기_노선_생성("일호선", 저장된역정보테이블.get("수원역"), 저장된역정보테이블.get("병점역"), 10L);
+
+        // When
+
+        ExtractableResponse<Response> 구간_생성_요청_결과 = 구간_생성됨(구간_생성_요청(생성된_일호선.getId(), 구간_요청_객체_생성(저장된역정보테이블.get("수원역"), 저장된역정보테이블.get("세류역"), 5L)));
+
+        // When
+        구간_생성됨(구간_생성_요청_결과);
+    }
+
+    /**
+     * Given 등록된 지하철 노선에
+     * When 구간 사이에 Distance 가 기존보다 큰 경우 새로운 구간을 요청하면
+     * Then 등록되지 않는다.
+     */
+    @DisplayName("구간사이에 Distance 가 기존보다 큰 경우 사이에 등록하면 등록이 되지 않는다.")
+    @Test
+    void invalidInsertToMiddleWhenDistanceIsBigTest() {
+        final LineResponse 생성된_일호선 = 초기_노선_생성("일호선", 저장된역정보테이블.get("수원역"), 저장된역정보테이블.get("병점역"), 10L);
+
+        // When
+
+        ExtractableResponse<Response> 구간_생성_요청_결과 = 구간_생성_요청(생성된_일호선.getId(), 구간_요청_객체_생성(저장된역정보테이블.get("수원역"), 저장된역정보테이블.get("세류역"), 11L));
+
+        // When
+        구간_생성_실패됨(구간_생성_요청_결과);
+    }
+
+    /**
+     * Given 등록된 지하철 노선에
+     * When 구간 사이에 Distance 가 기존보다 큰 경우 새로운 구간을 요청하면
+     * Then 등록되지 않는다.
+     */
+    @DisplayName("구간사이에 Distance 가 기존가 같아도 등록이 되지 않는다.")
+    @Test
+    void invalidInsertToMiddleWhenDistanceIsSameTest() {
+        final LineResponse 생성된_일호선 = 초기_노선_생성("일호선", 저장된역정보테이블.get("수원역"), 저장된역정보테이블.get("병점역"), 10L);
+
+        // When
+
+        ExtractableResponse<Response> 구간_생성_요청_결과 = 구간_생성_요청(생성된_일호선.getId(), 구간_요청_객체_생성(저장된역정보테이블.get("수원역"), 저장된역정보테이블.get("세류역"), 10L));
+
+        // When
+        구간_생성_실패됨(구간_생성_요청_결과);
+    }
+
+    @DisplayName("구간사이에 Distance 가 기존보다 작을 경우 사이에 등록된다.")
+    @Test
+
+    private static LineResponse 초기_노선_생성 (final String name, final Long upStationId, final Long downStationId , final Long distance) {
+        LineRequest lineRequest = new LineRequest(name, "bg-blue-600", upStationId, downStationId, distance);
+        return 지하철_노선_생성됨(지하철_노선_생성(lineRequest)).as(LineResponse.class);
+    }
+
+    public static ExtractableResponse<Response>  구간_생성_실패됨(ExtractableResponse<Response> response) {
+        요청_성공_실패_여부_확인(response, HttpStatus.BAD_REQUEST);
+        return response;
+    }
+
 
     public static ExtractableResponse<Response> 구간_생성됨(ExtractableResponse<Response> response) {
         요청_성공_실패_여부_확인(response, HttpStatus.CREATED);
         return response;
     }
 
-    private ExtractableResponse<Response> 구간_생성_요청(final Long id, final SectionRequest SectionRequest) {
+    private static ExtractableResponse<Response> 구간_생성_요청(final Long id, final SectionRequest SectionRequest) {
         return requestUtil.createSection(id, convertMapBy(SectionRequest));
     }
 

@@ -57,7 +57,7 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/"+id+"/sections")).body(sectionResponse);
     }
 
-    @ExceptionHandler(value = {EntityNotFoundException.class})
+    @ExceptionHandler(value = {EntityNotFoundException.class, IllegalArgumentException.class })
     public ResponseEntity<?> handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }

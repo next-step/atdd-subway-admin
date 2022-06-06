@@ -232,8 +232,9 @@ public class LineAcceptanceTest extends BasicAcceptance {
         return response;
     }
 
-    public static void 지하철_노선_검색됨(ExtractableResponse<Response> response, final String findName) {
+    public static ExtractableResponse<Response> 지하철_노선_검색됨(ExtractableResponse<Response> response, final String findName) {
         assertThat(지하철노선이름으로_검색(객체리스트로_변환(response), findName)).isTrue();
+        return response;
     }
 
     private void 지하철_노선_검색_요청_실패(ExtractableResponse<Response> response) {
