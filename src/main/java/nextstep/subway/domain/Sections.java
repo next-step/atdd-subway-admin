@@ -107,4 +107,8 @@ public class Sections {
     public boolean isEmpty() {
         return list.isEmpty();
     }
+
+    public List<Section> getList() {
+        return list;
+    }
 }
