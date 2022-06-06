@@ -1,12 +1,12 @@
 package nextstep.subway.station;
 
-import static nextstep.subway.ui.UrlConstant.DELETE_STATIONS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Collections;
 import java.util.List;
 import nextstep.subway.BaseSubwayTest;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +16,8 @@ import org.springframework.http.MediaType;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends BaseSubwayTest {
+
+    private static final String STATIONS_PATH = "/stations";
 
     /**
      * When 지하철역을 생성하면
@@ -92,13 +94,31 @@ public class StationAcceptanceTest extends BaseSubwayTest {
         RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .delete(DELETE_STATIONS, stationResponse.body().jsonPath().getInt("id"))
+                .delete(STATIONS_PATH + "/{id}", stationResponse.body().jsonPath().getInt("id"))
                 .then().log().all();
 
         // then
         final ExtractableResponse<Response> getStationsResponse = 지하철_목록_조회();
 
         assertThat(getStationsResponse.body().jsonPath().getList("$")).hasSize(0);
+    }
+
+    private ExtractableResponse<Response> 지하철_생성(final String name) {
+        return RestAssured.given().log().all()
+                .body(Collections.singletonMap("name", name))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(STATIONS_PATH)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_목록_조회() {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get(STATIONS_PATH)
+                .then().log().all()
+                .extract();
     }
 
 }
