@@ -24,7 +24,7 @@ public class Line extends BaseEntity {
 
     private Long distance = 0L;
 
-    public Line() {
+    protected Line() {
 
     }
 
