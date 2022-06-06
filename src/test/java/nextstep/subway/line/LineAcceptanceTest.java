@@ -26,7 +26,6 @@ import org.springframework.test.annotation.DirtiesContext;
 
 
 @DisplayName("지하철 노선 관련 기능")
-@DirtiesContext
 class LineAcceptanceTest extends BaseSubwayTest {
 
     private static final String LINES_PATH = "/lines";
@@ -38,7 +37,7 @@ class LineAcceptanceTest extends BaseSubwayTest {
     StationRepository stationRepository;
 
     @BeforeEach
-    protected void setUp() {
+    public void setUp() {
         super.setUp();
         stationRepository.saveAll(Arrays.asList(new Station("지하철역"),
                 new Station("새로운지하철역"), new Station("또다른지하철역")));

@@ -13,7 +13,7 @@ public abstract class BaseSubwayTest {
     int port;
 
     @BeforeEach
-    protected void setUp() {
+    public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
