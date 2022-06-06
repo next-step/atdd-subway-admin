@@ -134,4 +134,28 @@ public class LineStationAcceptanceTest {
 
         assertThat(lineStations.contains(AC_지하철구간_등록_응답));
     }
+
+    /**
+     * given: 구간을 등록하고
+     * when: 종점을 삭제하면
+     * then: 다음으로 오던역이 종점이 된다.
+     */
+    @Test
+    @DisplayName("종점 삭제")
+    void 지하철구간_종점삭제() {
+        // given
+        LineStationRequest AC_지하철구간_등록_요청 = new LineStationRequest(A역.getId(), C역.getId(), 30L);
+        LineStationApi.지하철구간_생성(line.getId(), AC_지하철구간_등록_요청);
+        LineStationRequest AB_지하철구간_등록_요청 = new LineStationRequest(A역.getId(), B역.getId(), 20L);
+        LineStationApi.지하철구간_생성(line.getId(), AB_지하철구간_등록_요청);
+
+        // when
+        LineStationApi.지하철구간_삭제(line.getId());
+
+        // then
+        ExtractableResponse<Response> response = LineApi.지하철노선_상세_조회(line.getId());
+        List<LineStationResponse> lineStations = response.jsonPath().getList("lineStations", LineStationResponse.class);
+
+//        assertThat(lineStations.size()).isEqualTo(1);
+    }
 }

@@ -18,4 +18,13 @@ public class LineStationApi {
 
         return response;
     }
+
+    public static void 지하철구간_삭제(Long lineId) {
+        ExtractableResponse<Response> 지하철구간_삭제_응답 =
+                RestAssured.given().log().all()
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().delete("/" + lineId + "/section")
+                        .then().log().all()
+                        .extract();
+    }
 }
