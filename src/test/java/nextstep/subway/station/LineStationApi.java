@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineStationRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 public class LineStationApi {
@@ -19,12 +20,14 @@ public class LineStationApi {
         return response;
     }
 
-    public static void 지하철구간_삭제(Long lineId) {
+    public static void 지하철구간_삭제(Long lineStationId) {
         ExtractableResponse<Response> 지하철구간_삭제_응답 =
                 RestAssured.given().log().all()
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().delete("/" + lineId + "/section")
+                        .when().delete("/line/" + lineStationId + "/section")
                         .then().log().all()
                         .extract();
+
+        ApiAcceptance.API응답_검증(지하철구간_삭제_응답.statusCode(), HttpStatus.NO_CONTENT.value());
     }
 }

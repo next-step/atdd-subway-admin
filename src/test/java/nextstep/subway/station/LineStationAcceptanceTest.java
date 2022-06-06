@@ -145,17 +145,17 @@ public class LineStationAcceptanceTest {
     void 지하철구간_종점삭제() {
         // given
         LineStationRequest AC_지하철구간_등록_요청 = new LineStationRequest(A역.getId(), C역.getId(), 30L);
-        LineStationApi.지하철구간_생성(line.getId(), AC_지하철구간_등록_요청);
+        ExtractableResponse<Response> AC_지하철구간_등록_응답 = LineStationApi.지하철구간_생성(line.getId(), AC_지하철구간_등록_요청);
         LineStationRequest AB_지하철구간_등록_요청 = new LineStationRequest(A역.getId(), B역.getId(), 20L);
         LineStationApi.지하철구간_생성(line.getId(), AB_지하철구간_등록_요청);
 
         // when
-        LineStationApi.지하철구간_삭제(line.getId());
+        LineStationApi.지하철구간_삭제(AC_지하철구간_등록_응답.jsonPath().getLong("id"));
 
         // then
         ExtractableResponse<Response> response = LineApi.지하철노선_상세_조회(line.getId());
         List<LineStationResponse> lineStations = response.jsonPath().getList("lineStations", LineStationResponse.class);
 
-//        assertThat(lineStations.size()).isEqualTo(1);
+        assertThat(lineStations.size()).isEqualTo(1);
     }
 }
