@@ -24,7 +24,7 @@ public class Section extends BaseEntity {
 	private Station upStation;
 
 	@ManyToOne
-	@JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_down_station"))
+	@JoinColumn(name = "downStation_id", foreignKey = @ForeignKey(name = "fk_down_station"))
 	private Station downStation;
 
 	private int distance;
@@ -61,5 +61,14 @@ public class Section extends BaseEntity {
 
 	public boolean isDownStation(Station station) {
 		return this.downStation.equals(station);
+	}
+
+	public boolean isDuplicated(Station upStation, Station downStation) {
+		return isEqualUpStationAndDownStation(upStation, downStation)
+			|| isEqualUpStationAndDownStation(downStation, upStation);
+	}
+
+	private boolean isEqualUpStationAndDownStation(Station upStation, Station downStation) {
+		return isUpStation(upStation) && isDownStation(downStation);
 	}
 }

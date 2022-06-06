@@ -52,8 +52,17 @@ public class Sections {
 			return;
 		}
 
+		validateDuplication(upStation, downStation);
+
 		updateSectionInMiddle(line, upStation, downStation, distance);
 		sections.add(new Section(line, upStation, downStation, distance));
+	}
+
+	private void validateDuplication(Station upStation, Station downStation) {
+		sections.stream()
+			.filter(it -> it.isDuplicated(upStation, downStation))
+			.findFirst()
+			.ifPresent(it -> { throw new IllegalArgumentException(); });
 	}
 
 	private void updateSectionInMiddle(Line line, Station upStation, Station downStation, int distance) {

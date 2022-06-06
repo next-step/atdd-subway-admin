@@ -1,6 +1,7 @@
 package nextstep.subway.station.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -71,5 +72,16 @@ public class LineTest {
 
 		// then
 		assertThat(sinbundangLine.getStation()).containsExactly(gangnamStation, gwanggyoStaion, jeongjaStation);
+	}
+
+	@DisplayName("구간이 이미 등록 되어 있는 경우")
+	@Test
+	void errorIfDuplicate() {
+		// given
+		sinbundangLine.addSection(gangnamStation, gwanggyoStaion, 30);
+
+		// when then
+		assertThatThrownBy(() -> sinbundangLine.addSection(gangnamStation, gwanggyoStaion, 10))
+			.isInstanceOf(IllegalArgumentException.class);
 	}
 }
