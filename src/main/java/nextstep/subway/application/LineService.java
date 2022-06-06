@@ -45,7 +45,7 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new NoSuchElementFoundException(ErrorMessage.NOT_FOUND_LINE));
+        Line line = findLine(id);
         return LineResponse.of(line);
     }
 
@@ -57,9 +57,7 @@ public class LineService {
 
     @Transactional
     public void deleteLineById(@PathVariable Long id) {
-        if (!lineRepository.existsById(id)) {
-            throw new NoSuchElementFoundException(ErrorMessage.NOT_FOUND_LINE);
-        }
+        checkExistsByLineId(id);
         lineRepository.deleteById(id);
     }
 
@@ -69,7 +67,7 @@ public class LineService {
 
     @Transactional
     public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchElementFoundException(ErrorMessage.NOT_FOUND_LINE));
+        Line line = findLine(lineId);
 
         Station upStation = findStationById(sectionRequest.getUpStationId());
         Station downStation = findStationById(sectionRequest.getDownStationId());
@@ -82,12 +80,20 @@ public class LineService {
 
     @Transactional
     public void removeSectionByStationId(Long lineId, Long stationId) {
-        if (!lineRepository.existsById(lineId)) {
-            throw new NoSuchElementFoundException(ErrorMessage.NOT_FOUND_LINE);
-        }
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchElementFoundException(ErrorMessage.NOT_FOUND_LINE));
+        checkExistsByLineId(lineId);
+        Line line = findLine(lineId);
         Station deleteStation = findStationById(stationId);
 
         line.removeSection(deleteStation);
+    }
+
+    private void checkExistsByLineId(Long lineId) {
+        if (!lineRepository.existsById(lineId)) {
+            throw new NoSuchElementFoundException(ErrorMessage.NOT_FOUND_LINE);
+        }
+    }
+
+    private Line findLine(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(() -> new NoSuchElementFoundException(ErrorMessage.NOT_FOUND_LINE));
     }
 }
