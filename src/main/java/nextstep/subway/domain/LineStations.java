@@ -1,13 +1,14 @@
 package nextstep.subway.domain;
 
 import javax.persistence.Embeddable;
-import javax.persistence.EntityExistsException;
 import javax.persistence.OneToMany;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
 public class LineStations {
+    private static final int ONE = 1;
+
     @OneToMany(mappedBy = "line", orphanRemoval = true)
     private final List<LineStation> lineStations = new ArrayList<>();
 
@@ -32,15 +33,20 @@ public class LineStations {
 
     public LineStations getLineStationBySorted() {
         List<LineStation> result = new ArrayList<>();
-        LineStation startStation = findStartStation();
-        result.add(startStation);
-        insertLineStationBySorted(result, startStation);
+        findStartStation().ifPresent(startStation -> {
+            result.add(startStation);
+            insertLineStationBySorted(result, startStation);
+        });
         return new LineStations(result);
     }
 
     public List<Station> getStation() {
         List<LineStation> lineStationList = getLineStationBySorted().getLineStations();
         return lineStationList.stream().map(LineStation::getCurrentStation).collect(Collectors.toList());
+    }
+
+    public List<Section> getSections() {
+        return getLineStations().stream().map(LineStation::getSection).collect(Collectors.toList());
     }
 
     public List<LineStation> getLineStations() {
@@ -74,8 +80,8 @@ public class LineStations {
         return isPreStation.isPresent() ? isPreStation : isCurrentStation;
     }
 
-    private LineStation findStartStation() {
-        return this.lineStations.stream().filter(LineStation::isStartStation).findFirst().orElseThrow(EntityExistsException::new);
+    private Optional<LineStation> findStartStation() {
+        return this.lineStations.stream().filter(LineStation::isStartStation).findFirst();
     }
 
     private Optional<LineStation> findPreStation(final Station station) {
@@ -88,12 +94,10 @@ public class LineStations {
         final List<LineStation> searchPreStation = this.lineStations.stream()
                 .filter(savedLineStation -> savedLineStation.isPreStation(station) || savedLineStation.isCurrentStation(station))
                 .collect(Collectors.toList());
-        if (searchPreStation.isEmpty()) {
-            return Optional.empty();
+        if (searchPreStation.size() > ONE) {
+            findStartStation().ifPresent(searchPreStation::remove);
         }
-        final LineStation startStation = findStartStation();
-        searchPreStation.remove(startStation);
-        return searchPreStation.isEmpty() ? Optional.of(startStation) : searchPreStation.stream().findFirst();
+        return searchPreStation.isEmpty() ? Optional.empty() : searchPreStation.stream().findFirst();
     }
 
     private Optional<LineStation> compareCurrentStation(final Station station) {
