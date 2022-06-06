@@ -41,7 +41,11 @@ class SectionsTest {
         // then
         assertThat(sectionResponses.size()).isEqualTo(2);
         assertThat(sectionResponses)
-                .containsExactly(SectionResponse.of(givenSection1), SectionResponse.of(givenSection2));
+                .containsExactly(
+                        new SectionResponse(givenSection1.getLine().getName(), givenSection1.getUpStation().getName(),
+                                givenSection1.getDownStation().getName(), givenSection1.getDistance()),
+                        new SectionResponse(givenSection2.getLine().getName(), givenSection2.getUpStation().getName(),
+                                givenSection2.getDownStation().getName(), givenSection2.getDistance()));
     }
 
     @Test

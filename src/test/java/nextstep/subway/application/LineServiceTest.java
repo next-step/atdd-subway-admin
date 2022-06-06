@@ -154,7 +154,7 @@ class LineServiceTest {
 
         // then
         assertThat(sectionResponse)
-                .isEqualTo(SectionResponse.of(line.getSections().getByUpStation(gangnam)));
+                .isEqualTo(new SectionResponse(line.getName(), gangnam.getName(), yangjae.getName(), distance));
     }
 
     private Line givenLine() {

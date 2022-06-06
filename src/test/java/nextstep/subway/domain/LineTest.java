@@ -37,10 +37,10 @@ public class LineTest {
         line.setFinalStations(finalUpStation, finalDownStation, lineDistance);
 
         // then
-        assertThat(line.getSections().sections())
-                .containsExactly(SectionResponse.of(new Section(line, finalUpStation, finalDownStation, lineDistance)));
         assertThat(line.getLineStations().stations())
                 .containsExactly(StationResponse.of(finalUpStation), StationResponse.of(finalDownStation));
+        assertThat(line.getLineStations().getByStation(finalUpStation).get().getPrevious()).isNull();
+        assertThat(line.getLineStations().getByStation(finalDownStation).get().getNext()).isNull();
     }
 
     @Test

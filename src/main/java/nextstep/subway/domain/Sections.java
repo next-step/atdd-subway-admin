@@ -20,7 +20,11 @@ public class Sections {
     public List<SectionResponse> sections() {
         return sections
                 .stream()
-                .map(section -> SectionResponse.of(section))
+                .map(section -> new SectionResponse(
+                        section.getLine().getName(),
+                        section.getUpStation().getName(),
+                        section.getDownStation().getName(),
+                        section.getDistance()))
                 .collect(Collectors.toList());
     }
 
