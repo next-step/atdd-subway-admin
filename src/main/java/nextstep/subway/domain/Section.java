@@ -1,11 +1,13 @@
 package nextstep.subway.domain;
 
-import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import org.springframework.dao.DataIntegrityViolationException;
 
 @Entity
@@ -16,24 +18,27 @@ public class Section extends BaseEntity {
     private Long id;
     @Column(name = "line_id")
     private Long lineId;
-    private Long upStationId;
-    private Long downStationId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "up_station_id")
+    private Station upStation;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "down_station_id")
+    private Station downStation;
     private Integer distance;
     private Integer order;
 
     protected Section() {
     }
 
-    public Section(Long lineId, Long upStationId, Long downStationId, Integer distance) {
+    public Section(Long lineId, Station upStation, Station downStation, Integer distance) {
         this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
     public boolean match(Section section) {
-        if (Objects.equals(this.upStationId, section.upStationId)
-                || Objects.equals(this.downStationId, section.downStationId)) {
+        if (this.upStation.equals(section.upStation) || this.downStation.equals(section.downStation)) {
             validateDistanceOver(section);
             return true;
         }
@@ -55,12 +60,12 @@ public class Section extends BaseEntity {
         return lineId;
     }
 
-    public Long getUpStationId() {
-        return upStationId;
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public Long getDownStationId() {
-        return downStationId;
+    public Station getDownStation() {
+        return downStation;
     }
 
     public Integer getDistance() {
@@ -71,12 +76,12 @@ public class Section extends BaseEntity {
         return order;
     }
 
-    public void updateUpStationId(Long upStationId) {
-        this.upStationId = upStationId;
+    public void updateUpStation(Station upStation) {
+        this.upStation = upStation;
     }
 
-    public void updateDownStationId(Long downStationId) {
-        this.downStationId = downStationId;
+    public void updateDownStation(Station downStation) {
+        this.downStation = downStation;
     }
 
     public void updateDistance(Integer distance) {

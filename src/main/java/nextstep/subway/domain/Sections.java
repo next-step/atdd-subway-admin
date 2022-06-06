@@ -48,26 +48,26 @@ public class Sections {
     }
 
     private boolean isFirstSection(Section section) {
-        return sections.get(0).getUpStationId().equals(section.getDownStationId());
+        return sections.get(0).getUpStation().equals(section.getDownStation());
     }
 
     private boolean isLastSection(Section section) {
-        return sections.get(sections.size() - 1).getDownStationId().equals(section.getUpStationId());
+        return sections.get(sections.size() - 1).getDownStation().equals(section.getUpStation());
     }
 
     private void addSectionWithUpdateMatchedSection(Section section) {
         int index = getIndexOfMatchedSection(section);
         Section matchedSection = sections.get(index);
 
-        if(matchedSection.getUpStationId().equals(section.getUpStationId())) {
-            matchedSection.updateUpStationId(section.getDownStationId());
+        if(matchedSection.getUpStation().equals(section.getUpStation())) {
+            matchedSection.updateUpStation(section.getDownStation());
             matchedSection.updateDistance(matchedSection.getDistance() - section.getDistance());
             addSectionToList(section, index);
             return;
         }
 
-        if(matchedSection.getDownStationId().equals(section.getDownStationId())) {
-            matchedSection.updateDownStationId(section.getUpStationId());
+        if(matchedSection.getDownStation().equals(section.getDownStation())) {
+            matchedSection.updateDownStation(section.getUpStation());
             matchedSection.updateDistance(matchedSection.getDistance() - section.getDistance());
             addSectionToList(section, index + 1);
         }
@@ -98,26 +98,19 @@ public class Sections {
     }
 
     private void validateExists(Section section) {
-        if (checkExistsOfUpStationId(section.getUpStationId())
-                && checkExistsOfDownStationId(section.getDownStationId())) {
+        if (checkExistsStation(section.getUpStation()) && checkExistsStation(section.getDownStation())) {
             throw new DataIntegrityViolationException(ERROR_EXISTS_SECTION);
         }
     }
 
     private void validateConnected(Section section) {
-        if (!checkExistsOfUpStationId(section.getUpStationId())
-                && !checkExistsOfDownStationId(section.getDownStationId())) {
+        if (!checkExistsStation(section.getUpStation()) && !checkExistsStation(section.getDownStation())) {
             throw new DataIntegrityViolationException(ERROR_CAN_NOT_CONNECT_SECTION);
         }
     }
 
-    private boolean checkExistsOfUpStationId(Long upStationId) {
-        return sections.stream().anyMatch(x -> x.getUpStationId().equals(upStationId)
-                || x.getDownStationId().equals(upStationId));
-    }
-
-    private boolean checkExistsOfDownStationId(Long downStationId) {
-        return sections.stream().anyMatch(x -> x.getUpStationId().equals(downStationId)
-                || x.getDownStationId().equals(downStationId));
+    private boolean checkExistsStation(Station station) {
+        return sections.stream().anyMatch(x -> x.getUpStation().equals(station)
+                || x.getDownStation().equals(station));
     }
 }
