@@ -16,9 +16,11 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("노선 관련 기능")
@@ -109,7 +111,7 @@ public class LineAcceptanceTest {
      */
     @DisplayName("노선을 수정한다.")
     @Test
-    void deleteLine() {
+    void updateLine() {
         // given
         ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", "광교역", "신사역", 10L);
 
@@ -133,6 +135,28 @@ public class LineAcceptanceTest {
                 () -> assertThat(lineResponse.getName()).isEqualTo("new 신분당선"),
                 () -> assertThat(lineResponse.getColor()).isEqualTo("bg-green-600")
         );
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("노선을 삭제한다.")
+    @Test
+    void deleteLine() {
+        // given
+        ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", "광교역", "신사역", 10L);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/" + createResponse.as(LineResponse.class).getId())
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     public ExtractableResponse<Response> createLine(String name, String color, String upStation, String downStation, Long distance) {
