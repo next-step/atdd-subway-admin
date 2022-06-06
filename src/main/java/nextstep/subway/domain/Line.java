@@ -4,6 +4,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @DynamicUpdate
@@ -49,7 +50,7 @@ public class Line extends BaseEntity {
 
     public Section getAscendEndpoint() {
         return getAllSections().stream().filter(it -> it.getPreStation() == null).findFirst()
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(NoSuchElementException::new);
     }
 
     public Section getDescendEndpoint() {
