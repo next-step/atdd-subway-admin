@@ -14,7 +14,6 @@ public class Sections {
     private List<Section> list = new ArrayList<>();
 
     public void add(Section newSection) {
-
         validate(newSection);
 
         updateWhenSameUpStation(newSection);
@@ -103,5 +102,9 @@ public class Sections {
         checkDuplication(newSection);
         validateDistance(newSection);
         validateStations(newSection);
+    }
+
+    public boolean isEmpty() {
+        return list.isEmpty();
     }
 }
