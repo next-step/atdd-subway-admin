@@ -162,4 +162,51 @@ public class SectionAcceptanceTest {
                 () -> assertThat(지하철노선_미포함_등록_결과.jsonPath().getString("message")).isEqualTo(NOT_MATCH_STATION_ERROR)
         );
     }
+
+    @Test
+    @DisplayName("지하철 노선 삭제시 존재하지 않는 지하철 노선 테스트")
+    void removeLineNotFoundLine() {
+        ExtractableResponse<Response> 지하철노선_제거_결과 = 지하철노선_제거(9999L, 강남역_ID);
+
+        assertAll(
+                () -> assertThat(지하철노선_제거_결과.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
+                () -> assertThat(지하철노선_제거_결과.jsonPath().getString("message")).isEqualTo(NOT_FOUND_LINE_ERROR)
+        );
+    }
+
+    @Test
+    @DisplayName("지하철 노선 삭제시 존재하지 않는 지하철 테스트")
+    void removeLineNotFoundStation() {
+        ExtractableResponse<Response> 지하철노선_생성_결과 = 지하철노선_생성("2호선", "bg-green-600", 교대역_ID, 강남역_ID);
+        assertThat(지하철노선_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Long 지하철노선_ID = 지하철노선_생성_결과.jsonPath().getLong("id");
+
+        ExtractableResponse<Response> 지하철노선_제거_결과 = 지하철노선_제거(지하철노선_ID, 9999);
+
+        assertAll(
+                () -> assertThat(지하철노선_제거_결과.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
+                () -> assertThat(지하철노선_제거_결과.jsonPath().getString("message")).isEqualTo(NOT_FOUND_STATION_ERROR)
+        );
+    }
+
+
+    @Test
+    @DisplayName("지하철 노선 제거 성공 테스트")
+    void removeLineStation() {
+        ExtractableResponse<Response> 지하철노선_생성_결과 = 지하철노선_생성("2호선", "bg-green-600", 교대역_ID, 역삼역_ID);
+        assertThat(지하철노선_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Long 지하철노선_ID = 지하철노선_생성_결과.jsonPath().getLong("id");
+
+        ExtractableResponse<Response> 지하철노선_구간_등록_결과 = 지하철노선_구간_등록(지하철노선_ID, 교대역_ID, 강남역_ID, 5);
+        assertThat(지하철노선_구간_등록_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        ExtractableResponse<Response> 지하철노선_제거_결과 = 지하철노선_제거(지하철노선_ID, 강남역_ID);
+        assertThat(지하철노선_제거_결과.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        ExtractableResponse<Response> 지하철노선_조회_결과 = 지하철노선_조회(지하철노선_ID);
+        assertAll(
+                () -> assertThat(지하철노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(지하철노선_조회_결과.jsonPath().getString("name")).isEqualTo("3호선")
+        );
+    }
 }
