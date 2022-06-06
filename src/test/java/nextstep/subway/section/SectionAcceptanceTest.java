@@ -191,6 +191,177 @@ public class SectionAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 지하철 노선에 구간을 추가하고
+     * <p>
+     * When 생성된 구간의 역을 제거하면
+     * <p>
+     * Then 제거한 역을 찾을 수 없다.
+     */
+    @DisplayName("지하철 노선의 구간을 제거한다.")
+    @Test
+    void deleteSection() {
+        // given
+        String stationId = Integer.toString(지하철역_생성("구간역").jsonPath().get("id"));
+        구간_생성(lineUpStationId, stationId, "5");
+
+        // when
+        ExtractableResponse<Response> response = RestAssuredMethod.delete("/lines/{id}/sections",
+                new HashMap<String, String>() {{
+                    put("id", lineId);
+                }}, new HashMap<String, String>() {{
+                    put("stationId", stationId);
+                }});
+
+        // then
+        List<HashMap<String, ?>> stations = 지하철노선_한개_조회(Integer.valueOf(lineId)).get("stations");
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(
+                        stations.stream()
+                                .map(target -> target.get("id").toString())
+                                .collect(Collectors.toList())
+                ).doesNotContain(stationId),
+                () -> assertThat(stations.size()).isEqualTo(2)
+        );
+    }
+
+    /**
+     * Given 지하철 노선에 구간을 추가하고
+     * <p>
+     * When 구간의 상행 종점을 제거하면
+     * <p>
+     * Then 그 다음 역이 상행 종점으로 변경된다
+     */
+    @DisplayName("지하철 노선의 상행 종점을 제거한다.")
+    @Test
+    void deleteUpStationSection() {
+        // given
+        String stationId = Integer.toString(지하철역_생성("구간역").jsonPath().get("id"));
+        구간_생성(lineUpStationId, stationId, "5");
+
+        // when
+        ExtractableResponse<Response> response = RestAssuredMethod.delete("/lines/{id}/sections",
+                new HashMap<String, String>() {{
+                    put("id", lineId);
+                }}, new HashMap<String, String>() {{
+                    put("stationId", lineUpStationId);
+                }});
+
+        // then
+        List<HashMap<String, ?>> stations = 지하철노선_한개_조회(Integer.valueOf(lineId)).get("stations");
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(
+                        stations.stream()
+                                .map(target -> target.get("id").toString())
+                                .collect(Collectors.toList())
+                ).doesNotContain(lineUpStationId),
+                () -> assertThat(stations.size()).isEqualTo(2)
+        );
+    }
+
+    /**
+     * Given 지하철 노선에 구간을 추가하고
+     * <p>
+     * When 구간의 하행 종점을 제거하면
+     * <p>
+     * Then 그 전 역이 하행 종점으로 변경된다
+     */
+    @DisplayName("지하철 노선의 하행 종점을 제거한다.")
+    @Test
+    void deleteDownStationSection() {
+        // given
+        String stationId = Integer.toString(지하철역_생성("구간역").jsonPath().get("id"));
+        구간_생성(lineUpStationId, stationId, "5");
+
+        // when
+        ExtractableResponse<Response> response = RestAssuredMethod.delete("/lines/{id}/sections",
+                new HashMap<String, String>() {{
+                    put("id", lineId);
+                }}, new HashMap<String, String>() {{
+                    put("stationId", lineDownStationId);
+                }});
+
+        // then
+        List<HashMap<String, ?>> stations = 지하철노선_한개_조회(Integer.valueOf(lineId)).get("stations");
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(
+                        stations.stream()
+                                .map(target -> target.get("id").toString())
+                                .collect(Collectors.toList())
+                ).doesNotContain(lineDownStationId),
+                () -> assertThat(stations.size()).isEqualTo(2)
+        );
+    }
+
+    /**
+     * When 노선에 등록되어 있지 않은 역을 제거하려고 하면
+     * <p>
+     * Then 예외가 발생한다.
+     */
+    @DisplayName("노선에 등록되어 있지 않은 역을 제거하려고 하면 예외 발생")
+    @Test
+    void deleteNotExistedSection() {
+
+        // when
+        ExtractableResponse<Response> response = RestAssuredMethod.delete("/lines/{id}/sections",
+                new HashMap<String, String>() {{
+                    put("id", lineId);
+                }}, new HashMap<String, Integer>() {{
+                    put("stationId", 지하철역_생성("없는역").jsonPath().get("id"));
+                }});
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 지하철 구간이 하나 밖에 없고
+     * <p>
+     * When 상행 종점을 제거하려 하면
+     * <p>
+     * Then 예외가 발생한다.
+     */
+    @DisplayName("지하철 구간이 하나 밖에 없고 상행 종점을 제거하려고 하면 예외 발생")
+    @Test
+    void deleteLastUpStationSection() {
+
+        // when
+        ExtractableResponse<Response> response = RestAssuredMethod.delete("/lines/{id}/sections",
+                new HashMap<String, String>() {{
+                    put("id", lineId);
+                }}, new HashMap<String, String>() {{
+                    put("stationId", lineUpStationId);
+                }});
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 지하철 구간이 하나 밖에 없고
+     * <p>
+     * When 하행 종점을 제거하려 하면
+     * <p>
+     * Then 예외가 발생한다.
+     */
+    @DisplayName("지하철 구간이 하나 밖에 없고 하행 종점을 제거하려고 하면 예외 발생")
+    @Test
+    void deleteLastDownStationSection() {
+
+        // when
+        ExtractableResponse<Response> response = RestAssuredMethod.delete("/lines/{id}/sections",
+                new HashMap<String, String>() {{
+                    put("id", lineId);
+                }}, new HashMap<String, String>() {{
+                    put("stationId", lineDownStationId);
+                }});
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 
     private ExtractableResponse<Response> 구간_생성(String upStationId, String downStationId, String distance) {
         Map<String, String> params = new HashMap<>();

@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import static nextstep.subway.domain.ErrorMessage.ALREADY_CREATED_SECTION;
+import static nextstep.subway.domain.ErrorMessage.CANNOT_DELETE_LAST_SECTION;
 import static nextstep.subway.domain.ErrorMessage.NOT_EXISTED_STATION;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import javax.persistence.OneToMany;
 
 @Embeddable
 public class Sections {
+    private static final int LAST_SECTION_SIZE = 2;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
     private List<Section> sections = new ArrayList<>();
@@ -52,6 +54,94 @@ public class Sections {
             return;
         }
 
+        throw new IllegalArgumentException(NOT_EXISTED_STATION.toString());
+    }
+
+    public void remove(Station station) {
+        validateLastSectionRemove();
+
+        Section downMatchedSection = findSectionFromDownStation(station);
+        Optional<Section> upMatchedSection = findSectionFromUpStation(station);
+
+        if (isLastStation(station)) {
+            removeLastSection(downMatchedSection);
+            return;
+        }
+
+        if (!upMatchedSection.isPresent()) {
+            throw new IllegalArgumentException(NOT_EXISTED_STATION.toString());
+        }
+
+        if (downMatchedSection.isFirstSection()) {
+            removeFirstSection(downMatchedSection, upMatchedSection.get());
+            return;
+        }
+        removeMiddleSection(downMatchedSection, upMatchedSection.get());
+    }
+
+    private void removeMiddleSection(Section downMatchedSection, Section upMatchedSection) {
+        sections.remove(downMatchedSection);
+        sections.remove(upMatchedSection);
+
+        add(new Section(
+                downMatchedSection.getUpStation(),
+                upMatchedSection.getDownStation(),
+                downMatchedSection.getDistance().add(upMatchedSection.getDistance()))
+        );
+    }
+
+    private void removeFirstSection(Section downMatchedSection, Section upMatchedSection) {
+        downMatchedSection.setDownStation(upMatchedSection.getDownStation());
+    }
+
+    private void removeLastSection(Section downMatchedSection) {
+        sections.remove(downMatchedSection);
+    }
+
+    private Section findSectionFromDownStation(Station downStation) {
+        Section preSection = getFirstSection();
+        Optional<Section> nextStation = getNextStation(preSection);
+        while (isLastSection(nextStation)) {
+            if (isMatchedDownStation(downStation, preSection)) {
+                return preSection;
+            }
+            preSection = nextStation.get();
+            nextStation = getNextStation(preSection);
+        }
+
+        if (isMatchedDownStation(downStation, preSection)) {
+            return preSection;
+        }
+        throw new IllegalArgumentException(NOT_EXISTED_STATION.toString());
+    }
+
+    private Optional<Section> findSectionFromUpStation(Station upStation) {
+        Section preSection = getFirstSection();
+        Optional<Section> nextStation = getNextStation(preSection);
+        while (isLastSection(nextStation)) {
+            if (isMatchedUpStation(upStation, preSection)) {
+                return Optional.of(preSection);
+            }
+            preSection = nextStation.get();
+            nextStation = getNextStation(preSection);
+        }
+        if (isMatchedUpStation(upStation, preSection)) {
+            return Optional.of(preSection);
+        }
+
+        return Optional.ofNullable(null);
+    }
+
+    private Section findSection(Station upStation, Station downStation) {
+        Section preSection = getFirstSection();
+        Optional<Section> nextStation = getNextStation(preSection);
+        while (isLastSection(nextStation)) {
+            if (isMatchedUpStation(upStation, preSection) && isMatchedDownStation(downStation, preSection)) {
+                return preSection;
+            }
+            preSection = nextStation.get();
+            nextStation = getNextStation(preSection);
+        }
         throw new IllegalArgumentException(NOT_EXISTED_STATION.toString());
     }
 
@@ -114,7 +204,7 @@ public class Sections {
 
     private Section getFirstSection() {
         return sections.stream()
-                .filter(section -> Objects.isNull(section.getUpStation()))
+                .filter(Section::isFirstSection)
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
     }
@@ -159,7 +249,7 @@ public class Sections {
 
     private Optional<Section> matchUpStation(Section newSection) {
         Optional<Section> upMatchedSection = sections.stream()
-                .filter(section -> !Objects.isNull(section.getUpStation()))
+                .filter(section -> !section.isFirstSection())
                 .filter(section -> isMatchedUpStation(section.getUpStation(), newSection))
                 .findFirst();
         return upMatchedSection;
@@ -180,7 +270,7 @@ public class Sections {
 
     private Optional<Section> getNextStation(Section finalPreSection) {
         return sections.stream()
-                .filter(section -> !Objects.isNull(section.getUpStation()))
+                .filter(section -> !section.isFirstSection())
                 .filter(section -> isMatchedDownStation(section.getUpStation(), finalPreSection))
                 .findFirst();
     }
@@ -190,12 +280,29 @@ public class Sections {
     }
 
     private boolean isMatchedUpStation(Station station, Section section) {
+        if (section.isFirstSection()) {
+            return false;
+        }
         return station.getId().equals(section.getUpStation().getId());
+    }
+
+    private boolean isLastStation(Station station) {
+        Station lastStation = getLastSection().getDownStation();
+        if (lastStation.equals(station)) {
+            return true;
+        }
+        return false;
     }
 
     private void validateAlreadySection(Optional<Section> upMatchedSection, Optional<Section> downMatchedSection) {
         if (upMatchedSection.isPresent() && downMatchedSection.isPresent()) {
             throw new IllegalArgumentException(ALREADY_CREATED_SECTION.toString());
+        }
+    }
+
+    private void validateLastSectionRemove() {
+        if (this.sections.size() == LAST_SECTION_SIZE) {
+            throw new IllegalArgumentException(CANNOT_DELETE_LAST_SECTION.toString());
         }
     }
 }

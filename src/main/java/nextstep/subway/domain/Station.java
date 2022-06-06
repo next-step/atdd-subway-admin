@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.Objects;
 import javax.persistence.*;
+import org.hibernate.Hibernate;
 
 @Entity
 public class Station extends BaseEntity {
@@ -36,11 +37,11 @@ public class Station extends BaseEntity {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
             return false;
         }
         Station station = (Station) o;
-        return Objects.equals(id, station.id);
+        return id.equals(station.getId());
     }
 
     @Override

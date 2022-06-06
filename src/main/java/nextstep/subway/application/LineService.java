@@ -79,6 +79,14 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    @Transactional
+    public LineResponse deleteSectionByLineIdAndStationId(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        line.removeSection(line.getStationByStationId(stationId));
+
+        return LineResponse.of(line);
+    }
+
     private Line findLineById(Long id) {
         return lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }

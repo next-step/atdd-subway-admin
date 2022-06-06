@@ -6,7 +6,8 @@ public enum ErrorMessage {
     UP_STATION_DOWN_STATION_SAME("상행종점역과 하행종점역은 같을 수 없습니다."),
     DISTANCE_UNDER_ZERO("거리는 0 이상 이어야 합니다."),
     ALREADY_CREATED_SECTION("이미 등록된 역을 구간으로 등록할 수 없습니다."),
-    NOT_EXISTED_STATION("상행역, 하행역 둘 중 하나를 포함해야 구간으로 등록 할 수 있습니다.");
+    NOT_EXISTED_STATION("존재하지 않는 역 입니다."),
+    CANNOT_DELETE_LAST_SECTION("구간이 하나인 노선에서 역을 삭제 할 수 없습니다.");
     private final String message;
 
     ErrorMessage(String message) {
