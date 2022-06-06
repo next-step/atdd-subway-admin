@@ -49,7 +49,7 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(value = NoSuchElementException.class)
+    @ExceptionHandler(value = {NoSuchElementException.class, IllegalArgumentException.class})
     public ResponseEntity handle() {
         return ResponseEntity.badRequest().build();
     }

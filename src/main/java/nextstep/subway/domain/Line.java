@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.persistence.*;
 
 @Entity
@@ -29,6 +31,8 @@ public class Line extends BaseEntity {
     }
 
     public Line(String name, String color, Station upStation, Station downStation, long distance) {
+        validateDistance(distance);
+        validateStation(upStation, downStation);
         this.name = name;
         this.color = color;
         this.upStation = upStation;
@@ -37,6 +41,7 @@ public class Line extends BaseEntity {
     }
 
     public void update(String name, String color) {
+        validateName(name);
         this.name = name;
         this.color = color;
     }
@@ -71,5 +76,23 @@ public class Line extends BaseEntity {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    private void validateDistance(long distance) {
+        if (distance <= 0) {
+            throw new IllegalArgumentException("거리는 0보다 큰 숫자만 입력이 가능합니다.");
+        }
+    }
+
+    private void validateStation(Station upStation, Station downStation) {
+        if (upStation.getId().longValue() == downStation.getId().longValue()) {
+            throw new IllegalArgumentException("상행역과 하행역은 동일한 역으로 지정될 수 없습니다.");
+        }
+    }
+
+    private void validateName(String name) {
+        if (StringUtils.isBlank(name)) {
+            throw new IllegalArgumentException("이름이 입력되지 않았습니다.");
+        }
     }
 }
