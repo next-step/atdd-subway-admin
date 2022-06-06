@@ -34,14 +34,14 @@ public class LineStations {
                 .collect(Collectors.toList());
     }
 
-    public Optional<LineStation> getByStation(final Station station) {
+    Optional<LineStation> getByStation(final Station station) {
         return lineStations
                 .stream()
                 .filter(lineStation -> lineStation.getStation().equals(station))
                 .findFirst();
     }
 
-    public List<SectionResponse> sections() {
+    List<SectionResponse> sections() {
         final List<SectionResponse> sections = new ArrayList<>();
         if (!lineStations.isEmpty()) {
             lineStations.forEach(lineStation -> addSection(sections, lineStation));

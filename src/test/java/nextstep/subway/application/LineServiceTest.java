@@ -61,8 +61,8 @@ class LineServiceTest {
         assertThat(lineResponse.getName()).isEqualTo(lineName);
 
         final Line createdLine = lineRepository.findById(lineResponse.getId()).get();
-        assertThat(createdLine.getLineStations().getByStation(gangnam).get().getPrevious()).isNull();
-        assertThat(createdLine.getLineStations().getByStation(jungja).get().getPrevious()).isEqualTo(gangnam);
+        assertThat(createdLine.getLineStations().stations())
+                .containsExactly(StationResponse.of(gangnam), StationResponse.of(jungja));
 
         final List<StationResponse> stationResponses = lineResponse.getStations();
         assertThat(stationResponses).containsExactly(StationResponse.of(gangnam), StationResponse.of(jungja));

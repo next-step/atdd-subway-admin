@@ -18,7 +18,7 @@ public class LineResponse {
                 line.getName(),
                 line.getColor(),
                 line.getLineStations().stations(),
-                line.getSections().sections());
+                line.getSections());
     }
 
     public LineResponse() {

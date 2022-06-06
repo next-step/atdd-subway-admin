@@ -70,7 +70,7 @@ public class LineService {
     }
 
     public List<SectionResponse> findAllSections(final Long id) {
-        return getLineOrElseThrow(id).getSections().sections();
+        return getLineOrElseThrow(id).getSections();
     }
 
     private Line getLineOrElseThrow(final Long id) {
