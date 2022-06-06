@@ -25,7 +25,7 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
     private Integer distance;
-    private Integer order;
+    private Integer orderNumber = 0;
 
     protected Section() {
     }
@@ -72,8 +72,8 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-    public Integer getOrder() {
-        return order;
+    public Integer getOrderNumber() {
+        return orderNumber;
     }
 
     public void updateUpStation(Station upStation) {
@@ -88,11 +88,11 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public void updateOrder(Integer order) {
-        this.order = order;
+    public void updateOrderNumber(Integer order) {
+        this.orderNumber = order;
     }
 
-    public void increaseOrder() {
-        this.order++;
+    public void increaseOrderNumber() {
+        this.orderNumber++;
     }
 }
