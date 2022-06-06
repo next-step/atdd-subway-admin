@@ -1,4 +1,4 @@
-package nextstep.subway.station;
+package nextstep.subway.station.unit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

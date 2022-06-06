@@ -1,7 +1,7 @@
-package nextstep.subway.station;
+package nextstep.subway.station.acceptance;
 
-import static nextstep.subway.station.StationSteps.*;
-import static org.assertj.core.api.Assertions.*;
+import static nextstep.subway.station.acceptance.StationSteps.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
