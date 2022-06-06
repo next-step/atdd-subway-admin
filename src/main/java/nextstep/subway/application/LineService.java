@@ -59,9 +59,7 @@ public class LineService {
         }
 
         Line persistLine = line.get();
-        persistLine.setName(lineUpdateRequest.getName());
-        persistLine.setColor(lineUpdateRequest.getColor());
-        lineRepository.save(persistLine);
+        persistLine.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
         return ResponseEntity.ok().build();
     }
 
