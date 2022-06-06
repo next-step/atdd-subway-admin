@@ -43,4 +43,10 @@ public class LineService {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당 라인은 찾을 수 없습니다."));
     }
+
+    @Transactional
+    public void updateLineById(Long id, LineRequest lineRequest) {
+        Line line = findById(id);
+        line.update(lineRequest);
+    }
 }
