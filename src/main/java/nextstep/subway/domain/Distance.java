@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.Objects;
@@ -8,6 +10,7 @@ import java.util.Objects;
 public class Distance {
     private static final Long ZERO = 0L;
 
+    @JsonProperty("value")
     @Column(nullable = false)
     private Long distance;
 
