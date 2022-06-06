@@ -59,7 +59,7 @@ public class LineStations {
         }
     }
 
-    Optional<LineStation> validation(final LineStation lineStation) {
+    private Optional<LineStation> validation(final LineStation lineStation) {
         if (this.lineStations.isEmpty()) {
             return Optional.empty();
         }
