@@ -5,7 +5,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Entity
-public class Station extends BaseEntity {
+public class Station extends BaseEntity implements Comparable<Station>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,6 +32,11 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public int compareTo(Station station) {
+        return Long.compare(this.id, station.getId());
     }
 
     @Override
