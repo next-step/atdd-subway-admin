@@ -47,7 +47,8 @@ public class LineService {
 
     public LineResponse findLine(Long id) {
         Optional<Line> result = lineRepository.findById(id);
-        return result.map(LineResponse::of).orElseGet(LineResponse::new);
+        return result.map(LineResponse::of)
+                .orElseGet(LineResponse::new);
     }
 
     @Transactional
