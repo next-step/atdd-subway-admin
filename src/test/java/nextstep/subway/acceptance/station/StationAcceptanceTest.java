@@ -22,7 +22,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
      * Then 지하철역이 생성된다
      * Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
      */
-    @DisplayName("지하철역을 생성한다.")
+    @DisplayName("지하철역을 생성하면 조회시 생성된 역을 찾을 수 있다.")
     @Test
     void 지하철역_생성() {
         // when
@@ -42,7 +42,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
      * When 기존에 존재하는 지하철역 이름으로 지하철역을 생성하면
      * Then 지하철역 생성이 안된다
      */
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @DisplayName("이미 존재하는 지하철역 이름으로 역을 생성하면 생성이 안된다.")
     @Test
     void 존재하는_지하철역_이름으로_지하철역_생성() {
         // given
@@ -61,7 +61,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
      * When 지하철역 목록을 조회하면
      * Then 2개의 지하철역을 응답 받는다
      */
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("지하철역 목록을 조회하면 생성된 모든 지하철역을 응답 받는다.")
     @Test
     void 지하철역_조회() {
         // given
@@ -81,7 +81,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
      * When 그 지하철역을 삭제하면
      * Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
      */
-    @DisplayName("지하철역을 제거한다.")
+    @DisplayName("지하철역을 제거하면 조회 시 삭제된 역을 찾을 수 없다.")
     @Test
     void 지하철역_제거() {
         // given

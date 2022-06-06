@@ -43,7 +43,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
      * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
      */
     @Test
-    @DisplayName("지하철노선을 생성한다.")
+    @DisplayName("지하철노선을 생성하면 조회 시 생성한 노선을 찾을 수 있다.")
     void 지하철노선_등록() {
         // When
         ExtractableResponse<Response> response = 지하철노선_생성(신분당선);
@@ -60,7 +60,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
      * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
      */
     @Test
-    @DisplayName("모든 지하철 노선을 생성한다.")
+    @DisplayName("지사철노선을 조회하면 생성한 모든 노선을 조회할 수 있다.")
     void 지하철노선_목록_조회() {
         // Given
         지하철노선_생성(신분당선);
@@ -79,7 +79,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
      * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
      */
     @Test
-    @DisplayName("아이디로 지하철노선을 조회한다.")
+    @DisplayName("아이디로 지하철노선을 조회하면 해당 노선의 정보를 응답받는다.")
     void 지하철노선_조회() {
         // Given
         Long lineId = 지하철노선_생성(신분당선).jsonPath().getLong("id");
@@ -102,7 +102,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
      * Then 해당 지하철 노선 정보는 수정된다
      */
     @Test
-    @DisplayName("특정 지하철노선의 정보를 수정할 수 있다.")
+    @DisplayName("특정 지하철 노선 정보 수정하면 해당 노선 정보가 수정된다.")
     void 지하철노선_수정() {
         final String 다른분당선 = "다른분당선";
 
@@ -125,7 +125,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
      * Then 해당 지하철 노선 정보는 삭제된다
      */
     @Test
-    @DisplayName("특정 지하철노선을 삭제할 수 있다.")
+    @DisplayName("특정 지하철 노선을 삭제하면 조회시 찾을 수 없다.")
     void 지하철노선_삭제() {
         // Given
         Long lineId = 지하철노선_생성(신분당선).jsonPath().getLong("id");
