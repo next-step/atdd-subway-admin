@@ -53,6 +53,11 @@ public class Line {
         section.setLine(this);
     }
 
+    public void deleteSectionByStation(Station station) {
+        Section section = sections.deleteSectionByStation(station);
+        section.setLine(this);
+    }
+
     public List<Station> sortByStation() {
         List<Station> stations = new ArrayList<>();
         Section section = getFirstSection();

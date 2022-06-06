@@ -8,8 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static nextstep.subway.common.Messages.DUPLICATE_SECTION_ERROR;
-import static nextstep.subway.common.Messages.NOT_MATCH_STATION_ERROR;
+import static nextstep.subway.common.Messages.*;
 
 @Embeddable
 public class Sections {
@@ -59,7 +58,7 @@ public class Sections {
         Station upStation = section.getUpStation();
 
         if (matchUpStation(upStation)) {
-            Section station = findUpStation(upStation);
+            Section station = findSectionByUpStation(upStation);
             station.updateUpStation(section.getDownStation(), section.getDistance());
         }
     }
@@ -68,7 +67,7 @@ public class Sections {
         Station downStation = section.getDownStation();
 
         if (matchDownStation(downStation)) {
-            Section station = findDownStation(downStation);
+            Section station = findSectionByDownStation(downStation);
             station.updateDownStation(section.getUpStation(), section.getDistance());
         }
     }
@@ -77,7 +76,7 @@ public class Sections {
         return sections.stream().anyMatch(section -> section.isEqualsUpStation(station));
     }
 
-    private Section findUpStation(Station station) {
+    private Section findSectionByUpStation(Station station) {
         return sections.stream()
                 .filter(section -> section.isEqualsUpStation(station))
                 .findFirst()
@@ -88,10 +87,34 @@ public class Sections {
         return sections.stream().anyMatch(section -> section.isEqualsDownStation(station));
     }
 
-    private Section findDownStation(Station station) {
+    private Section findSectionByDownStation(Station station) {
         return sections.stream()
                 .filter(section -> section.isEqualsDownStation(station))
                 .findFirst()
                 .orElseGet(Section::new);
+    }
+
+    public Section deleteSectionByStation(Station station) {
+        validateDeleteStation(station);
+        Section sectionByUpStation = findSectionByUpStation(station);
+        Section sectionByDownStation = findSectionByDownStation(station);
+
+        Section section = Section.of(
+                sectionByUpStation.getDistance() + sectionByDownStation.getDistance(),
+                sectionByDownStation.getUpStation(),
+                sectionByUpStation.getDownStation()
+        );
+
+        sections.add(section);
+        sections.remove(sectionByUpStation);
+        sections.remove(sectionByDownStation);
+
+        return section;
+    }
+
+    private void validateDeleteStation(Station station) {
+        if (!matchUpStation(station) || !matchDownStation(station)) {
+            throw new IllegalArgumentException(NOT_MATCH_STATION_DELETE_ERROR);
+        }
     }
 }
