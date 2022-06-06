@@ -54,14 +54,4 @@ public class LineController {
         LineResponse line = lineService.addSection(id, sectionRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId() + "/sections")).body(line);
     }
-
-    @ExceptionHandler({EntityNotFoundException.class, NoSuchElementException.class})
-    public ResponseEntity handleNotFoundException() {
-        return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler({IllegalArgumentException.class})
-    public ResponseEntity handleIllegalArgsException() {
-        return ResponseEntity.badRequest().build();
-    }
 }
