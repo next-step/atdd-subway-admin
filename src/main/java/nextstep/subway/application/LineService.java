@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,17 +30,19 @@ public class LineService {
         final Section section = new Section(lineRequest.getDistance())
                 .updateUpStationBy(stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(EntityNotFoundException::new))
                 .updateDownStationBy(stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(EntityNotFoundException::new));
-        return LineResponse.of(lineStationRepository.save(new LineStation(line, section)));
+        lineStationRepository.save(new LineStation(line, section));
+        return LineResponse.of(line, Collections.singletonList(section.getDownStation()));
     }
 
     public List<LineResponse> findAllLine() {
         List<Line> lines = lineRepository.findAll();
-        return lines.stream().map(LineResponse::of).collect(Collectors.toList());
+        return lines.stream().mapToLong(Line::getId).mapToObj(this::findLine).collect(Collectors.toList());
     }
 
     public LineResponse findLine(final Long id) {
-        final Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        return LineResponse.of(line);
+        LineStation lineStation = lineStationRepository.findLineStationsByLineId(id).stream().findAny().orElseThrow(EntityNotFoundException::new);
+        Line line = lineStation.getLine();
+        return LineResponse.of(lineStation.getLine(), line.getLineStations().getSortedStationsByStationId());
     }
 
     @Transactional
