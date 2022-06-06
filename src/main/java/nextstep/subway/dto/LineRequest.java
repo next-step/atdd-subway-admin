@@ -8,10 +8,10 @@ public class LineRequest {
     private String color;
     private long upStationId;
     private long downStationId;
-    private Integer distance;
+    private int distance;
 
     public LineRequest() {}
-    public LineRequest(String name, String color, long upStationId, long downStationId, Integer distance) {
+    public LineRequest(String name, String color, long upStationId, long downStationId, int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
