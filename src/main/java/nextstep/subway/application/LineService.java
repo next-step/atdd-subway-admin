@@ -47,7 +47,7 @@ public class LineService {
     @Transactional
     public void updateLineById(Long id, LineRequest lineRequest) {
         Line line = findById(id);
-        line.update(lineRequest);
+        line.update(lineRequest.toLine());
     }
 
     @Transactional

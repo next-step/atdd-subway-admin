@@ -29,6 +29,10 @@ public class LineRequest {
         return Line.of(name, color, upStation, downStation, distance);
     }
 
+    public Line toLine() {
+        return Line.of(name, color);
+    }
+
     public String getName() {
         return name;
     }
