@@ -1,6 +1,7 @@
 package nextstep.subway.application;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -52,13 +53,13 @@ public class LineService {
 	}
 
 	public LineResponse findById(Long id) {
-		Line line = lineRepository.findById(id).get();
+		Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
 		return LineResponse.of(line);
 	}
 
 	@Transactional
 	public void updateLine(Long id, LineRequest lineRequest) {
-		Line line = lineRepository.findById(id).get();
+		Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
 		line.updateLine(lineRequest.getName(), lineRequest.getColor());
 	}
 
@@ -71,7 +72,7 @@ public class LineService {
 	public void addSection(Long lineId, SectionRequest sectionRequest) {
 		Station upStation = stationService.findById(sectionRequest.getUpStationId());
 		Station downStation = stationService.findById(sectionRequest.getDownStationId());
-		Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+		Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
 
 		line.addSection(upStation, downStation, sectionRequest.getDistance());
 	}
