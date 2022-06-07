@@ -225,4 +225,24 @@ public class DomainCreationHelper {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철구간_사이_등록(
+            final Long lineId,
+            final Long lineUpStationId,
+            final Long lineDownStationId,
+            final Long distance
+    ) {
+        final Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", lineUpStationId);
+        params.put("downStationId", lineDownStationId);
+        params.put("distance", distance);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .pathParam("id", lineId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines/{id}/sections")
+                .then().log().all()
+                .extract();
+    }
 }

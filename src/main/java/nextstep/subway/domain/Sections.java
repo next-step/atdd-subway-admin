@@ -13,6 +13,8 @@ import nextstep.subway.exception.BothStationAlreadyExistsException;
 import nextstep.subway.exception.BothStationNotExistsException;
 import nextstep.subway.exception.DistanceIsEqualOrGreaterException;
 import nextstep.subway.exception.ResourceNotFoundException;
+import nextstep.subway.exception.SectionLessOrEqualThanOneException;
+import nextstep.subway.exception.StationNotRegisteredInLineException;
 
 @Embeddable
 public class Sections {
@@ -21,6 +23,7 @@ public class Sections {
 
     private final static long BOTH_ALL_MATCHED_COUNT = 2;
     private final static long BOTH_NON_MATCHED_COUNT = 0;
+    private final static int MINIMUM_SIZE = 1;
 
     public boolean addSection(final Section addableSection) {
         checkBothStationExists(addableSection);
@@ -146,6 +149,37 @@ public class Sections {
                 .filter(section ->
                         section.isEqualToUpStation(station))
                 .findFirst();
-        return nextSection.map(section -> section.getDownStation());
+        return nextSection.map(Section::getDownStation);
+    }
+
+    public void removeSectionBy(final Long stationId) {
+        checkRemovableSize();
+        checkStationRegistered(stationId);
+        findSectionsByStationId(stationId).removeMatchedSections(sections);
+    }
+
+    private void checkRemovableSize() {
+        if (sections.size() <= MINIMUM_SIZE) {
+            throw new SectionLessOrEqualThanOneException();
+        }
+    }
+
+    private void checkStationRegistered(final Long stationId) {
+        final List<Station> stations = getAllStations();
+        stations.stream()
+                .filter(station -> station.isIdEqualTo(stationId))
+                .findFirst()
+                .orElseThrow(() -> new StationNotRegisteredInLineException());
+    }
+
+    private MatchedSections findSectionsByStationId(final Long stationId) {
+        return new MatchedSections(
+                sections.stream()
+                        .filter(section -> section.isEqualToUpOrDownStation(stationId))
+                        .collect(Collectors.toList()));
+    }
+
+    public List<Section> toList() {
+        return sections;
     }
 }

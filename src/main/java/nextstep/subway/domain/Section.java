@@ -88,8 +88,21 @@ public class Section {
         return station == this.getUpStation() || station == this.getDownStation();
     }
 
-    public boolean isEqualToUpOrDownStation(Section addableSection) {
+    public boolean isEqualToUpOrDownStation(final Section addableSection) {
         return this.getUpStation().equals(addableSection.getUpStation()) ||
                 this.getDownStation().equals(addableSection.getDownStation());
+    }
+
+    public boolean isEqualToUpOrDownStation(final Long stationId) {
+        return this.getUpStation().isIdEqualTo(stationId) ||
+                this.getDownStation().isIdEqualTo(stationId);
+    }
+
+    public void updateDownStation(final Station downStation) {
+        this.downStation = downStation;
+    }
+
+    public void updateDistance(final Long mergedDistance) {
+        this.distance = mergedDistance;
     }
 }

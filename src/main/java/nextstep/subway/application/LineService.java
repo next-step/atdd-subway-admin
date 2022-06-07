@@ -74,6 +74,14 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    @Transactional
+    public void removeSection(final Long lineId, final Long stationId) {
+        final Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new ResourceNotFoundException(Line.class));
+
+        line.removeSectionBy(stationId);
+    }
+
     private Station findStationsById(final Long stationId) {
         return stationRepository.findById(stationId)
                 .orElseThrow(() -> new ResourceNotFoundException(Station.class));
