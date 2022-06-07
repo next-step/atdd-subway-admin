@@ -45,6 +45,12 @@ class DistanceTest {
         assertThat(distance.value()).isEqualTo(3);
     }
 
+    @Test
+    @DisplayName("거리들의 합인 거리를 구한다")
+    void sumDistance() {
+        assertThat(Distance.sumDistance(Distance.of(4), Distance.of(7)).value()).isEqualTo(11);
+    }
+
     private static Stream<Arguments> lessParam() {
         return Stream.of(
                 Arguments.of(Distance.of(3), Distance.of(5), true),

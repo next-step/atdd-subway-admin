@@ -1,8 +1,6 @@
 package nextstep.subway.message;
 
 
-import org.springframework.dao.DataIntegrityViolationException;
-
 public enum ErrorMessage {
     LINE_NONE_EXIST("존재 하지 않은 노선입니다."),
     LINE_NOT_VALID_UP_STATION("유효하지 않은 상행종점입니다."),
@@ -25,8 +23,11 @@ public enum ErrorMessage {
     SECTION_UP_STATION_AND_DOWN_STATION_NO_EXIST("상행선과 하행선이 존재하지 않은 구간입니다."),
     SECTION_IS_NO_SEARCH("구간을 찾을수 없습니다."),
     STATION_IS_NO_SEARCH("역을 찾을수 없습니다."),
+    SECTION_STATION_NO_DELETE_RESON_ONE_SECTION("구간이 하나임으로 제거할 수 없습니다."),
+    SECTION_STATION_IS_NO_SEARCH("구간에 존재하지 않은 역입니다"),
 
     DATA_INTEGRITY_VIOLATION_ERROR_MESSAGE("처리 할수 없는 데이터 양식입니다.");
+
 
 
 

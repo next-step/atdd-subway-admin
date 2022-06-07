@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Section.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
@@ -75,7 +75,7 @@ public class LineService {
     public List<SectionResponse> findAllSection(Long lineId) {
         return getLine(lineId)
                 .getSections()
-                .getList()
+                .sortedSectionList()
                 .stream()
                 .map(SectionResponse::of)
                 .collect(Collectors.toList());
@@ -96,14 +96,19 @@ public class LineService {
         line.getSections().addSection(newSection);
     }
 
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = getLine(lineId);
+        final Station deleteStation = getValidStation(stationId, ErrorMessage.STATION_IS_NO_SEARCH);
+        line.getSections().deleteSectionStation(deleteStation);
+    }
+
 
     private Line getLine(Long lindId) {
         return lineRepository
                 .findById(lindId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.LINE_NONE_EXIST.toMessage()));
     }
-
-
 
     private Station getValidStation(Long stationId, ErrorMessage msg) {
         final Optional<Station> findStation = stationRepository.findById(stationId);

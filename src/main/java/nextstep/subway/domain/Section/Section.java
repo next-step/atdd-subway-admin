@@ -1,4 +1,4 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.Section;
 
 import static nextstep.subway.message.ErrorMessage.SECTION_HAS_DISTANCE_STATION_ESSENTIAL;
 import static nextstep.subway.message.ErrorMessage.SECTION_HAS_DOWN_STATION_ESSENTIAL;
@@ -13,6 +13,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import nextstep.subway.domain.Distance;
+import nextstep.subway.domain.Station;
 
 
 @Entity
@@ -56,6 +58,10 @@ public class Section {
         }
     }
 
+    public void minusDistance(Distance distance) {
+        this.distance.minusDistance(distance.value());
+    }
+
     public Station getUpStation() {
         return upStation;
     }
@@ -68,9 +74,11 @@ public class Section {
         return distance;
     }
 
-    public void minusDistance(Distance distance) {
-        this.distance.minusDistance(distance.value());
+    public int getDistanceValue() {
+        return distance.value();
     }
+
+
 
     public static class Builder {
         private Station upStation;

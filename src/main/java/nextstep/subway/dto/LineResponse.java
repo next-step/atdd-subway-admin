@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Sections;
+import nextstep.subway.domain.Section.Sections;
 
 
 public class LineResponse {
@@ -49,7 +49,7 @@ public class LineResponse {
     }
 
     private static List<SectionResponse> sectionToResponse(Sections sections) {
-        return sections.getList()
+        return sections.sortedSectionList()
                 .stream()
                 .map(SectionResponse::of)
                 .collect(Collectors.toList());

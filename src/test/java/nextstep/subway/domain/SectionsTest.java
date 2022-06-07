@@ -4,7 +4,11 @@ import static nextstep.subway.domain.Station.createStation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.List;
+import nextstep.subway.domain.Section.Section;
+import nextstep.subway.domain.Section.Sections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,15 +20,15 @@ public class SectionsTest {
     @BeforeEach
     void setUp() {
         final Section initSection = Section.builder()
-                .distance(10)
-                .upStation(createStation("주안역"))
-                .downStation(createStation("동인천역"))
-                .build();
-
-        final Section addSection = Section.builder()
                 .distance(4)
                 .upStation(createStation("동인천역"))
                 .downStation(createStation("서울역"))
+                .build();
+
+        final Section addSection = Section.builder()
+                .distance(10)
+                .upStation(createStation("주안역"))
+                .downStation(createStation("동인천역"))
                 .build();
 
 
@@ -87,6 +91,82 @@ public class SectionsTest {
         Station lastDownStation = sections.getLastDownStation();
 
         assertThat(lastDownStation).isEqualTo(createStation("신림역"));
+
+    }
+
+    @Test
+    @DisplayName("구간이 하나이면 제거 할수 없다.")
+    void oneSectionIsNoDelete() {
+        final Station 주안역 = createStation("주안역");
+        final Station 동인천역 = createStation("동인천역");
+        final Section initSection = Section.builder()
+                .distance(10)
+                .upStation(주안역)
+                .downStation(동인천역)
+                .build();
+
+        Sections sections = new Sections(initSection);
+
+        assertThatIllegalStateException().isThrownBy(() -> sections.deleteSectionStation(주안역));
+    }
+
+    @Test
+    @DisplayName("구간에 존재하지 않은 역은 제거 할 수 없다.")
+    void isNotContainStationIsNoDelete() {
+        assertThatIllegalStateException().isThrownBy(()
+                -> sections.deleteSectionStation(createStation("광명역")));
+    }
+
+
+    @Test
+    @DisplayName("상행역 종점을 제거 한다.")
+    void lastUpStationRemove() {
+        final Station 주안역 = createStation("주안역");
+        sections.deleteSectionStation(주안역);
+        final List<Section> list = sections.sortedSectionList();
+        assertAll(() -> {
+            assertThat(list).hasSize(1);
+            assertThat(sections.getLastUpStation()).isEqualTo(createStation("동인천역"));
+        });
+    }
+
+    @Test
+    @DisplayName("하행역 종점을 제거 한다.")
+    void lastDownStationRemove() {
+        final Station 서울역 = createStation("서울역");
+        sections.deleteSectionStation(서울역);
+        final List<Section> list = sections.sortedSectionList();
+        assertAll(() -> {
+            assertThat(list).hasSize(1);
+            assertThat(sections.getLastDownStation()).isEqualTo(createStation("동인천역"));
+        });
+    }
+
+    @Test
+    @DisplayName("구간역을 제거 한다.")
+    void betweenRemoveStation() {
+        final Station 동인천역 = createStation("동인천역");
+        final int sumDistance = sections.sortedSectionList().stream().mapToInt((Section::getDistanceValue)).sum();
+
+        sections.deleteSectionStation(동인천역);
+        final List<Section> list = sections.sortedSectionList();
+
+        assertAll(
+                () -> assertThat(list).hasSize(1),
+                () -> assertThat(list.get(0).getUpStation()).isEqualTo(createStation("주안역")),
+                () -> assertThat(sumDistance).isEqualTo(list.get(0).getDistanceValue())
+        );
+    }
+
+    @Test
+    @DisplayName("구간이_정렬_되어_나온다")
+    void sortedSectionList() {
+        final int size = sections.size();
+        final List<Section> sortedSectionList = sections.sortedSectionList();
+
+        assertAll(() -> assertThat(sortedSectionList.get(0).getUpStation()).isEqualTo(createStation("주안역")),
+                () -> assertThat(sortedSectionList.size()).isEqualTo(size)
+        );
 
     }
 }
