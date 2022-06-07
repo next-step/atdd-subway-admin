@@ -23,10 +23,10 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @BeforeEach
     void createLine() {
         // given
-        this.강남역_ID = 지하철역_생성("강남역").jsonPath().getLong(ID_KEY);
-        this.판교역_ID = 지하철역_생성("판교역").jsonPath().getLong(ID_KEY);
-        this.새로운역_ID = 지하철역_생성("새로운역").jsonPath().getLong(ID_KEY);
-        LineRequest 신분당선_생성_요청 = LineRequest.of("신분당선", LINE_COLOR_RED, this.강남역_ID, this.판교역_ID, DISTANCE);
+        this.강남역_ID = 지하철역_생성("강남역").jsonPath().getLong(idKey);
+        this.판교역_ID = 지하철역_생성("판교역").jsonPath().getLong(idKey);
+        this.새로운역_ID = 지하철역_생성("새로운역").jsonPath().getLong(idKey);
+        LineRequest 신분당선_생성_요청 = LineRequest.of("신분당선", lineColorRed, this.강남역_ID, this.판교역_ID, distance);
         this.신분당선_생성_응답 = 지하철노선_생성(신분당선_생성_요청);
     }
 
@@ -147,11 +147,122 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void notExistAllStations() {
         // when
-        Long 없는역_ID = 지하철역_생성("없는역").jsonPath().getLong(ID_KEY);
+        Long 없는역_ID = 지하철역_생성("없는역").jsonPath().getLong(idKey);
         SectionRequest 기존_노선에_없는_구간_요청 = SectionRequest.of(this.새로운역_ID, 없는역_ID, 4);
         ExtractableResponse<Response> 기존_노선에_없는_구간_추가_응답 = 지하철_구간_추가(this.신분당선_생성_응답, 기존_노선에_없는_구간_요청);
 
         // then
         새로운_구간_추가_안됨(기존_노선에_없는_구간_추가_응답);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하여
+     * Given 기존 역 사이에 지하철 구간을 추가하고
+     * When 기존 상행 종점 구간을 제거하면
+     * Then 추가한 지하철역을 새로운 상행 종점으로 조회할 수 있다
+     */
+    @DisplayName("상행 종점을 제거하고 새로운 상행 종점을 조회한다.")
+    @Test
+    void deleteEdgeUpSection() {
+        // given
+        SectionRequest 새로운역_구간_요청 = SectionRequest.of(this.강남역_ID, this.새로운역_ID, 4);
+        지하철_구간_추가(this.신분당선_생성_응답, 새로운역_구간_요청);
+
+        // when
+        지하철_구간_제거(this.신분당선_생성_응답, this.강남역_ID);
+
+        // then
+        새로운_종점_조회(this.신분당선_생성_응답, this.새로운역_ID);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하여
+     * Given 기존 역 사이에 지하철 구간을 추가하고
+     * When 기존 하행 종점 구간을 제거하면
+     * Then 추가한 지하철역을 새로운 하행 종점으로 조회할 수 있다
+     */
+    @DisplayName("하행 종점을 제거하고 새로운 하행 종점을 조회한다.")
+    @Test
+    void deleteEdgeDownSection() {
+        // given
+        SectionRequest 새로운역_구간_요청 = SectionRequest.of(this.새로운역_ID, this.판교역_ID, 4);
+        지하철_구간_추가(this.신분당선_생성_응답, 새로운역_구간_요청);
+
+        // when
+        지하철_구간_제거(this.신분당선_생성_응답, this.판교역_ID);
+
+        // then
+        새로운_종점_조회(this.신분당선_생성_응답, this.새로운역_ID);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하여
+     * Given 기존 구간 사이에 새로운 역을 추가하고
+     * When 추가한 역을 구간에서 제거하면
+     * Then 추가한 역이 구간에서 제거되고 노선에서 조회되지 않는다
+     */
+    @DisplayName("기존 구간 사이에 추가된 역을 제거한다.")
+    @Test
+    void deleteSection() {
+        // given
+        SectionRequest 새로운역_구간_요청 = SectionRequest.of(this.강남역_ID, this.새로운역_ID, 4);
+        지하철_구간_추가(this.신분당선_생성_응답, 새로운역_구간_요청);
+
+        // when
+        지하철_구간_제거(this.신분당선_생성_응답, this.새로운역_ID);
+
+        // then
+        제거된역_조회_안됨(this.신분당선_생성_응답, this.새로운역_ID);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하여
+     * Given 기존 역 사이에 지하철 구간을 추가하고
+     * When 노선에 등록되어 있지 않은 역을 구간에서 제거하려고 하면
+     * Then 지하철역을 제거할 수 없다
+     */
+    @DisplayName("노선에 등록되어 있지 않은 역은 구간에서 제거할 수 없다.")
+    @Test
+    void deleteNotExistSection() {
+        // given
+        SectionRequest 새로운역_구간_요청 = SectionRequest.of(this.강남역_ID, this.새로운역_ID, 4);
+        지하철_구간_추가(this.신분당선_생성_응답, 새로운역_구간_요청);
+
+        // when
+        Long 없는역_ID = 지하철역_생성("없는역").jsonPath().getLong(idKey);
+        ExtractableResponse<Response> 새로운역_제거_응답 = 지하철_구간_제거(this.신분당선_생성_응답, 없는역_ID);
+
+        // then
+        지하철_구간_제거_안됨(새로운역_제거_응답);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 상행 종점을 구간에서 제거하려고 하면
+     * Then 지하철역을 제거할 수 없다
+     */
+    @DisplayName("구간이 하나인 노선에서 상행 종점은 제거할 수 없다.")
+    @Test
+    void deleteOnlyOneEdgeUpSection() {
+        // when
+        ExtractableResponse<Response> 상행종점_제거_응답 = 지하철_구간_제거(this.신분당선_생성_응답, this.강남역_ID);
+
+        // then
+        지하철_구간_제거_안됨(상행종점_제거_응답);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 하행 종점을 구간에서 제거하려고 하면
+     * Then 지하철역을 제거할 수 없다
+     */
+    @DisplayName("구간이 하나인 노선에서 하행 종점은 제거할 수 없다.")
+    @Test
+    void deleteOnlyOneEdgeDownSection() {
+        // when
+        ExtractableResponse<Response> 하행종점_제거_응답 = 지하철_구간_제거(this.신분당선_생성_응답, this.판교역_ID);
+
+        // then
+        지하철_구간_제거_안됨(하행종점_제거_응답);
     }
 }

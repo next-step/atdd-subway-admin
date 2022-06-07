@@ -70,6 +70,13 @@ public class LineService {
         return section.toSectionResponse();
     }
 
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        Station removeStation = stationService.findStationById(stationId);
+        line.removeSectionByStation(removeStation);
+    }
+
     private Section generateSection(LineRequest lineRequest) {
         return generateSection(
                 lineRequest.getUpStationId(),

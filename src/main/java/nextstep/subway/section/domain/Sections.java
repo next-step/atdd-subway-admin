@@ -17,7 +17,11 @@ public class Sections {
     private static final String NOT_FOUND_SORTED_NEXT_STATION = "정렬할 다음 역을 찾을 수 없습니다.";
     private static final String NOT_FOUND_EDGE_UP_SECTION = "상행 종점을 찾을 수 없습니다.";
     private static final String NOT_FOUND_EDGE_DOWN_SECTION = "하행 종점을 찾을 수 없습니다.";
+    private static final String NOT_FOUND_UP_SECTION = "상행 구간을 찾을 수 없습니다.";
+    private static final String NOT_FOUND_DOWN_SECTION = "하행 구간을 찾을 수 없습니다.";
     private static final String NOT_CONTAINS_CONNECT_SECTION = "기존 구간과 연결된 역을 찾을 수 없습니다.";
+    private static final String NOT_REMOVED_ONLY_ONE_SECTION = "구간이 하나인 노선에서 역을 제거할 수 없습니다.";
+    private static final String DOES_NOT_CONTAIN_STATION = "노선에 등록되어 있지 않은 역은 제거할 수 없습니다.";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections;
@@ -40,8 +44,17 @@ public class Sections {
 
     public void add(Section section) {
         validateContainsUpDownStation(section);
-        relocateConnectSection(section);
+        if (addableSection(section)) {
+            relocateConnectSection(section);
+        }
         this.sections.add(section);
+    }
+
+    public void removeByStation(Station removeStation) {
+        if (removableStation(removeStation)) {
+            Section removeSection = findRemoveSection(removeStation);
+            this.sections.remove(removeSection);
+        }
     }
 
     public int size() {
@@ -83,16 +96,76 @@ public class Sections {
         return LineStations.from(sortedAllStations);
     }
 
-    private boolean isEdgeSection(Section addedSection) {
-        return isEdgeUpSection(addedSection) || isEdgeDownSection(addedSection);
+    private boolean addableSection(Section addedSection) {
+        return isNotEmpty() && isNotEdgeSection(addedSection);
     }
 
-    private boolean isEdgeUpSection(Section addedSection) {
-        return findEdgeUpSection().getUpStation().equals(addedSection.getDownStation());
+    private boolean removableStation(Station removeStation) {
+        if (onlyOneSection()) {
+            throw new IllegalArgumentException(NOT_REMOVED_ONLY_ONE_SECTION);
+        }
+        if (doseNotContainStation(removeStation)) {
+            throw new IllegalArgumentException(DOES_NOT_CONTAIN_STATION);
+        }
+        return isNotEmpty();
     }
 
-    private boolean isEdgeDownSection(Section addedSection) {
-        return findEdgeDownSection().getDownStation().equals(addedSection.getUpStation());
+    private boolean isNotEmpty() {
+        return !this.sections.isEmpty();
+    }
+
+    private boolean isNotEdgeSection(Section section) {
+        return !isEdgeSection(section);
+    }
+
+    private boolean onlyOneSection() {
+        return this.sections.size() == 1;
+    }
+
+    private boolean doseNotContainStation(Station station) {
+        return !containsStation(station);
+    }
+
+    private boolean isEdgeSection(Section section) {
+        return isEdgeUpSection(section) || isEdgeDownSection(section);
+    }
+
+    private boolean isEdgeUpSection(Section section) {
+        return isEdgeUpSectionByStation(section.getDownStation());
+    }
+
+    private boolean isEdgeDownSection(Section section) {
+        return isEdgeDownSectionByStation(section.getUpStation());
+    }
+
+    private boolean isEdgeStation(Station station) {
+        return isEdgeUpSectionByStation(station) || isEdgeDownSectionByStation(station);
+    }
+
+    private boolean isEdgeUpSectionByStation(Station station) {
+        return findEdgeUpSection().isEqualsUpStation(station);
+    }
+
+    private boolean isEdgeDownSectionByStation(Station station) {
+        return findEdgeDownSection().isEqualsDownStation(station);
+    }
+
+    private Section findRemoveSection(Station removeStation) {
+        if (isEdgeStation(removeStation)) {
+            return findEdgeSectionByStation(removeStation);
+        }
+
+        Section upSection = findUpSectionByStation(removeStation);
+        Section downSection = findDownSectionByStation(removeStation);
+        relocateConnectSectionByRemovedSection(upSection, downSection);
+        return downSection;
+    }
+
+    private Section findEdgeSectionByStation(Station station) {
+        if (isEdgeUpSectionByStation(station)) {
+            return findEdgeUpSection();
+        }
+        return findEdgeDownSection();
     }
 
     private Section findEdgeUpSection() {
@@ -100,7 +173,7 @@ public class Sections {
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
         return this.sections.stream()
-                .filter(section -> !section.isIncludedUpStation(downStations))
+                .filter(section -> section.isNotIncludedUpStation(downStations))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_EDGE_UP_SECTION));
     }
@@ -110,17 +183,20 @@ public class Sections {
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
         return this.sections.stream()
-                .filter(section -> !section.isIncludedDownStation(upStations))
+                .filter(section -> section.isNotIncludedDownStation(upStations))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_EDGE_DOWN_SECTION));
     }
 
+    private void relocateConnectSectionByRemovedSection(Section connectSection, Section removedSection) {
+        connectSection.updateDownStation(removedSection.getDownStation());
+        connectSection.increaseDistance(removedSection.getDistance());
+    }
+
     private void relocateConnectSection(Section addedSection) {
-        if (!this.sections.isEmpty() && !isEdgeSection(addedSection)) {
-            Section connectSection = findConnectSection(addedSection);
-            relocateUpSection(connectSection, addedSection);
-            relocateDownSection(connectSection, addedSection);
-        }
+        Section connectSection = findConnectSection(addedSection);
+        relocateUpSection(connectSection, addedSection);
+        relocateDownSection(connectSection, addedSection);
     }
 
     private void relocateUpSection(Section connectSection, Section addedSection) {
@@ -137,11 +213,17 @@ public class Sections {
         }
     }
 
+    private Section findUpSectionByStation(Station station) {
+        return findSectionByDownStation(station).orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_UP_SECTION));
+    }
+
+    private Section findDownSectionByStation(Station station) {
+        return findSectionByUpStation(station).orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_DOWN_SECTION));
+    }
+
     private Section findConnectSection(Section section) {
-        return findSectionByUpStation(section.getUpStation())
-                .orElseGet(() -> findSectionByDownStation(section.getDownStation())
-                    .orElseThrow(() -> new IllegalArgumentException(NOT_CONTAINS_CONNECT_SECTION))
-                );
+        return findSectionByUpStation(section.getUpStation()).orElseGet(() -> findSectionByDownStation(section.getDownStation())
+                .orElseThrow(() -> new IllegalArgumentException(NOT_CONTAINS_CONNECT_SECTION)));
     }
 
     private Optional<Section> findSectionByUpStation(Station upStation) {

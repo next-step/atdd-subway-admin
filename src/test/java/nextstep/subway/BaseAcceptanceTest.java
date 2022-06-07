@@ -3,6 +3,7 @@ package nextstep.subway;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -12,10 +13,10 @@ import org.springframework.test.context.jdbc.Sql;
 @Sql("/truncate.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class BaseAcceptanceTest {
-    protected static final String ID_KEY = "id";
-    protected static final String LINE_COLOR_RED = "bg-red-600";
-    protected static final String LINE_COLOR_GREEN = "bg-green-600";
-    protected static final int DISTANCE = 10;
+    protected static String idKey;
+    protected static String lineColorRed;
+    protected static String lineColorGreen;
+    protected static int distance;
 
     @LocalServerPort
     int port;
@@ -25,6 +26,14 @@ public class BaseAcceptanceTest {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = this.port;
         }
+    }
+
+    @BeforeAll
+    public static void setTestArgs() {
+        idKey = "id";
+        lineColorRed = "bg-red-600";
+        lineColorGreen = "bg-green-600";
+        distance = 10;
     }
 
     public static ExtractableResponse<Response> get(String uri) {

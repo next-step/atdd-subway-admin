@@ -46,4 +46,16 @@ class DistanceTest {
         assertThatThrownBy(() -> distance.decrease(addedDistance))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("제거된 구간 길이만큼 기존 구간 길이가 증가한다.")
+    @Test
+    void test_increase_distance() {
+        // given
+        Distance distance = Distance.from(6);
+        Distance removedDistance = Distance.from(4);
+        // when
+        distance.increase(removedDistance);
+        // then
+        assertThat(distance.get()).isEqualTo(10);
+    }
 }
