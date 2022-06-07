@@ -2,6 +2,7 @@ package nextstep.subway.section;
 
 import static nextstep.subway.line.LineAcceptanceTest.지하철_노선_등록되어_있음;
 import static nextstep.subway.line.LineAcceptanceTest.지하철노선_조회_요청;
+import static nextstep.subway.station.StationAcceptanceTest.응답코드_확인;
 import static nextstep.subway.station.StationAcceptanceTest.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -93,6 +95,25 @@ public class SectionAcceptanceTest {
         // 추가된 노선이 하행 종점이 된 상태로 차례대로 조회된다.
         ExtractableResponse<Response> 지하철노선_조회_요청 = 지하철노선_조회_요청(1L);
         지하철역_순서_확인(지하철노선_조회_요청, Arrays.asList("강남역", "판교역", "광교역"));
+    }
+
+    // * Given : 지하철 노선 생성하고
+    // * When : 기존 노선에 있는 상행역과 신규 하행역을 사이에 추가하는데, 거리를 기존 노선보다 길거나 같게 하면
+    // * Then : 등록되지 않고 에러 발생
+    @DisplayName("등록된 노선의 길이보다 길게 새 구간을 추가한다.")
+    @Test
+    void addSectionWithLongerDistance() {
+        //Given : 지하철 노선 생성하고
+        지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
+        지하철역_생성_요청("양재시민의숲역");
+
+        // when
+        // 기존 노선에 있는 상행역과 신규 하행역을 사이에 추가하는데, 거리를 기존 노선보다 길거나 같게 하면
+        ExtractableResponse<Response> 지하철구간_추가_요청 = 지하철구간_추가_요청(1L, 3L, 10L, 1L);
+        // then
+        // 등록되지 않고 에러 발생
+        응답코드_확인(지하철구간_추가_요청, HttpStatus.BAD_REQUEST);
+
     }
 
 
