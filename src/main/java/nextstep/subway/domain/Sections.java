@@ -45,14 +45,14 @@ public class Sections {
     public void insertSectionWhenSectionIsHead(Line line, Section section) {
         Station beforeLineUpStation = getLineUpStation();
         if (beforeLineUpStation.equals(section.getDownStation())) {
-            addSectionWithLine(section, line);
+            addSection(section, line);
         }
     }
 
     public void insertSectionWhenSectionIsTail(Line line, Section section) {
         Station beforeLineDownStation = getLineDownStation();
         if (beforeLineDownStation.equals(section.getUpStation())) {
-            addSectionWithLine(section, line);
+            addSection(section, line);
         }
     }
 
@@ -70,24 +70,24 @@ public class Sections {
 
     public void insertSectionFromFront(Line line, Section section, Section insertSection) {
         Distance restDistance = section.getDistance().minusDistance(insertSection.getDistance());
-        addSectionWithLine(insertSection, line);
-        addSectionWithLine(new Section(restDistance, insertSection.getDownStation(), section.getDownStation()), line);
-        deleteSection(section);
+        addSection(insertSection, line);
+        addSection(new Section(restDistance, insertSection.getDownStation(), section.getDownStation()), line);
+        removeSection(section);
     }
 
     public void insertSectionFromRear(Line line, Section section, Section insertSection) {
         Distance restDistance = section.getDistance().minusDistance(insertSection.getDistance());
-        addSectionWithLine(insertSection, line);
-        addSectionWithLine(new Section(restDistance, section.getUpStation(), insertSection.getUpStation()), line);
-        deleteSection(section);
+        addSection(insertSection, line);
+        addSection(new Section(restDistance, section.getUpStation(), insertSection.getUpStation()), line);
+        removeSection(section);
     }
 
-    private void addSectionWithLine(Section section, Line line) {
-        section.updateLine(line);
+    private void addSection(Section section, Line line) {
         list.add(section);
+        section.updateLine(line);
     }
 
-    private void deleteSection(Section section) {
+    private void removeSection(Section section) {
         list.remove(section);
         section.updateLine(null);
     }
@@ -97,7 +97,7 @@ public class Sections {
         Optional<Section> rightSection = deleteRightSection(station);
         if (leftSection.isPresent() && rightSection.isPresent()) {
             Section newSection = leftSection.get().connectSection(rightSection.get());
-            addSectionWithLine(newSection, line);
+            addSection(newSection, line);
         }
     }
 
@@ -105,7 +105,7 @@ public class Sections {
         Optional<Section> leftSection = findSectionWithDownStation(station);
         if (leftSection.isPresent()) {
             Section deleteSection = leftSection.get();
-            deleteSection(deleteSection);
+            removeSection(deleteSection);
         }
         return leftSection;
     }
@@ -114,7 +114,7 @@ public class Sections {
         Optional<Section> rightSection = findSectionWithUpStation(station);
         if (rightSection.isPresent()) {
             Section deleteSection = rightSection.get();
-            deleteSection(deleteSection);
+            removeSection(deleteSection);
         }
         return rightSection;
     }
