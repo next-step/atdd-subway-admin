@@ -13,7 +13,7 @@ import java.util.*;
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    private List<Section> list;
+    private final List<Section> list;
 
     public Sections() {
         list = new ArrayList<>();
@@ -34,11 +34,9 @@ public class Sections {
     public void insertSection(Line line, Section section) {
         insertSectionWhenSectionIsHead(line, section);
         insertSectionWhenSectionIsTail(line, section);
-
         if (containBothStation(section)) {
             return;
         }
-
         insertSectionWhenStationIsIncluded(line, section);
     }
 
@@ -59,11 +57,9 @@ public class Sections {
     public void insertSectionWhenStationIsIncluded(Line line, Section insertSection) {
         Optional<Section> frontSection = findSectionWithUpStation(insertSection.getUpStation());
         frontSection.ifPresent(section -> insertSectionFromFront(line, section, insertSection));
-
         if (containBothStation(insertSection)) {
             return;
         }
-
         Optional<Section> rearSection = findSectionWithDownStation(insertSection.getDownStation());
         rearSection.ifPresent(section -> insertSectionFromRear(line, section, insertSection));
     }
@@ -102,21 +98,15 @@ public class Sections {
     }
 
     private Optional<Section> deleteLeftSection(Station station) {
-        Optional<Section> leftSection = findSectionWithDownStation(station);
-        if (leftSection.isPresent()) {
-            Section deleteSection = leftSection.get();
-            removeSection(deleteSection);
-        }
-        return leftSection;
+        Optional<Section> section = findSectionWithDownStation(station);
+        section.ifPresent(this::removeSection);
+        return section;
     }
 
     private Optional<Section> deleteRightSection(Station station) {
-        Optional<Section> rightSection = findSectionWithUpStation(station);
-        if (rightSection.isPresent()) {
-            Section deleteSection = rightSection.get();
-            removeSection(deleteSection);
-        }
-        return rightSection;
+        Optional<Section> section = findSectionWithUpStation(station);
+        section.ifPresent(this::removeSection);
+        return section;
     }
 
     public boolean isLineUpStation(Station station) {
@@ -142,14 +132,16 @@ public class Sections {
     public Station getLineUpStation() {
         Set<Station> stationSet = getStationSet();
         this.list.forEach(section -> stationSet.remove(section.getDownStation()));
-        return stationSet.stream()
-                .findFirst()
-                .orElseThrow(StationNotFoundException::new);
+        return findFirstStation(stationSet);
     }
 
     public Station getLineDownStation() {
         Set<Station> stationSet = getStationSet();
         this.list.forEach(section -> stationSet.remove(section.getUpStation()));
+        return findFirstStation(stationSet);
+    }
+
+    private Station findFirstStation(Set<Station> stationSet) {
         return stationSet.stream()
                 .findFirst()
                 .orElseThrow(StationNotFoundException::new);
@@ -166,22 +158,14 @@ public class Sections {
 
     public Section getLineUpSection() {
         Station lineUpStation = getLineUpStation();
-        return list.stream()
-                .filter(section -> section.getUpStation() == lineUpStation)
-                .findFirst()
-                .orElseThrow(() -> {
-                    throw new SectionNotFoundException("노선 내 구간을 찾을 수 없습니다");
-                });
+        return findSectionWithUpStation(lineUpStation)
+                .orElseThrow(SectionNotFoundException::new);
     }
 
     public Section getLineDownSection() {
         Station lineDownStation = getLineDownStation();
-        return list.stream()
-                .filter(section -> section.getDownStation() == lineDownStation)
-                .findFirst()
-                .orElseThrow(() -> {
-                    throw new SectionNotFoundException("노선 내 구간을 찾을 수 없습니다");
-                });
+        return findSectionWithDownStation(lineDownStation)
+                .orElseThrow(SectionNotFoundException::new);
     }
 
     public boolean containStation(Station station) {
