@@ -23,10 +23,7 @@ public class Sections {
 
 	public List<Station> getStations() {
 		Section firstSection = findFirstSection();
-
-		List<Station> stations = getStationsBeyond(firstSection);
-
-		return stations;
+		return getStationsBeyond(firstSection);
 	}
 
 	public void add(Line line, Station upStation, Station downStation, int distance) {
@@ -136,8 +133,15 @@ public class Sections {
 		Optional<Section> optionalFrontSection = findSectionByUpStation(station);
 		Optional<Section> optionalBackSection = findSectionByDownStation(station);
 
-		if(isFront(optionalFrontSection, optionalBackSection)) {
+		if(optionalFrontSection.isPresent()
+			&& !optionalBackSection.isPresent()) {
 			Section section = optionalFrontSection.orElseThrow(NoSuchElementException::new);
+			sections.remove(section);
+		}
+
+		if(!optionalFrontSection.isPresent()
+			&& optionalBackSection.isPresent()) {
+			Section section = optionalBackSection.orElseThrow(NoSuchElementException::new);
 			sections.remove(section);
 		}
 	}
@@ -152,9 +156,5 @@ public class Sections {
 		return sections.stream()
 			.filter(it -> it.isDownStation(station))
 			.findFirst();
-	}
-
-	private boolean isFront(Optional<Section> frontSection,	Optional<Section> backSection) {
-		return frontSection.isPresent() && !backSection.isPresent();
 	}
 }
