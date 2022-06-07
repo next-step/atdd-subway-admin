@@ -21,7 +21,7 @@ public class SectionAcceptanceRequest {
         지하철노선_존재("2호선", 1L, 2L, 10, "green");
     }
 
-    public static ExtractableResponse<Response> 지하철구간_생성_요청(String downStationId, String upStationId, int distance) {
+    public static ExtractableResponse<Response> 지하철구간_생성_요청(String upStationId, String downStationId, int distance) {
         Map<String, Object> params = new HashMap<>();
         params.put("downStationId", downStationId);
         params.put("upStationId", upStationId);

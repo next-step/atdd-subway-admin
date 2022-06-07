@@ -49,7 +49,7 @@ public class LineServiceTest {
         when(stationRepository.findById(any(Long.class))).thenReturn(Optional.of(downStation));
         when(lineRepository.save(any(Line.class))).thenReturn(new Line("2호선", "green",section));
 
-        LineResponse lineResponse = lineService.create(LineRequest.of("2호선", 2L, 1L));
+        LineResponse lineResponse = lineService.create(LineRequest.of("2호선", 2L, 1L, 10));
 
         assertThat(lineResponse.getName()).isEqualTo("2호선");
     }
@@ -84,7 +84,7 @@ public class LineServiceTest {
     @DisplayName("id값이 존재한다면 지하철노선을 수정한다")
     @Test
     void updateLineWithValidId() {
-        LineRequest lineRequest = LineRequest.of("3호선", 2L, 1L);
+        LineRequest lineRequest = LineRequest.of("3호선", 2L, 1L, 10);
         when(lineRepository.findById(1L)).thenReturn(Optional.of(new Line("2호선")));
 
         LineResponse lineResponse = lineService.updateLine(1L, lineRequest);
@@ -95,7 +95,7 @@ public class LineServiceTest {
     @DisplayName("id값이 존재하지 않는다면 예외를 던진다")
     @Test
     void updateLineWithInvalidId() {
-        LineRequest lineRequest = LineRequest.of("3호선", 2L, 1L);
+        LineRequest lineRequest = LineRequest.of("3호선", 2L, 1L, 10);
         assertThatThrownBy(() -> lineService.updateLine(1L, lineRequest))
                 .isInstanceOf(LineNotFoundException.class);
     }

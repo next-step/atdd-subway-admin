@@ -14,14 +14,15 @@ public class LineRequest {
     public LineRequest() {
     }
 
-    private LineRequest(String name, Long upStationId, Long downStationId) {
+    private LineRequest(String name, Long upStationId, Long downStationId, int distance) {
         this.name = name;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
+        this.distance = distance;
     }
 
-    public static LineRequest of(String name, Long upStationId, Long downStationId) {
-        return new LineRequest(name, upStationId, downStationId);
+    public static LineRequest of(String name, Long upStationId, Long downStationId, int distance) {
+        return new LineRequest(name, upStationId, downStationId, distance);
     }
 
     public String getName() {

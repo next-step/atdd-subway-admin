@@ -47,9 +47,9 @@ public class SectionAcceptanceTest {
         지하철역과_노선_존재();
         String upStationId = "1";
         String downStationId = "3";
-        int distance = 10;
+        int distance = 5;
 
-        ExtractableResponse<Response> response = 지하철구간_생성_요청(downStationId, upStationId, distance);
+        ExtractableResponse<Response> response = 지하철구간_생성_요청(upStationId, downStationId, distance);
 
         지하철구간_생성_성공(response);
     }
@@ -70,7 +70,7 @@ public class SectionAcceptanceTest {
         지하철역과_노선_존재();
         지하철구간_존재(downStationId, upStationId, distance);
 
-        ExtractableResponse<Response> response = 지하철구간_생성_요청(downStationId, upStationId, distance);
+        ExtractableResponse<Response> response = 지하철구간_생성_요청(upStationId, downStationId, distance);
 
         지하철구간_생성_실패(response);
     }
@@ -89,13 +89,13 @@ public class SectionAcceptanceTest {
         String downStationId = "5";
         int distance = 10;
 
-        ExtractableResponse<Response> response = 지하철구간_생성_요청(downStationId, upStationId, distance);
+        ExtractableResponse<Response> response = 지하철구간_생성_요청(upStationId, downStationId, distance);
 
         지하철구간_생성_실패(response);
     }
 
     /**
-     * GIVEN 3개의 지하철 역과
+     * GIVEN 지하철 역과
      * GIVEN 1개의 노선과
      * GIVEN 1개의 구간이 존재 할 때
      * WEHN 역 사이에 새로운 역을 등록하면
@@ -104,6 +104,14 @@ public class SectionAcceptanceTest {
     @DisplayName("역 사이에 새로운 역 생성한다")
     @Test
     void 역_사이에_새로운_역_생성_성공() {
+        지하철역과_노선_존재();
+        String upStationId = "1";
+        String downStationId = "3";
+        int distance = 5;
+
+        ExtractableResponse<Response> response = 지하철구간_생성_요청(upStationId, downStationId, distance);
+
+        지하철구간_생성_성공(response);
     }
 
     /**
@@ -116,6 +124,14 @@ public class SectionAcceptanceTest {
     @DisplayName("역 사이에 새로운 역 생성한다")
     @Test
     void 역_사이에_새로운_역_생성_예외() {
+        지하철역과_노선_존재();
+        String upStationId = "1";
+        String downStationId = "3";
+        int distance = 10;
+
+        ExtractableResponse<Response> response = 지하철구간_생성_요청(upStationId, downStationId, distance);
+
+        지하철구간_생성_실패(response);
     }
 
     /**

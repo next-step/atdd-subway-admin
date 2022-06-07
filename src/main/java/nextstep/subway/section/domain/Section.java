@@ -3,6 +3,7 @@ package nextstep.subway.section.domain;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
@@ -31,7 +32,8 @@ public class Section {
     @ManyToOne(fetch = FetchType.LAZY)
     private Line line;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
@@ -40,13 +42,13 @@ public class Section {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public Long getId() {
@@ -62,7 +64,7 @@ public class Section {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.getDistance();
     }
 
     public Line getLine() {
@@ -94,5 +96,25 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(id, upStation, downStation, line, distance);
+    }
+
+    public boolean isSameUpStation(Section section) {
+        return this.upStation.equals(section.getUpStation());
+    }
+
+    public void updateUpStation(Section section) {
+        this.downStation = section.getUpStation();
+    }
+
+    public void updateDistance(Section section) {
+        this.distance = this.distance.subtract(section.getDistance());
+    }
+
+    public boolean isSameDownStation(Section section) {
+        return this.downStation.equals(section.getDownStation());
+    }
+
+    public void updateDownStation(Section section) {
+        this.upStation = section.getDownStation();
     }
 }
