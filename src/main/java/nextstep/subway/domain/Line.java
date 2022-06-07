@@ -5,7 +5,7 @@ import nextstep.subway.dto.LineRequest;
 import javax.persistence.*;
 
 @Entity
-public class Line extends BaseEntity{
+public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,13 +37,22 @@ public class Line extends BaseEntity{
         this.distance = distance;
     }
 
+    private Line(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
     public static Line of(String name, String color, Station upStation, Station downStation, Long distance) {
         return new Line(name, color, upStation, downStation, distance);
     }
 
-    public void update(LineRequest lineRequest) {
-        this.name = lineRequest.getName();
-        this.color = lineRequest.getColor();
+    public static Line of(String name, String color) {
+        return new Line(name, color);
+    }
+
+    public void update(Line line) {
+        this.name = line.getName();
+        this.color = line.getColor();
     }
 
     public Long getId() {
