@@ -355,48 +355,50 @@ public class LinesAcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = LineRequest.deleteSection(createdLineId, station2);
-        ExtractableResponse<Response> getAllResponse = LineRequest.getLineById(createdLineId);
+        ExtractableResponse<Response> getResponse = LineRequest.getLineById(createdLineId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_NO_CONTENT);
-        assertThat(getAllResponse.jsonPath().getList("stations.id", Long.class))
+        assertThat(getResponse.jsonPath().getList("stations.id", Long.class))
                 .containsExactly(station1, station3, station4);
     }
 
-//    /**
-//     * Given 2개 이상의 구간을 가진 지하철 노선을 생성하고
-//     * When 상행, 하행의 종점을 삭제하면
-//     * Then 해당 구간은 삭제가 되고 해당 구간과 연결된 구간이 새로운 상행, 하행의 종점이 되어야 한다
-//     */
-//    @DisplayName("노선의 상/하행 종점을 삭제하면 삭제되는 구간과 연결된 구간이 새로운 상/하행 종점이 되어야 한다")
-//    @Test
-//    void deleteFirstOrLastSection() {
-//        // given
-//        Long station1 = StationRequest.createStationThenReturnId("배방역");
-//        Long station2 = StationRequest.createStationThenReturnId("신창역");
-//        Long station3 = StationRequest.createStationThenReturnId("온양온천역");
-//        Long createdLineId1 = LineRequest.createLineThenReturnId(
-//                "1호선", "bg-blue-600", station1, station3, 10L
-//        );
-//        Long createdLineId2 = LineRequest.createLineThenReturnId(
-//                "1호선", "bg-blue-600", station3, station1, 10L
-//        );
-//        LineRequest.addSection(createdLineId1, station1, station2, 5L);
-//        LineRequest.addSection(createdLineId2, station3, station2, 5L);
-//
-//        // when
-//        ExtractableResponse<Response> newUpStationResponse = LineRequest.deleteSection(createdLineId1, station1);
-//        ExtractableResponse<Response> newDownStationResponse = LineRequest.deleteSection(createdLineId2, station1);
-//
-//        // then
-//        assertThat(newUpStationResponse.statusCode()).isEqualTo(HttpStatus.SC_NO_CONTENT);
-//        assertThat(newDownStationResponse.statusCode()).isEqualTo(HttpStatus.SC_NO_CONTENT);
-//        assertThat(newUpStationResponse.jsonPath().getList("stations.id", Long.class))
-//                .containsExactly(station2, station3);
-//        assertThat(newDownStationResponse.jsonPath().getList("stations.id", Long.class))
-//                .containsExactly(station3, station2);
-//    }
-//
+    /**
+     * Given 2개 이상의 구간을 가진 지하철 노선을 생성하고
+     * When 상행, 하행의 종점을 삭제하면
+     * Then 해당 구간은 삭제가 되고 해당 구간과 연결된 구간이 새로운 상행, 하행의 종점이 되어야 한다
+     */
+    @DisplayName("노선의 상/하행 종점을 삭제하면 삭제되는 구간과 연결된 구간이 새로운 상/하행 종점이 되어야 한다")
+    @Test
+    void deleteFirstOrLastSection() {
+        // given
+        Long station1 = StationRequest.createStationThenReturnId("배방역");
+        Long station2 = StationRequest.createStationThenReturnId("신창역");
+        Long station3 = StationRequest.createStationThenReturnId("온양온천역");
+        Long createdLineId1 = LineRequest.createLineThenReturnId(
+                "1호선", "bg-blue-600", station1, station3, 10L
+        );
+        Long createdLineId2 = LineRequest.createLineThenReturnId(
+                "1호선", "bg-blue-600", station3, station1, 10L
+        );
+        LineRequest.addSection(createdLineId1, station1, station2, 5L);
+        LineRequest.addSection(createdLineId2, station3, station2, 5L);
+
+        // when
+        ExtractableResponse<Response> deleteFirstSectionResponse = LineRequest.deleteSection(createdLineId1, station1);
+        ExtractableResponse<Response> deleteLastSectionResponse = LineRequest.deleteSection(createdLineId2, station1);
+        ExtractableResponse<Response> getDeleteFirstResponse = LineRequest.getLineById(createdLineId1);
+        ExtractableResponse<Response> getDeleteLastResponse = LineRequest.getLineById(createdLineId2);
+
+        // then
+        assertThat(deleteFirstSectionResponse.statusCode()).isEqualTo(HttpStatus.SC_NO_CONTENT);
+        assertThat(deleteLastSectionResponse.statusCode()).isEqualTo(HttpStatus.SC_NO_CONTENT);
+        assertThat(getDeleteFirstResponse.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(station2, station3);
+        assertThat(getDeleteLastResponse.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(station3, station2);
+    }
+
 //    /**
 //     * Given 구간이 1개인 지하철 노선을 생성하고
 //     * When 마지막 구간을 삭제하면

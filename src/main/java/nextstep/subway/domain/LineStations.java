@@ -34,7 +34,7 @@ public class LineStations {
 
     public void deleteLineStation(Station station) {
         LineStation target = findLineStation(
-                lineStation -> lineStation.isSameUpStation(station),
+                lineStation -> lineStation.isSameUpStation(station) || (lineStation.isLast() && lineStation.isSameDownStation(station)),
                 station.getName() + " 에 해당하는 구간이 1개가 아닙니다."
         );
 
@@ -75,8 +75,8 @@ public class LineStations {
     }
 
     private LineStation findAddTarget(Station upStation, Station downStation) {
-        LineStation findByUpStation = findLineStationByAddUpStationId(upStation);
-        LineStation findByDownStation = findLineStationByAddDownStationId(downStation);
+        LineStation findByUpStation = findLineStationByUpStationId(upStation);
+        LineStation findByDownStation = findLineStationByDownStationId(downStation);
 
         if (findByUpStation != null && findByDownStation != null) {
             throw new IllegalArgumentException("기존에 등록된 같은 상/하행역을 등록할 수 없습니다.");
@@ -105,17 +105,17 @@ public class LineStations {
                 .orElse(null);
     }
 
-    private LineStation findLineStationByAddUpStationId(Station upStation) {
+    private LineStation findLineStationByUpStationId(Station upStation) {
         return findLineStation(
                 lineStation -> lineStation.isSameUpStation(upStation) || lineStation.isAddNewLast(upStation),
-                upStation.getName() + " 이 상행역인 구간이 1개가 아니거나 종착역 이후 구간이 존재합니다."
+                upStation.getName() + " 의 상행역인 구간이 1개가 아니거나 종착역 이후 구간이 존재합니다."
         );
     }
 
-    private LineStation findLineStationByAddDownStationId(Station downStation) {
+    private LineStation findLineStationByDownStationId(Station downStation) {
         return findLineStation(
                 lineStation -> lineStation.isSameDownStation(downStation) || lineStation.isAddNewFirst(downStation),
-                downStation.getName() + " 이 하행역인 구간이 1개가 아니거나 시작역 이전 구간이 존재합니다."
+                downStation.getName() + " 의 하행역인 구간이 1개가 아니거나 시작역 이전 구간이 존재합니다."
         );
     }
 
