@@ -33,6 +33,8 @@ public class LineAcceptanceTest {
     @Autowired
     DatabaseCleanup databaseCleanup;
 
+    private final String LINE_URL = "/lines";
+
     @BeforeEach
     public void setUp() throws Exception {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
@@ -51,14 +53,14 @@ public class LineAcceptanceTest {
     @Test
     void createLineTest() {
         // when
-        ExtractableResponse<Response> response = createLine("신분당선", "bg-red-600", "광교역", "신사역", 10L);
+        ExtractableResponse<Response> response = 지하철_노선_생성_신분당선();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        ExtractableResponse<Response> lineResponse = selectLine(response.as(LineResponse.class).getId());
-        assertThat(lineResponse.as(LineResponse.class).getName()).isEqualTo("신분당선");
+        ExtractableResponse<Response> lineResponse = selectLine(getId(response));
+        assertThat(toLineResponse(lineResponse).getName()).isEqualTo("신분당선");
     }
 
     /**
@@ -70,8 +72,8 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        createLine("신분당선", "bg-red-600", "광교역", "신사역", 10L);
-        createLine("2호선", "bg-green-600", "까치산", "신도림", 20L);
+        지하철_노선_생성_신분당선();
+        지하철_노선_생성_2호선();
 
         // when
         ExtractableResponse<Response> response = selectAllLine();
@@ -94,14 +96,14 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", "광교역", "신사역", 10L);
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_신분당선();
 
         // when
-        ExtractableResponse<Response> response = selectLine(createResponse.as(LineResponse.class).getId());
+        ExtractableResponse<Response> response = selectLine(getId(createResponse));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
-        LineResponse line = response.as(LineResponse.class);
+        LineResponse line = toLineResponse(response);
         assertAll(
                 () -> assertThat(line.getName()).isEqualTo("신분당선"),
                 () -> assertThat(line.getColor()).isEqualTo("bg-red-600")
@@ -117,24 +119,19 @@ public class LineAcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", "광교역", "신사역", 10L);
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_신분당선();
 
         // when
         Map<String, String> params = new HashMap<>();
         params.put("name", "new 신분당선");
         params.put("color", "bg-green-600");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params)
-                .when().put("/lines/" + createResponse.as(LineResponse.class).getId())
-                .then().log().all()
-                .extract();
-
+        Long id = getId(createResponse);
+        ExtractableResponse<Response> response = updateLine(id, params);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
-        LineResponse lineResponse = selectLine(createResponse.as(LineResponse.class).getId()).as(LineResponse.class);
+        LineResponse lineResponse = toLineResponse(selectLine(id));
         assertAll(
                 () -> assertThat(lineResponse.getName()).isEqualTo("new 신분당선"),
                 () -> assertThat(lineResponse.getColor()).isEqualTo("bg-green-600")
@@ -150,22 +147,26 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", "광교역", "신사역", 10L);
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_신분당선();
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/lines/" + createResponse.as(LineResponse.class).getId())
-                .then().log().all()
-                .extract();
-
-        ExtractableResponse<Response> afterDelete = selectLine(createResponse.as(LineResponse.class).getId());
+        Long id = getId(createResponse);
+        ExtractableResponse<Response> response = deleteLine(id);
+        ExtractableResponse<Response> afterDelete = selectLine(id);
 
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
                 () -> assertThat(afterDelete.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
         );
+    }
+
+    public ExtractableResponse<Response> 지하철_노선_생성_신분당선() {
+        return createLine("신분당선", "bg-red-600", "광교역", "신사역", 10L);
+    }
+
+    public ExtractableResponse<Response> 지하철_노선_생성_2호선() {
+        return createLine("2호선", "bg-green-600", "까치산", "신도림", 20L);
     }
 
     public ExtractableResponse<Response> createLine(String name, String color, String upStation, String downStation, Long distance) {
@@ -203,14 +204,39 @@ public class LineAcceptanceTest {
     public ExtractableResponse<Response> selectAllLine() {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines")
+                .when().get(LINE_URL)
                 .then().log().all()
                 .extract();
     }
 
     public ExtractableResponse<Response> selectLine(Long id) {
         return  RestAssured.given().log().all()
-                .when().get("/lines/" + String.valueOf(id))
+                .when().get(LINE_URL+ "/" + String.valueOf(id))
+                .then().log().all()
+                .extract();
+    }
+
+    public Long getId(ExtractableResponse<Response> response) {
+        return response.as(LineResponse.class).getId();
+    }
+
+    public LineResponse toLineResponse(ExtractableResponse<Response> response) {
+        return response.as(LineResponse.class);
+    }
+
+    public ExtractableResponse<Response> updateLine(Long id, Map<String, String> params) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when().put(LINE_URL+ "/" + id)
+                .then().log().all()
+                .extract();
+    }
+
+    public ExtractableResponse<Response> deleteLine(Long id) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete(LINE_URL+ "/" + id)
                 .then().log().all()
                 .extract();
     }
