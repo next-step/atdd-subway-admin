@@ -5,11 +5,16 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Embeddable
 public class LineStations {
+    private static Logger logger = Logger.getLogger(LineStation.class.getName());
+
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @JoinColumn(name = "line_id")
     private List<LineStation> lineStations = new ArrayList<>();
@@ -78,11 +83,13 @@ public class LineStations {
                 .filter(LineStation::isStart)
                 .collect(Collectors.toList());
 
-        if (findResult.size() != 1) {
-            throw new IllegalStateException("노선의 시작점이 1개가 아닙니다.");
+        if (findResult.size() > 1) {
+            logger.log(Level.SEVERE, "노선의 시작점이 1개가 아닙니다.");
         }
 
-        return findResult.get(0);
+        return findResult.stream()
+                .max(Comparator.comparing(LineStation::getCreatedDate))
+                .orElseThrow(() -> new IllegalStateException("노선의 시작점을 찾을 수 없습니다."));
     }
 
     private LineStation findNextLineStation(Station nextStation) {
@@ -92,9 +99,11 @@ public class LineStations {
                 .collect(Collectors.toList());
 
         if (findResult.size() != 1) {
-            throw new IllegalStateException(nextStation.getName() + " 의 다음역 정보가 1개가 아닙니다.");
+            logger.log(Level.SEVERE, nextStation.getName() + " 의 다음역 정보가 1개가 아닙니다.");
         }
 
-        return findResult.get(0);
+        return findResult.stream()
+                .max(Comparator.comparing(LineStation::getCreatedDate))
+                .orElseThrow(() -> new IllegalStateException(nextStation.getName() + " 의 다음역 정보를 찾을 수 없습니다."));
     }
 }
