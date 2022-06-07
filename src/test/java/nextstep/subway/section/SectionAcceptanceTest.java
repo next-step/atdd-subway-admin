@@ -115,7 +115,7 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * GIVEN 3개의 지하철 역과
+     * GIVEN 지하철 역과
      * GIVEN 1개의 노선과
      * GIVEN 1개의 구간이 존재 할 때
      * WEHN 새로운 구간의 길이가 기존 구간의 길이보다 크거나 같으면
@@ -135,7 +135,7 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * GIVEN 3개의 지하철 역과
+     * GIVEN 지하철 역과
      * GIVEN 1개의 노선과
      * GIVEN 1개의 구간이 존재 할 때
      * WEHN 새로운 역을 상행 종점으로 생성하면
@@ -144,10 +144,18 @@ public class SectionAcceptanceTest {
     @DisplayName("새로운 역을 상행 종점으로 생성한다")
     @Test
     void 새로운_역_상행_종점_생성_성공() {
+        지하철역과_노선_존재();
+        String upStationId = "3";
+        String downStationId = "1";
+        int distance = 5;
+
+        ExtractableResponse<Response> response = 지하철구간_생성_요청(upStationId, downStationId, distance);
+
+        지하철구간_생성_성공(response);
     }
 
     /**
-     * GIVEN 3개의 지하철 역과
+     * GIVEN 지하철 역과
      * GIVEN 1개의 노선과
      * GIVEN 1개의 구간이 존재 할 때
      * WEHN 새로운 역을 하행 종점으로 생성하면
@@ -156,5 +164,13 @@ public class SectionAcceptanceTest {
     @DisplayName("새로운 역을 하행 종점으로 생성한다")
     @Test
     void 새로운_역_하행_종점_생성_성공() {
+        지하철역과_노선_존재();
+        String upStationId = "2";
+        String downStationId = "3";
+        int distance = 5;
+
+        ExtractableResponse<Response> response = 지하철구간_생성_요청(upStationId, downStationId, distance);
+
+        지하철구간_생성_성공(response);
     }
 }

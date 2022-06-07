@@ -80,9 +80,14 @@ public class Section {
                 this.downStation.equals(section.downStation);
     }
 
-    public boolean matchAllNoneStations(Section section) {
-        return !this.upStation.equals(section.upStation) &&
-                !this.downStation.equals(section.downStation);
+    public boolean hasUpStations(Section section) {
+        return this.upStation.equals(section.upStation) ||
+                this.upStation.equals(section.downStation);
+    }
+
+    public boolean hasDownStations(Section section) {
+        return this.downStation.equals(section.upStation) ||
+                this.downStation.equals(section.downStation);
     }
 
     @Override
@@ -98,16 +103,16 @@ public class Section {
         return Objects.hash(id, upStation, downStation, line, distance);
     }
 
+    public void updateDistance(Section section) {
+        this.distance = this.distance.subtract(section.getDistance());
+    }
+
     public boolean isSameUpStation(Section section) {
         return this.upStation.equals(section.getUpStation());
     }
 
     public void updateUpStation(Section section) {
-        this.downStation = section.getUpStation();
-    }
-
-    public void updateDistance(Section section) {
-        this.distance = this.distance.subtract(section.getDistance());
+        this.upStation = section.getDownStation();
     }
 
     public boolean isSameDownStation(Section section) {
@@ -115,6 +120,6 @@ public class Section {
     }
 
     public void updateDownStation(Section section) {
-        this.upStation = section.getDownStation();
+        this.downStation = section.getUpStation();
     }
 }

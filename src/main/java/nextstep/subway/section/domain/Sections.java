@@ -16,7 +16,7 @@ public class Sections {
 
     public void addSection(Section section) {
         validateDuplication(section);
-        validateExistence(section);
+        validateRegister(section);
         updateUpStation(section);
         updateDownStation(section);
         sections.add(section);
@@ -28,8 +28,17 @@ public class Sections {
         }
     }
 
+    private void validateRegister(Section section) {
+        if (!isFirst()) {
+            validateExistence(section);
+        }
+    }
+
     private void validateExistence(Section section) {
-        if (sections.stream().anyMatch(section::matchAllNoneStations)) {
+        boolean upStationExist = sections.stream().anyMatch(section::hasUpStations);
+        boolean downStationExist = sections.stream().anyMatch(section::hasDownStations);
+
+        if (!upStationExist && !downStationExist) {
             throw new StationAllNotExistedException();
         }
     }
@@ -52,5 +61,9 @@ public class Sections {
                     s.updateDownStation(section);
                     s.updateDistance(section);
                 });
+    }
+
+    private boolean isFirst() {
+        return sections.size() == 0;
     }
 }
