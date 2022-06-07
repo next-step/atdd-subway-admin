@@ -250,6 +250,14 @@ host: localhost:52165
 }
 ```
 
+* 지하철 구간 삭제
+```http request
+DELETE /lines/1/sections?stationId=2 HTTP/1.1
+accept: */*
+host: localhost:52165
+```
+
+
 ## ✏️ Code Review Process
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
