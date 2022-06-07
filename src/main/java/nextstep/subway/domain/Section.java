@@ -96,7 +96,7 @@ public class Section extends BaseEntity {
         this.distance = this.distance.subtract(target.distance);
     }
 
-    public void addLine(Line line) {
+    public void setLine(Line line) {
         validateLineNotNull(line);
         this.line = line;
     }

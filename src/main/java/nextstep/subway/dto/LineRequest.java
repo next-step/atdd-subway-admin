@@ -23,8 +23,7 @@ public class LineRequest {
 
     public Line toLine(Station upStation, Station downStation) {
         Section section = Section.of(upStation, downStation, this.distance);
-        Line line = new Line(name, color);
-        line.addSection(section);
+        Line line = new Line(name, color, section);
         return line;
     }
 

@@ -71,8 +71,8 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        sections.connect(section);
-        section.addLine(this);
+        sections.addSection(section);
+        section.setLine(this);
     }
 
     public Long getId() {

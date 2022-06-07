@@ -23,7 +23,7 @@ public class Sections {
     protected Sections() {
     }
 
-    public void connect(Section section) {
+    public void addSection(Section section) {
         validate(section);
         update(section);
         sections.add(section);
