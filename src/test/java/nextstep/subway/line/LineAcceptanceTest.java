@@ -28,7 +28,7 @@ public class LineAcceptanceTest {
 
     @LocalServerPort
     int port;
-    private Map<String, String> params;
+    public static Map<String, String> params;
 
 
     @BeforeEach
@@ -210,7 +210,7 @@ public class LineAcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> 지하철노선_조회_요청(Long id) {
+    public static ExtractableResponse<Response> 지하철노선_조회_요청(Long id) {
         return RestAssured.given().log().all()
             .pathParam("id", id)
             .when().get("/lines/{id}")
@@ -226,7 +226,8 @@ public class LineAcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color, Long upStationId,
+    public static ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color,
+        Long upStationId,
         Long downStationId, Long distance) {
         params.put("name", name);
         params.put("color", color);
@@ -242,11 +243,11 @@ public class LineAcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(TestLine testLine) {
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(TestLine testLine) {
         if (testLine.equals(TestLine.NUMBER_2)) {
             ExtractableResponse<Response> 잠실역 = 지하철역_생성_요청("잠실역");
             ExtractableResponse<Response> 건대역 = 지하철역_생성_요청("건대역");
-            return 지하철노선_생성_요청(testLine.getName(), "bg-blue-600",
+            return 지하철노선_생성_요청(testLine.getName(), "역g-blue-600",
                 잠실역.jsonPath().getLong("id"),
                 건대역.jsonPath().getLong("id"), 10L);
         }
