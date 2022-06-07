@@ -78,6 +78,11 @@ public class Section {
                 this.downStation.equals(section.downStation);
     }
 
+    public boolean matchAllNoneStations(Section section) {
+        return !this.upStation.equals(section.upStation) &&
+                !this.downStation.equals(section.downStation);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

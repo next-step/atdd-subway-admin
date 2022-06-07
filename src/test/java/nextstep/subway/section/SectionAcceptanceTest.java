@@ -36,7 +36,7 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * GIVEN 2개의 지하철과
+     * GIVEN 지하철역이 존재하고
      * GIVEN 1개의 노선이 존재할 때
      * WHEN 지하철 구간을 생성하면
      * THEN 생성된 지하철 구간을 확인할 수 있다
@@ -55,7 +55,7 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * GIVEN 2개의 지하철역이 존재하고
+     * GIVEN 지하철역이 존재하고
      * GIVEN 1개의 노선이 존재할 때
      * WHEN 동일한 구간을 생성하면
      * THEN 예외를 던진다
@@ -76,7 +76,7 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * GIVEN 2개의 지하철역이 존재하고
+     * GIVEN 지하철역이 존재하고
      * GIVEN 1개의 노선이 존재할 때
      * WHEN 지하철 역 중 하나도 포함되어있지 않으면
      * THEN 예외를 던진다
@@ -84,6 +84,14 @@ public class SectionAcceptanceTest {
     @DisplayName("지하철 역 중 하나도 포함되어있지 않으면 예외를 던진다")
     @Test
     void 구간_생성_포함_예외() {
+        지하철역과_노선_존재();
+        String upStationId = "4";
+        String downStationId = "5";
+        int distance = 10;
+
+        ExtractableResponse<Response> response = 지하철구간_생성_요청(downStationId, upStationId, distance);
+
+        지하철구간_생성_실패(response);
     }
 
     /**
