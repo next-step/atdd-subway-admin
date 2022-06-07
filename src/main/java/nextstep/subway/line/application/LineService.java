@@ -30,20 +30,20 @@ public class LineService {
     public LineResponse addLine(final LineAddRequest lineAddRequest) {
         final Station upStation = stationService.findById(lineAddRequest.getUpStationId());
         final Station downStation = stationService.findById(lineAddRequest.getDownStationId());
-        Line line = Line.ofAddLine(lineAddRequest, upStation, downStation);
+        Line line = lineAddRequest.toEntity(upStation, downStation);
         lineRepository.save(line);
 
-        return line.toLineResponse();
+        return LineResponse.from(line);
     }
 
     public List<LineResponse> fetchLines() {
         return lineRepository.findAll().stream()
-                .map(Line::toLineResponse)
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
 
     public LineResponse fetchLine(final Long id) {
-        return findById(id).toLineResponse();
+        return LineResponse.from(findById(id));
     }
 
     @Transactional

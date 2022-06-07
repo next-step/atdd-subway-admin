@@ -1,11 +1,11 @@
 package nextstep.subway.line.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.Stations;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.dto.Stations;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,17 +15,21 @@ public class LineResponse {
     private final String color;
     private final Stations stations;
 
-    @JsonCreator
-    public LineResponse(@JsonProperty("id") final Long id,
-                        @JsonProperty("name") final String name,
-                        @JsonProperty("color") final String color,
-                        @JsonProperty("stations") final List<Station> stations) {
+    private LineResponse(final Long id, final String name, final String color, final List<Station> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.stations = Stations.of(stations);
     }
 
+    public static LineResponse from(final Line line) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(),
+                createStations(line.getUpStation(), line.getDownStation()));
+    }
+
+    private static List<Station> createStations(final Station upStation, final Station downStation) {
+        return Arrays.asList(upStation, downStation);
+    }
 
     public Long getId() {
         return id;
@@ -40,7 +44,7 @@ public class LineResponse {
     }
 
     public List<StationResponse> getStations() {
-        return stations.getStations();
+        return stations.getStationResponse();
     }
 
     @Override

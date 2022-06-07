@@ -2,6 +2,8 @@ package nextstep.subway.line.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
 
 public class LineAddRequest {
     private final String name;
@@ -23,6 +25,9 @@ public class LineAddRequest {
         this.distance = distance;
     }
 
+    public Line toEntity(final Station upStation, final Station downStation) {
+        return Line.of(name, color, upStation, downStation, distance);
+    }
 
     public String getName() {
         return name;

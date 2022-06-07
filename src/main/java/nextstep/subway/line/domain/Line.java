@@ -1,13 +1,9 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.dto.LineAddRequest;
-import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -27,10 +23,6 @@ public class Line {
     protected Line() {
     }
 
-    public Line(final String name, final String color, final Station upStation, final Station downStation, final long distance) {
-        this(null, name, color, upStation, downStation, distance);
-    }
-
     public Line(final Long id, final String name, final String color,
                 final Station upStation, final Station downStation, final long distance) {
         this.id = id;
@@ -41,8 +33,17 @@ public class Line {
         this.distance = new Distance(distance);
     }
 
-    public static Line ofAddLine(final LineAddRequest lineAddRequest, final Station upStation, final Station downStation) {
-        return new Line(null, lineAddRequest.getName(), lineAddRequest.getColor(), upStation, downStation, lineAddRequest.getDistance());
+    private Line(final String name, final String color, final Station upStation, final Station downStation, final long distance) {
+        this(null, name, color, upStation, downStation, distance);
+    }
+
+    public static Line of(final String name, final String color, final Station upStation, final Station downStation, final long distance) {
+        return new Line(null, name, color, upStation, downStation, distance);
+    }
+
+    public void updateNameAndColor(final LineUpdateRequest lineUpdateRequest) {
+        this.color = lineUpdateRequest.getColor();
+        this.name = lineUpdateRequest.getName();
     }
 
     public Long getId() {
@@ -67,19 +68,6 @@ public class Line {
 
     public long getDistance() {
         return distance.getValue();
-    }
-
-    public LineResponse toLineResponse() {
-        return new LineResponse(id, name, color, getSideStation());
-    }
-
-    private List<Station> getSideStation() {
-        return Arrays.asList(upStation, downStation);
-    }
-
-    public void updateNameAndColor(final LineUpdateRequest lineUpdateRequest) {
-        this.color = lineUpdateRequest.getColor();
-        this.name = lineUpdateRequest.getName();
     }
 
     @Override
