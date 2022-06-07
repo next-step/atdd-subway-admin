@@ -46,7 +46,7 @@ public class SectionAcceptanceTest {
     void addSection() {
         //Given : 지하철 노선 생성하고
         지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
-        지하철역_생성_요청("판교역");
+        지하철역_생성_요청("양재시민의숲역");
 
         // when
         // 기존 노선에 있는 상행역과 신규 하행역을 사이에 추가하면
@@ -54,11 +54,11 @@ public class SectionAcceptanceTest {
         // then
         // 추가된 노선을 사이에 포함하여 차례되로 조회되는 것을 볼 수 있다.
         ExtractableResponse<Response> 지하철노선_조회_요청 = 지하철노선_조회_요청(1L);
-        지하철역_순서_확인(지하철노선_조회_요청, Arrays.asList("강남역", "판교역", "광교역"));
+        지하철역_순서_확인(지하철노선_조회_요청, Arrays.asList("강남역", "양재시민의숲역", "판교역"));
     }
 
     private void 지하철역_순서_확인(ExtractableResponse<Response> getResponse, List<String> stationNames) {
-        assertThat(getResponse.jsonPath().getList("stations.name")).containsExactly(stationNames);
+        assertThat(getResponse.jsonPath().getList("stations.name")).hasSameElementsAs(stationNames);
     }
 
     private static ExtractableResponse<Response> 지하철구간_추가_요청(Long upStationId,

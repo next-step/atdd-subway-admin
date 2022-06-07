@@ -17,6 +17,36 @@ public class Sections {
         sections.add(section);
     }
 
+
+    public void update(Section section) {
+        Section sameUpStationSection = findSameUpStationSection(section);
+        Section sameDownStationSection = findSameDownStationSection(section);
+
+        if (sameDownStationSection != null && sameUpStationSection != null) {
+            throw new IllegalArgumentException("이미 등록된 구간입니다.");
+        }
+        if (sameDownStationSection == null && sameUpStationSection == null) {
+            throw new IllegalArgumentException("연결할 수 있는 역이 없습니다.");
+        }
+
+        if (sameUpStationSection != null) {
+            sameUpStationSection.updateUpStation(section);
+        }
+        if (sameDownStationSection != null) {
+            sameDownStationSection.updateDownStation(section);
+        }
+
+        sections.add(section);
+    }
+
+    private Section findSameUpStationSection(Section section) {
+        return sections.stream().filter(s -> s.existUpStation(section)).findFirst().orElse(null);
+    }
+
+    private Section findSameDownStationSection(Section section) {
+        return sections.stream().filter(s -> s.existDownStation(section)).findFirst().orElse(null);
+    }
+
     public List<Station> orderedStations() {
         Station station = firstStation();
         List<Station> orderedStations = new ArrayList<>();

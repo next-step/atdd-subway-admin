@@ -30,11 +30,22 @@ public class Section {
     @Column
     private Long distance;
 
+    public Long getDistance() {
+        return distance;
+    }
 
     public Section(Station upStation, Station downStation, Long distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public boolean existUpStation(Section section) {
+        return upStation.getId() == section.getUpStation().getId();
+    }
+
+    public boolean existDownStation(Section section) {
+        return downStation.getId() == section.getDownStation().getId();
     }
 
 
@@ -61,4 +72,24 @@ public class Section {
     public void setLine(Line line) {
         this.line = line;
     }
+
+    public void updateUpStation(Section section) {
+        updateDistance(section);
+        upStation = section.downStation;
+    }
+
+    public void updateDownStation(Section section) {
+        updateDistance(section);
+        downStation = section.upStation;
+    }
+
+    private void updateDistance(Section section) {
+        if (distance <= section.distance) {
+            throw new IllegalArgumentException("기존 구간 보다 거리가 멀 수 없습니다.");
+        }
+        distance = distance - section.distance;
+
+    }
+
+
 }

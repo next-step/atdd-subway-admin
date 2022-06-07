@@ -4,8 +4,10 @@ import java.net.URI;
 import java.util.List;
 import javassist.NotFoundException;
 import nextstep.subway.application.LineService;
+import nextstep.subway.application.SectionService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,9 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class LineController {
 
     private LineService lineService;
+    private SectionService sectionService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping("/lines")
@@ -56,6 +60,13 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping(value = "/lines/{lineId}/sections")
+    public ResponseEntity addSection(@PathVariable Long lineId,
+        @RequestBody SectionRequest sectionRequest) throws NotFoundException {
+        LineResponse lineResponse = sectionService.addSection(sectionRequest, lineId);
+        return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections"))
+            .body(lineResponse);
+    }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity handleNotFoundException() {

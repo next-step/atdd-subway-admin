@@ -28,7 +28,7 @@ public class LineAcceptanceTest {
 
     @LocalServerPort
     int port;
-    public static Map<String, String> params;
+    public static Map<String, String> params = new HashMap<>();
 
 
     @BeforeEach
@@ -36,7 +36,6 @@ public class LineAcceptanceTest {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
-        params = new HashMap<>();
     }
 
     /**

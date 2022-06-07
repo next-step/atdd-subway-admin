@@ -1,5 +1,8 @@
 package nextstep.subway.application;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import javassist.NotFoundException;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
@@ -7,16 +10,19 @@ import nextstep.subway.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 @Transactional(readOnly = true)
 public class StationService {
+
     private StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
+    }
+
+    public Station findStationOrThrow(Long stationId) throws NotFoundException {
+        return stationRepository.findById(stationId)
+            .orElseThrow(() -> new NotFoundException("지하철 노선이 존재하지 않습니다."));
     }
 
     @Transactional
@@ -29,8 +35,8 @@ public class StationService {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-                .map(station -> StationResponse.of(station))
-                .collect(Collectors.toList());
+            .map(station -> StationResponse.of(station))
+            .collect(Collectors.toList());
     }
 
     @Transactional

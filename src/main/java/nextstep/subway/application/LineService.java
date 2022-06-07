@@ -69,7 +69,7 @@ public class LineService {
         }
     }
 
-    private Line findLineOrThrow(Long id) throws NotFoundException {
+    public Line findLineOrThrow(Long id) throws NotFoundException {
         return lineRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("지하철 노선이 존재하지 않습니다."));
     }
