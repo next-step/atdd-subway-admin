@@ -33,6 +33,10 @@ public class LineStations {
     }
 
     public void deleteLineStation(Station station) {
+        if (this.lineStations.size() == 1) {
+            throw new IllegalArgumentException("노선에 구간이 1개일 때 삭제할 수 없습니다.");
+        }
+
         LineStation target = findLineStation(
                 lineStation -> lineStation.isSameUpStation(station) || (lineStation.isLast() && lineStation.isSameDownStation(station)),
                 station.getName() + " 에 해당하는 구간이 1개가 아닙니다."

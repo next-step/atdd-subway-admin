@@ -399,31 +399,31 @@ public class LinesAcceptanceTest {
                 .containsExactly(station3, station2);
     }
 
-//    /**
-//     * Given 구간이 1개인 지하철 노선을 생성하고
-//     * When 마지막 구간을 삭제하면
-//     * Then 해당 삭제는 실패하고 예외가 발생해야 한다
-//     */
-//    @DisplayName("하나의 구간만 존재하는 노선의 구간을 삭제하면 예외가 발생하면서 실패해야 한다")
-//    @Test
-//    void deleteOneRemainingSection() {
-//        // given
-//        Long upStation = StationRequest.createStationThenReturnId("진접역");
-//        Long downStation = StationRequest.createStationThenReturnId("오남역");
-//        Long createdLineId = LineRequest.createLineThenReturnId(
-//                "4호선", "bg-sky-600", upStation, downStation, 10L
-//        );
-//
-//        // when
-//        ExtractableResponse<Response> response = LineRequest.deleteSection(createdLineId, upStation);
-//        ExtractableResponse<Response> getLineResponse = LineRequest.getLineById(createdLineId);
-//
-//        // then
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
-//        assertThat(getLineResponse.jsonPath().getList("stations.id", Long.class))
-//                .containsExactly(upStation, downStation);
-//    }
-//
+    /**
+     * Given 구간이 1개인 지하철 노선을 생성하고
+     * When 마지막 구간을 삭제하면
+     * Then 해당 삭제는 실패하고 예외가 발생해야 한다
+     */
+    @DisplayName("하나의 구간만 존재하는 노선의 구간을 삭제하면 예외가 발생하면서 실패해야 한다")
+    @Test
+    void deleteOneRemainingSection() {
+        // given
+        Long upStation = StationRequest.createStationThenReturnId("진접역");
+        Long downStation = StationRequest.createStationThenReturnId("오남역");
+        Long createdLineId = LineRequest.createLineThenReturnId(
+                "4호선", "bg-sky-600", upStation, downStation, 10L
+        );
+
+        // when
+        ExtractableResponse<Response> response = LineRequest.deleteSection(createdLineId, upStation);
+        ExtractableResponse<Response> getLineResponse = LineRequest.getLineById(createdLineId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+        assertThat(getLineResponse.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(upStation, downStation);
+    }
+
 //    /**
 //     * Given 노선을 생성하고
 //     * When 해당 노선에 존재하지 않는 구간을 삭제하면
