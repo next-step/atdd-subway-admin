@@ -57,4 +57,8 @@ public class Section {
     public void setDownStation(Station downStation) {
         this.downStation = downStation;
     }
+
+    public void setLine(Line line) {
+        this.line = line;
+    }
 }

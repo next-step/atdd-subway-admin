@@ -247,7 +247,7 @@ public class LineAcceptanceTest {
             ExtractableResponse<Response> 잠실역 = 지하철역_생성_요청("잠실역");
             ExtractableResponse<Response> 건대역 = 지하철역_생성_요청("건대역");
             return 지하철노선_생성_요청(testLine.getName(), "bg-blue-600",
-                건대역.jsonPath().getLong("id"),
+                잠실역.jsonPath().getLong("id"),
                 건대역.jsonPath().getLong("id"), 10L);
         }
         if (testLine.equals(TestLine.SHINBUNDANG)) {
