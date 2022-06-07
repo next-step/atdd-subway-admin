@@ -1,7 +1,6 @@
 package nextstep.subway.application;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -35,9 +34,7 @@ public class LineService {
 			lineRequest.getColor()
 		));
 
-		if(lineRequest.getUpStationId() != null
-			&& lineRequest.getDownStationId() != null
-			&& lineRequest.getDistance() > 0) {
+		if(lineRequest.isAddable()) {
 			Station upStation = stationService.findById(lineRequest.getUpStationId());
 			Station downStation = stationService.findById(lineRequest.getDownStationId());
 

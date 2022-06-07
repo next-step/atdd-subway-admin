@@ -23,7 +23,7 @@ public class AcceptanceTest {
 
 	@BeforeEach
 	public void setUp() {
-		if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
+		if(RestAssured.port == RestAssured.UNDEFINED_PORT) {
 			RestAssured.port = port;
 		}
 	}
