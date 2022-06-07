@@ -34,13 +34,13 @@ public class SectionControllerTest {
     @DisplayName("구간 생성한다")
     @Test
     void createSection() throws Exception {
-        Station upStation = new Station("강남역");
-        Station downStation = new Station("잠실역");
-        Line line = new Line("2호선", upStation, downStation);
-        int distance = 10;
+        Station upStation = new Station(1L, "강남역");
+        Station downStation = new Station(2L, "잠실역");
+        Section section = new Section(upStation, downStation, 10);
+        Line line = new Line("2호선", "green", section);
 
         when(sectionService.createSection(any(Long.class), any(SectionRequest.class)))
-                .thenReturn(SectionResponse.of(new Section(line, upStation, downStation, distance)));
+                .thenReturn(SectionResponse.of(new Section(line, upStation, downStation, 10)));
 
         mockMvc.perform(post("/lines/1/sections")
                         .contentType(MediaType.APPLICATION_JSON)

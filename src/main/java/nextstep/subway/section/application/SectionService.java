@@ -16,12 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Service
 public class SectionService {
-    private final SectionRepository sectionRepository;
     private final StationRepository stationRepository;
     private final LineRepository lineRepository;
 
-    public SectionService(SectionRepository sectionRepository, StationRepository stationRepository, LineRepository lineRepository) {
-        this.sectionRepository = sectionRepository;
+    public SectionService(StationRepository stationRepository, LineRepository lineRepository) {
         this.stationRepository = stationRepository;
         this.lineRepository = lineRepository;
     }
@@ -36,7 +34,9 @@ public class SectionService {
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
                 .orElseThrow(StationNotFoundException::new);
 
-        Section section = sectionRequest.toSection(line, upStation, downStation);
-        return SectionResponse.of(sectionRepository.save(section));
+        Section section = new Section(upStation, downStation, sectionRequest.getDistance());
+        line.addSection(section);
+
+        return SectionResponse.of(section);
     }
 }

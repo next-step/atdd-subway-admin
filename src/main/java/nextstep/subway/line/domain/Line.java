@@ -1,16 +1,14 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.domain.BaseEntity;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import java.util.Objects;
 
 @Entity
@@ -19,18 +17,10 @@ public class Line extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-
-    @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_line_to_up_station"))
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Station upStation;
-
-    @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_line_to_down_station"))
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Station downStation;
-
-    private int distance;
-
     private String color;
+
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
     }
@@ -39,25 +29,10 @@ public class Line extends BaseEntity {
         this.name = name;
     }
 
-    public Line(String name, Station upStation, Station downStation) {
+    public Line(String name, String color, Section section) {
         this.name = name;
-        this.upStation = upStation;
-        this.downStation = downStation;
-    }
-
-    public Line(String name, Station upStation, Station downStation, int distance, String color) {
-        this.name = name;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
         this.color = color;
-    }
-
-    public Line(Long id, String name, Station upStation, Station downStation) {
-        this.id = id;
-        this.name = name;
-        this.upStation = upStation;
-        this.downStation = downStation;
+        addSection(section);
     }
 
     public Long getId() {
@@ -72,16 +47,9 @@ public class Line extends BaseEntity {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        return "Line{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", upStation=" + upStation +
-                ", downStation=" + downStation +
-                ", distance=" + distance +
-                ", color='" + color + '\'' +
-                '}';
+    public void addSection(Section section) {
+        section.setLine(this);
+        this.sections.addSection(section);
     }
 
     @Override
@@ -89,11 +57,21 @@ public class Line extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return distance == line.distance && Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(upStation, line.upStation) && Objects.equals(downStation, line.downStation) && Objects.equals(color, line.color);
+        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects.equals(sections, line.sections);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, upStation, downStation, distance, color);
+        return Objects.hash(id, name, color, sections);
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", sections=" + sections +
+                '}';
     }
 }

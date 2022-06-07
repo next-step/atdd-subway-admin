@@ -6,6 +6,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -40,17 +41,17 @@ public class LineServiceTest {
     @DisplayName("지하철노선 생성한다")
     @Test
     void create() {
-        String lineName = "2호선";
-        Station upStation = new Station("강남역");
-        Station downStation = new Station("역삼역");
+        Station upStation = new Station(1L,"강남역");
+        Station downStation = new Station(2L,"잠실역");
+        Section section = new Section(upStation, downStation, 10);
 
         when(stationRepository.findById(any(Long.class))).thenReturn(Optional.of(upStation));
         when(stationRepository.findById(any(Long.class))).thenReturn(Optional.of(downStation));
-        when(lineRepository.save(any(Line.class))).thenReturn(new Line(lineName, upStation, downStation));
+        when(lineRepository.save(any(Line.class))).thenReturn(new Line("2호선", "green",section));
 
-        LineResponse lineResponse = lineService.create(LineRequest.of(lineName, 2L, 1L));
+        LineResponse lineResponse = lineService.create(LineRequest.of("2호선", 2L, 1L));
 
-        assertThat(lineResponse.getName()).isEqualTo(lineName);
+        assertThat(lineResponse.getName()).isEqualTo("2호선");
     }
 
     @DisplayName("지하철노선 목록 조회한다")
