@@ -30,12 +30,16 @@ public class CustomExtractableResponse {
     
     @BeforeEach
     public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
+        RestAssured.port = port;
         databaseCleanup.execute();
     }
 
+	public <T> long getId(ExtractableResponse<Response> response) {
+		return response
+				.jsonPath()
+				.getLong("id");
+	}
+	
 	public <T> T getObject(ExtractableResponse<Response> response, Class<T> type) {
 		return response
 				.jsonPath()
