@@ -29,9 +29,10 @@ public class RestAssuredUtils {
             .then().log().all();
     }
 
-    public static ValidatableResponse delete(final String urlTemplate) {
+    public static ValidatableResponse delete(final String urlTemplate, final String path) {
+        final String endpoint = String.format(urlTemplate.concat("/%s"), path);
         return requestSpecification.when()
-            .delete(urlTemplate)
+            .delete(endpoint)
             .then().log().all();
     }
 }
