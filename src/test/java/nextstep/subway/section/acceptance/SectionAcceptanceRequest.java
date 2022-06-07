@@ -14,6 +14,7 @@ import static nextstep.subway.station.StationRequest.지하철역_존재;
 public class SectionAcceptanceRequest {
     public static void 지하철역과_노선_존재() {
         지하철역_존재("강남역");
+        지하철역_존재("잠실역");
         지하철역_존재("역삼역");
         지하철노선_존재("2호선", 1L, 2L, 10, "green");
     }

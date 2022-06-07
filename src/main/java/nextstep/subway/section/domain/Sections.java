@@ -1,5 +1,7 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.section.exception.SectionDuplicationException;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -11,11 +13,14 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
-    public List<Section> getSections() {
-        return sections;
+    public void addSection(Section section) {
+        validateDuplication(section);
+        sections.add(section);
     }
 
-    public void addSection(Section section) {
-        sections.add(section);
+    private void validateDuplication(Section section) {
+        if (sections.stream().anyMatch(section::matchAllStations)) {
+            throw new SectionDuplicationException();
+        }
     }
 }

@@ -45,10 +45,10 @@ public class SectionAcceptanceTest {
     @Test
     void 구간_생성_성공() {
         지하철역과_노선_존재();
-
-        String downStationId = "2";
         String upStationId = "1";
+        String downStationId = "3";
         int distance = 10;
+
         ExtractableResponse<Response> response = 지하철구간_생성_요청(downStationId, upStationId, distance);
 
         지하철구간_생성_성공(response);
@@ -63,8 +63,8 @@ public class SectionAcceptanceTest {
     @DisplayName("지하철 구간이 중복된다면 예외를 던진다")
     @Test
     void 구간_생성_중복_예외() {
-        String downStationId = "2";
         String upStationId = "1";
+        String downStationId = "3";
         int distance = 10;
 
         지하철역과_노선_존재();

@@ -2,8 +2,6 @@ package nextstep.subway.section.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
@@ -38,9 +36,7 @@ public class SectionServiceTest {
     void create() {
         Station upStation = new Station(1L, "강남역");
         Station downStation = new Station(2L, "잠실역");
-        Section section = new Section(upStation, downStation, 10);
-        Line line = new Line("2호선", "green", section);
-        line.addSection(section);
+        Line line = new Line("2호선", "green");
         SectionRequest sectionRequest = SectionRequest.of(1L, 2L, 10);
 
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));

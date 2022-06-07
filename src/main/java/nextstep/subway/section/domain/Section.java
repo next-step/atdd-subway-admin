@@ -3,7 +3,6 @@ package nextstep.subway.section.domain;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
@@ -21,15 +20,15 @@ public class Section {
     private Long id;
 
     @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_to_up_station"))
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Station upStation;
 
     @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_to_down_station"))
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Station downStation;
 
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Line line;
 
     private int distance;
@@ -66,8 +65,17 @@ public class Section {
         return distance;
     }
 
-    public void setLine(Line line) {
+    public Line getLine() {
+        return line;
+    }
+
+    public void updateLine(Line line) {
         this.line = line;
+    }
+
+    public boolean matchAllStations(Section section) {
+        return this.upStation.equals(section.upStation) &&
+                this.downStation.equals(section.downStation);
     }
 
     @Override
