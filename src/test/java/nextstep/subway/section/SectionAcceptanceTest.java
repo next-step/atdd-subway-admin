@@ -134,6 +134,24 @@ public class SectionAcceptanceTest {
 
     }
 
+    // * Given : 지하철 노선 생성하고
+    // * When :  노선에 없는 역을 상행역과 하행역으로 하면
+    // * Then : 등록되지 않고 에러 발생
+    @DisplayName("노선에 존재하지 않는 역을 구간으로 등록한다.")
+    @Test
+    void addSectionNotExistStation() {
+        //Given : 지하철 노선 생성하고
+        지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
+        지하철역_생성_요청("광교역");
+        지하철역_생성_요청("수지구청역");
+
+        // when
+        // 이미 노선에 등록이 되어있는 역을 상행역과 하행역으로 하면
+        ExtractableResponse<Response> 지하철구간_추가_요청 = 지하철구간_추가_요청(3L, 4L, 10L, 1L);
+        // then
+        // 등록되지 않고 에러 발생
+        응답코드_확인(지하철구간_추가_요청, HttpStatus.BAD_REQUEST);
+    }
 
     private void 지하철역_순서_확인(ExtractableResponse<Response> getResponse, List<String> stationNames) {
         assertThat(getResponse.jsonPath().getList("stations.name")).hasSameElementsAs(stationNames);
