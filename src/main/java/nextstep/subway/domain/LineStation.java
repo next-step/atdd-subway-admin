@@ -87,11 +87,11 @@ public class LineStation extends BaseEntity {
         this.isLast = true;
     }
 
-    public boolean isStart() {
+    public boolean isStartSection() {
         return isStart;
     }
 
-    public boolean isLast() {
+    public boolean isLastSection() {
         return isLast;
     }
 

@@ -38,7 +38,7 @@ public class LineStations {
         }
 
         LineStation target = findLineStation(
-                lineStation -> lineStation.isSameUpStation(station) || (lineStation.isLast() && lineStation.isSameDownStation(station)),
+                lineStation -> lineStation.isSameUpStation(station) || (lineStation.isLastSection() && lineStation.isSameDownStation(station)),
                 station.getName() + " 에 해당하는 구간이 1개가 아닙니다."
         );
 
@@ -49,10 +49,10 @@ public class LineStations {
         LineStation nextLineStation = findNextLineStation(target.getDownStation());
         LineStation preLineStation = findPreLineStation(target.getUpStation());
 
-        if (target.isStart()) {
+        if (target.isStartSection()) {
             nextLineStation.changeToFirstSection();
         }
-        if (target.isLast()) {
+        if (target.isLastSection()) {
             preLineStation.changeToLastSection();
         }
         if (target.isMiddleSection()) {
@@ -125,7 +125,7 @@ public class LineStations {
 
     private LineStation findStartLineStation() {
         LineStation firstLineStation = findLineStation(
-                LineStation::isStart,
+                LineStation::isStartSection,
                 "노선의 시작점이 1개가 아닙니다."
         );
 
