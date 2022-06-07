@@ -77,18 +77,12 @@ public class Section {
 
     public void updateUpStation(Section section) {
         if (upStation.getId().equals(section.getUpStation().getId())) {
-            downStation = section.upStation;
+            upStation = section.downStation;
             updateDistance(section);
-        }
-        if (downStation.getId().equals(section.getUpStation().getId())) {
-
         }
     }
 
     public void updateDownStation(Section section) {
-        if (upStation.getId().equals(section.getDownStation().getId())) {
-
-        }
         if (downStation.getId().equals(section.getDownStation().getId())) {
             updateDistance(section);
             downStation = section.upStation;

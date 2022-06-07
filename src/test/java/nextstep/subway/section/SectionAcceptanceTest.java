@@ -30,14 +30,14 @@ public class SectionAcceptanceTest {
 
     @LocalServerPort
     int port;
-    public static Map<String, String> params;
+    public static Map<String, String> params = new HashMap<>();
+
 
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
-        params = new HashMap<>();
     }
 
     //   * Given : 지하철 노선 생성하고
@@ -47,15 +47,14 @@ public class SectionAcceptanceTest {
     @Test
     void addSectionInMiddle() {
         //Given : 지하철 노선 생성하고
-        지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
         지하철역_생성_요청("양재시민의숲역");
-
         // when
         // 기존 노선에 있는 상행역과 신규 하행역을 사이에 추가하면
-        ExtractableResponse<Response> 지하철구간_추가_요청 = 지하철구간_추가_요청(1L, 3L, 5L, 1L);
+        지하철구간_추가_요청(1L, 3L, 5L, 신분당선.jsonPath().getLong("id"));
         // then
         // 추가된 노선을 사이에 포함하여 차례되로 조회되는 것을 볼 수 있다.
-        ExtractableResponse<Response> 지하철노선_조회_요청 = 지하철노선_조회_요청(1L);
+        ExtractableResponse<Response> 지하철노선_조회_요청 = 지하철노선_조회_요청(신분당선.jsonPath().getLong("id"));
         지하철역_순서_확인(지하철노선_조회_요청, Arrays.asList("강남역", "양재시민의숲역", "판교역"));
     }
 
@@ -66,15 +65,14 @@ public class SectionAcceptanceTest {
     @Test
     void addSectionAtFirst() {
         //Given : 지하철 노선 생성하고
-        지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
         지하철역_생성_요청("신사역");
-
         // when
         // 신규 역을 상행 종점으로 하고, 기존의 상행 종점을 하행 역으로 추가하면
-        ExtractableResponse<Response> 지하철구간_추가_요청 = 지하철구간_추가_요청(3L, 1L, 5L, 1L);
+        지하철구간_추가_요청(3L, 1L, 5L, 신분당선.jsonPath().getLong("id"));
         // then
         // 추가된 노선이 상행 종점이 된 상태로 차례대로 조회된다.
-        ExtractableResponse<Response> 지하철노선_조회_요청 = 지하철노선_조회_요청(1L);
+        ExtractableResponse<Response> 지하철노선_조회_요청 = 지하철노선_조회_요청(신분당선.jsonPath().getLong("id"));
         지하철역_순서_확인(지하철노선_조회_요청, Arrays.asList("신사역", "강남역", "판교역"));
     }
 
@@ -85,15 +83,14 @@ public class SectionAcceptanceTest {
     @Test
     void addSectionAtLast() {
         //Given : 지하철 노선 생성하고
-        지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
         지하철역_생성_요청("광교역");
-
         // when
         // 신규 역을 하행 종점으로 하고, 기존의 하행 종점을 상행 역으로 추가하면
-        ExtractableResponse<Response> 지하철구간_추가_요청 = 지하철구간_추가_요청(2L, 3L, 5L, 1L);
+        지하철구간_추가_요청(2L, 3L, 5L, 신분당선.jsonPath().getLong("id"));
         // then
         // 추가된 노선이 하행 종점이 된 상태로 차례대로 조회된다.
-        ExtractableResponse<Response> 지하철노선_조회_요청 = 지하철노선_조회_요청(1L);
+        ExtractableResponse<Response> 지하철노선_조회_요청 = 지하철노선_조회_요청(신분당선.jsonPath().getLong("id"));
         지하철역_순서_확인(지하철노선_조회_요청, Arrays.asList("강남역", "판교역", "광교역"));
     }
 
@@ -104,12 +101,12 @@ public class SectionAcceptanceTest {
     @Test
     void addSectionWithLongerDistance() {
         //Given : 지하철 노선 생성하고
-        지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
         지하철역_생성_요청("양재시민의숲역");
-
         // when
         // 기존 노선에 있는 상행역과 신규 하행역을 사이에 추가하는데, 거리를 기존 노선보다 길거나 같게 하면
-        ExtractableResponse<Response> 지하철구간_추가_요청 = 지하철구간_추가_요청(1L, 3L, 10L, 1L);
+        ExtractableResponse<Response> 지하철구간_추가_요청 = 지하철구간_추가_요청(1L, 3L, 10L,
+            신분당선.jsonPath().getLong("id"));
         // then
         // 등록되지 않고 에러 발생
         응답코드_확인(지하철구간_추가_요청, HttpStatus.BAD_REQUEST);
@@ -123,11 +120,11 @@ public class SectionAcceptanceTest {
     @Test
     void addSectionAlreadyExist() {
         //Given : 지하철 노선 생성하고
-        지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
-
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
         // when
         // 이미 노선에 등록이 되어있는 역을 상행역과 하행역으로 하면
-        ExtractableResponse<Response> 지하철구간_추가_요청 = 지하철구간_추가_요청(1L, 2L, 10L, 1L);
+        ExtractableResponse<Response> 지하철구간_추가_요청 = 지하철구간_추가_요청(1L, 2L, 10L,
+            신분당선.jsonPath().getLong("id"));
         // then
         // 등록되지 않고 에러 발생
         응답코드_확인(지하철구간_추가_요청, HttpStatus.BAD_REQUEST);
@@ -141,13 +138,13 @@ public class SectionAcceptanceTest {
     @Test
     void addSectionNotExistStation() {
         //Given : 지하철 노선 생성하고
-        지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
         지하철역_생성_요청("광교역");
         지하철역_생성_요청("수지구청역");
-
         // when
         // 이미 노선에 등록이 되어있는 역을 상행역과 하행역으로 하면
-        ExtractableResponse<Response> 지하철구간_추가_요청 = 지하철구간_추가_요청(3L, 4L, 10L, 1L);
+        ExtractableResponse<Response> 지하철구간_추가_요청 = 지하철구간_추가_요청(3L, 4L, 10L,
+            신분당선.jsonPath().getLong("id"));
         // then
         // 등록되지 않고 에러 발생
         응답코드_확인(지하철구간_추가_요청, HttpStatus.BAD_REQUEST);
