@@ -30,9 +30,6 @@ public class SectionAcceptanceTest extends BasicAcceptance {
 
     LineResponse 생성된_신분당선;
 
-    @Autowired
-    LineStationRepository lineStationRepository;
-
     private Map<String, Long> 저장된역정보테이블;
 
     @Override
@@ -63,8 +60,6 @@ public class SectionAcceptanceTest extends BasicAcceptance {
     void addSectionTest() {
         // Given
         지하철_노선_검색됨(지하철_노선_일부_검색(생성된_신분당선.getId()), "신분당선");
-
-        List<LineStation> lineStationsByLineId = lineStationRepository.findLineStationsByLineId(생성된_신분당선.getId());
 
         // When
         ExtractableResponse<Response> 구간_생성_요청_결과 = 구간_생성_요청(생성된_신분당선.getId(), 구간_요청_객체_생성(저장된역정보테이블.get("양재역"), 저장된역정보테이블.get("양재시민의숲"), 10L));
