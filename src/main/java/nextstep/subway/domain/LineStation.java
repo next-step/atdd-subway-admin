@@ -28,7 +28,7 @@ public class LineStation extends BaseEntity {
     }
 
     public LineStation(final Line line, final Station station) {
-        this(line, new Section(null, station, new Distance(0L)));
+        this(line, new Section(null, station, new Distance(0)));
     }
 
     private void addLine(final Line line) {

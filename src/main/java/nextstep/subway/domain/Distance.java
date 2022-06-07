@@ -8,23 +8,23 @@ import java.util.Objects;
 
 @Embeddable
 public class Distance {
-    private static final Long ZERO = 0L;
+    private static final long ZERO = 0;
 
     @JsonProperty("value")
     @Column(nullable = false)
-    private Long distance;
+    private long distance;
 
     protected Distance() {
     }
 
-    public Distance(final Long distance) {
+    public Distance(final long distance) {
         if (ZERO > distance) {
             throw new IllegalArgumentException("invalid parameter");
         }
         this.distance = distance;
     }
 
-    public Long getDistance() {
+    public long getDistance() {
         return distance;
     }
 
@@ -36,11 +36,11 @@ public class Distance {
         return destination.plus(this.distance);
     }
 
-    private Distance plus(final Long destination) {
+    private Distance plus(final long destination) {
         return new Distance(destination + this.distance);
     }
 
-    private Distance subtractBy(final Long source) {
+    private Distance subtractBy(final long source) {
         return new Distance(source - this.distance);
     }
 

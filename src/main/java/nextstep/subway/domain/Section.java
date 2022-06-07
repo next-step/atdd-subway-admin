@@ -6,7 +6,7 @@ import java.util.Objects;
 
 @Embeddable
 public class Section {
-    private static final Long ZERO = 0L;
+    private static final long ZERO = 0;
 
     @ManyToOne
     @JoinColumn(name = "UPSTATION_ID")
@@ -24,11 +24,11 @@ public class Section {
     protected Section() {
     }
 
-    public Section(final Long distance) {
+    public Section(final long distance) {
         this(null, new Station(), distance);
     }
 
-    public Section(final Station upStation, final Station downStation, final Long distance) {
+    public Section(final Station upStation, final Station downStation, final long distance) {
         this(upStation, downStation, new Distance(distance));
     }
 
