@@ -146,5 +146,39 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // Given
+        final String stationNameProperty = "name";
+        Map<String, String> firstStationRequestParams = new HashMap<>();
+        firstStationRequestParams.put(stationNameProperty, "선릉역");
+        Response generateStationResponse = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(firstStationRequestParams)
+            .when().post(BASE_URL)
+            .then().log().all().extract().response();
+        assertThat(generateStationResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        final String stationId = generateStationResponse.body().jsonPath().getString("id");
+        final String urlTemplate = String.format(BASE_URL.concat("/%s"), stationId);
+
+        // When
+        Response deleteResponse = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().delete(urlTemplate)
+            .then().log().all()
+            .extract().response();
+
+        // Then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        Response getAllStationsResponse = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().get(BASE_URL)
+            .then().log().all()
+            .extract().response();
+
+        assertThat(getAllStationsResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<String> stationNames = getAllStationsResponse.jsonPath().getList(stationNameProperty, String.class);
+        assertThat(stationNames)
+            .as("지하철역 목록 조회 응답에 삭제한 지하철역 미포함 여부 검증")
+            .doesNotContain(firstStationRequestParams.get(stationNameProperty));
     }
 }
