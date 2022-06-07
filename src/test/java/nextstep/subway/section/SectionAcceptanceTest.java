@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.setRemoveAssertJRelatedElementsFromStackTrace;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -123,6 +125,91 @@ public class SectionAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @Test
+    void 중간_역_제거() {
+        //given 라인의 역 사이에 새로운 역을 등록하고
+        StationResponse 양재역 = StationAcceptanceTest.createStation("양재역").as(StationResponse.class);
+        ExtractableResponse<Response> addSectionLine = createSection(신분당선.getId(), 강남역.getId(), 양재역.getId(), 10);
+        List<Integer> addAfterDistance = addSectionLine.jsonPath().get("sections.distance");
+
+        //when 새로운 역을 삭제하면
+        deleteSection(신분당선.getId(), 양재역.getId());
+
+        //then 라인의 노선 목록 조회 시 새로운 역을 찾을 수 없고 거리는 새로운 중간역을 등록한 후 두 구간의 거리의 합이다.
+        ExtractableResponse<Response> deletedSectionLine = LineAcceptanceTest.fetchLineById(신분당선.getId());
+        int distance = deletedSectionLine.jsonPath().get("sections[0].distance");
+        List<String> upStationNames = deletedSectionLine.jsonPath().getList("sections.upStationName");
+        List<String> downStationNames = deletedSectionLine.jsonPath().getList("sections.downStationName");
+        assertAll(
+                () -> assertThat(!upStationNames.contains("양재역")).isTrue(),
+                () -> assertThat(!downStationNames.contains("양재역")).isTrue(),
+                () -> assertThat(distance).isEqualTo(addAfterDistance.stream().mapToInt(Integer::intValue).sum())
+        );
+
+    }
+
+    @Test
+    void 상행_종점역_제거() {
+        //given 새로운 역을 상행 종점으로 등록하고
+        StationResponse 정자역 = StationAcceptanceTest.createStation("정자역").as(StationResponse.class);
+        ExtractableResponse<Response> addSectionResponse = createSection(신분당선.getId(), 정자역.getId(), 강남역.getId(), 7);
+        //새로운 상행역 다음으로 오는 역
+        String upStationNextStationName = addSectionResponse.jsonPath().get("sections[0].downStationName");
+
+        //when 새로 등록된 상행 종점을 삭제하면
+        deleteSection(신분당선.getId(), 정자역.getId());
+
+        //then then 라인의 노선 목록 조회 시 새로운 상행역 다음으로 오던 역이 상행역이 된다.
+        ExtractableResponse<Response> deletedSectionLine = LineAcceptanceTest.fetchLineById(신분당선.getId());
+        String newUpStationName = deletedSectionLine.jsonPath().get("sections[0].upStationName");
+
+        assertThat(newUpStationName).isEqualTo(upStationNextStationName);
+    }
+
+    @Test
+    void 하행_종점역_제거() {
+        //given 새로운 역을 하행 종점으로 등록하고
+        StationResponse 광교역 = StationAcceptanceTest.createStation("광교역").as(StationResponse.class);
+        ExtractableResponse<Response> addSectionResponse = createSection(신분당선.getId(), 광교중앙역.getId(), 광교역.getId(), 8);
+        //새로운 하행역 전에 오던 역
+        String upStationOfNewDownStation = addSectionResponse.jsonPath().get("sections[1].upStationName");
+
+        //when 새로 등록된 하행 종점을 삭제하면
+        deleteSection(신분당선.getId(), 광교역.getId());
+
+        //then 라인의 노선 목록 조회 시 새로운 하행역 전에 오던 역이 하행역이 된다.
+        ExtractableResponse<Response> deletedSectionLine = LineAcceptanceTest.fetchLineById(신분당선.getId());
+        String downStationName = deletedSectionLine.jsonPath().get("sections[0].downStationName");
+
+        assertThat(downStationName).isEqualTo(upStationOfNewDownStation);
+
+    }
+
+    @Test
+    void 구간이_하나인_노선에서_상행역_제거시_에러() {
+        //when 구간이 하나인 노선에서 상행역을 제거할 시
+        ExtractableResponse<Response> response = deleteSection(신분당선.getId(), 강남역.getId());
+        //then 에러가 발생한다. (400 err)
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void 구간이_하나인_노선에서_하행역_제거시_에러() {
+        //when 구간이 하나인 노선에서 하행역을 제거할 시
+        ExtractableResponse<Response> response = deleteSection(신분당선.getId(), 광교중앙역.getId());
+        //then 에러가 발생한다. (400 err)
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void 노선에_등록되지_않은_역_제거시_에러() {
+        //when 구간에 등록되지 않은 역을 제거할 시
+        StationResponse 대림역 = StationAcceptanceTest.createStation("대림역").as(StationResponse.class);
+        ExtractableResponse<Response> response = deleteSection(신분당선.getId(), 대림역.getId());
+        //then 에러가 발생한다. (400 err)
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     public static ExtractableResponse<Response> createSection(Long lineId, Long upStationId, Long downStationId, int distance) {
        Map<String, Object> pathParams = new HashMap<>();
        pathParams.put("id", lineId);
@@ -142,5 +229,23 @@ public class SectionAcceptanceTest {
                 .when().post(path, pathParams)
                 .then().log().all()
                 .extract();
+    }
+
+    private static ExtractableResponse<Response> delete(String path, Map<String, ?> pathParams, Map<String, ?> queryParams) {
+        return RestAssured.given().log().all()
+                .queryParams(queryParams)
+                .when().delete(path, pathParams)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> deleteSection(Long lineId, Long stationId) {
+        Map<String, Object> pathParams = new HashMap<>();
+        pathParams.put("lineId", lineId);
+
+        Map<String, Object> queryParams = new HashMap<>();
+        queryParams.put("stationId", stationId);
+
+        return delete("/{lineId}/sections", pathParams, queryParams);
     }
 }

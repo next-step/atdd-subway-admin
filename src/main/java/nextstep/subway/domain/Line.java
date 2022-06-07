@@ -1,8 +1,6 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -23,6 +21,10 @@ public class Line extends BaseEntity {
     public void addSection(Section section) {
         this.sections.addSection(section);
         section.toLine(this);
+    }
+
+    public void removeSection(Station station) {
+        this.sections.removeSection(station);
     }
 
     public void addFirstSection(Section section) {
