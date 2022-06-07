@@ -1,5 +1,8 @@
 package nextstep.subway.station;
 
+import static nextstep.subway.utils.AssertionsUtils.assertCreated;
+import static nextstep.subway.utils.AssertionsUtils.assertNoContent;
+import static nextstep.subway.utils.AssertionsUtils.assertOk;
 import static nextstep.subway.utils.RequestParamUtils.generateRequestParam;
 import static nextstep.subway.utils.RestAssuredUtils.delete;
 import static nextstep.subway.utils.RestAssuredUtils.get;
@@ -108,17 +111,17 @@ public class StationAcceptanceTest {
         final String stationNameProperty = "name";
         Map<String, String> firstStationRequestParams = generateRequestParam(stationNameProperty, "논현역");
         Response generateFirstStationsResponse = post(BASE_URL, firstStationRequestParams).extract().response();
-        assertThat(generateFirstStationsResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertCreated(generateFirstStationsResponse);
 
         Map<String, String> secondStationRequestParams = generateRequestParam(stationNameProperty, "신논현역");
         Response generateSecondStationsResponse = post(BASE_URL, secondStationRequestParams).extract().response();
-        assertThat(generateSecondStationsResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertCreated(generateSecondStationsResponse);
 
         // When
         Response getAllStationsResponse = get(BASE_URL).extract().response();
 
         // Then
-        assertThat(getAllStationsResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertOk(getAllStationsResponse);
         List<String> stationNames = getAllStationsResponse.jsonPath().getList("name", String.class);
         assertThat(stationNames)
             .hasSize(2)
@@ -138,7 +141,7 @@ public class StationAcceptanceTest {
         final String stationNameProperty = "name";
         Map<String, String> requestParam = generateRequestParam(stationNameProperty, "선릉역");
         Response generateStationResponse = post(BASE_URL, requestParam).extract().response();
-        assertThat(generateStationResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertCreated(generateStationResponse);
         final String stationId = generateStationResponse.body().jsonPath().getString("id");
         final String urlTemplate = String.format(BASE_URL.concat("/%s"), stationId);
 
@@ -146,10 +149,10 @@ public class StationAcceptanceTest {
         Response deleteResponse = delete(urlTemplate).extract().response();
 
         // Then
-        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertNoContent(deleteResponse);
 
         Response getAllStationsResponse = get(BASE_URL).extract().response();
-        assertThat(getAllStationsResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertOk(getAllStationsResponse);
         List<String> stationNames = getAllStationsResponse.jsonPath().getList(stationNameProperty, String.class);
         assertThat(stationNames)
             .as("지하철역 목록 조회 응답에 삭제한 지하철역 미포함 여부 검증")
