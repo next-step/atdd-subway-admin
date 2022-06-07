@@ -230,11 +230,11 @@ public class Sections {
     }
 
     public void validateDeleteSection(Station station) {
-        if (getList().size() == 1) {
-            throw new InvalidSectionException("하나만 남은 구간은 삭제할 수 없습니다.");
+        if (!containStation(station)) {
+            throw new InvalidSectionException("제거할 지하철 역을 포함한 구간이 노선에 존재하지 않습니다.");
         }
 
-        if (!containStation(station)) {
+        if (getList().size() == 1) {
             throw new InvalidSectionException("하나만 남은 구간은 삭제할 수 없습니다.");
         }
     }
