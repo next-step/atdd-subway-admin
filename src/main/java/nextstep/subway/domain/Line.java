@@ -16,7 +16,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private LineStations lineStations = new LineStations();
+    private final LineStations lineStations = new LineStations();
 
     protected Line() {}
 
@@ -36,6 +36,10 @@ public class Line extends BaseEntity {
 
     public void addSection(Station upStation, Station downStation, Long distance) {
         lineStations.add(upStation, downStation, new Distance(distance));
+    }
+
+    public void deleteSection(Station station) {
+        lineStations.deleteLineStation(station);
     }
 
     public Long getId() {

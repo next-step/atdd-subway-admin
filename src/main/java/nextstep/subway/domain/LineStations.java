@@ -7,6 +7,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -31,6 +32,33 @@ public class LineStations {
         );
     }
 
+    public void deleteLineStation(Station station) {
+        LineStation target = findLineStation(
+                lineStation -> lineStation.isSameUpStation(station),
+                station.getName() + " 에 해당하는 구간이 1개가 아닙니다."
+        );
+
+        if (target == null) {
+            throw new IllegalArgumentException(station.getName() + " 에 해당하는 구간을 찾을 수 없습니다.");
+        }
+
+        LineStation nextLineStation = findNextLineStation(target.getDownStation());
+        LineStation preLineStation = findPreLineStation(target.getUpStation());
+
+        if (target.isStart()) {
+            nextLineStation.changeToFirstSection();
+        }
+        if (target.isLast()) {
+            preLineStation.changeToLastSection();
+        }
+        if (target.isMiddleSection()) {
+            preLineStation.changeDownStation(target.getDownStation());
+            preLineStation.addDistance(target.getDistance());
+        }
+
+        this.lineStations.removeIf(lineStation -> lineStation.equals(target));
+    }
+
     public List<Station> getStationsSortedByUpToDown() {
         List<Station> result = new ArrayList<>();
         LineStation lineStation = findStartLineStation();
@@ -47,8 +75,8 @@ public class LineStations {
     }
 
     private LineStation findAddTarget(Station upStation, Station downStation) {
-        LineStation findByUpStation = findLineStationByUpStationId(upStation);
-        LineStation findByDownStation = findLineStationByDownStationId(downStation);
+        LineStation findByUpStation = findLineStationByAddUpStationId(upStation);
+        LineStation findByDownStation = findLineStationByAddDownStationId(downStation);
 
         if (findByUpStation != null && findByDownStation != null) {
             throw new IllegalArgumentException("기존에 등록된 같은 상/하행역을 등록할 수 없습니다.");
@@ -63,47 +91,58 @@ public class LineStations {
         return findByDownStation;
     }
 
-    private LineStation findLineStationByUpStationId(Station upStation) {
-        return lineStations.stream()
-                .filter(lineStation -> lineStation.isSameUpStation(upStation) || lineStation.isAddNewLast(upStation))
-                .findFirst()
-                .orElse(null);
-    }
-
-    private LineStation findLineStationByDownStationId(Station downStation) {
-        return lineStations.stream()
-                .filter(lineStation -> lineStation.isSameDownStation(downStation) || lineStation.isAddNewFirst(downStation))
-                .findFirst()
-                .orElse(null);
-    }
-
-    private LineStation findStartLineStation() {
-        List<LineStation> findResult = this.lineStations
-                .stream()
-                .filter(LineStation::isStart)
+    private LineStation findLineStation(Predicate<LineStation> predicate, String duplicateFoundMessage) {
+        List<LineStation> findResult = lineStations.stream()
+                .filter(predicate)
                 .collect(Collectors.toList());
 
         if (findResult.size() > 1) {
-            logger.log(Level.SEVERE, "노선의 시작점이 1개가 아닙니다.");
+            logger.log(Level.SEVERE, duplicateFoundMessage);
         }
 
         return findResult.stream()
                 .max(Comparator.comparing(LineStation::getCreatedDate))
-                .orElseThrow(() -> new IllegalStateException("노선의 시작점을 찾을 수 없습니다."));
+                .orElse(null);
+    }
+
+    private LineStation findLineStationByAddUpStationId(Station upStation) {
+        return findLineStation(
+                lineStation -> lineStation.isSameUpStation(upStation) || lineStation.isAddNewLast(upStation),
+                upStation.getName() + " 이 상행역인 구간이 1개가 아니거나 종착역 이후 구간이 존재합니다."
+        );
+    }
+
+    private LineStation findLineStationByAddDownStationId(Station downStation) {
+        return findLineStation(
+                lineStation -> lineStation.isSameDownStation(downStation) || lineStation.isAddNewFirst(downStation),
+                downStation.getName() + " 이 하행역인 구간이 1개가 아니거나 시작역 이전 구간이 존재합니다."
+        );
+    }
+
+    private LineStation findStartLineStation() {
+        LineStation firstLineStation = findLineStation(
+                LineStation::isStart,
+                "노선의 시작점이 1개가 아닙니다."
+        );
+
+        if (firstLineStation == null) {
+            throw new IllegalStateException("노선의 시작점을 찾을 수 없습니다.");
+        }
+
+        return firstLineStation;
     }
 
     private LineStation findNextLineStation(Station nextStation) {
-        List<LineStation> findResult = this.lineStations
-                .stream()
-                .filter(value -> value.getUpStation().isSameId(nextStation.getId()))
-                .collect(Collectors.toList());
+        return findLineStation(
+                lineStation -> lineStation.isSameUpStation(nextStation),
+                nextStation.getName() + " 의 다음역 정보가 1개가 아닙니다."
+        );
+    }
 
-        if (findResult.size() != 1) {
-            logger.log(Level.SEVERE, nextStation.getName() + " 의 다음역 정보가 1개가 아닙니다.");
-        }
-
-        return findResult.stream()
-                .max(Comparator.comparing(LineStation::getCreatedDate))
-                .orElseThrow(() -> new IllegalStateException(nextStation.getName() + " 의 다음역 정보를 찾을 수 없습니다."));
+    private LineStation findPreLineStation(Station preStation) {
+        return findLineStation(
+                lineStation -> lineStation.isSameDownStation(preStation),
+                preStation.getName() + " 의 이전역 정보가 1개가 아닙니다."
+        );
     }
 }

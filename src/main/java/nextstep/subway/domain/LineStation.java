@@ -3,7 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 
 @Entity
-public class LineStation {
+public class LineStation extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -69,6 +69,34 @@ public class LineStation {
         }
 
         throw new IllegalArgumentException("지하철을 추가할 수 없습니다.");
+    }
+
+    public void changeDownStation(Station station) {
+        this.downStation = station;
+    }
+
+    public void addDistance(Distance distance) {
+        this.distance.add(distance);
+    }
+
+    public void changeToFirstSection() {
+        this.isStart = true;
+    }
+
+    public void changeToLastSection() {
+        this.isLast = true;
+    }
+
+    public boolean isStart() {
+        return isStart;
+    }
+
+    public boolean isLast() {
+        return isLast;
+    }
+
+    public boolean isMiddleSection() {
+        return !isStart && !isLast;
     }
 
     private LineStation addNewLineFirstStation(LineStation addResult) {
@@ -145,13 +173,5 @@ public class LineStation {
 
     public Station getDownStation() {
         return downStation;
-    }
-
-    public boolean isStart() {
-        return isStart;
-    }
-
-    public boolean isLast() {
-        return isLast;
     }
 }
