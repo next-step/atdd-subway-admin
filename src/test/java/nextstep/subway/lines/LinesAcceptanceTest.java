@@ -424,29 +424,31 @@ public class LinesAcceptanceTest {
                 .containsExactly(upStation, downStation);
     }
 
-//    /**
-//     * Given 노선을 생성하고
-//     * When 해당 노선에 존재하지 않는 구간을 삭제하면
-//     * Then 해당 삭제는 실패하고 예외가 발생해야 한다
-//     */
-//    @DisplayName("노선에 존재하지 않는 구간을 삭제하면 예외가 발생하면서 실패해야 한다")
-//    @Test
-//    void deleteNotIncludeSection() {
-//        // given
-//        Long upStation = StationRequest.createStationThenReturnId("당고개역");
-//        Long downStation = StationRequest.createStationThenReturnId("노원역");
-//        Long station = StationRequest.createStationThenReturnId("상계역");
-//        Long createdLineId = LineRequest.createLineThenReturnId(
-//                "4호선", "bg-sky-600", upStation, downStation, 10L
-//        );
-//
-//        // when
-//        ExtractableResponse<Response> response = LineRequest.deleteSection(createdLineId, station);
-//        ExtractableResponse<Response> getLineResponse = LineRequest.getLineById(createdLineId);
-//
-//        // then
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
-//        assertThat(getLineResponse.jsonPath().getList("stations.id", Long.class))
-//                .containsExactly(upStation, downStation);
-//    }
+    /**
+     * Given 노선을 생성하고
+     * When 해당 노선에 존재하지 않는 구간을 삭제하면
+     * Then 해당 삭제는 실패하고 예외가 발생해야 한다
+     */
+    @DisplayName("노선에 존재하지 않는 구간을 삭제하면 예외가 발생하면서 실패해야 한다")
+    @Test
+    void deleteNotIncludeSection() {
+        // given
+        Long upStation = StationRequest.createStationThenReturnId("당고개역");
+        Long downStation = StationRequest.createStationThenReturnId("노원역");
+        Long middleStation = StationRequest.createStationThenReturnId("상계역");
+        Long station = StationRequest.createStationThenReturnId("미아역");
+        Long createdLineId = LineRequest.createLineThenReturnId(
+                "4호선", "bg-sky-600", upStation, downStation, 10L
+        );
+        LineRequest.addSection(createdLineId, upStation, middleStation, 5L);
+
+        // when
+        ExtractableResponse<Response> response = LineRequest.deleteSection(createdLineId, station);
+        ExtractableResponse<Response> getLineResponse = LineRequest.getLineById(createdLineId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+        assertThat(getLineResponse.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(upStation, middleStation, downStation);
+    }
 }
