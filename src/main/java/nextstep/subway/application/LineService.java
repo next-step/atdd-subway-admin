@@ -66,7 +66,6 @@ public class LineService {
                 .updateDownStationBy(stationRepository.findById(addSection.getDownStationId()).orElseThrow(EntityNotFoundException::new));
         Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         LineStation lineStation = new LineStation(line, section);
-        LineStation save = lineStationRepository.save(lineStation);
-        return SectionResponse.of(save);
+        return SectionResponse.of(lineStationRepository.save(lineStation));
     }
 }
