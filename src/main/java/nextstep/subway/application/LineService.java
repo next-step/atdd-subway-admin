@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import javassist.NotFoundException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
@@ -32,8 +33,9 @@ public class LineService {
         Station downStation = stationRepository.findById(lineRequest.getDownStationId())
             .orElseThrow(() -> new NotFoundException("하행 역이 존재하지 않습니다."));
 
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation,
-            lineRequest.getDistance());
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor(),
+            new Section(upStation, downStation,
+                lineRequest.getDistance()));
         lineRepository.save(line);
         return LineResponse.of(line);
     }

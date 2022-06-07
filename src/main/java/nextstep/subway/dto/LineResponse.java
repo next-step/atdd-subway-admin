@@ -20,8 +20,8 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(),
-            Arrays.asList(StationResponse.of(line.getUpStation()),
-                StationResponse.of(line.getDownStation())));
+            Arrays.asList(StationResponse.of(),
+                StationResponse.of()));
     }
 
     public Long getId() {
