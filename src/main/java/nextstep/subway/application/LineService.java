@@ -43,9 +43,8 @@ public class LineService {
     }
 
     public LineResponse findLine(final Long id) {
-        LineStation lineStation = lineStationRepository.findLineStationsByLineId(id).stream().findAny().orElseThrow(EntityNotFoundException::new);
-        Line line = lineStation.getLine();
-        return LineResponse.of(lineStation.getLine(), line.getLineStations().getSortedStationsByStationId());
+        LineStation lineStation = lineStationRepository.findLineStationByLineId(id).orElseThrow(EntityNotFoundException::new);
+        return LineResponse.of(lineStation.getLine(), lineStation.getLine().getLineStations().getSortedStationsByStationId());
     }
 
     @Transactional
