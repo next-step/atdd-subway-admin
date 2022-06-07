@@ -1,8 +1,13 @@
 package nextstep.subway.station;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,12 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -29,6 +28,8 @@ public class StationAcceptanceTest {
             RestAssured.port = port;
         }
     }
+
+    public static final String BASE_URL = "/stations";
 
     /**
      * When 지하철역을 생성하면
@@ -101,6 +102,40 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // Given
+        final String stationNameProperty = "name";
+        Map<String, String> firstStationRequestParams = new HashMap<>();
+        firstStationRequestParams.put(stationNameProperty, "논현역");
+        Response generateFirstStationsResponse = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(firstStationRequestParams)
+            .when().post(BASE_URL)
+            .then().log().all().extract().response();
+        assertThat(generateFirstStationsResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        Map<String, String> secondStationRequestParams = new HashMap<>();
+        secondStationRequestParams.put(stationNameProperty, "신논현역");
+        Response generateSecondStationsResponse = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(secondStationRequestParams)
+            .when().post(BASE_URL)
+            .then().log().all()
+            .extract().response();
+        assertThat(generateSecondStationsResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // When
+        Response getAllStationsResponse = RestAssured.given().log().all()
+            .when().get(BASE_URL)
+            .then().log().all()
+            .extract().response();
+
+        // Then
+        assertThat(getAllStationsResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<String> stationNames = getAllStationsResponse.jsonPath().getList("name", String.class);
+        assertThat(stationNames)
+            .hasSize(2)
+            .as("지하철역 목록 조회 응답에 생성한 두개의 지하철역 이름 포함 여부 검증")
+            .contains(firstStationRequestParams.get(stationNameProperty), secondStationRequestParams.get(stationNameProperty));
     }
 
     /**
