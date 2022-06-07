@@ -108,4 +108,18 @@ public class LineTest {
 		assertThatThrownBy(() -> sinbundangLine.addSection(gangnamStation, jeongjaStation, 40))
 			.isInstanceOf(IllegalArgumentException.class);
 	}
+
+	@DisplayName("노선의 맨 앞 상행역 삭제")
+	@Test
+	void removeFrontUpStation() {
+		// given
+		sinbundangLine.addSection(gangnamStation, gwanggyoStaion, 30);
+		sinbundangLine.addSection(gangnamStation, jeongjaStation, 10);
+
+		// when
+		sinbundangLine.removeSection(gangnamStation);
+
+		// then
+		assertThat(sinbundangLine.getStation()).containsExactly(jeongjaStation, gwanggyoStaion);
+	}
 }

@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -120,20 +121,40 @@ public class Sections {
 		stations.add(section.getUpStation());
 		stations.add(section.getDownStation());
 
-		Optional<Section> nextSection = next(section.getDownStation());
+		Optional<Section> nextSection = findSectionByUpStation(section.getDownStation());
 
 		while(nextSection.isPresent()) {
 			Station station = nextSection.get().getDownStation();
 
 			stations.add(station);
-			nextSection = next(station);
+			nextSection = findSectionByUpStation(station);
 		}
 		return stations;
 	}
 
-	private Optional<Section> next(Station station) {
+	public void remove(Station station) {
+		Optional<Section> optionalFrontSection = findSectionByUpStation(station);
+		Optional<Section> optionalBackSection = findSectionByDownStation(station);
+
+		if(isFront(optionalFrontSection, optionalBackSection)) {
+			Section section = optionalFrontSection.orElseThrow(NoSuchElementException::new);
+			sections.remove(section);
+		}
+	}
+
+	private Optional<Section> findSectionByUpStation(Station station) {
 		return sections.stream()
 			.filter(it -> it.isUpStation(station))
 			.findFirst();
+	}
+
+	private Optional<Section> findSectionByDownStation(Station station) {
+		return sections.stream()
+			.filter(it -> it.isDownStation(station))
+			.findFirst();
+	}
+
+	private boolean isFront(Optional<Section> frontSection,	Optional<Section> backSection) {
+		return frontSection.isPresent() && !backSection.isPresent();
 	}
 }

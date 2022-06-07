@@ -83,4 +83,11 @@ public class LineSteps {
 			.then().log().all()
 			.extract();
 	}
+
+	public static ExtractableResponse<Response> 구간_삭제_요청(Long lindId, Long stationId) {
+		return RestAssured.given().log().all()
+			.when().delete("/lines/{lineId}/sections?stationId={stationId}", lindId, stationId)
+			.then().log().all()
+			.extract();
+	}
 }
