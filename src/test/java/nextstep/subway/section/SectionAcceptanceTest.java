@@ -76,6 +76,25 @@ public class SectionAcceptanceTest {
         지하철역_순서_확인(지하철노선_조회_요청, Arrays.asList("신사역", "강남역", "판교역"));
     }
 
+    // * Given : 지하철 노선 생성하고
+    // * When : 신규 역을 하행 종점으로 하고, 기존의 하행 종점을 상행 역으로 추가하면
+    // * Then : 추가된 노선이 하행 종점이 된 상태로 차례대로 조회된다.
+    @DisplayName("노선의 하행종점으로 새로운 역구간을 등록한다.")
+    @Test
+    void addSectionAtLast() {
+        //Given : 지하철 노선 생성하고
+        지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
+        지하철역_생성_요청("광교역");
+
+        // when
+        // 신규 역을 하행 종점으로 하고, 기존의 하행 종점을 상행 역으로 추가하면
+        ExtractableResponse<Response> 지하철구간_추가_요청 = 지하철구간_추가_요청(2L, 3L, 5L, 1L);
+        // then
+        // 추가된 노선이 하행 종점이 된 상태로 차례대로 조회된다.
+        ExtractableResponse<Response> 지하철노선_조회_요청 = 지하철노선_조회_요청(1L);
+        지하철역_순서_확인(지하철노선_조회_요청, Arrays.asList("강남역", "판교역", "광교역"));
+    }
+
 
     private void 지하철역_순서_확인(ExtractableResponse<Response> getResponse, List<String> stationNames) {
         assertThat(getResponse.jsonPath().getList("stations.name")).hasSameElementsAs(stationNames);
