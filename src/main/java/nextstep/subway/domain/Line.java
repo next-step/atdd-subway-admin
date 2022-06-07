@@ -1,10 +1,8 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.LineUpdateRequest;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,24 +17,16 @@ public class Line extends BaseEntity {
     private String name;
     @Column(unique = true)
     private String color;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private Station upStation;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private Station downStation;
-    @Column(nullable = false)
-    private Long distance;
+    @Embedded
+    private Sections sections;
 
     protected Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, Long distance) {
+    public Line(String name, String color, Integer distance, Station upStation, Station downStation) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+        this.sections = new Sections(this, distance, upStation, downStation);
     }
 
     public Long getId() {
@@ -51,13 +41,17 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getStations() {
-        return Arrays.asList(this.upStation, this.downStation);
+    public List<Section> getAllSectionsSorted() {
+        return this.sections.getAllSorted();
     }
 
     public void update(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public void addSection(Station station, Integer distance, Station previousStation, Station nextStation) {
+        this.sections.addSection(this, station, distance, previousStation, nextStation);
     }
 
     @Override
