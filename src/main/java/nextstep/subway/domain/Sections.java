@@ -19,21 +19,21 @@ public class Sections {
 
 
     public void update(Section section) {
-        Section sameUpStationSection = findSameUpStationSection(section);
-        Section sameDownStationSection = findSameDownStationSection(section);
+        Section hasUpStationSection = findSameUpStationSection(section);
+        Section hasDownStationSection = findSameDownStationSection(section);
 
-        if (sameDownStationSection != null && sameUpStationSection != null) {
+        if (hasDownStationSection != null && hasUpStationSection != null) {
             throw new IllegalArgumentException("이미 등록된 구간입니다.");
         }
-        if (sameDownStationSection == null && sameUpStationSection == null) {
+        if (hasDownStationSection == null && hasUpStationSection == null) {
             throw new IllegalArgumentException("연결할 수 있는 역이 없습니다.");
         }
 
-        if (sameUpStationSection != null) {
-            sameUpStationSection.updateUpStation(section);
+        if (hasUpStationSection != null) {
+            hasUpStationSection.updateUpStation(section);
         }
-        if (sameDownStationSection != null) {
-            sameDownStationSection.updateDownStation(section);
+        if (hasDownStationSection != null) {
+            hasDownStationSection.updateDownStation(section);
         }
 
         sections.add(section);

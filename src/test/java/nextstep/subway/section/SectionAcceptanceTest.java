@@ -41,9 +41,9 @@ public class SectionAcceptanceTest {
     //   * Given : 지하철 노선 생성하고
     //    * When : 기존 노선에 있는 상행역과 신규 하행역을 사이에 추가하면
     //    * Then : 추가된 노선을 사이에 포함하여 차례되로 조회되는 것을 볼 수 있다.
-    @DisplayName("노선에 구간을 등록한다.")
+    @DisplayName("노선의 사이에 새로운 역 구간을 등록한다.")
     @Test
-    void addSection() {
+    void addSectionInMiddle() {
         //Given : 지하철 노선 생성하고
         지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
         지하철역_생성_요청("양재시민의숲역");
@@ -56,6 +56,26 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> 지하철노선_조회_요청 = 지하철노선_조회_요청(1L);
         지하철역_순서_확인(지하철노선_조회_요청, Arrays.asList("강남역", "양재시민의숲역", "판교역"));
     }
+
+    // * Given : 지하철 노선 생성하고
+    // * When : 신규 역을 상행 종점으로 하고, 기존의 상행 종점을 하행 역으로 추가하면
+    // * Then : 추가된 노선이 상행 종점이 된 상태로 차례대로 조회된다.
+    @DisplayName("노선의 상행종점으로 새로운 역구간을 등록한다.")
+    @Test
+    void addSectionAtFirst() {
+        //Given : 지하철 노선 생성하고
+        지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
+        지하철역_생성_요청("신사역");
+
+        // when
+        // 신규 역을 상행 종점으로 하고, 기존의 상행 종점을 하행 역으로 추가하면
+        ExtractableResponse<Response> 지하철구간_추가_요청 = 지하철구간_추가_요청(3L, 1L, 5L, 1L);
+        // then
+        // 추가된 노선이 상행 종점이 된 상태로 차례대로 조회된다.
+        ExtractableResponse<Response> 지하철노선_조회_요청 = 지하철노선_조회_요청(1L);
+        지하철역_순서_확인(지하철노선_조회_요청, Arrays.asList("신사역", "강남역", "판교역"));
+    }
+
 
     private void 지하철역_순서_확인(ExtractableResponse<Response> getResponse, List<String> stationNames) {
         assertThat(getResponse.jsonPath().getList("stations.name")).hasSameElementsAs(stationNames);

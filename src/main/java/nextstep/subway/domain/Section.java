@@ -41,11 +41,13 @@ public class Section {
     }
 
     public boolean existUpStation(Section section) {
-        return upStation.getId() == section.getUpStation().getId();
+        return (upStation.getId() == section.getUpStation().getId()
+            || downStation.getId() == section.getUpStation().getId());
     }
 
     public boolean existDownStation(Section section) {
-        return downStation.getId() == section.getDownStation().getId();
+        return (upStation.getId() == section.getDownStation().getId()
+            || downStation.getId() == section.getDownStation().getId());
     }
 
 
@@ -74,13 +76,23 @@ public class Section {
     }
 
     public void updateUpStation(Section section) {
-        updateDistance(section);
-        upStation = section.downStation;
+        if (upStation.getId().equals(section.getUpStation().getId())) {
+            downStation = section.upStation;
+            updateDistance(section);
+        }
+        if (downStation.getId().equals(section.getUpStation().getId())) {
+
+        }
     }
 
     public void updateDownStation(Section section) {
-        updateDistance(section);
-        downStation = section.upStation;
+        if (upStation.getId().equals(section.getDownStation().getId())) {
+
+        }
+        if (downStation.getId().equals(section.getDownStation().getId())) {
+            updateDistance(section);
+            downStation = section.upStation;
+        }
     }
 
     private void updateDistance(Section section) {
