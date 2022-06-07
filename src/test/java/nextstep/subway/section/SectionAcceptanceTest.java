@@ -220,7 +220,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> 지하철노선_조회_결과 = 지하철노선_조회(지하철노선_ID);
         assertAll(
                 () -> assertThat(지하철노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(지하철노선_조회_결과.jsonPath().getString("name")).isEqualTo("3호선")
+                () -> assertThat(지하철노선_조회_결과.jsonPath().getString("name")).isEqualTo("2호선")
         );
     }
 }
