@@ -10,6 +10,8 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.exception.DownStationNotFoundException;
+import nextstep.subway.exception.UpStationNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,18 +28,22 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse saveLine(LineRequest lineRequest) throws NotFoundException {
+    public LineResponse saveLine(LineRequest lineRequest) {
         validateExistOrThrow(lineRequest);
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
-            .orElseThrow(() -> new NotFoundException("상행 역이 존재하지 않습니다."));
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId())
-            .orElseThrow(() -> new NotFoundException("하행 역이 존재하지 않습니다."));
-
+        Station upStation = findStation(lineRequest.getUpStationId(),
+            new UpStationNotFoundException());
+        Station downStation = findStation(lineRequest.getDownStationId(),
+            new DownStationNotFoundException());
         Line line = new Line(lineRequest.getName(), lineRequest.getColor(),
             new Section(upStation, downStation,
                 lineRequest.getDistance()));
         lineRepository.save(line);
         return LineResponse.of(line);
+    }
+
+    private Station findStation(Long stationId, RuntimeException e) {
+        return stationRepository.findById(stationId)
+            .orElseThrow(() -> new RuntimeException(e));
     }
 
     public List<LineResponse> findAllLine() {
