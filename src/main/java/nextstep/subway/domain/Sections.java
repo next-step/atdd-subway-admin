@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
@@ -15,9 +16,37 @@ public class Sections {
         sections.add(section);
     }
 
-    public List<Station> findStations() {
+    public List<Station> orderedStations() {
+        Station station = firstStation();
+        List<Station> orderedStations = new ArrayList<>();
+        orderedStations.add(station);
 
-        return new ArrayList<>();
+        Section nextSection = findNextSection(station);
+        do {
+            orderedStations.add(nextSection.getDownStation());
+            nextSection = findNextSection(nextSection.getDownStation());
+        } while (nextSection != null);
+
+        return orderedStations;
+    }
+
+    private Section findNextSection(Station station) {
+        Optional<Section> nextSection = sections.stream()
+            .filter(section -> section.getUpStation().equals(station)).findFirst();
+        return nextSection.orElse(null);
+    }
+
+    private Station firstStation() {
+        List<Station> upStations = new ArrayList<>();
+        List<Station> downStations = new ArrayList<>();
+
+        sections.forEach(section -> {
+            upStations.add(section.getUpStation());
+            downStations.add(section.getDownStation());
+        });
+
+        upStations.removeAll(downStations);
+        return upStations.get(0);
     }
 
 }

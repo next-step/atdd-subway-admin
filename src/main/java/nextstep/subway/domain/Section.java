@@ -41,4 +41,20 @@ public class Section {
     protected Section() {
 
     }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
 }
