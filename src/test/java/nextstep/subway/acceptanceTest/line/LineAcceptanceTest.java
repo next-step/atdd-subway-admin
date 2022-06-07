@@ -261,14 +261,7 @@ public class LineAcceptanceTest {
         addSection(_2호선_lineId, 1, 2, 4);
 
         //then
-        List<SectionResponse> sectionResponses = RestAssured.given().log().all()
-                .when().log().all()
-                .get("/lines/" + _2호선_lineId + "/sections")
-                .then().log().all()
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", SectionResponse.class);
+        List<SectionResponse> sectionResponses = getSectionResponse(_2호선_lineId);
 
         Optional<SectionResponse> 강남역_력삼역 =
                 sectionResponses.stream().filter(s -> s.getUpStation().equals("강남역")).findFirst();
@@ -276,6 +269,49 @@ public class LineAcceptanceTest {
                 sectionResponses.stream().filter(s -> s.getUpStation().equals("력삼역")).findFirst();
         assertThat(강남역_력삼역.get().getDistance()).isEqualTo(4);
         assertThat(력삼역_선릉역.get().getDistance()).isEqualTo(6);
+    }
+
+    /**
+     * Given 지하철 노선을 추가하고
+     * When 역을 삭제하면
+     * Then 역이 삭제된다.
+     */
+    @Test
+    @DisplayName("라인에서 역을 삭제한다")
+    void deleteStation() {
+        //given
+        addSection(_2호선_lineId, 1, 2, 5);
+
+        //when
+        ExtractableResponse<Response> response = deleteStation(_2호선_lineId,2);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+    }
+
+    /**
+     * Given 지하철 노선을 추가하고
+     * When 중간 역을 삭제하면
+     * Then 삭제한 역은 조회되지 않는다.
+     * Then 이전 역의 역간 거리는 삭제한 역의 역간 거리만큼 증가한다.
+     * Then 이전 역의 다음 역은 삭제한 역의 다음 역으로 업데이트 된다.
+     */
+    @Test
+    @DisplayName("라인에서 역을 삭제하면 이전 역의 역간 거리는 삭제한 역간 거리만큼 늘어나고, 다음 역은 삭제한 다음 역으로 업데이트 된다")
+    void deleteStation2() {
+        //given
+        addSection(_2호선_lineId, 1, 2, 5);
+
+        //when
+        deleteStation(_2호선_lineId, 2);
+
+        //then
+        List<SectionResponse> sectionResponse = getSectionResponse(_2호선_lineId);
+        assertThat(sectionResponse.stream().filter(s -> s.getUpStation().equals("력삼역"))).hasSize(0);
+        Optional<SectionResponse> 강남역 = sectionResponse.stream().filter(s -> s.getUpStation().equals("강남역")).findFirst();
+        assertThat(강남역.get().getDistance()).isEqualTo(10);
+        assertThat(강남역.get().getDownStation()).isEqualTo("선릉역");
     }
 
     /**
@@ -321,6 +357,38 @@ public class LineAcceptanceTest {
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 지하철 노선을 추가하고
+     * When 라인에 없는 역을 삭제하면
+     * Then 400 에러가 발생한다
+     */
+    @Test
+    @DisplayName("라인에 없는 역을 삭제하면 400 에러가 발생한다")
+    void deleteNotExistedStationException() {
+        //given
+        addSection(_2호선_lineId, 1, 2, 5);
+
+        //when
+        ExtractableResponse<Response> response = deleteStation(_2호선_lineId, 4);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 노선이 하나만 있는 라인에서 역을 삭제하면
+     * Then 400 에러가 발생한다
+     */
+    @Test
+    @DisplayName("노선이 하나만 있는 경우 역을 삭제하면 400 에러가 발생한다")
+    void deleteStationExceptionIfSectionSizeIsZeroOrOne() {
+        //when
+        ExtractableResponse<Response> response = deleteStation(_2호선_lineId, 2);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> createLine(String name, String color, String upStationId, String downStationId, String distance) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
@@ -360,5 +428,23 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
+    private ExtractableResponse<Response> deleteStation(int lineId, int stationId) {
+        return RestAssured.given().log().all()
+                .when().log().all()
+                .delete("/lines/" + lineId + "/sections?stationId=" + stationId)
+                .then().log().all()
+                .extract();
+    }
 
+    private List<SectionResponse> getSectionResponse(int lineId) {
+        List<SectionResponse> sectionResponses = RestAssured.given().log().all()
+                .when().log().all()
+                .get("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract()
+                .body()
+                .jsonPath()
+                .getList(".", SectionResponse.class);
+        return sectionResponses;
+    }
 }

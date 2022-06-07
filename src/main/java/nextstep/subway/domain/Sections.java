@@ -3,14 +3,11 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
     protected Sections() {
@@ -112,6 +109,55 @@ public class Sections {
 
     public List<Section> sections() {
         return Collections.unmodifiableList(sections);
+    }
+
+    public void delete(Line line, Station station) {
+        validateSectionsSize();
+
+        Optional<Section> upSection = getUpSection(station);
+        Optional<Section> downSection = getDownSection(station);
+
+        validateSectionPresent(upSection, downSection);
+
+        createSection(line, downSection, upSection);
+        removeSections(upSection, downSection);
+    }
+
+    private void removeSections(Optional<Section> upSection, Optional<Section> downSection) {
+        upSection.ifPresent(sections::remove);
+        downSection.ifPresent(sections::remove);
+    }
+
+    private void validateSectionsSize() {
+        if (sections.size() <= 1) {
+            throw new IllegalArgumentException(String.format("역을 제거할 수 없습니다. (라인의 구간 수: %d)", sections.size()));
+        }
+    }
+
+    private Optional<Section> getUpSection(Station station) {
+        return sections.stream()
+                .filter(s -> s.equalUpStation(station))
+                .findFirst();
+    }
+
+    private Optional<Section> getDownSection(Station station) {
+        return sections.stream()
+                .filter(s -> s.equalDownStation(station))
+                .findFirst();
+    }
+
+    private void validateSectionPresent(Optional<Section> upSection, Optional<Section> downSection) {
+        if (!upSection.isPresent() && !downSection.isPresent()) {
+            throw new IllegalArgumentException("삭제하려는 역은 존재하지 않습니다");
+        }
+    }
+
+    private void createSection(Line line, Optional<Section> downSection, Optional<Section> upSection) {
+        if (upSection.isPresent() && downSection.isPresent())
+        {
+            int newDistance = upSection.get().getDistance() + downSection.get().getDistance();
+            sections.add(new Section(line, downSection.get().getUpStation(), upSection.get().getDownStation(), newDistance));
+        }
     }
 
     @Override
