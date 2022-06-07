@@ -21,9 +21,6 @@ import org.springframework.http.MediaType;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends BaseAcceptanceTest {
 
-    private Long stationId1;
-    private Long stationId2;
-
     /**
      * When 지하철 노선을 생성하면
      * Then 지하철 노선이 생성된다
@@ -32,10 +29,12 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        // when
+        // given
         createStationWithStationName("강남역");
         createStationWithStationName("양재역");
-        ExtractableResponse<Response> response = createLineWithLineName("신분당선", "bg-red-600", 1L, 2L, 10L);
+
+        // when
+        ExtractableResponse<Response> response = createLineWithLineName("신분당선", "bg-red-600", 1L, 2L, 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -58,8 +57,8 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         createStationWithStationName("양재역");
 
         // given
-        createLineWithLineName("신분당선", "bg-red-600", 1L, 2L, 10L);
-        ExtractableResponse<Response> response = createLineWithLineName("신분당선", "bg-red-600", 1L, 2L, 10L);
+        createLineWithLineName("신분당선", "bg-red-600", 1L, 2L, 10);
+        ExtractableResponse<Response> response = createLineWithLineName("신분당선", "bg-red-600", 1L, 2L, 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -78,8 +77,8 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         createStationWithStationName("양재역");
         createStationWithStationName("왕십리역");
         createStationWithStationName("선릉역");
-        createLineWithLineName("신분당선", "bg-red-600", 1L, 2L, 10L);
-        createLineWithLineName("분당선", "bg-green-600", 3L, 4L, 20L);
+        createLineWithLineName("신분당선", "bg-red-600", 1L, 2L, 10);
+        createLineWithLineName("분당선", "bg-green-600", 3L, 4L, 20);
 
         // when
         ExtractableResponse<Response> response = getLineList();
@@ -103,7 +102,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         // given
         createStationWithStationName("강남역");
         createStationWithStationName("양재역");
-        ExtractableResponse<Response> createResponse = createLineWithLineName("신분당선", "bg-red-600", 1L, 2L, 10L);
+        ExtractableResponse<Response> createResponse = createLineWithLineName("신분당선", "bg-red-600", 1L, 2L, 10);
         Long lineId = createResponse.jsonPath().getLong("id");
 
         // when
@@ -124,18 +123,23 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         // given
         StationResponse upStation = createStationWithStationName("강남역").as(StationResponse.class);
         StationResponse downStation = createStationWithStationName("양재역").as(StationResponse.class);
-        Long createdLineId = createLineWithLineName("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10L)
-            .jsonPath().getLong("id");
+        ExtractableResponse<Response> createLine = createLineWithLineName("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
 
         // when
-        LineRequest lineRequest = new LineRequest("신분당선_NEW", "bg-gray-600", downStation.getId(), upStation.getId(), 10L);
-        ExtractableResponse<Response> updateResponse = updateLineWithLindId(createdLineId, lineRequest, upStation.getId(), downStation.getId());
+        LineRequest lineRequest = new LineRequest("신분당선_NEW", "bg-gray-600", downStation.getId(), upStation.getId(), 10);
+        ExtractableResponse<Response> updateResponse = updateLineWithLindId(createLine.jsonPath().getLong("id"), lineRequest);
 
         // then
-        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> updatedLine = findLineById(createLine.jsonPath().getLong("id"));
+        assertAll(
+            () -> assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(updatedLine.jsonPath().getString("name")).isEqualTo("신분당선_NEW"),
+            () -> assertThat(updatedLine.jsonPath().getString("color")).isEqualTo("bg-gray-600")
+        );
+
     }
 
-    private ExtractableResponse<Response> createLineWithLineName(String name, String color, Long upStationId, Long downStationId, Long distance){
+    private ExtractableResponse<Response> createLineWithLineName(String name, String color, Long upStationId, Long downStationId, int distance){
         Map<String, String> params = createLineMap(name, color, upStationId, downStationId, distance);
 
         return RestAssured
@@ -163,8 +167,10 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> updateLineWithLindId(Long id, LineRequest lineRequest, Long upStationId, Long downStationId){
-        Map<String, String> params = createLineMap(lineRequest.getName(), lineRequest.getColor(), upStationId, downStationId, lineRequest.getDistance());
+    private ExtractableResponse<Response> updateLineWithLindId(Long id, LineRequest lineRequest){
+        Map<String, String> params = new HashMap<>();
+        params.put("name", lineRequest.getName());
+        params.put("color", lineRequest.getColor());
 
         return RestAssured
             .given().log().all()
@@ -175,7 +181,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
             .extract();
     }
 
-    private Map<String, String> createLineMap(String name, String color, Long upStationId, Long downStationId, Long distance){
+    private Map<String, String> createLineMap(String name, String color, Long upStationId, Long downStationId, int distance){
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
@@ -185,9 +191,14 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         if (downStationId != null) {
             params.put("downStationId", String.valueOf(downStationId));
         }
-        if (distance != null) {
-            params.put("distance", String.valueOf(distance));
-        }
+        params.put("distance", String.valueOf(distance));
         return params;
+    }
+
+    private ExtractableResponse<Response> findLineById(Long id) {
+        return RestAssured.given().log().all()
+            .when().get("/lines/{id}", id)
+            .then().log().all()
+            .extract();
     }
 }

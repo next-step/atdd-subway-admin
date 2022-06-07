@@ -9,43 +9,44 @@ import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.exception.InvalidLineException;
-import nextstep.subway.exception.InvalidStationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class LineService {
 
+    private static final String INVALID_LINE = "%d : 유효하지 않은 지하철 노선입니다.";
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    private static final String INVALID_STATION = "유효하지 않은 지하철역입니다.";
-    private static final String INVALID_LINE = "유효하지 않은 지하철 노선입니다.";
+    private final StationService stationService;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository,
+        StationRepository stationRepository, StationService stationService) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = findStationById(lineRequest.getUpStationId());
-        Station downStation = findStationById(lineRequest.getDownStationId());
-        Line newLine = lineRepository.save(new Line(lineRequest, upStation, downStation));
+        Station upStation = stationService.findStationById(lineRequest.getUpStationId());
+        Station downStation = stationService.findStationById(lineRequest.getDownStationId());
+        Line newLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.of(newLine);
     }
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
+        String lineName = lineRequest.getName();
+        String lineColor = lineRequest.getColor();
         Line foundLine = lineRepository.findById(id).orElseThrow(
-            () -> new InvalidLineException(INVALID_LINE)
+            () -> new InvalidLineException(String.format(INVALID_LINE, id))
         );
-        Station upStation = findStationById(foundLine.getUpStation().getId());
-        Station downStation = findStationById(foundLine.getDownStation().getId());
-        foundLine.update(lineRequest, upStation, downStation);
+        foundLine.update(lineName, lineColor);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
@@ -61,13 +62,13 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLineById(Long id) {
-        return LineResponse.of(lineRepository.findById(id)
-            .orElseThrow(() -> new InvalidLineException(INVALID_LINE)));
+        return LineResponse.of(findById(id));
     }
 
-    private Station findStationById(Long stationId) {
-        return stationRepository.findById(stationId)
-            .orElseThrow(() -> new InvalidStationException(INVALID_STATION));
+    @Transactional(readOnly = true)
+    public Line findById(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(() -> new InvalidLineException(String.format(INVALID_LINE, id)));
     }
 
 }
