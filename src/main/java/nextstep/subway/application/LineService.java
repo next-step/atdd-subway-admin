@@ -18,13 +18,10 @@ public class LineService {
 
     private static final String INVALID_LINE = "%d : 유효하지 않은 지하철 노선입니다.";
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
     private final StationService stationService;
 
-    public LineService(LineRepository lineRepository,
-        StationRepository stationRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
         this.stationService = stationService;
     }
 
