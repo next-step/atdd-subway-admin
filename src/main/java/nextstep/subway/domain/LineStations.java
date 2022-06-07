@@ -1,13 +1,14 @@
 package nextstep.subway.domain;
 
 import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
 public class LineStations {
-    @OneToMany(mappedBy = "line", orphanRemoval = true)
+    @OneToMany(mappedBy = "line", orphanRemoval = true, fetch = FetchType.LAZY)
     private final List<LineStation> lineStations = new ArrayList<>();
 
     protected LineStations() {
