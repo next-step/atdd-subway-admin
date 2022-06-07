@@ -195,7 +195,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private ExtractableResponse<Response> 노선_조회(Long id) {
+    public static ExtractableResponse<Response> 노선_조회(Long id) {
         return RestAssured
                 .given().log().all()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -220,7 +220,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 신분당선_생성() {
+    public static ExtractableResponse<Response> 신분당선_생성() {
         final long 강남역_ID = 1L;
         final long 양재역_ID = 2L;
 
