@@ -1,9 +1,10 @@
-package nextstep.subway.line;
+package nextstep.subway.line.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import nextstep.subway.station.Station;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

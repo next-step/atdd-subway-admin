@@ -1,4 +1,4 @@
-package nextstep.subway.shared.exception;
+package nextstep.subway.common.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

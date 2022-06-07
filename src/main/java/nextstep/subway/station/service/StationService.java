@@ -1,7 +1,9 @@
-package nextstep.subway.station;
+package nextstep.subway.station.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import nextstep.subway.station.repository.StationRepository;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequestDto;
 import nextstep.subway.station.dto.StationResponseDto;
 import org.springframework.stereotype.Service;
@@ -17,12 +19,12 @@ public class StationService {
     }
 
     @Transactional
-    StationResponseDto saveStation(StationRequestDto stationRequest) {
+    public StationResponseDto saveStation(StationRequestDto stationRequest) {
         Station persistStation = stationRepository.save(stationRequest.toStation());
         return StationResponseDto.of(persistStation);
     }
 
-    List<StationResponseDto> findAllStations() {
+    public List<StationResponseDto> findAllStations() {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream().
@@ -31,7 +33,7 @@ public class StationService {
     }
 
     @Transactional
-    void deleteStationById(Long id) {
+    public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
     }
 }

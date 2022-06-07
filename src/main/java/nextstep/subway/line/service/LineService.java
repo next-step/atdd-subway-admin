@@ -1,12 +1,12 @@
-package nextstep.subway.shared;
+package nextstep.subway.line.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import nextstep.subway.shared.exception.NotFoundException;
-import nextstep.subway.station.Station;
-import nextstep.subway.station.StationRepository;
-import nextstep.subway.line.Line;
-import nextstep.subway.line.LineRepository;
+import nextstep.subway.common.exception.NotFoundException;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.repository.StationRepository;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.repository.LineRepository;
 import nextstep.subway.line.dto.LineRequestDto;
 import nextstep.subway.line.dto.LineResponseDto;
 import nextstep.subway.line.dto.UpdateLineRequestDto;

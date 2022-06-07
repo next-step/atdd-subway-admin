@@ -1,7 +1,7 @@
 package nextstep.subway.station.dto;
 
 import java.time.LocalDateTime;
-import nextstep.subway.station.Station;
+import nextstep.subway.station.domain.Station;
 
 public class StationResponseDto {
     private Long id;

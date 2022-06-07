@@ -1,4 +1,4 @@
-package nextstep.subway.shared;
+package nextstep.subway.common.domain;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
