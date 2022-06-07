@@ -3,6 +3,9 @@ package nextstep.subway.domain;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
@@ -16,13 +19,17 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_line_to_up_station"))
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_line_to_down_station"))
     private Station downStation;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
+    private List<Section> sections = new ArrayList<>();
 
     private Long distance = 0L;
 
@@ -38,12 +45,29 @@ public class Line extends BaseEntity {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+        sections.add(new Section(null, upStation, 0));
+        sections.add(new Section(upStation, downStation, distance));
+        sections.add(new Section(downStation, null, 0));
     }
 
     public void update(String name, String color) {
         validateName(name);
         this.name = name;
         this.color = color;
+    }
+
+    public void addSection(Station upStation, Station downStation, long distance) {
+        Optional<Section> sectionList = sections.stream()
+                .filter(section -> section.getId().equals(upStation.getId()))
+                .findFirst();
+
+        if (sectionList.isPresent()) {
+            Section existingSection = sectionList.get();
+            sections.add(new Section(existingSection.getUpStation(), downStation, distance));
+            sections.add(new Section(downStation, existingSection.getDownStation()
+                    , existingSection.getDistance() - distance));
+            sections.remove(existingSection);
+        }
     }
 
     public Long getId() {
@@ -76,6 +100,18 @@ public class Line extends BaseEntity {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public List<Section> getSections() {
+        return new ArrayList<>(sections);
+    }
+
+    public void removeSection(Section section) {
+        this.sections.remove(section);
+    }
+
+    public void addSection(Section section) {
+        this.sections.add(section);
     }
 
     private void validateDistance(long distance) {
