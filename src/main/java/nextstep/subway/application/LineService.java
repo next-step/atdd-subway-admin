@@ -36,8 +36,8 @@ public class LineService {
 		));
 
 		if(lineRequest.isAddable()) {
-			Station upStation = stationService.findById(lineRequest.getUpStationId());
-			Station downStation = stationService.findById(lineRequest.getDownStationId());
+			Station upStation = getStationById(lineRequest.getUpStationId());
+			Station downStation = getStationById(lineRequest.getDownStationId());
 
 			persistLine.addSection(upStation, downStation, lineRequest.getDistance());
 		}
@@ -53,13 +53,13 @@ public class LineService {
 	}
 
 	public LineResponse findById(Long id) {
-		Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
+		Line line = getLineById(id);
 		return LineResponse.of(line);
 	}
 
 	@Transactional
 	public void updateLine(Long id, LineRequest lineRequest) {
-		Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
+		Line line = getLineById(id);
 		line.updateLine(lineRequest.getName(), lineRequest.getColor());
 	}
 
@@ -70,10 +70,18 @@ public class LineService {
 
 	@Transactional
 	public void addSection(Long lineId, SectionRequest sectionRequest) {
-		Station upStation = stationService.findById(sectionRequest.getUpStationId());
-		Station downStation = stationService.findById(sectionRequest.getDownStationId());
-		Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
+		Station upStation = getStationById(sectionRequest.getUpStationId());
+		Station downStation = getStationById(sectionRequest.getDownStationId());
+		Line line = getLineById(lineId);
 
 		line.addSection(upStation, downStation, sectionRequest.getDistance());
+	}
+
+	private Station getStationById(Long stationId) {
+		return stationService.findById(stationId);
+	}
+
+	private Line getLineById(Long lineId) {
+		return lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
 	}
 }

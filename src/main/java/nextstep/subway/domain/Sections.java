@@ -21,27 +21,9 @@ public class Sections {
 	}
 
 	public List<Station> getStations() {
-		List<Station> downStations = sections.stream()
-			.map(Section::getDownStation)
-			.collect(Collectors.toList());
+		Section firstSection = findFirstSection();
 
-		Section firstSection = sections.stream()
-			.filter(it -> !downStations.contains(it.getUpStation()))
-			.findFirst()
-			.orElseThrow(IllegalArgumentException::new);
-
-		List<Station> stations = new ArrayList<>();
-		stations.add(firstSection.getUpStation());
-		stations.add(firstSection.getDownStation());
-
-		Optional<Section> nextSection = findNextSection(firstSection.getDownStation());
-
-		while(nextSection.isPresent()) {
-			Station station = nextSection.get().getDownStation();
-
-			stations.add(station);
-			nextSection = findNextSection(station);
-		}
+		List<Station> stations = getStationsBeyond(firstSection);
 
 		return stations;
 	}
@@ -122,7 +104,34 @@ public class Sections {
 			.orElse(NOT_FOUND);
 	}
 
-	private Optional<Section> findNextSection(Station station) {
+	private Section findFirstSection() {
+		List<Station> downStations = sections.stream()
+			.map(Section::getDownStation)
+			.collect(Collectors.toList());
+
+		return sections.stream()
+			.filter(it -> !downStations.contains(it.getUpStation()))
+			.findFirst()
+			.orElseThrow(IllegalArgumentException::new);
+	}
+
+	private List<Station> getStationsBeyond(Section section) {
+		List<Station> stations = new ArrayList<>();
+		stations.add(section.getUpStation());
+		stations.add(section.getDownStation());
+
+		Optional<Section> nextSection = next(section.getDownStation());
+
+		while(nextSection.isPresent()) {
+			Station station = nextSection.get().getDownStation();
+
+			stations.add(station);
+			nextSection = next(station);
+		}
+		return stations;
+	}
+
+	private Optional<Section> next(Station station) {
 		return sections.stream()
 			.filter(it -> it.isUpStation(station))
 			.findFirst();
