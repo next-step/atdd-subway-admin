@@ -236,3 +236,13 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   ![img_8.png](img_8.png)
 
 ### 구현목록
+* 지하철 구간 삭제
+  * 이전 역의 구간거리는 삭제한 역간 구간 거리만큼 추가
+    * Domain
+      * Sections.java
+        * delete()
+          * 역 삭제
+          * 구간 거리 업데이트
+          * 이전, 다음 구간 역 재연결
+  * 테스트
+    * Sections 및 인수 테스트 작성
