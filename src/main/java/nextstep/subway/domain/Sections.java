@@ -39,6 +39,34 @@ public class Sections {
 		sections.add(new Section(line, upStation, downStation, distance));
 	}
 
+	public void remove(Station station) {
+		Optional<Section> optionalUpStation = findSectionByUpStation(station);
+		Optional<Section> optionalDownStation = findSectionByDownStation(station);
+
+		if(optionalUpStation.isPresent()
+			&& !optionalDownStation.isPresent()) {
+			Section section = optionalUpStation.orElseThrow(NoSuchElementException::new);
+			sections.remove(section);
+			return;
+		}
+
+		if(!optionalUpStation.isPresent()
+			&& optionalDownStation.isPresent()) {
+			Section section = optionalDownStation.orElseThrow(NoSuchElementException::new);
+			sections.remove(section);
+			return;
+		}
+
+		Section backSection = optionalUpStation.orElseThrow(NoSuchElementException::new);
+		Section frontSection = optionalDownStation.orElseThrow(NoSuchElementException::new);
+
+		sections.remove(backSection);
+		sections.remove(frontSection);
+
+		sections.add(new Section(frontSection.getLine(), frontSection.getUpStation(), backSection.getDownStation(),
+			frontSection.getDistance() + backSection.getDistance()));
+	}
+
 	private void validateDuplication(Station upStation, Station downStation) {
 		sections.stream()
 			.filter(it -> it.isDuplicated(upStation, downStation))
@@ -127,23 +155,6 @@ public class Sections {
 			nextSection = findSectionByUpStation(station);
 		}
 		return stations;
-	}
-
-	public void remove(Station station) {
-		Optional<Section> optionalFrontSection = findSectionByUpStation(station);
-		Optional<Section> optionalBackSection = findSectionByDownStation(station);
-
-		if(optionalFrontSection.isPresent()
-			&& !optionalBackSection.isPresent()) {
-			Section section = optionalFrontSection.orElseThrow(NoSuchElementException::new);
-			sections.remove(section);
-		}
-
-		if(!optionalFrontSection.isPresent()
-			&& optionalBackSection.isPresent()) {
-			Section section = optionalBackSection.orElseThrow(NoSuchElementException::new);
-			sections.remove(section);
-		}
 	}
 
 	private Optional<Section> findSectionByUpStation(Station station) {

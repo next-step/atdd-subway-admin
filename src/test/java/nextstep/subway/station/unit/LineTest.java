@@ -136,4 +136,18 @@ public class LineTest {
 		// then
 		assertThat(sinbundangLine.getStation()).containsExactly(gangnamStation, jeongjaStation);
 	}
+
+	@DisplayName("노선의 중간역 삭제")
+	@Test
+	void removeMiddleStation() {
+		// given
+		sinbundangLine.addSection(gangnamStation, gwanggyoStaion, 30);
+		sinbundangLine.addSection(gangnamStation, jeongjaStation, 10);
+
+		// when
+		sinbundangLine.removeSection(jeongjaStation);
+
+		// then
+		assertThat(sinbundangLine.getStation()).containsExactly(gangnamStation, gwanggyoStaion);
+	}
 }

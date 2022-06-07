@@ -125,6 +125,28 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철노선_역_목록_확인(response, 강남역.getName(), 정자역.getName());
 	}
 
+	/**
+	 *  Given 지하철 노선에 구간을 생성하고
+	 *    1. 강남역 - 정자역 - 광교역
+	 *	When 중간역을 삭제 요청하면
+	 * 	Then 지하철 노선에 구간이 삭제된다.
+	 * 	Then 지하철역 목록 조회 시 남아있는 역들을 찾을 수 있다.
+	 * 	  1. 강남역 - 광교역
+	 */
+	@DisplayName("노선의 중간역을 삭제한다.")
+	@Test
+	void removeMiddleStation() {
+		// given
+		구간_생성_요청(신분당선.getId(), 강남역.getId(), 정자역.getId(), 10);
+
+		// when
+		구간_삭제_요청(신분당선.getId(), 정자역.getId());
+		ExtractableResponse<Response> response = 노선_조회_요청(신분당선.getId());
+
+		// then
+		지하철노선_역_목록_확인(response, 강남역.getName(), 광교역.getName());
+	}
+
 	private void 지하철노선_역_목록_확인(ExtractableResponse<Response> response, String ...stationNames) {
 		assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly(stationNames);
 	}
