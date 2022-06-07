@@ -4,6 +4,8 @@ import static nextstep.subway.utils.AssertionsUtils.assertCreated;
 import static nextstep.subway.utils.AssertionsUtils.assertNoContent;
 import static nextstep.subway.utils.AssertionsUtils.assertOk;
 import static nextstep.subway.utils.RequestParamUtils.generateRequestParam;
+import static nextstep.subway.utils.ResponseBodyExtractUtils.getList;
+import static nextstep.subway.utils.ResponseBodyExtractUtils.getString;
 import static nextstep.subway.utils.RestAssuredUtils.delete;
 import static nextstep.subway.utils.RestAssuredUtils.get;
 import static nextstep.subway.utils.RestAssuredUtils.post;
@@ -26,6 +28,7 @@ import org.springframework.http.MediaType;
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
+
     @LocalServerPort
     int port;
 
@@ -39,9 +42,7 @@ public class StationAcceptanceTest {
     public static final String BASE_URL = "/stations";
 
     /**
-     * When 지하철역을 생성하면
-     * Then 지하철역이 생성된다
-     * Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
+     * When 지하철역을 생성하면 Then 지하철역이 생성된다 Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
      */
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -100,9 +101,7 @@ public class StationAcceptanceTest {
     }
 
     /**
-     * Given 2개의 지하철역을 생성하고
-     * When 지하철역 목록을 조회하면
-     * Then 2개의 지하철역을 응답 받는다
+     * Given 2개의 지하철역을 생성하고 When 지하철역 목록을 조회하면 Then 2개의 지하철역을 응답 받는다
      */
     @DisplayName("지하철역을 조회한다.")
     @Test
@@ -122,7 +121,7 @@ public class StationAcceptanceTest {
 
         // Then
         assertOk(getAllStationsResponse);
-        List<String> stationNames = getAllStationsResponse.jsonPath().getList("name", String.class);
+        List<String> stationNames = getList(getAllStationsResponse, stationNameProperty);
         assertThat(stationNames)
             .hasSize(2)
             .as("지하철역 목록 조회 응답에 생성한 두개의 지하철역 이름 포함 여부 검증")
@@ -130,9 +129,7 @@ public class StationAcceptanceTest {
     }
 
     /**
-     * Given 지하철역을 생성하고
-     * When 그 지하철역을 삭제하면
-     * Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
+     * Given 지하철역을 생성하고 When 그 지하철역을 삭제하면 Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
      */
     @DisplayName("지하철역을 제거한다.")
     @Test
@@ -142,7 +139,7 @@ public class StationAcceptanceTest {
         Map<String, String> requestParam = generateRequestParam(stationNameProperty, "선릉역");
         Response generateStationResponse = post(BASE_URL, requestParam).extract().response();
         assertCreated(generateStationResponse);
-        final String stationId = generateStationResponse.body().jsonPath().getString("id");
+        final String stationId = getString(generateStationResponse, "id");
         final String urlTemplate = String.format(BASE_URL.concat("/%s"), stationId);
 
         // When
@@ -153,7 +150,7 @@ public class StationAcceptanceTest {
 
         Response getAllStationsResponse = get(BASE_URL).extract().response();
         assertOk(getAllStationsResponse);
-        List<String> stationNames = getAllStationsResponse.jsonPath().getList(stationNameProperty, String.class);
+        List<String> stationNames = getList(getAllStationsResponse, stationNameProperty);
         assertThat(stationNames)
             .as("지하철역 목록 조회 응답에 삭제한 지하철역 미포함 여부 검증")
             .doesNotContain(requestParam.get(stationNameProperty));
