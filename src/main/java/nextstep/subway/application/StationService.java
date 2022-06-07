@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class StationService {
     private final StationRepository stationRepository;
 
-    public StationService(StationRepository stationRepository) {
+    public StationService(final StationRepository stationRepository) {
         this.stationRepository = stationRepository;
     }
 
