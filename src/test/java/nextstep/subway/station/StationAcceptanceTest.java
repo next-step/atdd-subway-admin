@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,9 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,7 +41,7 @@ public class StationAcceptanceTest {
     @Test
     void 지하철역_생성() {
         // when
-        ExtractableResponse<Response> response = createStation("강남역");
+        ExtractableResponse<Response> response = createStation(new StationRequest("강남역"));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -61,10 +60,10 @@ public class StationAcceptanceTest {
     @Test
     void 지하철역_중복_생성() {
         // given
-        createStation("강남역");
+        createStation(new StationRequest("강남역"));
 
         // when
-        ExtractableResponse<Response> response = createStation("강남역");
+        ExtractableResponse<Response> response = createStation(new StationRequest("강남역"));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -79,8 +78,8 @@ public class StationAcceptanceTest {
     @Test
     void 지하철역_목록_조회() {
         // given
-        createStation("여의나루역");
-        createStation("안국역");
+        createStation(new StationRequest("여의나루역"));
+        createStation(new StationRequest("안국역"));
 
         // when
         List<String> stationNames = getStationsIn("name", String.class);
@@ -98,11 +97,11 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Long stationId = createStation("여의나루역")
-                .jsonPath().getLong("id");
+        String location = createStation(new StationRequest("여의나루역"))
+                .header("Location");
 
         // when
-        deleteStation(stationId);
+        deleteStation(location);
 
         // then
         List<String> stationNames = getStationsIn("name", String.class);
@@ -117,18 +116,15 @@ public class StationAcceptanceTest {
     @Test
     void 존재하지_않는_지하철역_삭제() {
         // when
-        ExtractableResponse<Response> response = deleteStation(1L);
+        ExtractableResponse<Response> response = deleteStation("/stations/10");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-    public static ExtractableResponse<Response> createStation(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
+    public static ExtractableResponse<Response> createStation(StationRequest body) {
         return RestAssured.given().log().all()
-                .body(params)
+                .body(body)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post(ENDPOINT)
                 .then().log().all()
@@ -142,9 +138,9 @@ public class StationAcceptanceTest {
                 .extract().jsonPath().getList(path, genericType);
     }
 
-    private ExtractableResponse<Response> deleteStation(Long stationId) {
+    private ExtractableResponse<Response> deleteStation(String location) {
         return RestAssured.given().log().all()
-                .when().delete(ENDPOINT + "/" + stationId)
+                .when().delete(location)
                 .then().log().all()
                 .extract();
     }

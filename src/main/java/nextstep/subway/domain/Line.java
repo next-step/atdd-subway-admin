@@ -1,11 +1,11 @@
 package nextstep.subway.domain;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -13,26 +13,27 @@ public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
+
     private String color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Station downStation;
-
-    private Long distance;
+    @Embedded
+    private final Sections sections = new Sections();
 
     protected Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, Long distance) {
+    private Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+    }
+
+    public static Line createLine(String name, String color, Station upStation, Station downStation, int distance) {
+        Line line = new Line(name, color);
+        line.addSection(new Section(upStation, downStation, distance));
+
+        return line;
     }
 
     public Long getId() {
@@ -47,16 +48,17 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
     public void updateNameColor(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public void addSection(Section newSection) {
+        newSection.setLine(this);
+        sections.add(newSection);
+    }
+
+    public List<Station> getStationsInOrder() {
+        return sections.getStationsInOrder();
     }
 }

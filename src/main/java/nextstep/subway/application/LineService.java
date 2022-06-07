@@ -2,6 +2,7 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -25,11 +26,14 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(new Line(
+        Station upStation = stationRepository.getById(request.getUpStationId());
+        Station downStation = stationRepository.getById(request.getDownStationId());
+
+        Line persistLine = lineRepository.save(Line.createLine(
                 request.getName(),
                 request.getColor(),
-                stationRepository.getById(request.getUpStationId()),
-                stationRepository.getById(request.getDownStationId()),
+                upStation,
+                downStation,
                 request.getDistance()));
 
         return LineResponse.of(persistLine);

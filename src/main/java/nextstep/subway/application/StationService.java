@@ -4,9 +4,11 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityExistsException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,9 +22,18 @@ public class StationService {
     }
 
     @Transactional
-    public StationResponse saveStation(StationRequest stationRequest) {
-        Station persistStation = stationRepository.saveOne(stationRequest.toStation());
-        return StationResponse.of(persistStation);
+    public StationResponse saveStation(StationRequest request) {
+        stationRepository.findByName(request.getName())
+                .ifPresent(s -> {
+                    throw new EntityExistsException("이미 존재하는 지하철역입니다. name: " + request.getName());
+                });
+
+        try {
+            Station persistStation = stationRepository.save(request.toStation());
+            return StationResponse.of(persistStation);
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException("유니크 제약 조건 위반: " + request.getName());
+        }
     }
 
     public List<StationResponse> findAllStations() {

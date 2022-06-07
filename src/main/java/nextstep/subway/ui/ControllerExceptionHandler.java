@@ -1,5 +1,6 @@
 package nextstep.subway.ui;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -21,7 +22,19 @@ public class ControllerExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(EntityExistsException.class)
-    public ErrorResult handleIllegalArgsException(EntityExistsException e) {
+    public ErrorResult entityExistsExHandler(EntityExistsException e) {
+        return new ErrorResult(ERROR, e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ErrorResult dataIntegrityViolationExHandler(DataIntegrityViolationException e) {
+        return new ErrorResult(ERROR, e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ErrorResult illegalArgExHandler(IllegalArgumentException e) {
         return new ErrorResult(ERROR, e.getMessage());
     }
 

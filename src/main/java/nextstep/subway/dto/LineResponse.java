@@ -3,8 +3,8 @@ package nextstep.subway.dto;
 import nextstep.subway.domain.Line;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineResponse {
 
@@ -34,9 +34,10 @@ public class LineResponse {
                 line.getColor(),
                 line.getCreatedDate(),
                 line.getModifiedDate(),
-                Arrays.asList(
-                        StationResponse.of(line.getUpStation()),
-                        StationResponse.of(line.getDownStation())));
+                line.getStationsInOrder().stream()
+                        .map(station -> StationResponse.of(station))
+                        .collect(Collectors.toList())
+        );
     }
 
     public Long getId() {

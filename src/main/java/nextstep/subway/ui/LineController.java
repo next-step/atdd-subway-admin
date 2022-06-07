@@ -1,8 +1,10 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.LineService;
+import nextstep.subway.application.SectionService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,10 +24,12 @@ import java.util.List;
 public class LineController {
 
     public static final String ENDPOINT_ROOT = "/lines";
-    private LineService lineService;
+    private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping
@@ -54,5 +58,13 @@ public class LineController {
     public ResponseEntity deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity addSection(
+            @PathVariable Long lineId,
+            @RequestBody SectionRequest request) {
+        sectionService.addSection(lineId, request);
+        return ResponseEntity.ok().build();
     }
 }
