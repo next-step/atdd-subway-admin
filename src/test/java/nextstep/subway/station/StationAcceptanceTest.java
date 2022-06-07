@@ -1,5 +1,6 @@
 package nextstep.subway.station;
 
+import static nextstep.subway.utils.RequestParamUtils.generateRequestParam;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
@@ -104,8 +105,7 @@ public class StationAcceptanceTest {
     void getStations() {
         // Given
         final String stationNameProperty = "name";
-        Map<String, String> firstStationRequestParams = new HashMap<>();
-        firstStationRequestParams.put(stationNameProperty, "논현역");
+        Map<String, String> firstStationRequestParams = generateRequestParam(stationNameProperty, "논현역");
         Response generateFirstStationsResponse = RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(firstStationRequestParams)
@@ -113,8 +113,7 @@ public class StationAcceptanceTest {
             .then().log().all().extract().response();
         assertThat(generateFirstStationsResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        Map<String, String> secondStationRequestParams = new HashMap<>();
-        secondStationRequestParams.put(stationNameProperty, "신논현역");
+        Map<String, String> secondStationRequestParams = generateRequestParam(stationNameProperty, "신논현역");
         Response generateSecondStationsResponse = RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(secondStationRequestParams)
@@ -148,8 +147,7 @@ public class StationAcceptanceTest {
     void deleteStation() {
         // Given
         final String stationNameProperty = "name";
-        Map<String, String> firstStationRequestParams = new HashMap<>();
-        firstStationRequestParams.put(stationNameProperty, "선릉역");
+        Map<String, String> firstStationRequestParams = generateRequestParam(stationNameProperty, "선릉역");
         Response generateStationResponse = RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(firstStationRequestParams)
