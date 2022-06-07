@@ -24,23 +24,15 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-        validate(section);
         update(section);
         sections.add(section);
     }
 
-    private void validate(Section section) {
-        if (!isEmpty()) {
-            validateDuplicate(section);
-            validateExistence(section);
-        }
-    }
-
-    private boolean isEmpty() {
+    public boolean isEmpty() {
         return sections.isEmpty();
     }
 
-    private void validateDuplicate(Section target) {
+    public void validateDuplicate(Section target) {
         Optional<Section> optionalSection = sections.stream()
             .filter(element -> element.isSameStationPair(target))
             .findFirst();
@@ -52,7 +44,7 @@ public class Sections {
         }
     }
 
-    private void validateExistence(Section target) {
+    public void validateExistence(Section target) {
         if (!isExistStation(target.getDownStation())
             && !isExistStation(target.getUpStation())) {
             throw new InvalidSectionException(
