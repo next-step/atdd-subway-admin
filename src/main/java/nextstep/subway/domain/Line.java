@@ -33,24 +33,17 @@ public class Line extends BaseEntity {
     }
 
     public void initStation(Distance distance, Station upStation, Station downStation) {
-        sections.addSection(new Section(new Distance(1), null, upStation, this));
         sections.addSection(new Section(distance, upStation, downStation, this));
-        sections.addSection(new Section(new Distance(1), downStation, null, this));
     }
 
     public void insertSection(Section section) {
-        validateSection(section);
+        sections.validateInsertSection(section);
         sections.insertSection(this, section);
     }
 
-    private void validateSection(Section section) {
-        if (sections.containBothStation(section)) {
-            throw new InvalidSectionException("이미 노선에 포함된 구간은 추가할 수 없습니다.");
-        }
-
-        if (sections.containNoneStation(section)) {
-            throw new InvalidSectionException("구간 내 지하철 역이 하나는 등록된 상태여야 합니다.");
-        }
+    public void deleteSection(Station station) {
+        sections.validateDeleteSection(station);
+        sections.deleteSection(this, station);
     }
 
     public Long getId() {

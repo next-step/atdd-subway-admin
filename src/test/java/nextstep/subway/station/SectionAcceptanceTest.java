@@ -74,6 +74,11 @@ public class SectionAcceptanceTest {
         assertThat(find.getStations()).hasSize(3);
     }
 
+    /**
+     * Given 노선을 생성하고
+     * When 구간을 추가하면
+     * Then 노선에 속한 지하철역의 숫자가 증가한다
+     */
     @DisplayName("역 사이에 새로운 역을 등록할 경우")
     @Test
     void addSectionCase2() {
@@ -164,6 +169,11 @@ public class SectionAcceptanceTest {
         응답_검증(response, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Given 노선을 생성하고
+     * When 노선 거리를 초과하는 구간을 중간에 추가하면
+     * Then 노선을 추가하지 못한다
+     */
     @DisplayName("구간 추가 오류(구간 거리 초과2)")
     @Test
     void addSectionException2() {
@@ -177,6 +187,11 @@ public class SectionAcceptanceTest {
         응답_검증(response, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Given 노선을 생성하고
+     * When 노선 거리를 초과하는 구간을 중간에 추가하면
+     * Then 노선을 추가하지 못한다
+     */
     @DisplayName("구간 추가 오류(노선에 이미 포함된 지하철 역)")
     @Test
     void addSectionException3() {
@@ -190,6 +205,11 @@ public class SectionAcceptanceTest {
         응답_검증(response, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Given 노선을 생성하고
+     * When 노선에 포함되지 않은 지하철 구간을 추가하면
+     * Then 노선을 추가하지 못한다
+     */
     @DisplayName("구간 추가 오류(노선에 모두 포함안된 지하철 역)")
     @Test
     void addSectionException4() {
@@ -204,7 +224,105 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * Given 노선 및 구간을 설정한다.
+     * Given 노선을 생성하고
+     * When [중간] 노선 내 구간을 삭제하면
+     * Then 노선이 삭제된다
+     */
+    @DisplayName("중간 지하철 역 삭제")
+    @Test
+    void deleteSectionCase1() {
+        LineResponse line = 응답_객체_생성(노선_등록("2호선", "초록", 15, A역.getId(), B역.getId()), LineResponse.class);
+
+        구간_추가(B역.getId(), C역.getId(), 4, line.getId());
+        구간_추가(C역.getId(), D역.getId(), 3, line.getId());
+        구간_추가(D역.getId(), E역.getId(), 15, line.getId());
+        구간_삭제(line.getId(), B역.getId());
+
+        // then
+        LineResponse find = 응답_객체_생성(노선_조회(line.getId()), LineResponse.class);
+        assertThat(find.getStations()).hasSize(4);
+    }
+
+    /**
+     * Given 노선을 생성하고
+     * When [상행 종점 역] 노선 내 구간을 삭제하면
+     * Then 노선이 삭제된다
+     */
+    @DisplayName("상행 종점역 지하철 역 삭제")
+    @Test
+    void deleteSectionCase2() {
+        LineResponse line = 응답_객체_생성(노선_등록("2호선", "초록", 15, A역.getId(), B역.getId()), LineResponse.class);
+
+        구간_추가(B역.getId(), C역.getId(), 4, line.getId());
+        구간_추가(C역.getId(), D역.getId(), 3, line.getId());
+        구간_추가(D역.getId(), E역.getId(), 15, line.getId());
+        구간_삭제(line.getId(), A역.getId());
+
+        // then
+        LineResponse find = 응답_객체_생성(노선_조회(line.getId()), LineResponse.class);
+        assertThat(find.getStations()).hasSize(4);
+    }
+
+    /**
+     * Given 노선을 생성하고
+     * When [하행 종점 역] 노선 내 구간을 삭제하면
+     * Then 노선이 삭제된다
+     */
+    @DisplayName("하행 종점역 지하철 역 삭제")
+    @Test
+    void deleteSectionCase3() {
+        LineResponse line = 응답_객체_생성(노선_등록("2호선", "초록", 15, A역.getId(), B역.getId()), LineResponse.class);
+
+        구간_추가(B역.getId(), C역.getId(), 4, line.getId());
+        구간_추가(C역.getId(), D역.getId(), 3, line.getId());
+        구간_추가(D역.getId(), E역.getId(), 15, line.getId());
+        구간_삭제(line.getId(), E역.getId());
+
+        // then
+        LineResponse find = 응답_객체_생성(노선_조회(line.getId()), LineResponse.class);
+        assertThat(find.getStations()).hasSize(4);
+    }
+
+    /**
+     * Given 노선을 생성하고
+     * When 노선 내 하나 남은 구간의 지하철 역을 삭제하면
+     * Then 지하철 역을 삭제할 수 없다
+     */
+    @DisplayName("노선 내 하나 남은 구간의 지하철 역을 삭제")
+    @Test
+    void deleteSectionException1() {
+        // given
+        LineResponse line = 응답_객체_생성(노선_등록("2호선", "초록", 15, A역.getId(), B역.getId()), LineResponse.class);
+
+        // when
+        ValidatableResponse response = 구간_삭제(line.getId(), A역.getId());
+
+        // then
+        응답_검증(response, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Given 노선을 생성하고
+     * When 노선 내 존재하지 않는 지하철 역을 삭제하면
+     * Then 지하철 역을 삭제할 수 없다.
+     */
+    @DisplayName("노선 내 존재하지 않는 지하철 역을 삭제")
+    @Test
+    void deleteSectionException2() {
+        // given
+        LineResponse line = 응답_객체_생성(노선_등록("2호선", "초록", 15, A역.getId(), B역.getId()), LineResponse.class);
+        구간_추가(B역.getId(), C역.getId(), 4, line.getId());
+        구간_추가(C역.getId(), D역.getId(), 3, line.getId());
+
+        // when
+        ValidatableResponse response = 구간_삭제(line.getId(), E역.getId());
+
+        // then
+        응답_검증(response, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Given 노선 및 구간을 설정한다. (구간 추가만)
      * When, then 노선 내 순서대로 구간을 조회한다.
      */
     @DisplayName("노선에 포함된 구간 리스트 조회")
@@ -222,6 +340,29 @@ public class SectionAcceptanceTest {
         assertThat(responses).hasSize(5);
     }
 
+    /**
+     * Given 노선 및 구간을 설정한다. (구간 추가 삭제)
+     * When, then 노선 내 순서대로 구간을 조회한다.
+     */
+    @DisplayName("노선에 포함된 구간 리스트 조회")
+    @Test
+    void showLineSections2() {
+        // given
+        LineResponse line = 응답_객체_생성(노선_등록("2호선", "초록", 15, A역.getId(), D역.getId()), LineResponse.class);
+        구간_추가(A역.getId(), B역.getId(), 4, line.getId());
+        구간_삭제(line.getId(), B역.getId());
+        구간_추가(C역.getId(), D역.getId(), 3, line.getId());
+        구간_삭제(line.getId(), C역.getId());
+        구간_추가(E역.getId(), A역.getId(), 15, line.getId());
+        구간_삭제(line.getId(), E역.getId());
+        구간_추가(D역.getId(), F역.getId(), 30, line.getId());
+        구간_삭제(line.getId(), F역.getId());
+
+        // when, then
+        List<SectionResponse> responses = 구간_목록_조회(line.getId());
+        assertThat(responses).hasSize(1);
+    }
+
     public static ValidatableResponse 구간_추가(long upStationId, long downStationId, int distance, long lineId) {
         SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
@@ -229,6 +370,13 @@ public class SectionAcceptanceTest {
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines/" + lineId + "/sections")
+                .then().log().all();
+    }
+
+    public static ValidatableResponse 구간_삭제(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .param("stationId", stationId)
+                .when().delete("/lines/" + lineId + "/sections")
                 .then().log().all();
     }
 

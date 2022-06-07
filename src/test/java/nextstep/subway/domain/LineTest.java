@@ -5,6 +5,8 @@ import nextstep.subway.exception.InvalidSectionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -102,6 +104,73 @@ class LineTest {
         // then
         assertThat(line.getUpStation()).isEqualTo(E역);
         assertThat(line.getDownStation()).isEqualTo(F역);
+    }
+
+    @Test
+    void 노선_중간_지하철역_삭제() {
+        // given
+        Line line = new Line("2호선", "초록", 15, A역, C역);
+
+        // when
+        line.insertSection(new Section(5, B역, C역));
+        line.deleteSection(B역);
+
+        // then
+        Sections sections = line.getSections();
+        assertThat(sections.getList()).hasSize(1);
+        assertThat(sections.getSortedLineStations()).hasSize(2);
+    }
+
+    @Test
+    void 노선_상행종점역_지하철역_삭제() {
+        // given
+        Line line = new Line("2호선", "초록", 15, A역, C역);
+        line.insertSection(new Section(5, B역, C역));
+
+        // when
+        line.deleteSection(A역);
+
+        // then
+        Sections sections = line.getSections();
+        assertThat(sections.getList()).hasSize(1);
+        assertThat(sections.getSortedLineStations()).hasSize(2);
+    }
+
+    @Test
+    void 노선_하행종점역_지하철역_삭제() {
+        // given
+        Line line = new Line("2호선", "초록", 15, A역, C역);
+        line.insertSection(new Section(5, B역, C역));
+
+        // when
+        line.deleteSection(C역);
+
+        // then
+        Sections sections = line.getSections();
+        assertThat(sections.getList()).hasSize(1);
+        assertThat(sections.getSortedLineStations()).hasSize(2);
+    }
+
+    @Test
+    void 하나만_남은_구간은_삭제불가1() {
+        // given
+        Line line = new Line("2호선", "초록", 15, A역, C역);
+
+        // when, then
+        assertThatThrownBy(() -> {
+            line.deleteSection(A역);
+        }).isInstanceOf(InvalidSectionException.class);
+    }
+
+    @Test
+    void 하나만_남은_구간은_삭제불가2() {
+        // given
+        Line line = new Line("2호선", "초록", 15, A역, C역);
+
+        // when, then
+        assertThatThrownBy(() -> {
+            line.deleteSection(C역);
+        }).isInstanceOf(InvalidSectionException.class);
     }
 
     @Test

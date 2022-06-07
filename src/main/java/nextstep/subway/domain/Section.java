@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -31,6 +32,12 @@ public class Section {
         this.downStation = downStation;
     }
 
+    public Section(Distance distance, Station upStation, Station downStation) {
+        this.distance = distance;
+        this.upStation = upStation;
+        this.downStation = downStation;
+    }
+
     public Section(Distance distance, Station upStation, Station downStation, Line line) {
         this.distance = distance;
         this.upStation = upStation;
@@ -48,9 +55,18 @@ public class Section {
         this.distance = distance;
     }
 
+    public void updateLine(Line line) {
+        this.line = line;
+    }
+
     public boolean containsStation(Station station) {
         return station.equals(getUpStation())
                 || station.equals(getDownStation());
+    }
+
+    public Section connectSection(Section target) {
+        Distance plusDistance = getDistance().plusDistance(target.getDistance());
+        return new Section(plusDistance, getUpStation(), target.getDownStation());
     }
 
     public Long getId() {
@@ -71,6 +87,22 @@ public class Section {
 
     public Line getLine() {
         return line;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return Objects.equals(distance, section.distance) &&
+                Objects.equals(upStation, section.upStation) &&
+                Objects.equals(downStation, section.downStation) &&
+                Objects.equals(line, section.line);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(distance, upStation, downStation, line);
     }
 
     @Override
