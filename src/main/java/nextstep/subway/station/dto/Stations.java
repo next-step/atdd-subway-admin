@@ -1,6 +1,6 @@
-package nextstep.subway.station.domain;
+package nextstep.subway.station.dto;
 
-import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.domain.Station;
 
 import java.util.Collections;
 import java.util.List;
@@ -8,24 +8,20 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Stations {
-    private final List<StationResponse> stations;
+    private final List<Station> stations;
 
-    private Stations(final List<StationResponse> stations) {
+    private Stations(final List<Station> stations) {
         this.stations = Collections.unmodifiableList(stations);
     }
 
-    public static Stations ofStationResponse(final List<StationResponse> stations) {
+    public static Stations of(final List<Station> stations) {
         return new Stations(stations);
     }
 
-    public static Stations of(final List<Station> stations) {
-        return ofStationResponse(stations.stream()
+    public List<StationResponse> getStationResponse() {
+        return stations.stream()
                 .map(StationResponse::of)
-                .collect(Collectors.toList()));
-    }
-
-    public List<StationResponse> getStations() {
-        return stations;
+                .collect(Collectors.toList());
     }
 
     @Override
