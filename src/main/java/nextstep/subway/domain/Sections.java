@@ -44,7 +44,7 @@ public class Sections {
         sections.stream()
                 .filter(s -> s.equalUpStation(upStation))
                 .findFirst()
-                .ifPresent(s -> s.updateUpStationAndDistance(downStation, distance));
+                .ifPresent(s -> s.updateUpStationAndDistance(downStation, s.getDistance() - distance));
     }
 
     private void updateDownStationOfSectionIfExists(Station upStation, Station downStation, int distance) {
@@ -54,7 +54,7 @@ public class Sections {
         sections.stream()
                 .filter(s -> s.equalDownStation(downStation))
                 .findFirst()
-                .ifPresent(s -> s.updateDownStationAndDistance(upStation, distance));
+                .ifPresent(s -> s.updateDownStationAndDistance(upStation, s.getDistance() - distance));
     }
 
     private boolean isPresentStation(Station station) {

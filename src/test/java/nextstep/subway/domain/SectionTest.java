@@ -29,9 +29,17 @@ class SectionTest {
     @Test
     @DisplayName("상행역을 업데이트한다")
     void updateUpStation() {
-        section.updateUpStationAndDistance(station3, 40);
+        section.updateUpStationAndDistance(station3, 10);
         assertThat(section.getDistance()).isEqualTo(10);
         assertThat(section.getUpStation()).isEqualTo(station3);
+    }
+
+    @Test
+    @DisplayName("하행역을 업데이트한다")
+    void updateDownStation() {
+        section.updateDownStationAndDistance(station3, 10);
+        assertThat(section.getDistance()).isEqualTo(10);
+        assertThat(section.getDownStation()).isEqualTo(station3);
     }
 
     @Test
@@ -40,14 +48,6 @@ class SectionTest {
         assertThatThrownBy(() -> section.updateUpStationAndDistance(station3, 100))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("역 사이의 거리가 초과되었습니다.");
-    }
-
-    @Test
-    @DisplayName("하행역을 업데이트한다")
-    void updateDownStation() {
-        section.updateDownStationAndDistance(station3, 40);
-        assertThat(section.getDistance()).isEqualTo(10);
-        assertThat(section.getDownStation()).isEqualTo(station3);
     }
 
     @Test
