@@ -30,9 +30,6 @@ public class Section {
     @Column
     private Long distance;
 
-    public Long getDistance() {
-        return distance;
-    }
 
     public Section(Station upStation, Station downStation, Long distance) {
         this.upStation = upStation;
@@ -59,16 +56,8 @@ public class Section {
         return upStation;
     }
 
-    public void setUpStation(Station upStation) {
-        this.upStation = upStation;
-    }
-
     public Station getDownStation() {
         return downStation;
-    }
-
-    public void setDownStation(Station downStation) {
-        this.downStation = downStation;
     }
 
     public void setLine(Line line) {
@@ -76,14 +65,14 @@ public class Section {
     }
 
     public void updateUpStation(Section section) {
-        if (upStation.getId().equals(section.getUpStation().getId())) {
+        if (upStation.equals(section.getUpStation())) {
             upStation = section.downStation;
             updateDistance(section);
         }
     }
 
     public void updateDownStation(Section section) {
-        if (downStation.getId().equals(section.getDownStation().getId())) {
+        if (downStation.equals(section.getDownStation())) {
             updateDistance(section);
             downStation = section.upStation;
         }
@@ -94,8 +83,5 @@ public class Section {
             throw new IllegalArgumentException("기존 구간 보다 거리가 멀 수 없습니다.");
         }
         distance = distance - section.distance;
-
     }
-
-
 }

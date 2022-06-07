@@ -13,30 +13,40 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
+    private static final int FIRST_INDEX = 0;
+
     public void add(Section section) {
         sections.add(section);
     }
 
 
-    public void update(Section section) {
-        Section hasUpStationSection = findSameUpStationSection(section);
-        Section hasDownStationSection = findSameDownStationSection(section);
+    public void update(Section requestSection) {
+        Section hasUpStationSection = findSameUpStationSection(requestSection);
+        Section hasDownStationSection = findSameDownStationSection(requestSection);
 
+        validate(hasUpStationSection, hasDownStationSection);
+        updateSection(hasUpStationSection, hasDownStationSection, requestSection);
+
+        sections.add(requestSection);
+    }
+
+    private void validate(Section hasUpStationSection, Section hasDownStationSection) {
         if (hasDownStationSection != null && hasUpStationSection != null) {
             throw new IllegalArgumentException("이미 등록된 구간입니다.");
         }
         if (hasDownStationSection == null && hasUpStationSection == null) {
             throw new IllegalArgumentException("연결할 수 있는 역이 없습니다.");
         }
+    }
 
+    private void updateSection(Section hasUpStationSection, Section hasDownStationSection,
+        Section requestSection) {
         if (hasUpStationSection != null) {
-            hasUpStationSection.updateUpStation(section);
+            hasUpStationSection.updateUpStation(requestSection);
         }
         if (hasDownStationSection != null) {
-            hasDownStationSection.updateDownStation(section);
+            hasDownStationSection.updateDownStation(requestSection);
         }
-
-        sections.add(section);
     }
 
     private Section findSameUpStationSection(Section section) {
@@ -77,7 +87,7 @@ public class Sections {
         });
 
         upStations.removeAll(downStations);
-        return upStations.get(0);
+        return upStations.get(FIRST_INDEX);
     }
 
 }

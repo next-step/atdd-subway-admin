@@ -2,7 +2,6 @@ package nextstep.subway.application;
 
 import javassist.NotFoundException;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineResponse;
@@ -15,13 +14,10 @@ public class SectionService {
 
     private LineService lineService;
     private StationService stationService;
-    private LineRepository lineRepository;
 
-    public SectionService(LineService lineService, StationService stationService,
-        LineRepository lineRepository) {
+    public SectionService(LineService lineService, StationService stationService) {
         this.lineService = lineService;
         this.stationService = stationService;
-        this.lineRepository = lineRepository;
     }
 
     @Transactional

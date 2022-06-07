@@ -10,6 +10,7 @@ import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,8 +31,8 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest)
-        throws NotFoundException {
+    public ResponseEntity<LineResponse> createLine(
+        @Validated @RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
@@ -48,7 +49,7 @@ public class LineController {
 
     @PutMapping(value = "/lines/{id}")
     public ResponseEntity updateLine(@PathVariable Long id,
-        @RequestBody LineRequest lineRequest) throws NotFoundException {
+        @Validated @RequestBody LineRequest lineRequest) throws NotFoundException {
         lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok().build();
     }
@@ -61,7 +62,7 @@ public class LineController {
 
     @PostMapping(value = "/lines/{lineId}/sections")
     public ResponseEntity addSection(@PathVariable Long lineId,
-        @RequestBody SectionRequest sectionRequest) throws NotFoundException {
+        @Validated @RequestBody SectionRequest sectionRequest) throws NotFoundException {
         LineResponse lineResponse = sectionService.addSection(sectionRequest, lineId);
         return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections"))
             .body(lineResponse);
