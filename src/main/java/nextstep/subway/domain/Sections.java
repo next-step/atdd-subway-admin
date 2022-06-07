@@ -10,10 +10,12 @@ import java.util.stream.IntStream;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.exception.CannotDeleteException;
 
 @Embeddable
 public class Sections {
 	private final int NOT_FOUND = -1;
+	private final int MIN_SIZE = 1;
 
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
@@ -40,6 +42,8 @@ public class Sections {
 	}
 
 	public void remove(Station station) {
+		validDeletableStation();
+
 		Optional<Section> optionalUpStation = findSectionByUpStation(station);
 		Optional<Section> optionalDownStation = findSectionByDownStation(station);
 
@@ -167,5 +171,11 @@ public class Sections {
 		return sections.stream()
 			.filter(it -> it.isDownStation(station))
 			.findFirst();
+	}
+
+	private void validDeletableStation() {
+		if(sections.size() <= MIN_SIZE) {
+			throw new CannotDeleteException();
+		}
 	}
 }

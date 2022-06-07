@@ -3,6 +3,7 @@ package nextstep.subway.station.unit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import nextstep.subway.exception.CannotDeleteException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -149,5 +150,16 @@ public class LineTest {
 
 		// then
 		assertThat(sinbundangLine.getStation()).containsExactly(gangnamStation, gwanggyoStaion);
+	}
+
+	@DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 경우 오류")
+	@Test
+	void errorRemoveLastSection() {
+		// given
+		sinbundangLine.addSection(gangnamStation, gwanggyoStaion, 30);
+
+		// when then
+		assertThatThrownBy(() -> sinbundangLine.removeSection(gangnamStation))
+			.isInstanceOf(CannotDeleteException.class);
 	}
 }
