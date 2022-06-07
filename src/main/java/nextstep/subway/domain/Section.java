@@ -64,6 +64,11 @@ public class Section {
                 || station.equals(getDownStation());
     }
 
+    public Section connectSection(Section target) {
+        Distance plusDistance = getDistance().plusDistance(target.getDistance());
+        return new Section(plusDistance, getUpStation(), target.getDownStation());
+    }
+
     public Long getId() {
         return id;
     }

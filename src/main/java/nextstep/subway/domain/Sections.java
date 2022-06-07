@@ -96,8 +96,8 @@ public class Sections {
         Optional<Section> leftSection = deleteLeftSection(station);
         Optional<Section> rightSection = deleteRightSection(station);
         if (leftSection.isPresent() && rightSection.isPresent()) {
-            Distance plusDistance = leftSection.get().getDistance().plusDistance(rightSection.get().getDistance());
-            addSectionWithLine(new Section(plusDistance, leftSection.get().getUpStation(), rightSection.get().getDownStation()), line);
+            Section newSection = leftSection.get().connectSection(rightSection.get());
+            addSectionWithLine(newSection, line);
         }
     }
 

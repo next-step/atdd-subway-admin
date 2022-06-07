@@ -19,4 +19,23 @@ class SectionTest {
         assertThat(section.containsStation(stationA)).isTrue();
         assertThat(section.containsStation(stationB)).isTrue();
     }
+
+    @DisplayName("구간 연결하기")
+    @Test
+    void connectSection() {
+        // given
+        Station stationA = new Station(1L, "A역");
+        Station stationB = new Station(2L, "B역");
+        Station stationC = new Station(3L, "C역");
+        Section section1 = new Section(10, stationA, stationB);
+        Section section2 = new Section(10, stationB, stationC);
+
+        // when
+        Section actual = section1.connectSection(section2);
+
+        // then
+        assertThat(actual.getUpStation()).isEqualTo(stationA);
+        assertThat(actual.getDownStation()).isEqualTo(stationC);
+        assertThat(actual.getDistance()).isEqualTo(new Distance(20));
+    }
 }
