@@ -1,4 +1,4 @@
-package nextstep.subway.station;
+package nextstep.subway.station.acceptance;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +34,13 @@ public class LineSteps {
 			.extract();
 	}
 
+	public static ExtractableResponse<Response> 노선_조회_요청(Long lineId) {
+		return RestAssured.given().log().all()
+			.when().get("/lines/{longId}", lineId)
+			.then().log().all()
+			.extract();
+	}
+
 	public static ExtractableResponse<Response> 노선_조회_요청(ExtractableResponse<Response> response) {
 		String uri = response.header("Location");
 
@@ -59,6 +66,20 @@ public class LineSteps {
 
 		return RestAssured.given().log().all()
 			.when().delete(uri)
+			.then().log().all()
+			.extract();
+	}
+
+	public static ExtractableResponse<Response> 구간_생성_요청(Long lineId, Long upStationId, Long downStationId, int distance) {
+		Map<String, String> params = new HashMap<>();
+		params.put("upStationId", String.valueOf(upStationId));
+		params.put("downStationId", String.valueOf(downStationId));
+		params.put("distance", String.valueOf(distance));
+
+		return RestAssured.given().log().all()
+			.body(params)
+			.contentType(ContentType.JSON)
+			.when().post("/lines/{lineId}/sections", lineId)
 			.then().log().all()
 			.extract();
 	}

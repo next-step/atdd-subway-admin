@@ -40,6 +40,6 @@ public class StationService {
     }
 
     public Station findById(Long id) {
-        return stationRepository.findById(id).orElseThrow(IllegalAccessError::new);
+        return stationRepository.findById(id).get();
     }
 }

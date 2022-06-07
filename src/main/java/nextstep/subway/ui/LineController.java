@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 
 @RestController
 @RequestMapping("/lines")
@@ -52,5 +53,11 @@ public class LineController {
 	public ResponseEntity deleteLine(@PathVariable Long id) {
 		lineService.deleteLine(id);
 		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping("/{lineId}/sections")
+	public ResponseEntity createSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+		lineService.addSection(lineId, sectionRequest);
+		return ResponseEntity.ok().build();
 	}
 }

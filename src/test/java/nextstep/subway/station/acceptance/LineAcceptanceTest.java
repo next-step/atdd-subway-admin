@@ -1,7 +1,7 @@
-package nextstep.subway.station;
+package nextstep.subway.station.acceptance;
 
-import static nextstep.subway.station.LineSteps.*;
-import static nextstep.subway.station.StationSteps.지하철_생성_요청;
+import static nextstep.subway.station.acceptance.LineSteps.*;
+import static nextstep.subway.station.acceptance.StationSteps.지하철_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
@@ -16,7 +16,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
 @DisplayName("지하철 노선 관련 기능")
-public class LineAcceptanceTest extends AcceptanceTest{
+public class LineAcceptanceTest extends AcceptanceTest {
 
 	@BeforeEach
 	void init() {
