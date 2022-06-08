@@ -35,12 +35,7 @@ public class Sections {
     }
 
     public boolean containsStation(Station station) {
-        boolean hasStation = false;
-        for (Section oldSection : sections) {
-            hasStation |= oldSection.getUpStation().equals(station);
-            hasStation |= oldSection.getDownStation().equals(station);
-        }
-        return hasStation;
+        return sections.stream().anyMatch(section -> section.containsStation(station));
     }
 
     public void addFirstSection(Section section) {
@@ -61,7 +56,7 @@ public class Sections {
         int position = findPositionToAddSection(section);
         addMiddleSection(position, section);
     }
-
+    
     private void addMiddleSection(int position, Section section) {
         Section oldSection = sections.get(position);
 

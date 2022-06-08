@@ -58,6 +58,10 @@ public class Section extends BaseEntity {
         }
     }
 
+    public boolean containsStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
     public void updateLine(Line line) {
         this.line = line;
     }
