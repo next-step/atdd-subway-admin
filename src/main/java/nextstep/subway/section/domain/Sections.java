@@ -105,6 +105,13 @@ public class Sections {
                 .orElseThrow(NoSuchElementException::new);
     }
 
+    private Station getLastStation() {
+        return getDownStations().stream()
+                .filter(station -> !getUpStations().contains(station))
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
+    }
+
     private Set<Station> getUpStations() {
         return sections.stream()
                 .flatMap(section -> Stream.of(section.getUpStation()))
@@ -115,6 +122,54 @@ public class Sections {
         return sections.stream()
                 .flatMap(section -> Stream.of(section.getDownStation()))
                 .collect(Collectors.toSet());
+    }
+
+    public void removeSection(Station station) {
+        if(!includeStations().contains(station)) {
+            throw new IllegalArgumentException();
+        }
+
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException();
+        }
+
+        if (station == getRootStation()) {
+            removeRootSection();
+            return;
+        }
+
+        if (station == getLastStation()) {
+            removeLastSection();
+            return;
+        }
+
+        Section upSection = findSectionByDownStation(station);
+        Section downSection = findSectionByUpStation(station);
+
+        upSection.removeUpdateSection(downSection);
+        sections.remove(downSection);
+    }
+
+    private void removeRootSection() {
+        sections.remove(getStationsSorted().get(0));
+    }
+
+    private void removeLastSection() {
+        sections.remove(getStationsSorted().get(sections.size()));
+    }
+
+    private Section findSectionByUpStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.getEqualsUpStation(station))
+                .findFirst()
+                .get();
+    }
+
+    private Section findSectionByDownStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.getEqualsDownStation(station))
+                .findFirst()
+                .get();
     }
 
     public List<Section> getSections() {

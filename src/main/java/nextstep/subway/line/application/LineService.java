@@ -70,4 +70,11 @@ public class LineService {
         Section section = new Section(upStation, downStation, sectionRequest.getDistance());
         line.addSection(section);
     }
+
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchElementException(NO_ELEMENT_SEARCH_BY_ID_MSG));
+        Station station = stationService.findById(stationId);
+        line.removeSectionByStation(station);
+    }
 }
