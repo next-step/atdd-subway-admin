@@ -68,6 +68,6 @@ public class LineController {
     public ResponseEntity handleDatabaseException(DataIntegrityViolationException exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .build();
+                .body("해당 Line 이미 존재합니다.");
     }
 }

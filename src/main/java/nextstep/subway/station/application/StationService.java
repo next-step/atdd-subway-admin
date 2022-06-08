@@ -48,8 +48,7 @@ public class StationService {
 
     public SectionStations findUpDownStation(Long upStationId, Long downStationId) {
         List<Station> stations = stationRepository.findAll();
-        SectionStations sectionStations = new SectionStations();
-        sectionStations.findUpAndDownStations(stations, upStationId, downStationId);
+        SectionStations sectionStations = new SectionStations(stations, upStationId, downStationId);
         return sectionStations;
     }
 
