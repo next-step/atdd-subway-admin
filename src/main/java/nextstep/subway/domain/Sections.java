@@ -117,7 +117,7 @@ public class Sections {
 
 	private void sectionsAdd(int index, Section section) {
 		sections.add(index, section);
-		section.addCompleted(index);
+		section.updateSectionOrder(index);
 	}
 
 	@Override

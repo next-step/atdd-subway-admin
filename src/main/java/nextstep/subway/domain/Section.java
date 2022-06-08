@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import nextstep.subway.exception.StationNotFoundException;
+
 @Entity
 public class Section extends BaseEntity {
 	private static final int MIN_DISTANCE = 0;
@@ -44,9 +46,9 @@ public class Section extends BaseEntity {
 	}
 
 	private void validation(Station upStation, Station downStation, int distance) {
-		if (Objects.isNull(upStation) || Objects.isNull(downStation) || upStation.getId() == null
-				|| downStation.getId() == null) {
-			throw new NullPointerException("역 정보가 없습니다.");
+		if (Objects.isNull(upStation) || Objects.isNull(downStation) 
+				|| upStation.getId() == null || downStation.getId() == null) {
+			new StationNotFoundException("역 정보가 없습니다.");
 		}
 
 		if (upStation.equals(downStation)) {
@@ -92,7 +94,7 @@ public class Section extends BaseEntity {
 		}
 	}
 
-	protected void addCompleted(int index) {
+	protected void updateSectionOrder(int index) {
 		this.sectionOrder = index;
 	}
 
