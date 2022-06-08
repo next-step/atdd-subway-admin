@@ -149,7 +149,7 @@ public class Sections {
             throw new IllegalArgumentException(STATION_MINIMUM_DELETE_ERROR);
         }
 
-        if ((!matchUpStation(station) || !matchDownStation(station))) {
+        if (!matchUpStation(station) && !matchDownStation(station)) {
             throw new IllegalArgumentException(NOT_MATCH_STATION_DELETE_ERROR);
         }
     }
