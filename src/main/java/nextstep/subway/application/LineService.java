@@ -82,18 +82,18 @@ public class LineService {
         Station downStation = findStationById(sectionRequest.getDownStationId());
         Station upStation = findStationById(sectionRequest.getUpStationId());
 
-        if (line.getUpStation().getId().equals(downStation.getId())) {
+        if (line.getUpStation().equals(downStation)) {
             line.changeUpStation(upStation, sectionRequest.getDistance());
             return line;
         }
 
-        if (line.getDownStation().getId().equals(upStation.getId())) {
+        if (line.getDownStation().equals(upStation)) {
             line.changeDownStation(downStation, sectionRequest.getDistance());
             return line;
         }
 
         Optional<Section> sameUpSection = line.getSections().stream()
-                .filter(section -> section.getUpStation().getId().equals(upStation.getId()))
+                .filter(section -> section.getUpStation().equals(upStation))
                 .findFirst();
 
         if (sameUpSection.isPresent()) {
