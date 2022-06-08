@@ -9,26 +9,45 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class LineService {
+    public static final String ERROR_MESSAGE_UP_STATION_NOT_EXISTS = "상행종점 역이 존재하지 않습니다.";
+    public static final String ERROR_MESSAGE_DOWN_STATION_NOT_EXISTS = "하행종점 역이 존재하지 않습니다.";
     private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
         Line persistLine = lineRepository.save(lineRequest.toLine());
 
-        Section firstSection = new Section(persistLine.getId(), new Station(lineRequest.getUpStationId()),
-                new Station(lineRequest.getDownStationId()), lineRequest.getDistance());
+        Station upStation = stationRepository.getById(lineRequest.getUpStationId());
+        Station downStation = stationRepository.getById(lineRequest.getDownStationId());
+        validateExistsOfStations(upStation, downStation);
+
+        Section firstSection = new Section(persistLine.getId(), upStation, downStation, lineRequest.getDistance());
         persistLine.addSection(firstSection);
 
         return LineResponse.from(persistLine);
+    }
+
+    private void validateExistsOfStations(Station upStation, Station downStation) {
+        validateExistsOfStation(upStation, ERROR_MESSAGE_UP_STATION_NOT_EXISTS);
+        validateExistsOfStation(downStation, ERROR_MESSAGE_DOWN_STATION_NOT_EXISTS);
+    }
+
+    private void validateExistsOfStation(Station station, String errorMessage) {
+        if (station == null) {
+            throw new DataIntegrityViolationException(errorMessage);
+        }
     }
 
     @Transactional(readOnly = true)
