@@ -67,13 +67,27 @@ public class Line extends BaseEntity {
             return ;
         }
 
-        Optional<Section> sameUpSection = getSections().stream()
+        addSectionBetweenTwoStation(newUpStation, newDownStation, sectionDistance);
+    }
+
+    private void addSectionBetweenTwoStation(Station newUpStation, Station newDownStation, long sectionDistance) {
+        Optional<Section> existingUpSection = getSections().stream()
                 .filter(section -> section.getUpStation().equals(newUpStation))
                 .findFirst();
 
-        if (sameUpSection.isPresent()) {
-            validateNewSectionDistance(sectionDistance, sameUpSection.get().getDistance());
-            addSectionBetweenExistingSection(sectionDistance, newDownStation, sameUpSection);
+        if (existingUpSection.isPresent()) {
+            validateNewSectionDistance(sectionDistance, existingUpSection.get().getDistance());
+            addSectionFromUpStation(existingUpSection.get(), newDownStation, sectionDistance);
+            return ;
+        }
+
+        Optional<Section> existingDownSection = getSections().stream()
+                .filter(section -> section.getDownStation().equals(newDownStation))
+                .findFirst();
+
+        if (existingDownSection.isPresent()) {
+            validateNewSectionDistance(sectionDistance, existingDownSection.get().getDistance());
+            addSectionFromDownSection(newUpStation, existingDownSection.get(), sectionDistance);
         }
     }
 
@@ -92,15 +106,19 @@ public class Line extends BaseEntity {
                 .anyMatch(section -> section.getUpStation().equals(station) || section.getDownStation().equals(station));
     }
 
-    private void addSectionBetweenExistingSection(long newSectionDistance, Station newDownStation, Optional<Section> existingUpSection) {
-        if (existingUpSection.isPresent()) {
-            Section existingSection = existingUpSection.get();
+    private void addSectionFromUpStation(Section existingSection, Station newDownStation, long newSectionDistance) {
             Section newDownSection = new Section(newDownStation, existingSection.getDownStation()
                     , existingSection.getDistance() - newSectionDistance);
             addSection(newDownSection);
             existingSection.setDownStation(newDownStation);
             existingSection.setDistance(newSectionDistance);
-        }
+    }
+
+    private void addSectionFromDownSection(Station newUpStation, Section existingSection, long newSectionDistance) {
+        Section newDownSection = new Section(newUpStation, existingSection.getDownStation(), newSectionDistance);
+        addSection(newDownSection);
+        existingSection.setDownStation(newUpStation);
+        existingSection.setDistance(existingSection.getDistance() - newSectionDistance);
     }
 
     private void changeUpStation(Station newUpStation, long newSectionDistance) {

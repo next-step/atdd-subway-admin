@@ -27,10 +27,10 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
     /**
      * Given 지하철 노선이 생성된 상태에서
-     * When 두 역 사이에 새로운 역을 등록하면
+     * When 두 역 사이에 상행역에서 출발하는 새로운 역을 등록하면
      * Then 새로운 역이 등록되고 구간이 조정된다.
      */
-    @DisplayName("역 사이에 새로운 구간을 등록한다.")
+    @DisplayName("역 사이에 상행역에서 출발하는 새로운 구간을 등록한다.")
     @Test
     void addSection() {
         // When
@@ -48,6 +48,31 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         Integer 신규구간_양재역_거리_리턴값 = 구간_추가_결과_응답.jsonPath()
                 .get("sections.find { section -> (section.downStation != null && section.downStation.id == 2L) }.distance");
         assertThat(신규구간_양재역_거리_리턴값).isEqualTo(신규구간_양재역_거리);
+    }
+
+    /**
+     * Given 지하철 노선이 생성된 상태에서
+     * When 두 역 사이에 하행역에서 출발하는 새로운 역을 등록하면
+     * Then 새로운 역이 등록되고 구간이 조정된다.
+     */
+    @DisplayName("역 사이에 하행역에서 출발하는 새로운 구간을 등록한다.")
+    @Test
+    void addSectionFromDownStation() {
+        // When
+        SectionRequest sectionRequest = new SectionRequest(5L, 2L, 4);
+        ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(1L, sectionRequest);
+
+        // Then
+        final Integer 신규역에서_양재역_거리 = 4;
+        final Integer 강남역에서_신규역_거리 = 6;
+
+        Integer 강남역_신규구간_거리_리턴값 = 구간_추가_결과_응답.jsonPath()
+                .get("sections.find { section -> (section.upStation.id == 1L) }.distance");
+        assertThat(강남역_신규구간_거리_리턴값).isEqualTo(강남역에서_신규역_거리);
+
+        Integer 신규구간_양재역_거리_리턴값 = 구간_추가_결과_응답.jsonPath()
+                .get("sections.find { section -> (section.downStation.id == 2L) }.distance");
+        assertThat(신규구간_양재역_거리_리턴값).isEqualTo(신규역에서_양재역_거리);
     }
 
     /**
