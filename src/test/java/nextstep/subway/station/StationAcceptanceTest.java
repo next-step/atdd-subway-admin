@@ -39,8 +39,7 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        Map<String, String> params = getStringStringMap("강남역");
 
         ExtractableResponse<Response> response = createStation(params);
 
@@ -53,12 +52,14 @@ public class StationAcceptanceTest {
     }
 
     private List<String> getStationNames() {
-        return RestAssured.given().log().all().when().get(STATION_PATH()).then().log().all().extract().jsonPath().getList("name", String.class);
+        return RestAssured.given().log().all()
+                .when().get(STATION_PATH)
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
     }
 
-    private final String STATION_PATH() {
-        return "/stations";
-    }
+    private final String STATION_PATH = "/stations";
+
 
     /**
      * Given 지하철역을 생성하고
@@ -69,10 +70,11 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        Map<String, String> params = getStringStringMap("강남역");
 
-        RestAssured.given().log().all().body(params).contentType(MediaType.APPLICATION_JSON_VALUE).when().post(STATION_PATH()).then().log().all();
+        RestAssured.given().log().all()
+                .body(params).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(STATION_PATH).then().log().all();
 
         // when
         ExtractableResponse<Response> response = createStation(params);
@@ -90,13 +92,11 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        Map<String, String> params = getStringStringMap("강남역");
 
         ExtractableResponse<Response> response = createStation(params);
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "사가정역");
+        Map<String, String> params2 = getStringStringMap("사가정역");
 
         ExtractableResponse<Response> response2 = createStation(params2);
 
@@ -109,6 +109,12 @@ public class StationAcceptanceTest {
         assertThat(stationNames).containsAnyOf("강남역", "사가정역");
     }
 
+    private Map<String, String> getStringStringMap(String stationName) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", stationName);
+        return params;
+    }
+
 
     /**
      * Given 지하철역을 생성하고
@@ -119,8 +125,7 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        Map<String, String> params = getStringStringMap("강남역");
 
         ExtractableResponse<Response> response = createStation(params);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -130,7 +135,7 @@ public class StationAcceptanceTest {
         // when
         removeStation(1L);
 
-        assertThat(findAll().body().jsonPath().getList("name", String.class)).hasSize(0);
+        assertThat(findAll().body().jsonPath().getList("name", String.class)).isEmpty();
     }
 
 
@@ -138,7 +143,7 @@ public class StationAcceptanceTest {
         return RestAssured.given().log().all().
                 body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(STATION_PATH())
+                .when().post(STATION_PATH)
                 .then().log().all()
                 .extract();
     }
@@ -146,7 +151,7 @@ public class StationAcceptanceTest {
     ExtractableResponse<Response> removeStation(Long id) {
         return RestAssured.given().log().all()
                 .pathParam("id", id)
-                .when().delete(STATION_PATH() + "/{id}")
+                .when().delete(STATION_PATH + "/{id}")
                 .then().log().all()
                 .extract();
     }
@@ -154,7 +159,7 @@ public class StationAcceptanceTest {
     ExtractableResponse<Response> findAll() {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get(STATION_PATH())
+                .when().get(STATION_PATH)
                 .then().log().all()
                 .extract();
     }
