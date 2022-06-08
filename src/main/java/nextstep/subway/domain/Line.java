@@ -59,6 +59,10 @@ public class Line {
     }
 
     public List<Station> sortByStation() {
+        if (sections.getSections().size() == 0) {
+            return new ArrayList<>();
+        }
+
         List<Station> stations = new ArrayList<>();
         Section section = getFirstSection();
 

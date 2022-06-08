@@ -21,6 +21,7 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         List<Station> list = line.sortByStation();
+
         List<StationResponse> responses = list.stream()
                 .map(LineResponse::toStationResponse)
                 .distinct()
