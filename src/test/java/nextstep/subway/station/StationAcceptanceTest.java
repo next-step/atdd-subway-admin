@@ -89,11 +89,14 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = requestGetStations();
 
         // then
-        지하철역_조회완료(response.statusCode());
-
-        List<String> findStations = response.jsonPath().getList("name", String.class);
-        assertThat(findStations.size()).isEqualTo(stationNames.size());
-        assertThat(findStations).contains(stationNames.toArray(new String[0]));
+        assertAll(
+            () -> 지하철역_조회완료(response.statusCode()),
+            () -> {
+                List<String> findStations = response.jsonPath().getList("name", String.class);
+                assertThat(findStations.size()).isEqualTo(stationNames.size());
+                assertThat(findStations).contains(stationNames.toArray(new String[0]));
+            }
+        );
     }
 
     /**
