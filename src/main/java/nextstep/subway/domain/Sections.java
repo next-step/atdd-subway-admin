@@ -12,7 +12,7 @@ import static nextstep.subway.common.Messages.*;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
@@ -20,8 +20,8 @@ public class Sections {
 
     public void addSections(Section section) {
         validate(section);
-        checkUpStation(section);
-        checkDownStation(section);
+        checkAndUpdateUpStation(section);
+        checkAndUpdateDownStation(section);
         sections.add(section);
     }
 
@@ -54,7 +54,7 @@ public class Sections {
         return getStations().contains(upStation) || getStations().contains(downStation);
     }
 
-    private void checkUpStation(Section section) {
+    private void checkAndUpdateUpStation(Section section) {
         Station upStation = section.getUpStation();
 
         if (matchUpStation(upStation)) {
@@ -63,7 +63,7 @@ public class Sections {
         }
     }
 
-    private void checkDownStation(Section section) {
+    private void checkAndUpdateDownStation(Section section) {
         Station downStation = section.getDownStation();
 
         if (matchDownStation(downStation)) {
@@ -96,6 +96,19 @@ public class Sections {
 
     public Section deleteSectionByStation(Station station) {
         validateDeleteStation(station);
+
+        if (isUpStationAndDownStation(station)) {
+            return matchUpStationAndDownStation(station);
+        }
+
+        if (matchUpStation(station)) {
+            return matchAndRemoveUpStation(station);
+        }
+
+        return matchAndRemoveDownStation(station);
+    }
+
+    private Section matchUpStationAndDownStation(Station station) {
         Section sectionByUpStation = findSectionByUpStation(station);
         Section sectionByDownStation = findSectionByDownStation(station);
 
@@ -108,12 +121,27 @@ public class Sections {
         sections.add(section);
         sections.remove(sectionByUpStation);
         sections.remove(sectionByDownStation);
-
         return section;
     }
 
+    private Section matchAndRemoveUpStation(Station station) {
+        Section upStation = findSectionByUpStation(station);
+        sections.remove(upStation);
+        return upStation;
+    }
+
+    private Section matchAndRemoveDownStation(Station station) {
+        Section downStation = findSectionByDownStation(station);
+        sections.remove(downStation);
+        return downStation;
+    }
+
+    private boolean isUpStationAndDownStation(Station station) {
+        return matchUpStation(station) && matchDownStation(station);
+    }
+
     private void validateDeleteStation(Station station) {
-        if (!matchUpStation(station) || !matchDownStation(station)) {
+        if (sections.size() <= 1 && (!matchUpStation(station) || !matchDownStation(station))) {
             throw new IllegalArgumentException(NOT_MATCH_STATION_DELETE_ERROR);
         }
     }
