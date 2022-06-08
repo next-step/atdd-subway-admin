@@ -97,11 +97,18 @@ public class LineService {
                 .findFirst();
 
         if (sameUpSection.isPresent()) {
+            validateNewSectionDistance(sectionRequest.getDistance(), sameUpSection.get().getDistance());
             addSectionBetweenExistingSection(sectionRequest, line, downStation, sameUpSection);
             return line;
         }
 
         return line;
+    }
+
+    private void validateNewSectionDistance(int newSectionDistance, long existingSectionDistance) {
+        if (newSectionDistance >= existingSectionDistance) {
+            throw new IllegalArgumentException("등록하고자 하는 구간의 거리가 역 사이 길이보다 크거나 같습니다.");
+        }
     }
 
     private void addSectionBetweenExistingSection(SectionRequest sectionRequest, Line line, Station downStation, Optional<Section> existingUpSection) {

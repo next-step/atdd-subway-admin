@@ -4,9 +4,11 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
+import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -95,6 +97,25 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         String 신분당선_상행역명_리턴값 = 구간_추가_결과_응답.jsonPath().get("downStation.name");
         assertThat(신분당선_상행역명_리턴값).isEqualTo(구간_추가후_신분당선_하행역명);
+    }
+
+    /**
+     * Given 지하철 노선이 생성된 상태에서
+     * When 두 역 사이에 현재 노선보다 긴 구간의 역을 등록하면
+     * Then 오류가 발생한다.
+     */
+    @DisplayName("기존 역 사이보다 긴 구간의 길이")
+    @Test
+    void longerThanExistingSection() {
+        // Given
+        신분당선_생성();
+
+        // When
+        SectionRequest sectionRequest = new SectionRequest(1L, 5L, 20);
+        ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(1L, sectionRequest);
+
+        // Then
+        assertThat(구간_추가_결과_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> 구간_추가(long lineId, SectionRequest sectionRequest) {
