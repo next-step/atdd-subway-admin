@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -65,6 +66,12 @@ public class Line extends BaseEntity {
     public void update(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public Line withSection(Section section) {
+        this.sections.addFirstSection(section);
+        section.updateLine(this);
+        return this;
     }
 
     public void addSection(Section section) {

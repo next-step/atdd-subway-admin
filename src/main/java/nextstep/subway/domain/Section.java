@@ -42,6 +42,10 @@ public class Section extends BaseEntity {
         return new Section(upStation, downStation, line, distance);
     }
 
+    public static Section of(Station upStation, Station downStation, Integer distance) {
+        return new Section(upStation, downStation, null, distance);
+    }
+
     private void validateDistance(Integer distance) {
         if (distance <= MIN_DISTANCE) {
             throw new IllegalArgumentException("지하철 구간의 거리는 양수만 입력해 주세요.");

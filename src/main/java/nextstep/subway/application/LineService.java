@@ -25,9 +25,10 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = findStationById(lineRequest.getUpStationId());
         Station downStation = findStationById(lineRequest.getDownStationId());
+        Integer distance = lineRequest.getDistance();
 
-        Line line = lineRepository.save(lineRequest.toLine(upStation, downStation));
-        line.addSection(Section.of(upStation, downStation, line, line.getDistance()));
+        Line line = lineRepository.save(lineRequest.toLine(upStation, downStation))
+                .withSection(Section.of(upStation, downStation, distance));
         return LineResponse.of(line);
     }
 
@@ -60,7 +61,7 @@ public class LineService {
         Station downStation = findStationById(sectionRequest.getDownStationId());
         Integer distance = sectionRequest.getDistance();
 
-        line.addSection(Section.of(upStation, downStation, line, distance));
+        line.addSection(Section.of(upStation, downStation, distance));
         return LineResponse.of(line);
     }
 
