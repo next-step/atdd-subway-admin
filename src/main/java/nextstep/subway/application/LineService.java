@@ -1,11 +1,13 @@
 package nextstep.subway.application;
 
 import nextstep.subway.domain.*;
-import nextstep.subway.dto.*;
+import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -91,7 +93,7 @@ public class LineService {
         }
 
         Optional<Section> sameUpSection = line.getSections().stream()
-                .filter(section -> !ObjectUtils.isEmpty(section.getUpStation()) && (section.getUpStation().getId().equals(upStation.getId())))
+                .filter(section -> section.getUpStation().getId().equals(upStation.getId()))
                 .findFirst();
 
         if (sameUpSection.isPresent()) {
