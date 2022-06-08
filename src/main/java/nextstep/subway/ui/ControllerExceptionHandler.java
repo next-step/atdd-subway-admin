@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.persistence.EntityExistsException;
 import java.util.NoSuchElementException;
 
 @RestControllerAdvice
@@ -17,12 +16,6 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoSuchElementException.class)
     public ErrorResult noSuchExHandler(NoSuchElementException e) {
-        return new ErrorResult(ERROR, e.getMessage());
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(EntityExistsException.class)
-    public ErrorResult entityExistsExHandler(EntityExistsException e) {
         return new ErrorResult(ERROR, e.getMessage());
     }
 
