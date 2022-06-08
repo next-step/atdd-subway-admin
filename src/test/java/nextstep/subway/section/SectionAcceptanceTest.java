@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Sql("classpath:/createlinestation.sql")
 public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
+    @BeforeEach
+    void createLine() {
+        신분당선_생성();
+    }
+
     /**
      * Given 지하철 노선이 생성된 상태에서
      * When 두 역 사이에 새로운 역을 등록하면
@@ -27,9 +33,6 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("역 사이에 새로운 구간을 등록한다.")
     @Test
     void addSection() {
-        // Given
-        신분당선_생성();
-
         // When
         SectionRequest sectionRequest = new SectionRequest(1L, 5L, 4);
         ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(1L, sectionRequest);
@@ -55,9 +58,6 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("새로운 역을 상행 종점으로 등록한다.")
     @Test
     void addStationAsUpStation() {
-        // Given
-        신분당선_생성();
-
         // When
         SectionRequest sectionRequest = new SectionRequest(6L, 1L, 4);
         ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(1L, sectionRequest);
@@ -81,9 +81,6 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
     @Test
     void addStationAsDownStation() {
-        // Given
-        신분당선_생성();
-
         // When
         SectionRequest sectionRequest = new SectionRequest(2L, 5L, 7);
         ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(1L, sectionRequest);
@@ -107,9 +104,6 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("기존 역 사이보다 긴 구간의 길이")
     @Test
     void longerThanExistingSection() {
-        // Given
-        신분당선_생성();
-
         // When
         SectionRequest sectionRequest = new SectionRequest(1L, 5L, 20);
         ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(1L, sectionRequest);
@@ -127,7 +121,6 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void addSectionWithExistingStation() {
         // Given
-        신분당선_생성();
         SectionRequest sectionRequest = new SectionRequest(2L, 5L, 10);
         구간_추가(1L, sectionRequest);
 
@@ -147,9 +140,6 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("등록하지 않은 역으로 구성된 구간 등록")
     @Test
     void addSectionWithOtherStation() {
-        // Given
-        신분당선_생성();
-
         // When
         SectionRequest badSectionRequest = new SectionRequest(3L, 4L, 5);
         ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(1L, badSectionRequest);
