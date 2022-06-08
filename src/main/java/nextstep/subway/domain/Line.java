@@ -1,11 +1,8 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-
-import static nextstep.subway.consts.Constraint.MIN_DISTANCE;
 
 @Entity
 public class Line extends BaseEntity {
@@ -33,6 +30,8 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private Integer distance;
 
+    public static final int MIN_LINE_DISTANCE = 0;
+
     protected Line() {
     }
 
@@ -48,7 +47,7 @@ public class Line extends BaseEntity {
     }
 
     private void validateDistance(Integer distance) {
-        if (distance <= MIN_DISTANCE) {
+        if (distance <= MIN_LINE_DISTANCE) {
             throw new IllegalArgumentException("지하철 노선의 거리는 양수만 입력해 주세요.");
         }
     }
