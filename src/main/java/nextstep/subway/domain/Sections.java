@@ -16,7 +16,7 @@ public class Sections {
     public static final String ERROR_EXISTS_SECTION = "이미 존재하는 구간입니다.";
     public static final String ERROR_CAN_NOT_CONNECT_SECTION = "연결되는 구간을 찾을 수 없습니다.";
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "line_id")
     @OrderBy("orderNumber ASC")
     private final List<Section> sections = new LinkedList<>();

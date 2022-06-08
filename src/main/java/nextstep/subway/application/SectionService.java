@@ -1,7 +1,5 @@
 package nextstep.subway.application;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
