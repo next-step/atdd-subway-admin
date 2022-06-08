@@ -55,7 +55,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSection() {
         // when
         ExtractableResponse<Response> response = addSection(line.getId(),
-                new SectionRequest(upStation.getId(), downStation.getId(), newStation.getId(), 1));
+                new SectionRequest(downStation.getId(), newStation.getId(), 1));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -74,7 +74,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSection_exceed() {
         // when
         ExtractableResponse<Response> response = addSection(line.getId(),
-                new SectionRequest(upStation.getId(), downStation.getId(), newStation.getId(), 2));
+                new SectionRequest(newStation.getId(), downStation.getId(), 2));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -89,7 +89,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSection_already_added() {
         // when
         ExtractableResponse<Response> response = addSection(line.getId(),
-                new SectionRequest(null, downStation.getId(), upStation.getId(), 1));
+                new SectionRequest(upStation.getId(), downStation.getId(), 1));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -104,7 +104,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSection_empty() {
         // when
         ExtractableResponse<Response> response = addSection(line.getId(),
-                new SectionRequest(null, null, newStation.getId(), 1));
+                new SectionRequest(newUpStation.getId(), newDownStation.getId(), 1));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -119,7 +119,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSection_same_station() {
         // when
         ExtractableResponse<Response> response = addSection(line.getId(),
-                new SectionRequest(downStation.getId(), downStation.getId(), newStation.getId(), 1));
+                new SectionRequest(downStation.getId(), downStation.getId(), 1));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -134,7 +134,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addAscendEndpointSection() {
         // when
         ExtractableResponse<Response> response =
-                addSection(line.getId(), new SectionRequest(null, upStation.getId(), newUpStation.getId(), 5));
+                addSection(line.getId(), new SectionRequest(newUpStation.getId(), upStation.getId(), 5));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -153,7 +153,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addDescendEndpointSection() {
         // when
         ExtractableResponse<Response> response =
-                addSection(line.getId(), new SectionRequest(downStation.getId(), null, newDownStation.getId(), 5));
+                addSection(line.getId(), new SectionRequest(downStation.getId(),newDownStation.getId(), 5));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());

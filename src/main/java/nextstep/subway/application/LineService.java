@@ -44,10 +44,9 @@ public class LineService {
 
     public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
         Line persistLine = findLineById(lineId);
-        Station station = findStationById(sectionRequest.getStationId());
-        Station previousStation = findStationByIdOrElseNull(sectionRequest.getPreviousStationId());
-        Station nextStation = findStationByIdOrElseNull(sectionRequest.getNextStationId());
-        persistLine.addSection(station, sectionRequest.getDistance(), previousStation, nextStation);
+        Station upStation = findStationById(sectionRequest.getUpStationId());
+        Station downStation = findStationById(sectionRequest.getDownStationId());
+        persistLine.addSection(sectionRequest.getDistance(), upStation, downStation);
         return LineResponse.from(persistLine);
     }
 

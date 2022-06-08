@@ -41,8 +41,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getAllSectionsSorted() {
-        return this.sections.getAllSorted();
+    public List<Station> getAllSectionsSorted() {
+        return this.sections.getAllDistinctStations();
     }
 
     public void update(String name, String color) {
@@ -50,8 +50,8 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void addSection(Station station, Integer distance, Station previousStation, Station nextStation) {
-        this.sections.addSection(this, station, distance, previousStation, nextStation);
+    public void addSection(int distance, Station upStation, Station downStation) {
+        this.sections.addSection(this, distance, upStation, downStation);
     }
 
     @Override
