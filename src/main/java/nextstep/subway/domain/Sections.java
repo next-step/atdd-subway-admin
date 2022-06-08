@@ -62,20 +62,22 @@ public class Sections {
     }
 
     public void removeByDownStation(Station targetStation) {
-        if (list.size() == 3) {
-            throw new IllegalStateException("구간이 하나일 때는 삭제할 수 없습니다.");
-        }
+        checkRemovableStatus();
 
-        Section targetSection = list.stream()
-                .filter(section -> targetStation.equals(section.getDownStation()))
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("삭제 대상이 존재하지 않습니다."));
+        Section targetSection = getTargetSection(targetStation);
 
         Section nextSection = getNextSectionOf(targetSection);
 
         nextSection.updateUpStationToUpStationOf(targetSection);
 
         list.remove(targetSection);
+    }
+
+    private Section getTargetSection(Station targetStation) {
+        return list.stream()
+                .filter(section -> targetStation.equals(section.getDownStation()))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("삭제 대상이 존재하지 않습니다."));
     }
 
     private Section getNextSectionOf(Section section) {
@@ -105,6 +107,13 @@ public class Sections {
         if (target.hasSameDownStationAs(newSection)) {
             target.updateDownStationToUpStationOf(newSection);
             return;
+        }
+    }
+
+    private void checkRemovableStatus() {
+        // 실질적 구간이 하나일 때도 상하행 종점 구간을 포함하여 총 3개의 구간이 존재
+        if (list.size() == 3) {
+            throw new IllegalStateException("구간이 하나일 때는 삭제할 수 없습니다.");
         }
     }
 
