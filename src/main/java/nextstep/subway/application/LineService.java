@@ -80,6 +80,14 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public void deleteStation(Long lineId, Long stationId) {
+        Line line = findByIdOrElseThrow(lineId);
+        Station station = stationService.findByIdOrElseThrow(stationId);
+        line.deleteStation(station);
+        lineRepository.save(line);
+    }
+
     private Line findByIdOrElseThrow(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("노선이 존재하지 않습니다.", id));

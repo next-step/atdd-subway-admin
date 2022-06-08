@@ -4,37 +4,16 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.SectionResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("지하철 노선 관련기능 인수테스트")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = {"classpath:/db/truncate.sql", "classpath:/db/data.sql"})
-public class LineAcceptanceTest {
-    @LocalServerPort
-    int port;
-    ExtractableResponse<Response> _2호선;
-    int _2호선_lineId;
-
-    @BeforeEach
-    void setup() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-        // given
-        _2호선 = createLine("2호선", "bg-red-600", "1", "3", "10");
-        _2호선_lineId = _2호선.jsonPath().get("id");
-    }
+@DisplayName("지하철 노선 관련기능 인수 테스트")
+public class LineAcceptanceTest extends LineAcceptance {
 
     /**
      * Given 지하철역을 생성하고
@@ -261,14 +240,7 @@ public class LineAcceptanceTest {
         addSection(_2호선_lineId, 1, 2, 4);
 
         //then
-        List<SectionResponse> sectionResponses = RestAssured.given().log().all()
-                .when().log().all()
-                .get("/lines/" + _2호선_lineId + "/sections")
-                .then().log().all()
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", SectionResponse.class);
+        List<SectionResponse> sectionResponses = getSectionResponse(_2호선_lineId);
 
         Optional<SectionResponse> 강남역_력삼역 =
                 sectionResponses.stream().filter(s -> s.getUpStation().equals("강남역")).findFirst();
@@ -279,86 +251,46 @@ public class LineAcceptanceTest {
     }
 
     /**
-     * When 기존에 존재하는 구간과 같은 구간을 추가하면
-     * Then 에러가 발생한다
+     * Given 지하철 노선을 추가하고
+     * When 역을 삭제하면
+     * Then 역이 삭제된다.
      */
     @Test
-    @DisplayName("같은 구간을 등록하면 에러가 발생한다")
-    void equalSection() {
+    @DisplayName("라인에서 역을 삭제한다")
+    void deleteStation() {
+        //given
+        addSection(_2호선_lineId, 1, 2, 5);
+
         //when
-        ExtractableResponse<Response> response = addSection(_2호선_lineId, 1, 3, 4);
+        ExtractableResponse<Response> response = deleteStation(_2호선_lineId,2);
+
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
     }
 
     /**
-     * When 등록된 구간과 등록하려는 구간의 열결점이 없으면
-     * Then 에러가 발생한다
+     * Given 지하철 노선을 추가하고
+     * When 중간 역을 삭제하면
+     * Then 삭제한 역은 조회되지 않는다.
+     * Then 이전 역의 역간 거리는 삭제한 역의 역간 거리만큼 증가한다.
+     * Then 이전 역의 다음 역은 삭제한 역의 다음 역으로 업데이트 된다.
      */
     @Test
-    @DisplayName("등록하려는 구간이 없으면 에러 발생")
-    void noMatchSection() {
+    @DisplayName("라인에서 역을 삭제하면 이전 역의 역간 거리는 삭제한 역간 거리만큼 늘어나고, 다음 역은 삭제한 다음 역으로 업데이트 된다")
+    void deleteStation2() {
+        //given
+        addSection(_2호선_lineId, 1, 2, 5);
+
         //when
-        ExtractableResponse<Response> response = addSection(_2호선_lineId, 2, 4, 4);
+        deleteStation(_2호선_lineId, 2);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        List<SectionResponse> sectionResponse = getSectionResponse(_2호선_lineId);
+        assertThat(sectionResponse.stream().filter(s -> s.getUpStation().equals("력삼역"))).hasSize(0);
+        Optional<SectionResponse> 강남역 = sectionResponse.stream().filter(s -> s.getUpStation().equals("강남역")).findFirst();
+        assertThat(강남역.get().getDistance()).isEqualTo(10);
+        assertThat(강남역.get().getDownStation()).isEqualTo("선릉역");
     }
-
-    /**
-     * When 등록된 구간보다 거리가 길거나 같으면
-     * Then 에러가 발생한다
-     */
-    @Test
-    @DisplayName("등록된 구간보다 거리가 길거나 같으면 에러가 발생한다")
-    void sectionDistanceError() {
-        //when
-        ExtractableResponse<Response> response = addSection(_2호선_lineId, 1, 2, 11);
-        ExtractableResponse<Response> response2 = addSection(_2호선_lineId, 1, 2, 10);
-
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    private ExtractableResponse<Response> createLine(String name, String color, String upStationId, String downStationId, String distance) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", distance);
-
-        return RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().log().all()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private List<String> getLines(String jsonPath) {
-        return RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract().jsonPath().getList(jsonPath, String.class);
-    }
-
-    private ExtractableResponse<Response> addSection(int lineId, int upStationId, int downStationId, int distance) {
-        Map<String, Integer> params = new HashMap<>();
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", distance);
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().log().all()
-                .post("/lines/" + lineId + "/sections")
-                .then().log().all()
-                .extract();
-    }
-
 
 }

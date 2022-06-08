@@ -9,7 +9,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SectionsTest {
     Sections sections;
-    Section section;
     Station station1;
     Station station2;
     Station station3;
@@ -23,7 +22,7 @@ class SectionsTest {
         station3 = new Station(3L, "선릉역");
         station4 = new Station(4L, "삼성역");
         line = new Line(1L, "2호선", "bg-100", station1, station3, 100);
-        section = new Section(1L, line, station1, station2, 50);
+
         sections = new Sections(new Section(1L, line, station1, station3, 50));
     }
 
@@ -61,4 +60,45 @@ class SectionsTest {
         assertThat(sections.stations().get(2).getName()).isEqualTo("선릉역");
         assertThat(sections.stations().get(3).getName()).isEqualTo("삼성역");
     }
+
+    @Test
+    @DisplayName("역을 제거하면 상행 역간 구간거리는 삭제된 구간 거리만큼 늘어난다")
+    void delete() {
+        sections.add(line, station1, station2, 10);
+        sections.delete(line, station2);
+        assertThat(sections.sections().get(0).getDownStation()).isEqualTo(station3);
+        assertThat(sections.sections().get(0).getDistance()).isEqualTo(50);
+    }
+
+    @Test
+    @DisplayName("첫번째 역을 제거한다")
+    void deleteFirstStation() {
+        sections.add(line, station1, station2, 10);
+        sections.delete(line, station1);
+        assertThat(sections.sections().get(0).getUpStation()).isEqualTo(station2);
+    }
+
+    @Test
+    @DisplayName("마지막 역을 제거한다")
+    void deleteLastStation() {
+        sections.add(line, station1, station2, 10);
+        sections.delete(line, station3);
+        assertThat(sections.sections().get(0).getDownStation()).isEqualTo(station2);
+    }
+
+    @Test
+    @DisplayName("라인의 구간이 하나일 경우 역을 삭제하면 예외가 발생한다")
+    void deleteException() {
+        assertThatThrownBy(() -> sections.delete(line, station3)).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("역을 제거할 수 없습니다. (라인의 구간 수: 1)");
+    }
+
+    @Test
+    @DisplayName("라인에 없는 역을 삭제하면 예외가 발생한다")
+    void deleteNotExistStationException() {
+        sections.add(line, station1, station2, 10);
+        assertThatThrownBy(() -> sections.delete(line, station4)).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("삭제하려는 역은 존재하지 않습니다");
+    }
+
 }

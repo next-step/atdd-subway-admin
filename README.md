@@ -181,6 +181,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   * Section.java (Entity)
     * 구간 Entity
     * 구간정보 업데이트
+      * 구간 거리 업데이트 계산 로직 제거 (인수 거리 값을 그대로 넣도록 변경)
   * Sections.java (Embeddable)
     * 구간 리스트를 가진 일급 컬렉션 
     * 구간 정보를 추가하고 유효성 체크
@@ -193,4 +194,55 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   * LineService.java
     * 구간 추가 및 조회 메서드 추가
 
-#### [코드리뷰 피드백](https://github.com/next-step/atdd-subway-admin/pull/739) (리뷰어: 김재연 님)
+#### [코드리뷰 피드백](https://github.com/next-step/atdd-subway-admin/pull/739) (리뷰어: 김석홍 님)
+
+## [4단계 - 구간 제거 기능](https://edu.nextstep.camp/s/X02BsEA0/ls/57pXXJOr)
+### 요구사항
+#### 기능 요구사항 
+* 요구사항 설명에서 제공되는 요구사항을 기반으로 지하철 구간 제거 기능을 구현하세요.
+* 외 3단계와 동일
+
+#### 프로그래밍 요구사항
+* 인수 테스트 주도 개발 프로세스에 맞춰서 기능을 구현하세요.
+  * 요구사항 설명을 참고하여 인수 조건을 정의
+  * 인수 조건을 검증하는 인수 테스트 작성
+  * 인수 테스트를 충족하는 기능 구현
+* 인수 조건은 인수 테스트 메서드 상단에 주석으로 작성하세요.
+  * 뼈대 코드의 인수 테스트를 참고
+* 인수 테스트의 결과가 다른 인수 테스트에 영향을 끼치지 않도록 인수 테스트를 서로 격리 시키세요.
+* 인수 테스트의 재사용성과 가독성, 그리고 빠른 테스트 의도 파악을 위해 인수 테스트를 리팩터링 하세요.
+
+### 요구사항 설명
+#### API 명세
+* 지하철 구간 삭제 request
+  ```
+  DELETE /lines/1/sections?stationId=2 HTTP/1.1
+  accept: */*
+  host: localhost:52165
+  ```
+* 노선의 구간을 제거하는 기능을 구현하기
+  * 종점이 제거될 경우 다음으로 오던 역이 종점이 됨
+  * 중간역이 제거될 경우 재배치를 함
+    * 노선에 A - B - C 역이 연결되어 있을 때 B역을 제거할 경우 A - C로 재배치 됨
+    *  거리는 두 구간의 거리의 합으로 정함
+    ![img_7.png](img_7.png)
+
+* 구간 삭제 시 예외 케이스를 고려하기
+  * 기능 설명을 참고하여 예외가 발생할 수 있는 경우를 검증할 수 있는 인수 테스트를 만들고 이를 성공 시키세요.
+    > 예시) 노선에 등록되어있지 않은 역을 제거하려 한다.
+
+* 구간이 하나인 노선에서 마지막 구간을 제거할 때
+  * 제거할 수 없음
+  ![img_8.png](img_8.png)
+
+### 구현목록
+* 지하철 구간 삭제
+  * 이전 역의 구간거리는 삭제한 역간 구간 거리만큼 추가
+    * Domain
+      * Sections.java
+        * delete()
+          * 역 삭제
+          * 구간 거리 업데이트
+          * 이전, 다음 구간 역 재연결
+  * 테스트
+    * Sections 및 인수 테스트 작성
