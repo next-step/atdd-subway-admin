@@ -164,12 +164,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> addSection(long lineId, SectionRequest sectionRequest) {
-        return RestAssured.given().log().all().body(sectionRequest).contentType(MediaType.APPLICATION_JSON_VALUE).when()
-                .post("/lines/{lineId}/sections", lineId).then().log().all().extract();
+        return RestAssured
+                .given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/{lineId}/sections", lineId)
+                .then().log().all().extract();
     }
 
     private ExtractableResponse<Response> getOne(Long lineId) {
-        return RestAssured.given().log().all().when().get("/lines/{lineId}", lineId).then().log().all().extract();
+        return RestAssured.given().log().all()
+                .when()
+                .get("/lines/{lineId}", lineId)
+                .then().log().all().extract();
     }
 
 }

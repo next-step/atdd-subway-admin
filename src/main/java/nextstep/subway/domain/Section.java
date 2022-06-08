@@ -8,12 +8,14 @@ public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Line line;
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     private Station upStation;
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     private Station downStation;
     private Integer distance;
 
@@ -25,10 +27,6 @@ public class Section {
     }
 
     protected Section() {
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public Integer getDistance() {
@@ -52,10 +50,13 @@ public class Section {
             this.upStation = section.getDownStation();
         }
 
+        checkDistance(section);
+        this.distance -= section.getDistance();
+    }
+
+    private void checkDistance(Section section) {
         if (this.distance <= section.getDistance()) {
             throw new IllegalArgumentException("distance 는 구간 내에 속할 수 있는 값 이어야 합니다.");
         }
-
-        this.distance -= section.getDistance();
     }
 }
