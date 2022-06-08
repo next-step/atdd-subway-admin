@@ -223,4 +223,44 @@ public class SectionAcceptanceTest {
                 () -> assertThat(지하철노선_조회_결과.jsonPath().getString("name")).isEqualTo("2호선")
         );
     }
+
+    @Test
+    @DisplayName("지하철 노선 중 상행 제거 성공 테스트")
+    void removeLineUpStation() {
+        ExtractableResponse<Response> 지하철노선_생성_결과 = 지하철노선_생성("2호선", "bg-green-600", 교대역_ID, 역삼역_ID);
+        assertThat(지하철노선_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Long 지하철노선_ID = 지하철노선_생성_결과.jsonPath().getLong("id");
+
+        ExtractableResponse<Response> 지하철노선_구간_등록_결과 = 지하철노선_구간_등록(지하철노선_ID, 교대역_ID, 강남역_ID, 5);
+        assertThat(지하철노선_구간_등록_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        ExtractableResponse<Response> 지하철노선_제거_결과 = 지하철노선_제거(지하철노선_ID, 교대역_ID);
+        assertThat(지하철노선_제거_결과.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        ExtractableResponse<Response> 지하철노선_조회_결과 = 지하철노선_조회(지하철노선_ID);
+        assertAll(
+                () -> assertThat(지하철노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(지하철노선_조회_결과.jsonPath().getString("name")).isEqualTo("2호선")
+        );
+    }
+
+    @Test
+    @DisplayName("지하철 노선 중 하행 제거 성공 테스트")
+    void removeLineDownStation() {
+        ExtractableResponse<Response> 지하철노선_생성_결과 = 지하철노선_생성("2호선", "bg-green-600", 교대역_ID, 역삼역_ID);
+        assertThat(지하철노선_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Long 지하철노선_ID = 지하철노선_생성_결과.jsonPath().getLong("id");
+
+        ExtractableResponse<Response> 지하철노선_구간_등록_결과 = 지하철노선_구간_등록(지하철노선_ID, 교대역_ID, 강남역_ID, 5);
+        assertThat(지하철노선_구간_등록_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        ExtractableResponse<Response> 지하철노선_제거_결과 = 지하철노선_제거(지하철노선_ID, 역삼역_ID);
+        assertThat(지하철노선_제거_결과.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        ExtractableResponse<Response> 지하철노선_조회_결과 = 지하철노선_조회(지하철노선_ID);
+        assertAll(
+                () -> assertThat(지하철노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(지하철노선_조회_결과.jsonPath().getString("name")).isEqualTo("2호선")
+        );
+    }
 }
