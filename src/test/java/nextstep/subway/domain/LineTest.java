@@ -158,23 +158,19 @@ public class LineTest {
 
 		assertAll(() -> assertEquals(line.getName(), "2호선"),
 				() -> assertEquals(line.getSections().getSections().size(), 6),
-				() -> assertEquals(line.getSections().getSections().get(0), 까치산역에서신도림역),
-				() -> assertEquals(line.getSections().getSections().get(0).getDistance(), 7),
-				() -> assertEquals(line.getSections().getSections().get(0).getSectionOrder(), 0),
-				() -> assertEquals(line.getSections().getSections().get(1), 신도림역에서대림역),
-				() -> assertEquals(line.getSections().getSections().get(1).getDistance(), 5),
-				() -> assertEquals(line.getSections().getSections().get(1).getSectionOrder(), 1),
-				() -> assertEquals(line.getSections().getSections().get(2), 신도림역에서강남역),
-				() -> assertEquals(line.getSections().getSections().get(2).getDistance(), 11),
-				() -> assertEquals(line.getSections().getSections().get(2).getSectionOrder(), 2),
-				() -> assertEquals(line.getSections().getSections().get(3), 신림역에서강남역),
-				() -> assertEquals(line.getSections().getSections().get(3).getDistance(), 4),
-				() -> assertEquals(line.getSections().getSections().get(3).getSectionOrder(), 3),
-				() -> assertEquals(line.getSections().getSections().get(4), 강남역에서잠실역),
-				() -> assertEquals(line.getSections().getSections().get(4).getDistance(), 14),
-				() -> assertEquals(line.getSections().getSections().get(4).getSectionOrder(), 4),
-				() -> assertEquals(line.getSections().getSections().get(5), 역삼역에서잠실역),
-				() -> assertEquals(line.getSections().getSections().get(5).getDistance(), 6),
-				() -> assertEquals(line.getSections().getSections().get(5).getSectionOrder(), 5));
+				() -> equalsTest(line, 0, 까치산역에서신도림역, 7, 0), 
+				() -> equalsTest(line, 1, 신도림역에서대림역, 5, 1),
+				() -> equalsTest(line, 2, 신도림역에서강남역, 11, 2), 
+				() -> equalsTest(line, 3, 신림역에서강남역, 4, 3),
+				() -> equalsTest(line, 4, 강남역에서잠실역, 14, 4), 
+				() -> equalsTest(line, 5, 역삼역에서잠실역, 6, 5));
+	}
+
+	private void equalsTest(Line line, int index, Section section, int distance, int sectionOrder) {
+		Section tempSection = line.getSections().getSections().get(index);
+
+		assertAll(() -> assertEquals(tempSection, section), 
+				() -> assertEquals(tempSection.getDistance(), distance),
+				() -> assertEquals(tempSection.getSectionOrder(), sectionOrder));
 	}
 }
