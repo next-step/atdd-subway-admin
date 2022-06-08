@@ -119,7 +119,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선이 생성을 생성하고 두 개의 구간을 등록한 후
+     * Given 지하철 노선을 생성하고 두 개의 구간을 등록한 후
      * When 등록된 구간에 포함된 역을 구간으로 등록하면
      * Then 오류가 발생한다.
      */
@@ -133,6 +133,25 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // When
         SectionRequest badSectionRequest = new SectionRequest(1L, 5L, 5);
+        ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(1L, badSectionRequest);
+
+        // Then
+        assertThat(구간_추가_결과_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 등록된 구간에 포함되지 않은 두 역을 구간으로 등록하면
+     * Then 오류가 발생한다.
+     */
+    @DisplayName("등록하지 않은 역으로 구성된 구간 등록")
+    @Test
+    void addSectionWithOtherStation() {
+        // Given
+        신분당선_생성();
+
+        // When
+        SectionRequest badSectionRequest = new SectionRequest(3L, 4L, 5);
         ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(1L, badSectionRequest);
 
         // Then

@@ -55,7 +55,7 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Station newUpStation, Station newDownStation, long sectionDistance) {
-        validateNotContainStation(newUpStation, newDownStation);
+        validateStationInSection(newUpStation, newDownStation);
 
         if (upStation.equals(newDownStation)) {
             changeUpStation(newUpStation, sectionDistance);
@@ -77,9 +77,13 @@ public class Line extends BaseEntity {
         }
     }
 
-    private void validateNotContainStation(Station newUpStation, Station newDownStation) {
+    private void validateStationInSection(Station newUpStation, Station newDownStation) {
         if (hasStation(newUpStation) && hasStation(newDownStation)) {
-            throw new IllegalArgumentException("이미 등록된 역입니다.");
+            throw new IllegalArgumentException("두 역 모두 이미 등록된 역입니다.");
+        }
+
+        if (!hasStation(newUpStation) && !hasStation(newDownStation)) {
+            throw new IllegalArgumentException("두 역 모두 등록되지 않은 역입니다.");
         }
     }
 
