@@ -39,7 +39,7 @@ public class Line extends BaseEntity {
 
     public Line(String name, String color, Station upStation, Station downStation, long distance) {
         validateDistance(distance);
-        validateStation(upStation, downStation);
+        validateNotSameStation(upStation, downStation);
         this.name = name;
         this.color = color;
         this.upStation = upStation;
@@ -55,6 +55,8 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Station newUpStation, Station newDownStation, long sectionDistance) {
+        validateNotContainStation(newUpStation, newDownStation);
+
         if (upStation.equals(newDownStation)) {
             changeUpStation(newUpStation, sectionDistance);
             return ;
@@ -73,6 +75,17 @@ public class Line extends BaseEntity {
             validateNewSectionDistance(sectionDistance, sameUpSection.get().getDistance());
             addSectionBetweenExistingSection(sectionDistance, newDownStation, sameUpSection);
         }
+    }
+
+    private void validateNotContainStation(Station newUpStation, Station newDownStation) {
+        if (hasStation(newUpStation) && hasStation(newDownStation)) {
+            throw new IllegalArgumentException("이미 등록된 역입니다.");
+        }
+    }
+
+    private boolean hasStation(Station station) {
+        return getSections().stream()
+                .anyMatch(section -> section.getUpStation().equals(station) || section.getDownStation().equals(station));
     }
 
     private void addSectionBetweenExistingSection(long newSectionDistance, Station newDownStation, Optional<Section> existingUpSection) {
@@ -170,7 +183,7 @@ public class Line extends BaseEntity {
         }
     }
 
-    private void validateStation(Station upStation, Station downStation) {
+    private void validateNotSameStation(Station upStation, Station downStation) {
         if (upStation.getId().longValue() == downStation.getId().longValue()) {
             throw new IllegalArgumentException("상행역과 하행역은 동일한 역으로 지정될 수 없습니다.");
         }
