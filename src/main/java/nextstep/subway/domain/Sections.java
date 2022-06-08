@@ -48,9 +48,13 @@ public class Sections {
         checkAlreadyAdded(upStation, downStation);
         checkStationIncluded(upStation, downStation);
 
+        updateEndStation(upStation, downStation);
         Section section = new Section(line, distance, upStation, downStation);
         findIncludingSectionBy(upStation, downStation).ifPresent(value -> value.connect(section));
+        this.sections.add(section);
+    }
 
+    private void updateEndStation(Station upStation, Station downStation) {
         if (downStation == ascend) {
             this.ascend = upStation;
         }
@@ -58,8 +62,6 @@ public class Sections {
         if (upStation == descend) {
             this.descend = downStation;
         }
-
-        this.sections.add(section);
     }
 
     private Optional<Section> findIncludingSectionBy(Station upStation, Station downStation) {
