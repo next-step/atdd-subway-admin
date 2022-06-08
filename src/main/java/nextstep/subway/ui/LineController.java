@@ -7,7 +7,6 @@ import nextstep.subway.application.SectionService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
-import nextstep.subway.dto.SectionResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -59,15 +58,10 @@ public class LineController {
     }
 
     @PostMapping("/lines/{lineId}/sections")
-    public ResponseEntity<SectionResponse> addSection(@PathVariable Long lineId,
-                                                      @RequestBody SectionRequest sectionRequest) {
-        SectionResponse response = sectionService.addSection(lineId, sectionRequest);
-        return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections/")).body(response);
-    }
-
-    @GetMapping(value = "/lines/{lineId}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<SectionResponse>> showLineSections(@PathVariable Long lineId) {
-        return ResponseEntity.ok().body(sectionService.findLineSections(lineId));
+    public ResponseEntity addSection(@PathVariable Long lineId,
+                                     @RequestBody SectionRequest sectionRequest) {
+        sectionService.addSection(lineId, sectionRequest);
+        return ResponseEntity.created(URI.create("/lines/" + lineId)).build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
