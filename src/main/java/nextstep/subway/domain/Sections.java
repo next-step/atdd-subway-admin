@@ -4,9 +4,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import static nextstep.subway.common.Messages.*;
 
@@ -39,14 +38,16 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        Set<Station> stations = new HashSet<>();
+        List<Station> stations = new ArrayList<>();
 
         sections.forEach(section -> {
             stations.add(section.getUpStation());
             stations.add(section.getDownStation());
         });
 
-        return new ArrayList<>(stations);
+        return stations.stream()
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     private void validate(Section section) {
@@ -144,7 +145,11 @@ public class Sections {
     }
 
     private void validateDeleteStation(Station station) {
-        if (sections.size() <= 1 && (!matchUpStation(station) || !matchDownStation(station))) {
+        if (sections.size() < 1) {
+            throw new IllegalArgumentException(STATION_MINIMUM_DELETE_ERROR);
+        }
+
+        if ((!matchUpStation(station) || !matchDownStation(station))) {
             throw new IllegalArgumentException(NOT_MATCH_STATION_DELETE_ERROR);
         }
     }
