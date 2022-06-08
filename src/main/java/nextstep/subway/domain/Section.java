@@ -54,6 +54,7 @@ public class Section extends BaseEntity {
         this.upStation = newSection.downStation;
 
         if (isLastSection()) {
+            this.distance = 0;
             return;
         }
 
@@ -64,10 +65,22 @@ public class Section extends BaseEntity {
         this.downStation = newSection.upStation;
 
         if (isFirstSection()) {
+            this.distance = 0;
             return;
         }
 
         this.distance -= newSection.distance;
+    }
+
+    public void updateUpStationToUpStationOf(Section deleted) {
+        this.upStation = deleted.upStation;
+
+        if (isFirstSection() || isLastSection()) {
+            this.distance = 0;
+            return;
+        }
+
+        this.distance += deleted.distance;
     }
 
     public boolean isFirstSection() {

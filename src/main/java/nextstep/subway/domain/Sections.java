@@ -35,6 +35,13 @@ public class Sections {
                 .orElseThrow(() -> new IllegalStateException("첫 번째 구간이 없음"));
     }
 
+    public Section lastSection() {
+        return list.stream()
+                .filter(section -> section.isLastSection())
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("마지막 구간이 없음"));
+    }
+
     public void add(Section newSection) {
         validateSectionIsNull(newSection);
 
@@ -51,6 +58,19 @@ public class Sections {
 
         validateStationsOf(newSection);
         list.add(newSection);
+    }
+
+    public void removeByDownStation(Station targetStation) {
+        Section targetSection = list.stream()
+                .filter(section -> targetStation.equals(section.getDownStation()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 삭제 대상"));
+
+        Section nextSection = getNextSectionOf(targetSection);
+
+        nextSection.updateUpStationToUpStationOf(targetSection);
+
+        list.remove(targetSection);
     }
 
     private Section getNextSectionOf(Section section) {

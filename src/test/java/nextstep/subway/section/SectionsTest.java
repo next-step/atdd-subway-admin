@@ -129,4 +129,58 @@ public class SectionsTest {
         assertThat(sections.getStationsInOrder())
                 .containsExactly(왕십리역, 서울숲역, 선릉역, 도곡역);
     }
+
+    @Test
+    void 중간_역_삭제() {
+        sections.add(new Section(왕십리역, 선릉역, 7));
+        sections.add(new Section(서울숲역, 선릉역, 3));
+        assertThat(sections.getList()).contains(
+                new Section(null, 왕십리역, 0),
+                new Section(왕십리역, 서울숲역, 4),
+                new Section(서울숲역, 선릉역, 3),
+                new Section(선릉역, null, 0));
+
+        sections.removeByDownStation(서울숲역);
+
+        assertThat(sections.getList()).contains(
+                new Section(null, 왕십리역, 0),
+                new Section(왕십리역, 선릉역, 7),
+                new Section(선릉역, null, 0));
+    }
+
+    @Test
+    void 상행_종점_역_삭제() {
+        sections.add(new Section(서울숲역, 선릉역, 4));
+        sections.add(new Section(왕십리역, 서울숲역, 3));
+        assertThat(sections.getList()).contains(
+                new Section(null, 왕십리역, 0),
+                new Section(왕십리역, 서울숲역, 3),
+                new Section(서울숲역, 선릉역, 4),
+                new Section(선릉역, null, 0));
+
+        sections.removeByDownStation(왕십리역);
+
+        assertThat(sections.getList()).contains(
+                new Section(null, 서울숲역, 0),
+                new Section(서울숲역, 선릉역, 4),
+                new Section(선릉역, null, 0));
+    }
+
+    @Test
+    void 하행_종점_역_삭제() {
+        sections.add(new Section(왕십리역, 선릉역, 7));
+        sections.add(new Section(선릉역, 도곡역, 3));
+        assertThat(sections.getList()).contains(
+                new Section(null, 왕십리역, 0),
+                new Section(왕십리역, 선릉역, 7),
+                new Section(선릉역, 도곡역, 3),
+                new Section(도곡역, null, 0));
+
+        sections.removeByDownStation(도곡역);
+
+        assertThat(sections.getList()).contains(
+                new Section(null, 왕십리역, 0),
+                new Section(왕십리역, 선릉역, 7),
+                new Section(선릉역, null, 0));
+    }
 }
