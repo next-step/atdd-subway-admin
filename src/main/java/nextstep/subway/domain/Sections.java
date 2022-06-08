@@ -6,13 +6,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 @Embeddable
 public class Sections {
-	@OneToMany
+	@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
 	@JoinColumn(name = "section_id")
 	private List<Section> sections;
 

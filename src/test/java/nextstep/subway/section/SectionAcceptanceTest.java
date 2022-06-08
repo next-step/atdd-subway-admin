@@ -23,7 +23,7 @@ import nextstep.subway.station.StationAcceptanceTest;
 
 @DisplayName("구간 관련 기능")
 public class SectionAcceptanceTest extends CustomExtractableResponse {
-	private static final String BASIC_URL_SECTIONS = "sections";
+	public static final String BASIC_URL_SECTIONS = "sections";
 
 	public Map<String, Long> stations = new HashMap<>();
 	public Map<String, Long> lines = new HashMap<>();
