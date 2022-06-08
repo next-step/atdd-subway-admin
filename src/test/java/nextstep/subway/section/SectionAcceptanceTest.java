@@ -71,6 +71,32 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(신분당선_상행역명_리턴값).isEqualTo(구간_추가후_신분당선_상행역명);
     }
 
+    /**
+     * Given 지하철 노선이 생성된 상태에서
+     * When 새로운 역을 하행 종점으로 등록하면
+     * Then 새로운 역이 등록되고 구간이 조정된다.
+     */
+    @DisplayName("새로운 역을 하행 종점으로 등록한다.")
+    @Test
+    void addStationAsDownStation() {
+        // Given
+        신분당선_생성();
+
+        // When
+        SectionRequest sectionRequest = new SectionRequest(2L, 5L, 7);
+        ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(1L, sectionRequest);
+
+        // Then
+        final Integer 구간_추가후_신분당선_총_거리 = 17;
+        final String 구간_추가후_신분당선_하행역명 = "양재시민의숲역";
+
+        Integer 신분당선_총_거리_리턴값 = 구간_추가_결과_응답.jsonPath().get("distance");
+        assertThat(신분당선_총_거리_리턴값).isEqualTo(구간_추가후_신분당선_총_거리);
+
+        String 신분당선_상행역명_리턴값 = 구간_추가_결과_응답.jsonPath().get("downStation.name");
+        assertThat(신분당선_상행역명_리턴값).isEqualTo(구간_추가후_신분당선_하행역명);
+    }
+
     private ExtractableResponse<Response> 구간_추가(long lineId, SectionRequest sectionRequest) {
         return RestAssured.given().log().all()
                 .body(sectionRequest)
