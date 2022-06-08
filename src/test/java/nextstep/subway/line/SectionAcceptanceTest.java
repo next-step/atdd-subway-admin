@@ -47,6 +47,32 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * Given 지하철 노선에 지하철역 등록 요청
+     * When 지하철_노선에_지하철역_삭제_요청
+     * Then  지하철_노선에_지하철역_삭제됨
+     */
+    @DisplayName("노선에 구간을 삭제한다.")
+    @Test
+    void deleteSection() {
+        //given
+        addSection();
+
+        //when
+        ExtractableResponse<Response> response = deleteSection(line.getId(), newStation.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then
+        List<String> stationNames = getOne(line.getId()).jsonPath().getList("stations.name");
+        assertThat(stationNames).containsExactlyInAnyOrder("강남", "광교중앙");
+    }
+
+    private ExtractableResponse<Response> deleteSection(long id, long stationId) {
+        return null;
+    }
+
+    /**
      * When 지하철_노선에_지하철역_등록_요청
      * Then  지하철_노선에_지하철역_등록됨
      */
