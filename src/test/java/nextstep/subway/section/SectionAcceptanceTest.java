@@ -111,7 +111,7 @@ public class SectionAcceptanceTest extends BaseSectionAcceptanceTest {
      * Then 생성한 지하철 노선와 구간 정보를 응답받을 수 있다
      */
     @Test
-    @DisplayName("새로운 하행 종점역이 포함된 구간정보를 등록할 수 있다.")
+    @DisplayName("새로운 상행 종점역이 포함된 구간정보를 등록할 수 있다.")
     void addUpFinalSection() {
         // 신분당선 : [판교역 - 강남역] => [정자역 - 판교역] [판교역 - 강남역]
         // when
