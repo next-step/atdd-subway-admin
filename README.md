@@ -59,7 +59,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ### 요구사항
 - [ ] 지하철 구간 제거 기능을 구현한다.
-    - [ ] 실패하는 happy path 인수 테스트를 만든다.
+    - [X] 실패하는 happy path 인수 테스트를 만든다.
     - [ ] 위 인수테스트를 성공시키게끔 로직을 만든다.
     - [ ] 예외케이스를 확인하는 인수테스트를 추가한다.
     - [ ] 위 인수테스트를 성공시키게끔 로직을 변경한다. 
