@@ -20,8 +20,17 @@ public class Sections {
 
     public void addSections(Section section) {
         validate(section);
-        checkAndUpdateUpStation(section);
-        checkAndUpdateDownStation(section);
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+
+        if (matchUpStation(upStation)) {
+            updateUpStation(section);
+        }
+
+        if (matchDownStation(downStation)) {
+            updateDownStation(section);
+        }
+
         sections.add(section);
     }
 
@@ -54,22 +63,16 @@ public class Sections {
         return getStations().contains(upStation) || getStations().contains(downStation);
     }
 
-    private void checkAndUpdateUpStation(Section section) {
+    private void updateUpStation(Section section) {
         Station upStation = section.getUpStation();
-
-        if (matchUpStation(upStation)) {
-            Section station = findSectionByUpStation(upStation);
-            station.updateUpStation(section.getDownStation(), section.getDistance());
-        }
+        Section findSection = findSectionByUpStation(upStation);
+        findSection.updateUpStation(section.getDownStation(), section.getDistance());
     }
 
-    private void checkAndUpdateDownStation(Section section) {
+    private void updateDownStation(Section section) {
         Station downStation = section.getDownStation();
-
-        if (matchDownStation(downStation)) {
-            Section station = findSectionByDownStation(downStation);
-            station.updateDownStation(section.getUpStation(), section.getDistance());
-        }
+        Section findSection = findSectionByDownStation(downStation);
+        findSection.updateDownStation(section.getUpStation(), section.getDistance());
     }
 
     private boolean matchUpStation(Station station) {
