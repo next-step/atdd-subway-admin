@@ -5,7 +5,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Sections {
-    @OneToMany(mappedBy = "line", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
     @ManyToOne
     @JoinColumn(nullable = false)
@@ -42,7 +42,7 @@ public class Sections {
         return this.sections.stream().filter(it -> Objects.equals(it.getUpStation(), station)).findFirst().orElse(null);
     }
 
-    public void addSection(Line line, int distance, Station upStation, Station downStation) {
+    public void add(Line line, int distance, Station upStation, Station downStation) {
         checkSame(upStation, downStation);
         checkDistance(distance);
         checkAlreadyAdded(upStation, downStation);
@@ -96,5 +96,53 @@ public class Sections {
                         && Objects.equals(section.getDownStation(), downStation))) {
             throw new IllegalArgumentException("이미 존재하는 구간입니다.");
         }
+    }
+
+    private void checkStationIncluded(Station station) {
+        if (getAllDistinctStations().stream().noneMatch(distinctStation -> Objects.equals(distinctStation, station))) {
+            throw new IllegalArgumentException("구간 내 존재하지 않는 역입니다.");
+        }
+    }
+
+    private void checkEnd() {
+        if (this.sections.size() < 2) {
+            throw new IllegalArgumentException("마지막 구간은 제거할 수 없습니다.");
+        }
+    }
+
+    private Section findIncludingUpStationSectionBy(Station upStation) {
+        return this.sections.stream()
+                .filter(section -> Objects.equals(section.getUpStation(), upStation))
+                .findAny().orElse(null);
+    }
+
+    private Section findIncludingDownStationSectionBy(Station downStation) {
+        return this.sections.stream()
+                .filter(section -> Objects.equals(section.getDownStation(), downStation))
+                .findAny().orElse(null);
+    }
+
+    public void delete(Station station) {
+        checkStationIncluded(station);
+        checkEnd();
+
+        Section upSection = findIncludingUpStationSectionBy(station);
+        Section downSection = findIncludingDownStationSectionBy(station);
+
+        if (upSection == null) {
+            this.sections.remove(downSection);
+            this.descend = downSection.getUpStation();
+            return;
+        }
+
+        if (downSection == null) {
+            this.sections.remove(upSection);
+            this.ascend = upSection.getDownStation();
+            return;
+        }
+
+        downSection.updateDownStation(upSection.getDownStation());
+        downSection.updateDistance(upSection.getDistance());
+        this.sections.remove(upSection);
     }
 }

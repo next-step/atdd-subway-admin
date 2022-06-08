@@ -69,7 +69,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> deleteSection(long id, long stationId) {
-        return null;
+        return RestAssured
+                .given().log().all()
+                .when()
+                .delete("/lines/{lineId}/sections?stationId={stationId}", id, stationId)
+                .then().log().all().extract();
     }
 
     /**

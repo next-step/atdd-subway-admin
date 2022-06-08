@@ -41,6 +41,14 @@ public class Section {
         return this.downStation;
     }
 
+    public void updateDownStation(Station station) {
+        this.downStation = station;
+    }
+
+    public void updateDistance(int distance) {
+        this.distance = distance;
+    }
+
     public void connect(Section section) {
         if (this.downStation == section.getDownStation()) {
             this.downStation = section.getUpStation();

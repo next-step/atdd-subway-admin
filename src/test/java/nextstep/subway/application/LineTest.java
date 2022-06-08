@@ -67,6 +67,21 @@ class LineTest {
     }
 
     @Test
+    public void 상행_하행_사이_구간_삭제() {
+        //when
+        line.addSection(8, upStation, addedStation);
+
+        //then
+        assertThat(line.getAllSectionsSorted().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("상행",
+                "새로운 지하철역", "하행");
+
+       line.deleteSection(addedStation);
+        //then
+        assertThat(line.getAllSectionsSorted().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("상행", "하행");
+
+    }
+
+    @Test
     public void 사이_구간_추가시_범위_벗어나는_경우_구간_추가가_불가능하다() {
         //then
         assertThatThrownBy(() -> line.addSection( 10, upStation, addedStation)).isInstanceOf(IllegalArgumentException.class);
