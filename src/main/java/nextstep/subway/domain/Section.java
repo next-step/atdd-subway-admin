@@ -18,13 +18,13 @@ public class Section extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "up_station_id")
+	
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@JoinColumn(name = "up_station_id", nullable = false)
 	private Station upStation;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "down_station_id")
+	
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@JoinColumn(name = "down_station_id", nullable = false)
 	private Station downStation;
 
 	private int distance;
