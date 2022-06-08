@@ -1,12 +1,12 @@
 package nextstep.subway.domain;
 
+import java.util.List;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import nextstep.subway.dto.LineRequest;
 
 @Entity
@@ -19,36 +19,36 @@ public class Line extends BaseEntity {
     private String name;
     @Column
     private String color;
-    @ManyToOne
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-    @ManyToOne
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
-    @Column
-    private Long distance;
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
     }
 
-    public Line(String name, String color, Station upStation,
-        Station downStation, Long distance) {
-        this(null, name, color, upStation, downStation, distance);
+    public Line(String name, String color, Section section) {
+        this(null, name, color, section);
     }
 
-    public Line(Long id, String name, String color, Station upStation,
-        Station downStation, Long distance) {
+    public Line(Long id, String name, String color, Section section) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+        addSection(section);
     }
 
     public void update(LineRequest lineRequest) {
         this.name = lineRequest.getName();
         this.color = lineRequest.getColor();
+    }
+
+    public void addSection(Section section) {
+        section.setLine(this);
+        sections.add(section);
+    }
+
+    public void updateSection(Section section) {
+        section.setLine(this);
+        sections.update(section);
     }
 
     public Long getId() {
@@ -63,15 +63,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public List<Station> orderedStations() {
+        return sections.orderedStations();
     }
 
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public Long getDistance() {
-        return distance;
-    }
 }
