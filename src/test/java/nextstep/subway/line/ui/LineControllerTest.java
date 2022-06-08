@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@DisplayName("LineController는")
 @WebMvcTest(LineController.class)
 public class LineControllerTest {
     @Autowired
@@ -36,7 +37,7 @@ public class LineControllerTest {
     @MockBean
     private LineService lineService;
 
-    @DisplayName("지하철 노선 생성")
+    @DisplayName("지하철 노선 생성을 생성한다")
     @Test
     void create() throws Exception {
         Line line = new Line("2호선");
@@ -49,7 +50,7 @@ public class LineControllerTest {
                 .andExpect(status().isCreated());
     }
 
-    @DisplayName("지하철 노선 목록 조회")
+    @DisplayName("지하철 노선 목록 조회한다")
     @Test
     void getLines() throws Exception {
         List<Line> lines = Arrays.asList(new Line("2호선"), new Line("1호선"));
@@ -61,7 +62,7 @@ public class LineControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @DisplayName("id값이 존재한다면 지하철 노선 목록 조회")
+    @DisplayName("id값이 존재한다면 지하철 노선 목록 조회한다")
     @Test
     void getLineWithValidId() throws Exception {
         Line line = new Line("2호선");

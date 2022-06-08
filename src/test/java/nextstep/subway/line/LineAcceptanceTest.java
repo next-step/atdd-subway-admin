@@ -25,8 +25,9 @@ import static nextstep.subway.line.accecptance.LineAcceptanceResponse.지하철�
 import static nextstep.subway.line.accecptance.LineAcceptanceResponse.지하철노선_수정_조회_실패;
 import static nextstep.subway.line.accecptance.LineAcceptanceResponse.지하철노선_조회_성공;
 import static nextstep.subway.line.accecptance.LineAcceptanceResponse.지하철노선_조회_실패;
+import static nextstep.subway.station.StationRequest.지하철역_존재;
 
-@DisplayName("지하철 노선 기능")
+@DisplayName("지하철 노선 인수테스트")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
     @LocalServerPort
@@ -52,10 +53,11 @@ public class LineAcceptanceTest {
     @DisplayName("지하철노선 생성한다")
     @Test
     void 지하철노선_생성_조회_성공() {
-        // when
+        지하철역_존재("강남역");
+        지하철역_존재("역삼역");
+
         ExtractableResponse<Response> response = 지하철노선_생성_요청();
 
-        //then
         지하철노선_생성_성공(response);
     }
 
@@ -67,8 +69,12 @@ public class LineAcceptanceTest {
     @DisplayName("지하철노선 목록 조회한다")
     @Test
     void 지하철노선_목록_조회() {
-        지하철노선_존재("2호선");
-        지하철노선_존재("1호선");
+        지하철역_존재("강남역");
+        지하철역_존재("역삼역");
+        지하철역_존재("석수역");
+        지하철역_존재("관악역");
+        지하철노선_존재("2호선", 1L, 2L, 10, "green");
+        지하철노선_존재("1호선", 3L, 4L, 5, "blue");
 
         ExtractableResponse<Response> response = 지하철노선_목록_조회_요청();
 
@@ -83,7 +89,9 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선이 존재한다면 조회한다")
     @Test
     void 지하철노선_조회() {
-        지하철노선_존재("2호선");
+        지하철역_존재("강남역");
+        지하철역_존재("역삼역");
+        지하철노선_존재("2호선", 1L, 2L, 10, "green");
 
         ExtractableResponse<Response> response = 지하철노선_조회_요청();
 
@@ -112,7 +120,9 @@ public class LineAcceptanceTest {
     void 지하철노선_수정() {
         String existedName = "2호선";
         String updatedName = "3호선";
-        지하철노선_존재(existedName);
+        지하철역_존재("강남역");
+        지하철역_존재("역삼역");
+        지하철노선_존재(existedName, 1L, 2L, 10, "green");
 
         ExtractableResponse<Response> response = 지하철노선_수정_요청_성공(updatedName);
 
@@ -141,7 +151,9 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선 삭제한다")
     @Test
     void 지하철노선_삭제() {
-        지하철노선_존재("2호선");
+        지하철역_존재("강남역");
+        지하철역_존재("역삼역");
+        지하철노선_존재("2호선", 1L, 2L, 10, "green");
 
         ExtractableResponse<Response> response = 지하철노선_삭제_요청_성공("2호선");
 

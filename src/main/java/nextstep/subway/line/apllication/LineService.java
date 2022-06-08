@@ -5,6 +5,9 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,13 +17,22 @@ import java.util.List;
 @Service
 public class LineService {
     private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse create(LineRequest lineRequest) {
-        Line line = lineRepository.save(lineRequest.toLine());
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
+                .orElseThrow(StationNotFoundException::new);
+
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId())
+                .orElseThrow(StationNotFoundException::new);
+
+        Line line = lineRepository.save(lineRequest.toLine(upStation, downStation));
+
         return LineResponse.of(line);
     }
 

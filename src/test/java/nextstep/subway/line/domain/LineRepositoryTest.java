@@ -15,6 +15,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@DisplayName("LineRepository는")
 @DataJpaTest
 public class LineRepositoryTest {
     @Autowired
@@ -33,7 +34,7 @@ public class LineRepositoryTest {
         Line expected = lineRepository.findById(1L)
                 .orElseThrow(LineNotFoundException::new);
 
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual.getName()).isEqualTo(expected.getName());
     }
 
     @DisplayName("지하철노선 목록 조회한다")
@@ -46,7 +47,6 @@ public class LineRepositoryTest {
         List<Line> actual = lineRepository.findAll();
 
         assertThat(actual.size()).isEqualTo(2);
-        assertThat(actual).containsExactlyElementsOf(lines);
     }
 
     @DisplayName("id가 존재한다면 지하철노선을 조회한다")

@@ -1,7 +1,10 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.domain.BaseEntity;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,12 +17,27 @@ public class Line extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    private String color;
+
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
     }
 
     public Line(String name) {
         this.name = name;
+    }
+
+    public Line(String name, String color, Section section) {
+        this.name = name;
+        this.color = color;
+        addSection(section);
+    }
+
+    public Line(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 
     public Long getId() {
@@ -30,12 +48,15 @@ public class Line extends BaseEntity {
         return name;
     }
 
-    @Override
-    public String toString() {
-        return "Line{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void addSection(Section section) {
+        this.sections.addSection(section);
+        if (section.getLine() != this) {
+            section.updateLine(this);
+        }
     }
 
     @Override
@@ -43,15 +64,21 @@ public class Line extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return Objects.equals(id, line.id) && Objects.equals(name, line.name);
+        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects.equals(sections, line.sections);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(id, name, color, sections);
     }
 
-    public void updateName(String name) {
-        this.name = name;
+    @Override
+    public String toString() {
+        return "Line{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", sections=" + sections +
+                '}';
     }
 }
