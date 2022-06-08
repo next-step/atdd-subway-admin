@@ -54,7 +54,39 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void changeUpStation(Station newUpStation, long newSectionDistance) {
+    public void addSection(Station newUpStation, Station newDownStation, long sectionDistance) {
+        if (upStation.equals(newDownStation)) {
+            changeUpStation(newUpStation, sectionDistance);
+            return ;
+        }
+
+        if (downStation.equals(newUpStation)) {
+            changeDownStation(newDownStation, sectionDistance);
+            return ;
+        }
+
+        Optional<Section> sameUpSection = getSections().stream()
+                .filter(section -> section.getUpStation().equals(newUpStation))
+                .findFirst();
+
+        if (sameUpSection.isPresent()) {
+            validateNewSectionDistance(sectionDistance, sameUpSection.get().getDistance());
+            addSectionBetweenExistingSection(sectionDistance, newDownStation, sameUpSection);
+        }
+    }
+
+    private void addSectionBetweenExistingSection(long newSectionDistance, Station newDownStation, Optional<Section> existingUpSection) {
+        if (existingUpSection.isPresent()) {
+            Section existingSection = existingUpSection.get();
+            Section newDownSection = new Section(newDownStation, existingSection.getDownStation()
+                    , existingSection.getDistance() - newSectionDistance);
+            addSection(newDownSection);
+            existingSection.setDownStation(newDownStation);
+            existingSection.setDistance(newSectionDistance);
+        }
+    }
+
+    private void changeUpStation(Station newUpStation, long newSectionDistance) {
         Optional<Section> upStationSection = getSections().stream()
                 .filter(section -> section.getUpStation().equals(upStation))
                 .findFirst();
@@ -68,7 +100,7 @@ public class Line extends BaseEntity {
         }
     }
 
-    public void changeDownStation(Station newDownStation, long newSectionDistance) {
+    private void changeDownStation(Station newDownStation, long newSectionDistance) {
         Optional<Section> downStationSection = getSections().stream()
                 .filter(section -> section.getDownStation().equals(downStation))
                 .findFirst();
@@ -124,6 +156,12 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section) {
         this.sections.add(section);
+    }
+
+    private void validateNewSectionDistance(long newSectionDistance, long existingSectionDistance) {
+        if (newSectionDistance >= existingSectionDistance) {
+            throw new IllegalArgumentException("등록하고자 하는 구간의 거리가 역 사이 길이보다 크거나 같습니다.");
+        }
     }
 
     private void validateDistance(long distance) {

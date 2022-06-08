@@ -79,47 +79,12 @@ public class LineService {
     @Transactional
     public Line addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = findLineById(lineId);
+
         Station downStation = findStationById(sectionRequest.getDownStationId());
         Station upStation = findStationById(sectionRequest.getUpStationId());
 
-        if (line.getUpStation().equals(downStation)) {
-            line.changeUpStation(upStation, sectionRequest.getDistance());
-            return line;
-        }
-
-        if (line.getDownStation().equals(upStation)) {
-            line.changeDownStation(downStation, sectionRequest.getDistance());
-            return line;
-        }
-
-        Optional<Section> sameUpSection = line.getSections().stream()
-                .filter(section -> section.getUpStation().equals(upStation))
-                .findFirst();
-
-        if (sameUpSection.isPresent()) {
-            validateNewSectionDistance(sectionRequest.getDistance(), sameUpSection.get().getDistance());
-            addSectionBetweenExistingSection(sectionRequest, line, downStation, sameUpSection);
-            return line;
-        }
-
+        line.addSection(upStation, downStation, sectionRequest.getDistance());
         return line;
     }
 
-    private void validateNewSectionDistance(int newSectionDistance, long existingSectionDistance) {
-        if (newSectionDistance >= existingSectionDistance) {
-            throw new IllegalArgumentException("등록하고자 하는 구간의 거리가 역 사이 길이보다 크거나 같습니다.");
-        }
-    }
-
-    private void addSectionBetweenExistingSection(SectionRequest sectionRequest, Line line, Station downStation, Optional<Section> existingUpSection) {
-        long distance = sectionRequest.getDistance();
-        if (existingUpSection.isPresent()) {
-            Section existingSection = existingUpSection.get();
-            Section newDownSection = new Section(downStation, existingSection.getDownStation()
-                    , existingSection.getDistance() - distance);
-            line.addSection(newDownSection);
-            existingSection.setDownStation(downStation);
-            existingSection.setDistance(distance);
-        }
-    }
 }
