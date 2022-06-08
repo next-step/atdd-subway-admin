@@ -52,12 +52,22 @@ public class Section extends BaseEntity {
 
     public void updateUpStationToDownStationOf(Section newSection) {
         this.upStation = newSection.downStation;
-        this.distance = Math.max(this.distance - newSection.distance, 0);
+
+        if (isLastSection()) {
+            return;
+        }
+
+        this.distance -= newSection.distance;
     }
 
     public void updateDownStationToUpStationOf(Section newSection) {
         this.downStation = newSection.upStation;
-        this.distance = Math.max(this.distance - newSection.distance, 0);
+
+        if (isFirstSection()) {
+            return;
+        }
+
+        this.distance -= newSection.distance;
     }
 
     public boolean isFirstSection() {
