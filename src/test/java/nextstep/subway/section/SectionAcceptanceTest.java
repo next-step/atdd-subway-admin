@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.CustomExtractableResponse;
@@ -53,12 +54,12 @@ public class SectionAcceptanceTest extends CustomExtractableResponse {
 	@DisplayName("역 사이에 새로운 구간을 등록한다.")
 	@Test
 	void addSection() {
-		ExtractableResponse<Response> CreateResponse = 구간_등록_요청(lines.get("신분당선"), stations.get("지하철역").toString(),
+		ExtractableResponse<Response> createResponse = 구간_등록_요청(lines.get("신분당선"), stations.get("지하철역").toString(),
 				stations.get("또다른지하철역").toString(), "4");
 		
 		List<Station> list = 노선_역정보_ID_조회("신분당선");
 
-		assertAll(() -> assertThat(CreateResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+		assertAll(() -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
 				() -> assertEquals(list.get(0).getName(), "지하철역"), 
 				() -> assertEquals(list.get(1).getName(), "또다른지하철역"),
 				() -> assertEquals(list.get(2).getName(), "새로운지하철역"));
@@ -67,12 +68,12 @@ public class SectionAcceptanceTest extends CustomExtractableResponse {
 	@DisplayName("출발구간으로 등록한다.")
 	@Test
 	void addFirstSection() {
-		ExtractableResponse<Response> CreateResponse = 구간_등록_요청(lines.get("신분당선"), stations.get("또다른지하철역").toString(),
+		ExtractableResponse<Response> createResponse = 구간_등록_요청(lines.get("신분당선"), stations.get("또다른지하철역").toString(),
 				stations.get("지하철역").toString(), "10");
 
 		List<Station> list = 노선_역정보_ID_조회("신분당선");
 
-		assertAll(() -> assertThat(CreateResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+		assertAll(() -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
 				() -> assertEquals(list.get(0).getName(), "또다른지하철역"), 
 				() -> assertEquals(list.get(1).getName(), "지하철역"),
 				() -> assertEquals(list.get(2).getName(), "새로운지하철역"));
@@ -81,12 +82,12 @@ public class SectionAcceptanceTest extends CustomExtractableResponse {
 	@DisplayName("마지막구간으로 등록한다.")
 	@Test
 	void addLastSection() {
-		ExtractableResponse<Response> CreateResponse = 구간_등록_요청(lines.get("신분당선"), stations.get("새로운지하철역").toString(),
+		ExtractableResponse<Response> createResponse = 구간_등록_요청(lines.get("신분당선"), stations.get("새로운지하철역").toString(),
 				stations.get("또다른지하철역").toString(), "4");
 
 		List<Station> list = 노선_역정보_ID_조회("신분당선");
 
-		assertAll(() -> assertThat(CreateResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+		assertAll(() -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
 				() -> assertEquals(list.get(0).getName(), "지하철역"), 
 				() -> assertEquals(list.get(1).getName(), "새로운지하철역"),
 				() -> assertEquals(list.get(2).getName(), "또다른지하철역"));
@@ -95,25 +96,74 @@ public class SectionAcceptanceTest extends CustomExtractableResponse {
 	@DisplayName("구간길이가 같거나 큰 구간을 등록할수없다.")
 	@Test
 	void addSectionSameOrBigDistance() {
-		ExtractableResponse<Response> CreateResponse = 구간_등록_요청(lines.get("신분당선"), stations.get("지하철역").toString(),
+		ExtractableResponse<Response> createResponse = 구간_등록_요청(lines.get("신분당선"), stations.get("지하철역").toString(),
 				stations.get("또다른지하철역").toString(), "10");
-		assertThat(CreateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	@DisplayName("상행역과 하행역이 모두 같으면 등록할수없다.")
 	@Test
 	void addSectionSameSection() {
-		ExtractableResponse<Response> CreateResponse = 구간_등록_요청(lines.get("신분당선"), stations.get("지하철역").toString(),
+		ExtractableResponse<Response> createResponse = 구간_등록_요청(lines.get("신분당선"), stations.get("지하철역").toString(),
 				stations.get("새로운지하철역").toString(), "4");
-		assertThat(CreateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	@DisplayName("정보를 알수없는 지하철역은 등록할수없다.")
 	@Test
 	void addSectionNotFoundStation() {
-		ExtractableResponse<Response> CreateResponse = 구간_등록_요청(lines.get("신분당선"), stations.get("지하철역").toString(),
+		ExtractableResponse<Response> createResponse = 구간_등록_요청(lines.get("신분당선"), stations.get("지하철역").toString(),
 				"15", "4");
-		assertThat(CreateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+	
+	@DisplayName("라인에 구간이 하나만 존재하는 경우 삭제할 수 없다.")
+	@Test
+	void removeSectionFail() {
+		ExtractableResponse<Response> deleteResponse = 구간_삭제_요청(lines.get("신분당선"), stations.get("지하철역"));
+		ExtractableResponse<Response> deleteResponse2 = 구간_삭제_요청(lines.get("신분당선"), stations.get("새로운지하철역"));
+
+		assertAll(() -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+				() -> assertThat(deleteResponse2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()));
+	}
+	
+	@DisplayName("첫번째 역을 삭제한다.")
+	@Test
+	void removeFirstSection() {
+		구간_등록_요청(lines.get("신분당선"), stations.get("새로운지하철역").toString(), stations.get("또다른지하철역").toString(), "4");
+		ExtractableResponse<Response> deleteResponse = 구간_삭제_요청(lines.get("신분당선"), stations.get("지하철역"));
+
+		List<Station> list = 노선_역정보_ID_조회("신분당선");
+		assertAll(() -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+				() -> assertEquals(list.size(), 2),
+				() -> assertEquals(list.get(0).getName(), "새로운지하철역"),
+				() -> assertEquals(list.get(1).getName(), "또다른지하철역"));
+	}
+	
+	@DisplayName("마지막 역을 삭제한다.")
+	@Test
+	void removeLastSection() {
+		구간_등록_요청(lines.get("신분당선"), stations.get("새로운지하철역").toString(), stations.get("또다른지하철역").toString(), "4");
+		ExtractableResponse<Response> deleteResponse = 구간_삭제_요청(lines.get("신분당선"), stations.get("또다른지하철역"));
+
+		List<Station> list = 노선_역정보_ID_조회("신분당선");
+		assertAll(() -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+				() -> assertEquals(list.size(), 2),
+				() -> assertEquals(list.get(0).getName(), "지하철역"),
+				() -> assertEquals(list.get(1).getName(), "새로운지하철역"));
+	}
+	
+	@DisplayName("중간역을 삭제한다.")
+	@Test
+	void removeSection() {
+		구간_등록_요청(lines.get("신분당선"), stations.get("새로운지하철역").toString(), stations.get("또다른지하철역").toString(), "4");
+		ExtractableResponse<Response> deleteResponse = 구간_삭제_요청(lines.get("신분당선"), stations.get("새로운지하철역"));
+
+		List<Station> list = 노선_역정보_ID_조회("신분당선");
+		assertAll(() -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+				() -> assertEquals(list.size(), 2),
+				() -> assertEquals(list.get(0).getName(), "지하철역"),
+				() -> assertEquals(list.get(1).getName(), "또다른지하철역"));
 	}
 
 	private ExtractableResponse<Response> 지하철_생성_요청(String name) {
@@ -159,6 +209,22 @@ public class SectionAcceptanceTest extends CustomExtractableResponse {
 		return post(requestUrl(id), params);
 	}
 
+	private ExtractableResponse<Response> 구간_삭제_요청(Long id, Long stationId) {
+		Map<String, String> params = new HashMap<>();
+		params.put("stationId", stationId.toString());
+		
+		return RestAssured
+				.given()
+					.port(port)
+					.param("stationId", stationId)
+					.log().all()
+				.when()
+					.delete(requestUrl(id))
+				.then()
+					.log().all()
+				.extract();
+	}
+	
 	private String requestUrl(Long id) {
 		return LineAcceptanceTest.BASIC_URL_LINES + "/" + id + "/" + BASIC_URL_SECTIONS;
 	}
