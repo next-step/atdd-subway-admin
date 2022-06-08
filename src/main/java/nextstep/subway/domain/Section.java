@@ -48,7 +48,7 @@ public class Section extends BaseEntity {
 	private void validation(Station upStation, Station downStation, int distance) {
 		if (Objects.isNull(upStation) || Objects.isNull(downStation) 
 				|| upStation.getId() == null || downStation.getId() == null) {
-			new StationNotFoundException("역 정보가 없습니다.");
+			throw new StationNotFoundException("역 정보가 없습니다.");
 		}
 
 		if (upStation.equals(downStation)) {

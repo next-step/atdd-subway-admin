@@ -41,15 +41,15 @@ public class Sections {
 			return;
 		}
 
-		boolean findUpStation = sections.stream().anyMatch(s -> s.exists(section.getUpStation()));
-		boolean findDownStation = sections.stream().anyMatch(s -> s.exists(section.getDownStation()));
-		validationLink(findUpStation, findDownStation);
+		boolean isFindUpStation = sections.stream().anyMatch(s -> s.exists(section.getUpStation()));
+		boolean isFindDownStation = sections.stream().anyMatch(s -> s.exists(section.getDownStation()));
+		validationLink(isFindUpStation, isFindDownStation);
 
-		if (findUpStation) {
+		if (isFindUpStation) {
 			findUpStation(section);
 		}
 
-		if (findDownStation) {
+		if (isFindDownStation) {
 			findDownStation(section);
 		}
 	}
@@ -60,12 +60,12 @@ public class Sections {
 		}
 	}
 
-	private void validationLink(boolean findUpStation, boolean findDownStation) {
-		if (findUpStation && findDownStation) {
+	private void validationLink(boolean isFindUpStation, boolean isFindDownStation) {
+		if (isFindUpStation && isFindDownStation) {
 			throw new RuntimeException("상행역과 하행역 모두 등록되어있습니다.");
 		}
 
-		if (!findUpStation && !findDownStation) {
+		if (!isFindUpStation && !isFindDownStation) {
 			throw new RuntimeException("상행역과 하행역 모두 등록되어있지않습니다.");
 		}
 	}
