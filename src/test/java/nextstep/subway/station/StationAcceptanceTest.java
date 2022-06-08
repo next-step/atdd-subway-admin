@@ -46,7 +46,7 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_생성_요청(stationNames.get(0));
 
         // then
-        assertStatusCode(response.statusCode(), HttpStatus.CREATED.value());
+        지하철역_생성완료(response.statusCode());
 
         // then
         ExtractableResponse<Response> getResponse = requestGetStations();
@@ -69,7 +69,7 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_생성_요청(stationNames.get(0));
 
         // then
-        assertStatusCode(response.statusCode(), HttpStatus.BAD_REQUEST.value());
+        지하철역_요청오류(response.statusCode());
     }
 
     /**
@@ -89,13 +89,12 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = requestGetStations();
 
         // then
-        assertStatusCode(response.statusCode(), HttpStatus.OK.value());
+        지하철역_조회완료(response.statusCode());
 
         List<String> findStations = response.jsonPath().getList("name", String.class);
-        assertStatusCode(findStations.size(), stationNames.size());
+        assertThat(findStations.size()).isEqualTo(stationNames.size());
         assertThat(findStations).contains(stationNames.toArray(new String[0]));
     }
-
 
     /**
      * Given 지하철역을 생성하고
@@ -115,14 +114,30 @@ public class StationAcceptanceTest {
         // then
         ExtractableResponse<Response> getResponse = requestGetStations();
         assertAll(
-            () -> assertStatusCode(deleteResponse.statusCode(), HttpStatus.NO_CONTENT.value()),
-            () -> assertStatusCode(getResponse.statusCode(), HttpStatus.OK.value()),
+            () -> 지하철역_삭제완료(deleteResponse.statusCode()),
+            () -> 지하철역_조회완료(getResponse.statusCode()),
             () -> {
                 List<String> findStations = getResponse.jsonPath().getList("name", String.class);
-                assertStatusCode(findStations.size(), 0);
+                assertThat(findStations.size()).isZero();
                 assertThat(findStations).doesNotContain(stationNames.get(1));
             }
         );
+    }
+
+    private void 지하철역_삭제완료(int deleteResponse) {
+        assertThat(deleteResponse).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private void 지하철역_생성완료(int response) {
+        assertThat(response).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private void 지하철역_조회완료(int response) {
+        assertThat(response).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철역_요청오류(int response) {
+        assertThat(response).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> requestDeleteStation(Long stationId) {
@@ -151,9 +166,4 @@ public class StationAcceptanceTest {
             .then().log().all()
             .extract();
     }
-
-    private void assertStatusCode(int actual, int expect) {
-        assertThat(actual).isEqualTo(expect);
-    }
-
 }
