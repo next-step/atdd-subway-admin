@@ -56,17 +56,18 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void addSection(Station upStation, Station downStation, long distance) {
-        Optional<Section> sectionList = sections.stream()
-                .filter(section -> section.getId().equals(upStation.getId()))
+    public void changeUpStation(Station newUpStation, long newSectionDistance) {
+        this.upStation = newUpStation;
+        Optional<Section> upStationSection = getSections().stream()
+                .filter(section -> section.getUpStation() == null)
                 .findFirst();
 
-        if (sectionList.isPresent()) {
-            Section existingSection = sectionList.get();
-            sections.add(new Section(existingSection.getUpStation(), downStation, distance));
-            sections.add(new Section(downStation, existingSection.getDownStation()
-                    , existingSection.getDistance() - distance));
-            sections.remove(existingSection);
+        if (upStationSection.isPresent()) {
+            Section existingSection = upStationSection.get();
+            existingSection.setDownStation(newUpStation);
+            this.sections.add(new Section(newUpStation, upStation, newSectionDistance));
+            upStation = newUpStation;
+            distance += newSectionDistance;
         }
     }
 

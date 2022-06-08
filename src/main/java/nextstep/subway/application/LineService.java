@@ -80,9 +80,23 @@ public class LineService {
         Station downStation = findStationById(sectionRequest.getDownStationId());
         Station upStation = findStationById(sectionRequest.getUpStationId());
 
-        Optional<Section> existingUpSection = line.getSections().stream()
+        Optional<Section> sameUpSection = line.getSections().stream()
                 .filter(section -> !ObjectUtils.isEmpty(section.getUpStation()) && (section.getUpStation().getId().equals(upStation.getId())))
                 .findFirst();
+        
+        if (sameUpSection.isPresent()) {
+            addSectionBetweenExistingSection(sectionRequest, line, downStation, sameUpSection);
+            return line;
+        }
+
+        if (downStation.getId().equals(line.getUpStation().getId())) {
+            line.changeUpStation(upStation, sectionRequest.getDistance());
+        }
+
+        return line;
+    }
+
+    private void addSectionBetweenExistingSection(SectionRequest sectionRequest, Line line, Station downStation, Optional<Section> existingUpSection) {
         long distance = sectionRequest.getDistance();
         if (existingUpSection.isPresent()) {
             Section existingSection = existingUpSection.get();
@@ -92,7 +106,5 @@ public class LineService {
             existingSection.setDownStation(downStation);
             existingSection.setDistance(distance);
         }
-
-        return line;
     }
 }

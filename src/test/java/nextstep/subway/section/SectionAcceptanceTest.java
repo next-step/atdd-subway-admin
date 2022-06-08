@@ -1,4 +1,4 @@
-package nextstep.subway.linestation;
+package nextstep.subway.section;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -22,7 +22,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
      * When 두 역 사이에 새로운 역을 등록하면
      * Then 새로운 역이 등록되고 구간이 조정된다.
      */
-    @DisplayName("노선에 구간을 등록한다.")
+    @DisplayName("역 사이에 새로운 구간을 등록한다.")
     @Test
     void addSection() {
         // Given
@@ -43,6 +43,32 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         Integer 신규구간_양재역_거리_리턴값 = 구간_추가_결과_응답.jsonPath()
                 .get("sections.find { section -> (section.downStation != null && section.downStation.id == 2L) }.distance");
         assertThat(신규구간_양재역_거리_리턴값).isEqualTo(신규구간_양재역_거리);
+    }
+
+    /**
+     * Given 지하철 노선이 생성된 상태에서
+     * When 새로운 역을 상행 종점으로 등록하면
+     * Then 새로운 역이 등록되고 구간이 조정된다.
+     */
+    @DisplayName("새로운 역을 상행 종점으로 등록한다.")
+    @Test
+    void addStationAsUpStation() {
+        // Given
+        신분당선_생성();
+
+        // When
+        SectionRequest sectionRequest = new SectionRequest(6L, 1L, 4);
+        ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(1L, sectionRequest);
+
+        // Then
+        final Integer 구간_추가후_신분당선_총_거리 = 14;
+        final String 구간_추가후_신분당선_상행역명 = "신논현역";
+
+        Integer 신분당선_총_거리_리턴값 = 구간_추가_결과_응답.jsonPath().get("distance");
+        assertThat(신분당선_총_거리_리턴값).isEqualTo(구간_추가후_신분당선_총_거리);
+
+        String 신분당선_상행역명_리턴값 = 구간_추가_결과_응답.jsonPath().get("upStation.name");
+        assertThat(신분당선_상행역명_리턴값).isEqualTo(구간_추가후_신분당선_상행역명);
     }
 
     private ExtractableResponse<Response> 구간_추가(long lineId, SectionRequest sectionRequest) {
