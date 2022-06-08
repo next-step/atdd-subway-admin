@@ -327,6 +327,43 @@ public class SectionAcceptanceTest {
         assertThat(stationNames).containsExactly("왕십리역","서울숲역");
     }
 
+    /**
+     * Given 구간이 두 개 이상인 노선이 있을 때
+     * When 노선에 등록되지 않은 역을 제거하려 하면
+     * Then 400 에러가 전달된다
+     */
+    @DisplayName("노선에 등록되지 않은 역을 제거하려 한다.")
+    @Test
+    void 미등록_역_제거() {
+        // given
+        // 분당선(왕십리역-서울숲역-선릉역)
+        addSection(분당선.getId(), new SectionRequest(왕십리역.getId(), 서울숲역.getId(), 4));
+
+        // when
+        ExtractableResponse<Response> response = deleteStation(분당선.getId(), 도곡역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    /**
+     * Given 구간이 하나뿐인 노선이 있을 때
+     * When 역을 제거하려 하면
+     * Then 400 에러가 전달된다
+     */
+    @DisplayName("구간이 하나뿐인 노선의 역을 제거하려 한다.")
+    @Test
+    void 구간_하나뿐인_노선_역_제거() {
+        // given
+        // 분당선(왕십리역-선릉역)
+
+        // when
+        ExtractableResponse<Response> response = deleteStation(분당선.getId(), 선릉역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> addSection(Long lineId, SectionRequest body) {
         return RestAssured.given().log().all()
                 .body(body)

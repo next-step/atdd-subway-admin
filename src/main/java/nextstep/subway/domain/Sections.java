@@ -5,6 +5,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -61,10 +62,14 @@ public class Sections {
     }
 
     public void removeByDownStation(Station targetStation) {
+        if (list.size() == 3) {
+            throw new IllegalStateException("구간이 하나일 때는 삭제할 수 없습니다.");
+        }
+
         Section targetSection = list.stream()
                 .filter(section -> targetStation.equals(section.getDownStation()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 삭제 대상"));
+                .orElseThrow(() -> new NoSuchElementException("삭제 대상이 존재하지 않습니다."));
 
         Section nextSection = getNextSectionOf(targetSection);
 

@@ -31,6 +31,12 @@ public class ControllerExceptionHandler {
         return new ErrorResult(ERROR, e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalStateException.class)
+    public ErrorResult illegalStatusExHandler(IllegalStateException e) {
+        return new ErrorResult(ERROR, e.getMessage());
+    }
+
     static class ErrorResult {
         private final String code;
         private final String message;
