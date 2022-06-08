@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+
+import nextstep.subway.exception.StationNotFoundException;
 
 @Embeddable
 public class Sections {
@@ -37,8 +41,8 @@ public class Sections {
 	public void add(Section section) {
 		validationSectionIdNull(section);
 
-		if (sections.isEmpty()) {
-			sectionsAdd(section);
+		if (getSections().isEmpty()) {
+			addSections(section);
 			return;
 		}
 
@@ -72,16 +76,24 @@ public class Sections {
 	}
 
 	private boolean isFirstSection(Section section) {
-		return sections.get(0).upStationEquals(section.getDownStation());
+		return isFirstSection(section.getDownStation());
+	}
+	
+	private boolean isFirstSection(Station station) {
+		return sections.get(0).upStationEquals(station);
 	}
 
 	private boolean isLastSection(Section section) {
-		return lastSection().downStationEquals(section.getUpStation());
+		return isLastSection(section.getUpStation());
+	}
+
+	private boolean isLastSection(Station station) {
+		return lastSection().downStationEquals(station);
 	}
 
 	private void findUpStation(Section section) {
 		if (isLastSection(section)) {
-			sectionsAdd(section);
+			addSections(section);
 			return;
 		}
 		int idx = IntStream.range(0, sections.size())
@@ -89,13 +101,13 @@ public class Sections {
 
 		sectionIncreaseOrder(idx);
 		sections.get(idx).addUpStation(section);
-		sectionsAdd(idx, section);
+		addSections(idx, section);
 	}
 
 	private void findDownStation(Section section) {
 		if (isFirstSection(section)) {
 			sectionIncreaseOrder(0);
-			sectionsAdd(0, section);
+			addSections(0, section);
 			return;
 		}
 
@@ -105,20 +117,67 @@ public class Sections {
 
 		sectionIncreaseOrder(idx + 1);
 		sections.get(idx).addDownStation(section);
-		sectionsAdd(idx + 1, section);
+		addSections(idx + 1, section);
 	}
 
 	private void sectionIncreaseOrder(int index) {
 		sections.stream().filter(Section -> Section.getSectionOrder() >= index).forEach(Section::orderIncrease);
 	}
 
-	private void sectionsAdd(Section section) {
-		this.sectionsAdd(sections.size(), section);
+	private void sectionDecreaseOrder(int index) {
+		sections.stream().filter(Section -> Section.getSectionOrder() >= index).forEach(Section::orderDecrease);
 	}
 
-	private void sectionsAdd(int index, Section section) {
+	private void addSections(Section section) {
+		this.addSections(sections.size(), section);
+	}
+
+	private void addSections(int index, Section section) {
 		sections.add(index, section);
 		section.updateSectionOrder(index);
+	}
+
+	public void removeSection(Optional<Station> removeStation) {
+		validationRemoveSection(removeStation);
+
+		if(isFirstSection(removeStation.get())) {
+			sections.remove(0);
+			sectionDecreaseOrder(0);
+			return;
+		}
+		
+		if(isLastSection(removeStation.get())) {
+			sections.remove(lastIndex());
+			return;
+		}
+		
+		removeSection(removeSectionsIndex(removeStation));
+	}
+
+	private void removeSection(OptionalInt idx) {
+		if(!idx.isPresent()) {
+			throw new StationNotFoundException();
+		}
+		
+		sections.get(idx.getAsInt() - 1).removeAfterSection(sections.get(idx.getAsInt()));
+		sections.remove(idx.getAsInt());
+		sectionDecreaseOrder(idx.getAsInt());
+	}
+
+	private OptionalInt removeSectionsIndex(Optional<Station> removeStation) {
+		return IntStream.range(0, sections.size())
+				.filter(index -> sections.get(index).upStationEquals(removeStation.get()))
+				.findFirst();
+	}
+
+	private void validationRemoveSection(Optional<Station> removeStation) {
+		if(getSections().size() < 2) {
+			throw new IllegalArgumentException("구간이 2개이상 등록된 경우에만 삭제가 가능합니다.");
+		}
+		
+		if(!removeStation.isPresent()) {
+			throw new StationNotFoundException();
+		}
 	}
 
 	@Override

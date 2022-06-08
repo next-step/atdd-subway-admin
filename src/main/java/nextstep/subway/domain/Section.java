@@ -48,7 +48,7 @@ public class Section extends BaseEntity {
 	private void validation(Station upStation, Station downStation, int distance) {
 		if (Objects.isNull(upStation) || Objects.isNull(downStation) 
 				|| upStation.getId() == null || downStation.getId() == null) {
-			throw new StationNotFoundException("역 정보가 없습니다.");
+			throw new StationNotFoundException();
 		}
 
 		if (upStation.equals(downStation)) {
@@ -76,13 +76,13 @@ public class Section extends BaseEntity {
 	 * Title : Sectinos 관리 Content : Sections에서 값을 추가하기전 비교하기 위해 사용하는 함수들
 	 */
 
-	public void addUpStation(Section section) {
+	protected void addUpStation(Section section) {
 		validationDistance(section.getDistance());
 		this.distance -= section.distance;
 		this.upStation = section.downStation;
 	}
 
-	public void addDownStation(Section section) {
+	protected void addDownStation(Section section) {
 		validationDistance(section.getDistance());
 		this.distance -= section.distance;
 		this.downStation = section.upStation;
@@ -98,8 +98,17 @@ public class Section extends BaseEntity {
 		this.sectionOrder = index;
 	}
 
+	public void removeAfterSection(Section section) {
+		this.distance += section.distance;
+		this.downStation = section.downStation;
+	}
+
 	protected void orderIncrease() {
 		this.sectionOrder++;
+	}
+
+	protected void orderDecrease() {
+		this.sectionOrder--;
 	}
 	/* Sections 관리 End */
 

@@ -78,4 +78,12 @@ public class LineService {
 			throw new RuntimeException("역 정보를 찾지 못했습니다.");
 		}
 	}
+
+	@Transactional
+	public void removeSectionByStationId(Long lineId, Long stationId) {
+		Optional<Line> line = lineRepository.findById(lineId);
+		Optional<Station> removeStation = stationRepository.findById(stationId);
+		
+		line.get().removeSection(removeStation);
+	}
 }
