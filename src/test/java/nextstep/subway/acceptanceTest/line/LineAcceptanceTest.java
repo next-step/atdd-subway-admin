@@ -4,37 +4,16 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.SectionResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("지하철 노선 관련기능 인수테스트")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = {"classpath:/db/truncate.sql", "classpath:/db/data.sql"})
-public class LineAcceptanceTest {
-    @LocalServerPort
-    int port;
-    ExtractableResponse<Response> _2호선;
-    int _2호선_lineId;
-
-    @BeforeEach
-    void setup() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-        // given
-        _2호선 = createLine("2호선", "bg-red-600", "1", "3", "10");
-        _2호선_lineId = _2호선.jsonPath().get("id");
-    }
+@DisplayName("지하철 노선 관련기능 인수 테스트")
+public class LineAcceptanceTest extends LineAcceptance {
 
     /**
      * Given 지하철역을 생성하고
@@ -314,137 +293,4 @@ public class LineAcceptanceTest {
         assertThat(강남역.get().getDownStation()).isEqualTo("선릉역");
     }
 
-    /**
-     * When 기존에 존재하는 구간과 같은 구간을 추가하면
-     * Then 에러가 발생한다
-     */
-    @Test
-    @DisplayName("같은 구간을 등록하면 에러가 발생한다")
-    void equalSection() {
-        //when
-        ExtractableResponse<Response> response = addSection(_2호선_lineId, 1, 3, 4);
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    /**
-     * When 등록된 구간과 등록하려는 구간의 열결점이 없으면
-     * Then 에러가 발생한다
-     */
-    @Test
-    @DisplayName("등록하려는 구간이 없으면 에러 발생")
-    void noMatchSection() {
-        //when
-        ExtractableResponse<Response> response = addSection(_2호선_lineId, 2, 4, 4);
-
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    /**
-     * When 등록된 구간보다 거리가 길거나 같으면
-     * Then 에러가 발생한다
-     */
-    @Test
-    @DisplayName("등록된 구간보다 거리가 길거나 같으면 에러가 발생한다")
-    void sectionDistanceError() {
-        //when
-        ExtractableResponse<Response> response = addSection(_2호선_lineId, 1, 2, 11);
-        ExtractableResponse<Response> response2 = addSection(_2호선_lineId, 1, 2, 10);
-
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    /**
-     * Given 지하철 노선을 추가하고
-     * When 라인에 없는 역을 삭제하면
-     * Then 400 에러가 발생한다
-     */
-    @Test
-    @DisplayName("라인에 없는 역을 삭제하면 400 에러가 발생한다")
-    void deleteNotExistedStationException() {
-        //given
-        addSection(_2호선_lineId, 1, 2, 5);
-
-        //when
-        ExtractableResponse<Response> response = deleteStation(_2호선_lineId, 4);
-
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    /**
-     * When 노선이 하나만 있는 라인에서 역을 삭제하면
-     * Then 400 에러가 발생한다
-     */
-    @Test
-    @DisplayName("노선이 하나만 있는 경우 역을 삭제하면 400 에러가 발생한다")
-    void deleteStationExceptionIfSectionSizeIsZeroOrOne() {
-        //when
-        ExtractableResponse<Response> response = deleteStation(_2호선_lineId, 2);
-
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    private ExtractableResponse<Response> createLine(String name, String color, String upStationId, String downStationId, String distance) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", distance);
-
-        return RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().log().all()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private List<String> getLines(String jsonPath) {
-        return RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract().jsonPath().getList(jsonPath, String.class);
-    }
-
-    private ExtractableResponse<Response> addSection(int lineId, int upStationId, int downStationId, int distance) {
-        Map<String, Integer> params = new HashMap<>();
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", distance);
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().log().all()
-                .post("/lines/" + lineId + "/sections")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> deleteStation(int lineId, int stationId) {
-        return RestAssured.given().log().all()
-                .when().log().all()
-                .delete("/lines/" + lineId + "/sections?stationId=" + stationId)
-                .then().log().all()
-                .extract();
-    }
-
-    private List<SectionResponse> getSectionResponse(int lineId) {
-        List<SectionResponse> sectionResponses = RestAssured.given().log().all()
-                .when().log().all()
-                .get("/lines/" + lineId + "/sections")
-                .then().log().all()
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", SectionResponse.class);
-        return sectionResponses;
-    }
 }

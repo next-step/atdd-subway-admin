@@ -123,11 +123,6 @@ public class Sections {
         removeSections(upSection, downSection);
     }
 
-    private void removeSections(Optional<Section> upSection, Optional<Section> downSection) {
-        upSection.ifPresent(sections::remove);
-        downSection.ifPresent(sections::remove);
-    }
-
     private void validateSectionsSize() {
         if (sections.size() <= 1) {
             throw new IllegalArgumentException(String.format("역을 제거할 수 없습니다. (라인의 구간 수: %d)", sections.size()));
@@ -158,6 +153,11 @@ public class Sections {
             int newDistance = upSection.get().getDistance() + downSection.get().getDistance();
             sections.add(new Section(line, downSection.get().getUpStation(), upSection.get().getDownStation(), newDistance));
         }
+    }
+
+    private void removeSections(Optional<Section> upSection, Optional<Section> downSection) {
+        upSection.ifPresent(sections::remove);
+        downSection.ifPresent(sections::remove);
     }
 
     @Override
