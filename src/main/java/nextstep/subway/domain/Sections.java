@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -9,10 +10,12 @@ import java.util.stream.IntStream;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.exception.CannotDeleteException;
 
 @Embeddable
 public class Sections {
 	private final int NOT_FOUND = -1;
+	private final int MIN_SIZE = 1;
 
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
@@ -21,29 +24,8 @@ public class Sections {
 	}
 
 	public List<Station> getStations() {
-		List<Station> downStations = sections.stream()
-			.map(Section::getDownStation)
-			.collect(Collectors.toList());
-
-		Section firstSection = sections.stream()
-			.filter(it -> !downStations.contains(it.getUpStation()))
-			.findFirst()
-			.orElseThrow(IllegalArgumentException::new);
-
-		List<Station> stations = new ArrayList<>();
-		stations.add(firstSection.getUpStation());
-		stations.add(firstSection.getDownStation());
-
-		Optional<Section> nextSection = findNextSection(firstSection.getDownStation());
-
-		while(nextSection.isPresent()) {
-			Station station = nextSection.get().getDownStation();
-
-			stations.add(station);
-			nextSection = findNextSection(station);
-		}
-
-		return stations;
+		Section firstSection = findFirstSection();
+		return getStationsBeyond(firstSection);
 	}
 
 	public void add(Line line, Station upStation, Station downStation, int distance) {
@@ -57,6 +39,36 @@ public class Sections {
 
 		updateSectionInMiddle(line, upStation, downStation, distance);
 		sections.add(new Section(line, upStation, downStation, distance));
+	}
+
+	public void remove(Station station) {
+		validDeletableStation();
+
+		Optional<Section> optionalUpStation = findSectionByUpStation(station);
+		Optional<Section> optionalDownStation = findSectionByDownStation(station);
+
+		if(optionalUpStation.isPresent()
+			&& !optionalDownStation.isPresent()) {
+			Section section = optionalUpStation.orElseThrow(NoSuchElementException::new);
+			sections.remove(section);
+			return;
+		}
+
+		if(!optionalUpStation.isPresent()
+			&& optionalDownStation.isPresent()) {
+			Section section = optionalDownStation.orElseThrow(NoSuchElementException::new);
+			sections.remove(section);
+			return;
+		}
+
+		Section backSection = optionalUpStation.orElseThrow(NoSuchElementException::new);
+		Section frontSection = optionalDownStation.orElseThrow(NoSuchElementException::new);
+
+		sections.remove(backSection);
+		sections.remove(frontSection);
+
+		sections.add(new Section(frontSection.getLine(), frontSection.getUpStation(), backSection.getDownStation(),
+			frontSection.getDistance() + backSection.getDistance()));
 	}
 
 	private void validateDuplication(Station upStation, Station downStation) {
@@ -122,9 +134,48 @@ public class Sections {
 			.orElse(NOT_FOUND);
 	}
 
-	private Optional<Section> findNextSection(Station station) {
+	private Section findFirstSection() {
+		List<Station> downStations = sections.stream()
+			.map(Section::getDownStation)
+			.collect(Collectors.toList());
+
+		return sections.stream()
+			.filter(it -> !downStations.contains(it.getUpStation()))
+			.findFirst()
+			.orElseThrow(IllegalArgumentException::new);
+	}
+
+	private List<Station> getStationsBeyond(Section section) {
+		List<Station> stations = new ArrayList<>();
+		stations.add(section.getUpStation());
+		stations.add(section.getDownStation());
+
+		Optional<Section> nextSection = findSectionByUpStation(section.getDownStation());
+
+		while(nextSection.isPresent()) {
+			Station station = nextSection.get().getDownStation();
+
+			stations.add(station);
+			nextSection = findSectionByUpStation(station);
+		}
+		return stations;
+	}
+
+	private Optional<Section> findSectionByUpStation(Station station) {
 		return sections.stream()
 			.filter(it -> it.isUpStation(station))
 			.findFirst();
+	}
+
+	private Optional<Section> findSectionByDownStation(Station station) {
+		return sections.stream()
+			.filter(it -> it.isDownStation(station))
+			.findFirst();
+	}
+
+	private void validDeletableStation() {
+		if(sections.size() <= MIN_SIZE) {
+			throw new CannotDeleteException();
+		}
 	}
 }

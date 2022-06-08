@@ -45,6 +45,10 @@ public class Section extends BaseEntity {
 		return id;
 	}
 
+	public Line getLine() {
+		return line;
+	}
+
 	public Station getUpStation() {
 		return upStation;
 	}
@@ -84,9 +88,9 @@ public class Section extends BaseEntity {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
+		if(this == o)
 			return true;
-		if (o == null || getClass() != o.getClass())
+		if(o == null || getClass() != o.getClass())
 			return false;
 		Section section = (Section)o;
 		return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(line,

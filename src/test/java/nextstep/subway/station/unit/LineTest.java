@@ -3,6 +3,7 @@ package nextstep.subway.station.unit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import nextstep.subway.exception.CannotDeleteException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -107,5 +108,58 @@ public class LineTest {
 		// when then
 		assertThatThrownBy(() -> sinbundangLine.addSection(gangnamStation, jeongjaStation, 40))
 			.isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@DisplayName("노선의 맨 앞 상행역 삭제")
+	@Test
+	void removeFrontUpStation() {
+		// given
+		sinbundangLine.addSection(gangnamStation, gwanggyoStaion, 30);
+		sinbundangLine.addSection(gangnamStation, jeongjaStation, 10);
+
+		// when
+		sinbundangLine.removeSection(gangnamStation);
+
+		// then
+		assertThat(sinbundangLine.getStation()).containsExactly(jeongjaStation, gwanggyoStaion);
+	}
+
+	@DisplayName("노선의 맨 뒤 하행역 삭제")
+	@Test
+	void removeBackDownStation() {
+		// given
+		sinbundangLine.addSection(gangnamStation, gwanggyoStaion, 30);
+		sinbundangLine.addSection(gangnamStation, jeongjaStation, 10);
+
+		// when
+		sinbundangLine.removeSection(gwanggyoStaion);
+
+		// then
+		assertThat(sinbundangLine.getStation()).containsExactly(gangnamStation, jeongjaStation);
+	}
+
+	@DisplayName("노선의 중간역 삭제")
+	@Test
+	void removeMiddleStation() {
+		// given
+		sinbundangLine.addSection(gangnamStation, gwanggyoStaion, 30);
+		sinbundangLine.addSection(gangnamStation, jeongjaStation, 10);
+
+		// when
+		sinbundangLine.removeSection(jeongjaStation);
+
+		// then
+		assertThat(sinbundangLine.getStation()).containsExactly(gangnamStation, gwanggyoStaion);
+	}
+
+	@DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 경우 오류")
+	@Test
+	void errorRemoveLastSection() {
+		// given
+		sinbundangLine.addSection(gangnamStation, gwanggyoStaion, 30);
+
+		// when then
+		assertThatThrownBy(() -> sinbundangLine.removeSection(gangnamStation))
+			.isInstanceOf(CannotDeleteException.class);
 	}
 }

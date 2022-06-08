@@ -1,7 +1,7 @@
 package nextstep.subway.application;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -35,11 +35,9 @@ public class LineService {
 			lineRequest.getColor()
 		));
 
-		if(lineRequest.getUpStationId() != null
-			&& lineRequest.getDownStationId() != null
-			&& lineRequest.getDistance() > 0) {
-			Station upStation = stationService.findById(lineRequest.getUpStationId());
-			Station downStation = stationService.findById(lineRequest.getDownStationId());
+		if(lineRequest.isAddable()) {
+			Station upStation = getStationById(lineRequest.getUpStationId());
+			Station downStation = getStationById(lineRequest.getDownStationId());
 
 			persistLine.addSection(upStation, downStation, lineRequest.getDistance());
 		}
@@ -55,13 +53,13 @@ public class LineService {
 	}
 
 	public LineResponse findById(Long id) {
-		Line line = lineRepository.findById(id).get();
+		Line line = getLineById(id);
 		return LineResponse.of(line);
 	}
 
 	@Transactional
 	public void updateLine(Long id, LineRequest lineRequest) {
-		Line line = lineRepository.findById(id).get();
+		Line line = getLineById(id);
 		line.updateLine(lineRequest.getName(), lineRequest.getColor());
 	}
 
@@ -72,10 +70,26 @@ public class LineService {
 
 	@Transactional
 	public void addSection(Long lineId, SectionRequest sectionRequest) {
-		Station upStation = stationService.findById(sectionRequest.getUpStationId());
-		Station downStation = stationService.findById(sectionRequest.getDownStationId());
-		Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+		Station upStation = getStationById(sectionRequest.getUpStationId());
+		Station downStation = getStationById(sectionRequest.getDownStationId());
+		Line line = getLineById(lineId);
 
 		line.addSection(upStation, downStation, sectionRequest.getDistance());
+	}
+
+	@Transactional
+	public void removeSectionByStationId(Long lineId, Long stationId) {
+		Station station = getStationById(stationId);
+		Line line = getLineById(lineId);
+
+		line.removeSection(station);
+	}
+
+	private Station getStationById(Long stationId) {
+		return stationService.findById(stationId);
+	}
+
+	private Line getLineById(Long lineId) {
+		return lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
 	}
 }
