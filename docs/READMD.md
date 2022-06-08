@@ -59,3 +59,68 @@
          When 생성한 지하철 노선을 삭제하면
          Then 해당 지하철 노선 정보는 삭제된다
       ```
+      
+------------------------
+-----------------------
+## STEP3
+
+_______________________
+
+### 요구사항
+- 기능 요구 사항
+  - 지하철 구간 추가 기능 
+  - 인수 조건을 조출
+  - 인수 테스트 
+  - 예외 케이스에 대한 검증도 포함
+
+- 프로그래밍 요구 사항
+  - 인수 테스트 주도 개발 프로세스 
+
+
+- API 명세
+  ```http request
+     POST /lines/1/sections
+     content-type: application/json;
+     
+     {
+          "downStationId": "4",
+          "upStationId": "2",
+          "distance": 10
+     }
+  ```
+- 사용자 요구 사항 정리 
+  - 기본 요청에 따른 시나리오 
+    - mandatory 값은 distance 이다.
+      - 없으면 IllegalArgsException 이 발생
+    - downStationId or upStationId 는 optional 이지만 둘중 하나 값을 존재 해야 한다.
+      - 하나도 없으면 IllegalArgsException 이 발생 
+    - distance 값은 0 이상 이다.
+      - 음수 이면 예외 발생 IllegalArgsException 이 발생
+    - downStationId 이나 upStationId 입력 시 기존에 등록이 되어 있어야 한다
+      - 없는 경우 EntityNotFoundException 이 발생
+  
+  - 추가 시나리오 
+    - 새로운 역이 가운데에 추가되는 경우
+      - 기존 distance  > new section 의 distance 인지 확인
+        - 아니면 IllegalArgsException 에러 발생
+      - 상행 과 일치한 경우 
+        - 기존의 upStation 을 new downStation 으로 변경 하고 distance - new distance 값으로 업데이트 
+      - 하행과 일치한 경우 
+        - 기존의 downStation 을 new upStation 으로 변경 하고  distance - new distance 값으로 업데이트
+    
+    - 상행 , 하행 종점으로 등록한 경우
+      - 그냥 추가 한다.
+  
+  - 리팩토링
+    - 기존의 line 에 upStation, downStation, distance 를 Section 으로 변경
+  
+  - LineStation class 역할
+    - 전역 정보를 알수 있다.
+    - 출발역 인지 알수 있다.
+    - 현재 노선 정보를 알수 있다.
+    - 현재 전역과의 거리를 알수 있다.
+    - 같은 노선일 경우에만 역을 추가 할수 있다.
+  
+  - LineStations class 역할
+    - LineStation 을 추가 할수 있다.
+    - LineStation 을 순서대로 가져올수 있다.

@@ -18,45 +18,15 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private String color;
 
-    @ManyToOne
-    @JoinColumn(name = "UPSTATION_ID")
-    private Station upStation;
-
-    @ManyToOne
-    @JoinColumn(name = "DOWNSTATION_ID")
-    private Station downStation;
-
     @Embedded
-    @Column(nullable = false)
-    private Distance distance;
+    private final LineStations lineStations = new LineStations();
 
     protected Line() {
     }
 
-    public Line(final String name, final String color, final Distance distance) {
-        this(name, color, null, null, distance);
-    }
-
-    public Line(final String name, final String color, final Station upStation, final Station downStation, final Distance distance) {
-        this(null, name, color, upStation, downStation, distance);
-    }
-
-    public Line(Long id, String name, String color, Station upStation, Station downStation, Distance distance) {
-        this.id = id;
+    public Line(final String name, final String color) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
-    }
-
-    public Line(Long id, String name, String color, Station upStation, Station downStation, Long distance) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = new Distance(distance);
     }
 
     public Long getId() {
@@ -71,18 +41,6 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public Distance getDistance() {
-        return distance;
-    }
-
     public void updateName(String name) {
         if (!name.isEmpty() && !Objects.equals(this.name, name)) {
             this.name = name;
@@ -95,19 +53,19 @@ public class Line extends BaseEntity {
         }
     }
 
-    public Line upStationBy(final Station upStation) {
-        this.upStation = upStation;
-        return this;
-    }
-
     public void updateBy(LineRequest request) {
         this.updateName(request.getName());
         this.updateColor(request.getColor());
     }
 
-    public Line downStationBy(Station downStation) {
-        this.downStation = downStation;
-        return this;
+    public void addLineStation(final LineStation lineStation) {
+        if (!this.lineStations.isContains(lineStation)) {
+            this.lineStations.addLineStation(lineStation);
+        }
+    }
+
+    public LineStations getLineStations() {
+        return lineStations;
     }
 
     @Override

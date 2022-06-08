@@ -24,11 +24,17 @@ public class RequestUtil {
     private static final String STATION_URL = "/stations";
     private static final String LINE_URL = "/lines";
 
+    private static final String SECTION_PATH = "/sections";
     private static final String INVALID_KEY = "name";
 
     public static void 요청_성공_실패_여부_확인(ExtractableResponse<Response> response, HttpStatus status) {
         assertThat(HttpStatus.valueOf(response.statusCode())).isEqualTo(status);
     }
+
+    public ExtractableResponse<Response> createSection(final Long lineId, final Map<String, String> body) {
+        return this.request(()->body, POST, String.format(LINE_URL+"/%d"+SECTION_PATH, lineId));
+    }
+
 
     public ExtractableResponse<Response> createLine(final Map<String, String> body) {
         return this.request(()->body, POST, LINE_URL);

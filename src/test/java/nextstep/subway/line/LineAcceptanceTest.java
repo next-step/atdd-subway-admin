@@ -176,15 +176,15 @@ public class LineAcceptanceTest extends BasicAcceptance {
         return requestUtil.updateLine(id, convertMapBy(lineRequest));
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성(final LineRequest lineRequest) {
+    public static ExtractableResponse<Response> 지하철_노선_생성(final LineRequest lineRequest) {
         return requestUtil.createLine(convertMapBy(lineRequest));
     }
 
-    private ExtractableResponse<Response> 지하철_노선_전체_검색() {
+    public static ExtractableResponse<Response> 지하철_노선_전체_검색() {
         return requestUtil.searchAllLine();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_일부_검색(final Long id) {
+    public static ExtractableResponse<Response> 지하철_노선_일부_검색(final Long id) {
         return requestUtil.searchLine(id);
     }
 
@@ -192,7 +192,7 @@ public class LineAcceptanceTest extends BasicAcceptance {
         return requestUtil.deleteLine(id);
     }
 
-    private List<LineResponse> 객체리스트로_변환(ExtractableResponse<Response> response) {
+    public static List<LineResponse> 객체리스트로_변환(ExtractableResponse<Response> response) {
         try {
             return response.jsonPath().getList(".", LineResponse.class);
         } catch (ClassCastException e) {
@@ -204,16 +204,16 @@ public class LineAcceptanceTest extends BasicAcceptance {
         return response.as(LineResponse.class);
     }
 
-    private boolean 지하철노선이름으로_검색(List<LineResponse> responseList, final String lineName) {
+    public static boolean 지하철노선이름으로_검색(List<LineResponse> responseList, final String lineName) {
         return responseList.stream().anyMatch(lineResponse -> Objects.equals(lineResponse.getName(), lineName));
     }
 
-    private Map<String, String> convertMapBy(final LineRequest lineRequest) {
+    static Map<String, String> convertMapBy(final LineRequest lineRequest) {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.convertValue(lineRequest, Map.class);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성됨(ExtractableResponse<Response> response) {
+    public static ExtractableResponse<Response> 지하철_노선_생성됨(ExtractableResponse<Response> response) {
         요청_성공_실패_여부_확인(response, HttpStatus.CREATED);
         return response;
     }
@@ -222,7 +222,7 @@ public class LineAcceptanceTest extends BasicAcceptance {
         요청_성공_실패_여부_확인(response, HttpStatus.BAD_REQUEST);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_검색이_정상처리됨(ExtractableResponse<Response> response) {
+    public static ExtractableResponse<Response> 지하철_노선_검색이_정상처리됨(ExtractableResponse<Response> response) {
         요청_성공_실패_여부_확인(response, HttpStatus.OK);
         return response;
     }
@@ -232,8 +232,9 @@ public class LineAcceptanceTest extends BasicAcceptance {
         return response;
     }
 
-    private void 지하철_노선_검색됨(ExtractableResponse<Response> response, final String findName) {
+    public static ExtractableResponse<Response> 지하철_노선_검색됨(ExtractableResponse<Response> response, final String findName) {
         assertThat(지하철노선이름으로_검색(객체리스트로_변환(response), findName)).isTrue();
+        return response;
     }
 
     private void 지하철_노선_검색_요청_실패(ExtractableResponse<Response> response) {

@@ -3,6 +3,8 @@ package nextstep.subway.ui;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.SectionResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,7 +51,13 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(value = {EntityNotFoundException.class})
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<SectionResponse> addSection( @PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
+        SectionResponse sectionResponse = lineService.saveSection(id, sectionRequest);
+        return ResponseEntity.created(URI.create("/lines/"+id+"/sections")).body(sectionResponse);
+    }
+
+    @ExceptionHandler(value = {EntityNotFoundException.class, IllegalArgumentException.class })
     public ResponseEntity<?> handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }
