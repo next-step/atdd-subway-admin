@@ -28,13 +28,11 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(final LineRequest lineRequest) {
-        final Line line = lineRequest.toLine();
         final SectionRequest sectionRequest = lineRequest.getSectionRequest();
-        final Section section = SectionRequest.of(sectionRequest)
-                .updateUpStationBy(stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(EntityNotFoundException::new))
-                .updateDownStationBy(stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(EntityNotFoundException::new));
-        lineStationRepository.save(new LineStation(line, section));
-        return LineResponse.of(line, Collections.singletonList(section.getDownStation()));
+        final Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(EntityNotFoundException::new);
+        final Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(EntityNotFoundException::new);
+        final LineStation savedLineStation = lineStationRepository.save(new LineStation(lineRequest.toLine() , new Section(upStation, downStation, sectionRequest.getDistance())));
+        return LineResponse.of(savedLineStation.getLine(), Collections.singletonList(savedLineStation.getCurrentStation()));
     }
 
     public List<LineResponse> findAllLine() {
@@ -60,11 +58,9 @@ public class LineService {
 
     @Transactional
     public SectionResponse saveSection(final Long id, final SectionRequest addSection) {
-        final Section section = SectionRequest.of(addSection)
-                .updateUpStationBy(stationRepository.findById(addSection.getUpStationId()).orElseThrow(EntityNotFoundException::new))
-                .updateDownStationBy(stationRepository.findById(addSection.getDownStationId()).orElseThrow(EntityNotFoundException::new));
-        Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        LineStation lineStation = new LineStation(line, section);
-        return SectionResponse.of(lineStationRepository.save(lineStation));
+        final Station upStation = stationRepository.findById(addSection.getUpStationId()).orElseThrow(EntityNotFoundException::new);
+        final Station downStation = stationRepository.findById(addSection.getDownStationId()).orElseThrow(EntityNotFoundException::new);
+        final Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return SectionResponse.of(lineStationRepository.save(new LineStation(line, new Section(upStation, downStation, addSection.getDistance()))));
     }
 }
