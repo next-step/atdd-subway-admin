@@ -72,6 +72,7 @@ Then 해당 지하철 노선 정보는 삭제된다
 - 접근 제한을 최소화
 - 테스트 격리하는 방법
   - [참고자료](https://tech.pick-git.com/test-optimization2/)
+  - 위 방법으로 진행 할 경우 엔티티의 변경사항까지 반영하여 데이터베이스를 삭제할 수 있음
 - 테스트 작성시에는 가독성있는 변수명.
   - ex) `upStationId1 = stationApi.createId("광교역");` -> `광교역 = stationApi.createId("광교역");`
 - 
