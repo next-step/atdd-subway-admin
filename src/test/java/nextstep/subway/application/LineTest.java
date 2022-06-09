@@ -1,7 +1,6 @@
 package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,8 +49,13 @@ class LineTest {
         line.addSection(8, upStation, addedStation);
 
         //then
-        assertThat(line.getAllSectionsSorted().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("상행",
-                "새로운 지하철역", "하행");
+        assertThat(line.getAllSectionsSorted().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("상행", "새로운 지하철역", "하행");
+    }
+
+    @Test
+    public void 상행_하행_사이_구간_연속_추가() {
+        //given
+        상행_하행_사이_구간_추가();
 
         //when
         line.addSection(1, addedStation, new Station(4L, "새로추가된 역에 또 하나 더 추가함"));
@@ -67,18 +71,66 @@ class LineTest {
     }
 
     @Test
-    public void 상행_하행_사이_구간_삭제() {
+    public void 상행_하행_사이_구간_연속_삭제() {
+        //given
+        상행_하행_사이_구간_연속_추가();
+
         //when
-        line.addSection(8, upStation, addedStation);
+        line.deleteSection(addedStation);
 
         //then
-        assertThat(line.getAllSectionsSorted().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("상행",
-                "새로운 지하철역", "하행");
+        assertThat(line.getAllSectionsSorted().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("상행", "더 추가하기", "새로추가된 역에 또 하나 더 추가함", "하행");
 
-       line.deleteSection(addedStation);
+        //when
+        line.deleteSection(upStation);
+
         //then
-        assertThat(line.getAllSectionsSorted().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("상행", "하행");
+        assertThat(line.getAllSectionsSorted().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("더 추가하기", "새로추가된 역에 또 하나 더 추가함", "하행");
 
+        //when
+        line.deleteSection(downStation);
+
+        //then
+        assertThat(line.getAllSectionsSorted().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("더 추가하기", "새로추가된 역에 또 하나 더 추가함");
+    }
+
+    @Test
+    public void 상행_하행_사이_구간_삭제() {
+        //given
+        상행_하행_사이_구간_추가();
+
+        //when
+        line.deleteSection(addedStation);
+
+        //then
+        assertThat(line.getAllSectionsSorted().stream().map(Station::getName)
+                .collect(Collectors.toList())).containsExactly("상행", "하행");
+    }
+
+    @Test
+    public void 상행_구간_삭제() {
+        //given
+        상행_하행_사이_구간_추가();
+
+        //when
+        line.deleteSection(upStation);
+
+        //then
+        assertThat(line.getAllSectionsSorted().stream().map(Station::getName)
+                .collect(Collectors.toList())).containsExactly("새로운 지하철역", "하행");
+    }
+
+    @Test
+    public void 하행_구간_삭제() {
+        //given
+        상행_하행_사이_구간_추가();
+
+        //when
+        line.deleteSection(downStation);
+
+        //then
+        assertThat(line.getAllSectionsSorted().stream().map(Station::getName)
+                .collect(Collectors.toList())).containsExactly("상행", "새로운 지하철역");
     }
 
     @Test
@@ -97,5 +149,17 @@ class LineTest {
     public void 구간_추가시_이미_존재하는_구간은_구간_추가가_불가능하다() {
         //then
         assertThatThrownBy(() -> line.addSection(  5, upStation, downStation)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void 사이_구간_삭제시_구간이_하나인_경우_삭제가_불가능하다() {
+        //then
+        assertThatThrownBy(() -> line.deleteSection(upStation)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void 구간에_포함되있지_않은_역은_삭제가_불가능하다() {
+        //then
+        assertThatThrownBy(() -> line.deleteSection(addedStation)).isInstanceOf(IllegalArgumentException.class);
     }
 }

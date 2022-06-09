@@ -104,7 +104,7 @@ public class Sections {
         }
     }
 
-    private void checkEnd() {
+    private void checkLastSection() {
         if (this.sections.size() < 2) {
             throw new IllegalArgumentException("마지막 구간은 제거할 수 없습니다.");
         }
@@ -124,7 +124,7 @@ public class Sections {
 
     public void delete(Station station) {
         checkStationIncluded(station);
-        checkEnd();
+        checkLastSection();
 
         Section upSection = findIncludingUpStationSectionBy(station);
         Section downSection = findIncludingDownStationSectionBy(station);

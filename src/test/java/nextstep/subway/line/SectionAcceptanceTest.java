@@ -62,10 +62,76 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        // then
         List<String> stationNames = getOne(line.getId()).jsonPath().getList("stations.name");
         assertThat(stationNames).containsExactlyInAnyOrder("강남", "광교중앙");
+    }
+
+    /**
+     * Given 지하철 노선에 지하철역 등록 요청
+     * When 지하철_노선에_지하철역_삭제_요청
+     * Then  지하철_노선에_지하철역_삭제됨
+     */
+    @DisplayName("노선에 상행 종점 구간을 삭제한다.")
+    @Test
+    void deleteSection_ascend() {
+        //given
+        addSection();
+
+        //when
+        ExtractableResponse<Response> response = deleteSection(line.getId(), upStation.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<String> stationNames = getOne(line.getId()).jsonPath().getList("stations.name");
+        assertThat(stationNames).containsExactlyInAnyOrder("양재", "광교중앙");
+    }
+
+    /**
+     * Given 지하철 노선에 지하철역 등록 요청
+     * When 지하철_노선에_지하철역_삭제_요청
+     * Then  지하철_노선에_지하철역_삭제됨
+     */
+    @DisplayName("노선에 하행 종점 구간을 삭제한다.")
+    @Test
+    void deleteSection_descend() {
+        //given
+        addSection();
+
+        //when
+        ExtractableResponse<Response> response = deleteSection(line.getId(), downStation.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<String> stationNames = getOne(line.getId()).jsonPath().getList("stations.name");
+        assertThat(stationNames).containsExactlyInAnyOrder("강남", "양재");
+    }
+
+    /**
+     * When 지하철_노선에_지하철역_삭제_요청
+     * Then  지하철_노선에_지하철역_삭제_실패함
+     */
+    @DisplayName("노선의 마지막 구간을 삭제하면 실패한다")
+    @Test
+    void deleteSection_last() {
+        // when
+        ExtractableResponse<Response> response = deleteSection(line.getId(), upStation.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 지하철_노선에_지하철역_삭제_요청
+     * Then  지하철_노선에_지하철역_삭제_실패함
+     */
+    @DisplayName("노선 구간에 포함되어 있지 않은 역을 삭제하면 실패한다.")
+    @Test
+    void deleteSection_not_included() {
+        // when
+        ExtractableResponse<Response> response = deleteSection(line.getId(), newStation.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> deleteSection(long id, long stationId) {
