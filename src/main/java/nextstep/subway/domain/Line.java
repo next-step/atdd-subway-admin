@@ -27,9 +27,8 @@ public class Line extends BaseEntity {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_line_to_down_station"))
     private Station downStation;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     private Long distance = 0L;
 
@@ -55,7 +54,7 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Station newUpStation, Station newDownStation, long sectionDistance) {
-        validateStationInSection(newUpStation, newDownStation);
+        validateStations(newUpStation, newDownStation);
 
         if (upStation.equals(newDownStation)) {
             changeUpStation(newUpStation, sectionDistance);
@@ -67,31 +66,10 @@ public class Line extends BaseEntity {
             return ;
         }
 
-        addSectionBetweenTwoStation(newUpStation, newDownStation, sectionDistance);
+        sections.addSectionBetweenTwoStation(newUpStation, newDownStation, sectionDistance);
     }
 
-    private void addSectionBetweenTwoStation(Station newUpStation, Station newDownStation, long sectionDistance) {
-        Optional<Section> existingUpSection = getSections().stream()
-                .filter(section -> section.getUpStation().equals(newUpStation))
-                .findFirst();
-
-        if (existingUpSection.isPresent()) {
-            validateNewSectionDistance(sectionDistance, existingUpSection.get().getDistance());
-            addSectionFromUpStation(existingUpSection.get(), newDownStation, sectionDistance);
-            return ;
-        }
-
-        Optional<Section> existingDownSection = getSections().stream()
-                .filter(section -> section.getDownStation().equals(newDownStation))
-                .findFirst();
-
-        if (existingDownSection.isPresent()) {
-            validateNewSectionDistance(sectionDistance, existingDownSection.get().getDistance());
-            addSectionFromDownSection(newUpStation, existingDownSection.get(), sectionDistance);
-        }
-    }
-
-    private void validateStationInSection(Station newUpStation, Station newDownStation) {
+    private void validateStations(Station newUpStation, Station newDownStation) {
         if (hasStation(newUpStation) && hasStation(newDownStation)) {
             throw new IllegalArgumentException("두 역 모두 이미 등록된 역입니다.");
         }
@@ -104,21 +82,6 @@ public class Line extends BaseEntity {
     private boolean hasStation(Station station) {
         return getSections().stream()
                 .anyMatch(section -> section.getUpStation().equals(station) || section.getDownStation().equals(station));
-    }
-
-    private void addSectionFromUpStation(Section existingSection, Station newDownStation, long newSectionDistance) {
-            Section newDownSection = new Section(newDownStation, existingSection.getDownStation()
-                    , existingSection.getDistance() - newSectionDistance);
-            addSection(newDownSection);
-            existingSection.setDownStation(newDownStation);
-            existingSection.setDistance(newSectionDistance);
-    }
-
-    private void addSectionFromDownSection(Station newUpStation, Section existingSection, long newSectionDistance) {
-        Section newDownSection = new Section(newUpStation, existingSection.getDownStation(), newSectionDistance);
-        addSection(newDownSection);
-        existingSection.setDownStation(newUpStation);
-        existingSection.setDistance(existingSection.getDistance() - newSectionDistance);
     }
 
     private void changeUpStation(Station newUpStation, long newSectionDistance) {
@@ -182,21 +145,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> getSections() {
-        return new ArrayList<>(sections);
-    }
-
-    public void removeSection(Section section) {
-        this.sections.remove(section);
-    }
-
-    public void addSection(Section section) {
-        this.sections.add(section);
-    }
-
-    private void validateNewSectionDistance(long newSectionDistance, long existingSectionDistance) {
-        if (newSectionDistance >= existingSectionDistance) {
-            throw new IllegalArgumentException("등록하고자 하는 구간의 거리가 역 사이 길이보다 크거나 같습니다.");
-        }
+        return new ArrayList<>(sections.getSectionList());
     }
 
     private void validateDistance(long distance) {
