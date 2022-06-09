@@ -85,9 +85,23 @@ public class LineStations {
         final Optional<LineStation> hasPreLineStation = findByCompareCurrentStation(lineStation.getPreStation());
         final Optional<LineStation> hasNextLineStation = findByComparePreStation(lineStation.getCurrentStation());
         if (Objects.equals(Optional.empty(), hasPreLineStation) && hasNextLineStation.isPresent()) {
-            hasNextLineStation.orElseThrow(EntityNotFoundException::new).getSection().updateUpStationBy(null);
+            changeStartLineStation(hasNextLineStation.orElseThrow(EntityNotFoundException::new));
+        }
+        if (hasPreLineStation.isPresent() && hasNextLineStation.isPresent()) {
+            changeMiddleLineStation(lineStation, hasNextLineStation.orElseThrow(EntityNotFoundException::new));
         }
     }
+
+    private void changeStartLineStation(final LineStation hasNextLineStation) {
+        Section section = hasNextLineStation.getSection();
+        hasNextLineStation.getSection().updateUpStationBy(null);
+    }
+
+    private void changeMiddleLineStation(LineStation lineStation, LineStation nextLineStation) {
+        nextLineStation.getSection().updateUpStationBy(lineStation.getSection().getUpStation());
+        nextLineStation.getSection().updateDistanceBy(nextLineStation.getDistance().plus(lineStation.getDistance()));
+    }
+
     public int isSize() {
         return lineStations.size();
     }

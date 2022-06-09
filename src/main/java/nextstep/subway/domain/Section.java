@@ -78,6 +78,11 @@ public class Section {
         return this;
     }
 
+    public Section updateDistanceBy(final Distance distance) {
+        this.distance = distance;
+        return this;
+    }
+
     private Section isMiddle(final Section destination) {
         if (destination.isSameUpStation(upStation)) {
             return this;
