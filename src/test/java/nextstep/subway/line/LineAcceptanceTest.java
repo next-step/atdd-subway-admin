@@ -81,4 +81,27 @@ public class LineAcceptanceTest {
         지하철노선_포함_확인("1호선");
         지하철노선_포함_확인("2호선");
     }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("지하철노선을 조회한다.")
+    @Test
+    void getLine() {
+        // given
+        ExtractableResponse<Response> 생성_응답 = 지하철노선_생성_요청("1호선", "blue", "서울역", "용산역");
+        Long 노선_ID = 지하철노선_ID_조회(생성_응답);
+
+        // when
+        ExtractableResponse<Response> 조회_응답 = 지하철노선_조회(노선_ID);
+
+        // then
+        지하철노선_조회_성공_확인(조회_응답);
+
+        // then
+        지하철노선_이름_확인(조회_응답, "1호선");
+        지하철노선_색_확인(조회_응답, "blue");
+    }
 }
