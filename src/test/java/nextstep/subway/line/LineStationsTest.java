@@ -87,4 +87,10 @@ public class LineStationsTest {
         LineStations 신분당선_노선들 = new LineStations(Arrays.asList(신분당선_양재역, 신분당선_강남역, 신분당선_신사역, 신분당선_논현, 신분당선_신논현));
         assertThat(신분당선_노선들.getStations().stream().map(Station::getName).toArray()).containsExactly("신사역", "논현", "신논현", "강남역", "양재역");
     }
+
+    @DisplayName("구간이 1개 이하이면 삭제가 불가능 하다.")
+    @Test
+    void invalidRemoveTestWhenSectionIsOnlyOne() {
+        assertThatThrownBy(() -> 신분당선_역정보들.removeSection(강남역)).isExactlyInstanceOf(IllegalArgumentException.class);
+    }
 }

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class LineStations {
+    private static final int ONE = 1;
     @OneToMany(mappedBy = "line", orphanRemoval = true, fetch = FetchType.LAZY)
     private final List<LineStation> lineStations = new ArrayList<>();
 
@@ -61,6 +62,13 @@ public class LineStations {
 
     public List<LineStation> getLineStations() {
         return lineStations;
+    }
+
+    public Optional<LineStation> removeSection(final Station station) {
+        if (this.lineStations.size() <= ONE) {
+            throw new IllegalArgumentException("invalid Request");
+        }
+        return Optional.empty();
     }
 
     private void insertLineStationBySorted(List<LineStation> result, LineStation startStation) {
