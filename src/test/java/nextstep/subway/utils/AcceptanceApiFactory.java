@@ -114,4 +114,12 @@ public class AcceptanceApiFactory {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철노선_제거(Long id, int stationId) {
+        return RestAssured.given().log().all()
+                .queryParam("stationId", stationId)
+                .when().delete("/lines/{id}/sections", id)
+                .then().log().all()
+                .extract();
+    }
 }
