@@ -37,12 +37,24 @@ public class LineTestUtils {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 지하철노선_조회(Long lineId) {
+        return RestAssured.given().log().all()
+                .pathParam("id", lineId)
+                .when().get(PATH + "/{id}")
+                .then().log().all()
+                .extract();
+    }
+
     public static void 지하철노선_생성_성공_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     public static void 지하철노선_생성_실패_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    public static Long 지하철노선_ID_조회(ExtractableResponse<Response> response) {
+        return response.jsonPath().getLong("id");
     }
 
     public static void 지하철노선_조회_성공_확인(ExtractableResponse<Response> response) {
@@ -52,5 +64,15 @@ public class LineTestUtils {
     public static void 지하철노선_포함_확인(String lineName) {
         List<String> lineNames = 지하철노선_목록_조회().jsonPath().getList("name", String.class);
         assertThat(lineNames).containsAnyOf(lineName);
+    }
+
+    public static void 지하철노선_이름_확인(ExtractableResponse<Response> response, String lineName) {
+        String name = response.jsonPath().getString("name");
+        assertThat(name).isEqualTo(lineName);
+    }
+
+    public static void 지하철노선_색_확인(ExtractableResponse<Response> response, String lineColor) {
+        String color = response.jsonPath().getString("color");
+        assertThat(color).isEqualTo(lineColor);
     }
 }

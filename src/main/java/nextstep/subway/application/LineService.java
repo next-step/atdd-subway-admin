@@ -37,4 +37,11 @@ public class LineService {
                 .map(line -> LineResponse.of(line))
                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public LineResponse findLine(Long id) {
+        Line line = lineRepository.getById(id);
+        System.out.println("### findLine - id:" + id + ", name:" + line.getName() + ", color:" + line.getColor());
+        return LineResponse.of(line);
+    }
 }
