@@ -24,10 +24,10 @@ public class Section extends BaseEntity {
     private Long id;
     @Column(name = "line_id")
     private Long lineId;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "up_station_id")
     private Station upStation;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "down_station_id")
     private Station downStation;
     private Integer distance;
@@ -78,13 +78,25 @@ public class Section extends BaseEntity {
             throw new DataIntegrityViolationException(ERROR_MESSAGE_DISTANCE_OVER);
         }
     }
-    
+
     public boolean hasStation(Station station) {
+        return equalUpStation(station) || equalDownStation(station);
+    }
+
+    public boolean equalUpStation(Station station) {
         if(station == null) {
             return false;
         }
 
-        return upStation.equals(station) || downStation.equals(station);
+        return upStation.equals(station);
+    }
+
+    public boolean equalDownStation(Station station) {
+        if(station == null) {
+            return false;
+        }
+
+        return downStation.equals(station);
     }
 
     public void updateForDivide(Section newSection) {

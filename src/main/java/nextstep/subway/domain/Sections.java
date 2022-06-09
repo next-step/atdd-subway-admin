@@ -12,6 +12,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 public class Sections {
     public static final String ERROR_EXISTS_SECTION = "이미 존재하는 구간입니다.";
     public static final String ERROR_CAN_NOT_CONNECT_SECTION = "연결되는 구간을 찾을 수 없습니다.";
+    public static final String ERROR_NOT_FOUND_FIRST_STATION = "첫번째 역을 찾을 수 없습니다.";
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "line_id")
@@ -21,17 +22,33 @@ public class Sections {
     }
 
     public List<Station> getSortedStations() {
-        if (sections.isEmpty()) {
-            return new ArrayList<>();
-        }
-
         List<Station> stations = new ArrayList<>();
-        stations.add(sections.get(0).getUpStation());
-        for (Section section : sections) {
-            stations.add(section.getDownStation());
+
+        Station firstStation = getFirstStation();
+        stations.add(firstStation);
+
+        Station nextStation = getNextStation(firstStation);
+        while(nextStation != null) {
+            stations.add(nextStation);
+            nextStation = getNextStation(nextStation);
         }
 
         return stations;
+    }
+
+    private Station getFirstStation() {
+        return sections.stream().map(Section::getUpStation)
+                .filter(upStation -> !isExistsDownStationOfSections(upStation)).findFirst()
+                .orElseThrow(() -> new DataIntegrityViolationException(ERROR_NOT_FOUND_FIRST_STATION));
+    }
+
+    private boolean isExistsDownStationOfSections(Station station) {
+        return sections.stream().anyMatch(section -> section.equalDownStation(station));
+    }
+
+    private Station getNextStation(Station currentStation) {
+        return sections.stream().filter(section -> section.equalUpStation(currentStation))
+                .map(Section::getDownStation).findFirst().orElse(null);
     }
 
     public void addSection(Section section) {

@@ -14,7 +14,7 @@ public class LineResponse {
     private LocalDateTime modifiedDate;
 
     public static LineResponse from(Line line) {
-        List<StationResponse> stations = line.getSections().getSortedStations().stream()
+        List<StationResponse> stations = line.getStations().stream()
                 .map(StationResponse::from).collect(Collectors.toList());
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stations, line.getCreatedDate(),
                 line.getModifiedDate());
