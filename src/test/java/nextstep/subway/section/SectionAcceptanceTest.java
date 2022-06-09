@@ -1,24 +1,19 @@
 package nextstep.subway.section;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import groovy.util.logging.Log;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BasicAcceptance;
-import nextstep.subway.domain.LineStation;
-import nextstep.subway.domain.LineStationRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import javax.transaction.Transactional;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static nextstep.subway.line.LineAcceptanceTest.*;
@@ -197,6 +192,27 @@ public class SectionAcceptanceTest extends BasicAcceptance {
         // then
         구간_삭제_실패됨(요청_결과);
     }
+
+    /**
+     * Given 구간이 여러개 등록된 노선에
+     * When 등록된 구간의 역을 삭제하면
+     * Then 정상적으로 삭제된다.
+     */
+    @DisplayName("시작점 역을 삭제해도 정상적으로 삭제된다.")
+    @Test
+    void removeTestWhenInputStationIsStart() {
+        // given
+        final LineResponse 생성된_일호선 = 초기_노선_생성("일호선" ,저장된역정보테이블.get("수원역"),  저장된역정보테이블.get("수원역"), 0L);
+        구간_생성됨(구간_생성_요청(생성된_일호선.getId(), 구간_요청_객체_생성(저장된역정보테이블.get("수원역"), 저장된역정보테이블.get("병점역"), 5L)));
+        구간_생성됨(구간_생성_요청(생성된_일호선.getId(), 구간_요청_객체_생성(저장된역정보테이블.get("병점역"), 저장된역정보테이블.get("세류역"), 5L)));
+
+        // when
+        ExtractableResponse<Response> 요청_결과 = 구간_삭제_요청(생성된_일호선.getId(), 저장된역정보테이블.get("수원역"));
+
+        // then
+        구간_삭제_성공됨(요청_결과);
+    }
+
     private ExtractableResponse<Response> 구간_삭제_요청(final Long lineId, final Long stationId ) {
         return requestUtil.deleteSection(lineId, stationId);
     }
@@ -213,6 +229,11 @@ public class SectionAcceptanceTest extends BasicAcceptance {
 
     public static ExtractableResponse<Response>  구간_삭제_실패됨(ExtractableResponse<Response> response) {
         요청_성공_실패_여부_확인(response, HttpStatus.BAD_REQUEST);
+        return response;
+    }
+
+    public static ExtractableResponse<Response>  구간_삭제_성공됨(ExtractableResponse<Response> response) {
+        요청_성공_실패_여부_확인(response, HttpStatus.OK);
         return response;
     }
 
