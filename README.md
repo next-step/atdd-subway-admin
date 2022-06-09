@@ -148,7 +148,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ## 📈 To-Do
 - [x] 지하철노선 생성 인수 테스트 코드 작성
 - [x] 지하철노선 생성 기능 구현
-- [ ] 지하철노선 목록 조회 인수 테스트 코드 작성
+- [x] 지하철노선 목록 조회 인수 테스트 코드 작성
 - [ ] 지하철노선 목록 조회 기능 구현
 - [ ] 지하철노선 조회 인수 테스트 코드 작성
 - [ ] 지하철노선 조회 기능 구현
