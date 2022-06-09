@@ -37,19 +37,19 @@ public class LineStation extends BaseEntity {
     }
 
     public boolean isSameUpStation(Station upStation) {
-        return this.upStation.isSameId(upStation.getId());
+        return this.upStation.equals(upStation);
     }
 
     public boolean isAddNewFirst(Station downStation) {
-        return this.isStart && this.upStation.isSameId(downStation.getId());
+        return this.isStart && this.upStation.equals(downStation);
     }
 
     public boolean isSameDownStation(Station downStation) {
-        return this.downStation.isSameId(downStation.getId());
+        return this.downStation.equals(downStation);
     }
 
     public boolean isAddNewLast(Station upStation) {
-        return this.isLast && this.downStation.isSameId(upStation.getId());
+        return this.isLast && this.downStation.equals(upStation);
     }
 
     public LineStation addStation(Station upStation, Station downStation, Distance distance) {
@@ -61,10 +61,10 @@ public class LineStation extends BaseEntity {
         if (isAddNewLast(upStation)) {
             return addNewLineLastStation(addResult);
         }
-        if (isAddUpToMiddle(upStation.getId())) {
+        if (isAddUpToMiddle(upStation)) {
             return addUpToMiddle(addResult);
         }
-        if (isAddMiddleToDown(downStation.getId())) {
+        if (isAddMiddleToDown(downStation)) {
             return addMiddleToDown(addResult);
         }
 
@@ -135,12 +135,12 @@ public class LineStation extends BaseEntity {
         return addResult;
     }
 
-    private boolean isAddUpToMiddle(Long upStationId) {
-        return this.upStation.isSameId(upStationId);
+    private boolean isAddUpToMiddle(Station upStation) {
+        return this.upStation.equals(upStation);
     }
 
-    private boolean isAddMiddleToDown(Long downStationId) {
-        return this.downStation.isSameId(downStationId);
+    private boolean isAddMiddleToDown(Station downStation) {
+        return this.downStation.equals(downStation);
     }
 
     private void validation(Station upStation, Station downStation) {

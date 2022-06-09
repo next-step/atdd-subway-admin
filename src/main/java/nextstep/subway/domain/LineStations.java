@@ -14,7 +14,8 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class LineStations {
-    private static Logger logger = Logger.getLogger(LineStation.class.getName());
+    private static final Logger logger = Logger.getLogger(LineStation.class.getName());
+    private static final int SECTION_MIN_COUNT = 1;
 
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @JoinColumn(name = "line_id")
@@ -33,8 +34,8 @@ public class LineStations {
     }
 
     public void deleteLineStation(Station station) {
-        if (this.lineStations.size() == 1) {
-            throw new IllegalArgumentException("노선에 구간이 1개일 때 삭제할 수 없습니다.");
+        if (this.lineStations.size() <= SECTION_MIN_COUNT) {
+            throw new IllegalArgumentException("노선에 1개 이상의 구간이 존재해야 합니다.");
         }
 
         LineStation target = findLineStation(
@@ -46,20 +47,9 @@ public class LineStations {
             throw new IllegalArgumentException(station.getName() + " 에 해당하는 구간을 찾을 수 없습니다.");
         }
 
-        LineStation nextLineStation = findNextLineStation(target.getDownStation());
-        LineStation preLineStation = findPreLineStation(target.getUpStation());
-
-        if (target.isStartSection()) {
-            nextLineStation.changeToFirstSection();
-        }
-        if (target.isLastSection()) {
-            preLineStation.changeToLastSection();
-        }
-        if (target.isMiddleSection()) {
-            preLineStation.changeDownStation(target.getDownStation());
-            preLineStation.addDistance(target.getDistance());
-        }
-
+        updateLineStationBeforeRemove(
+                findPreLineStation(target.getUpStation()), findNextLineStation(target.getDownStation()), target
+        );
         this.lineStations.removeIf(lineStation -> lineStation.equals(target));
     }
 
@@ -76,6 +66,10 @@ public class LineStations {
         }
 
         return result;
+    }
+
+    public List<LineStation> getValue() {
+        return this.lineStations;
     }
 
     private LineStation findAddTarget(Station upStation, Station downStation) {
@@ -134,6 +128,21 @@ public class LineStations {
         }
 
         return firstLineStation;
+    }
+
+    private void updateLineStationBeforeRemove(
+            LineStation preLineStation, LineStation nextLineStation, LineStation target
+    ) {
+        if (target.isStartSection()) {
+            nextLineStation.changeToFirstSection();
+        }
+        if (target.isLastSection()) {
+            preLineStation.changeToLastSection();
+        }
+        if (target.isMiddleSection()) {
+            preLineStation.changeDownStation(target.getDownStation());
+            preLineStation.addDistance(target.getDistance());
+        }
     }
 
     private LineStation findNextLineStation(Station nextStation) {
