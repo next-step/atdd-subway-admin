@@ -158,23 +158,105 @@ public class LineTest {
 
 		assertAll(() -> assertEquals(line.getName(), "2호선"),
 				() -> assertEquals(line.getSections().getSections().size(), 6),
-				() -> assertEquals(line.getSections().getSections().get(0), 까치산역에서신도림역),
-				() -> assertEquals(line.getSections().getSections().get(0).getDistance(), 7),
-				() -> assertEquals(line.getSections().getSections().get(0).getSectionOrder(), 0),
-				() -> assertEquals(line.getSections().getSections().get(1), 신도림역에서대림역),
-				() -> assertEquals(line.getSections().getSections().get(1).getDistance(), 5),
-				() -> assertEquals(line.getSections().getSections().get(1).getSectionOrder(), 1),
-				() -> assertEquals(line.getSections().getSections().get(2), 신도림역에서강남역),
-				() -> assertEquals(line.getSections().getSections().get(2).getDistance(), 11),
-				() -> assertEquals(line.getSections().getSections().get(2).getSectionOrder(), 2),
-				() -> assertEquals(line.getSections().getSections().get(3), 신림역에서강남역),
-				() -> assertEquals(line.getSections().getSections().get(3).getDistance(), 4),
-				() -> assertEquals(line.getSections().getSections().get(3).getSectionOrder(), 3),
-				() -> assertEquals(line.getSections().getSections().get(4), 강남역에서잠실역),
-				() -> assertEquals(line.getSections().getSections().get(4).getDistance(), 14),
-				() -> assertEquals(line.getSections().getSections().get(4).getSectionOrder(), 4),
-				() -> assertEquals(line.getSections().getSections().get(5), 역삼역에서잠실역),
-				() -> assertEquals(line.getSections().getSections().get(5).getDistance(), 6),
-				() -> assertEquals(line.getSections().getSections().get(5).getSectionOrder(), 5));
+				() -> equalsTest(line, 0, 까치산역에서신도림역, 7, 0), 
+				() -> equalsTest(line, 1, 신도림역에서대림역, 5, 1),
+				() -> equalsTest(line, 2, 신도림역에서강남역, 11, 2), 
+				() -> equalsTest(line, 3, 신림역에서강남역, 4, 3),
+				() -> equalsTest(line, 4, 강남역에서잠실역, 14, 4), 
+				() -> equalsTest(line, 5, 역삼역에서잠실역, 6, 5));
+	}
+
+	@Test
+	void 구간이_하나인경우_삭제_실패() {
+		Section 까치산역에서신도림역 = sectionRepository.save(new Section(까치산역, 신도림역, 5)); 
+
+		Line line = new Line("2호선", "bg-red-600", 까치산역에서신도림역);
+		
+		assertAll(() -> assertThrows(IllegalArgumentException.class, () -> line.removeSection(까치산역)),
+				() -> assertThrows(IllegalArgumentException.class, () -> line.removeSection(신도림역)));
+	}
+
+	@Test
+	void 첫번째_구간_삭제() {
+		Station 강남역 = stationRepository.save(new Station("강남역"));
+
+		// 까치산-신도림-강남-잠실
+		Section 까치산역에서신도림역 = sectionRepository.save(new Section(까치산역, 신도림역, 5)); 
+		Section 신도림역에서강남역 = sectionRepository.save(new Section(신도림역, 강남역, 8)); 
+		Section 강남역에서잠실역 = sectionRepository.save(new Section(강남역, 잠실역, 10)); 
+
+		Line line = new Line("2호선", "bg-red-600", 까치산역에서신도림역);
+		line.add(신도림역에서강남역);
+		line.add(강남역에서잠실역);
+		line.removeSection(까치산역);
+		
+		assertAll(() -> assertEquals(line.getSections().getSections().size(), 2),
+				() -> equalsTest(line, 0, 신도림역에서강남역, 8, 0), 
+				() -> equalsTest(line, 1, 강남역에서잠실역, 10, 1));
+	}
+	
+	@Test
+	void 마지막_구간_삭제() {
+		Station 강남역 = stationRepository.save(new Station("강남역"));
+
+		// 까치산-신도림-강남-잠실
+		Section 까치산역에서신도림역 = sectionRepository.save(new Section(까치산역, 신도림역, 5)); 
+		Section 신도림역에서강남역 = sectionRepository.save(new Section(신도림역, 강남역, 8)); 
+		Section 강남역에서잠실역 = sectionRepository.save(new Section(강남역, 잠실역, 10)); 
+
+		Line line = new Line("2호선", "bg-red-600", 까치산역에서신도림역);
+		line.add(신도림역에서강남역);
+		line.add(강남역에서잠실역);
+		line.removeSection(잠실역);
+		
+		assertAll(() -> assertEquals(line.getSections().getSections().size(), 2),
+				() -> equalsTest(line, 0, 까치산역에서신도림역, 5, 0), 
+				() -> equalsTest(line, 1, 신도림역에서강남역, 8, 1));
+	}
+	
+	@Test
+	void 중간_구간_삭제_1() {
+		Station 강남역 = stationRepository.save(new Station("강남역"));
+
+		// 까치산-신도림-강남-잠실
+		Section 까치산역에서신도림역 = sectionRepository.save(new Section(까치산역, 신도림역, 5)); 
+		Section 신도림역에서강남역 = sectionRepository.save(new Section(신도림역, 강남역, 8)); 
+		Section 강남역에서잠실역 = sectionRepository.save(new Section(강남역, 잠실역, 10)); 
+
+		Line line = new Line("2호선", "bg-red-600", 까치산역에서신도림역);
+		line.add(신도림역에서강남역);
+		line.add(강남역에서잠실역);
+		line.removeSection(신도림역);
+		
+		assertAll(() -> assertEquals(line.getSections().getSections().size(), 2),
+				() -> equalsTest(line, 0, 까치산역에서신도림역, 13, 0), 
+				() -> equalsTest(line, 1, 강남역에서잠실역, 10, 1));
+	}
+	
+	@Test
+	void 중간_구간_삭제_2() {
+		Station 강남역 = stationRepository.save(new Station("강남역"));
+
+		// 까치산-신도림-강남-잠실
+		Section 까치산역에서신도림역 = sectionRepository.save(new Section(까치산역, 신도림역, 5)); 
+		Section 신도림역에서강남역 = sectionRepository.save(new Section(신도림역, 강남역, 8)); 
+		Section 강남역에서잠실역 = sectionRepository.save(new Section(강남역, 잠실역, 10)); 
+
+		Line line = new Line("2호선", "bg-red-600", 까치산역에서신도림역);
+		line.add(신도림역에서강남역);
+		line.add(강남역에서잠실역);
+		line.removeSection(강남역);
+		
+		assertAll(() -> assertEquals(line.getSections().getSections().size(), 2),
+				() -> equalsTest(line, 0, 까치산역에서신도림역, 5, 0), 
+				() -> equalsTest(line, 1, 신도림역에서강남역, 18, 1));
+	}
+
+	private void equalsTest(Line line, int index, Section section, int distance, int sectionOrder) {
+		Section tempSection = line.getSections().getSections().get(index);
+
+		assertAll(() -> assertEquals(tempSection, section), 
+				() -> assertEquals(tempSection.getDistance(), distance),
+				() -> assertEquals(tempSection.getSectionOrder(), sectionOrder));
 	}
 }

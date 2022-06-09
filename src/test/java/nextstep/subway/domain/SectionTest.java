@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import nextstep.subway.exception.StationNotFoundException;
+
 @DataJpaTest
 @DisplayName("구간 도메인")
 public class SectionTest {
@@ -39,7 +41,7 @@ public class SectionTest {
 	@Test
 	@DisplayName("구간 ID가 없는 경우 실패하는 테스트")
 	void create_fail_1() {
-		assertThrows(NullPointerException.class, () -> new Section(신도림역, new Station("잠실역"), 10));
+		assertThrows(StationNotFoundException.class, () -> new Section(신도림역, new Station("잠실역"), 10));
 	}
 
 	@Test

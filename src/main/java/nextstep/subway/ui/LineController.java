@@ -3,7 +3,6 @@ package nextstep.subway.ui;
 import java.net.URI;
 import java.util.List;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,9 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.application.LineService;
+import nextstep.subway.application.SectionService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
@@ -25,15 +26,17 @@ import nextstep.subway.dto.SectionRequest;
 @RequestMapping(value = "/lines")
 public class LineController {
 
+	private final SectionService sectionService;
 	private final LineService lineService;
 
-	public LineController(LineService lineService) {
+	public LineController(SectionService sectionService, LineService lineService) {
+		this.sectionService = sectionService;
 		this.lineService = lineService;
 	}
 
 	@PostMapping
 	public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-		LineResponse line = lineService.saveLine(lineRequest);
+		LineResponse line = lineService.saveLine(lineRequest, sectionService.save(lineRequest));
 		return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
 	}
 
@@ -65,8 +68,16 @@ public class LineController {
 	public ResponseEntity<LineResponse> addSection(
 	        @PathVariable Long lineId, 
 	        @RequestBody SectionRequest sectionRequest) {
-		lineService.addSection(lineId, sectionRequest);
+		lineService.addSection(lineId, sectionService.save(sectionRequest));
 		return ResponseEntity.ok().build();
+	}
+	
+	@DeleteMapping("/{lineId}/sections")
+	public ResponseEntity removeLineStation(
+	        @PathVariable Long lineId, 
+	        @RequestParam Long stationId) {
+	    lineService.removeSectionByStationId(lineId, stationId);
+	    return ResponseEntity.ok().build();
 	}
 
 	@ExceptionHandler(Exception.class)
