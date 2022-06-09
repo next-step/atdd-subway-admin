@@ -69,7 +69,7 @@ public class LineStations {
         while (preStation.isPresent()) {
             LineStation station = preStation.get();
             result.add(station);
-            preStation = findPreStation(station.getCurrentStation());
+            preStation = findByComparePreStation(station.getCurrentStation());
         }
     }
 
@@ -110,12 +110,6 @@ public class LineStations {
 
     private Optional<LineStation> findStartStation() {
         return this.lineStations.stream().filter(LineStation::isStartStation).findFirst();
-    }
-
-    private Optional<LineStation> findPreStation(final Station station) {
-        return this.lineStations.stream()
-                .filter(savedLineStation -> savedLineStation.isPreStation(station))
-                .findFirst();
     }
 
     private Optional<LineStation> findByComparePreStation(final Station station) {
