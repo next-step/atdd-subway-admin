@@ -24,6 +24,8 @@ class SectionsTest {
     private static final Station 강남역 = new Station("강남역");
     private static final Station 광교역 = new Station("광교역");
     private static final Station 양재역 = new Station("양재역");
+    private static final Station 판교역 = new Station("판교역");
+    private static final Station 정자역 = new Station("정자역");
 
     @ParameterizedTest
     @MethodSource("getSectionsTestParameter")
@@ -102,6 +104,19 @@ class SectionsTest {
         final Sections sections = new Sections();
         Section section1 = new Section(강남역, 광교역, 10);
         Section section2 = new Section(강남역, 양재역, 10);
+        sections.add(section1);
+
+        // when & then
+        assertThatThrownBy(() -> sections.add(section2)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void 구간_등록_시_예외_케이스_2() {
+        // given
+        final Sections sections = new Sections();
+        Section section1 = new Section(강남역, 광교역, 10);
+        Section section2 = new Section(판교역, 정자역, 4);
         sections.add(section1);
 
         // when & then

@@ -105,9 +105,20 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     void 상행역과_하행역이_이미_노선에_모두_등록되어_있다면_추가할_수_없음() {
     }
 
+    /**
+     * When 상행역과 하행역 둘 중 하나도 포함되어있지 않은 구간을 등록한다
+     * Then 등록 실패 응답을 반환한다
+     */
     @Test
     void 상행역과_하행역_둘_중_하나도_포함되어있지_않으면_추가할_수_없음() {
+        // given
+        지하철_구간_생성됨(신분당선.getId(), 강남역_ID, 양재역_ID, 10);
 
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_생성됨(신분당선.getId(), 판교역_ID, 정자역_ID, 4);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     public static ExtractableResponse<Response> 지하철_구간_생성됨(Long lineId, Long upStationId, Long downStationId, Integer distance) {
