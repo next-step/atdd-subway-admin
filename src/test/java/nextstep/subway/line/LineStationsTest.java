@@ -106,7 +106,7 @@ public class LineStationsTest {
 
     @DisplayName("시작구간을 삭제하면 시작 구간 뒤역이 시작점이 된다.")
     @Test
-    void removeSectionTestWhenInputSectionIsStartSection() {
+    void removeLineStationByTestWhenInputStationIsStartStart() {
         final Section 논현역_구간 = new Section(강남역, 논현역, 2);
         신분당선_역정보들.addLineStation(new LineStation(신분당선, 논현역_구간));
         신분당선_역정보들.addLineStation(new LineStation(신분당선, new Section(논현역, 양재역, 2)));
@@ -114,5 +114,15 @@ public class LineStationsTest {
         신분당선_역정보들.removeLineStationBy(강남역);
         assertThat(신분당선_역정보들.getStations().stream().map(Station::getName).toArray()).containsExactly("논현역","양재역");
         assertThat(논현역_구간.getUpStation()).isEqualTo(null);
+    }
+
+    @DisplayName("종점이 제거되면 종점 앞 역이 종점이 된다.")
+    @Test
+    void removeLineStationByTestWhenInputStationIsEnd() {
+        final Section 양재역_구간 = new Section(논현역, 양재역, 2);
+        신분당선_역정보들.addLineStation(new LineStation(신분당선, new Section(강남역, 논현역, 2)));
+        신분당선_역정보들.addLineStation(new LineStation(신분당선, 양재역_구간));
+        신분당선_역정보들.removeLineStationBy(양재역);
+        assertThat(신분당선_역정보들.getSortedLineStations().getStations().toArray()).containsExactly(강남역,논현역);
     }
 }
