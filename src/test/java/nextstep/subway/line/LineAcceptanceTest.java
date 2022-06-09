@@ -130,4 +130,26 @@ public class LineAcceptanceTest {
         지하철노선_이름_확인(조회_응답, "4호선");
         지하철노선_색_확인(조회_응답, "orange");
     }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철노선을 제거한다.")
+    @Test
+    void deleteLine() {
+        // given
+        ExtractableResponse<Response> 생성_응답 = 지하철노선_생성_요청("1호선", "blue", "서울역", "용산역");
+        Long 노선_ID = 지하철노선_ID_조회(생성_응답);
+
+        // when
+        ExtractableResponse<Response> 삭제_응답 = 지하철노선_삭제_요청(노선_ID);
+
+        // then
+        지하철노선_삭제_성공_확인(삭제_응답);
+
+        // then
+        지하철노선_미포함_확인("1호선");
+    }
 }
