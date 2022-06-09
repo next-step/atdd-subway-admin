@@ -213,6 +213,26 @@ public class SectionAcceptanceTest extends BasicAcceptance {
         구간_삭제_성공됨(요청_결과);
     }
 
+    /**
+     * Given 구간이 여러개 등록된 노선에
+     * When 등록된 구간의 역 중 중간역을 삭제하면
+     * Then 정상적으로 삭제된다.
+     */
+    @DisplayName("중간 역을 삭제해도 정상적으로 삭제된다.")
+    @Test
+    void removeTestWhenInputStationIsMiddle() {
+        // given
+        final LineResponse 생성된_일호선 = 초기_노선_생성("일호선" ,저장된역정보테이블.get("수원역"),  저장된역정보테이블.get("수원역"), 0L);
+        구간_생성됨(구간_생성_요청(생성된_일호선.getId(), 구간_요청_객체_생성(저장된역정보테이블.get("수원역"), 저장된역정보테이블.get("병점역"), 5L)));
+        구간_생성됨(구간_생성_요청(생성된_일호선.getId(), 구간_요청_객체_생성(저장된역정보테이블.get("병점역"), 저장된역정보테이블.get("세류역"), 5L)));
+
+        // when
+        ExtractableResponse<Response> 요청_결과 = 구간_삭제_요청(생성된_일호선.getId(), 저장된역정보테이블.get("병점역"));
+
+        // then
+        구간_삭제_성공됨(요청_결과);
+    }
+
     private ExtractableResponse<Response> 구간_삭제_요청(final Long lineId, final Long stationId ) {
         return requestUtil.deleteSection(lineId, stationId);
     }
