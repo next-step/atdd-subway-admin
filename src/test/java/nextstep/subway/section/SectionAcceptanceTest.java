@@ -1,6 +1,7 @@
 package nextstep.subway.section;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import groovy.util.logging.Log;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BasicAcceptance;
@@ -137,12 +138,32 @@ public class SectionAcceptanceTest extends BasicAcceptance {
 
         ExtractableResponse<Response> 구간_생성_요청_결과 = 구간_생성_요청(생성된_일호선.getId(), 구간_요청_객체_생성(저장된역정보테이블.get("수원역"), 저장된역정보테이블.get("세류역"), 10L));
 
-        // When
+        // Then
         구간_생성_실패됨(구간_생성_요청_결과);
     }
 
-    @DisplayName("구간사이에 Distance 가 기존보다 작을 경우 사이에 등록된다.")
+    /**
+     * Given 구간이 저장된 역에
+     * When 등록되지 않은 역을 삭제 요청 시
+     * Then 삭제가 될수 없다.
+     */
+    @DisplayName("등록되지 않은 역을 요청시에 삭제가 될수 없다.")
     @Test
+    void invalidRemoveTestWhenInputStationIdIsNotExist() {
+        // given
+        final LineResponse 생성된_일호선 = 초기_노선_생성("일호선", 저장된역정보테이블.get("수원역"), 저장된역정보테이블.get("병점역"), 10L);
+        구간_생성됨(구간_생성_요청(생성된_일호선.getId(), 구간_요청_객체_생성(저장된역정보테이블.get("수원역"), 저장된역정보테이블.get("세류역"), 5L)));
+        final Station 이상한역 = new Station(100L, "이상한역");
+        // when
+        ExtractableResponse<Response> 요청_결과 = 구간_삭제_요청(생성된_일호선.getId(), 이상한역.getId());
+
+        // then
+        구간_삭제_실패됨(요청_결과);
+    }
+
+    private ExtractableResponse<Response> 구간_삭제_요청(final Long lineId, final Long stationId ) {
+        return requestUtil.deleteSection(lineId, stationId);
+    }
 
     private static LineResponse 초기_노선_생성 (final String name, final Long upStationId, final Long downStationId , final Long distance) {
         LineRequest lineRequest = new LineRequest(name, "bg-blue-600", upStationId, downStationId, distance);
@@ -154,6 +175,10 @@ public class SectionAcceptanceTest extends BasicAcceptance {
         return response;
     }
 
+    public static ExtractableResponse<Response>  구간_삭제_실패됨(ExtractableResponse<Response> response) {
+        요청_성공_실패_여부_확인(response, HttpStatus.BAD_REQUEST);
+        return response;
+    }
 
     public static ExtractableResponse<Response> 구간_생성됨(ExtractableResponse<Response> response) {
         요청_성공_실패_여부_확인(response, HttpStatus.CREATED);

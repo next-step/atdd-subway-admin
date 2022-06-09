@@ -63,4 +63,9 @@ public class LineService {
         final Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         return SectionResponse.of(lineStationRepository.save(new LineStation(line, new Section(upStation, downStation, addSection.getDistance()))));
     }
+
+    @Transactional
+    public void removeSectionByStationId(final Long lineId, final Long stationId) {
+        stationRepository.findById(stationId).orElseThrow(EntityNotFoundException::new);
+    }
 }
