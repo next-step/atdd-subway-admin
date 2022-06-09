@@ -1,5 +1,6 @@
 package nextstep.subway.ui;
 
+import nextstep.subway.Exception.NotFoundLineException;
 import nextstep.subway.application.LineService;
 import nextstep.subway.Exception.NotFoundStationException;
 import nextstep.subway.dto.LineRequest;
@@ -34,6 +35,12 @@ public class LineController {
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         return ResponseEntity.ok().body(lineService.findLine(id));
+    }
+
+    @PutMapping(value = "/lines/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) throws NotFoundLineException {
+        lineService.updateLine(id, lineRequest);
+        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

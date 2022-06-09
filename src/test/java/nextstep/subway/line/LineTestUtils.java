@@ -7,7 +7,9 @@ import nextstep.subway.dto.LineRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,6 +47,20 @@ public class LineTestUtils {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 지하철노선_수정_요청(Long lineId, String lineName, String lineColor) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", lineName);
+        params.put("color", lineColor);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParam("id", lineId)
+                .when().put(PATH + "/{id}")
+                .then().log().all()
+                .extract();
+    }
+
     public static void 지하철노선_생성_성공_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -58,6 +74,10 @@ public class LineTestUtils {
     }
 
     public static void 지하철노선_조회_성공_확인(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    public static void 지하철노선_수정_성공_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 

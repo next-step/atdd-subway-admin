@@ -1,5 +1,6 @@
 package nextstep.subway.application;
 
+import nextstep.subway.Exception.NotFoundLineException;
 import nextstep.subway.Exception.NotFoundStationException;
 import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
@@ -43,5 +44,12 @@ public class LineService {
         Line line = lineRepository.getById(id);
         System.out.println("### findLine - id:" + id + ", name:" + line.getName() + ", color:" + line.getColor());
         return LineResponse.of(line);
+    }
+
+    @Transactional
+    public void updateLine(Long id, LineRequest lineRequest) throws NotFoundLineException {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NotFoundLineException(id));
+        line.update(lineRequest.toLine(line.getUpStation(), line.getDownStation()));
     }
 }

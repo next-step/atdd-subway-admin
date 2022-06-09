@@ -153,7 +153,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [x] 지하철노선 조회 인수 테스트 코드 작성
 - [x] 지하철노선 조회 기능 구현
 - [x] 지하철노선 수정 인수 테스트 코드 작성
-- [ ] 지하철노선 수정 기능 구현
+- [x] 지하철노선 수정 기능 구현
 - [ ] 지하철노선 삭제 인수 테스트 코드 작성
 - [ ] 지하철노선 삭제 기능 구현
 - [ ] 인수 테스트 격리
