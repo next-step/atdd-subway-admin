@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -20,17 +21,27 @@ public class Sections {
 
     public void add(Section section) {
         if (!sections.isEmpty()) {
+            validateDuplicateSection(section);
             Section connectionSection = findConnectableSection(section);
             connectionSection.merge(section);
         }
         sections.add(section);
     }
 
+    private void validateDuplicateSection(Section section) {
+        if (getSectionStream(section).count() > 1) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어있습니다.");
+        }
+    }
+
     private Section findConnectableSection(Section section) {
-        return sections.stream()
-                .filter(s -> s.isContainAnyStation(section))
+        return getSectionStream(section)
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("연결할 수 있는 구간이 없습니다."));
+    }
+
+    private Stream<Section> getSectionStream(Section section) {
+        return sections.stream().filter(s -> s.isContainAnyStation(section));
     }
 
     public List<Station> getStationsInOrder() {

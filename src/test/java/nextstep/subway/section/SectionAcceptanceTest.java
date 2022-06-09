@@ -101,8 +101,20 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * When 상행역과 하행역이 이미 노선에 모두 등록되어 있는 구간을 등록한다
+     * Then 등록 실패 응답을 반환한다
+     */
     @Test
     void 상행역과_하행역이_이미_노선에_모두_등록되어_있다면_추가할_수_없음() {
+        // given
+        지하철_구간_생성됨(신분당선.getId(), 강남역_ID, 양재역_ID, 3);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_생성됨(신분당선.getId(), 강남역_ID, 광교역_ID, 4);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**

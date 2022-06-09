@@ -28,7 +28,7 @@ class SectionsTest {
     private static final Station 정자역 = new Station("정자역");
 
     @ParameterizedTest
-    @MethodSource("getSectionsTestParameter")
+    @MethodSource("역_리스트_정렬_파라미터")
     void 역_리스트_정렬(Station A, Station B, Station C) {
         // given
         final Sections sections = new Sections();
@@ -49,7 +49,7 @@ class SectionsTest {
         );
     }
 
-    private static Stream<Arguments> getSectionsTestParameter() {
+    private static Stream<Arguments> 역_리스트_정렬_파라미터() {
         return Stream.of(
                 arguments(강남역, 광교역, 양재역),
                 arguments(양재역, 광교역, 강남역),
@@ -103,10 +103,10 @@ class SectionsTest {
         // given
         final Sections sections = new Sections();
         Section section1 = new Section(강남역, 광교역, 10);
-        Section section2 = new Section(강남역, 양재역, 10);
         sections.add(section1);
 
         // when & then
+        Section section2 = new Section(강남역, 양재역, 10);
         assertThatThrownBy(() -> sections.add(section2)).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -115,12 +115,35 @@ class SectionsTest {
     void 구간_등록_시_예외_케이스_2() {
         // given
         final Sections sections = new Sections();
-        Section section1 = new Section(강남역, 광교역, 10);
-        Section section2 = new Section(판교역, 정자역, 4);
+        Section section1 = new Section(강남역, 광교역, 7);
+        Section section2 = new Section(양재역, 광교역, 5);
         sections.add(section1);
+        sections.add(section2);
 
         // when & then
-        assertThatThrownBy(() -> sections.add(section2)).isInstanceOf(IllegalArgumentException.class);
+        Section section3 = new Section(판교역, 정자역, 4);
+        assertThatThrownBy(() -> sections.add(section3)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @ParameterizedTest
+    @MethodSource("구간_등록_시_예외_케이스_3_파라미터")
+    void 구간_등록_시_예외_케이스_3(Section section1, Section section2, Section section3) {
+        // given
+        final Sections sections = new Sections();
+        sections.add(section1);
+        sections.add(section2);
+
+        // when & then
+        assertThatThrownBy(() -> sections.add(section3)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    private static Stream<Arguments> 구간_등록_시_예외_케이스_3_파라미터() {
+        return Stream.of(
+                arguments(new Section(강남역, 양재역, 7), new Section(양재역, 광교역, 5), new Section(강남역, 광교역, 7)),
+                arguments(new Section(강남역, 양재역, 7), new Section(강남역, 광교역, 5), new Section(강남역, 광교역, 4)),
+                arguments(new Section(강남역, 양재역, 7), new Section(광교역, 양재역, 5), new Section(강남역, 양재역, 2))
+        );
     }
 
     private List<String> toStationNames(List<Station> stations) {
