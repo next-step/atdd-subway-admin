@@ -3,7 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 
 @Entity
-public class LineStation {
+public class LineStation extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,19 +37,19 @@ public class LineStation {
     }
 
     public boolean isSameUpStation(Station upStation) {
-        return this.upStation.isSameId(upStation.getId());
+        return this.upStation.equals(upStation);
     }
 
     public boolean isAddNewFirst(Station downStation) {
-        return this.isStart && this.upStation.isSameId(downStation.getId());
+        return this.isStart && this.upStation.equals(downStation);
     }
 
     public boolean isSameDownStation(Station downStation) {
-        return this.downStation.isSameId(downStation.getId());
+        return this.downStation.equals(downStation);
     }
 
     public boolean isAddNewLast(Station upStation) {
-        return this.isLast && this.downStation.isSameId(upStation.getId());
+        return this.isLast && this.downStation.equals(upStation);
     }
 
     public LineStation addStation(Station upStation, Station downStation, Distance distance) {
@@ -61,14 +61,42 @@ public class LineStation {
         if (isAddNewLast(upStation)) {
             return addNewLineLastStation(addResult);
         }
-        if (isAddUpToMiddle(upStation.getId())) {
+        if (isAddUpToMiddle(upStation)) {
             return addUpToMiddle(addResult);
         }
-        if (isAddMiddleToDown(downStation.getId())) {
+        if (isAddMiddleToDown(downStation)) {
             return addMiddleToDown(addResult);
         }
 
         throw new IllegalArgumentException("지하철을 추가할 수 없습니다.");
+    }
+
+    public void changeDownStation(Station station) {
+        this.downStation = station;
+    }
+
+    public void addDistance(Distance distance) {
+        this.distance.add(distance);
+    }
+
+    public void changeToFirstSection() {
+        this.isStart = true;
+    }
+
+    public void changeToLastSection() {
+        this.isLast = true;
+    }
+
+    public boolean isStartSection() {
+        return isStart;
+    }
+
+    public boolean isLastSection() {
+        return isLast;
+    }
+
+    public boolean isMiddleSection() {
+        return !isStart && !isLast;
     }
 
     private LineStation addNewLineFirstStation(LineStation addResult) {
@@ -107,12 +135,12 @@ public class LineStation {
         return addResult;
     }
 
-    private boolean isAddUpToMiddle(Long upStationId) {
-        return this.upStation.isSameId(upStationId);
+    private boolean isAddUpToMiddle(Station upStation) {
+        return this.upStation.equals(upStation);
     }
 
-    private boolean isAddMiddleToDown(Long downStationId) {
-        return this.downStation.isSameId(downStationId);
+    private boolean isAddMiddleToDown(Station downStation) {
+        return this.downStation.equals(downStation);
     }
 
     private void validation(Station upStation, Station downStation) {
@@ -145,13 +173,5 @@ public class LineStation {
 
     public Station getDownStation() {
         return downStation;
-    }
-
-    public boolean isStart() {
-        return isStart;
-    }
-
-    public boolean isLast() {
-        return isLast;
     }
 }

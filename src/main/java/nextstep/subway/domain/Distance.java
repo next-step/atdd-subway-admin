@@ -20,6 +20,10 @@ public class Distance {
         this.value -= distance.value;
     }
 
+    public void add(Distance distance) {
+        this.value += distance.value;
+    }
+
     public boolean isLessThenOrSame(Distance distance) {
         return this.value <= distance.value;
     }

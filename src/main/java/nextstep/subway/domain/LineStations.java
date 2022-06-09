@@ -5,11 +5,18 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Embeddable
 public class LineStations {
+    private static final Logger logger = Logger.getLogger(LineStation.class.getName());
+    private static final int SECTION_MIN_COUNT = 1;
+
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @JoinColumn(name = "line_id")
     private List<LineStation> lineStations = new ArrayList<>();
@@ -26,6 +33,26 @@ public class LineStations {
         );
     }
 
+    public void deleteLineStation(Station station) {
+        if (this.lineStations.size() <= SECTION_MIN_COUNT) {
+            throw new IllegalArgumentException("노선에 1개 이상의 구간이 존재해야 합니다.");
+        }
+
+        LineStation target = findLineStation(
+                lineStation -> lineStation.isSameUpStation(station) || (lineStation.isLastSection() && lineStation.isSameDownStation(station)),
+                station.getName() + " 에 해당하는 구간이 1개가 아닙니다."
+        );
+
+        if (target == null) {
+            throw new IllegalArgumentException(station.getName() + " 에 해당하는 구간을 찾을 수 없습니다.");
+        }
+
+        updateLineStationBeforeRemove(
+                findPreLineStation(target.getUpStation()), findNextLineStation(target.getDownStation()), target
+        );
+        this.lineStations.removeIf(lineStation -> lineStation.equals(target));
+    }
+
     public List<Station> getStationsSortedByUpToDown() {
         List<Station> result = new ArrayList<>();
         LineStation lineStation = findStartLineStation();
@@ -39,6 +66,10 @@ public class LineStations {
         }
 
         return result;
+    }
+
+    public List<LineStation> getValue() {
+        return this.lineStations;
     }
 
     private LineStation findAddTarget(Station upStation, Station downStation) {
@@ -58,43 +89,73 @@ public class LineStations {
         return findByDownStation;
     }
 
-    private LineStation findLineStationByUpStationId(Station upStation) {
-        return lineStations.stream()
-                .filter(lineStation -> lineStation.isSameUpStation(upStation) || lineStation.isAddNewLast(upStation))
-                .findFirst()
+    private LineStation findLineStation(Predicate<LineStation> predicate, String duplicateFoundMessage) {
+        List<LineStation> findResult = lineStations.stream()
+                .filter(predicate)
+                .collect(Collectors.toList());
+
+        if (findResult.size() > 1) {
+            logger.log(Level.SEVERE, duplicateFoundMessage);
+        }
+
+        return findResult.stream()
+                .max(Comparator.comparing(LineStation::getCreatedDate))
                 .orElse(null);
+    }
+
+    private LineStation findLineStationByUpStationId(Station upStation) {
+        return findLineStation(
+                lineStation -> lineStation.isSameUpStation(upStation) || lineStation.isAddNewLast(upStation),
+                upStation.getName() + " 의 상행역인 구간이 1개가 아니거나 종착역 이후 구간이 존재합니다."
+        );
     }
 
     private LineStation findLineStationByDownStationId(Station downStation) {
-        return lineStations.stream()
-                .filter(lineStation -> lineStation.isSameDownStation(downStation) || lineStation.isAddNewFirst(downStation))
-                .findFirst()
-                .orElse(null);
+        return findLineStation(
+                lineStation -> lineStation.isSameDownStation(downStation) || lineStation.isAddNewFirst(downStation),
+                downStation.getName() + " 의 하행역인 구간이 1개가 아니거나 시작역 이전 구간이 존재합니다."
+        );
     }
 
     private LineStation findStartLineStation() {
-        List<LineStation> findResult = this.lineStations
-                .stream()
-                .filter(LineStation::isStart)
-                .collect(Collectors.toList());
+        LineStation firstLineStation = findLineStation(
+                LineStation::isStartSection,
+                "노선의 시작점이 1개가 아닙니다."
+        );
 
-        if (findResult.size() != 1) {
-            throw new IllegalStateException("노선의 시작점이 1개가 아닙니다.");
+        if (firstLineStation == null) {
+            throw new IllegalStateException("노선의 시작점을 찾을 수 없습니다.");
         }
 
-        return findResult.get(0);
+        return firstLineStation;
+    }
+
+    private void updateLineStationBeforeRemove(
+            LineStation preLineStation, LineStation nextLineStation, LineStation target
+    ) {
+        if (target.isStartSection()) {
+            nextLineStation.changeToFirstSection();
+        }
+        if (target.isLastSection()) {
+            preLineStation.changeToLastSection();
+        }
+        if (target.isMiddleSection()) {
+            preLineStation.changeDownStation(target.getDownStation());
+            preLineStation.addDistance(target.getDistance());
+        }
     }
 
     private LineStation findNextLineStation(Station nextStation) {
-        List<LineStation> findResult = this.lineStations
-                .stream()
-                .filter(value -> value.getUpStation().isSameId(nextStation.getId()))
-                .collect(Collectors.toList());
+        return findLineStation(
+                lineStation -> lineStation.isSameUpStation(nextStation),
+                nextStation.getName() + " 의 다음역 정보가 1개가 아닙니다."
+        );
+    }
 
-        if (findResult.size() != 1) {
-            throw new IllegalStateException(nextStation.getName() + " 의 다음역 정보가 1개가 아닙니다.");
-        }
-
-        return findResult.get(0);
+    private LineStation findPreLineStation(Station preStation) {
+        return findLineStation(
+                lineStation -> lineStation.isSameDownStation(preStation),
+                preStation.getName() + " 의 이전역 정보가 1개가 아닙니다."
+        );
     }
 }

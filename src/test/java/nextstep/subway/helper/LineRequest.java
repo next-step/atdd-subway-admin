@@ -3,6 +3,7 @@ package nextstep.subway.helper;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,5 +60,11 @@ public class LineRequest {
         body.put("distance", distance);
 
         return RequestHelper.postRequest(PATH + "/{id}/sections", new HashMap<>(), body, id);
+    }
+
+    public static ExtractableResponse<Response> deleteSection(Long id, Long stationId) {
+        return RequestHelper.deleteRequest(
+                PATH + "/{id}/sections", Collections.singletonMap("stationId", stationId), id
+        );
     }
 }

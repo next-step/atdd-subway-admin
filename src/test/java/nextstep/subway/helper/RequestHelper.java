@@ -11,7 +11,7 @@ public class RequestHelper {
     private RequestHelper() {}
 
     public static ExtractableResponse<Response> getRequest(
-            String path, Map<String, String> params, Object... pathVariables
+            String path, Map<String, Object> params, Object... pathVariables
     ) {
         return RestAssured.given().log().all()
                 .params(params)
@@ -21,7 +21,7 @@ public class RequestHelper {
     }
 
     public static ExtractableResponse<Response> postRequest(
-            String path, Map<String, String> params, Object body, Object... pathVariables
+            String path, Map<String, Object> params, Object body, Object... pathVariables
     ) {
         return RestAssured.given().log().all()
                 .params(params)
@@ -33,7 +33,7 @@ public class RequestHelper {
     }
 
     public static ExtractableResponse<Response> deleteRequest(
-            String path, Map<String, String> params, Object... pathVariables
+            String path, Map<String, Object> params, Object... pathVariables
     ) {
         return RestAssured.given().log().all()
                 .params(params)
@@ -43,7 +43,7 @@ public class RequestHelper {
     }
 
     public static ExtractableResponse<Response> putRequest(
-            String path, Map<String, String> params, Object body, Object... pathVariables
+            String path, Map<String, Object> params, Object body, Object... pathVariables
     ) {
         return RestAssured.given().log().all()
                 .params(params)
