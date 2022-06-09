@@ -93,4 +93,13 @@ public class LineStationsTest {
     void invalidRemoveTestWhenSectionIsOnlyOne() {
         assertThatThrownBy(() -> 신분당선_역정보들.removeSection(강남역)).isExactlyInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("노선에 등록되지 않은 역은 제거 될수 없다.")
+    @Test
+    void invalidRemoveTestWhenStationIsNoExist() {
+        Station 신사역 = new Station("신사역");
+        신분당선_역정보들.addLineStation(new LineStation(신분당선, new Section(강남역, 논현역, 2)));
+        assertThat(신분당선_역정보들.isSize()).isEqualTo(2);
+        assertThatThrownBy(() -> 신분당선_역정보들.removeSection(신사역)).isExactlyInstanceOf(IllegalArgumentException.class);
+    }
 }

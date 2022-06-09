@@ -65,10 +65,22 @@ public class LineStations {
     }
 
     public Optional<LineStation> removeSection(final Station station) {
-        if (this.lineStations.size() <= ONE) {
-            throw new IllegalArgumentException("invalid Request");
-        }
+        validation(station);
         return Optional.empty();
+    }
+
+    private void validation(Station station) {
+        if (this.lineStations.size() <= ONE) {
+            throw new IllegalArgumentException("현재 노선은 1개 뿐이라서 지울수 없습니다.");
+        }
+        Optional<LineStation> hasCurrentStation = findByCompareCurrentStation(station);
+        if (Objects.equals(Optional.empty(), hasCurrentStation)) {
+            throw new IllegalArgumentException("없는 역입니다.");
+        }
+    }
+
+    public int isSize() {
+        return lineStations.size();
     }
 
     private void insertLineStationBySorted(List<LineStation> result, LineStation startStation) {
