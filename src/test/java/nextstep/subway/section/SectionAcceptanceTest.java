@@ -11,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
+import static nextstep.subway.section.acceptance.SectionAcceptanceRequest.지하철구간_삭제_요청;
 import static nextstep.subway.section.acceptance.SectionAcceptanceRequest.지하철구간_생성_요청;
 import static nextstep.subway.section.acceptance.SectionAcceptanceRequest.지하철구간_존재;
 import static nextstep.subway.section.acceptance.SectionAcceptanceRequest.지하철역과_노선_존재;
+import static nextstep.subway.section.acceptance.SectionAcceptanceResponse.지하철구간_삭제_성공;
 import static nextstep.subway.section.acceptance.SectionAcceptanceResponse.지하철구간_생성_성공;
 import static nextstep.subway.section.acceptance.SectionAcceptanceResponse.지하철구간_생성_실패;
 
@@ -172,5 +174,26 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = 지하철구간_생성_요청(upStationId, downStationId, distance);
 
         지하철구간_생성_성공(response);
+    }
+
+    /**
+     * GIVEN 지하철 역과
+     * GIVEN 1개의 노선과
+     * GIVEN 1개의 구간이 존재 할 때
+     * WEHN 구간을 삭제하면
+     * THEN 존재하는 구간이 삭제된다
+     */
+    @DisplayName("새로운 역을 하행 종점으로 생성한다")
+    @Test
+    void 구간_삭제_성공() {
+        지하철역과_노선_존재();
+        String upStationId = "1";
+        String downStationId = "3";
+        int distance = 5;
+        지하철구간_존재(upStationId, downStationId, distance);
+
+        ExtractableResponse<Response> response = 지하철구간_삭제_요청(upStationId, downStationId, distance);
+
+        지하철구간_삭제_성공(response);
     }
 }

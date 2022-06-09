@@ -48,4 +48,18 @@ public class SectionAcceptanceRequest {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철구간_삭제_요청(String upStationId, String downStationId, int distance) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("downStationId", downStationId);
+        params.put("upStationId", upStationId);
+        params.put("distance", distance);
+
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when().post("/lines/1/sections?stationId=3")
+                .then().log().all()
+                .extract();
+    }
 }
