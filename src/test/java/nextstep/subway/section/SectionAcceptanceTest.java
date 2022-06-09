@@ -9,6 +9,7 @@ import nextstep.subway.dto.SectionRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -40,16 +41,18 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     /**
-     * When 역사이에 구간 생성
-     * Then 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정
+     * When 지하철역 사이에 새로운 역을 등록할 경우
+     * Then 등록 성공 응답을 반환한다
+     * Then 정상적으로 추가된 지하철역 리스트를 확인한다
      */
     @Test
     void 역_사이에_새로운_역을_등록() {
         // when
-        지하철_구간_생성됨(신분당선.getId(), 강남역_ID, 양재역_ID, 4);
+        ExtractableResponse<Response> response = 지하철_구간_생성됨(신분당선.getId(), 강남역_ID, 양재역_ID, 4);
         List<String> stationNames = 지하철_노선_역_이름_리스트_조회(신분당선.getId());
 
         // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(stationNames).containsExactly("강남역", "양재역", "광교역");
     }
 
@@ -63,9 +66,17 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
     }
 
+    /**
+     * When 지하철역 사이에 기존 역 사이 길이보다 크거나 같은 구간을 등록할 경우
+     * Then 등록 실패 응답을 반환한다
+     */
     @Test
     void 역_사이에_새로운_역을_등록할_경우_기존_역_사이_길이보다_크거나_같으면_등록을_할_수_없음() {
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_생성됨(신분당선.getId(), 강남역_ID, 양재역_ID, 10);
 
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
