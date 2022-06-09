@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import java.util.Optional;
-
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -44,7 +42,7 @@ public class Line extends BaseEntity {
 		this.color = color;
 	}
 	
-	public void removeSection(Optional<Station> removeStation) {
+	public void removeSection(Station removeStation) {
 		sections.removeSection(removeStation);
 	}
 

@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -174,8 +172,8 @@ public class LineTest {
 
 		Line line = new Line("2호선", "bg-red-600", 까치산역에서신도림역);
 		
-		assertAll(() -> assertThrows(IllegalArgumentException.class, () -> line.removeSection(Optional.of(까치산역))),
-				() -> assertThrows(IllegalArgumentException.class, () -> line.removeSection(Optional.of(신도림역))));
+		assertAll(() -> assertThrows(IllegalArgumentException.class, () -> line.removeSection(까치산역)),
+				() -> assertThrows(IllegalArgumentException.class, () -> line.removeSection(신도림역)));
 	}
 
 	@Test
@@ -190,7 +188,7 @@ public class LineTest {
 		Line line = new Line("2호선", "bg-red-600", 까치산역에서신도림역);
 		line.add(신도림역에서강남역);
 		line.add(강남역에서잠실역);
-		line.removeSection(Optional.of(까치산역));
+		line.removeSection(까치산역);
 		
 		assertAll(() -> assertEquals(line.getSections().getSections().size(), 2),
 				() -> equalsTest(line, 0, 신도림역에서강남역, 8, 0), 
@@ -209,7 +207,7 @@ public class LineTest {
 		Line line = new Line("2호선", "bg-red-600", 까치산역에서신도림역);
 		line.add(신도림역에서강남역);
 		line.add(강남역에서잠실역);
-		line.removeSection(Optional.of(잠실역));
+		line.removeSection(잠실역);
 		
 		assertAll(() -> assertEquals(line.getSections().getSections().size(), 2),
 				() -> equalsTest(line, 0, 까치산역에서신도림역, 5, 0), 
@@ -228,7 +226,7 @@ public class LineTest {
 		Line line = new Line("2호선", "bg-red-600", 까치산역에서신도림역);
 		line.add(신도림역에서강남역);
 		line.add(강남역에서잠실역);
-		line.removeSection(Optional.of(신도림역));
+		line.removeSection(신도림역);
 		
 		assertAll(() -> assertEquals(line.getSections().getSections().size(), 2),
 				() -> equalsTest(line, 0, 까치산역에서신도림역, 13, 0), 
@@ -247,7 +245,7 @@ public class LineTest {
 		Line line = new Line("2호선", "bg-red-600", 까치산역에서신도림역);
 		line.add(신도림역에서강남역);
 		line.add(강남역에서잠실역);
-		line.removeSection(Optional.of(강남역));
+		line.removeSection(강남역);
 		
 		assertAll(() -> assertEquals(line.getSections().getSections().size(), 2),
 				() -> equalsTest(line, 0, 까치산역에서신도림역, 5, 0), 

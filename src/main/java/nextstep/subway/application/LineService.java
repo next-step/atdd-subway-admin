@@ -16,6 +16,8 @@ import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.exception.LineNotFoundException;
+import nextstep.subway.exception.StationNotFoundException;
 
 @Service
 @Transactional(readOnly = true)
@@ -65,25 +67,21 @@ public class LineService {
 
 	@Transactional
 	public void addSection(Long lineId, SectionRequest sectionRequest) {
-		Optional<Station> upStation = stationRepository.findById(sectionRequest.getUpStationId());
-		Optional<Station> downStation = stationRepository.findById(sectionRequest.getDownStationId());
-		validationStation(upStation, downStation);
-		Section section = sectionRepository.save(sectionRequest.toSection(upStation.get(), downStation.get()));
+		Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(() -> new StationNotFoundException());
+		Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(() -> new StationNotFoundException());
+		
+		Section section = sectionRepository.save(sectionRequest.toSection(upStation, downStation));
 		Line line = lineRepository.getById(lineId);
 		line.add(section);
-	}
-
-	private void validationStation(Optional<Station> upStation, Optional<Station> downStation) {
-		if (!upStation.isPresent() || !downStation.isPresent()) {
-			throw new RuntimeException("역 정보를 찾지 못했습니다.");
-		}
 	}
 
 	@Transactional
 	public void removeSectionByStationId(Long lineId, Long stationId) {
 		Optional<Line> line = lineRepository.findById(lineId);
 		Optional<Station> removeStation = stationRepository.findById(stationId);
-		
-		line.get().removeSection(removeStation);
+
+		line.orElseThrow(() -> new LineNotFoundException())
+				.removeSection(removeStation.orElseThrow(() -> new StationNotFoundException()));
 	}
+
 }

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
 import javax.persistence.CascadeType;
@@ -137,16 +135,16 @@ public class Sections {
 		section.updateSectionOrder(index);
 	}
 
-	public void removeSection(Optional<Station> removeStation) {
+	public void removeSection(Station removeStation) {
 		validationRemoveSection(removeStation);
 
-		if(isFirstSection(removeStation.get())) {
+		if(isFirstSection(removeStation)) {
 			sections.remove(0);
 			sectionDecreaseOrder(0);
 			return;
 		}
 		
-		if(isLastSection(removeStation.get())) {
+		if(isLastSection(removeStation)) {
 			sections.remove(lastIndex());
 			return;
 		}
@@ -154,29 +152,23 @@ public class Sections {
 		removeSection(removeSectionsIndex(removeStation));
 	}
 
-	private void removeSection(OptionalInt idx) {
-		if(!idx.isPresent()) {
-			throw new StationNotFoundException();
-		}
-		
-		sections.get(idx.getAsInt() - 1).removeAfterSection(sections.get(idx.getAsInt()));
-		sections.remove(idx.getAsInt());
-		sectionDecreaseOrder(idx.getAsInt());
+	private void removeSection(int idx) {
+		Section beforeSection = sections.get(idx - 1); 
+		beforeSection.removeAfterSection(sections.get(idx));
+		sections.remove(idx);
+		sectionDecreaseOrder(idx);
 	}
 
-	private OptionalInt removeSectionsIndex(Optional<Station> removeStation) {
+	private int removeSectionsIndex(Station removeStation) {
 		return IntStream.range(0, sections.size())
-				.filter(index -> sections.get(index).upStationEquals(removeStation.get()))
-				.findFirst();
+				.filter(index -> sections.get(index).upStationEquals(removeStation))
+				.findFirst()
+				.orElseThrow(() -> new StationNotFoundException());
 	}
 
-	private void validationRemoveSection(Optional<Station> removeStation) {
+	private void validationRemoveSection(Station removeStation) {
 		if(getSections().size() < 2) {
 			throw new IllegalArgumentException("구간이 2개이상 등록된 경우에만 삭제가 가능합니다.");
-		}
-		
-		if(!removeStation.isPresent()) {
-			throw new StationNotFoundException();
 		}
 	}
 
