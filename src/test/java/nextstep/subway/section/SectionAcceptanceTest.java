@@ -180,6 +180,23 @@ public class SectionAcceptanceTest extends BasicAcceptance {
         구간_삭제_실패됨(요청_결과);
     }
 
+    /**
+     * Given 구간이 하나 등록된 노선에
+     * When 노선에 등록된 역을 삭제 하면
+     * Then 삭제가 될수 없다.
+     */
+    @DisplayName("노선에 구간이 1개만 등록된 경우 삭제 할수 없다.")
+    @Test
+    void invalidRemoveTestWhenLineHasOneSection() {
+        // given
+        final LineResponse 생성된_일호선 = 초기_노선_생성("일호선", 저장된역정보테이블.get("수원역"), 저장된역정보테이블.get("병점역"), 10L);
+
+        // when
+        ExtractableResponse<Response> 요청_결과 = 구간_삭제_요청(생성된_일호선.getId(), 저장된역정보테이블.get("병점역"));
+
+        // then
+        구간_삭제_실패됨(요청_결과);
+    }
     private ExtractableResponse<Response> 구간_삭제_요청(final Long lineId, final Long stationId ) {
         return requestUtil.deleteSection(lineId, stationId);
     }
