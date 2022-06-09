@@ -17,6 +17,7 @@ public class Section extends BaseEntity {
     public static final String ERROR_MESSAGE_UP_STATION_NULL = "상행역 변수 값이 null 입니다.";
     public static final String ERROR_MESSAGE_DOWN_STATION_NULL = "하행역 변수 값이 null 입니다.";
     public static final String ERROR_MESSAGE_DISTANCE_NULL = "역 간 거리의 값이 null 입니다.";
+    public static final String ERROR_MESSAGE_NOT_MATCHED = "업데이트 대상 구간이 겹치지 않는 구간입니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,13 +31,12 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
     private Integer distance;
-    private Integer orderNumber = 0;
 
     protected Section() {
     }
 
     public Section(Long lineId, Station upStation, Station downStation, Integer distance) {
-        validateSection(upStation, downStation, distance);
+        validateConstructor(upStation, downStation, distance);
         
         this.lineId = lineId;
         this.upStation = upStation;
@@ -44,7 +44,7 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
     
-    private void validateSection(Station upStation, Station downStation, Integer distance) {
+    private void validateConstructor(Station upStation, Station downStation, Integer distance) {
         validateNull(upStation, ERROR_MESSAGE_UP_STATION_NULL);
         validateNull(downStation, ERROR_MESSAGE_DOWN_STATION_NULL);
         validateNull(distance, ERROR_MESSAGE_DISTANCE_NULL);
@@ -87,6 +87,26 @@ public class Section extends BaseEntity {
         return upStation.equals(station) || downStation.equals(station);
     }
 
+    public void updateForDivide(Section newSection) {
+        validateDivide(newSection);
+
+        if(upStation.equals(newSection.upStation)) {
+            upStation = newSection.downStation;
+        }
+
+        if(downStation.equals(newSection.downStation)) {
+            downStation = newSection.upStation;
+        }
+
+        distance = distance - newSection.distance;
+    }
+
+    private void validateDivide(Section newSection) {
+        if(!match(newSection)) {
+            throw new DataIntegrityViolationException(ERROR_MESSAGE_NOT_MATCHED);
+        }
+    }
+
     public Long getId() {
         return id;
     }
@@ -105,29 +125,5 @@ public class Section extends BaseEntity {
 
     public Integer getDistance() {
         return distance;
-    }
-
-    public Integer getOrderNumber() {
-        return orderNumber;
-    }
-
-    public void updateUpStation(Station upStation) {
-        this.upStation = upStation;
-    }
-
-    public void updateDownStation(Station downStation) {
-        this.downStation = downStation;
-    }
-
-    public void updateDistance(Integer distance) {
-        this.distance = distance;
-    }
-
-    public void updateOrderNumber(Integer order) {
-        this.orderNumber = order;
-    }
-
-    public void increaseOrderNumber() {
-        this.orderNumber++;
     }
 }
