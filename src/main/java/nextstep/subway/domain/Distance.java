@@ -41,6 +41,9 @@ public class Distance {
     }
 
     private Distance subtractBy(final long source) {
+        if ((source - this.distance) == ZERO) {
+            throw new IllegalArgumentException("subtract result must is not zero");
+        }
         return new Distance(source - this.distance);
     }
 
