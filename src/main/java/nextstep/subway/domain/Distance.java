@@ -7,6 +7,8 @@ import java.util.Objects;
 @Embeddable
 public class Distance {
 
+    private static final int MIN_VALUE = 1;
+
     @Column
     private Integer value;
 
@@ -14,7 +16,14 @@ public class Distance {
     }
 
     public Distance(Integer value) {
+        validateValue(value);
         this.value = value;
+    }
+
+    private void validateValue(Integer value) {
+        if (value < MIN_VALUE) {
+            throw new IllegalArgumentException(String.format("최소 %d 이상의 값이여야합니다.", MIN_VALUE));
+        }
     }
 
     public Integer getValue() {

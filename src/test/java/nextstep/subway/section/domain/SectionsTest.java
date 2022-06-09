@@ -4,6 +4,8 @@ import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -13,10 +15,15 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class SectionsTest {
+
+    private static final Station 강남역 = new Station("강남역");
+    private static final Station 광교역 = new Station("광교역");
+    private static final Station 양재역 = new Station("양재역");
 
     @ParameterizedTest
     @MethodSource("getSectionsTestParameter")
@@ -41,15 +48,24 @@ class SectionsTest {
     }
 
     private static Stream<Arguments> getSectionsTestParameter() {
-        Station 강남역 = new Station("강남역");
-        Station 광교역 = new Station("광교역");
-        Station 양재역 = new Station("양재역");
-
         return Stream.of(
                 arguments(강남역, 광교역, 양재역),
                 arguments(양재역, 광교역, 강남역),
                 arguments(광교역, 양재역, 강남역)
         );
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @Test
+    void 구간_등록_시_예외_케이스() {
+        // given
+        final Sections sections = new Sections();
+        Section section1 = new Section(강남역, 광교역, 10);
+        Section section2 = new Section(강남역, 양재역, 10);
+        sections.add(section1);
+
+        // when & then
+        assertThatThrownBy(() -> sections.add(section2)).isInstanceOf(IllegalArgumentException.class);
     }
 
     private List<String> toStationNames(List<Station> stations) {
