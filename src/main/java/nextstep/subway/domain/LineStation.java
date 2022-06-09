@@ -72,7 +72,7 @@ public class LineStation extends BaseEntity {
         validationLine(newLineStation);
         Section changedSection = this.section.updatable(newLineStation.getSection());
         if (!changedSection.isSameSection(newLineStation.getSection())) {
-            this.changeSectionBy(newLineStation.getSection());
+            updateBySection(getSectionBy(this.getSection(), newLineStation.getSection()));
         }
         return newLineStation;
     }
@@ -85,11 +85,17 @@ public class LineStation extends BaseEntity {
         return section;
     }
 
-    private void changeSectionBy(Section section) {
-        final Distance updatedDistance = this.getDistance().subtract(section.getDistance());
-        this.section = Objects.equals(this.section.getUpStation(), section.getUpStation()) ?
-                new Section(section.getDownStation(), this.section.getDownStation(), updatedDistance) :
-                new Section(this.section.getUpStation(), section.getUpStation(), updatedDistance);
+    public void updateBySection(final Section section) {
+        this.section.updateUpStationBy(section.getUpStation())
+                .updateDownStationBy(section.getDownStation())
+                .updateDistanceBy(section.getDistance());
+    }
+
+    private Section getSectionBy( final Section source, final Section destination) {
+        final Distance updatedDistance = source.getDistance().subtract(destination.getDistance());
+        return Objects.equals(source.getUpStation(), destination.getUpStation()) ?
+                new Section(destination.getDownStation(), source.getDownStation(), updatedDistance) :
+                new Section(source.getUpStation(), destination.getUpStation(), updatedDistance);
     }
 
     private void validationLine(LineStation newLineStation) {
