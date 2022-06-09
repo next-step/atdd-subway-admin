@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.persistence.EntityExistsException;
 import java.util.NoSuchElementException;
 
 @RestControllerAdvice
@@ -21,12 +20,6 @@ public class ControllerExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(EntityExistsException.class)
-    public ErrorResult entityExistsExHandler(EntityExistsException e) {
-        return new ErrorResult(ERROR, e.getMessage());
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorResult dataIntegrityViolationExHandler(DataIntegrityViolationException e) {
         return new ErrorResult(ERROR, e.getMessage());
@@ -35,6 +28,12 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
     public ErrorResult illegalArgExHandler(IllegalArgumentException e) {
+        return new ErrorResult(ERROR, e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalStateException.class)
+    public ErrorResult illegalStatusExHandler(IllegalStateException e) {
         return new ErrorResult(ERROR, e.getMessage());
     }
 

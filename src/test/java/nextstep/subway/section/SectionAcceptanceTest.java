@@ -264,11 +264,120 @@ public class SectionAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 노선의 종점 사이에 중간 역이 있을 때
+     * When 중간 역을 제거하면
+     * Then 중간 역을 제외한 역들을 확인할 수 있다
+     */
+    @DisplayName("중간 역을 제거한다.")
+    @Test
+    void 중간_역_제거() {
+        // given
+        // 분당선(왕십리역-서울숲역-선릉역)
+        addSection(분당선.getId(), new SectionRequest(왕십리역.getId(), 서울숲역.getId(), 4));
+
+        // when
+        deleteStation(분당선.getId(), 서울숲역.getId());
+
+        // then
+        List<String> stationNames = LineAcceptanceTest.getLine("/lines/" + 분당선.getId())
+                .jsonPath().getList("stations.name", String.class);
+        assertThat(stationNames).containsExactly("왕십리역", "선릉역");
+    }
+
+    /**
+     * Given 최소 두 개 이상의 구간을 가진 노선이 있을 때
+     * When 상행 종점 역을 제거하면
+     * Then 상행 종점이 바뀐 역들을 확인할 수 있다
+     */
+    @DisplayName("상행 종점 역을 제거한다.")
+    @Test
+    void 상행_종점_역_제거() {
+        // given
+        // 분당선(왕십리역-서울숲역-선릉역)
+        addSection(분당선.getId(), new SectionRequest(왕십리역.getId(), 서울숲역.getId(), 4));
+
+        // when
+        deleteStation(분당선.getId(), 왕십리역.getId());
+
+        // then
+        List<String> stationNames = LineAcceptanceTest.getLine("/lines/" + 분당선.getId())
+                .jsonPath().getList("stations.name", String.class);
+        assertThat(stationNames).containsExactly("서울숲역", "선릉역");
+    }
+
+    /**
+     * Given 최소 두 개 이상의 구간을 가진 노선이 있을 때
+     * When 하행 종점 역을 제거하면
+     * Then 하행 종점이 바뀐 역들을 확인할 수 있다
+     */
+    @DisplayName("하행 종점 역을 제거한다.")
+    @Test
+    void 하행_종점_역_제거() {
+        // given
+        // 분당선(왕십리역-서울숲역-선릉역)
+        addSection(분당선.getId(), new SectionRequest(왕십리역.getId(), 서울숲역.getId(), 4));
+
+        // when
+        deleteStation(분당선.getId(), 선릉역.getId());
+
+        // then
+        List<String> stationNames = LineAcceptanceTest.getLine("/lines/" + 분당선.getId())
+                .jsonPath().getList("stations.name", String.class);
+        assertThat(stationNames).containsExactly("왕십리역","서울숲역");
+    }
+
+    /**
+     * Given 구간이 두 개 이상인 노선이 있을 때
+     * When 노선에 등록되지 않은 역을 제거하려 하면
+     * Then 400 에러가 전달된다
+     */
+    @DisplayName("노선에 등록되지 않은 역을 제거하려 한다.")
+    @Test
+    void 미등록_역_제거() {
+        // given
+        // 분당선(왕십리역-서울숲역-선릉역)
+        addSection(분당선.getId(), new SectionRequest(왕십리역.getId(), 서울숲역.getId(), 4));
+
+        // when
+        ExtractableResponse<Response> response = deleteStation(분당선.getId(), 도곡역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    /**
+     * Given 구간이 하나뿐인 노선이 있을 때
+     * When 역을 제거하려 하면
+     * Then 400 에러가 전달된다
+     */
+    @DisplayName("구간이 하나뿐인 노선의 역을 제거하려 한다.")
+    @Test
+    void 구간_하나뿐인_노선_역_제거() {
+        // given
+        // 분당선(왕십리역-선릉역)
+
+        // when
+        ExtractableResponse<Response> response = deleteStation(분당선.getId(), 선릉역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> addSection(Long lineId, SectionRequest body) {
         return RestAssured.given().log().all()
                 .body(body)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post(LINES + "/" + lineId + SECTIONS)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> deleteStation(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .queryParams("stationId", stationId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete(LINES + "/" + lineId + SECTIONS)
                 .then().log().all()
                 .extract();
     }
