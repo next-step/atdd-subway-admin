@@ -113,7 +113,7 @@ public class LineStationsTest {
 
         신분당선_역정보들.removeLineStationBy(강남역);
         assertThat(신분당선_역정보들.getStations().stream().map(Station::getName).toArray()).containsExactly("논현역","양재역");
-        assertThat(논현역_구간.getUpStation()).isEqualTo(null);
+        assertThat(논현역_구간.getUpStation()).isEqualTo(논현역);
     }
 
     @DisplayName("종점이 제거되면 종점 앞 역이 종점이 된다.")

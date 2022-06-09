@@ -93,7 +93,7 @@ public class LineStations {
     }
 
     private void changeStartLineStation(final LineStation hasNextLineStation) {
-        hasNextLineStation.updateBySection(new Section(null, hasNextLineStation.getCurrentStation(), hasNextLineStation.getDistance()));
+        hasNextLineStation.updateBySection(new Section(hasNextLineStation.getCurrentStation(), hasNextLineStation.getCurrentStation(), hasNextLineStation.getDistance()));
     }
 
     private void changeMiddleLineStation(LineStation lineStation, LineStation nextLineStation) {
@@ -160,7 +160,7 @@ public class LineStations {
 
     private Optional<LineStation> findByComparePreStation(final Station station) {
         return this.lineStations.stream()
-                .filter(savedLineStation -> savedLineStation.isPreStation(station)).findFirst();
+                .filter(savedLineStation -> !savedLineStation.isStartStation() && savedLineStation.isPreStation(station)).findFirst();
     }
 
     private Optional<LineStation> findByCompareCurrentStation(final Station station) {

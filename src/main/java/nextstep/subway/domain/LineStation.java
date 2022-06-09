@@ -57,7 +57,7 @@ public class LineStation extends BaseEntity {
     }
 
     public boolean isStartStation() {
-        return Objects.equals(getPreStation(), null);
+        return Objects.equals(getPreStation(), null) || Objects.equals(getPreStation(), getCurrentStation());
     }
 
     public Distance getDistance() {
