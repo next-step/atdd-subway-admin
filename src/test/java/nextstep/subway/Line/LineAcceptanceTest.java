@@ -3,16 +3,13 @@ package nextstep.subway.Line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.Db.DatabaseCleanup;
+import nextstep.subway.base.BaseUnitTest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
 import nextstep.subway.station.StationAcceptanceTest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -26,23 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    DatabaseCleanup databaseCleanup;
-
+public class LineAcceptanceTest extends BaseUnitTest {
     private final String LINE_URL = "/lines";
-
-    @BeforeEach
-    public void setUp() throws Exception {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-            databaseCleanup.afterPropertiesSet();
-        }
-        databaseCleanup.tableClear();
-    }
 
     /**
      * When 지하철 노선을 생성하면
