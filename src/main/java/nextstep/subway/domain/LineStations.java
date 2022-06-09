@@ -63,7 +63,6 @@ public class LineStations {
         return lineStations;
     }
 
-
     private void insertLineStationBySorted(List<LineStation> result, LineStation startStation) {
         Optional<LineStation> preStation = findByComparePreStation(startStation.getCurrentStation());
         while (preStation.isPresent()) {
@@ -114,7 +113,7 @@ public class LineStations {
 
     private Optional<LineStation> findByComparePreStation(final Station station) {
         return this.lineStations.stream()
-                .filter(savedLineStation -> savedLineStation.isPreStation(station)).findAny();
+                .filter(savedLineStation -> savedLineStation.isPreStation(station)).findFirst();
     }
 
     private Optional<LineStation> findByCompareCurrentStation(final Station station) {
