@@ -37,7 +37,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         지하철역_생성완료(response.statusCode());
 
         // then
-        ExtractableResponse<Response> getResponse = requestGetStations();
+        ExtractableResponse<Response> getResponse = 지하철역_조회_요청();
         List<String> stationNamesOfResponse = getResponse.jsonPath().getList("name", String.class);
         assertThat(stationNamesOfResponse).containsAnyOf(stationNames.get(0));
     }
@@ -74,7 +74,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         }
 
         // when
-        ExtractableResponse<Response> response = requestGetStations();
+        ExtractableResponse<Response> response = 지하철역_조회_요청();
 
         // then
         assertAll(
@@ -103,7 +103,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> deleteResponse = requestDeleteStation(stationId);
 
         // then
-        ExtractableResponse<Response> getResponse = requestGetStations();
+        ExtractableResponse<Response> getResponse = 지하철역_조회_요청();
         assertAll(
             () -> 지하철역_삭제완료(deleteResponse.statusCode()),
             () -> 지하철역_조회완료(getResponse.statusCode()),
@@ -133,7 +133,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
 
     private ExtractableResponse<Response> requestDeleteStation(Long stationId) {
         return RestAssured.given().log().all()
-            .when().delete(String.format("/stations/%d", stationId))
+            .when().delete(rootPath + "/" + stationId)
             .then().log().all()
             .extract();
     }
@@ -151,7 +151,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> requestGetStations() {
+    private ExtractableResponse<Response> 지하철역_조회_요청() {
         return RestAssured.given().log().all()
             .when().get(rootPath)
             .then().log().all()
