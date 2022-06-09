@@ -1,0 +1,52 @@
+package nextstep.subway.line;
+
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import nextstep.subway.dto.LineRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import static nextstep.subway.station.StationTestUtils.*;
+
+public class LineTestUtils {
+    public static final String PATH = "/lines";
+
+    public static ExtractableResponse<Response> 지하철노선_생성_요청(String lineName, String lineColor, String upStationName, String downStationName) {
+        Long upStationId = 지하철역_생성_요청(upStationName).jsonPath().getLong("id");
+        Long downStationId = 지하철역_생성_요청(downStationName).jsonPath().getLong("id");
+
+        LineRequest request = new LineRequest(lineName, lineColor, upStationId, downStationId);
+
+        return RestAssured.given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(PATH)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철노선_목록_조회() {
+        return RestAssured.given().log().all()
+                .when().get(PATH)
+                .then().log().all()
+                .extract();
+    }
+
+    public static void 지하철노선_생성_성공_확인(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    public static void 지하철노선_생성_실패_확인(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    public static void 지하철노선_포함_확인(String lineName) {
+        List<String> lineNames = 지하철노선_목록_조회().jsonPath().getList("name", String.class);
+        assertThat(lineNames).containsAnyOf(lineName);
+    }
+}
