@@ -41,7 +41,7 @@ public class Sections {
 
         if (existingDownSection.isPresent()) {
             validateNewSectionDistance(sectionDistance, existingDownSection.get().getDistance());
-            addSectionFromDownSection(newUpStation, existingDownSection.get(), sectionDistance);
+            addSectionFromDownSection(existingDownSection.get(), newUpStation, sectionDistance);
         }
     }
 
@@ -53,7 +53,7 @@ public class Sections {
         existingSection.setDistance(newSectionDistance);
     }
 
-    private void addSectionFromDownSection(Station newUpStation, Section existingSection, long newSectionDistance) {
+    private void addSectionFromDownSection(Section existingSection, Station newUpStation, long newSectionDistance) {
         Section newDownSection = new Section(newUpStation, existingSection.getDownStation(), newSectionDistance);
         sectionList.add(newDownSection);
         existingSection.setDownStation(newUpStation);
