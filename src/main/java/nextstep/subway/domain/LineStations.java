@@ -72,13 +72,25 @@ public class LineStations {
         return lineStations;
     }
 
-    public Optional<LineStation> removeSection(final Station station) {
+    public void removeLineStationBy(final Station station) {
         if (this.lineStations.size() <= ONE) {
             throw new IllegalArgumentException("현재 노선은 1개 뿐이라서 지울수 없습니다.");
         }
-        findByCompareCurrentStation(station).orElseThrow(EntityNotFoundException::new);
+        final LineStation lineStation = findByCompareCurrentStation(station).orElseThrow(EntityNotFoundException::new);
+        changeLineStation(lineStation);
+        removeLineStationBy(lineStation);
+    }
 
-        return Optional.empty();
+    private void changeLineStation(LineStation lineStation) {
+        final Optional<LineStation> hasPreLineStation = findByCompareCurrentStation(lineStation.getPreStation());
+        final Optional<LineStation> hasNextLineStation = findByComparePreStation(lineStation.getCurrentStation());
+        if (Objects.equals(Optional.empty(), hasPreLineStation) && hasNextLineStation.isPresent()) {
+             changeStartStation(lineStation);
+        }
+    }
+    private void changeStartStation(final LineStation removeLineStation) {
+        LineStation lineStation = findByComparePreStation(removeLineStation.getCurrentStation()).orElseThrow(EntityNotFoundException::new);
+        lineStation.getSection().updateUpStationBy(null);
     }
 
     public int isSize() {
