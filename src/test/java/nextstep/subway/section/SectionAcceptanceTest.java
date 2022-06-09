@@ -161,6 +161,25 @@ public class SectionAcceptanceTest extends BasicAcceptance {
         구간_삭제_실패됨(요청_결과);
     }
 
+    /**
+     * Given 구간이 저장된 역에
+     * When 노선에 등록되지 않은역을 삭제 요청 시
+     * Then 삭제가 될수 없다.
+     */
+    @DisplayName("등록된 역이지만 노선에 등록되지 않은 역은 삭제 될수 없다.")
+    @Test
+    void invalidRemoveTestWhenInputStationIsNotRegister() {
+        // given
+        final LineResponse 생성된_일호선 = 초기_노선_생성("일호선", 저장된역정보테이블.get("수원역"), 저장된역정보테이블.get("병점역"), 10L);
+        구간_생성됨(구간_생성_요청(생성된_일호선.getId(), 구간_요청_객체_생성(저장된역정보테이블.get("수원역"), 저장된역정보테이블.get("세류역"), 5L)));
+
+        // when
+        ExtractableResponse<Response> 요청_결과 = 구간_삭제_요청(생성된_일호선.getId(), 저장된역정보테이블.get("양재시민의숲"));
+
+        // then
+        구간_삭제_실패됨(요청_결과);
+    }
+
     private ExtractableResponse<Response> 구간_삭제_요청(final Long lineId, final Long stationId ) {
         return requestUtil.deleteSection(lineId, stationId);
     }
