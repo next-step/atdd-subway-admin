@@ -93,13 +93,17 @@ public class LineStations {
     }
 
     private void changeStartLineStation(final LineStation hasNextLineStation) {
-        Section section = hasNextLineStation.getSection();
-        hasNextLineStation.getSection().updateUpStationBy(null);
+        hasNextLineStation.updateBySection(new Section(null, hasNextLineStation.getCurrentStation(), hasNextLineStation.getDistance()));
     }
 
     private void changeMiddleLineStation(LineStation lineStation, LineStation nextLineStation) {
-        nextLineStation.getSection().updateUpStationBy(lineStation.getSection().getUpStation());
-        nextLineStation.getSection().updateDistanceBy(nextLineStation.getDistance().plus(lineStation.getDistance()));
+        nextLineStation.updateBySection(
+                new Section(
+                        lineStation.getPreStation(),
+                        nextLineStation.getCurrentStation(),
+                        nextLineStation.getDistance().plus(lineStation.getDistance())
+                )
+        );
     }
 
     public int isSize() {
