@@ -45,6 +45,10 @@ public class LineTestUtils {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    public static void 지하철노선_조회_성공_확인(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
     public static void 지하철노선_포함_확인(String lineName) {
         List<String> lineNames = 지하철노선_목록_조회().jsonPath().getList("name", String.class);
         assertThat(lineNames).containsAnyOf(lineName);
