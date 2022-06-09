@@ -99,7 +99,7 @@ public class StationAcceptanceTest {
 
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(response.jsonPath().getList(".", StationResponse.class)).hasSize(2)
+            () -> assertThat(getList(response)).hasSize(2)
         );
     }
 
@@ -113,14 +113,14 @@ public class StationAcceptanceTest {
     void deleteStation() {
         //given, when
         //지하철역_생성
-        createStation("강남역");
+        ExtractableResponse<Response> createResponse = createStation("강남역");
 
         //then
         //지하철역_삭제
         ExtractableResponse<Response> deleteResponse =
                 RestAssured.given().log().all()
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().delete("/stations/1")
+                        .when().delete("/stations/" + getId(createResponse))
                         .then().log().all()
                         .extract();
 
@@ -131,7 +131,7 @@ public class StationAcceptanceTest {
 
         assertAll(
             () -> assertThat(getAllResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(getAllResponse.jsonPath().getList(".", StationResponse.class)).hasSize(0)
+            () -> assertThat(getList(getAllResponse)).hasSize(0)
         );
     }
 
@@ -153,5 +153,13 @@ public class StationAcceptanceTest {
                 .when().get("/stations")
                 .then().log().all()
                 .extract();
+    }
+
+    Long getId(ExtractableResponse<Response> response) {
+        return response.as(StationResponse.class).getId();
+    }
+
+    List<StationResponse> getList(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(".", StationResponse.class);
     }
 }
