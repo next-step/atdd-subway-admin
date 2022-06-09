@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.Embeddable;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.*;
@@ -65,18 +66,12 @@ public class LineStations {
     }
 
     public Optional<LineStation> removeSection(final Station station) {
-        validation(station);
-        return Optional.empty();
-    }
-
-    private void validation(Station station) {
         if (this.lineStations.size() <= ONE) {
             throw new IllegalArgumentException("현재 노선은 1개 뿐이라서 지울수 없습니다.");
         }
-        Optional<LineStation> hasCurrentStation = findByCompareCurrentStation(station);
-        if (Objects.equals(Optional.empty(), hasCurrentStation)) {
-            throw new IllegalArgumentException("없는 역입니다.");
-        }
+        findByCompareCurrentStation(station).orElseThrow(EntityNotFoundException::new);
+
+        return Optional.empty();
     }
 
     public int isSize() {
