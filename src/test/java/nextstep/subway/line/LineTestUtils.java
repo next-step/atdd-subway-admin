@@ -61,6 +61,14 @@ public class LineTestUtils {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 지하철노선_삭제_요청(Long lineId) {
+        return RestAssured.given().log().all()
+                .pathParam("id", lineId)
+                .when().delete(PATH + "/{id}")
+                .then().log().all()
+                .extract();
+    }
+
     public static void 지하철노선_생성_성공_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -81,9 +89,18 @@ public class LineTestUtils {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    public static void 지하철노선_삭제_성공_확인(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
     public static void 지하철노선_포함_확인(String lineName) {
         List<String> lineNames = 지하철노선_목록_조회().jsonPath().getList("name", String.class);
         assertThat(lineNames).containsAnyOf(lineName);
+    }
+
+    public static void 지하철노선_미포함_확인(String lineName) {
+        List<String> lineNames = 지하철노선_목록_조회().jsonPath().getList("name", String.class);
+        assertThat(lineNames).doesNotContain(lineName);
     }
 
     public static void 지하철노선_이름_확인(ExtractableResponse<Response> response, String lineName) {
