@@ -38,4 +38,11 @@ public class SectionService {
 
         return SectionResponse.of(section);
     }
+
+    public void deleteSection(Long id, Long stationId) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(LineNotFoundException::new);
+
+        line.deleteStation(stationId);
+    }
 }

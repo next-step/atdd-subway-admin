@@ -90,17 +90,16 @@ public class Section {
                 this.downStation.equals(section.downStation);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Section section = (Section) o;
-        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(line, section.line);
+    public boolean hasStation(Long stationId) {
+        return isUpStationId(stationId) || isDownStationId(stationId);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, upStation, downStation, line, distance);
+    private boolean isUpStationId(Long stationId) {
+        return this.upStation.getId() == stationId;
+    }
+
+    private boolean isDownStationId(Long stationId) {
+        return this.downStation.getId() == stationId;
     }
 
     public void updateDistance(Section section) {
@@ -121,5 +120,30 @@ public class Section {
 
     public void updateDownStation(Section section) {
         this.downStation = section.getUpStation();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(line, section.line);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, upStation, downStation, line, distance);
+    }
+
+    public boolean hasUpStation(Long stationId) {
+        return this.upStation.getId() == stationId;
+    }
+
+    public void changeDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
+    public void changeUpStation(Station upStation) {
+        this.upStation = upStation;
     }
 }

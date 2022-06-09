@@ -3,6 +3,7 @@ package nextstep.subway.common.exception;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.section.exception.DistanceNegativeException;
 import nextstep.subway.section.exception.SectionDuplicationException;
+import nextstep.subway.section.exception.SectionStationNotFoundException;
 import nextstep.subway.station.exception.StationAllNotExistedException;
 import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DistanceNegativeException.class)
     public ErrorResponse handleDistanceNegativeException() {
+        return ErrorResponse.of(ErrorMessage.DISTANCE_NEGATIVE_EXCEPTION.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(SectionStationNotFoundException.class)
+    public ErrorResponse handleSectionStationNotFoundException() {
         return ErrorResponse.of(ErrorMessage.DISTANCE_NEGATIVE_EXCEPTION.getMessage());
     }
 }

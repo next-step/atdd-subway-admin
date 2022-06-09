@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.section.exception.SectionDuplicationException;
+import nextstep.subway.section.exception.SectionStationNotFoundException;
 import nextstep.subway.station.exception.StationAllNotExistedException;
 
 import javax.persistence.CascadeType;
@@ -20,6 +21,36 @@ public class Sections {
         updateUpStation(section);
         updateDownStation(section);
         sections.add(section);
+    }
+
+    public void deleteSection(Long stationId) {
+        Section targetSection = getTargetSection(stationId);
+        cutOffSection(targetSection, stationId);
+        this.sections.remove(targetSection);
+    }
+
+    private void cutOffSection(Section targetSection, Long stationId) {
+        cufOffByUpWard(targetSection, stationId);
+        cufOffByDownWard(targetSection, stationId);
+    }
+
+    private void cufOffByUpWard(Section targetSection, Long stationId) {
+        sections.stream().filter(section -> section.hasUpStation(stationId))
+                .findFirst()
+                .ifPresent(section -> section.changeDownStation(targetSection.getDownStation()));
+    }
+
+    private void cufOffByDownWard(Section targetSection, Long stationId) {
+        sections.stream().filter(section -> section.hasUpStation(stationId))
+                .findFirst()
+                .ifPresent(section -> section.changeUpStation(targetSection.getUpStation()));
+    }
+
+    private Section getTargetSection(Long stationId) {
+        return sections.stream()
+                .filter(section -> section.hasStation(stationId))
+                .findAny()
+                .orElseThrow(SectionStationNotFoundException::new);
     }
 
     private void validateDuplication(Section section) {

@@ -183,7 +183,7 @@ public class SectionAcceptanceTest {
      * WEHN 구간을 삭제하면
      * THEN 존재하는 구간이 삭제된다
      */
-    @DisplayName("새로운 역을 하행 종점으로 생성한다")
+    @DisplayName("구간을 삭제한다")
     @Test
     void 구간_삭제_성공() {
         지하철역과_노선_존재();

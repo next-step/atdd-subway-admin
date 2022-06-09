@@ -47,4 +47,20 @@ public class SectionServiceTest {
 
         assertThat(sectionRequest.getDistance()).isEqualTo(sectionResponse.getDistance());
     }
+
+    @Test
+    void delete() {
+        Station upStation = new Station(1L, "강남역");
+        Station downStation = new Station(2L, "잠실역");
+        Line line = new Line("2호선", "green");
+        SectionRequest sectionRequest = SectionRequest.of(1L, 2L, 10);
+
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
+        when(stationRepository.findById(eq(1L))).thenReturn(Optional.of(upStation));
+        when(stationRepository.findById(eq(2L))).thenReturn(Optional.of(downStation));
+
+        SectionResponse sectionResponse = sectionService.createSection(anyLong(), sectionRequest);
+
+        assertThat(sectionRequest.getDistance()).isEqualTo(sectionResponse.getDistance());
+    }
 }

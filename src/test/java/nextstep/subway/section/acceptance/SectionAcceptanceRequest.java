@@ -58,7 +58,7 @@ public class SectionAcceptanceRequest {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
-                .when().post("/lines/1/sections?stationId=3")
+                .when().delete("/lines/1/sections?stationId=3")
                 .then().log().all()
                 .extract();
     }
