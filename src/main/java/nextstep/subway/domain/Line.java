@@ -41,8 +41,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getAllSectionsSorted() {
-        return this.sections.getAllDistinctStations();
+    public List<Station> getAllDistinctStationsOrderByAscending() {
+        return this.sections.getAllDistinctStationsOrderByAscending();
     }
 
     public void update(String name, String color) {

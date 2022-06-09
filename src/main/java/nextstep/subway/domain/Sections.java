@@ -27,7 +27,7 @@ public class Sections {
         this.sections.add(section);
     }
 
-    public List<Station> getAllDistinctStations() {
+    public List<Station> getAllDistinctStationsOrderByAscending() {
         List<Station> sections = new ArrayList<>();
         Section section = findByUpStationOrNull(ascend);
         while (section != null) {
@@ -84,7 +84,7 @@ public class Sections {
     }
 
     private void checkStationIncluded(Station upStation, Station downStation) {
-        if (getAllDistinctStations().stream().noneMatch(station ->
+        if (getAllDistinctStationsOrderByAscending().stream().noneMatch(station ->
                 Objects.equals(station, upStation) || Objects.equals(station, downStation))) {
             throw new IllegalArgumentException("상행역과 하행역 둘 중 하나는 기존 구간 내 반드시 존재해야 합니다.");
         }
@@ -99,7 +99,7 @@ public class Sections {
     }
 
     private void checkStationIncluded(Station station) {
-        if (getAllDistinctStations().stream().noneMatch(distinctStation -> Objects.equals(distinctStation, station))) {
+        if (getAllDistinctStationsOrderByAscending().stream().noneMatch(distinctStation -> Objects.equals(distinctStation, station))) {
             throw new IllegalArgumentException("구간 내 존재하지 않는 역입니다.");
         }
     }

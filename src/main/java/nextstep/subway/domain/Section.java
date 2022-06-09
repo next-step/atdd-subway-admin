@@ -45,21 +45,25 @@ public class Section {
         this.downStation = station;
     }
 
+    public void updateUpStation(Station station) {
+        this.upStation = station;
+    }
+
     public void updateDistance(int distance) {
         this.distance = distance;
     }
 
     public void connect(Section section) {
         if (this.downStation == section.getDownStation()) {
-            this.downStation = section.getUpStation();
+            updateDownStation(section.getUpStation());
         }
 
         if (this.upStation == section.getUpStation()) {
-            this.upStation = section.getDownStation();
+            updateUpStation(section.getDownStation());
         }
 
         checkDistance(section);
-        this.distance -= section.getDistance();
+        updateDistance(getDistance() - section.getDistance());
     }
 
     private void checkDistance(Section section) {

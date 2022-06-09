@@ -30,7 +30,7 @@ class LineTest {
         line.addSection( 10, addedStation, upStation);
 
         //then
-        assertThat(line.getAllSectionsSorted().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("새로운 "
+        assertThat(line.getAllDistinctStationsOrderByAscending().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("새로운 "
                 + "지하철역", "상행", "하행");
     }
 
@@ -40,7 +40,7 @@ class LineTest {
         line.addSection(10, downStation, addedStation);
 
         //then
-        assertThat(line.getAllSectionsSorted().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("상행", "하행", "새로운 지하철역");
+        assertThat(line.getAllDistinctStationsOrderByAscending().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("상행", "하행", "새로운 지하철역");
     }
 
     @Test
@@ -49,7 +49,7 @@ class LineTest {
         line.addSection(8, upStation, addedStation);
 
         //then
-        assertThat(line.getAllSectionsSorted().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("상행", "새로운 지하철역", "하행");
+        assertThat(line.getAllDistinctStationsOrderByAscending().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("상행", "새로운 지하철역", "하행");
     }
 
     @Test
@@ -61,13 +61,13 @@ class LineTest {
         line.addSection(1, addedStation, new Station(4L, "새로추가된 역에 또 하나 더 추가함"));
 
         //then
-        assertThat(line.getAllSectionsSorted().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("상행", "새로운 지하철역", "새로추가된 역에 또 하나 더 추가함", "하행");
+        assertThat(line.getAllDistinctStationsOrderByAscending().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("상행", "새로운 지하철역", "새로추가된 역에 또 하나 더 추가함", "하행");
 
         //when
         line.addSection( 7, upStation, new Station(5L,  "더 추가하기"));
 
         //then
-        assertThat(line.getAllSectionsSorted().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("상행", "더 추가하기", "새로운 지하철역", "새로추가된 역에 또 하나 더 추가함", "하행");
+        assertThat(line.getAllDistinctStationsOrderByAscending().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("상행", "더 추가하기", "새로운 지하철역", "새로추가된 역에 또 하나 더 추가함", "하행");
     }
 
     @Test
@@ -79,19 +79,19 @@ class LineTest {
         line.deleteSection(addedStation);
 
         //then
-        assertThat(line.getAllSectionsSorted().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("상행", "더 추가하기", "새로추가된 역에 또 하나 더 추가함", "하행");
+        assertThat(line.getAllDistinctStationsOrderByAscending().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("상행", "더 추가하기", "새로추가된 역에 또 하나 더 추가함", "하행");
 
         //when
         line.deleteSection(upStation);
 
         //then
-        assertThat(line.getAllSectionsSorted().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("더 추가하기", "새로추가된 역에 또 하나 더 추가함", "하행");
+        assertThat(line.getAllDistinctStationsOrderByAscending().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("더 추가하기", "새로추가된 역에 또 하나 더 추가함", "하행");
 
         //when
         line.deleteSection(downStation);
 
         //then
-        assertThat(line.getAllSectionsSorted().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("더 추가하기", "새로추가된 역에 또 하나 더 추가함");
+        assertThat(line.getAllDistinctStationsOrderByAscending().stream().map(Station::getName).collect(Collectors.toList())).containsExactly("더 추가하기", "새로추가된 역에 또 하나 더 추가함");
     }
 
     @Test
@@ -103,7 +103,7 @@ class LineTest {
         line.deleteSection(addedStation);
 
         //then
-        assertThat(line.getAllSectionsSorted().stream().map(Station::getName)
+        assertThat(line.getAllDistinctStationsOrderByAscending().stream().map(Station::getName)
                 .collect(Collectors.toList())).containsExactly("상행", "하행");
     }
 
@@ -116,7 +116,7 @@ class LineTest {
         line.deleteSection(upStation);
 
         //then
-        assertThat(line.getAllSectionsSorted().stream().map(Station::getName)
+        assertThat(line.getAllDistinctStationsOrderByAscending().stream().map(Station::getName)
                 .collect(Collectors.toList())).containsExactly("새로운 지하철역", "하행");
     }
 
@@ -129,7 +129,7 @@ class LineTest {
         line.deleteSection(downStation);
 
         //then
-        assertThat(line.getAllSectionsSorted().stream().map(Station::getName)
+        assertThat(line.getAllDistinctStationsOrderByAscending().stream().map(Station::getName)
                 .collect(Collectors.toList())).containsExactly("상행", "새로운 지하철역");
     }
 
