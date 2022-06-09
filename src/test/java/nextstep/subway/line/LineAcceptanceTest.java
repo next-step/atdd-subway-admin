@@ -84,7 +84,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         long lineId = response.body().jsonPath().getLong("id");
 
         // when
-        String lineName = 지하철_노선_조회(lineId);
+        String lineName = 지하철_노선_이름_조회(lineId);
 
         // then
         assertThat(lineName).isEqualTo(name);
@@ -138,8 +138,12 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         return RestAssuredTemplate.get("/lines").body().jsonPath().getList("name", String.class);
     }
 
-    public static String 지하철_노선_조회(long lineId) {
+    public static String 지하철_노선_이름_조회(long lineId) {
         return RestAssuredTemplate.get("/lines/" + lineId).jsonPath().getString("name");
+    }
+
+    public static List<String> 지하철_노선_역_이름_리스트_조회(long lineId) {
+        return RestAssuredTemplate.get("/lines/" + lineId).jsonPath().getList("stations.name");
     }
 
     public static ExtractableResponse<Response> 지하철_노선_수정(long lineId, String name, String color) {

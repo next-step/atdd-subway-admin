@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 public class Section {
@@ -15,7 +17,8 @@ public class Section {
     @ManyToOne(fetch = FetchType.LAZY)
     private Station downStation;
 
-    private Integer distance;
+    @Embedded
+    private Distance distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Line line;
@@ -23,11 +26,45 @@ public class Section {
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, Integer distance, Line line) {
+    public Section(Station upStation, Station downStation, Integer distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
+    }
+
+    public void connectLine(Line line) {
         this.line = line;
+    }
+
+    public void merge(Section section) {
+        if (upStation.equals(section.getUpStation())) {
+            changeUpStation(section.getDownStation());
+            changeDistance(section.getDistance());
+        }
+        if (downStation.equals(section.getDownStation())) {
+            changeDownStation(section.getUpStation());
+            changeDistance(section.getDistance());
+        }
+    }
+
+    public void changeUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void changeDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
+    public void changeDistance(Distance distance) {
+        this.distance = new Distance(this.distance.getValue() - distance.getValue());
+    }
+
+    public boolean isContainAnyStation(Section section) {
+        return upStation.equals(section.getUpStation()) || downStation.equals(section.getDownStation());
+    }
+
+    public List<Station> getLineStations() {
+        return Arrays.asList(upStation, downStation);
     }
 
     public Long getId() {
@@ -42,7 +79,7 @@ public class Section {
         return downStation;
     }
 
-    public Integer getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 

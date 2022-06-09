@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
@@ -26,18 +25,17 @@ public class Line {
     public Line(String name, String color, Station upStation, Station downStation, Integer distance) {
         this.name = name;
         this.color = color;
-        addSection(upStation, downStation, distance);
+        addSection(new Section(upStation, downStation, distance));
     }
 
-    public Section addSection(Station upStation, Station downStation, Integer distance) {
-        Section section = new Section(upStation, downStation, distance, this);
+    public void addSection(Section section) {
         sections.add(section);
-        return section;
+        section.connectLine(this);
     }
 
     public void change(String name, String color) {
-        this.name = requireNonNull(name, "name 값을 입력해주세요.");
-        this.color = requireNonNull(color, "color 값을 입력해주세요.");
+        this.name = requireNonNull(name, "노선 이름을 입력해주세요.");
+        this.color = requireNonNull(color, "노선색을 입력해주세요.");
     }
 
     public Long getId() {
@@ -56,7 +54,4 @@ public class Line {
         return sections;
     }
 
-    public List<Station> getStations() {
-        return sections.getStations();
-    }
 }
