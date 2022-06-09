@@ -20,13 +20,13 @@ public class Sections {
 
     public void add(Section section) {
         if (!sections.isEmpty()) {
-            Section connectionSection = findConnectionSection(section);
+            Section connectionSection = findConnectableSection(section);
             connectionSection.merge(section);
         }
         sections.add(section);
     }
 
-    private Section findConnectionSection(Section section) {
+    private Section findConnectableSection(Section section) {
         return sections.stream()
                 .filter(s -> s.isContainAnyStation(section))
                 .findFirst()

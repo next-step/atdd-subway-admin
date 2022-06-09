@@ -55,6 +55,27 @@ class SectionsTest {
         );
     }
 
+    @Test
+    void 새로운_역을_상행_종점으로_등록할_경우() {
+        // given
+        final Sections sections = new Sections();
+        Section section1 = new Section(강남역, 광교역, 7);
+        Section section2 = new Section(양재역, 강남역, 4);
+        sections.add(section1);
+
+        // when
+        sections.add(section2);
+        List<Station> stations = sections.getStationsInOrder();
+
+        // then
+        assertAll(
+                () -> assertThat(toStationNames(stations)).containsExactly(양재역.getName(), 강남역.getName(), 광교역.getName()),
+                () -> assertThat(section1.getDistance()).isEqualTo(new Distance(7)),
+                () -> assertThat(section2.getDistance()).isEqualTo(new Distance(4))
+        );
+
+    }
+
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
     @Test
     void 구간_등록_시_예외_케이스() {

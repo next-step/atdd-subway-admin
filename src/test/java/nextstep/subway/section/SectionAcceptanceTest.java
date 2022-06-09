@@ -41,7 +41,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     /**
-     * When 지하철역 사이에 새로운 역을 등록할 경우
+     * When 지하철역 사이에 새로운 역을 등록한다
      * Then 등록 성공 응답을 반환한다
      * Then 정상적으로 추가된 지하철역 리스트를 확인한다
      */
@@ -56,9 +56,20 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(stationNames).containsExactly("강남역", "양재역", "광교역");
     }
 
+    /**
+     * When 새로운 역을 상행 종점으로 등록한다
+     * Then 등록 성공 응답을 반환한다
+     * Then 정상적으로 추가된 지하철역 리스트를 확인한다
+     */
     @Test
     void 새로운_역을_상행_종점으로_등록() {
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_생성됨(신분당선.getId(), 양재역_ID, 강남역_ID, 4);
+        List<String> stationNames = 지하철_노선_역_이름_리스트_조회(신분당선.getId());
 
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(stationNames).containsExactly("양재역", "강남역", "광교역");
     }
 
     @Test
@@ -67,7 +78,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     /**
-     * When 지하철역 사이에 기존 역 사이 길이보다 크거나 같은 구간을 등록할 경우
+     * When 지하철역 사이에 기존 역 사이 길이보다 크거나 같은 구간을 등록한다
      * Then 등록 실패 응답을 반환한다
      */
     @Test

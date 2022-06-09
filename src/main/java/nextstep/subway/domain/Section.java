@@ -45,6 +45,7 @@ public class Section {
             changeDownStation(section.getUpStation());
             changeDistance(section.getDistance());
         }
+
     }
 
     public void changeUpStation(Station upStation) {
@@ -60,10 +61,10 @@ public class Section {
     }
 
     public boolean isContainAnyStation(Section section) {
-        return upStation.equals(section.getUpStation()) || downStation.equals(section.getDownStation());
+        return section.getLineStations().contains(upStation) || section.getLineStations().contains(downStation);
     }
 
-    public List<Station> getLineStations() {
+    private List<Station> getLineStations() {
         return Arrays.asList(upStation, downStation);
     }
 
