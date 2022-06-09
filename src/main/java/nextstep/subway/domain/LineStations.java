@@ -57,6 +57,13 @@ public class LineStations {
         return stations.stream().distinct().sorted().collect(Collectors.toList());
     }
 
+    public void removeLineStationBy(final LineStation lineStation) {
+        this.lineStations.remove(lineStation);
+        if (Objects.nonNull(lineStation.getLine())) {
+            lineStation.getLine().removeLineStation(lineStation);
+        }
+    }
+
     public List<Section> getSections() {
         return getLineStations().stream().map(LineStation::getSection).collect(Collectors.toList());
     }

@@ -68,6 +68,13 @@ public class Line extends BaseEntity {
         return lineStations;
     }
 
+    public void removeLineStation(final LineStation removeLineStation) {
+        if (Objects.equals(removeLineStation.getLine(), this)) {
+            removeLineStation.updateLineBy(null);
+            this.lineStations.removeLineStationBy(removeLineStation);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

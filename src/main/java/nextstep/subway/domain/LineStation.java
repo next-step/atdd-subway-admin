@@ -77,6 +77,10 @@ public class LineStation extends BaseEntity {
         return newLineStation;
     }
 
+    public void updateLineBy(final Line line) {
+        this.line = line;
+    }
+
     public Section getSection() {
         return section;
     }
