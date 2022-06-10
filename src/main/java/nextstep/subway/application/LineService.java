@@ -32,9 +32,7 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
-        List<Line> lines = lineRepository.findAll();
-
-        return lines.stream()
+        return lineRepository.findAll().stream()
                 .map(line -> LineResponse.of(line))
                 .collect(Collectors.toList());
     }
