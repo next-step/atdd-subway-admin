@@ -1,12 +1,13 @@
 package nextstep.subway.domain;
 
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import nextstep.subway.dto.LineRequest;
+import org.hibernate.Hibernate;
 
 @Entity
 public class Line extends BaseEntity {
@@ -19,7 +20,7 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String color;
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color) {
@@ -43,5 +44,23 @@ public class Line extends BaseEntity {
         this.name = lineRequest.getName();
         this.color = lineRequest.getColor();
         return this;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        Line line = (Line) o;
+        return id != null && Objects.equals(id, line.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

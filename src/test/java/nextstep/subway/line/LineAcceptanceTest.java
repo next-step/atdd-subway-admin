@@ -7,35 +7,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.AcceptanceTest;
 import nextstep.subway.dto.LineRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
 
-@Sql({"/static/sql/truncate.sql"})
 @DisplayName("지하철 노선 관련 기능")
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest {
-
-    @LocalServerPort
-    int port;
+public class LineAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     ObjectMapper objectMapper;
-
-    @BeforeEach
-    void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-    }
 
     /**
      * When 지하철 노선을 생성하면
@@ -63,14 +47,11 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> postResponse1 = 지하철노선_생성_요청("신분당선", "bg-red-600", 1, 2, 10);
         ExtractableResponse<Response> postResponse2 = 지하철노선_생성_요청("분당선", "bg-green-600", 3, 4, 10);
 
-        assertThat(postResponse1.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(postResponse2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
         // when
         ExtractableResponse<Response> getResponse = 지하철노선_목록_조회_요청();
-        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(getResponse.jsonPath().getList("name")).contains("신분당선", "분당선");
     }
 
@@ -81,11 +62,13 @@ public class LineAcceptanceTest {
      */
     @Test
     void 지하철노선_조회() throws JsonProcessingException {
-        //given
+        // given
         ExtractableResponse<Response> postResponse = 지하철노선_생성_요청("신분당선", "bg-red-600", 1, 2, 10);
 
-        // then
+        // when
         ExtractableResponse<Response> getResponse = 지하철노선_조회_요청(postResponse.jsonPath().getLong("id"));
+
+        // then
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -103,7 +86,7 @@ public class LineAcceptanceTest {
         String putRequestBody = objectMapper.writeValueAsString(new LineRequest("5호선", "bg-red-500", 1, 2, 10));
         ExtractableResponse<Response> putResponse = 지하철노선_수정_요청(id, putRequestBody);
 
-        //then
+        // then
         assertThat(putResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(putResponse.body().jsonPath().getString("color")).isEqualTo("bg-red-500");
     }

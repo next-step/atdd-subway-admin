@@ -2,6 +2,7 @@ package nextstep.subway.application;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.dto.LineRequest;
@@ -26,17 +27,15 @@ public class LineService {
     }
 
     public List<LineResponse> readLines() {
-        List<LineResponse> lineResponses = new ArrayList<>();
-        List<Line> lines = lineRepository.findAll();
-        for (Line line : lines) {
-            lineResponses.add(LineResponse.from(line));
-        }
-        return lineResponses;
+        return lineRepository.findAll().stream()
+//                .map(line -> LineResponse.from(line))
+                .map(LineResponse::from)
+                .collect(Collectors.toList());
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Line persistLine = lineRepository.save(lineRequest.toLine());
+        Line persistLine = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
         return LineResponse.from(persistLine);
     }
 
