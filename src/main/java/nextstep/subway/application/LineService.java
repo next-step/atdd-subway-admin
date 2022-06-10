@@ -70,10 +70,6 @@ public class LineService {
         return stationRepository.findById(stationId).orElseThrow(NoSuchElementException::new);
     }
 
-    private Station findStationByIdOrElseNull(Long stationId) {
-        return stationRepository.findById(stationId).orElse(null);
-    }
-
     public void deleteSection(long id, long stationId) {
         Line persistLine = findLineById(id);
         Station station = findStationById(stationId);
