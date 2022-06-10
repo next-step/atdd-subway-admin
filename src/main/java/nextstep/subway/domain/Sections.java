@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Embeddable
 public class Sections {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
