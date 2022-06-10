@@ -3,22 +3,22 @@ package nextstep.subway.utils;
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
-import java.util.Map;
 import org.springframework.http.MediaType;
 
-public class RestAssuredUtils {
+public class RestAssuredUtils<T> {
 
     private static RequestSpecification requestSpecification;
 
     static {
         requestSpecification = RestAssured.given()
             .log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE);
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE);
     }
 
-    public static ValidatableResponse post(final String urlTemplate, final Map<String, String> requestParam) {
+    public static <T> ValidatableResponse post(final String urlTemplate, T request) {
         return requestSpecification.when()
-            .body(requestParam)
+            .body(request)
             .post(urlTemplate)
             .then().log().all();
     }
@@ -30,9 +30,12 @@ public class RestAssuredUtils {
     }
 
     public static ValidatableResponse delete(final String urlTemplate, final String path) {
-        final String endpoint = String.format(urlTemplate.concat("/%s"), path);
         return requestSpecification.when()
-            .delete(endpoint)
+            .delete(makeUrlTemplate(urlTemplate, path))
             .then().log().all();
+    }
+
+    private static String makeUrlTemplate(String urlTemplate, String path) {
+        return String.format(urlTemplate.concat("/%s"), path);
     }
 }
