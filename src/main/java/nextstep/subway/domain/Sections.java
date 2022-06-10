@@ -43,7 +43,7 @@ public class Sections {
     }
 
     private Optional<Section> findByUpStation(Station station) {
-        return this.sections.stream().filter(it -> Objects.equals(it.getUpStation(), station)).findFirst();
+        return this.sections.stream().filter(section -> section.isUpStationEquals(station)).findFirst();
     }
 
     public void add(Line line, int distance, Station upStation, Station downStation) {
@@ -113,13 +113,13 @@ public class Sections {
 
     private Section findIncludingUpStationSectionBy(Station upStation) {
         return this.sections.stream()
-                .filter(section -> Objects.equals(section.getUpStation(), upStation))
+                .filter(section -> section.isUpStationEquals(upStation))
                 .findAny().orElse(null);
     }
 
     private Section findIncludingDownStationSectionBy(Station downStation) {
         return this.sections.stream()
-                .filter(section -> Objects.equals(section.getDownStation(), downStation))
+                .filter(section -> section.isDownStationEquals(downStation))
                 .findAny().orElse(null);
     }
 
