@@ -21,6 +21,7 @@ public class Sections {
     }
 
     public void add(Section section) {
+        validateStations(section.getUpStation(), section.getDownStation());
         sectionList.add(section);
     }
 
@@ -64,6 +65,21 @@ public class Sections {
         if (newSectionDistance >= existingSectionDistance) {
             throw new IllegalArgumentException("등록하고자 하는 구간의 거리가 역 사이 길이보다 크거나 같습니다.");
         }
+    }
+
+    private void validateStations(Station newUpStation, Station newDownStation) {
+        if (hasStation(newUpStation) && hasStation(newDownStation)) {
+            throw new IllegalArgumentException("두 역 모두 이미 등록된 역입니다.");
+        }
+
+        if (!hasStation(newUpStation) && !hasStation(newDownStation)) {
+            throw new IllegalArgumentException("두 역 모두 등록되지 않은 역입니다.");
+        }
+    }
+
+    private boolean hasStation(Station station) {
+        return getSectionList().stream()
+                .anyMatch(section -> section.getUpStation().equals(station) || section.getDownStation().equals(station));
     }
 
 }

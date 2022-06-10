@@ -54,8 +54,6 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        validateStations(section.getUpStation(), section.getDownStation());
-
         if (upStation.equals(section.getDownStation())) {
             changeUpStation(section.getUpStation(), section.getDistance());
             return ;
@@ -69,20 +67,6 @@ public class Line extends BaseEntity {
         sections.addSectionBetweenTwoStation(section.getUpStation(), section.getDownStation(), section.getDistance());
     }
 
-    private void validateStations(Station newUpStation, Station newDownStation) {
-        if (hasStation(newUpStation) && hasStation(newDownStation)) {
-            throw new IllegalArgumentException("두 역 모두 이미 등록된 역입니다.");
-        }
-
-        if (!hasStation(newUpStation) && !hasStation(newDownStation)) {
-            throw new IllegalArgumentException("두 역 모두 등록되지 않은 역입니다.");
-        }
-    }
-
-    private boolean hasStation(Station station) {
-        return getSections().stream()
-                .anyMatch(section -> section.getUpStation().equals(station) || section.getDownStation().equals(station));
-    }
 
     private void changeUpStation(Station newUpStation, long newSectionDistance) {
         Optional<Section> upStationSection = getSections().stream()
