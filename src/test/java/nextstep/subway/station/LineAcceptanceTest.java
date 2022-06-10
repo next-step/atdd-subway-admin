@@ -2,27 +2,36 @@ package nextstep.subway.station;
 
 import static nextstep.subway.utils.AssertionsUtils.assertCreated;
 import static nextstep.subway.utils.AssertionsUtils.assertOk;
-import static nextstep.subway.utils.ResponseBodyExtractUtils.getId;
+import static nextstep.subway.utils.LineAcceptanceTestUtils.generateLine;
 import static nextstep.subway.utils.RestAssuredUtils.get;
-import static nextstep.subway.utils.RestAssuredUtils.post;
-import static nextstep.subway.utils.StationsAcceptanceUtils.generateStation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-import nextstep.subway.dto.line.CreateLineRequest;
+import nextstep.subway.utils.TearDownUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestConstructor;
+import org.springframework.test.context.TestConstructor.AutowireMode;
 
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@TestConstructor(autowireMode = AutowireMode.ALL)
+@Import(TearDownUtils.class)
 public class LineAcceptanceTest {
+
+    private final TearDownUtils tearDownUtils;
+
+    public LineAcceptanceTest(TearDownUtils tearDownUtils) {
+        this.tearDownUtils = tearDownUtils;
+    }
 
     @LocalServerPort
     int port;
@@ -32,32 +41,19 @@ public class LineAcceptanceTest {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        tearDownUtils.clearUpDatabase();
     }
 
     public static final String LINE_BASE_URL = "/lines";
 
     /**
-     * When 지하철 노선을 생성하면
-     * Then 지하철 목록 정보에서 생성한 지하철 노선을 찾을 수 있다.
+     * When 지하철 노선을 생성하면 Then 지하철 목록 정보에서 생성한 지하철 노선을 찾을 수 있다.
      */
     @Test
     @DisplayName("지하철 노선을 생성한다.")
     public void createLine() {
-        // Given
-        final String upStationName = "강남역";
-        final String downStationName = "판교역";
-        Response upStation = generateStation(upStationName);
-        Response downStation = generateStation(downStationName);
-        final CreateLineRequest createLineRequest = new CreateLineRequest(
-            "신분당선",
-            "bg-red-600",
-            Long.parseLong(getId(upStation)),
-            Long.parseLong(getId(downStation)),
-            10
-        );
-
         // When
-        Response createLineResponse = post(LINE_BASE_URL, createLineRequest).extract().response();
+        Response createLineResponse = generateLine("신분당선", "강남역", "판교역");
         Response getAllStationsResponse = get(LINE_BASE_URL).extract().response();
 
         // Then
@@ -65,13 +61,38 @@ public class LineAcceptanceTest {
         JsonPath getAllStationsResponseBody = getAllStationsResponse.jsonPath();
         assertAll(
             () -> assertCreated(createLineResponse),
-            () -> assertThat(createLineResponseBody.getString("name")).isEqualTo(createLineRequest.getName()),
+            () -> assertThat(createLineResponseBody.getString("name")).isEqualTo("신분당선"),
             () -> assertThat(createLineResponseBody.getList("stations.name"))
-                .containsAnyOf(upStationName, downStationName),
+                .containsAnyOf("강남역", "판교역"),
             () -> assertOk(getAllStationsResponse),
             () -> assertThat(getAllStationsResponseBody.getList("name"))
                 .as("지하철 목록 정보에서 생성한 지하철 노선 포함 여부 검증")
-                .containsAnyOf(createLineRequest.getName())
+                .containsAnyOf("신분당선")
+        );
+    }
+
+    /**
+     * Given 2개의 지하철 노선을 생성하고 When 지하철 목록 정보를 조회하면 Then 생성한 지하철 노선 정보를 찾을 수 있다.
+     */
+    @Test
+    @DisplayName("지하철 노선 목록을 조회한다.")
+    public void getAllStations() {
+        // Given
+        Response createFirstLineResponse = generateLine("신분당선", "강남역", "판교역");
+        Response createSecondLineResponse = generateLine("분당선", "문정역", "야탑역");
+
+        // When
+        Response getAllStationsResponse = get(LINE_BASE_URL).extract().response();
+
+        // Then
+        JsonPath jsonPath = getAllStationsResponse.jsonPath();
+        assertAll(
+            () -> assertCreated(createFirstLineResponse),
+            () -> assertCreated(createSecondLineResponse),
+            () -> assertOk(getAllStationsResponse),
+            () -> assertThat(jsonPath.getList("name"))
+                .as("지하철 목록 정보에서 생성한 지하철 노선 포함 여부 검증")
+                .containsAnyOf("신분당선", "분당선")
         );
     }
 }
