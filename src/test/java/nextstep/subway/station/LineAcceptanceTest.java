@@ -5,12 +5,14 @@ import static nextstep.subway.utils.AssertionsUtils.assertOk;
 import static nextstep.subway.utils.LineAcceptanceTestUtils.generateLine;
 import static nextstep.subway.utils.ResponseBodyExtractUtils.getId;
 import static nextstep.subway.utils.RestAssuredUtils.get;
+import static nextstep.subway.utils.RestAssuredUtils.put;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import nextstep.subway.dto.UpdateLineRequest;
 import nextstep.subway.utils.TearDownUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -117,6 +119,31 @@ public class LineAcceptanceTest {
             () -> assertThat(jsonPath.getString("name")).isEqualTo("신분당선"),
             () -> assertThat(jsonPath.getList("stations.name"))
                 .containsAnyOf("강남역", "판교역")
+        );
+    }
+
+    /**
+     * Given 1개의 지하철 노선을 생성하고 When 지하철 노선을 수정하면 Then 지하철 노선이 수정된다.
+     */
+    @Test
+    @DisplayName("지하철 노선을 수정한다.")
+    public void updateLine() {
+        // Given
+        Response createLineResponse = generateLine("신분당선", "강남역", "판교역");
+        String lineId = getId(createLineResponse);
+        UpdateLineRequest updateLineRequest = new UpdateLineRequest("분당선", "bg-yellow-600");
+
+        // When
+        Response updateLineResponse = put(LINE_BASE_URL, lineId, updateLineRequest).extract().response();
+        Response getLineByIdResponse = get(LINE_BASE_URL, lineId).extract().response();
+
+        // Then
+        JsonPath getLineByIdResponseBody = getLineByIdResponse.jsonPath();
+        assertAll(
+            () -> assertOk(updateLineResponse),
+            () -> assertOk(getLineByIdResponse),
+            () -> assertThat(getLineByIdResponseBody.getString("name")).isEqualTo(updateLineRequest.getName()),
+            () -> assertThat(getLineByIdResponseBody.getString("color")).isEqualTo(updateLineRequest.getColor())
         );
     }
 }

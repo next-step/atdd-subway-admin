@@ -3,6 +3,7 @@ package nextstep.subway.utils;
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
+import nextstep.subway.dto.UpdateLineRequest;
 import org.springframework.http.MediaType;
 
 public class RestAssuredUtils<T> {
@@ -38,6 +39,13 @@ public class RestAssuredUtils<T> {
     public static ValidatableResponse delete(final String urlTemplate, final String path) {
         return requestSpecification.when()
             .delete(makeUrlTemplate(urlTemplate, path))
+            .then().log().all();
+    }
+
+    public static ValidatableResponse put(String urlTemplate, String path, UpdateLineRequest updateLineRequest) {
+        return requestSpecification.when()
+            .body(updateLineRequest)
+            .put(makeUrlTemplate(urlTemplate, path))
             .then().log().all();
     }
 

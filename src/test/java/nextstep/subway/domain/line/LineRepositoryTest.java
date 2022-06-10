@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import javax.persistence.EntityManager;
 import nextstep.subway.domain.station.Station;
+import nextstep.subway.dto.UpdateLineRequest;
 import nextstep.subway.generator.StationGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -102,20 +103,19 @@ class LineRepositoryTest {
     @DisplayName("특정 지하철 노선 Entity 수정")
     public void updateNameAndColor() {
         // Given
-        final String newName = "분당선";
-        final String newColor = "bg-yellow-600";
+        final UpdateLineRequest updateLineRequest = new UpdateLineRequest("분당선", "bg-yellow-600");
 
         final Line given = new Line(name, color, upStation, downStation, distance);
         lineRepository.saveAndFlush(given);
 
         // When
-        given.updateColor(newName, newColor);
+        given.updateColor(updateLineRequest);
         entityManager.flush();
 
         // Then
         assertAll(
-            () -> assertThat(given.getName()).isEqualTo(newName),
-            () -> assertThat(given.getColor()).isEqualTo(newColor)
+            () -> assertThat(given.getName()).isEqualTo(updateLineRequest.getName()),
+            () -> assertThat(given.getColor()).isEqualTo(updateLineRequest.getColor())
         );
     }
 

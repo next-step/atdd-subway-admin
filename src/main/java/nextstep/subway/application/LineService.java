@@ -2,9 +2,11 @@ package nextstep.subway.application;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRepository;
+import nextstep.subway.dto.UpdateLineRequest;
 import nextstep.subway.dto.line.CreateLineRequest;
 import nextstep.subway.dto.line.LineResponse;
 import org.springframework.stereotype.Service;
@@ -41,6 +43,17 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        return LineResponse.of(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        return LineResponse.of(findLine(id));
+    }
+
+    @Transactional
+    public void updateLine(Long id, UpdateLineRequest updateLineRequest) {
+        Line line = findLine(id);
+        line.updateColor(updateLineRequest);
+    }
+
+    private Line findLine(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(IllegalArgumentException::new);
     }
 }

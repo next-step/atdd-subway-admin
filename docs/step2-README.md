@@ -157,7 +157,18 @@ API 명세
         ]
     }
     ```
-- [ ] 특정 지하철 노선 수정 API
+- [x] 특정 지하철 노선 수정 API
+  - [x] Service
+    - 요청 객체 정의
+  - [x] Controller
+    - 요청 : PUT /lines/{id}
+    ```
+    {
+        "name": "분당선",
+        "color": "bg-yellow-600"
+    }
+    ```
+    - 응답 : 200 OK
 - [ ] 특정 지하철 노선 삭제 API
 
 ---

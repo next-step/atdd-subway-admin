@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import nextstep.subway.domain.common.BaseEntity;
 import nextstep.subway.domain.station.Station;
+import nextstep.subway.dto.UpdateLineRequest;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(name = "UK_LINE_NAME", columnNames = "name"))
@@ -82,8 +83,8 @@ public class Line extends BaseEntity {
         return distance;
     }
 
-    public void updateColor(String newName, String newColor) {
-        this.name = newName;
-        this.color = newColor;
+    public void updateColor(UpdateLineRequest updateLineRequest) {
+        this.name = updateLineRequest.getName();
+        this.color = updateLineRequest.getColor();
     }
 }
