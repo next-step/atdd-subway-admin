@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
-import nextstep.subway.util.LineTestUtil;
-import nextstep.subway.util.SectionTestUtil;
-import nextstep.subway.util.StationTestUtil;
+import nextstep.subway.util.LineAcceptanceMethods;
+import nextstep.subway.util.SectionAcceptanceMethods;
+import nextstep.subway.util.StationAcceptanceMethods;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -24,9 +24,9 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
     @BeforeEach
     @Order(1)
     public void setUp() {
-        defaultUpStationId = StationTestUtil.createStation("강남역").jsonPath().getLong("id");
-        defaultDownStationId = StationTestUtil.createStation("광교중앙역").jsonPath().getLong("id");
-        defaultLineId = LineTestUtil.createLine("신분당선", "red", defaultUpStationId, defaultDownStationId, 10).jsonPath()
+        defaultUpStationId = StationAcceptanceMethods.createStation("강남역").jsonPath().getLong("id");
+        defaultDownStationId = StationAcceptanceMethods.createStation("광교중앙역").jsonPath().getLong("id");
+        defaultLineId = LineAcceptanceMethods.createLine("신분당선", "red", defaultUpStationId, defaultDownStationId, 10).jsonPath()
                 .getLong("id");
     }
 
@@ -40,11 +40,11 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         // BeforeEach 에서 실행
 
         // then
-        Long midStationId = StationTestUtil.createStation("동천역").jsonPath().getLong("id");
-        SectionTestUtil.addSection(defaultLineId, midStationId, defaultDownStationId, 3);
+        Long midStationId = StationAcceptanceMethods.createStation("동천역").jsonPath().getLong("id");
+        SectionAcceptanceMethods.addSection(defaultLineId, midStationId, defaultDownStationId, 3);
 
         // then
-        ExtractableResponse<Response> response = LineTestUtil.getLine(defaultLineId);
+        ExtractableResponse<Response> response = LineAcceptanceMethods.getLine(defaultLineId);
         assertThat(response.jsonPath().getList("stations.name", String.class)).containsAnyOf("동천역");
     }
 
@@ -58,11 +58,11 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         // BeforeEach 에서 실행
 
         // then
-        Long upStationId = StationTestUtil.createStation("신논현").jsonPath().getLong("id");
-        SectionTestUtil.addSection(defaultLineId, upStationId, defaultUpStationId, 5);
+        Long upStationId = StationAcceptanceMethods.createStation("신논현").jsonPath().getLong("id");
+        SectionAcceptanceMethods.addSection(defaultLineId, upStationId, defaultUpStationId, 5);
 
         // then
-        ExtractableResponse<Response> response = SectionTestUtil.getAllSections(defaultLineId);
+        ExtractableResponse<Response> response = SectionAcceptanceMethods.getAllSections(defaultLineId);
         assertThat(response.jsonPath().getLong("[0].upStation.id")).isEqualTo(upStationId);
         assertThat(response.jsonPath().getLong("[0].downStation.id")).isEqualTo(defaultUpStationId);
         assertThat(response.jsonPath().getInt("[0].distance")).isEqualTo(5);
@@ -78,11 +78,11 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         // BeforeEach 에서 실행
 
         // then
-        Long downStationId = StationTestUtil.createStation("광교역").jsonPath().getLong("id");
-        SectionTestUtil.addSection(defaultLineId, defaultDownStationId, downStationId, 7);
+        Long downStationId = StationAcceptanceMethods.createStation("광교역").jsonPath().getLong("id");
+        SectionAcceptanceMethods.addSection(defaultLineId, defaultDownStationId, downStationId, 7);
 
         // then
-        ExtractableResponse<Response> response = SectionTestUtil.getAllSections(defaultLineId);
+        ExtractableResponse<Response> response = SectionAcceptanceMethods.getAllSections(defaultLineId);
         assertThat(response.jsonPath().getLong("[1].upStation.id")).isEqualTo(defaultDownStationId);
         assertThat(response.jsonPath().getLong("[1].downStation.id")).isEqualTo(downStationId);
         assertThat(response.jsonPath().getInt("[1].distance")).isEqualTo(7);
@@ -98,14 +98,14 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         // BeforeEach 에서 실행
 
         // then
-        Long downStationId = StationTestUtil.createStation("광교역").jsonPath().getLong("id");
-        SectionTestUtil.addSection(defaultLineId, defaultDownStationId, downStationId, 7);
+        Long downStationId = StationAcceptanceMethods.createStation("광교역").jsonPath().getLong("id");
+        SectionAcceptanceMethods.addSection(defaultLineId, defaultDownStationId, downStationId, 7);
 
-        Long middleStationId = StationTestUtil.createStation("판교역").jsonPath().getLong("id");
-        SectionTestUtil.addSection(defaultLineId, middleStationId, defaultDownStationId, 3);
+        Long middleStationId = StationAcceptanceMethods.createStation("판교역").jsonPath().getLong("id");
+        SectionAcceptanceMethods.addSection(defaultLineId, middleStationId, defaultDownStationId, 3);
 
         // then
-        ExtractableResponse<Response> response = SectionTestUtil.getAllSections(defaultLineId);
+        ExtractableResponse<Response> response = SectionAcceptanceMethods.getAllSections(defaultLineId);
         assertThat(response.jsonPath().getLong("[1].upStation.id")).isEqualTo(middleStationId);
         assertThat(response.jsonPath().getLong("[1].downStation.id")).isEqualTo(defaultDownStationId);
         assertThat(response.jsonPath().getInt("[1].distance")).isEqualTo(3);
@@ -121,8 +121,8 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         // BeforeEach 에서 실행
 
         // then
-        Long middleStationId = StationTestUtil.createStation("동천역").jsonPath().getLong("id");
-        ExtractableResponse<Response> response = SectionTestUtil.addSection(defaultLineId, middleStationId,
+        Long middleStationId = StationAcceptanceMethods.createStation("동천역").jsonPath().getLong("id");
+        ExtractableResponse<Response> response = SectionAcceptanceMethods.addSection(defaultLineId, middleStationId,
                 defaultDownStationId, 15);
 
         // then
@@ -139,7 +139,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         // BeforeEach 에서 실행
 
         // then
-        ExtractableResponse<Response> response = SectionTestUtil.addSection(defaultLineId, defaultUpStationId,
+        ExtractableResponse<Response> response = SectionAcceptanceMethods.addSection(defaultLineId, defaultUpStationId,
                 defaultDownStationId, 3);
 
         // then
@@ -154,11 +154,11 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
     void addSectionOfExistStations() {
         // when
         // BeforeEach 에서 실행
-        Long upStationId = StationTestUtil.createStation("신논현").jsonPath().getLong("id");
-        SectionTestUtil.addSection(defaultLineId, upStationId, defaultUpStationId, 5);
+        Long upStationId = StationAcceptanceMethods.createStation("신논현").jsonPath().getLong("id");
+        SectionAcceptanceMethods.addSection(defaultLineId, upStationId, defaultUpStationId, 5);
 
         // then
-        ExtractableResponse<Response> response = SectionTestUtil.addSection(defaultLineId, defaultDownStationId,
+        ExtractableResponse<Response> response = SectionAcceptanceMethods.addSection(defaultLineId, defaultDownStationId,
                 defaultUpStationId, 4);
 
         // then

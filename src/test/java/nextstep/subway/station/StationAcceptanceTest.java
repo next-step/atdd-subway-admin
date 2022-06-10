@@ -6,7 +6,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.dto.StationResponse;
-import nextstep.subway.util.StationTestUtil;
+import nextstep.subway.util.StationAcceptanceMethods;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -21,13 +21,13 @@ class StationAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> createResponse = StationTestUtil.createStation("강남역");
+        ExtractableResponse<Response> createResponse = StationAcceptanceMethods.createStation("강남역");
 
         // then
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        ExtractableResponse<Response> response = StationTestUtil.getAllStations();
+        ExtractableResponse<Response> response = StationAcceptanceMethods.getAllStations();
         assertThat(response.jsonPath().getList("name", String.class)).containsAnyOf("강남역");
     }
 
@@ -38,10 +38,10 @@ class StationAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        StationTestUtil.createStation("강남역");
+        StationAcceptanceMethods.createStation("강남역");
 
         // when
-        ExtractableResponse<Response> response = StationTestUtil.createStation("강남역");
+        ExtractableResponse<Response> response = StationAcceptanceMethods.createStation("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -54,11 +54,11 @@ class StationAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void getStations() {
         // given
-        StationTestUtil.createStation("강남역");
-        StationTestUtil.createStation("삼성역");
+        StationAcceptanceMethods.createStation("강남역");
+        StationAcceptanceMethods.createStation("삼성역");
 
         // when
-        ExtractableResponse<Response> response = StationTestUtil.getAllStations();
+        ExtractableResponse<Response> response = StationAcceptanceMethods.getAllStations();
 
         // then
         assertThat(response.jsonPath().getList("$", StationResponse.class)).hasSize(2);
@@ -72,13 +72,13 @@ class StationAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = StationTestUtil.createStation("강남역");
+        ExtractableResponse<Response> createResponse = StationAcceptanceMethods.createStation("강남역");
 
         // when
-        StationTestUtil.deleteStation(createResponse.jsonPath().getLong("id"));
+        StationAcceptanceMethods.deleteStation(createResponse.jsonPath().getLong("id"));
 
         // then
-        ExtractableResponse<Response> response = StationTestUtil.getAllStations();
+        ExtractableResponse<Response> response = StationAcceptanceMethods.getAllStations();
         assertThat(response.jsonPath().getList("name", String.class)).doesNotContain("강남역");
     }
 }

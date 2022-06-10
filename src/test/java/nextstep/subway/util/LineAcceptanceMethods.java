@@ -6,7 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
 import org.springframework.http.MediaType;
 
-public class LineTestUtil {
+public class LineAcceptanceMethods {
     public static ExtractableResponse<Response> createLine(String lineName, String lineColor, Long upStationId,
                                                            Long downStationId, Integer distance) {
         LineRequest request = new LineRequest(lineName, lineColor, upStationId, downStationId, distance);
