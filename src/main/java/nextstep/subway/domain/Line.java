@@ -61,7 +61,6 @@ public class Line extends BaseEntity {
     }
 
     public void update(Line newLine) {
-        System.out.println("### line.update - newName:" + newLine.getName() + ", newColor:" + newLine.getColor());
         this.name = newLine.getName();
         this.color = newLine.getColor();
     }
