@@ -9,6 +9,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class LineService {
     public static final String ERROR_MESSAGE_UP_STATION_NOT_EXISTS = "상행종점 역이 존재하지 않습니다.";
     public static final String ERROR_MESSAGE_DOWN_STATION_NOT_EXISTS = "하행종점 역이 존재하지 않습니다.";
+    public static final String ERROR_MESSAGE_LINE_NOT_EXISTS = "해당 노선이 존재하지 않습니다.";
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
@@ -29,25 +31,28 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Line persistLine = lineRepository.save(lineRequest.toLine());
 
-        Station upStation = stationRepository.getById(lineRequest.getUpStationId());
-        Station downStation = stationRepository.getById(lineRequest.getDownStationId());
-        validateExistsOfStations(upStation, downStation);
-
-        Section firstSection = new Section(persistLine.getId(), upStation, downStation, lineRequest.getDistance());
-        persistLine.addSection(firstSection);
+        addSection(persistLine, lineRequest.getUpStationId(), lineRequest.getDownStationId(),
+                lineRequest.getDistance());
 
         return LineResponse.from(persistLine);
     }
 
-    private void validateExistsOfStations(Station upStation, Station downStation) {
-        validateExistsOfStation(upStation, ERROR_MESSAGE_UP_STATION_NOT_EXISTS);
-        validateExistsOfStation(downStation, ERROR_MESSAGE_DOWN_STATION_NOT_EXISTS);
+    public void addSectionByRequest(Long lineId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new DataIntegrityViolationException(ERROR_MESSAGE_LINE_NOT_EXISTS));
+
+        addSection(line, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
+                sectionRequest.getDistance());
     }
 
-    private void validateExistsOfStation(Station station, String errorMessage) {
-        if (station == null) {
-            throw new DataIntegrityViolationException(errorMessage);
-        }
+    private void addSection(Line line, Long upStationId, Long downStationId, Integer distance) {
+        Station upStation = stationRepository.findById(upStationId)
+                .orElseThrow(() -> new DataIntegrityViolationException(ERROR_MESSAGE_UP_STATION_NOT_EXISTS));
+        Station downStation = stationRepository.findById(downStationId)
+                .orElseThrow(() -> new DataIntegrityViolationException(ERROR_MESSAGE_DOWN_STATION_NOT_EXISTS));
+
+        Section section = new Section(line.getId(), upStation, downStation, distance);
+        line.addSection(section);
     }
 
     @Transactional(readOnly = true)
