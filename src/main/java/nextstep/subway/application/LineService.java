@@ -1,11 +1,13 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.*;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +52,7 @@ public class LineService {
     }
 
     @Transactional
-    public ResponseEntity updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
+    public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
         Optional<Line> line = lineRepository.findById(id);
         if (!line.isPresent()) {
             throw new NoSuchElementException("수정하고자 하는 지하철역을 찾을 수 없습니다.");
@@ -58,7 +60,6 @@ public class LineService {
 
         Line persistLine = line.get();
         persistLine.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
-        return ResponseEntity.ok().build();
     }
 
     @Transactional
