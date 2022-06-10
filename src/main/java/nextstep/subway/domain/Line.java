@@ -53,20 +53,20 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void addSection(Station newUpStation, Station newDownStation, long sectionDistance) {
-        validateStations(newUpStation, newDownStation);
+    public void addSection(Section section) {
+        validateStations(section.getUpStation(), section.getDownStation());
 
-        if (upStation.equals(newDownStation)) {
-            changeUpStation(newUpStation, sectionDistance);
+        if (upStation.equals(section.getDownStation())) {
+            changeUpStation(section.getUpStation(), section.getDistance());
             return ;
         }
 
-        if (downStation.equals(newUpStation)) {
-            changeDownStation(newDownStation, sectionDistance);
+        if (downStation.equals(section.getUpStation())) {
+            changeDownStation(section.getDownStation(), section.getDistance());
             return ;
         }
 
-        sections.addSectionBetweenTwoStation(newUpStation, newDownStation, sectionDistance);
+        sections.addSectionBetweenTwoStation(section.getUpStation(), section.getDownStation(), section.getDistance());
     }
 
     private void validateStations(Station newUpStation, Station newDownStation) {

@@ -84,7 +84,7 @@ public class LineService {
         Station downStation = findStationById(sectionRequest.getDownStationId());
         Station upStation = findStationById(sectionRequest.getUpStationId());
 
-        line.addSection(upStation, downStation, sectionRequest.getDistance());
+        line.addSection(sectionRequest.toSection(upStation, downStation, sectionRequest.getDistance()));
         return line;
     }
 
