@@ -70,9 +70,8 @@ public class Sections {
 
     private Optional<Section> findIncludingSectionBy(Station upStation, Station downStation) {
         return this.sections.stream()
-                .filter(section -> Objects.equals(section.getUpStation(), upStation)
-                        || Objects.equals(section.getDownStation(), downStation))
-                .findFirst();
+                .filter(section -> section.isUpStationEquals(upStation) || section.isDownStationEquals(downStation))
+                .findAny();
     }
 
     private void checkDistance(int distance) {

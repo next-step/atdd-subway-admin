@@ -54,6 +54,14 @@ public class Section {
         this.distance = distance;
     }
 
+    public boolean isUpStationEquals(Station station) {
+        return Objects.equals(this.upStation, station);
+    }
+
+    public boolean isDownStationEquals(Station station) {
+        return Objects.equals(this.downStation, station);
+    }
+
     public void connect(Section section) {
         if (Objects.equals(this.downStation, section.getDownStation())) {
             updateDownStation(section.getUpStation());
