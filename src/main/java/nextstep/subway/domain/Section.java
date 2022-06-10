@@ -24,10 +24,10 @@ public class Section extends BaseEntity {
     private Long id;
     @Column(name = "line_id")
     private Long lineId;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id")
     private Station upStation;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
     private Integer distance;
@@ -65,7 +65,7 @@ public class Section extends BaseEntity {
     }
 
     public boolean match(Section section) {
-        if (this.upStation.equals(section.upStation) || this.downStation.equals(section.downStation)) {
+        if (this.upStation.equals(section.getUpStation()) || this.downStation.equals(section.getDownStation())) {
             validateDistanceOver(section);
             return true;
         }
@@ -74,7 +74,7 @@ public class Section extends BaseEntity {
     }
 
     private void validateDistanceOver(Section section) {
-        if (distance <= section.distance) {
+        if (distance <= section.getDistance()) {
             throw new DataIntegrityViolationException(ERROR_MESSAGE_DISTANCE_OVER);
         }
     }
@@ -102,15 +102,15 @@ public class Section extends BaseEntity {
     public void updateForDivide(Section newSection) {
         validateDivide(newSection);
 
-        if(upStation.equals(newSection.upStation)) {
-            upStation = newSection.downStation;
+        if(upStation.equals(newSection.getUpStation())) {
+            upStation = newSection.getDownStation();
         }
 
-        if(downStation.equals(newSection.downStation)) {
-            downStation = newSection.upStation;
+        if(downStation.equals(newSection.getDownStation())) {
+            downStation = newSection.getUpStation();
         }
 
-        distance = distance - newSection.distance;
+        distance = distance - newSection.getDistance();
     }
 
     private void validateDivide(Section newSection) {
