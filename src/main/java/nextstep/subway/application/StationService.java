@@ -28,10 +28,8 @@ public class StationService {
 
     @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
-        List<Station> stations = stationRepository.findAll();
-
-        return stations.stream()
-                .map(station -> StationResponse.of(station))
+        return stationRepository.findAll().stream()
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 
