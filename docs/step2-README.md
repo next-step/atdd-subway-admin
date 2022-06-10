@@ -136,8 +136,28 @@ API 명세
             }
         ]
         ```
+- [x] 특정 지하철 노선 조회 API
+  - [x] Controller
+    - 요청 : GET /lines/{id}
+    - 응답 : 200 OK
+    ```
+    {
+        "id": 1,
+        "name": "신분당선",
+        "color": "some-color-code",
+        "stations": [
+            {
+                "id": 1,
+                "name": "강남역"
+            },
+            {
+                "id": 2,
+                "name": "판교역"
+            }
+        ]
+    }
+    ```
 - [ ] 특정 지하철 노선 수정 API
-- [ ] 특정 지하철 노선 조회 API
 - [ ] 특정 지하철 노선 삭제 API
 
 ---

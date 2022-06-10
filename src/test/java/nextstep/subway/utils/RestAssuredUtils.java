@@ -29,6 +29,12 @@ public class RestAssuredUtils<T> {
             .then().log().all();
     }
 
+    public static ValidatableResponse get(final String urlTemplate, final String path) {
+        return requestSpecification.when()
+            .get(makeUrlTemplate(urlTemplate, path))
+            .then().log().all();
+    }
+
     public static ValidatableResponse delete(final String urlTemplate, final String path) {
         return requestSpecification.when()
             .delete(makeUrlTemplate(urlTemplate, path))
