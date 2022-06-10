@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
     private final static int LAST_SIZE = 1;
+    private final static int DISTANCE_LOWER_BOUND = 1;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
     @ManyToOne
@@ -75,7 +76,7 @@ public class Sections {
     }
 
     private void checkDistance(int distance) {
-        if (distance < 1) {
+        if (distance < DISTANCE_LOWER_BOUND) {
             throw new IllegalArgumentException("거리값은 1 이상 되어야 합니다.");
         }
     }
