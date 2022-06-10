@@ -18,7 +18,7 @@ public class Sections {
     protected Sections() {
     }
 
-    public Sections(Line line, Integer distance, Station upStation, Station downStation) {
+    public Sections(Line line, int distance, Station upStation, Station downStation) {
         checkSame(upStation, downStation);
         checkDistance(distance);
 
@@ -30,17 +30,18 @@ public class Sections {
 
     public List<Station> getAllDistinctStationsOrderByAscending() {
         List<Station> sections = new ArrayList<>();
-        Section section = findByUpStationOrNull(ascend);
-        while (section != null) {
+        Optional<Section> optionalSection = findByUpStation(ascend);
+        while (optionalSection.isPresent()) {
+            Section section = optionalSection.get();
             sections.add(section.getUpStation());
             sections.add(section.getDownStation());
-            section = findByUpStationOrNull(section.getDownStation());
+            optionalSection = findByUpStation(section.getDownStation());
         }
         return sections.stream().distinct().collect(Collectors.toList());
     }
 
-    private Section findByUpStationOrNull(Station station) {
-        return this.sections.stream().filter(it -> Objects.equals(it.getUpStation(), station)).findFirst().orElse(null);
+    private Optional<Section> findByUpStation(Station station) {
+        return this.sections.stream().filter(it -> Objects.equals(it.getUpStation(), station)).findFirst();
     }
 
     public void add(Line line, int distance, Station upStation, Station downStation) {

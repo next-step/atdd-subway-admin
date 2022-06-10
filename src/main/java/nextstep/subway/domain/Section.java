@@ -17,9 +17,9 @@ public class Section {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Station downStation;
-    private Integer distance;
+    private int distance;
 
-    public Section(Line line, Integer distance, Station upStation, Station downStation) {
+    public Section(Line line, int distance, Station upStation, Station downStation) {
         this.line = line;
         this.distance = distance;
         this.upStation = upStation;
@@ -29,7 +29,7 @@ public class Section {
     protected Section() {
     }
 
-    public Integer getDistance() {
+    public int getDistance() {
         return this.distance;
     }
 

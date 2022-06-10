@@ -23,7 +23,7 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    public Line(String name, String color, Integer distance, Station upStation, Station downStation) {
+    public Line(String name, String color, int distance, Station upStation, Station downStation) {
         this.name = name;
         this.color = color;
         this.sections = new Sections(this, distance, upStation, downStation);
