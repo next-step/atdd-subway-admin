@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+    private final static int LAST_SIZE = 1;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
     @ManyToOne
@@ -47,11 +48,11 @@ public class Sections {
     public void add(Line line, int distance, Station upStation, Station downStation) {
         checkSame(upStation, downStation);
         checkDistance(distance);
-        checkAlreadyAdded(upStation, downStation);
         checkStationIncluded(upStation, downStation);
 
         updateEndStation(upStation, downStation);
         Section section = new Section(line, distance, upStation, downStation);
+        checkAlreadyAdded(section);
         findIncludingSectionBy(upStation, downStation).ifPresent(value -> value.connect(section));
         this.sections.add(section);
     }
@@ -92,10 +93,8 @@ public class Sections {
         }
     }
 
-    private void checkAlreadyAdded(Station upStation, Station downStation) {
-        if (this.sections.stream().anyMatch(
-                section -> Objects.equals(section.getUpStation(), upStation)
-                        && Objects.equals(section.getDownStation(), downStation))) {
+    private void checkAlreadyAdded(Section section) {
+        if (this.sections.contains(section)) {
             throw new IllegalArgumentException("이미 존재하는 구간입니다.");
         }
     }
@@ -107,7 +106,7 @@ public class Sections {
     }
 
     private void checkLastSection() {
-        if (this.sections.size() < 2) {
+        if (Objects.equals(this.sections.size(), LAST_SIZE)) {
             throw new IllegalArgumentException("마지막 구간은 제거할 수 없습니다.");
         }
     }
