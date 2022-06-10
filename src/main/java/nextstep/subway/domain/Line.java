@@ -7,6 +7,10 @@ import javax.persistence.*;
 
 @Entity
 public class Line extends BaseEntity {
+    private static final String ERROR_MSG_NAME_EMPTY = "노선 이름 정보가 존재하지 않습니다.";
+    private static final String ERROR_MSG_UP_STATION_EMPTY = "노선 상행종점역 정보가 존재하지 않습니다.";
+    private static final String ERROR_MSG_DOWN_STATION_EMPTY = "노선 하행종점역 정보가 존재하지 않습니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,10 +24,6 @@ public class Line extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_line_down_station"))
     private Station downStation;
-
-    private static final String ERROR_MSG_NAME_EMPTY = "노선 이름 정보가 존재하지 않습니다.";
-    private static final String ERROR_MSG_UP_STATION_EMPTY = "노선 상행종점역 정보가 존재하지 않습니다.";
-    private static final String ERROR_MSG_DOWN_STATION_EMPTY = "노선 하행종점역 정보가 존재하지 않습니다.";
 
     public Line() {
     }
