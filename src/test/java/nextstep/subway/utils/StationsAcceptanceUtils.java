@@ -3,7 +3,7 @@ package nextstep.subway.utils;
 import static nextstep.subway.station.StationAcceptanceTest.STATION_BASE_URL;
 
 import io.restassured.response.Response;
-import nextstep.subway.dto.StationRequest;
+import nextstep.subway.dto.station.StationRequest;
 
 public class StationsAcceptanceUtils {
 
