@@ -6,7 +6,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.util.LineAcceptanceMethods;
-import nextstep.subway.util.SectionAcceptanceMethods;
 import nextstep.subway.util.StationAcceptanceMethods;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +40,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         Long midStationId = StationAcceptanceMethods.createStation("동천역").jsonPath().getLong("id");
-        SectionAcceptanceMethods.addSection(defaultLineId, midStationId, defaultDownStationId, 3);
+        LineAcceptanceMethods.addSection(defaultLineId, midStationId, defaultDownStationId, 3);
 
         // then
         ExtractableResponse<Response> response = LineAcceptanceMethods.getLine(defaultLineId);
@@ -49,7 +48,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선을 생성하고 When 지하철 상행 종점 구간을 추가하면 Then 구간 목록 조회시 첫번째 구간으로 조회된다.
+     * Given 지하철 노선을 생성하고 When 지하철 상행 종점 구간을 추가하면 Then 노선 조회시 첫번째 역으로 변경된 상행 종점이 조회된다
      */
     @DisplayName("지하철 상행 종점 추가")
     @Test
@@ -59,17 +58,15 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         Long upStationId = StationAcceptanceMethods.createStation("신논현").jsonPath().getLong("id");
-        SectionAcceptanceMethods.addSection(defaultLineId, upStationId, defaultUpStationId, 5);
+        LineAcceptanceMethods.addSection(defaultLineId, upStationId, defaultUpStationId, 5);
 
         // then
-        ExtractableResponse<Response> response = SectionAcceptanceMethods.getAllSections(defaultLineId);
-        assertThat(response.jsonPath().getLong("[0].upStation.id")).isEqualTo(upStationId);
-        assertThat(response.jsonPath().getLong("[0].downStation.id")).isEqualTo(defaultUpStationId);
-        assertThat(response.jsonPath().getInt("[0].distance")).isEqualTo(5);
+        ExtractableResponse<Response> response = LineAcceptanceMethods.getLine(defaultLineId);
+        assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("신논현", "강남역", "광교중앙역");
     }
 
     /**
-     * Given 지하철 노선을 생성하고 When 지하철 하행 종점 구간을 추가하면 Then 구간 목록 조회시 마지막 구간으로 조회된다.
+     * Given 지하철 노선을 생성하고 When 지하철 하행 종점 구간을 추가하면 Then 노선 조회시 마지막 역으로 수정된 하행 종점이 조회된다
      */
     @DisplayName("지하철 하행 종점 추가")
     @Test
@@ -79,17 +76,15 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         Long downStationId = StationAcceptanceMethods.createStation("광교역").jsonPath().getLong("id");
-        SectionAcceptanceMethods.addSection(defaultLineId, defaultDownStationId, downStationId, 7);
+        LineAcceptanceMethods.addSection(defaultLineId, defaultDownStationId, downStationId, 7);
 
         // then
-        ExtractableResponse<Response> response = SectionAcceptanceMethods.getAllSections(defaultLineId);
-        assertThat(response.jsonPath().getLong("[1].upStation.id")).isEqualTo(defaultDownStationId);
-        assertThat(response.jsonPath().getLong("[1].downStation.id")).isEqualTo(downStationId);
-        assertThat(response.jsonPath().getInt("[1].distance")).isEqualTo(7);
+        ExtractableResponse<Response> response = LineAcceptanceMethods.getLine(defaultLineId);
+        assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("강남역", "광교중앙역", "광교역");
     }
 
     /**
-     * Given 지하철 노선을 생성하고 When 지하철 중간 구간을 추가하면 Then 구간 목록 조회시 중간 구간으로 조회된다.
+     * Given 지하철 노선을 생성하고 When 지하철 중간 구간을 추가하면 Then 노선 조회시 역 목록 중간에 신규 추가한 중간 구간의 역이 조회된다
      */
     @DisplayName("지하철 중간 구간 추가")
     @Test
@@ -99,16 +94,14 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         Long downStationId = StationAcceptanceMethods.createStation("광교역").jsonPath().getLong("id");
-        SectionAcceptanceMethods.addSection(defaultLineId, defaultDownStationId, downStationId, 7);
+        LineAcceptanceMethods.addSection(defaultLineId, defaultDownStationId, downStationId, 7);
 
         Long middleStationId = StationAcceptanceMethods.createStation("판교역").jsonPath().getLong("id");
-        SectionAcceptanceMethods.addSection(defaultLineId, middleStationId, defaultDownStationId, 3);
+        LineAcceptanceMethods.addSection(defaultLineId, middleStationId, defaultDownStationId, 3);
 
         // then
-        ExtractableResponse<Response> response = SectionAcceptanceMethods.getAllSections(defaultLineId);
-        assertThat(response.jsonPath().getLong("[1].upStation.id")).isEqualTo(middleStationId);
-        assertThat(response.jsonPath().getLong("[1].downStation.id")).isEqualTo(defaultDownStationId);
-        assertThat(response.jsonPath().getInt("[1].distance")).isEqualTo(3);
+        ExtractableResponse<Response> response = LineAcceptanceMethods.getLine(defaultLineId);
+        assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("강남역", "판교역", "광교중앙역", "광교역");
     }
 
     /**
@@ -122,7 +115,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         Long middleStationId = StationAcceptanceMethods.createStation("동천역").jsonPath().getLong("id");
-        ExtractableResponse<Response> response = SectionAcceptanceMethods.addSection(defaultLineId, middleStationId,
+        ExtractableResponse<Response> response = LineAcceptanceMethods.addSection(defaultLineId, middleStationId,
                 defaultDownStationId, 15);
 
         // then
@@ -139,7 +132,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         // BeforeEach 에서 실행
 
         // then
-        ExtractableResponse<Response> response = SectionAcceptanceMethods.addSection(defaultLineId, defaultUpStationId,
+        ExtractableResponse<Response> response = LineAcceptanceMethods.addSection(defaultLineId, defaultUpStationId,
                 defaultDownStationId, 3);
 
         // then
@@ -155,10 +148,10 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         // when
         // BeforeEach 에서 실행
         Long upStationId = StationAcceptanceMethods.createStation("신논현").jsonPath().getLong("id");
-        SectionAcceptanceMethods.addSection(defaultLineId, upStationId, defaultUpStationId, 5);
+        LineAcceptanceMethods.addSection(defaultLineId, upStationId, defaultUpStationId, 5);
 
         // then
-        ExtractableResponse<Response> response = SectionAcceptanceMethods.addSection(defaultLineId, defaultDownStationId,
+        ExtractableResponse<Response> response = LineAcceptanceMethods.addSection(defaultLineId, defaultDownStationId,
                 defaultUpStationId, 4);
 
         // then
