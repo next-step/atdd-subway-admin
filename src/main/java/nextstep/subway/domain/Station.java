@@ -18,12 +18,13 @@ public class Station extends BaseEntity {
     protected Station() {
     }
 
-    public Station(Long id) {
-        this.id = id;
-    }
-
     public Station(String name) {
         this.name = name;
+    }
+
+    public Station(Long id, String name) {
+        this(name);
+        this.id = id;
     }
 
     public Long getId() {

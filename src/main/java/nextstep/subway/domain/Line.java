@@ -28,6 +28,11 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    public Line(Long id, String name, String color) {
+        this(name, color);
+        this.id = id;
+    }
+
     public void addSection(Section section) {
         sections.addSection(section);
     }
