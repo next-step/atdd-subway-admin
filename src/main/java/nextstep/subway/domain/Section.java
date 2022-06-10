@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Entity
@@ -22,6 +24,8 @@ public class Section extends BaseEntity {
     private Line line;
 
     private Integer distance;
+
+    private Integer sequence;
 
     public static final int MIN_SECTION_DISTANCE = 0;
 
@@ -58,28 +62,63 @@ public class Section extends BaseEntity {
         }
     }
 
-    public boolean containsStation(Station station) {
-        return upStation.equals(station) || downStation.equals(station);
-    }
-
     public void updateLine(Line line) {
         this.line = line;
     }
 
-    public void updateUpStation(Station upStation) {
-        this.upStation = upStation;
+    public boolean matchUpAndDownStation(List<Section> sections) {
+        return sections.stream().anyMatch(section -> section.containsStation(upStation))
+                && sections.stream().anyMatch(section -> section.containsStation(downStation));
     }
 
-    public void updateDistance(Integer distance) {
-        this.distance = distance;
+    public boolean matchUpOrDownStation(List<Section> sections) {
+        return sections.stream().anyMatch(section -> section.containsStation(upStation))
+                || sections.stream().anyMatch(section -> section.containsStation(downStation));
     }
 
-    public void updateDownStation(Station downStation) {
-        this.downStation = downStation;
+    private boolean containsStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
+    public boolean isBeforeUpFinalSection(List<Section> sections) {
+        Section upFinalSection = sections.stream().findFirst()
+                .orElseThrow(() -> new NoSuchElementException("지하철 구간이 존재하지 않습니다."));
+        return downStation.equals(upFinalSection.upStation);
+    }
+
+    public boolean isAfterDownFinalSection(List<Section> sections) {
+        Section downFinalSection = sections.stream().reduce((upStation, downStation) -> downStation)
+                .orElseThrow(() -> new NoSuchElementException("지하철 구간이 존재하지 않습니다."));
+        return upStation.equals(downFinalSection.downStation);
+    }
+
+    public boolean hasSameUpStation(Section section) {
+        return upStation.equals(section.upStation);
     }
 
     public void addLineDistance() {
         line.addDistance(distance);
+    }
+
+    public boolean isLongerThan(Section section) {
+        return this.distance >= section.distance;
+    }
+
+    public void updateUpStation(Section section) {
+        this.upStation = section.downStation;
+        this.distance = this.distance - section.distance;
+    }
+
+    public void updateLineUpFinalStation() {
+        line.updateUpFinalStation(upStation);
+    }
+
+    public void updateLineDownFinalStation() {
+        line.updateDownFinalStation(downStation);
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
     }
 
     public Long getId() {
@@ -92,10 +131,6 @@ public class Section extends BaseEntity {
 
     public Station getDownStation() {
         return downStation;
-    }
-
-    public Line getLine() {
-        return line;
     }
 
     public Integer getDistance() {
