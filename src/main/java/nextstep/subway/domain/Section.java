@@ -55,11 +55,11 @@ public class Section {
     }
 
     public void connect(Section section) {
-        if (this.downStation == section.getDownStation()) {
+        if (Objects.equals(this.downStation, section.getDownStation())) {
             updateDownStation(section.getUpStation());
         }
 
-        if (this.upStation == section.getUpStation()) {
+        if (Objects.equals(this.upStation, section.getUpStation())) {
             updateUpStation(section.getDownStation());
         }
 

@@ -58,11 +58,11 @@ public class Sections {
     }
 
     private void updateEndStation(Station upStation, Station downStation) {
-        if (downStation == ascend) {
+        if (Objects.equals(downStation, ascend)) {
             this.ascend = upStation;
         }
 
-        if (upStation == descend) {
+        if (Objects.equals(upStation, descend)) {
             this.descend = downStation;
         }
     }
@@ -130,13 +130,13 @@ public class Sections {
         Section upSection = findIncludingUpStationSectionBy(station);
         Section downSection = findIncludingDownStationSectionBy(station);
 
-        if (upSection == null) {
+        if (Objects.isNull(upSection)) {
             this.sections.remove(downSection);
             this.descend = downSection.getUpStation();
             return;
         }
 
-        if (downSection == null) {
+        if (Objects.isNull(downSection)) {
             this.sections.remove(upSection);
             this.ascend = upSection.getDownStation();
             return;
