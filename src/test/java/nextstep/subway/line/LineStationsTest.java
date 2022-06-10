@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -69,7 +70,7 @@ public class LineStationsTest {
         신분당선_역정보들.addLineStation(new LineStation(신분당선, new Section(강남역, 양재역, 10L)));
         신분당선_역정보들.addLineStation(new LineStation(신분당선, new Section(양재역, 논현역, 10L)));
 
-        assertThatThrownBy(() -> 신분당선_역정보들.addLineStation(new LineStation(신분당선, new Section(new Station("양재역"), new Station("수원역"), 11L))))
+        assertThatThrownBy(() -> 신분당선_역정보들.addLineStation(new LineStation(신분당선, new Section(양재역, new Station("수원역"), 11L))))
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
@@ -86,5 +87,56 @@ public class LineStationsTest {
 
         LineStations 신분당선_노선들 = new LineStations(Arrays.asList(신분당선_양재역, 신분당선_강남역, 신분당선_신사역, 신분당선_논현, 신분당선_신논현));
         assertThat(신분당선_노선들.getStations().stream().map(Station::getName).toArray()).containsExactly("신사역", "논현", "신논현", "강남역", "양재역");
+    }
+
+    @DisplayName("구간이 1개 이하이면 삭제가 불가능 하다.")
+    @Test
+    void invalidRemoveSectionTestWhenSectionIsOnlyOne() {
+        assertThatThrownBy(() -> 신분당선_역정보들.removeLineStationBy(강남역)).isExactlyInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("노선에 등록되지 않은 역은 제거 될수 없다.")
+    @Test
+    void invalidRemoveSectionTestWhenStationIsNoExist() {
+        Station 신사역 = new Station("신사역");
+        신분당선_역정보들.addLineStation(new LineStation(신분당선, new Section(강남역, 논현역, 2)));
+        assertThat(신분당선_역정보들.isSize()).isEqualTo(2);
+        assertThatThrownBy(() -> 신분당선_역정보들.removeLineStationBy(신사역)).isExactlyInstanceOf(EntityNotFoundException.class);
+    }
+
+    @DisplayName("시작구간을 삭제하면 시작 구간 뒤역이 시작점이 된다.")
+    @Test
+    void removeLineStationByTestWhenInputStationIsStartStart() {
+        final Section 논현역_구간 = new Section(강남역, 논현역, 2);
+        신분당선_역정보들.addLineStation(new LineStation(신분당선, 논현역_구간));
+        신분당선_역정보들.addLineStation(new LineStation(신분당선, new Section(논현역, 양재역, 2)));
+
+        신분당선_역정보들.removeLineStationBy(강남역);
+        assertThat(신분당선_역정보들.getStations().stream().map(Station::getName).toArray()).containsExactly("논현역","양재역");
+        assertThat(논현역_구간.getUpStation()).isEqualTo(논현역);
+    }
+
+    @DisplayName("종점이 제거되면 종점 앞 역이 종점이 된다.")
+    @Test
+    void removeLineStationByTestWhenInputStationIsEnd() {
+        final Section 양재역_구간 = new Section(논현역, 양재역, 2);
+        신분당선_역정보들.addLineStation(new LineStation(신분당선, new Section(강남역, 논현역, 2)));
+        신분당선_역정보들.addLineStation(new LineStation(신분당선, 양재역_구간));
+        신분당선_역정보들.removeLineStationBy(양재역);
+        assertThat(신분당선_역정보들.getSortedLineStations().getStations().toArray()).containsExactly(강남역,논현역);
+    }
+
+    @DisplayName("중간 역을 제거되면 뒤의 역의 PreStation 은 삭제된 구간역의 앞을 참고하고 거리는 삭제된 구간만큼 늘어난다.")
+    @Test
+    void removeLineStationByTestWhenInputStationsIsMiddle() {
+        final Section 논현역_구간 = new Section(강남역, 논현역, 2);
+        final Section 양재역_구간 = new Section(논현역, 양재역, 2);
+        신분당선_역정보들.addLineStation(new LineStation(신분당선, 논현역_구간));
+        신분당선_역정보들.addLineStation(new LineStation(신분당선,양재역_구간));
+
+        신분당선_역정보들.removeLineStationBy(논현역);
+        assertThat(신분당선_역정보들.getStations().stream().map(Station::getName).toArray()).containsExactly("강남역","양재역");
+        assertThat(양재역_구간.getUpStation()).isEqualTo(강남역);
+        assertThat(양재역_구간.getDistance()).isEqualTo(new Distance(4));
     }
 }

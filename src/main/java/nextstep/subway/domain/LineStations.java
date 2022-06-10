@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.Embeddable;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.*;
@@ -8,6 +9,7 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class LineStations {
+    private static final int ONE = 1;
     @OneToMany(mappedBy = "line", orphanRemoval = true, fetch = FetchType.LAZY)
     private final List<LineStation> lineStations = new ArrayList<>();
 
@@ -55,6 +57,13 @@ public class LineStations {
         return stations.stream().distinct().sorted().collect(Collectors.toList());
     }
 
+    public void removeLineStationBy(final LineStation lineStation) {
+        this.lineStations.remove(lineStation);
+        if (Objects.nonNull(lineStation.getLine())) {
+            lineStation.getLine().removeLineStation(lineStation);
+        }
+    }
+
     public List<Section> getSections() {
         return getLineStations().stream().map(LineStation::getSection).collect(Collectors.toList());
     }
@@ -63,13 +72,50 @@ public class LineStations {
         return lineStations;
     }
 
+    public void removeLineStationBy(final Station station) {
+        if (this.lineStations.size() <= ONE) {
+            throw new IllegalArgumentException("현재 노선은 1개 뿐이라서 지울수 없습니다.");
+        }
+        final LineStation lineStation = findByCompareCurrentStation(station).orElseThrow(EntityNotFoundException::new);
+        changeLineStation(lineStation);
+        removeLineStationBy(lineStation);
+    }
+
+    private void changeLineStation(LineStation lineStation) {
+        final Optional<LineStation> hasPreLineStation = findByCompareCurrentStation(lineStation.getPreStation());
+        final Optional<LineStation> hasNextLineStation = findByComparePreStation(lineStation.getCurrentStation());
+        if (Objects.equals(Optional.empty(), hasPreLineStation) && hasNextLineStation.isPresent()) {
+            changeStartLineStation(hasNextLineStation.orElseThrow(EntityNotFoundException::new));
+        }
+        if (hasPreLineStation.isPresent() && hasNextLineStation.isPresent()) {
+            changeMiddleLineStation(lineStation, hasNextLineStation.orElseThrow(EntityNotFoundException::new));
+        }
+    }
+
+    private void changeStartLineStation(final LineStation hasNextLineStation) {
+        hasNextLineStation.updateBySection(new Section(hasNextLineStation.getCurrentStation(), hasNextLineStation.getCurrentStation(), hasNextLineStation.getDistance()));
+    }
+
+    private void changeMiddleLineStation(LineStation lineStation, LineStation nextLineStation) {
+        nextLineStation.updateBySection(
+                new Section(
+                        lineStation.getPreStation(),
+                        nextLineStation.getCurrentStation(),
+                        nextLineStation.getDistance().plus(lineStation.getDistance())
+                )
+        );
+    }
+
+    public int isSize() {
+        return lineStations.size();
+    }
 
     private void insertLineStationBySorted(List<LineStation> result, LineStation startStation) {
         Optional<LineStation> preStation = findByComparePreStation(startStation.getCurrentStation());
         while (preStation.isPresent()) {
             LineStation station = preStation.get();
             result.add(station);
-            preStation = findPreStation(station.getCurrentStation());
+            preStation = findByComparePreStation(station.getCurrentStation());
         }
     }
 
@@ -112,15 +158,9 @@ public class LineStations {
         return this.lineStations.stream().filter(LineStation::isStartStation).findFirst();
     }
 
-    private Optional<LineStation> findPreStation(final Station station) {
-        return this.lineStations.stream()
-                .filter(savedLineStation -> savedLineStation.isPreStation(station))
-                .findFirst();
-    }
-
     private Optional<LineStation> findByComparePreStation(final Station station) {
         return this.lineStations.stream()
-                .filter(savedLineStation -> savedLineStation.isPreStation(station)).findAny();
+                .filter(savedLineStation -> !savedLineStation.isStartStation() && savedLineStation.isPreStation(station)).findFirst();
     }
 
     private Optional<LineStation> findByCompareCurrentStation(final Station station) {

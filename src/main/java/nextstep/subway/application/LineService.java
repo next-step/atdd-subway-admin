@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,5 +63,12 @@ public class LineService {
         final Station downStation = stationRepository.findById(addSection.getDownStationId()).orElseThrow(EntityNotFoundException::new);
         final Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         return SectionResponse.of(lineStationRepository.save(new LineStation(line, new Section(upStation, downStation, addSection.getDistance()))));
+    }
+
+    @Transactional
+    public void removeSectionByStationId(final Long lineId, final Long stationId) {
+        final Station station = stationRepository.findById(stationId).orElseThrow(EntityNotFoundException::new);
+        final Line line = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
+        line.getLineStations().removeLineStationBy(station);
     }
 }

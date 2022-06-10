@@ -1,9 +1,6 @@
 package nextstep.subway.line;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.*;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,10 +10,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import javax.persistence.EntityNotFoundException;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @DataJpaTest
-public class EntityTest {
+public class LineEntityTest {
     @Autowired
     LineRepository lineRepository;
 

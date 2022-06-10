@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RequestUtil {
     private static final BiFunction<RequestSpecification, String, Response> POST = RequestSenderOptions::post;
     private static final BiFunction<RequestSpecification, String, Response> GET = RequestSenderOptions::get;
-    private static final BiFunction<RequestSpecification,String, Response> DELETE = RequestSenderOptions::delete;
+    private static final BiFunction<RequestSpecification, String, Response> DELETE = RequestSenderOptions::delete;
 
     private static final BiFunction<RequestSpecification, String, Response> PUT = RequestSenderOptions::put;
     private static final String STATION_URL = "/stations";
@@ -27,17 +27,22 @@ public class RequestUtil {
     private static final String SECTION_PATH = "/sections";
     private static final String INVALID_KEY = "name";
 
+    private static final String DELETE_PARAMETER_QUERY = "?stationId=%d";
+
     public static void 요청_성공_실패_여부_확인(ExtractableResponse<Response> response, HttpStatus status) {
         assertThat(HttpStatus.valueOf(response.statusCode())).isEqualTo(status);
     }
 
     public ExtractableResponse<Response> createSection(final Long lineId, final Map<String, String> body) {
-        return this.request(()->body, POST, String.format(LINE_URL+"/%d"+SECTION_PATH, lineId));
+        return this.request(() -> body, POST, String.format(LINE_URL + "/%d" + SECTION_PATH, lineId));
     }
 
+    public ExtractableResponse<Response> deleteSection(final Long lineId, final Long stationId) {
+        return this.request(HashMap::new, DELETE, String.format(LINE_URL + "/%d" + SECTION_PATH + DELETE_PARAMETER_QUERY, lineId, stationId));
+    }
 
     public ExtractableResponse<Response> createLine(final Map<String, String> body) {
-        return this.request(()->body, POST, LINE_URL);
+        return this.request(() -> body, POST, LINE_URL);
     }
 
     public ExtractableResponse<Response> searchAllLine() {
@@ -45,26 +50,27 @@ public class RequestUtil {
     }
 
     public ExtractableResponse<Response> searchLine(final Long id) {
-        return this.request(HashMap::new, GET, String.format(LINE_URL+"/%d",id));
+        return this.request(HashMap::new, GET, String.format(LINE_URL + "/%d", id));
     }
 
     public ExtractableResponse<Response> updateLine(Long id, Map<String, String> body) {
-        return  this.request(()->body, PUT, String.format(LINE_URL+"/%d",id));
+        return this.request(() -> body, PUT, String.format(LINE_URL + "/%d", id));
     }
 
     public ExtractableResponse<Response> deleteLine(final Long index) {
-        return this.request(HashMap::new, DELETE, String.format(LINE_URL+"/%d",index));
+        return this.request(HashMap::new, DELETE, String.format(LINE_URL + "/%d", index));
     }
 
     public ExtractableResponse<Response> createStation(final String stationName) {
         return this.request(() -> makeBody(INVALID_KEY, stationName), POST, STATION_URL);
     }
+
     public ExtractableResponse<Response> getStations() {
         return this.request(HashMap::new, GET, STATION_URL);
     }
 
     public ExtractableResponse<Response> deleteStation(final Long index) {
-        return this.request(HashMap::new, DELETE, String.format(STATION_URL+"/%d",index));
+        return this.request(HashMap::new, DELETE, String.format(STATION_URL + "/%d", index));
     }
 
     private Map<String, String> makeBody(final String key, final String value) {

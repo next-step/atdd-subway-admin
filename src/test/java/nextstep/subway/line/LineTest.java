@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-public class LineTest extends EntityTest {
+public class LineTest extends LineEntityTest {
 
     @DisplayName("라인은 이름, 컬러 정보를 가진다.")
     @Test

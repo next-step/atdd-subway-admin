@@ -6,8 +6,6 @@ import java.util.Objects;
 
 @Embeddable
 public class Section {
-    private static final long ZERO = 0;
-
     @ManyToOne
     @JoinColumn(name = "UPSTATION_ID")
     private Station upStation;
@@ -46,9 +44,6 @@ public class Section {
         if (section.isSameDownStation(this.upStation) || section.isSameUpStation(this.downStation)) {
             return section;
         }
-        if (isInvalidDistance(section.getDistance())) {
-            throw new IllegalArgumentException("invalid distance");
-        }
         return isMiddle(section);
     }
 
@@ -83,18 +78,17 @@ public class Section {
         return this;
     }
 
+    public Section updateDistanceBy(final Distance distance) {
+        this.distance = distance;
+        return this;
+    }
+
     private Section isMiddle(final Section destination) {
         if (destination.isSameUpStation(upStation)) {
             return this;
         }
         throw new IllegalArgumentException("no match station");
     }
-
-
-    private boolean isInvalidDistance(final Distance distance) {
-        return Objects.equals(this.distance.subtract(distance), new Distance(ZERO));
-    }
-
     private boolean isSameUpStation(final Station station) {
         return Objects.equals(station, upStation);
     }
