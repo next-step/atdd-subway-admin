@@ -1,6 +1,7 @@
 package nextstep.subway.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -22,6 +23,7 @@ import org.mockito.AdditionalAnswers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
@@ -59,5 +61,33 @@ class LineServiceTest {
         );
         verify(stationRepository, times(2)).findById(anyLong());
         verify(lineRepository).save(any(Line.class));
+    }
+
+    @Test
+    @DisplayName("지하철 노선 생성 실패 : 존재 하지 않는 역 정보")
+    public void throwException_WhenStationIsNotExist() {
+        // Given
+        final CreateLineRequest createLineRequest = new CreateLineRequest("name", "color", 1L, 2L, 10);
+        given(stationRepository.findById(anyLong())).willThrow(IllegalArgumentException.class);
+
+        // When & Then
+        assertThatExceptionOfType(IllegalArgumentException.class)
+            .isThrownBy(() -> lineService.saveLine(createLineRequest));
+    }
+
+    @Test
+    @DisplayName("지하철 노선 생성 실패 : 이미 존재 하는 노선 정보")
+    public void throwException_WhenAlreadyExistLine() {
+        // Given
+        final CreateLineRequest createLineRequest = new CreateLineRequest("name", "color", 1L, 2L, 10);
+        final Station upStation = new Station("강남역");
+        final Station downStation = new Station("판교역");
+        given(stationRepository.findById(1L)).willReturn(Optional.of(upStation));
+        given(stationRepository.findById(2L)).willReturn(Optional.of(downStation));
+        given(lineRepository.save(any(Line.class))).willThrow(DataIntegrityViolationException.class);
+
+        // When & Then
+        assertThatExceptionOfType(DataIntegrityViolationException.class)
+            .isThrownBy(() -> lineService.saveLine(createLineRequest));
     }
 }

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestConstructor.AutowireMode;
 
@@ -66,6 +67,20 @@ class LineRepositoryTest {
             () -> assertThat(actual.getCreatedDate()).isNotNull(),
             () -> assertThat(actual.getUpStation()).isNotNull()
         );
+    }
+
+    @Test
+    @DisplayName("asdf")
+    public void asf() {
+        // Given
+        final Line given = new Line(name, color, upStation, downStation, distance);
+        final Line given2 = new Line(name, color, upStation, downStation, distance);
+
+        // When
+        Line actual = lineRepository.save(given);
+        assertThatExceptionOfType(DataIntegrityViolationException.class)
+            .isThrownBy(() -> lineRepository.save(given2));
+        // Then
     }
 
     @Test
