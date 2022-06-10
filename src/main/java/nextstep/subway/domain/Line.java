@@ -14,10 +14,10 @@ public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
-    private String name;
-    @Column
-    private String color;
+    @Embedded
+    private LineName name;
+    @Embedded
+    private LineColor color;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_line_up_station"))
     private Station upStation;
@@ -30,8 +30,8 @@ public class Line extends BaseEntity {
 
     public Line(String name, String color, Station upStation, Station downStation) {
         validate(name, upStation, downStation);
-        this.name = name;
-        this.color = color;
+        this.name = new LineName(name);
+        this.color = new LineColor(color);
         this.upStation = upStation;
         this.downStation = downStation;
     }
@@ -69,11 +69,11 @@ public class Line extends BaseEntity {
         return id;
     }
 
-    public String getName() {
+    public LineName getName() {
         return name;
     }
 
-    public String getColor() {
+    public LineColor getColor() {
         return color;
     }
 

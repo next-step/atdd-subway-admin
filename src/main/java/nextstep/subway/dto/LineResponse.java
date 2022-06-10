@@ -19,7 +19,7 @@ public class LineResponse {
                 StationResponse.of(line.getUpStation()),
                 StationResponse.of(line.getDownStation())
         );
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations, line.getCreatedDate(), line.getModifiedDate());
+        return new LineResponse(line.getId(), line.getName().getName(), line.getColor().getColor(), stations, line.getCreatedDate(), line.getModifiedDate());
     }
 
     public LineResponse() {
