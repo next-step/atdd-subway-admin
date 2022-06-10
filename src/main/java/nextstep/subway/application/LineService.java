@@ -5,6 +5,7 @@ import nextstep.subway.Exception.NotFoundStationException;
 import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,10 +45,10 @@ public class LineService {
     }
 
     @Transactional
-    public void updateLine(Long id, LineRequest lineRequest) throws NotFoundLineException {
+    public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) throws NotFoundLineException {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundLineException(id));
-        line.update(lineRequest.toLine(line.getUpStation(), line.getDownStation()));
+        line.update(lineUpdateRequest.toLine(line.getUpStation(), line.getDownStation()));
     }
 
     @Transactional
