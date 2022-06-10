@@ -101,8 +101,4 @@ public class Sections {
     private boolean checkExistsStation(Station station) {
         return sections.stream().anyMatch(section -> section.hasStation(station));
     }
-
-    public List<Section> getSections() {
-        return sections;
-    }
 }
