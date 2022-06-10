@@ -52,6 +52,11 @@ public class LineService {
         line.updateColor(updateLineRequest);
     }
 
+    @Transactional
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
+
     private Line findLine(Long id) {
         return lineRepository.findById(id)
             .orElseThrow(IllegalArgumentException::new);

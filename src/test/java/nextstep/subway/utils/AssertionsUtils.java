@@ -22,4 +22,8 @@ public class AssertionsUtils {
     public static void assertBadRequest(Response response) {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    public static void assertInternalServerError(Response response) {
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
 }

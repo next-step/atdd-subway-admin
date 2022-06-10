@@ -1,9 +1,12 @@
 package nextstep.subway.station;
 
 import static nextstep.subway.utils.AssertionsUtils.assertCreated;
+import static nextstep.subway.utils.AssertionsUtils.assertInternalServerError;
+import static nextstep.subway.utils.AssertionsUtils.assertNoContent;
 import static nextstep.subway.utils.AssertionsUtils.assertOk;
 import static nextstep.subway.utils.LineAcceptanceTestUtils.generateLine;
 import static nextstep.subway.utils.ResponseBodyExtractUtils.getId;
+import static nextstep.subway.utils.RestAssuredUtils.delete;
 import static nextstep.subway.utils.RestAssuredUtils.get;
 import static nextstep.subway.utils.RestAssuredUtils.put;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -79,7 +82,7 @@ public class LineAcceptanceTest {
      */
     @Test
     @DisplayName("지하철 노선 목록을 조회한다.")
-    public void getAllStations() {
+    public void getAllLines() {
         // Given
         Response createFirstLineResponse = generateLine("신분당선", "강남역", "판교역");
         Response createSecondLineResponse = generateLine("분당선", "문정역", "야탑역");
@@ -144,6 +147,29 @@ public class LineAcceptanceTest {
             () -> assertOk(getLineByIdResponse),
             () -> assertThat(getLineByIdResponseBody.getString("name")).isEqualTo(updateLineRequest.getName()),
             () -> assertThat(getLineByIdResponseBody.getString("color")).isEqualTo(updateLineRequest.getColor())
+        );
+    }
+
+    /**
+     * Given 1개의 지하철 노선을 생성하고
+     * When 지하철 노선을 삭제하면
+     * Then 지하철 노선이 삭제된다.
+     */
+    @Test
+    @DisplayName("지하철 노선을 삭제한다.")
+    public void deleteLineById(){
+        // Given
+        Response createLineResponse = generateLine("신분당선", "강남역", "판교역");
+        String lineId = getId(createLineResponse);
+    
+        // When
+        Response deleteLineResponse = delete(LINE_BASE_URL, lineId).extract().response();
+        Response getLineByIdResponse = get(LINE_BASE_URL, lineId).extract().response();
+    
+        // Then
+        assertAll(
+            () -> assertNoContent(deleteLineResponse),
+            () -> assertInternalServerError(getLineByIdResponse)
         );
     }
 }

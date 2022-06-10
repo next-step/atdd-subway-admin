@@ -169,6 +169,9 @@ API 명세
     }
     ```
     - 응답 : 200 OK
-- [ ] 특정 지하철 노선 삭제 API
+- [x] 특정 지하철 노선 삭제 API
+  - [x] Controller
+    - 요청 : DELETE /lines/{id}
+    - 응답 : 204 No Content
 
 ---
