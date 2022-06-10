@@ -6,6 +6,8 @@ import java.util.Objects;
 @Entity
 @Table(name = "line_station")
 public class Section {
+    @Transient
+    private final static int DISTANCE_LOWER_BOUND = 1;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,6 +23,7 @@ public class Section {
     private int distance;
 
     public Section(Line line, int distance, Station upStation, Station downStation) {
+        checkDistance(distance);
         this.line = line;
         this.distance = distance;
         this.upStation = upStation;
@@ -51,6 +54,7 @@ public class Section {
     }
 
     public void updateDistance(int distance) {
+        checkDistance(distance);
         this.distance = distance;
     }
 
@@ -62,6 +66,12 @@ public class Section {
         return Objects.equals(this.downStation, station);
     }
 
+    private void checkDistance(int distance) {
+        if (distance < DISTANCE_LOWER_BOUND) {
+            throw new IllegalArgumentException("거리값은 1 이상 되어야 합니다.");
+        }
+    }
+
     public void connect(Section section) {
         if (Objects.equals(this.downStation, section.getDownStation())) {
             updateDownStation(section.getUpStation());
@@ -71,14 +81,7 @@ public class Section {
             updateUpStation(section.getDownStation());
         }
 
-        checkDistance(section);
         updateDistance(getDistance() - section.getDistance());
-    }
-
-    private void checkDistance(Section section) {
-        if (this.distance <= section.getDistance()) {
-            throw new IllegalArgumentException("distance 는 구간 내에 속할 수 있는 값 이어야 합니다.");
-        }
     }
 
     @Override

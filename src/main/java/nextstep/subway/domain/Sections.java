@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
     private final static int LAST_SIZE = 1;
-    private final static int DISTANCE_LOWER_BOUND = 1;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
     @ManyToOne
@@ -22,7 +21,6 @@ public class Sections {
 
     public Sections(Line line, int distance, Station upStation, Station downStation) {
         checkSame(upStation, downStation);
-        checkDistance(distance);
 
         Section section = new Section(line, distance, upStation, downStation);
         this.ascend = upStation;
@@ -48,7 +46,6 @@ public class Sections {
 
     public void add(Line line, int distance, Station upStation, Station downStation) {
         checkSame(upStation, downStation);
-        checkDistance(distance);
         checkStationIncluded(upStation, downStation);
 
         updateEndStation(upStation, downStation);
@@ -72,12 +69,6 @@ public class Sections {
         return this.sections.stream()
                 .filter(section -> section.isUpStationEquals(upStation) || section.isDownStationEquals(downStation))
                 .findAny();
-    }
-
-    private void checkDistance(int distance) {
-        if (distance < DISTANCE_LOWER_BOUND) {
-            throw new IllegalArgumentException("거리값은 1 이상 되어야 합니다.");
-        }
     }
 
     private void checkSame(Station previousStation, Station nextStation) {
@@ -143,7 +134,7 @@ public class Sections {
         }
 
         downSection.updateDownStation(upSection.getDownStation());
-        downSection.updateDistance(upSection.getDistance());
+        downSection.updateDistance(downSection.getDistance() + upSection.getDistance());
         this.sections.remove(upSection);
     }
 }
