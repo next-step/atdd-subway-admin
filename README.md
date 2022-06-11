@@ -51,7 +51,7 @@ npm run dev
   - [x] 지하철 노선 수정
   - [x] 지하철 노선 삭제
   - [x] Controller Advice를 통한 오류 처리
-  - [ ] 구간 등록 인수 테스트 작성
+  - [x] 구간 등록 인수 테스트 작성
       - [x] Section Entity 추가
       - [x] Section Line 연관 관계 맵핑
       - [x] 새로운 역을 역 사이에 새로운 역 등록
