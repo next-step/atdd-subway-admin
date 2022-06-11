@@ -17,7 +17,6 @@ public abstract class BaseAcceptanceTest {
     @Autowired
     private DatabaseCleanup databaseCleanup;
 
-    @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
